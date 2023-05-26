@@ -212,6 +212,32 @@ contains
       end select
 
    end subroutine reset_statistical_output
+   
+   subroutine flow_init_satistical_output(output_set,output_config)
+
+      type(t_output_variable_set), intent(inout) :: output_set !> output set that items need to be added to
+         
+      
+      call initialize_statistical_output(output_set)
+         
+   end subroutine check_and_add_stat_output_item
+   
+   subroutine add_stat_output_item(output_set,data_pointer)
+   
+         type(t_output_variable_set), intent(inout) :: output_set !> output set that items need to be added to
+         
+         output_set%count = output_set%count + 1
+         if (output_set%count > output_set%size) then
+            call realloc_stat_output(output_set)
+         endif
+         
+         
+            
+         
+         type(t_output_variable_item) :: item !> new output item to be created
+      
+   
+   end subroutine add_stat_output_item(output_set)
       
    !> For every item in output_set, allocate arrays depending on operation id
    subroutine initialize_statistical_output(output_set)
@@ -251,16 +277,6 @@ contains
       enddo
 
    end subroutine initialize_statistical_output
-   
-   !> routine that checks if the statistical output item has to be written, and if yes 
-   !  assigns the correct pointer to %source_input
-   subroutine set_statistical_input_pointer(i,success)
-   
-      type(t_output_variable_item), intent(inout)  :: i
-      logical, intent(out)                         :: success
-      success = .true.
-      
-   end subroutine set_statistical_input_pointer
    
 
 end module
