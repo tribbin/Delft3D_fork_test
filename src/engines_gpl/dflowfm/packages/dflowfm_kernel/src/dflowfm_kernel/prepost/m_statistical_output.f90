@@ -74,10 +74,10 @@ private
 
    !> Derived type to store the cross-section set
    type, public :: t_output_variable_set
-      integer                                                :: size = 0                  !< Actual size of cross-section set
-      integer                                                :: growsby = 200             !< Increment for cross-section set
-      integer                                                :: count= 0                  !< Actual number of cross-section sets
-      type(t_output_variable_item), pointer, dimension(:)    :: statout                   !< Current cross-section
+      integer                                                :: size = 0                  !< 
+      integer                                                :: growsby = 200             !< 
+      integer                                                :: count= 0                  !< 
+      type(t_output_variable_item), pointer, dimension(:)    :: statout                   !< 
    end type t_output_variable_set
 
 contains
@@ -214,57 +214,61 @@ contains
    end subroutine reset_statistical_output
    
    subroutine flow_init_statistical_output_his(output_config,output_set)
-
+   use m_flow
+   use m_flowexternalforcings
+   
       type(t_output_variable_set),    intent(inout)   :: output_set    !> output set that items need to be added to
       type(t_output_quantity_config_set), intent(in)  :: output_config !> output config for which an output set is needed.
       if (jahisbal > 0) then
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VOLTOT),voltot(1)                                         )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_STOR         ,voltot(2)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VOLERR       ,voltot(3)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BNDIN        ,voltot(4)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BNDOUT       ,voltot(5)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BNDTOT       ,voltot(6)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXCHIN       ,voltot(7)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXCHOUT      ,voltot(8)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXCHTOT      ,voltot(9)                                   )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_PRECIP_TOTAL ,voltot(10)                                  )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EVAP         ,voltot(11)                                  )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOUR         ,voltot(12)                                  )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_INTERNALTIDESDISSIPATION,voltot(13)                       )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GravInput    ,voltot(14)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SalInput     ,voltot(15)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SalInput2    ,voltot(16)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GRWIN        ,voltot(17)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GRWOUT       ,voltot(18)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GRWTOT       ,voltot(19)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATIN        ,voltot(20)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATOUT       ,voltot(21)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATTOT       ,voltot(22)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATIN1D      ,voltot(23)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATOUT1D     ,voltot(24)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATTOT1D     ,voltot(25)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATIN2D      ,voltot(26)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATOUT2D     ,voltot(27)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATTOT2D     ,voltot(28)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTIN        ,voltot(29)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTOUT       ,voltot(30)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTTOT       ,voltot(31)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTIN1D      ,voltot(32)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTOUT1D     ,voltot(33)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTTOT1D     ,voltot(34)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTIN2D      ,voltot(35)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTOUT2D     ,voltot(36)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTTOT2D     ,voltot(37)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_ICEPT        ,voltot(38)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EVAP_ICEPT   ,voltot(39)                                    )
-         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_PRECIP_GROUND,voltot(40)                                    )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VOLTOT                     ),voltot(1:1)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_STOR                       ),voltot(2:2)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VOLERR                     ),voltot(3:3)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BNDIN                      ),voltot(4:4)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BNDOUT                     ),voltot(5:5)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BNDTOT                     ),voltot(6:6)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXCHIN                     ),voltot(7:7)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXCHOUT                    ),voltot(8:8)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXCHTOT                    ),voltot(9:9)                                   )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_PRECIP_TOTAL               ),voltot(10:10)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EVAP                       ),voltot(11:11)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOUR                       ),voltot(12:12)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_INTERNALTIDESDISSIPATION   ),voltot(13:13)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GravInput                  ),voltot(14:14)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SalInput                   ),voltot(15:15)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SalInput2                  ),voltot(16:16)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GRWIN                      ),voltot(17:17)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GRWOUT                     ),voltot(18:18)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GRWTOT                     ),voltot(19:19)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATIN                      ),voltot(20:20)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATOUT                     ),voltot(21:21)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATTOT                     ),voltot(22:22)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATIN1D                    ),voltot(23:23)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATOUT1D                   ),voltot(24:24)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATTOT1D                   ),voltot(25:25)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATIN2D                    ),voltot(26:26)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATOUT2D                   ),voltot(27:27)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_LATTOT2D                   ),voltot(28:28)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTIN                      ),voltot(29:29)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTOUT                     ),voltot(30:30)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTTOT                     ),voltot(31:31)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTIN1D                    ),voltot(32:32)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTOUT1D                   ),voltot(33:33)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTTOT1D                   ),voltot(34:34)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTIN2D                    ),voltot(35:35)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTOUT2D                   ),voltot(36:36)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EXTTOT2D                   ),voltot(37:37)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_ICEPT                      ),voltot(38:38)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_EVAP_ICEPT                 ),voltot(39:39)                                  )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_PRECIP_GROUND              ),voltot(40:40)                                  )
       endif
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_PRESCRIBED_DISCHARGE                          )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_PRESCRIBED_SALINITY_INCREMENT                 )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_PRESCRIBED_TEMPERATURE_INCREMENT              )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_CURRENT_DISCHARGE                             )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_CUMULATIVE_VOLUME                             )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_DISCHARGE_AVERAGE                             )
+      !if (jahissourcesink > 0 .and. numsrc > 0) then
+      !   call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_PRESCRIBED_DISCHARGE                          )
+      !   call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_PRESCRIBED_SALINITY_INCREMENT                 )
+      !   call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_PRESCRIBED_TEMPERATURE_INCREMENT              )
+      !   call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_CURRENT_DISCHARGE                             )
+      !   call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_CUMULATIVE_VOLUME                ),vsrccum         )
+      !   call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_DISCHARGE_AVERAGE                             )
+      !endif
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GENERAL_STRUCTURE_DISCHARGE                               )
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GENERAL_STRUCTURE_CREST_LEVEL                             )
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_GENERAL_STRUCTURE_GATE_LOWER_EDGE_LEVEL                   )
@@ -602,12 +606,12 @@ contains
       
       call initialize_statistical_output(output_set)
          
-   end subroutine check_and_add_stat_output_item
+   end subroutine flow_init_statistical_output_his
    
    subroutine add_stat_output_item(output_set, output_config, data_pointer)
    
       type(t_output_variable_set), intent(inout) :: output_set             !> output set that items need to be added to
-      type(t_output_quantity_config), intent(in) :: output_config          !> output quantity config linked to output item
+      type(t_output_quantity_config), pointer, intent(in) :: output_config          !> output quantity config linked to output item
       double precision, pointer, dimension(:), intent(in) :: data_pointer  !> pointer to output quantity data
       
       type(t_output_variable_item) :: item !> new item to be added
@@ -630,17 +634,17 @@ contains
    
       type(t_output_quantity_config), intent(in) :: output_config          !> output quantity config linked to output item
       
-      if      (trim(str_tolower(output_config%input_value)) == 'current' ) then
-         return SO_CURRENT
-      else if (trim(str_tolower(output_config%input_value)) == 'average' ) then
-         return SO_AVERAGE
-      else if (trim(str_tolower(output_config%input_value)) == 'max' ) then
-         return SO_MAX
-      else if (trim(str_tolower(output_config%input_value)) == 'min' ) then
-         return SO_MIN
-      endif
+      set_operation_id = -1
       
-      return -1 !> invalid iput_value_string
+      if      (trim(str_tolower(output_config%input_value)) == 'current' ) then
+         set_operation_id = SO_CURRENT
+      else if (trim(str_tolower(output_config%input_value)) == 'average' ) then
+         set_operation_id = SO_AVERAGE
+      else if (trim(str_tolower(output_config%input_value)) == 'max' ) then
+         set_operation_id = SO_MAX
+      else if (trim(str_tolower(output_config%input_value)) == 'min' ) then
+         set_operation_id = SO_MIN
+      endif
          
    end function set_operation_id
       
