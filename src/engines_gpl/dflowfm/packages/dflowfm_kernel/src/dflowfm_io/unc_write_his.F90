@@ -3458,7 +3458,7 @@ subroutine unc_write_his(tim)            ! wrihis
             ierr = nf90_put_var(ihisfile, id_culvert_au,     valculvert(IVAL_AREA,i),          (/ i, it_his /))
             ierr = nf90_put_var(ihisfile, id_culvert_vel,    valculvert(IVAL_VEL,i),           (/ i, it_his /))
             ierr = nf90_put_var(ihisfile, id_culvert_crestl, valculvert(IVAL_CL_CRESTL,i),     (/ i, it_his /))
-            ierr = nf90_put_var(ihisfile, id_culvert_stat,   valculvert(IVAL_CL_STATE,i),  (/ i, it_his /))
+            ierr = nf90_put_var(ihisfile, id_culvert_stat,  int(valculvert(IVAL_CL_STATE,i)),  (/ i, it_his /))
             ierr = nf90_put_var(ihisfile, id_culvert_edgel , valculvert(IVAL_CL_EDGEL,i),      (/ i, it_his /))
             ierr = nf90_put_var(ihisfile, id_culvert_openh,  valculvert(IVAL_CL_OPENH,i),      (/ i, it_his /))
          enddo

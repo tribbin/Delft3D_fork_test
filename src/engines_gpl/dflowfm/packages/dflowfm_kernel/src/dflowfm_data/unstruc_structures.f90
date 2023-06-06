@@ -129,7 +129,7 @@ integer :: jaoldstr !< tmp backwards comp: we cannot mix structures from EXT and
  integer, parameter :: IVAL_UW_CRESTL = NUMVALS_COMMON + 1                   !< Index of universal weir crest level
  integer, parameter :: NUMEXTVALS_UNIWEIR = 1                                !< Number of extra variables for universal weir
  integer, parameter :: NUMVALS_UNIWEIR = NUMVALS_COMMON + NUMEXTVALS_UNIWEIR !< Total number of variables for universal weir
- double precision, dimension(:,:), allocatable :: valuniweir                 !< Array for universal weir(1:NUMVALS_UNIWEIR,:), the first dimension of this array contains
+ double precision, dimension(:,:), allocatable, target :: valuniweir                 !< Array for universal weir(1:NUMVALS_UNIWEIR,:), the first dimension of this array contains
                                                                              !< NUMVALS_COMMON common variables (see definitation at top) and above extra variables.
  
  ! gate (new),  extra variables:
@@ -147,7 +147,7 @@ integer :: jaoldstr !< tmp backwards comp: we cannot mix structures from EXT and
  
  ! Compound structure
  integer, parameter :: NUMVALS_CMPSTRU = NUMVALS_COMMON       !< Total number of variables for compound structure, no extra variables.
- double precision, dimension(:,:), allocatable :: valcmpstru  !< Array for compound structure(1:NUMVALS_CMPSTRU,:)
+ double precision, dimension(:,:), allocatable, target :: valcmpstru  !< Array for compound structure(1:NUMVALS_CMPSTRU,:)
 
  ! Pump shares the first 9 indices in common indices, extra variables are as follows:
  integer, parameter :: NUMVALS_COMMON_PUMP = 9                              !< Number of common variables shared by pump
@@ -167,7 +167,7 @@ integer :: jaoldstr !< tmp backwards comp: we cannot mix structures from EXT and
  integer, parameter :: IVAL_LC_VALVE       = NUMVALS_COMMON + 1                   !< long culvert valve relative opening
  integer, parameter :: NUMEXTVALS_LONGCULV = 1                                    !< Number of extra variables for long culvert
  integer, parameter :: NUMVALS_LONGCULVERT = NUMVALS_COMMON + NUMEXTVALS_LONGCULV !< Number of variables for long culvert
- double precision, dimension(:,:), allocatable :: vallongculvert                  !< Array for long culvert, (1:NUMVALS_LONGCULVERT,:), the first dimension of this array contains
+ double precision, dimension(:,:), allocatable, target :: vallongculvert                  !< Array for long culvert, (1:NUMVALS_LONGCULVERT,:), the first dimension of this array contains
                                                                                   !< NUMVALS_COMMON common variables (see definitation at top)and above extra variables.
  ! For old stype structures
  integer                           :: NUMVALS_GATE = 5        !< Number of variables for gate
