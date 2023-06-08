@@ -2723,8 +2723,8 @@ subroutine unc_write_his(tim)            ! wrihis
           ierr = nf90_put_var(ihisfile,    id_statgeom_node_coordy,  yobs(:), start = (/ 1 /), count = (/ numobs /))
 #ifdef HAVE_PROJ
           if (add_latlon) then
-!             call transform_and_put_latlon_coordinates(ihisfile, id_statgeom_node_lon, id_statgeom_node_lat, nccrs%proj_string, xobs, yobs)
-       end if
+             !             call transform_and_put_latlon_coordinates(ihisfile, id_statgeom_node_lon, id_statgeom_node_lat, nccrs%proj_string, xobs, yobs)
+          end if
 #endif
        end if
 
@@ -2733,7 +2733,7 @@ subroutine unc_write_his(tim)            ! wrihis
           ierr = nf90_put_var(ihisfile,    id_staty,  yobs(:),            start = (/ 1, it_his /), count = (/ ntot, 1 /))
 #ifdef HAVE_PROJ
           if (add_latlon) then
-!             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs, start = (/ 1, it_his /), count = (/ ntot, 1 /))
+             !             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs, start = (/ 1, it_his /), count = (/ ntot, 1 /))
           end if
 #endif
        else
@@ -2741,10 +2741,10 @@ subroutine unc_write_his(tim)            ! wrihis
           ierr = nf90_put_var(ihisfile,    id_staty,  yobs(:),            start = (/ 1 /), count = (/ ntot /))
 #ifdef HAVE_PROJ
           if (add_latlon) then
-!             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs)
-       endif
+             !             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs)
+          endif
 #endif
-    endif
+       endif
     endif
 
     if (timon) call timstrt('unc_write_his obs data 1', handle_extra(56))

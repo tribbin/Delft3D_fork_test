@@ -217,14 +217,15 @@ contains
    use m_flow
    use m_flowexternalforcings
    use m_structures
-   use m_observations, only: valobs
+   use m_observations
    
       type(t_output_variable_set),    intent(inout)   :: output_set    !> output set that items need to be added to
       type(t_output_quantity_config_set), intent(in)  :: output_config !> output config for which an output set is needed.
-      
       double precision, pointer, dimension(:) :: temp_pointer
-      integer :: i
+      integer :: i, ntot
       
+      ntot = numobs + nummovobs
+    
       if (jahisbal > 0) then
          call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VOLTOT                     ),voltot(1:1)                                   )
          call add_stat_output_item(output_set, output_config%statout(IDX_HIS_STOR                       ),voltot(2:2)                                   )
@@ -466,35 +467,72 @@ contains
          call add_stat_output_item(output_set, output_config%statout(IDX_HIS_INFILTRATION_CAP)                 ,valobs(IPNT_infiltcap,:)                                          )
          call add_stat_output_item(output_set, output_config%statout(IDX_HIS_INFILTRATION_INFILTRATION_ACTUAL) ,valobs(IPNT_infiltact,:)            )
       endif
-
-      
-
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_WIND                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_TAIR                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_RHUM                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_CLOU                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QSUN                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QEVA                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QCON                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QLONG                                                     )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QFREVA                                                    )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QFRCON                                                    )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QTOT                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SALINITY                                                  )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_POTENTIAL_DENSITY                                         )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_DENSITY                                                   )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BRUNT_VAISALA_N2                                          )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_WATERLEVEL                                                )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BEDLEVEL                                                  )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_WATERDEPTH                                                )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_HWAV                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_HWAV_SIG                                                  )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_TWAV                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_PHIWAV                                                    )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_RLABDA                                                    )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_UORB                                                      )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_USTOKES                                                   )
-      !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VSTOKES                                                   )
+      if (jatem > 1 .and. jahisheatflux > 0) then
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_WIND),valobs(IPNT_WIND,:)                               )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_TAIR),valobs(IPNT_TAIR,:)                               )
+         if (jatem == 5 .and. allocated(Rhum) .and. allocated(Clou) ) then
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_RHUM),valobs(IPNT_RHUM,:)                                    )
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_CLOU),valobs(IPNT_CLOU,:)                                    )
+         endif
+         if (jatem == 5 ) then
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QSUN  ),valobs(IPNT_QSUN,:)                                     )
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QEVA  ),valobs(IPNT_QEVA,:)                                     )
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QCON  ),valobs(IPNT_QCON,:)                                     )
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QLONG ),valobs(IPNT_QLON,:)                                     )
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QFREVA),valobs(IPNT_QFRE,:)                                     )
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QFRCON),valobs(IPNT_QFRC,:)                                     )
+            endif
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_QTOT  ),valobs(IPNT_RHUM,:)                                     )
+      endif
+      if (jasal > 0 .and. jahissal > 0) then
+         if (kmx>0) then
+            call c_f_pointer (c_loc(valobs(IPNT_SA1 +1:IPNT_SA1+kmx,1:ntot)), temp_pointer, [kmx*ntot])
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SALINITY   ),temp_pointer                                )
+         else
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_SALINITY   ),valobs(IPNT_SA1,:)                                )
+         endif
+      endif
+      if( (jasal > 0 .or. jatem > 0 .or. jased > 0 )  .and. jahisrho > 0) then
+         if (kmx>0) then
+            call c_f_pointer (c_loc(valobs(IPNT_RHOP +1:IPNT_RHOP+kmx,1:ntot)), temp_pointer, [kmx*ntot])
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_POTENTIAL_DENSITY   ),temp_pointer                                )
+            
+            call c_f_pointer (c_loc(valobs(IPNT_BRUV +1:IPNT_BRUV+kmx,1:ntot)), temp_pointer, [kmx*ntot])
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BRUNT_VAISALA_N2),temp_pointer                              )
+            if (idensform > 10) then
+               call c_f_pointer (c_loc(valobs(IPNT_RHO +1:IPNT_RHO+kmx,1:ntot)), temp_pointer, [kmx*ntot])
+               call add_stat_output_item(output_set, output_config%statout(IDX_HIS_DENSITY),temp_pointer                                )
+            endif
+         else
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_POTENTIAL_DENSITY),valobs(IPNT_RHOP,:)                              )
+         endif
+      endif
+      if (ntot > 0) then
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_WATERLEVEL),valobs(IPNT_S1,:)                               )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_BEDLEVEL)  ,valobs(IPNT_BL,:)                             )
+         if (jahiswatdep > 0) then
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_WATERDEPTH),valobs(IPNT_HS,:)                               )
+         endif
+      endif
+      if (jawave>0 .and. jahiswav > 0) then
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_HWAV    ),valobs(IPNT_WAVEH,:)                                    )
+         !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_HWAV_SIG),valobs(IPNT_HS,:)                                    )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_TWAV    ),valobs(IPNT_WAVET,:)                                    )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_PHIWAV  ),valobs(IPNT_WAVED,:)                                    )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_RLABDA  ),valobs(IPNT_WAVEL,:)                              )
+         call add_stat_output_item(output_set, output_config%statout(IDX_HIS_UORB    ),valobs(IPNT_WAVEU,:)                              )
+         if ( kmx>0 .and. .not. flowwithoutwaves) then
+            call c_f_pointer (c_loc(valobs(IPNT_UCXST +1:IPNT_UCXST+kmx,1:ntot)), temp_pointer, [kmx*ntot])
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_USTOKES),temp_pointer)
+            
+            call c_f_pointer (c_loc(valobs(IPNT_UCYST +1:IPNT_UCYST+kmx,1:ntot)), temp_pointer, [kmx*ntot])
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VSTOKES),temp_pointer)
+         else
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_USTOKES),valobs(IPNT_UCXST,:)                                 )
+            call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VSTOKES),valobs(IPNT_UCYST,:)                                 )
+         endif
+      endif
+      !if( jahisvelvec > 0 ) then
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_X_VELOCITY                                                )
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_Y_VELOCITY                                                )
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_Z_VELOCITY                                                )
@@ -514,6 +552,17 @@ contains
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_VELOCITY_MAGNITUDE_EULERIAN                               )
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_DISCHARGE_MAGNITUDE                                       )
       !call add_stat_output_item(output_set, output_config%statout(IDX_HIS_RICH                                                      )
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
       !call add_stat_output_item(output_set, output_config%statout(IDX_MAP_S0                                                        )
       !call add_stat_output_item(output_set, output_config%statout(IDX_MAP_S1                                                        )
       !call add_stat_output_item(output_set, output_config%statout(IDX_MAP_POTEVAP                                                   )
