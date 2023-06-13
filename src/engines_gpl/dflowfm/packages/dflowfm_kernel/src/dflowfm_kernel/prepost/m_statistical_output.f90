@@ -55,10 +55,10 @@ private
       module procedure dealloc_stat_output
    end interface dealloc
 
-   integer, parameter :: SO_CURRENT = 1
-   integer, parameter :: SO_AVERAGE = 2
-   integer, parameter :: SO_MAX     = 3
-   integer, parameter :: SO_MIN     = 4
+   integer, parameter, public :: SO_CURRENT = 1
+   integer, parameter, public :: SO_AVERAGE = 2
+   integer, parameter, public :: SO_MAX     = 3
+   integer, parameter, public :: SO_MIN     = 4
    
    integer :: window_size !< The size of the moving average window, in samples.
    

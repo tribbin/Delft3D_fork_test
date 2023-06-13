@@ -71,7 +71,10 @@ subroutine unc_write_his(tim)            ! wrihis
     use m_GlobalParameters
     use m_longculverts
     use odugrid
-    
+    use m_statistical_output
+    use fm_statistical_output
+    use m_output_config
+
     implicit none
 
     double precision, intent(in) :: tim !< Current time, should in fact be time1, since the data written is always s1, ucx, etc.
@@ -178,6 +181,9 @@ subroutine unc_write_his(tim)            ! wrihis
     double precision, allocatable:: toutput_cum, toutput_cur
     integer                      :: lsed
     logical                      :: add_latlon
+    integer, allocatable         :: id_hisvar(:)
+    character(len=255)           :: var_name, var_standard_name, var_long_name
+    type(t_output_quantity_config), pointer:: prt_config
 
     if (jahiszcor > 0) then
        jawrizc = 1
@@ -227,6 +233,8 @@ subroutine unc_write_his(tim)            ! wrihis
         call realloc(id_const_cum, NUMCONST_MDU, keepExisting = .false.)
 
         call realloc(id_voltot, MAX_IDX, keepExisting = .false.)
+
+        call realloc(id_hisvar, out_quan_conf_his%count, keepExisting = .false.)
 
         ! Possibly a different model, so make valobs transpose at correct size again.
         maxlocT = max(size(valobs, 2), npumpsg, network%sts%numPumps, ngatesg, ncdamsg, ncgensg, ngategen, &
@@ -306,13 +314,40 @@ subroutine unc_write_his(tim)            ! wrihis
 
 
             if ( jahiswatlev > 0 ) then
-               ierr = nf90_def_var(ihisfile, 'waterlevel', nf90_double, (/ id_statdim, id_timedim /), id_vars)
-               ierr = nf90_put_att(ihisfile, id_vars, 'standard_name', 'sea_surface_height') ! sorry for inland water people
-               ierr = nf90_put_att(ihisfile, id_vars, 'long_name', 'water level')
-               ierr = nf90_put_att(ihisfile, id_vars, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_vars, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_vars, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_vars, '_FillValue', dmiss)
+               ! TODO: later change the following codes to be more generic by making a loop.
+               call test_s1_his_output(out_variable_set_his) ! TODO: later delete this test subroutine.
+
+               prt_config => out_variable_set_his%statout(1)%output_config
+
+               var_name = prt_config%name
+               var_standard_name = prt_config%standard_name
+               var_long_name = prt_config%long_name
+               select case(out_variable_set_his%statout(1)%operation_id)
+               case(SO_CURRENT)
+               case(SO_AVERAGE)
+                  var_name          = 'average_'//var_name
+                  var_standard_name = 'average_'//var_standard_name
+                  var_long_name     = 'average_'//var_long_name
+               case(SO_MAX)
+                  var_name          = 'max_'//var_name
+                  var_standard_name = 'max_'//var_standard_name
+                  var_long_name     = 'max_'//var_long_name
+               case(SO_MIN)
+                  var_name          = 'min_'//var_name
+                  var_standard_name = 'min_'//var_standard_name
+                  var_long_name     = 'min_'//var_long_name
+               end select
+
+               ! TODO: type of the variable "nf90_doube" should also be stored in the statistical output arrays, and become generic here
+               ierr = nf90_def_var(ihisfile, var_name, nf90_double, (/ id_statdim, id_timedim /), id_hisvar(1))
+               ierr = nf90_put_att(ihisfile, id_hisvar(1), 'standard_name', var_standard_name)
+               ierr = nf90_put_att(ihisfile, id_hisvar(1), 'long_name', var_long_name)
+
+               ierr = nf90_put_att(ihisfile, id_hisvar(1), 'units', prt_config%unit)
+               ! following is still hardcoded
+               ierr = nf90_put_att(ihisfile, id_hisvar(1), 'coordinates', statcoordstring)
+               ierr = nf90_put_att(ihisfile, id_hisvar(1), 'geometry', station_geom_container_name)
+               ierr = nf90_put_att(ihisfile, id_hisvar(1), '_FillValue', dmiss)
             endif
 
             if ( jahisbedlev > 0 ) then
@@ -2706,7 +2741,7 @@ subroutine unc_write_his(tim)            ! wrihis
     ntot = numobs + nummovobs
     valobsT(1:ntot, 1:IPNT_NUM) = transpose(valobs)
     if (ntot > 0) then
-       ierr = nf90_put_var(ihisfile,    id_vars,   valobsT(:,IPNT_S1),    start = (/ 1, it_his /), count = (/ ntot, 1 /))
+       ierr = nf90_put_var(ihisfile, id_hisvar(1),   out_variable_set_his%statout(1)%source_input,    start = (/ 1, it_his /), count = (/ ntot, 1 /))
        ierr = nf90_put_var(ihisfile,    id_hs  ,   valobsT(:,IPNT_HS),    start = (/ 1, it_his /), count = (/ ntot, 1 /))
        if( stm_included ) then
           ierr = nf90_put_var(ihisfile,    id_varb,   valobsT(:,IPNT_BL),    start = (/ 1, it_his /), count = (/ ntot, 1 /))
@@ -3838,3 +3873,22 @@ subroutine unc_write_his(tim)            ! wrihis
     if (timon) call timstop (handle_extra(54))
 
 end subroutine unc_write_his
+
+!> A test subroutine for writing s1 to his-file, to be removed later.
+subroutine test_s1_his_output(output_set)
+   use m_observations
+   use m_statistical_output
+   use fm_statistical_output
+   type(t_output_variable_set), pointer, intent(inout) :: output_set     !> output set that needs to be initialized
+   integer :: i
+   
+   i = 1
+   output_set%count = i
+   call realloc(output_set)
+   output_set%statout(i)%output_config => out_quan_conf_his%statout(IDX_HIS_WATERLEVEL)
+   output_set%statout(i)%operation_id = SO_CURRENT
+   output_set%statout(i)%source_input => valobs(IPNT_S1,:)
+
+   call initialize_statistical_output(output_set)
+
+end subroutine test_s1_his_output
