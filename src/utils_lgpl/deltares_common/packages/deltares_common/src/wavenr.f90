@@ -57,13 +57,10 @@ subroutine wavenr(h         ,t         ,k         ,ag)
     !
     ! Global variables
     !
-    real, intent(in)               :: h  !!  Waterheight
-    real, intent(out)              :: k  !!  Approxiamation of wave lenght
-    real, intent(in)               :: t  !!  Period
-    real, intent(in   )              :: h  !< Waterheight
-    real, intent(  out)              :: k  !< Approximation of wave length
-    real, intent(in   )              :: t  !< Period
-    real, intent(in   )              :: ag !< Gravitational acceleration
+    real(fp), intent(in   )              :: h  !< Waterheight
+    real(fp), intent(  out)              :: k  !< Approximation of wave length
+    real(fp), intent(in   )              :: t  !< Period
+    real(fp), intent(in   )              :: ag !< Gravitational acceleration
     !
     ! Local parameters
     !
