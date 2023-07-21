@@ -20,6 +20,17 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
+      module m_dlwq02
+      use m_timer
+      use m_rearaa
+      use m_readmp
+      use m_dlwq0i
+
+
+      implicit none
+
+      contains
+
 
       subroutine dlwq02 ( lun     , lchar   , filtype , nrftot  , nlines  ,
      &                    npoins  , dtflg1  , dtflg2  , nodump  , iopt    ,
@@ -69,6 +80,8 @@
 !                           LUN(4) = unit intermediate file (pointers)
 !                           LUN(5) = unit intermediate file (timesteps)
 
+      use m_conver
+      use m_check
       use m_part01
       use m_report_date_time
       use m_rdpart
@@ -79,7 +92,6 @@
       use m_srstop
       use m_open_waq_files
       use rd_token     !   for the reading of tokens
-      use subs02
       use partmem      !   for PARTicle tracking
       use fileinfo     !   a filename array in PART
       use alloc_mod
@@ -662,3 +674,5 @@
  2470 format (  ' The following ',i3,' DELPAR substances are added as passive substances to DELWAQ.' )
 
       end
+
+      end module m_dlwq02

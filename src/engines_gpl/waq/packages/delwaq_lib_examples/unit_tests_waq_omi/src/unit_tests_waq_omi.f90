@@ -37,7 +37,6 @@ module unit_tests_waq_omi
 
     real :: margin = 1.0e-6
 
-    logical, external :: DefineWQSchematisation
     logical, external :: DefineWQProcessDefinition
     logical, external :: DefineDischargeLocations
     logical, external :: SetWasteLoadValues
@@ -301,7 +300,6 @@ subroutine test_waste_loads
     integer, dimension(0)           :: no_integers
     character(len=20), dimension(0) :: no_strings
 
-    logical, external :: DefineWQSchematisation
     logical, external :: DefineWQProcesses
     logical, external :: DefineDischargeLocations
     logical, external :: SetWasteLoadValues
@@ -352,7 +350,6 @@ subroutine test_boundary_conditions
     integer, dimension(0)           :: no_integers
     character(len=20), dimension(0) :: no_strings
 
-    logical, external :: DefineWQSchematisation
     logical, external :: DefineWQProcesses
     logical, external :: DefineDischargeLocations
     logical, external :: SetWasteLoadValues

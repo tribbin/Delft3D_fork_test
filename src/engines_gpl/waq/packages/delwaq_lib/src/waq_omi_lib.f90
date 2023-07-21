@@ -31,6 +31,10 @@
 
 !> Utilities for the routines here (effectively a private module)
 module waq_omi_utils
+    use m_dmpare
+    use m_dlwq0i
+    use m_dlwq0f
+    use m_dlwq09
     use m_delwaq2_main
     use m_dlwqp1
     use m_open_waq_files
@@ -674,6 +678,7 @@ logical function DefineWQSchematisation(number_segments, pointer_table, number_e
 
     use delwaq2_global_data
     use m_sysn
+    use m_dlwq0f
 
     implicit none
 
