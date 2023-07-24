@@ -616,6 +616,8 @@ function ionc_put_network(ioncid, networkgeom, networkid) result(ierr)
    character(len=ug_idsLen), allocatable                     :: nnodeids(:), nbranchids(:)       
    character(len=ug_idsLongNamesLen), allocatable            :: nnodelongnames(:), nbranchlongnames(:) 
    
+   integer :: ierrLocal
+   
    allocate(nnodeids(networkgeom%nnodes))
    allocate(nnodelongnames(networkgeom%nnodes))
    allocate(nbranchids(networkgeom%nbranches))
@@ -636,11 +638,9 @@ function ionc_put_network(ioncid, networkgeom, networkid) result(ierr)
    
    if (ierr == nf90_noerr) then
       ! Flush file
-      ierr = nf90_sync(datasets(ioncid)%ncid)
-   end if
-   
-   ! Check for any remaining native NetCDF errors
-   if (ierr /= nf90_noerr) then
+      ierrLocal = nf90_sync(datasets(ioncid)%ncid)
+   else  
+	  ! Check for any remaining native NetCDF errors   
       goto 801
    end if
 
@@ -1423,6 +1423,7 @@ function ionc_write_mesh_struct(ioncid, meshids, networkids, meshgeom, network1d
    integer                            :: ierr        !< Result status, ionc_noerr if successful.
    
    !Locals
+   integer :: ierrLocal
    
    character(len=ug_idsLen), allocatable             :: nodeids(:)
    character(len=ug_idsLongNamesLen), allocatable    :: nodelongnames(:)
@@ -1440,11 +1441,9 @@ function ionc_write_mesh_struct(ioncid, meshids, networkids, meshgeom, network1d
 
    if (ierr == nf90_noerr) then
       ! Flush file
-      ierr = nf90_sync(datasets(ioncid)%ncid)
-   end if
-
-   ! Check for any remaining native NetCDF errors
-   if (ierr /= nf90_noerr) then
+	  ierrLocal = nf90_sync(datasets(ioncid)%ncid)
+   else
+      ! Check for any remaining native NetCDF errors
       goto 801
    end if
 
@@ -2038,6 +2037,8 @@ function ionc_create_1d_mesh_ugrid_v1(ioncid, networkname, meshid, meshname, nme
    character(len=*),intent(in) :: meshname, networkname 
    integer                     :: ierr
    
+   integer :: ierrLocal
+   
    !adds a meshids structure
    ierr = ug_add_mesh(datasets(ioncid)%ncid, datasets(ioncid)%ug_file, meshid)
    ! set the meshname
@@ -2047,11 +2048,9 @@ function ionc_create_1d_mesh_ugrid_v1(ioncid, networkname, meshid, meshname, nme
 
    if (ierr == nf90_noerr) then
       ! Flush file
-      ierr = nf90_sync(datasets(ioncid)%ncid)
-   end if
-
-   ! Check for any remaining native NetCDF errors
-   if (ierr /= nf90_noerr) then
+      ierrLocal = nf90_sync(datasets(ioncid)%ncid)
+   else
+      ! Check for any remaining native NetCDF errors
       goto 801
    end if
 
