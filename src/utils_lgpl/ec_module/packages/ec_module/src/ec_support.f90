@@ -765,7 +765,7 @@ end subroutine ecInstanceListSourceItems
          !
          logical                         :: success   !< function status
          character(len=*), intent(in)    :: string    !< units string (at out in lowercase)
-         integer, intent(out)            :: unit      !< unit enum: ec_second, ec_minte, ec_hour, ec_day or 0 on error.
+         integer, intent(out)            :: unit      !< unit enum: ec_second, ec_minute, ec_hour, ec_day or 0 on error.
          !
          success = .true.
          if (index(string, 'seconds') /= 0) then

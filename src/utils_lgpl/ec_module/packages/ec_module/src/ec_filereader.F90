@@ -129,6 +129,8 @@ module m_ec_filereader
          if (allocated(fileReader%tframe%times)) deallocate(fileReader%tframe%times, stat = istat)
          deallocate(fileReader%tframe, stat = istat)
          if (istat /= 0) success = .false.
+         deallocate(fileReader%hframe, stat = istat)
+         if (istat /= 0) success = .false.
 
          if (allocated(fileReader%variable_names)) then
             deallocate(fileReader%variable_names)
@@ -357,6 +359,12 @@ module m_ec_filereader
                qname = fileReaderPtr%items(1)%ptr%quantityPtr%name
                call str_lower(qname)
                itemPtr => fileReaderPtr%items(1)%ptr
+               if (associated(itemPtr%hframe)) then
+                  ! This is a harmonics file, so don't bother.
+                  ! Return false, because we actually don't have time steps.
+                  success = .false.
+                  return
+               end if
                if (itemPtr%sourceT0FieldPtr%timesndx < 0) then
                   t0t1 = 0 
                   timesndx  = ecNetcdfGetTimeIndexByTime(fileReaderPtr, timesteps)           ! timesteps is MJD in the new EC-module ? CHECK!
@@ -408,8 +416,8 @@ module m_ec_filereader
                call setECMessage("ERROR: ec_filereader::ecFileReaderReadNextRecord: Unsupported file type.")
             case default
                call setECMessage("ERROR: ec_filereader::ecFileReaderReadNextRecord: Unknown file type.")
-            do i=1, fileReaderPtr%nItems
-               if (fileReaderPtr%items(i)%ptr%sourceT1FieldPtr%timesteps<fileReaderPtr%items(i)%ptr%sourceT0FieldPtr%timesteps) then
+               do i=1, fileReaderPtr%nItems
+                  if (fileReaderPtr%items(i)%ptr%sourceT1FieldPtr%timesteps<fileReaderPtr%items(i)%ptr%sourceT0FieldPtr%timesteps) then
                   call setECMessage('Non-progressive time variable detected in file: '//trim(fileReaderPtr%fileName))
                   success = .False.
                   return
@@ -564,6 +572,7 @@ module m_ec_filereader
                end select
             endif 
             itemPtr%tframe => fileReaderPtr%tframe
+            itemPtr%hframe => fileReaderPtr%hframe
             success = .true.
          end if
       end function ecFileReaderAddItem

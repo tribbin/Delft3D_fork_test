@@ -2422,7 +2422,7 @@ module m_ec_provider
          integer                                                 :: grid_type             !< elmSetType enum
          integer                                                 :: vptyp                 !< interpretation of the vertical coordinate
          character(len=NF90_MAX_NAME)                            :: z_positive            !< which direction of z is positive ? 
-         character(len=NF90_MAX_NAME)                            :: z_standardname            !< which direction of z is positive ? 
+         character(len=NF90_MAX_NAME)                            :: z_standardname        !< which direction of z is positive ? 
          real(hp)                                                :: gnplon,gnplat         !< coordinates of shifted north pole obtained from gridmapping 
          real(hp)                                                :: gsplon,gsplat         !< coordinates of shifted south pole obtained from gridmapping 
          real(hp),                   dimension(:,:), allocatable :: fgd_data              !< coordinate data along first dimension's axis
@@ -2914,7 +2914,7 @@ module m_ec_provider
                   ncol = fileReaderPtr%dim_length(dimids(1))
                   nrow = 1
                   nlay = 0
-                  if (size(dimids) > 2) then
+                  if (size(dimids) >= 2) then   ! TODO: TEST > -> >= FIX?! 
                      nrow = fileReaderPtr%dim_length(dimids(2))
                      if (size(dimids) > 3+dim_offset) then
                         nlay = fileReaderPtr%dim_length(dimids(3+dim_offset))
@@ -3066,8 +3066,19 @@ module m_ec_provider
             if ( .not.ecFileReaderAddItem(instancePtr, fileReaderPtr%id, itemPtr%id) ) then
                return
             end if
+
+            if (associated(itemPtr%hframe)) then
+                ! Store variable data in T0 field to also set up working space for harmonics.
+                if ( .not.ecNetcdfReadVariable(fileReaderPtr, itemPtr, 0) ) then
+                    return
+                end if
+                ! Store variable data in the T1 field, to be used as source amplitude values.
+                if ( .not.ecNetcdfReadVariable(fileReaderPtr, itemPtr, 1) ) then
+                    return
+                end if
+            end if            
          enddo !                i = 1, size(ncstdnames) quantities in requested set of quantities 
-         
+
          success = .true.
 
       end function ecProviderCreateNetcdfItems
@@ -3341,6 +3352,13 @@ module m_ec_provider
                call setECMessage("ERROR: ec_provider::ecProviderInitializeTimeFrame: Unsupported file type.")
             case (provFile_netcdf)
                success = ecNetcdfInitializeTimeFrame(fileReaderPtr)
+               if (.not. success) then
+                  ! Check if it's an harmonic instead if not a success? TODO: ^Also draw inspiration from provFile_fourier?
+                  success = ecNetcdfInitializeHarmonicsFrame(fileReaderPtr)
+               end if
+               if (.not. success) then
+                  call setECMessage('ERROR: ec_provider::ecProviderInitializeTimeFrame: Failed to initialize from NetCDF file.')
+               end if
             case (provFile_t3D)
                success = ecDefaultInitializeTimeFrame(fileReaderPtr)
             case (provFile_bc)
@@ -3458,8 +3476,7 @@ module m_ec_provider
                   exit
                end if
             end do
-            if (i>nVariables) then                ! .... if still not found, you are out of luck !  
-               call setECMessage("ERROR: ec_provider::ecNetcdfInitializeTimeFrame: Unable to find variable with standard_name: time.")
+            if (i>nVariables) then                ! .... if still not found, you are out of luck !
                return
             end if
          end if 
@@ -3481,6 +3498,114 @@ module m_ec_provider
          !
          success = .true.
       end function ecNetcdfInitializeTimeFrame
+      
+      ! =======================================================================
+
+      !> Get index of supplied variable name
+      function ecNetcdfFindVariableId(fileReaderPtr, variable_name) result(variable_id)
+         use netcdf
+         !
+         integer                      :: variable_id   !< variable id of name in file, ec_undef_int if not found.
+         type(tEcFileReader), pointer :: fileReaderPtr !< intent(in) File being read.
+         character(*), intent(in)     :: variable_name !< variable name to find.
+         !
+         integer                      :: nVariables    !< number of variables in NetCDF file
+         integer                      :: i             !< loop variable
+         !
+         variable_id = ec_undef_int
+         !
+         if (.not. ecSupportNetcdfCheckError(nf90_inquire(fileReaderPtr%fileHandle, nVariables=nVariables), "obtain nVariables", fileReaderPtr%fileName)) return
+         !
+         ! Inspect the standard_name attribute of all variables to find and store that variable's id.
+         !
+         ! check the standard names for the requested name
+         nVariables = size(fileReaderPtr%standard_names)
+         do i=1, nVariables                   
+            if (strcmpi(fileReaderPtr%standard_names(i), variable_name)) then
+               variable_id = i
+               return
+            end if
+         end do
+         ! .... if not found, check variable names .... 
+         nVariables = size(fileReaderPtr%variable_names)
+         do i=1, nVariables                   
+            if (strcmpi(fileReaderPtr%variable_names(i), variable_name)) then
+               variable_id = i
+               return
+            end if
+         end do
+      end function ecNetcdfFindVariableId 
+
+      !> Set the HarmonicsFrame's properties, based on a NetCDF file.
+      function ecNetcdfInitializeHarmonicsFrame(fileReaderPtr) result(success)
+         use netcdf
+         !
+         logical                      :: success       !< function status
+         type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
+         !
+         integer                      :: amplitude_id !< integer id of variable with standard_name "amplitude"
+         integer                      :: phase_id     !< integer id of variable with standard_name "phase"
+         character(len=NF90_MAX_NAME) :: units        !< units attribute of a variable ??
+         character(len=NF90_MAX_NAME) :: attrstring   !< global attribute
+         integer                      :: period       !< period value in seconds.
+         integer, dimension(2)        :: dimids       !< integer id's of amplitude/phase variable's dimension variables eg: phase(y,x) -> id's of y and x.
+         integer                      :: numids       !< number of variable id's of amplitude/phase (we expect 2: y,x)
+         integer, dimension(2)        :: phase_dims   !< number of points in Y,X directions.
+         integer                      :: istat        !< status of allocation operation ??
+         !
+         success = .false.
+         !
+         ! Find required 'phase' variable.
+         phase_id = ecNetcdfFindVariableId(fileReaderPtr, 'PHASE')
+         if (phase_id == ec_undef_int) return
+
+         ! Set reference date
+         attrstring = '' ! NetCDF does not completely overwrite a string, so re-initialize.
+         if (.not. ecSupportNetcdfCheckError(nf90_get_att(fileReaderPtr%fileHandle, 0, "reference_time_of_component_phase", attrstring), &
+                                                         "obtain reference time", fileReaderPtr%fileName)) return
+         if (.not. ecSupportTimestringToRefdate(attrstring, fileReaderPtr%tframe%ec_refdate, tzone = fileReaderPtr%tframe%ec_timezone)) return
+
+         ! Extract period from attributes.
+         ! TODO: Make this an OPTIONAL thing and maybe revert to astro as a fallback. (for now, we expect it to be there)
+         attrstring = '' ! NetCDF does not completely overwrite a string, so re-initialize.
+         if (.not. ecSupportNetcdfCheckError(nf90_get_att(fileReaderPtr%fileHandle, 0, "component_period_in_seconds", attrstring), &
+                                                         "obtain component period", fileReaderPtr%fileName)) return
+         allocate(fileReaderPtr%hframe, stat = istat)
+         if (istat /= 0) return
+         
+         ! We assume the unit to be seconds for now. TODO: Add iostat and support other units? (See also ecGetTimesteps for inspiration)
+         read(attrstring, *) period
+         fileReaderPtr%hframe%ec_period = period
+
+         ! Determine numbe rof timesteps: For harmonic components, the number of timesteps is not properly defined.
+         fileReaderPtr%tframe%nr_timesteps = 0  !ec_undef_int ! Undefined signals 'infinite' timesteps.
+
+         ! Get phase units
+         units = '' ! NetCDF does not completely overwrite a string, so re-initialize.
+         if (.not. ecSupportNetcdfCheckError(nf90_get_att(fileReaderPtr%fileHandle, phase_id, "units", units), "obtain phase units", fileReaderPtr%fileName)) return
+         if (units .ne. 'deg') then
+            call setECMessage('ERROR: Phase unit is not degrees.')
+            return
+         end if
+         if (.not. ecSupportNetcdfCheckError(nf90_inquire_variable(fileReaderPtr%fileHandle, phase_id, ndims=numids, dimids=dimids), "obtain phase dimension ids", fileReaderPtr%fileName)) return
+         if (numids .ne. 2) then
+            call setECMessage('ERROR: Phase does not have exactly two dimensions.')
+            return
+         end if
+         if (.not. ecSupportNetcdfCheckError(nf90_inquire_dimension(fileReaderPtr%fileHandle, dimids(1), len=phase_dims(1)), "obtain first phase dimension length", fileReaderPtr%fileName)) return
+         if (.not. ecSupportNetcdfCheckError(nf90_inquire_dimension(fileReaderPtr%fileHandle, dimids(2), len=phase_dims(2)), "obtain second phase dimension length", fileReaderPtr%fileName)) return
+         fileReaderPtr%hframe%phase_dims = phase_dims
+
+         ! Load phase data.
+         allocate(fileReaderPtr%hframe%phases(phase_dims(1),phase_dims(2)), stat=istat)
+         if (istat .ne. 0) then
+            call setECMessage('ERROR: Failed to allocate phase array.')
+            return
+         end if
+         if (.not. ecSupportNetcdfCheckError(nf90_get_var(fileReaderPtr%fileHandle, phase_id, fileReaderPtr%hframe%phases, start=(/1,1/), count=phase_dims), "obtain phase data", fileReaderPtr%fileName)) return
+
+         success = .true.
+      end function ecNetcdfInitializeHarmonicsFrame
       
       ! =======================================================================
       

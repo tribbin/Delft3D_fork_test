@@ -505,9 +505,13 @@ module m_ec_item
             fileReaderPtr => ecSupportFindFileReader(instancePtr, item%providerId)
          endif
          !
-
          ! timesteps < t0 : not supported
-         if (item%quantityPtr%constant) then
+
+         ! if we are doing harmonics, we are done. No need to update any further.
+         if (associated(item%hframe)) then
+            success = .true.
+            return 
+         else if (item%quantityPtr%constant) then
             success = .true.
             return
          else if (comparereal(item%sourceT1FieldPtr%timesteps, timesteps%mjd(), 1.0D-10) == 0) then
@@ -593,6 +597,7 @@ module m_ec_item
                      if (interpol_type == interpolate_time_extrapolation_ok) then
                         exit
                      else
+                        call setECMessage("DEBUG: 'failed' branch: Need to do something harmonic here?")
                         return         ! failed to update item AND no extrapolation allowed !!
                      end if
                   end if
