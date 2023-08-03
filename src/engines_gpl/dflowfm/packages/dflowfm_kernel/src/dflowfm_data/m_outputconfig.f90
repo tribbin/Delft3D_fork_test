@@ -438,6 +438,7 @@ private
    type t_output_quantity_config
       character(len=Idlen)             :: key             !< Key of the input item in the MDU file (e.g. wrimap_s1).                       
       character(len=Idlen)             :: name            !< Name of the output item on the NETCDF file.      
+      integer                          :: nc_type         !< NetCDF variable type, one of: nf90_double, nf90_int, etc.
       character(len=Idlen)             :: long_name       !< Long name of the output item on the NETCDF file.      
       character(len=Idlen)             :: unit            !< unit of the output item on the NETCDF file.      
       character(len=Idlen)             :: standard_name   !< Standard name of the output item on the NETCDF file.                     
@@ -503,7 +504,7 @@ subroutine dealloc_config_output(confoutput)
 end subroutine dealloc_config_output
 
    !> Define an output configuration quantity. And set the IDX variable to the current entry
-subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit, location_specifier, description)
+subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit, location_specifier, nc_type, description)
    type(t_output_quantity_config_set),  intent(inout) :: config_set         !< Array containing all output quantity configs.
    integer,                         intent(inout) :: idx                 !< Index for the current variable.
    character(len=*),                intent(in   ) :: key                 !< Key in the MDU file.
@@ -512,9 +513,17 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
    character(len=*),                intent(in   ) :: standard_name       !< Standard name of the variable on the NETCDF file.
    character(len=*),                intent(in   ) :: unit                !< Unit of the variable on the NETCDF file.
    integer,                         intent(in   ) :: location_specifier  !< Location specifier of the variable.
-   character(len=*), optional,      intent(in   ) :: description         !< Description for the 
+   integer,          optional,      intent(in   ) :: nc_type             !< NetCDF variable type, one of: nf90_double, nf90_int, etc. Default: nf90_double.
+   character(len=*), optional,      intent(in   ) :: description         !< Description of the MDU key, used when printing an MDU or .dia file.
 
    integer :: numentries
+   integer :: nc_type_
+   
+   if (present(nc_type)) then
+      nc_type_ = nc_type
+   else
+      nc_type_ = nf90_double
+   end if
 
    config_set%count = config_set%count+1
    if (config_set%count > config_set%size) then
@@ -524,6 +533,7 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
    idx = numentries
    config_set%statout(numentries)%key                = key             
    config_set%statout(numentries)%name               = name            
+   config_set%statout(numentries)%nc_type            = nc_type_
    config_set%statout(numentries)%long_name          = long_name       
    config_set%statout(numentries)%standard_name      = standard_name   
    config_set%statout(numentries)%unit               = unit            

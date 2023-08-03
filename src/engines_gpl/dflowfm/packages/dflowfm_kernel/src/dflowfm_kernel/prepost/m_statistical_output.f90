@@ -69,6 +69,7 @@ private
       integer                                   :: current_step         !< Latest entry in the work array. MOD(current_step+1,total_steps_count) is the next 
       integer                                   :: total_steps_count
       !< item to remove.   
+      integer                                   :: id_var               !< NetCDF variable ID, to be set and used by actual writing functions.
       double precision, pointer, dimension(:)   :: stat_output          !< Array that is to be written to the Netcdf file. In case the current values are
                                                                         !< required this variable points to the basic variable (e.g. s1).
                                                                         !< Otherwise during the simulation the intermediate results are stored.
@@ -300,9 +301,9 @@ contains
       do j = 1, output_set%count
          item => output_set%statout(j)
          input_size = size(item%source_input)
-         if (associated(item%source_input_function_pointer)) then
-            call item%source_input_function_pointer(item%source_input)
-         endif
+         
+         !call set_statistical_output_pointer(i,success)
+         success = .true.
 
          select case (item%operation_type)
          case (SO_CURRENT)

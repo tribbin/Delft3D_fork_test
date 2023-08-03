@@ -17197,8 +17197,8 @@ subroutine definencvar(ncid, idq, itype, idims, n, name, desc, unit, namecoord, 
    integer,                   intent(in   ) :: ncid  !< NetCDF dataset id.
    integer,                   intent(inout) :: idq   !< NetCDF variable id for the newly created variable.
    integer,                   intent(in   ) :: itype !< data type, one of the standard nf90_* data types.
-   integer,                   intent(in   ) :: n     !< Rank of the variable
    integer,                   intent(in   ) :: idims(n) !< NetCDF dimension id(s) for this variable.
+   integer,                   intent(in   ) :: n     !< Rank of the variable
    character(len=*),          intent(in   ) :: name  !< Variable name in the dataset
    character(len=*),          intent(in   ) :: desc  !< Description of the variable, used in the :long_name attribute.
    character(len=*),          intent(in   ) :: unit  !< Units of the variable (udunit-compatible), used in the :units attribute.
