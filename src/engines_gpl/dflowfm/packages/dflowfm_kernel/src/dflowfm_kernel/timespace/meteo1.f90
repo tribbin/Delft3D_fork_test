@@ -513,20 +513,26 @@ contains
    !
    !
    ! ==========================================================================
-   !> 
-   subroutine read1polylin(minp,xs,ys,ns,pliname)
+   !> Reads a single polyline from an open file.
+   !! Assumes two-column data with x,y pairs.
+   subroutine read1polylin(minp,xs,ys,ns,pliname, has_more_records)
       use m_alloc
-      integer          :: minp                          ! unit number of poly file
-      double precision, allocatable :: xs(:)            ! x-coordinates read from file    
-      double precision, allocatable :: ys(:)            ! y-coordinates read from file
-      integer                       :: ns               ! number of pli-points
-      character(len=:),allocatable,optional :: pliname  ! Optional, name (identifier) of pli
-   
+      integer,                                 intent(inout) :: minp     !< Unit number of poly file (already opened), will be closed after successful read.
+      double precision, allocatable,           intent(  out) :: xs(:)    !< x-coordinates read from file    
+      double precision, allocatable,           intent(  out) :: ys(:)    !< y-coordinates read from file
+      integer,                                 intent(  out) :: ns       !< Number of pli-points read
+      character(len=:), allocatable, optional, intent(  out) :: pliname  !< (Optional) Name (identifier) of the polyline read
+      logical,                       optional, intent(  out) :: has_more_records !< (Optional) Whether or not more polyline data exists in the remainder of the file, after reading this one polyline.
+
       character (len=maxnamelen)   :: rec
       integer                      :: k
    
       ns = 0
-   
+
+      if (present(has_more_records)) then
+         has_more_records = .false.
+      end if
+
    10 read(minp,'(a)',end = 999) rec
       if  (rec(1:1) == '*' ) goto 10
       if (present(pliname)) then
@@ -553,6 +559,10 @@ contains
          read(rec ,*    ,err = 777) xs(k), ys(k)
       enddo
    
+      if (present(has_more_records)) then
+         has_more_records = polyfile_has_more_records(minp)
+      end if
+
       call doclose(minp)
    
       return
@@ -568,6 +578,45 @@ contains
        return
    
    end subroutine read1polylin
+
+   
+   
+   !> Determine whether there is more data still left in the open polyfile.
+   !! Returns .true. when more non-whitepace/non-comment lines exist beyond
+   !! the current file pointer position.
+   !! After checking, 'backspaces' the filepointer to the first new data position.
+   function polyfile_has_more_records(minp) result(has_more)
+      integer, intent(inout) :: minp     !< Unit number of poly file, already open, filepointer can be anywhere in the file.
+      logical                :: has_more !< Result, whether or not more polyline data may exist in the remainder of the file.
+   
+      character (len=maxnamelen)   :: rec
+      integer                      :: k
+   
+      has_more = .false.
+
+      do
+         read(minp,'(a)',end = 999) rec
+         if (rec(1:1) == '*') then
+            cycle
+         end if
+         
+         if (len_trim(rec) == 0) then
+            cycle
+         else
+            ! We encountered a non-comment line, non-whitespace line before EOF
+            has_more = .true.
+            backspace(minp)
+            exit
+         end if
+      end do
+
+      return
+   
+   999 continue
+      ! EOF reached, simply return (.false.)
+      return
+   
+   end function polyfile_has_more_records
    !
    !
    ! ==========================================================================
@@ -5679,6 +5728,7 @@ contains
      integer                         :: JACROS
      integer                         :: ierr
      double precision                :: SL,SM,XCR,YCR,CRP
+     logical                         :: has_more_pli
    
      num = 0
    
@@ -5687,8 +5737,13 @@ contains
      if (filetype == poly_tim) then
 
         call oldfil(minp, filename)
-        call read1polylin(minp,xs,ys,ns,pliname)
-   
+        call read1polylin(minp,xs,ys,ns,pliname, has_more_records=has_more_pli)
+        
+        if (has_more_pli) then
+           call mess(LEVEL_WARN, 'While reading polyline file '''//trim(filename)//''': multiple polylines are not supported in a single file.')
+           call mess(LEVEL_WARN, 'Only using first polyline '''//trim(pliname)//''' and ignoring the rest.')
+        end if
+
         if (.not. allocated(kcs)) then
           allocate(kcs(ns))
         else if (ns > size(kcs)) then
