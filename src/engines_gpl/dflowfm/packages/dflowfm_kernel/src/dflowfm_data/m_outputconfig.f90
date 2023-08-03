@@ -216,7 +216,7 @@ private
    integer, public :: IDX_HIS_LONGCULVERT_HEAD
    integer, public :: IDX_HIS_LONGCULVERT_FLOW_AREA
    integer, public :: IDX_HIS_LONGCULVERT_VELOCITY
-   integer, public :: LONGCULVERT_VALVE_RELATIVE_OPENING
+   integer, public :: IDX_HIS_LONGCULVERT_VALVE_RELATIVE_OPENING
    integer, public :: IDX_HIS_TKE
    integer, public :: IDX_HIS_VICWW
    integer, public :: IDX_HIS_EPS
