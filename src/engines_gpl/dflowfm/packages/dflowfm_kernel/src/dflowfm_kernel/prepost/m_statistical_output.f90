@@ -245,10 +245,10 @@ contains
    subroutine add_stat_output_item(output_set, output_config, data_pointer, function_pointer)
    use m_function_pointer
    
-      type(t_output_variable_set), intent(inout) :: output_set             !> output set that items need to be added to
-      type(t_output_quantity_config), pointer, intent(in) :: output_config !> output quantity config linked to output item
-      double precision, pointer, dimension(:), intent(in) :: data_pointer  !> pointer to output quantity data
-      procedure(function_ptr_interface), optional, pointer, intent(in) :: function_pointer !< optional pointer to function that will produce source_input data
+      type(t_output_variable_set), intent(inout) :: output_set             !< Output set that item will be added to
+      type(t_output_quantity_config), pointer, intent(in) :: output_config !< Output quantity config linked to this output item
+      double precision, pointer, dimension(:), intent(in) :: data_pointer  !< Pointer to output quantity data ("source input")
+      procedure(function_ptr_interface), optional, pointer, intent(in) :: function_pointer !< (optional) Function pointer for producing/processing the source data, if no direct data_pointer is available
       
       type(t_output_variable_item) :: item !> new item to be added
       
