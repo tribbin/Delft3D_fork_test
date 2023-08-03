@@ -247,7 +247,8 @@ implicit none
     integer            :: md_findcells       = 0      !< read netcell info from files and bypass findcells. If not 0, findcells are called.
     integer            :: md_pressakey       = 0      !< press a key (1) or not (0)
     character(len=128) :: md_cfgfile         = ' '    !< cfg-file
-    integer            :: md_jasavenet       = 0      !< save network after initialization (1) or not (0)
+    integer            :: md_jasavenet       = 0      !< save network ito UGRID file after reading input network (1) or not (0)
+    integer            :: md_exportnet_bedlevel = 0   !< Export interpreted bed levels after initialization (1) or not (0)
     integer            :: md_cutcells        = 0
     integer            :: npolf              = 0      !< nr of polygonplotfiles saved with n key in editpol
     integer            :: md_usecaching      = 1      !< Use the caching file if it exists (1) or not (0)
