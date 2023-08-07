@@ -137,19 +137,19 @@ contains
    end subroutine dealloc_stat_output
 
    !> updates the moving average of a stat_out_item by removing the oldest and adding the newest value
-   elemental subroutine update_moving_average(i)
+   elemental subroutine update_moving_average(item)
 
-      type(t_output_variable_item), intent(inout) :: i !< statistical output item to update
+      type(t_output_variable_item), intent(inout) :: item !< statistical output item to update
       
       integer :: jnew, jold !< Index to newest and oldest timestep in samples array
 
-      jnew = i%current_step
-      jold = MOD(i%current_step,i%total_steps_count)+1
+      jnew = item%current_step
+      jold = MOD(item%current_step,item%total_steps_count)+1
    
       !when timestep < windowsize, no samples need to be removed. The timesteps array and samples array will be initialized to 0 so that we can keep the same expression.
-      i%moving_average_sum = i%moving_average_sum - i%samples(:,jold)*i%timesteps(jold) + i%samples(:,jnew)*i%timesteps(jnew)
-      i%timestep_sum = i%timestep_sum - i%timesteps(jold) + i%timesteps(jnew)
-      i%stat_input = i%moving_average_sum/i%timestep_sum
+      item%moving_average_sum = item%moving_average_sum - item%samples(:,jold)*item%timesteps(jold) + item%samples(:,jnew)*item%timesteps(jnew)
+      item%timestep_sum = item%timestep_sum - item%timesteps(jold) + item%timesteps(jnew)
+      item%stat_input = item%moving_average_sum/item%timestep_sum
    
    end subroutine update_moving_average
 
@@ -167,14 +167,14 @@ contains
    ! some variables without a pointer need a separate subroutine call to update their source_data array
    subroutine update_source_data(output_set)
    type(t_output_variable_set),    intent(inout)   :: output_set    !> output set that we wish to update
-   type(t_output_variable_item), pointer  :: i
+   type(t_output_variable_item), pointer  :: item
    
    integer :: j
    
    do j = 1, output_set%count
-      i => output_set%statout(j)
-      if (associated(i%function_pointer)) then
-         call i%function_pointer(i%source_input)
+      item => output_set%statout(j)
+      if (associated(item%function_pointer)) then
+         call item%function_pointer(item%source_input)
       endif
    enddo
    
@@ -182,27 +182,27 @@ contains
    
    !> updates a stat_output_item using the stat_input array, depending on the operation_id
    !  stat_input is filled elsewhere and can be a moving average or a pointer to an input variable.
-   elemental subroutine update_statistical_output(i,dts)
+   elemental subroutine update_statistical_output(item,dts)
       
-      type(t_output_variable_item), intent(inout) :: i   !< statistical output item to update
-      double precision,             intent(in)    :: dts !< current timestep
+      type(t_output_variable_item), intent(inout) :: item   !< statistical output item to update
+      double precision,             intent(in)    :: dts    !< current timestep
    
-      if (i%operation_id == SO_MIN .or. i%operation_id == SO_MAX ) then ! max/min of moving average requested
-         call add_statistical_output_sample(i,dts)
-         call update_moving_average(i)
-         i%current_step = mod(i%current_step+1,i%total_steps_count)
+      if (item%operation_id == SO_MIN .or. item%operation_id == SO_MAX ) then ! max/min of moving average requested
+         call add_statistical_output_sample(item,dts)
+         call update_moving_average(item)
+         item%current_step = mod(item%current_step+1,item%total_steps_count)
       endif
 
-      select case (i%operation_id)
+      select case (item%operation_id)
       case (SO_CURRENT)
          continue
       case (SO_AVERAGE) 
-         i%stat_output = i%stat_output + i%stat_input * dts
-         i%timestep_sum = i%timestep_sum + dts
+         item%stat_output = item%stat_output + item%stat_input * dts
+         item%timestep_sum = item%timestep_sum + dts
       case (SO_MAX) 
-         i%stat_output = max(i%stat_output,i%stat_input)
+         item%stat_output = max(item%stat_output,item%stat_input)
       case (SO_MIN) 
-         i%stat_output = min(i%stat_output,i%stat_input)
+         item%stat_output = min(item%stat_output,item%stat_input)
       case default
          return
       end select
@@ -210,31 +210,31 @@ contains
    end subroutine update_statistical_output
 
    !> in case average is requested, a division is required before the average can be written
-   subroutine finalize_SO_AVERAGE(i) 
+   subroutine finalize_SO_AVERAGE(item) 
 
-      type(t_output_variable_item), intent(inout) :: i !>
+      type(t_output_variable_item), intent(inout) :: item !> stat output item to finalize
 
-      if (i%operation_id == SO_AVERAGE) then 
-         i%stat_output = i%stat_output/i%timestep_sum
+      if (item%operation_id == SO_AVERAGE) then 
+         item%stat_output = item%stat_output/item%timestep_sum
       endif
 
    end subroutine finalize_SO_AVERAGE
 
    !> every output interval the stat_output needs to be reset.
-   subroutine reset_statistical_output(i)
+   subroutine reset_statistical_output(item)
 
-      type(t_output_variable_item), intent(inout) :: i !< statistical output item to reset
+      type(t_output_variable_item), intent(inout) :: item !< statistical output item to reset
       
-      select case (i%operation_id)
+      select case (item%operation_id)
       case (SO_CURRENT)
          continue
       case (SO_AVERAGE)
-         i%stat_output = 0 
-         i%timestep_sum = 0 !new sum every output interval
+         item%stat_output = 0 
+         item%timestep_sum = 0 !new sum every output interval
       case (SO_MAX)
-         i%stat_output = -huge
+         item%stat_output = -huge
       case (SO_MIN)
-         i%stat_output = huge
+         item%stat_output = huge
       case default 
          call mess(LEVEL_ERROR, 'update_statistical_output: invalid operation_id')
       end select
@@ -292,36 +292,36 @@ contains
    
       type(t_output_variable_set), intent(inout) :: output_set !> output set that needs to be initialized
 
-      type(t_output_variable_item), pointer  :: i
+      type(t_output_variable_item), pointer  :: item 
       integer :: j, inputsize
       logical :: success
       
       do j = 1, output_set%count
-         i => output_set%statout(j)
-         input_size = size(i%source_input)
-         if (associated(i%function_pointer)) then
-            call i%function_pointer(i%source_input)
+         item => output_set%statout(j)
+         input_size = size(item%source_input)
+         if (associated(item%function_pointer)) then
+            call item%function_pointer(item%source_input)
          endif
 
-         select case (i%operation_id)
+         select case (item%operation_id)
          case (SO_CURRENT)
-            i%stat_output => i%source_input
+            item%stat_output => item%source_input
          case (SO_AVERAGE)
-            allocate(i%stat_output(input_size))
-            i%stat_input => i%source_input
+            allocate(item%stat_output(input_size))
+            item%stat_input => item%source_input
          case (SO_MIN, SO_MAX)
-            allocate(i%stat_output(input_size),i%moving_average_sum(input_size), &
-               i%samples(input_size,window_size),i%timesteps(window_size),i%stat_input(input_size))
+            allocate(item%stat_output(input_size),item%moving_average_sum(input_size), &
+               item%samples(input_size,window_size),item%timesteps(window_size),item%stat_input(input_size))
 
-            i%moving_average_sum = 0
-            i%samples = 0
-            i%timesteps = 0
-            i%timestep_sum = 0
+            item%moving_average_sum = 0
+            item%samples = 0
+            item%timesteps = 0
+            item%timestep_sum = 0
             case default
             call mess(LEVEL_ERROR, 'initialize_statistical_output: invalid operation_id')
          end select
 
-         call reset_statistical_output(i)
+         call reset_statistical_output(item)
       enddo
 
    end subroutine initialize_statistical_output
