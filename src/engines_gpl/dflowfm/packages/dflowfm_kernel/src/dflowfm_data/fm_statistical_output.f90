@@ -462,6 +462,9 @@ private
       call addoutval(out_quan_conf_his, IDX_HIS_CULVERT_DISCHARGE,                                  &
                      'Wrihis_structure_culvert', 'culvert_discharge', 'Discharge through culvert', '',                     &
                      'm3 s-1', UNC_LOC_CULVERT, 'Write culvert parameters to his file')
+      call addoutval(out_quan_conf_his, IDX_HIS_CULVERT_CREST_LEVEL,                                &
+                     'Wrihis_structure_culvert', 'culvert_crest_level', 'Crest level of culvert', '',                     &
+                     'm', UNC_LOC_CULVERT)
       call addoutval(out_quan_conf_his, IDX_HIS_CULVERT_GATE_LOWER_EDGE_LEVEL,                      &
                      'Wrihis_structure_culvert', 'culvert_gate_lower_edge_level', 'Gate lower edge level of culvert', '',                     &
                      'm', UNC_LOC_CULVERT)
@@ -483,9 +486,6 @@ private
       call addoutval(out_quan_conf_his, IDX_HIS_CULVERT_VELOCITY,                                   &
                      'Wrihis_structure_culvert', 'culvert_velocity', 'Velocity through culvert', '',                     &
                      'm s-1', UNC_LOC_CULVERT)
-      call addoutval(out_quan_conf_his, IDX_HIS_CULVERT_CREST_WIDTH,                                &
-                     'Wrihis_structure_culvert', 'culvert_crest_width', 'Crest width of culvert', '',                     &
-                     'm', UNC_LOC_CULVERT)
       call addoutval(out_quan_conf_his, IDX_HIS_CULVERT_STATE,                                      &
                      'Wrihis_structure_culvert', 'culvert_state', 'Flow state at culvert', '',                     &
                      '-', UNC_LOC_CULVERT)

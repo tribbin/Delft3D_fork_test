@@ -185,7 +185,6 @@ private
    integer, public :: IDX_HIS_CULVERT_FLOW_AREA
    integer, public :: IDX_HIS_CULVERT_VELOCITY
    integer, public :: IDX_HIS_CULVERT_STATE
-   integer, public :: IDX_HIS_CULVERT_CREST_WIDTH
    integer, public :: IDX_HIS_DAMBREAK_S1UP
    integer, public :: IDX_HIS_DAMBREAK_S1DN
    integer, public :: IDX_HIS_DAMBREAK_DISCHARGE
