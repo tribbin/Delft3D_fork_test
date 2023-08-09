@@ -703,6 +703,7 @@ subroutine readMDUFile(filename, istat)
     use m_flowgeom !,              only : wu1Duni, bamin, rrtol, jarenumber, VillemonteCD1, VillemonteCD2
     use m_flowtimes
     use m_flowparameters
+    use m_flowexternalforcings, only: dambreakWideningString, dambreakWidening, DBW_SYMM, DBW_PROP, DBW_SYMM_ASYMM
     use m_waves,                 only: rouwav, gammax, hminlw, jauorb, jahissigwav, jamapsigwav
     use m_wind ! ,                  only : icdtyp, cdb, wdb,
     use network_data,            only : zkuni, Dcenterinside, removesmalllinkstrsh, cosphiutrsh
@@ -1336,6 +1337,20 @@ subroutine readMDUFile(filename, istat)
     vismol = 4.d0/(20.d0 + backgroundwatertemperature)*1d-5 ! Van Rijn, 1993, from iniphys.f90
 
     call prop_get_integer(md_ptr, 'physics', 'NFEntrainmentMomentum'  , NFEntrainmentMomentum)
+
+    call prop_get_string (md_ptr, 'physics', 'BreachGrowth', dambreakWideningString)
+    call str_lower(dambreakWideningString)
+    select case (dambreakWideningString)
+    case ('symmetric')
+       dambreakWidening = DBW_SYMM
+    case ('proportional')
+       dambreakWidening = DBW_PROP
+    case ('symmetric-asymmetric','')
+       dambreakWidening = DBW_SYMM_ASYMM
+       dambreakWideningString = 'symmetric-asymmetric'
+    case default
+       call mess(LEVEL_ERROR, 'Invalid value specified for breach growth.')
+    end select
 
     call prop_get_integer(md_ptr, 'veg',     'Vegetationmodelnr', javeg) ! Vegetation model nr, (0=no, 1=Baptist DFM)
     if( japillar == 2 ) then
@@ -3441,6 +3456,10 @@ endif
     endif
     if (writeall .or. jaequili > 0) then
        call prop_set(prop_ptr, 'physics', 'Equili'     , jaequili , 'Equilibrium spiral flow intensity (0: no, 1: yes)')
+    endif
+
+    if (ndambreak > 0) then
+       call prop_set_string (prop_ptr, 'physics', 'BreachGrowth', trim(dambreakWideningString), 'Method for implementing dambreak widening: symmetric, proportional, or symmetric-asymmetric')
     endif
 
     if (writeall .or. jased > 0) then
