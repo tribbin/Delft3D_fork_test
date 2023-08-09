@@ -217,10 +217,41 @@ private
    integer, public :: IDX_HIS_LONGCULVERT_FLOW_AREA
    integer, public :: IDX_HIS_LONGCULVERT_VELOCITY
    integer, public :: IDX_HIS_LONGCULVERT_VALVE_RELATIVE_OPENING
+
+   integer, public :: IDX_HIS_WATERLEVEL
+   integer, public :: IDX_HIS_BEDLEVEL
+   integer, public :: IDX_HIS_WATERDEPTH
+   integer, public :: IDX_HIS_X_VELOCITY
+   integer, public :: IDX_HIS_Y_VELOCITY
+   integer, public :: IDX_HIS_Z_VELOCITY
+   integer, public :: IDX_HIS_DEPTH_AVERAGED_X_VELOCITY
+   integer, public :: IDX_HIS_DEPTH_AVERAGED_Y_VELOCITY
+   integer, public :: IDX_HIS_VELOCITY_MAGNITUDE
+   integer, public :: IDX_HIS_VELOCITY_MAGNITUDE_EULERIAN
+   integer, public :: IDX_HIS_DISCHARGE_MAGNITUDE
+
    integer, public :: IDX_HIS_TKE
    integer, public :: IDX_HIS_VICWW
    integer, public :: IDX_HIS_EPS
    integer, public :: IDX_HIS_TAU
+   integer, public :: IDX_HIS_RICH
+   integer, public :: IDX_HIS_SALINITY
+   integer, public :: IDX_HIS_TEMPERATURE
+   integer, public :: IDX_HIS_POTENTIAL_DENSITY
+   integer, public :: IDX_HIS_DENSITY
+   integer, public :: IDX_HIS_BRUNT_VAISALA_N2
+
+   integer, public :: IDX_HIS_HWAV
+   integer, public :: IDX_HIS_HWAV_SIG
+   integer, public :: IDX_HIS_TWAV
+   integer, public :: IDX_HIS_PHIWAV
+   integer, public :: IDX_HIS_RLABDA
+   integer, public :: IDX_HIS_UORB
+   integer, public :: IDX_HIS_USTOKES
+   integer, public :: IDX_HIS_VSTOKES
+   integer, public :: IDX_HIS_TAUSX
+   integer, public :: IDX_HIS_TAUSY
+
    integer, public :: IDX_HIS_WINDX
    integer, public :: IDX_HIS_WINDX_SFERIC
    integer, public :: IDX_HIS_WINDY
@@ -228,7 +259,7 @@ private
    integer, public :: IDX_HIS_RAIN
    integer, public :: IDX_HIS_INFILTRATION_CAP
    integer, public :: IDX_HIS_INFILTRATION_INFILTRATION_ACTUAL
-   integer, public :: IDX_HIS_TEMPERATURE
+
    integer, public :: IDX_HIS_WIND
    integer, public :: IDX_HIS_TAIR
    integer, public :: IDX_HIS_RHUM
@@ -240,40 +271,18 @@ private
    integer, public :: IDX_HIS_QFREVA
    integer, public :: IDX_HIS_QFRCON
    integer, public :: IDX_HIS_QTOT
-   integer, public :: IDX_HIS_SALINITY
-   integer, public :: IDX_HIS_POTENTIAL_DENSITY
-   integer, public :: IDX_HIS_DENSITY
-   integer, public :: IDX_HIS_BRUNT_VAISALA_N2
-   integer, public :: IDX_HIS_WATERLEVEL
-   integer, public :: IDX_HIS_BEDLEVEL
-   integer, public :: IDX_HIS_WATERDEPTH
-   integer, public :: IDX_HIS_HWAV
-   integer, public :: IDX_HIS_HWAV_SIG
-   integer, public :: IDX_HIS_TWAV
-   integer, public :: IDX_HIS_PHIWAV
-   integer, public :: IDX_HIS_RLABDA
-   integer, public :: IDX_HIS_UORB
-   integer, public :: IDX_HIS_USTOKES
-   integer, public :: IDX_HIS_VSTOKES
-   integer, public :: IDX_HIS_X_VELOCITY
-   integer, public :: IDX_HIS_Y_VELOCITY
-   integer, public :: IDX_HIS_Z_VELOCITY
-   integer, public :: IDX_HIS_DEPTH_AVERAGED_X_VELOCITY
-   integer, public :: IDX_HIS_DEPTH_AVERAGED_Y_VELOCITY
+
    integer, public :: IDX_HIS_SED
    integer, public :: IDX_HIS_WS
    integer, public :: IDX_HIS_SEDDIF
+
    integer, public :: IDX_HIS_CONSTITUENTS
+
    integer, public :: IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_INSTANTANEOUS
    integer, public :: IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_AVERAGE
    integer, public :: IDX_HIS_LATERAL_REALIZED_DISCHARGE_INSTANTANEOUS
    integer, public :: IDX_HIS_LATERAL_REALIZED_DISCHARGE_AVERAGE
-   integer, public :: IDX_HIS_TAUSX
-   integer, public :: IDX_HIS_TAUSY
-   integer, public :: IDX_HIS_VELOCITY_MAGNITUDE
-   integer, public :: IDX_HIS_VELOCITY_MAGNITUDE_EULERIAN
-   integer, public :: IDX_HIS_DISCHARGE_MAGNITUDE
-   integer, public :: IDX_HIS_RICH
+
    integer, public :: IDX_MAP_S0
    integer, public :: IDX_MAP_S1
    integer, public :: IDX_MAP_POTEVAP
