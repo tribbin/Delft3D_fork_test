@@ -1592,7 +1592,7 @@ function adduniformtimerelation_objects(qid, locationfile, objtype, objid, param
    targetarrayptr => targetarray
    tgtitem = ec_undef_int
 
-   if (ierr /= 0) then ! No number, so check for timeseries filename
+   if (ierr /= 0 .or. index(valuestring,'/') == 1) then ! No number or a string starting with '/': check for timeseries filename
       if (strcmpi(trim(valuestring), 'REALTIME')) then
          success = .true.
          ! targetarray(targetindex) should be filled via DLL's API
