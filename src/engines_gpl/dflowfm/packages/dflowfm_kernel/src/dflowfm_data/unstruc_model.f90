@@ -1229,6 +1229,7 @@ subroutine readMDUFile(filename, istat)
     call prop_get_double (md_ptr, 'numerics', 'Baorgfracmin'    , Baorgfracmin)
 
     call prop_get_integer(md_ptr, 'numerics', 'LogSolverConvergence', jalogsolverconvergence)
+    call prop_get_integer(md_ptr, 'numerics', 'Wridia_viscosity_diffusivity_limit', ja_vis_diff_limit)
     call prop_get_integer(md_ptr, 'numerics', 'LogTransportSolverLimiting', jalogtransportsolverlimiting)
     call prop_get_integer(md_ptr, 'numerics', 'SubsUplUpdateS1', sdu_update_s1)
     if (sdu_update_s1<0 .or. sdu_update_s1>1) then
@@ -3071,6 +3072,7 @@ endif
 
     call prop_set(prop_ptr, 'numerics', 'Icgsolver',       Icgsolver, 'Solver type (1: sobekGS_OMP, 2: sobekGS_OMPthreadsafe, 3: sobekGS, 4: sobekGS + Saadilud, 5: parallel/global Saad, 6: parallel/Petsc, 7: parallel/GS)')
     call prop_set(prop_ptr, 'numerics', 'LogSolverConvergence', JaLogSolverConvergence, '1: Log time step, number of solver iterations and solver residual.')
+    call prop_set(prop_ptr, 'numerics', 'Wridia_viscosity_diffusivity_limit', ja_vis_diff_limit, 'Write info in dia file when viscosity/diffusivity is limited (0: no, 1: yes)')
     if (writeall .or. Maxdge .ne. 6) then
        call prop_set(prop_ptr, 'numerics', 'Maxdegree',  Maxdge,      'Maximum degree in Gauss elimination')
     end if
@@ -3835,7 +3837,7 @@ endif
     call prop_set(prop_ptr, 'output', 'NcFormat',  md_ncformat, 'Format for all NetCDF output files (3: classic, 4: NetCDF4+HDF5)')
 
     call prop_set(prop_ptr, 'output', 'NcDataPrecision',  md_nc_precision, 'Precision for NetCDF data in map files (0: double, 1: float)')
-
+    
     if (writeall .or. unc_nounlimited /= 0) then
        call prop_set(prop_ptr, 'output', 'NcNoUnlimited',  unc_nounlimited, 'Write full-length time-dimension instead of unlimited dimension (1: yes, 0: no). (Might require NcFormat=4.)')
     end if
