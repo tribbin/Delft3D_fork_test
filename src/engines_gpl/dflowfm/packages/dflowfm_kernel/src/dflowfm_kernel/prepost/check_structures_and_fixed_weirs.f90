@@ -38,8 +38,6 @@ subroutine check_structures_and_fixed_weirs()
    use unstruc_messages
    implicit none
 
-   character(len=128)                 :: msg
-
    integer, dimension(:), allocatable :: links_used_by_structures
    integer, dimension(:), allocatable :: links_used_by_weirs
 
@@ -70,17 +68,17 @@ subroutine check_structures_and_fixed_weirs()
             links_used_by_structures(flow_link) = general_structure
          else
             nummulti = nummulti + 1
-            write(msg, "('Flowlink ', I0, ' found in general structure ', A, ' already claimed by general structure ', A, '.')") &
+            write(msgbuf, "('Flowlink ', I0, ' found in general structure ', A, ' already claimed by general structure ', A, '.')") &
                 flow_link, trim(cgen_ids(general_structure)), trim(cgen_ids(links_used_by_structures(flow_link)))
-            call mess(LEVEL_WARN, trim(msg))
+            call mess(LEVEL_WARN, trim(msgbuf))
          end if
 
          if ( links_used_by_weirs(flow_link) /= FREE ) then
             numweir = numweir + 1
-            write(msg, &
+            write(msgbuf, &
                 "('Flowlink ',I0,' found in general structure ', A,' is also used by a fixed weir. It may lead to a wrong solution.')") &
                 flow_link, trim(cgen_ids(general_structure))
-            call mess(LEVEL_WARN, trim(msg))
+            call mess(LEVEL_WARN, trim(msgbuf))
          end if
       end do
    end do
