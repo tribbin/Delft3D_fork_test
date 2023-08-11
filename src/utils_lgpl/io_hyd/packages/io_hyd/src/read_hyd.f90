@@ -306,7 +306,7 @@
             ! convert to julian
             read (hyd%hyd_ref(1:8),'(i8)') idate
             read (hyd%hyd_ref(9:14),'(i6)') itime
-            hyd%time_ref = julian_v2 ( idate , itime )
+            hyd%time_ref = julian_with_leapyears ( idate , itime )
 
          elseif ( ikey .eq. 9 ) then
             ! hydrodynamic start
