@@ -78,85 +78,85 @@ private
       ! HIS: Mass balances
       !
       call addoutval(out_quan_conf_his, IDX_HIS_VOLTOT,                                             &
-                     'Wrihis_balance', 'total_volume', '', '', 'm3', UNC_LOC_WB, description='Write mass balance totals to his file')                                                 
+                     'Wrihis_balance', 'total_volume', '', '', 'm3', UNC_LOC_GLOBAL, description='Write mass balance totals to his file')                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_STOR,                                               &
-                     'Wrihis_balance', 'storage', '', '', 'm3', UNC_LOC_WB)                
+                     'Wrihis_balance', 'storage', '', '', 'm3', UNC_LOC_GLOBAL)                
       call addoutval(out_quan_conf_his, IDX_HIS_VOLERR,                                             &
-                     'Wrihis_balance', 'volume_error', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'volume_error', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_BNDIN,                                             &
-                     'Wrihis_balance', 'boundaries_in', '', '', 'm3', UNC_LOC_WB)                                                       
+                     'Wrihis_balance', 'boundaries_in', '', '', 'm3', UNC_LOC_GLOBAL)                                                       
       call addoutval(out_quan_conf_his, IDX_HIS_BNDOUT,                                            &
-                     'Wrihis_balance', 'boundaries_out', '', '', 'm3', UNC_LOC_WB)                                                       
+                     'Wrihis_balance', 'boundaries_out', '', '', 'm3', UNC_LOC_GLOBAL)                                                       
       call addoutval(out_quan_conf_his, IDX_HIS_BNDTOT,                                            &
-                     'Wrihis_balance', 'boundaries_total', '', '', 'm3', UNC_LOC_WB)                                                          
+                     'Wrihis_balance', 'boundaries_total', '', '', 'm3', UNC_LOC_GLOBAL)                                                          
       call addoutval(out_quan_conf_his, IDX_HIS_EXCHIN,                                             &
-                     'Wrihis_balance', 'exchange_with_1D_in', '', '', 'm3', UNC_LOC_WB)                                                       
+                     'Wrihis_balance', 'exchange_with_1D_in', '', '', 'm3', UNC_LOC_GLOBAL)                                                       
       call addoutval(out_quan_conf_his, IDX_HIS_EXCHOUT,                                            &
-                     'Wrihis_balance', 'exchange_with_1D_out', '', '', 'm3', UNC_LOC_WB)                                                       
+                     'Wrihis_balance', 'exchange_with_1D_out', '', '', 'm3', UNC_LOC_GLOBAL)                                                       
       call addoutval(out_quan_conf_his, IDX_HIS_EXCHTOT,                                            &
-                     'Wrihis_balance', 'exchange_with_1D_total', '', '', 'm3', UNC_LOC_WB)                                                          
+                     'Wrihis_balance', 'exchange_with_1D_total', '', '', 'm3', UNC_LOC_GLOBAL)                                                          
       call addoutval(out_quan_conf_his, IDX_HIS_PRECIP_TOTAL,                                       &
-                     'Wrihis_balance', 'precipitation_total', '', '', 'm3', UNC_LOC_WB)                                                       
+                     'Wrihis_balance', 'precipitation_total', '', '', 'm3', UNC_LOC_GLOBAL)                                                       
       call addoutval(out_quan_conf_his, IDX_HIS_EVAP,                                               &
-                     'Wrihis_balance', 'evaporation', '', '', 'm3', UNC_LOC_WB)                                  
+                     'Wrihis_balance', 'evaporation', '', '', 'm3', UNC_LOC_GLOBAL)                                  
       call addoutval(out_quan_conf_his, IDX_HIS_SOUR,                                               &
-                     'Wrihis_balance', 'source_sink', '', '', 'm3', UNC_LOC_WB)                                        
+                     'Wrihis_balance', 'source_sink', '', '', 'm3', UNC_LOC_GLOBAL)                                        
       call addoutval(out_quan_conf_his, IDX_HIS_InternalTidesDissipation,                           &
-                     'Wrihis_balance', 'InternalTidesDissipation', '', '', 'TJ', UNC_LOC_WB)                                                             
+                     'Wrihis_balance', 'InternalTidesDissipation', '', '', 'TJ', UNC_LOC_GLOBAL)                                                             
       call addoutval(out_quan_conf_his, IDX_HIS_GravInput,                                          &
-                     'Wrihis_balance', 'Gravitational_Input', '', '', 'TJ', UNC_LOC_WB)                                                       
+                     'Wrihis_balance', 'Gravitational_Input', '', '', 'TJ', UNC_LOC_GLOBAL)                                                       
       call addoutval(out_quan_conf_his, IDX_HIS_SalInput,                                           &
-                     'Wrihis_balance', 'SAL_Input', '', '', 'TJ', UNC_LOC_WB)                                  
+                     'Wrihis_balance', 'SAL_Input', '', '', 'TJ', UNC_LOC_GLOBAL)                                  
       call addoutval(out_quan_conf_his, IDX_HIS_SalInput2,                                          &
-                     'Wrihis_balance', 'SAL_Input_2', '', '', 'TJ', UNC_LOC_WB)
+                     'Wrihis_balance', 'SAL_Input_2', '', '', 'TJ', UNC_LOC_GLOBAL)
       call addoutval(out_quan_conf_his, IDX_HIS_GRWIN,                                              &
-                     'Wrihis_balance', 'groundwater_in', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'groundwater_in', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_GRWOUT,                                             &
-                     'Wrihis_balance', 'groundwater_out', '', '', 'm3', UNC_LOC_WB)                                                    
+                     'Wrihis_balance', 'groundwater_out', '', '', 'm3', UNC_LOC_GLOBAL)                                                    
       call addoutval(out_quan_conf_his, IDX_HIS_GRWTOT,                                             &
-                     'Wrihis_balance', 'groundwater_total', '', '', 'm3', UNC_LOC_WB)                                                    
+                     'Wrihis_balance', 'groundwater_total', '', '', 'm3', UNC_LOC_GLOBAL)                                                    
       call addoutval(out_quan_conf_his, IDX_HIS_LATIN,                                              &
-                     'Wrihis_balance', 'laterals_in', '', '', 'm3', UNC_LOC_WB)
+                     'Wrihis_balance', 'laterals_in', '', '', 'm3', UNC_LOC_GLOBAL)
       call addoutval(out_quan_conf_his, IDX_HIS_LATOUT,                                             &
-                     'Wrihis_balance', 'laterals_out', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'laterals_out', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_LATTOT,                                             &
-                     'Wrihis_balance', 'laterals_total', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'laterals_total', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_LATIN1D,                                            &
-                     'Wrihis_balance', 'laterals_in_1D', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'laterals_in_1D', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_LATOUT1D,                                           &
-                     'Wrihis_balance', 'laterals_out_1D', '', '', 'm3', UNC_LOC_WB)                                                    
+                     'Wrihis_balance', 'laterals_out_1D', '', '', 'm3', UNC_LOC_GLOBAL)                                                    
       call addoutval(out_quan_conf_his, IDX_HIS_LATTOT1D,                                           &
-                     'Wrihis_balance', 'laterals_total_1D', '', '', 'm3', UNC_LOC_WB)                                                    
+                     'Wrihis_balance', 'laterals_total_1D', '', '', 'm3', UNC_LOC_GLOBAL)                                                    
       call addoutval(out_quan_conf_his, IDX_HIS_LATIN2D,                                            &
-                     'Wrihis_balance', 'laterals_in_2D', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'laterals_in_2D', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_LATOUT2D,                                           &
-                     'Wrihis_balance', 'laterals_out_2D', '', '', 'm3', UNC_LOC_WB)                                                    
+                     'Wrihis_balance', 'laterals_out_2D', '', '', 'm3', UNC_LOC_GLOBAL)                                                    
       call addoutval(out_quan_conf_his, IDX_HIS_LATTOT2D,                                           &
-                     'Wrihis_balance', 'laterals_total_2D', '', '', 'm3', UNC_LOC_WB)                                                    
+                     'Wrihis_balance', 'laterals_total_2D', '', '', 'm3', UNC_LOC_GLOBAL)                                                    
       call addoutval(out_quan_conf_his, IDX_HIS_EXTIN,                                              &
-                     'Wrihis_balance', 'Qext_in', '', '', 'm3', UNC_LOC_WB)                                     
+                     'Wrihis_balance', 'Qext_in', '', '', 'm3', UNC_LOC_GLOBAL)                                     
       call addoutval(out_quan_conf_his, IDX_HIS_EXTOUT,                                             &
-                     'Wrihis_balance', 'Qext_out', '', '', 'm3', UNC_LOC_WB)                                        
+                     'Wrihis_balance', 'Qext_out', '', '', 'm3', UNC_LOC_GLOBAL)                                        
       call addoutval(out_quan_conf_his, IDX_HIS_EXTTOT,                                             &
-                     'Wrihis_balance', 'Qext_total', '', '', 'm3', UNC_LOC_WB)                                              
+                     'Wrihis_balance', 'Qext_total', '', '', 'm3', UNC_LOC_GLOBAL)                                              
       call addoutval(out_quan_conf_his, IDX_HIS_EXTIN1D,                                            &
-                     'Wrihis_balance', 'Qext_in_1D', '', '', 'm3', UNC_LOC_WB)                                        
+                     'Wrihis_balance', 'Qext_in_1D', '', '', 'm3', UNC_LOC_GLOBAL)                                        
       call addoutval(out_quan_conf_his, IDX_HIS_EXTOUT1D,                                           &
-                     'Wrihis_balance', 'Qext_out_1D', '', '', 'm3', UNC_LOC_WB)                                     
+                     'Wrihis_balance', 'Qext_out_1D', '', '', 'm3', UNC_LOC_GLOBAL)                                     
       call addoutval(out_quan_conf_his, IDX_HIS_EXTTOT1D,                                           &
-                     'Wrihis_balance', 'Qext_total_1D', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'Qext_total_1D', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_EXTIN2D,                                            &
-                     'Wrihis_balance', 'Qext_in_2D', '', '', 'm3', UNC_LOC_WB)                                                    
+                     'Wrihis_balance', 'Qext_in_2D', '', '', 'm3', UNC_LOC_GLOBAL)                                                    
       call addoutval(out_quan_conf_his, IDX_HIS_EXTOUT2D,                                           &
-                     'Wrihis_balance', 'Qext_out_2D', '', '', 'm3', UNC_LOC_WB)                                           
+                     'Wrihis_balance', 'Qext_out_2D', '', '', 'm3', UNC_LOC_GLOBAL)                                           
       call addoutval(out_quan_conf_his, IDX_HIS_EXTTOT2D,                                           &
-                     'Wrihis_balance', 'Qext_total_2D', '', '', 'm3', UNC_LOC_WB)                                                 
+                     'Wrihis_balance', 'Qext_total_2D', '', '', 'm3', UNC_LOC_GLOBAL)                                                 
       call addoutval(out_quan_conf_his, IDX_HIS_ICEPT,                                              &
-                     'Wrihis_balance', 'total_volume_interception', '', '', 'm3', UNC_LOC_WB)                                                             
+                     'Wrihis_balance', 'total_volume_interception', '', '', 'm3', UNC_LOC_GLOBAL)                                                             
       call addoutval(out_quan_conf_his, IDX_HIS_EVAP_ICEPT,                                         &
-                     'Wrihis_balance', 'evaporation_interception', '', '', 'm3', UNC_LOC_WB)                                                             
+                     'Wrihis_balance', 'evaporation_interception', '', '', 'm3', UNC_LOC_GLOBAL)                                                             
       call addoutval(out_quan_conf_his, IDX_HIS_PRECIP_GROUND,                                      &
-                     'Wrihis_balance', 'precipitation_on_ground', '', '', 'm3', UNC_LOC_WB)                                                          
+                     'Wrihis_balance', 'precipitation_on_ground', '', '', 'm3', UNC_LOC_GLOBAL)                                                          
   
       !
       ! HIS: source sinks

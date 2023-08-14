@@ -27,7 +27,7 @@ private
    integer, parameter, public :: UNC_LOC_U3D = 5  !< Data location: horizontal velocity point in all layers.
    integer, parameter, public :: UNC_LOC_W   = 6  !< Data location: vertical velocity point on all layer interfaces.
    integer, parameter, public :: UNC_LOC_WU  = 16 !< Data location: vertical viscosity point on all layer interfaces.
-   integer, parameter, public :: UNC_LOC_WB        = 21 !< Data location: his file water balance
+   integer, parameter, public :: UNC_LOC_GLOBAL    = 21 !< Data location: his file global variables (e.g. water balance)
    integer, parameter, public :: UNC_LOC_SOSI      = 22 !< Data location: his file sources and sinks
    integer, parameter, public :: UNC_LOC_GENSTRU   = 23 !< Data location: his file general structure data
    integer, parameter, public :: UNC_LOC_DAM       = 24   !< Data location: his file controllable dam data

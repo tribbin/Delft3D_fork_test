@@ -331,8 +331,9 @@ subroutine unc_write_his(tim)            ! wrihis
                config => out_variable_set_his%statout(ivar)%output_config
                id_var => out_variable_set_his%statout(ivar)%id_var
                
-               if (config%location_specifier /= UNC_LOC_STATION) then
-                  call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station.')
+               if (config%location_specifier /= UNC_LOC_STATION &
+                   .and. config%location_specifier /= UNC_LOC_GLOBAL) then
+                  call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station nor global.')
                   cycle
                end if
 
@@ -364,7 +365,11 @@ subroutine unc_write_his(tim)            ! wrihis
 
                select case(config%location_specifier)
                case (UNC_LOC_STATION)
-                  call definencvar(ihisfile, id_var, config%nc_type, (/ id_statdim, id_timedim /), 2, var_name, var_long_name, config%unit, statcoordstring, station_geom_container_name)
+                  call definencvar(ihisfile, id_var, config%nc_type, (/ id_statdim, id_timedim /), 2, var_name, var_long_name, config%unit, statcoordstring, station_geom_container_name, fillVal=dmiss, add_gridmapping = .true.)
+               case (UNC_LOC_GLOBAL)
+                  if (timon) call timstrt ( "unc_write_his DEF bal", handle_extra(59))
+                  call definencvar(ihisfile, id_var, config%nc_type, (/ id_timedim /), 1, var_name, var_long_name, config%unit, "", fillVal=dmiss)
+                  if (timon) call timstop (handle_extra(59))
                end select
 
                if (len_trim(var_standard_name) > 0) then
@@ -373,10 +378,9 @@ subroutine unc_write_his(tim)            ! wrihis
                if (len_trim(stat_cell_methods) > 0) then
                   ierr = nf90_put_att(ihisfile, id_var, 'cell_methods', trim(stat_cell_methods))
                end if
-               ierr = nf90_put_att(ihisfile, id_var, '_FillValue', dmiss)
             end do
-            endif
-
+            end if
+            if (.false.) then
             if ( jahisbedlev > 0 ) then
                if( stm_included ) then
                   ierr = nf90_def_var(ihisfile, 'bedlevel', nf90_double, (/ id_statdim, id_timedim /), id_varb)
@@ -1170,6 +1174,7 @@ subroutine unc_write_his(tim)            ! wrihis
                ierr = nf90_put_att(ihisfile, id_zwu, '_FillValue' , dmiss)
             endif
         end if
+        endif ! (.false.)
 
         if (ncrs > 0) then
             mnp = 0
@@ -1395,31 +1400,6 @@ subroutine unc_write_his(tim)            ! wrihis
            ierr = nf90_put_att(ihisfile, id_qsrcavg,    'geometry', src_geom_container_name)
         endif
 
-        if (timon) call timstrt ( "unc_write_his DEF bal", handle_extra(59))
-        if (jahisbal > 0) then
-           do num = 1,MAX_IDX
-              if ( num.eq.IDX_InternalTidesDissipation ) then
-                 if ( jaFrcInternalTides2D.eq.1 ) then
-                    ierr = nf90_def_var(ihisfile, trim(voltotname(num)), nf90_double, (/ id_timedim /), id_voltot(num))
-                    ierr = nf90_put_att(ihisfile, id_voltot(num), 'units', 'TJ')
-                 end if
-              else if ( num.eq.IDX_GravInput ) then
-                 if ( jatidep > 0 ) then
-                    ierr = nf90_def_var(ihisfile, trim(voltotname(num)), nf90_double, (/ id_timedim /), id_voltot(num))
-                    ierr = nf90_put_att(ihisfile, id_voltot(num), 'units', 'TJ')
-                 end if
-              else if ( num.eq.IDX_SALInput .or. num.eq.IDX_SALInput2 ) then
-                 if ( jaselfal.gt.0 ) then
-                    ierr = nf90_def_var(ihisfile, trim(voltotname(num)), nf90_double, (/ id_timedim /), id_voltot(num))
-                    ierr = nf90_put_att(ihisfile, id_voltot(num), 'units', 'TJ')
-                 end if
-              else
-                 ierr = nf90_def_var(ihisfile, 'water_balance_'//trim(voltotname(num)), nf90_double, (/ id_timedim /), id_voltot(num))
-                 ierr = nf90_put_att(ihisfile, id_voltot(num), 'units', 'm3')
-              end if
-           enddo
-        end if
-        if (timon) call timstop (handle_extra(59))
 
         if (timon) call timstrt ( "unc_write_his DEF structures", handle_extra(60))
         if (jaoldstr == 1) then
@@ -2777,8 +2757,30 @@ subroutine unc_write_his(tim)            ! wrihis
 !   Observation points (fixed+moving)
 
     ntot = numobs + nummovobs
+
+   do ivar = 1,out_variable_set_his%count
+      config => out_variable_set_his%statout(ivar)%output_config
+      id_var => out_variable_set_his%statout(ivar)%id_var
+               
+      if (config%location_specifier /= UNC_LOC_STATION &
+            .and. config%location_specifier /= UNC_LOC_GLOBAL) then
+         call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station.')
+         cycle
+      end if
+
+      select case(config%location_specifier)
+      case (UNC_LOC_STATION)
+         ierr = nf90_put_var(ihisfile, id_var,   out_variable_set_his%statout(ivar)%stat_output,    start = (/ 1, it_his /), count = (/ ntot, 1 /))
+      case (UNC_LOC_GLOBAL)
+         if (timon) call timstrt('unc_write_his IDX data', handle_extra(67))
+         ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output,  start=(/ it_his /))
+         if (timon) call timstop(handle_extra(67))
+      end select
+   end do
+   
+   
     valobsT(1:ntot, 1:IPNT_NUM) = transpose(valobs)
-    if (ntot > 0) then
+    if (ntot > 0 .and. .false.) then
        if ( jahiswatlev > 0 ) then
          ivar = 1 ! Remove after testing
          config => out_variable_set_his%statout(ivar)%output_config
@@ -2826,6 +2828,7 @@ subroutine unc_write_his(tim)            ! wrihis
     endif
     endif
 
+    if (ntot > 0 .and. .false.) then
     if (timon) call timstrt('unc_write_his obs data 1', handle_extra(56))
     if (japatm > 0) then
        ierr = nf90_put_var(ihisfile, id_varpatm, valobsT(:,IPNT_patm), start = (/ 1, it_his /), count = (/ ntot, 1 /))
@@ -2846,7 +2849,7 @@ subroutine unc_write_his(tim)            ! wrihis
     endif
     if (timon) call timstop(handle_extra(56))
 
-    if (timon) call timstrt('unc_write_his obs/crs data 2', handle_extra(57))
+!    if (timon) call timstrt('unc_write_his obs/crs data 2', handle_extra(57))
 
     if (numobs+nummovobs > 0) then
       if ( kmx>0 ) then
@@ -3173,6 +3176,7 @@ subroutine unc_write_his(tim)            ! wrihis
           ierr = nf90_put_var(ihisfile, id_mfluff, toutputx, start = (/ 1, 1, it_his /), count = (/ ntot, stmpar%lsedsus, 1/))
        end if
     endif
+    endif !(ntot > 0 .and. .false.)
 
     !
     ! Cross sections
@@ -3228,7 +3232,7 @@ subroutine unc_write_his(tim)            ! wrihis
           endif
        end do
     end if
-    if (timon) call timstop(handle_extra(57))
+!    if (timon) call timstop(handle_extra(57))
 
     if (timon) call timstrt('unc_write_his RUG', handle_extra(65))
 
@@ -3741,6 +3745,7 @@ subroutine unc_write_his(tim)            ! wrihis
       end if
       if (timon) call timstop ( handle_extra(62))
       !
+      if (.false.) then
       if (timon) call timstrt('unc_write_his sed data', handle_extra(66))
       if (jased>0 .and. stm_included .and. jahissed>0 .and. stmpar%lsedtot>0) then
          if (stmpar%morpar%moroutput%sbcuv) then
@@ -3842,26 +3847,8 @@ subroutine unc_write_his(tim)            ! wrihis
        ierr = nf90_put_var(ihisfile, id_plough_tfrac, dadpar%tim_ploughed/cof0 , start = (/ 1, it_his /), count = (/ dadpar%nadred+dadpar%nasupl, 1 /))
     endif
     if (timon) call timstop(handle_extra(66))
+    endif ! (.false.)
 
-    if (timon) call timstrt('unc_write_his IDX data', handle_extra(67))
-    do num = 1,MAX_IDX
-       if ( num.eq.IDX_InternalTidesDissipation ) then
-          if ( jaFrcInternalTides2D.eq.1 ) then
-             ierr = nf90_put_var(ihisfile, id_voltot(num), 1d-12*voltot(num),  start=(/ it_his /))
-          end if
-       else if ( num.eq.IDX_GravInput ) then
-          if ( jatidep > 0 .or. jaselfal > 0 ) then
-             ierr = nf90_put_var(ihisfile, id_voltot(num), 1d-12*voltot(num),  start=(/ it_his /))
-          end if
-       else if ( num.eq.IDX_SALInput .or. num.eq.IDX_SALInput2 ) then
-          if ( jaselfal.gt.0 ) then
-             ierr = nf90_put_var(ihisfile, id_voltot(num), 1d-12*voltot(num),  start=(/ it_his /))
-          end if
-       else
-          ierr = nf90_put_var(ihisfile, id_voltot(num), voltot(num),  start=(/ it_his /))
-       end if
-    enddo
-    if (timon) call timstop(handle_extra(67))
 
     if( jahisgate > 0 .and. ngatesg+ngategen > 0) then
        ! todo: remove all do loops
