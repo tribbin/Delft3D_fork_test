@@ -17192,8 +17192,9 @@ subroutine read_structure_dimensions_from_rst(ncid, filename, istrtypein, struna
 end subroutine read_structure_dimensions_from_rst
 
 !> Defines a new variable in a NetCDF dataset, also setting some frequently used attributes.
-subroutine definencvar(ncid, idq, itype, idims, n, name, desc, unit, namecoord, geometry, fillVal, add_gridmapping)
+subroutine definencvar(ncid, idq, itype, idims, n, name, desc, unit, namecoord, geometry, fillVal, add_gridmapping, attset)
    use netcdf
+   use netcdf_utils
    use m_sferic
    implicit none
 
@@ -17209,7 +17210,7 @@ subroutine definencvar(ncid, idq, itype, idims, n, name, desc, unit, namecoord, 
    character(len=*), optional,intent(in   ) :: geometry !< (optional) Variable name of a geometry variable in the same dataset, used in the :geometry attribute.
    double precision, optional,intent(in   ) :: fillVal  !< Fill value that will be stored in the standard :_FillValue attribute
    logical,          optional,intent(in   ) :: add_gridmapping !< Whether or not to add a grid mapping attribute. Default: false.. Only use this if your coordinates in namecoord rely on this grid mapping.
-
+   type(nc_att_set), optional,intent(in   ) :: attset !< (optional) Set containing additional custom NetCDF attributes for this variable.
    integer                          :: ierr
    
    logical :: add_gridmapping_
@@ -17250,6 +17251,11 @@ subroutine definencvar(ncid, idq, itype, idims, n, name, desc, unit, namecoord, 
       end if
    end if
 
+   if (present(attset)) then
+      if (attset%count > 0) then
+         ierr = ncu_put_var_attset(ncid, idq, attset%atts(1:attset%count))
+      end if
+   end if
 
    end subroutine definencvar
 

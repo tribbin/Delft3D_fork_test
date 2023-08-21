@@ -82,7 +82,7 @@ subroutine unc_write_his(tim)            ! wrihis
     ! locals
     integer, save :: id_laydim , id_laydimw, &
                      id_statdim, id_strlendim, id_crsdim, id_crslendim, id_crsptsdim, id_timedim, &
-                     id_statx, id_staty, id_statid, id_statname, id_time, id_timestep, &
+                     id_statx, id_staty, id_stat_id, id_statname, id_time, id_timestep, &
                      id_statlon, id_statlat, id_crsname, &
                      id_vars, id_varucx, id_varucy, id_varucz, id_varsal, id_vartem, id_varsed, id_varrhop, id_varrho, id_bruv,  &
                      id_varQ, id_varQint, id_varb, id_varumag, id_varqmag,&
@@ -95,11 +95,11 @@ subroutine unc_write_his(tim)            ! wrihis
                      id_R, id_WH, id_WD, id_WL, id_WT, id_WU, id_hs, &
                      id_pumpdim,    id_pump_id,     id_pump_dis,     id_pump_cap,      id_pump_s1up,      id_pump_s1dn,     id_pump_head,      &
                      id_pump_xmid,  id_pump_ymid,   id_pump_struhead,id_pump_stage,    id_pump_redufact,  id_pump_s1del,    id_pump_s1suc,     id_pump_disdir, &
-                     id_gatedim,    id_gatename,    id_gate_dis,    id_gate_edgel,     id_gate_s1up,      id_gate_s1dn,    &                              ! id_gate_head,
-                     id_cdamdim,    id_cdamname,    id_cdam_dis,    id_cdam_crestl,    id_cdam_s1up,      id_cdam_s1dn,    &                              ! id_cdam_head,
+                     id_gatedim,    id_gate_id,    id_gate_dis,    id_gate_edgel,     id_gate_s1up,      id_gate_s1dn,    &                              ! id_gate_head,
+                     id_cdamdim,    id_cdam_id,    id_cdam_dis,    id_cdam_crestl,    id_cdam_s1up,      id_cdam_s1dn,    &                              ! id_cdam_head,
                      id_weirgendim,id_weirgendim_input, id_weirgen_id, id_weirgen_dis, id_weirgen_crestl, id_weirgen_crestw, id_weirgen_s1up,  id_weirgen_s1dn,  &        ! id_weirgen_head,
                      id_weir_stat,  id_weirgen_vel, id_weirgen_au,  id_weirgen_head,   id_weirgen_forcedif, id_weirgen_s1crest,               &
-                     id_gategendim, id_gategenname, id_gategen_dis, id_gategen_sillh,  id_gategen_sillw,  id_gategen_edgel, id_gategen_openw, &           ! id_gategen_head,
+                     id_gategendim, id_gategen_id, id_gategen_dis, id_gategen_sillh,  id_gategen_sillw,  id_gategen_edgel, id_gategen_openw, &           ! id_gategen_head,
                      id_gategen_flowh, id_gategen_s1up, id_gategen_s1dn,                                                                      &
                      id_genstrudim, id_genstru_id, id_genstru_dis, id_genstru_crestl, id_genstru_crestw, id_genstru_edgel, id_genstru_openw, &           ! id_genstru_head,
                      id_genstru_s1up, id_genstru_s1dn, id_genstru_dis_gate_open, id_genstru_dis_gate_over, id_genstru_dis_gate_under, id_genstru_openh, id_genstru_uppl,  &
@@ -132,9 +132,9 @@ subroutine unc_write_his(tim)            ! wrihis
     integer :: id_statgeom_node_count,        id_statgeom_node_coordx,        id_statgeom_node_coordy,    &
                                               id_statgeom_node_lon,           id_statgeom_node_lat,       &
                id_crsgeom_node_count,         id_crsgeom_node_coordx,         id_crsgeom_node_coordy,     &
-               id_weirgeom_input_node_count,  id_weirgeom_input_node_coordx,  id_weirgeom_input_node_coordy,&
-               id_weirgeom_node_count,        id_weirgeom_node_coordx,        id_weirgeom_node_coordy,    &
-               id_orifgeom_node_count,        id_orifgeom_node_coordx,        id_orifgeom_node_coordy,    &
+               id_weirgengeom_input_node_count, id_weirgengeom_input_node_coordx, id_weirgengeom_input_node_coordy,&
+               id_weirgengeom_node_count,     id_weirgengeom_node_coordx,     id_weirgengeom_node_coordy,    &
+               id_orifgengeom_node_count,     id_orifgengeom_node_coordx,     id_orifgengeom_node_coordy,    &
                id_genstrugeom_node_count,     id_genstrugeom_node_coordx,     id_genstrugeom_node_coordy, &
                id_uniweirgeom_node_count,     id_uniweirgeom_node_coordx,     id_uniweirgeom_node_coordy, &
                id_culvertgeom_node_count,     id_culvertgeom_node_coordx,     id_culvertgeom_node_coordy, &
@@ -267,10 +267,16 @@ subroutine unc_write_his(tim)            ! wrihis
             call mess(LEVEL_WARN, 'Could not create history file.')
         end if
 
+        !
+        ! Global metadata
+        !
         ierr = unc_meta_add_user_defined(ihisfile)
 
         ierr = unc_add_time_coverage(ihisfile, ti_hiss, ti_hise, ti_his)
 
+        !
+        ! General purpose dimensions
+        !
         !if (unc_nounlimited > 0) then ! UNST-4764: His file has never shown good results with NcNoUnlimited option on.
         ierr = nf90_def_dim(ihisfile, 'time', nf90_unlimited, id_timedim)
         ierr = nf90_def_dim(ihisfile, 'two', 2, id_twodim)
@@ -283,10 +289,33 @@ subroutine unc_write_his(tim)            ! wrihis
            ierr = nf90_def_dim(ihisfile, 'laydimw', kmx+1, id_laydimw)
         end if
 
+        !
+        ! Time
+        !
+        ierr = nf90_def_var(ihisfile, 'time', nf90_double, id_timedim, id_time)
+        ierr = nf90_put_att(ihisfile, id_time,  'units'        , trim(Tudunitstr))
+        ierr = nf90_put_att(ihisfile, id_time,  'standard_name', 'time')
+        ierr = nf90_put_att(ihisfile, id_time,  'bounds', 'time_bds')
+
+        ierr = nf90_def_var(ihisfile, 'time_bds', nf90_double, (/ id_twodim, id_timedim /), id_timebds)
+        ierr = nf90_put_att(ihisfile, id_timebds,  'units'        , trim(Tudunitstr))
+        ierr = nf90_put_att(ihisfile, id_timebds,  'standard_name', 'time')
+        ierr = nf90_put_att(ihisfile, id_timebds,  'long_name', 'Time interval for each point in time.')
+
+        ! Size of latest timestep
+        ierr = unc_def_var_nonspatial(ihisfile, id_timestep, nf90_double, (/ id_timedim /), 'timestep', '',     'latest computational timestep size in each output interval', 's')
+
+        !
+        ! Observation stations
+        !
         if (numobs+nummovobs > 0) then
             ierr = unc_addcoordmapping(ihisfile, jsferic)
             
-            ierr = nf90_def_dim(ihisfile, 'stations', numobs+nummovobs, id_statdim)
+            ierr = unc_def_his_structure_static_vars(ihisfile, 'station', 'station', 1, numobs+nummovobs, 'point', nNodeTot, id_strlendim, &
+                                                     id_statdim, id_stat_id, id_statgeom_node_count, id_statgeom_node_coordx, id_statgeom_node_coordy)
+            ierr = nf90_def_var(ihisfile, 'station_name',         nf90_char,   (/ id_strlendim, id_statdim /), id_statname)
+            ierr = nf90_put_att(ihisfile, id_statname,  'cf_role', 'timeseries_id')
+            ierr = nf90_put_att(ihisfile, id_statname,  'long_name'    , 'observation station name') ! REF
 
             if (nummovobs > 0) then
                ierr = nf90_def_var(ihisfile, 'station_x_coordinate', nf90_double, (/ id_statdim, id_timedim /), id_statx) ! TODO: AvD: decide on UNST-1606 (trajectory_id vs. timeseries_id)
@@ -308,815 +337,7 @@ subroutine unc_write_his(tim)            ! wrihis
 
                statcoordstring = trim(statcoordstring) // ' station_lon station_lat'
             end if
-
-            ierr = nf90_def_var(ihisfile, 'station_id',         nf90_char,   (/ id_strlendim, id_statdim /), id_statid)
-            ierr = nf90_put_att(ihisfile, id_statid,  'long_name'    , 'observation station identifier') ! REF
-
-            ierr = nf90_def_var(ihisfile, 'station_name',         nf90_char,   (/ id_strlendim, id_statdim /), id_statname)
-            ierr = nf90_put_att(ihisfile, id_statname,  'cf_role', 'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_statname,  'long_name'    , 'observation station name') ! REF
-
-            ! Define geometry related variables
-            station_geom_container_name = 'station_geom'
-            nNodeTot = numobs+nummovobs
-            ierr = sgeom_def_geometry_variables(ihisfile, station_geom_container_name, 'station', 'point', nNodeTot, id_statdim, &
-               id_statgeom_node_count, id_statgeom_node_coordx, id_statgeom_node_coordy, add_latlon, id_statgeom_node_lon, id_statgeom_node_lat)
-
-            if (.false.) then
-            if ( jahisbedlev > 0 ) then
-               if( stm_included ) then
-                  ierr = nf90_def_var(ihisfile, 'bedlevel', nf90_double, (/ id_statdim, id_timedim /), id_varb)
-               else
-                  ierr = nf90_def_var(ihisfile, 'bedlevel', nf90_double, (/ id_statdim /), id_varb)
-               endif
-               ierr = nf90_put_att(ihisfile, id_varb, 'long_name', 'bottom level')
-               ierr = nf90_put_att(ihisfile, id_varb, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_varb, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_varb, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_varb, '_FillValue', dmiss)
-            endif
-
-            idims(1) = id_statdim
-            idims(2) = id_timedim
-            if (jahiswatdep > 0) then
-               call definencvar(ihisfile,id_hs, nf90_double, idims, 2, 'waterdepth'  , 'water depth', 'm', statcoordstring, station_geom_container_name)
-            endif
-
-            if( jahisvelvec > 0 ) then
-               if ( kmx.gt.0 ) then
-                  ierr = nf90_def_var(ihisfile, 'x_velocity', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_varucx)
-                  ierr = nf90_put_att(ihisfile, id_varucx, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                  ierr = nf90_def_var(ihisfile, 'y_velocity', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_varucy)
-                  ierr = nf90_put_att(ihisfile, id_varucy, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                  ierr = nf90_def_var(ihisfile, 'z_velocity', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_varucz)
-                  ierr = nf90_put_att(ihisfile, id_varucz, 'standard_name', 'upward_sea_water_velocity')
-                  ierr = nf90_put_att(ihisfile, id_varucz, 'long_name', 'vertical/upward component of flow element center velocity vector') ! sorry for inland water people
-                  ierr = nf90_put_att(ihisfile, id_varucz, 'units', 'm s-1')
-                  ierr = nf90_put_att(ihisfile, id_varucz, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                  ierr = nf90_put_att(ihisfile, id_varucz, 'geometry', station_geom_container_name)
-                  ierr = nf90_put_att(ihisfile, id_varucz, '_FillValue', dmiss)
-                  jawrizc = 1
-                  ierr = nf90_def_var(ihisfile, 'depth-averaged_x_velocity', nf90_double, (/ id_statdim, id_timedim /), id_varucxq)
-                  ierr = nf90_put_att(ihisfile, id_varucxq, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_varucxq, 'standard_name', 'sea_water_depth-averaged_x_velocity')
-                  ierr = nf90_put_att(ihisfile, id_varucxq, 'long_name', 'flow element center depth-averaged velocity vector, x-component')
-                  ierr = nf90_put_att(ihisfile, id_varucxq, 'units', 'm s-1')
-                  ierr = nf90_put_att(ihisfile, id_varucxq, 'geometry', station_geom_container_name)
-                  ierr = nf90_put_att(ihisfile, id_varucxq, '_FillValue', dmiss)
-
-                  ierr = nf90_def_var(ihisfile, 'depth-averaged_y_velocity', nf90_double, (/ id_statdim, id_timedim /), id_varucyq)
-                  ierr = nf90_put_att(ihisfile, id_varucyq, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_varucyq, 'standard_name', 'sea_water_depth-averaged_y_velocity')
-                  ierr = nf90_put_att(ihisfile, id_varucyq, 'long_name', 'flow element center depth-averaged velocity vector, y-component')
-                  ierr = nf90_put_att(ihisfile, id_varucyq, 'units', 'm s-1')
-                  ierr = nf90_put_att(ihisfile, id_varucyq, 'geometry', station_geom_container_name)
-                  ierr = nf90_put_att(ihisfile, id_varucyq, '_FillValue', dmiss)
-               else
-                  ierr = nf90_def_var(ihisfile, 'x_velocity', nf90_double, (/ id_statdim, id_timedim /), id_varucx)
-                  ierr = nf90_put_att(ihisfile, id_varucx, 'coordinates', statcoordstring)
-                  ierr = nf90_def_var(ihisfile, 'y_velocity', nf90_double, (/ id_statdim, id_timedim /), id_varucy)
-                  ierr = nf90_put_att(ihisfile, id_varucy, 'coordinates', statcoordstring)
-               end if
-               ierr = nf90_put_att(ihisfile, id_varucx, 'standard_name', 'sea_water_x_velocity')
-               ierr = nf90_put_att(ihisfile, id_varucx, 'long_name', 'x-component of flow element center velocity vector')
-               ierr = nf90_put_att(ihisfile, id_varucx, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_varucx, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_varucx, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_varucy, 'standard_name', 'sea_water_y_velocity')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'long_name', 'y-component of flow element center velocity vector')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_varucy, '_FillValue', dmiss)
-            endif
-
-            if ( kmx.gt.0 ) then
-
-               !idims(1) = id_laydim
-               !idims(2) = id_statdim
-               !idims(3) = id_timedim
-               !call definencvar   (ihisfile, id_zcs, nf90_double, idims,3, 'zcoordinate_c' , 'vertical coordinate at center of flow element and layer'   , 'm',  'station_x_coordinate station_y_coordinate station_name zcoordinate_c')
-               !ierr = nf90_put_att(ihisfile, id_zcs, 'positive' , 'up')
-
-               idims(1) = id_laydimw
-               idims(2) = id_statdim
-               idims(3) = id_timedim
-               !call definencvar   (ihisfile, id_zws, nf90_double, idims,3, 'zcoordinate_w' , 'vertical coordinate at center of flow element and at layer interface'   , 'm',  'station_x_coordinate station_y_coordinate station_name zcoordinate_w')
-               !ierr = nf90_put_att(ihisfile, id_zws, 'positive' , 'up')
-
-               if (iturbulencemodel >= 3 .and. jahistur > 0) then
-                  call definencvar(ihisfile,id_turkin,nf90_double, idims,3, 'tke'   , 'turbulent kinetic energy'   , 'm2 s-2',  trim(statcoordstring) // ' zcoordinate_wu', station_geom_container_name, fillVal = dmiss)
-                  jawrizw = 1
-               endif
-               if (iturbulencemodel > 1 .and. jahistur > 0 ) then
-                  call definencvar(ihisfile,id_vicwwu,nf90_double, idims,3, 'vicww' , 'turbulent vertical eddy viscosity'    , 'm2 s-1' ,  trim(statcoordstring) // ' zcoordinate_wu', station_geom_container_name, fillVal = dmiss)
-                  ierr = nf90_put_att(ihisfile, id_turkin, 'standard_name', 'specific_turbulent_kinetic_energy_of_sea_water')
-                  jawrizw = 1
-               endif
-               if (iturbulencemodel == 3 .and. jahistur > 0) then
-                  call definencvar(ihisfile,id_tureps,nf90_double, idims,3, 'eps'   , 'turbulent energy dissipation', 'm2 s-3'  ,  trim(statcoordstring) // ' zcoordinate_wu', station_geom_container_name, fillVal = dmiss)
-                  ierr = nf90_put_att(ihisfile, id_tureps, 'standard_name', 'specific_turbulent_kinetic_energy_dissipation_in_sea_water')
-                  jawrizw = 1
-               else if (iturbulencemodel == 4 .and. jahistur > 0) then
-                  call definencvar(ihisfile,id_tureps,nf90_double, idims,3, 'tau'   , 'turbulent time scale', 's-1'  ,  trim(statcoordstring) // ' zcoordinate_wu', station_geom_container_name, fillVal = dmiss)
-                  jawrizw = 1
-               endif
-
-               if (jarichardsononoutput > 0) then
-                  call definencvar(ihisfile,id_rich,nf90_double, idims,3, 'rich' , 'Richardson Nr'    , '  ' ,  trim(statcoordstring) // ' zcoordinate_wu', station_geom_container_name, fillVal = dmiss)
-                  jawrizw = 1
-               end if
-
-            end if
-            if (jsferic == 0) then
-               ierr = nf90_put_att(ihisfile, id_varucx, 'standard_name', 'sea_water_x_velocity')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'standard_name', 'sea_water_y_velocity')
-            else
-               ierr = nf90_put_att(ihisfile, id_varucx, 'standard_name', 'eastward_sea_water_velocity')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'standard_name', 'northward_sea_water_velocity')
-            end if
-
-            if (jaeulervel==0) then
-               ierr = nf90_put_att(ihisfile, id_varucx, 'long_name', 'flow element center velocity vector, x-component')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'long_name', 'flow element center velocity vector, y-component')
-            else
-               ierr = nf90_put_att(ihisfile, id_varucx, 'long_name', 'flow element center Eulerian velocity vector, x-component')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'long_name', 'flow element center Eulerian velocity vector, y-component')
-            endif
-            ierr = nf90_put_att(ihisfile, id_varucx, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_varucy, 'units', 'm s-1')
-
-            if (kmx > 0) then
-               ierr = nf90_put_att(ihisfile, id_varucx, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-               ierr = nf90_put_att(ihisfile, id_varucy, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-            else
-               ierr = nf90_put_att(ihisfile, id_varucx, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_varucy, 'coordinates', statcoordstring)
-            end if
-
-            ierr = nf90_put_att(ihisfile, id_varucx, 'geometry', station_geom_container_name)
-            ierr = nf90_put_att(ihisfile, id_varucy, 'geometry', station_geom_container_name)
-            ierr = nf90_put_att(ihisfile, id_varucx, '_FillValue', dmiss)
-            ierr = nf90_put_att(ihisfile, id_varucy, '_FillValue', dmiss)
-
-
-            if (jasal > 0 .and. jahissal > 0) then
-               if ( kmx.gt.0 ) then
-                  ierr = nf90_def_var(ihisfile, 'salinity', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_varsal)
-                  ierr = nf90_put_att(ihisfile, id_varsal, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                  jawrizc = 1
-               else
-                  ierr = nf90_def_var(ihisfile, 'salinity', nf90_double, (/ id_statdim, id_timedim /), id_varsal)
-                  ierr = nf90_put_att(ihisfile, id_varsal, 'coordinates', statcoordstring)
-               end if
-               ierr = nf90_put_att(ihisfile, id_varsal, 'units', '1e-3')
-               ierr = nf90_put_att(ihisfile, id_varsal, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_varsal, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_varsal, 'standard_name', 'sea_water_salinity')
-            endif
-
-            if ( jahisvelocity > 0 ) then
-               if (kmx > 0) then
-                  ierr = nf90_def_var(ihisfile, 'velocity_magnitude', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_varumag)
-                  ierr = nf90_put_att(ihisfile, id_varumag, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-               else 
-                  ierr = nf90_def_var(ihisfile, 'velocity_magnitude', nf90_double, (/ id_statdim, id_timedim /), id_varumag)
-                  ierr = nf90_put_att(ihisfile, id_varumag, 'coordinates', statcoordstring)
-               endif
-               if (jaeulervel==0) then
-                  ierr = nf90_put_att(ihisfile, id_varumag, 'long_name', 'velocity magnitude')
-                  ierr = nf90_put_att(ihisfile, id_varumag, 'standard_name', 'sea_water_speed')
-               else
-                  ierr = nf90_put_att(ihisfile, id_varumag, 'standard_name', 'sea_water_eulerian_speed')
-                  ierr = nf90_put_att(ihisfile, id_varumag, 'long_name', 'Eulerian velocity magnitude')
-               end if
-               ierr = nf90_put_att(ihisfile, id_varumag, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_varumag, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_varumag, '_FillValue', dmiss)
-            endif
-
-            if ( jahisdischarge > 0 ) then
-               if (kmx > 0) then
-                  ierr = nf90_def_var(ihisfile, 'discharge_magnitude', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_varqmag)
-                  ierr = nf90_put_att(ihisfile, id_varqmag, 'coordinates', trim(statcoordstring))
-               else
-                  ierr = nf90_def_var(ihisfile, 'discharge_magnitude', nf90_double, (/ id_statdim, id_timedim /), id_varqmag)
-                  ierr = nf90_put_att(ihisfile, id_varqmag, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-               endif
-               
-               ierr = nf90_put_att(ihisfile, id_varqmag, 'standard_name', 'water_volume_transport_in_river_channel') 
-               ierr = nf90_put_att(ihisfile, id_varqmag, 'long_name', 'average discharge magnitude')
-               ierr = nf90_put_att(ihisfile, id_varqmag, 'units', 'm3 s-1')
-               ierr = nf90_put_att(ihisfile, id_varqmag, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_varqmag, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_varqmag, '_FillValue', dmiss)
-            endif
-
-
-!           JRE surfbeat
-            if (jawave .eq. 4) then
-
-               ierr = nf90_def_var(ihisfile, 'R',  nf90_double, ((/ id_statdim, id_timedim /)) , id_R)
-               ierr = nf90_put_att(ihisfile, id_R,   'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_R,   'standard_name', 'sea_surface_bulk_roller_energy')                          ! not CF
-               ierr = nf90_put_att(ihisfile, id_R,   'long_name'    , 'roller energy per square meter')
-               ierr = nf90_put_att(ihisfile, id_R,   'units'        , 'J m-2')
-               ierr = nf90_put_att(ihisfile, id_R, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_R, '_FillValue', dmiss)
-
-            end if
-
-            if (jawave > 0 .and. jahiswav > 0) then
-               ierr = nf90_def_var(ihisfile, 'hwav',  nf90_double, ((/ id_statdim, id_timedim /)) , id_WH)
-               ierr = nf90_put_att(ihisfile, id_WH,   'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_WH,   'standard_name', 'sea_surface_wave_significant_wave_height')     ! Default behaviour
-               ierr = nf90_put_att(ihisfile, id_WH,   'long_name'    , 'Significant wave height')
-               if (jahissigwav==0) then
-                  ierr = nf90_put_att(ihisfile, id_WH,   'standard_name', 'sea_surface_wave_rms_height')
-                  ierr = nf90_put_att(ihisfile, id_WH,   'long_name'    , 'Root mean square wave height based on wave energy')
-               end  if
-               ierr = nf90_put_att(ihisfile, id_WH,   'units'        , 'm')
-               ierr = nf90_put_att(ihisfile, id_WH, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_WH, '_FillValue', dmiss)
-
-               ierr = nf90_def_var(ihisfile, 'twav',  nf90_double, ((/ id_statdim, id_timedim /)) , id_WT)
-               ierr = nf90_put_att(ihisfile, id_WT,   'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_WT,   'standard_name', 'sea_surface_wave_period')
-               ierr = nf90_put_att(ihisfile, id_WT,   'long_name'    , 'Wave period')
-               ierr = nf90_put_att(ihisfile, id_WT,   'units'        , 's')
-               ierr = nf90_put_att(ihisfile, id_WT, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_WT, '_FillValue', dmiss)
-
-               ierr = nf90_def_var(ihisfile, 'phiwav',  nf90_double, ((/ id_statdim, id_timedim /)) , id_WD)
-               ierr = nf90_put_att(ihisfile, id_WD,   'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_WD,   'standard_name', 'sea_surface_wave_from_direction')
-               ierr = nf90_put_att(ihisfile, id_WD,   'long_name'    , 'Wave from direction')
-               ierr = nf90_put_att(ihisfile, id_WD,   'units'        , 'deg from N')
-               ierr = nf90_put_att(ihisfile, id_WD, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_WD, '_FillValue', dmiss)
-
-               ierr = nf90_def_var(ihisfile, 'rlabda',  nf90_double, ((/ id_statdim, id_timedim /)) , id_WL)
-               ierr = nf90_put_att(ihisfile, id_WL,   'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_WL,   'standard_name', 'sea_surface_wave_length')
-               ierr = nf90_put_att(ihisfile, id_WL,   'long_name'    , 'Wave length')
-               ierr = nf90_put_att(ihisfile, id_WL,   'units'        , 'm')
-               ierr = nf90_put_att(ihisfile, id_WL, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_WL, '_FillValue', dmiss)
-
-               ierr = nf90_def_var(ihisfile, 'uorb',  nf90_double, ((/ id_statdim, id_timedim /)) , id_WU)
-               ierr = nf90_put_att(ihisfile, id_WU,   'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_WU,   'standard_name', 'sea_surface_wave_orbital_velocity')
-               ierr = nf90_put_att(ihisfile, id_WU,   'long_name'    , 'Orbital velocity')
-               ierr = nf90_put_att(ihisfile, id_WU,   'units'        , 'm/s')
-               ierr = nf90_put_att(ihisfile, id_WU, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_WU, '_FillValue', dmiss)
-
-               if (.not. flowWithoutWaves) then
-                  if (kmx==0) then
-                      ierr = nf90_def_var(ihisfile, 'ustokes',  nf90_double, ((/ id_statdim, id_timedim /)) , id_USTX)
-                      ierr = nf90_put_att(ihisfile, id_USTX,   'coordinates'  , statcoordstring)
-                      ierr = nf90_def_var(ihisfile, 'vstokes',  nf90_double, ((/ id_statdim, id_timedim /)) , id_USTY)
-                      ierr = nf90_put_att(ihisfile, id_USTY,   'coordinates'  , statcoordstring)
-                  else
-                      ierr = nf90_def_var(ihisfile, 'ustokes',  nf90_double, ((/ id_laydim, id_statdim, id_timedim /)) , id_USTX)
-                      ierr = nf90_put_att(ihisfile, id_USTX,   'coordinates'  , trim(statcoordstring) // ' zcoordinate_c')
-                      ierr = nf90_def_var(ihisfile, 'vstokes',  nf90_double, ((/ id_laydim, id_statdim, id_timedim /)) , id_USTY)
-                      ierr = nf90_put_att(ihisfile, id_USTY,   'coordinates'  , trim(statcoordstring) // ' zcoordinate_c')
-                      jawrizc = 1
-                  endif
-                  
-                  ierr = nf90_put_att(ihisfile, id_USTX,   'standard_name', 'sea_surface_wave_stokes_drift_x')
-                  ierr = nf90_put_att(ihisfile, id_USTX,   'long_name'    , 'Stokes drift, x-component')
-                  ierr = nf90_put_att(ihisfile, id_USTX,   'units'        , 'm s-1')
-                  ierr = nf90_put_att(ihisfile, id_USTX, '_FillValue', dmiss)
-                  
-                  ierr = nf90_put_att(ihisfile, id_USTY,   'standard_name', 'sea_surface_wave_stokes_drift_y')
-                  ierr = nf90_put_att(ihisfile, id_USTY,   'long_name'    , 'Stokes drift, y-component')
-                  ierr = nf90_put_att(ihisfile, id_USTY,   'units'        , 'm s-1')
-                  ierr = nf90_put_att(ihisfile, id_USTY, '_FillValue', dmiss)
-               endif
-            endif
-
-            if (jahistaucurrent>0) then
-               
-               ierr = nf90_def_var(ihisfile, 'tausx',  nf90_double, ((/ id_statdim, id_timedim /)) , id_TAUX)
-               ierr = nf90_put_att(ihisfile, id_TAUX, 'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_TAUX, 'standard_name', 'mean_bottom_shear_stress vector, x-component')
-               ierr = nf90_put_att(ihisfile, id_TAUX, 'long_name'    , 'Mean bottom shear stress vector, x-component')
-               ierr = nf90_put_att(ihisfile, id_TAUX, 'units'        , 'Pa')
-               ierr = nf90_put_att(ihisfile, id_TAUX, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_TAUX, '_FillValue', dmiss)
-               
-               ierr = nf90_def_var(ihisfile, 'tausy',  nf90_double, ((/ id_statdim, id_timedim /)) , id_TAUY)
-               ierr = nf90_put_att(ihisfile, id_TAUY, 'coordinates'  , statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_TAUY, 'standard_name', 'mean_bottom_shear_stress vector, y-component')
-               ierr = nf90_put_att(ihisfile, id_TAUY, 'long_name'    , 'Mean bottom shear stress vector, y-component')
-               ierr = nf90_put_att(ihisfile, id_TAUY, 'units'        , 'Pa')
-               ierr = nf90_put_att(ihisfile, id_TAUY, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_TAUY, '_FillValue', dmiss)
-            endif
-
-            if (jatem > 0 .and. jahistem > 0) then
-               if ( kmx.gt.0 ) then
-                  ierr = nf90_def_var(ihisfile, 'temperature', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_vartem)
-                  ierr = nf90_put_att(ihisfile, id_vartem, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                  jawrizc = 1
-               else
-                  ierr = nf90_def_var(ihisfile, 'temperature', nf90_double, (/ id_statdim, id_timedim /), id_vartem)
-                  ierr = nf90_put_att(ihisfile, id_vartem, 'coordinates', statcoordstring)
-               end if
-               ierr = nf90_put_att(ihisfile, id_vartem, 'units', 'degC')
-               ierr = nf90_put_att(ihisfile, id_vartem, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_vartem, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_vartem, 'standard_name', 'sea_water_temperature')
-
-               if (jatem > 1 .and. jahisheatflux > 0) then ! here less verbose
-                  idims(1) = id_statdim
-                  idims(2) = id_timedim
-                  call definencvar(ihisfile,id_wind   ,nf90_double,idims,2, 'wind'  , 'windspeed', 'm s-1', statcoordstring, station_geom_container_name)
-                  call definencvar(ihisfile,id_tair   ,nf90_double,idims,2, 'Tair'  , 'air temperature', 'degC', statcoordstring, station_geom_container_name)
-                  if (jatem == 5) then
-                     call definencvar(ihisfile,id_rhum   ,nf90_double,idims,2, 'rhum'  , 'relative humidity', ' ',statcoordstring, station_geom_container_name)
-                     call definencvar(ihisfile,id_clou   ,nf90_double,idims,2, 'clou'  , 'cloudiness', ' ', statcoordstring, station_geom_container_name)
-
-                     call definencvar(ihisfile,id_qsun   ,nf90_double,idims,2, 'Qsun'  , 'solar influx', 'W m-2', statcoordstring, station_geom_container_name)
-                     call definencvar(ihisfile,id_Qeva   ,nf90_double,idims,2, 'Qeva'  , 'evaporative heat flux', 'W m-2', statcoordstring, station_geom_container_name)
-                     call definencvar(ihisfile,id_Qcon   ,nf90_double,idims,2, 'Qcon'  , 'sensible heat flux', 'W m-2', statcoordstring, station_geom_container_name)
-                     call definencvar(ihisfile,id_Qlong  ,nf90_double,idims,2, 'Qlong' , 'long wave back radiation', 'W m-2', statcoordstring, station_geom_container_name)
-                     call definencvar(ihisfile,id_Qfreva ,nf90_double,idims,2, 'Qfreva', 'free convection evaporative heat flux', 'W m-2', statcoordstring, station_geom_container_name)
-                     call definencvar(ihisfile,id_Qfrcon ,nf90_double,idims,2, 'Qfrcon', 'free convection sensible heat flux', 'W m-2', statcoordstring, station_geom_container_name)
-                  endif
-                  if (jatem > 1) then
-                     call definencvar(ihisfile,id_Qtot   ,nf90_double,idims,2, 'Qtot'  , 'total heat flux', 'W m-2', statcoordstring, station_geom_container_name)
-                  end if
-               endif
-            endif
-
-            if ((jasal > 0 .or. jatem > 0 .or. jased > 0) .and. jahisrho > 0) then
-               if ( kmx.gt.0 ) then
-                  idims(1) = id_laydim
-                  jawrizc = 1
-                  call definencvar(ihisfile,id_varrhop,nf90_double, idims,3,'potential_density'       , 'potential_density'         , 'kg m-3' ,  trim(statcoordstring) // ' zcoordinate_c', station_geom_container_name, fillVal = dmiss)
-                  if (idensform > 10) then 
-                  call definencvar(ihisfile,id_varrho ,nf90_double, idims,3,'density'                 , 'density'                   , 'kg m-3' ,  trim(statcoordstring) // ' zcoordinate_c', station_geom_container_name, fillVal = dmiss)
-                  endif
-                  idims(1) = id_laydimw
-                  call definencvar(ihisfile,id_bruv   ,nf90_double, idims,3,'Brunt_Vaisala_N2'  , 'Brunt_Vaisala_N2'  , '1/s2'   ,  trim(statcoordstring) // ' zcoordinate_w', station_geom_container_name, fillVal = dmiss)
-               else
-                  call definencvar(ihisfile,id_varrhop,nf90_double, idims,2,'potential_density'       , 'potential_density'         , 'kg m-3' ,  trim(statcoordstring)                    , station_geom_container_name, fillVal = dmiss)
-               end if  ! en misschien kan iemand de kmx > 0 repetitie ook in definencvar afvangen en // ' zcoordinate_c' en idims,3  automatisch maken voor kmx>0
-            endif
-
-            if (ITRA1 > 0 .and. jahisconst > 0) then
-               do j=ITRA1,ITRAN
-                  i = j-ITRA1+1  ! tracer nr
-
-                  tmpstr = const_names(j)
-                  ! Forbidden chars in NetCDF names: space, /, and more.
-                  call replace_char(tmpstr,32,95)
-
-                  if ( kmx > 0 ) then
-                     ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_tra(i))
-                     ierr = nf90_put_att(ihisfile, id_tra(i), 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                     jawrizc = 1
-                  else
-                     ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_statdim, id_timedim /), id_tra(i))
-                     ierr = nf90_put_att(ihisfile, id_tra(i), 'coordinates', statcoordstring)
-                  end if
-                  if (const_units(j).ne.' ') then
-                     tmpstr = const_units(j)
-                  else
-                     tmpstr = '-'
-                  endif
-                  ierr = nf90_put_att(ihisfile, id_tra(i), 'units', tmpstr)
-                  ierr = nf90_put_att(ihisfile, id_tra(i), 'geometry', station_geom_container_name)
-                  ierr = nf90_put_att(ihisfile, id_tra(i), '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_tra(i), 'long_name', const_names(j))
-               enddo
-            endif
-
-            if (numwqbots > 0) then
-               call realloc(id_hwqb, numwqbots, keepExisting = .false.)
-               do i=1,numwqbots
-                  tmpstr = wqbotnames(i)
-                  ! Forbidden chars in NetCDF names: space, /, and more.
-                  call replace_char(tmpstr,32,95)
-
-                  ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_statdim, id_timedim /), id_hwqb(i))
-                  ierr = nf90_put_att(ihisfile, id_hwqb(i), 'coordinates', statcoordstring)
-
-                  tmpstr = wqbotunits(i)
-                  ierr = nf90_put_att(ihisfile, id_hwqb(i), 'units', tmpstr)
-                  ierr = nf90_put_att(ihisfile, id_hwqb(i), 'geometry', station_geom_container_name)
-                  ierr = nf90_put_att(ihisfile, id_hwqb(i), '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_hwqb(i), 'long_name', wqbotnames(i))
-               enddo
-               if (wqbot3D_output == 1) then
-                  call realloc(id_hwqb3d, numwqbots, keepExisting = .false.)
-                  do i=1,numwqbots
-                     tmpstr = wqbotnames(i)
-                     ! Forbidden chars in NetCDF names: space, /, and more.
-                     call replace_char(tmpstr,32,95)
-
-                     ierr = nf90_def_var(ihisfile, trim(tmpstr)//'_3D', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_hwqb3d(i))
-                     ierr = nf90_put_att(ihisfile, id_hwqb3d(i), 'coordinates', statcoordstring)
-
-                     tmpstr = wqbotunits(i)
-                     ierr = nf90_put_att(ihisfile, id_hwqb3d(i), 'units', tmpstr)
-                     ierr = nf90_put_att(ihisfile, id_hwqb3d(i), 'geometry', station_geom_container_name)
-                     ierr = nf90_put_att(ihisfile, id_hwqb3d(i), '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_hwqb3d(i), 'long_name', trim(wqbotnames(i))//' (3D)')
-                  enddo
-            endif
-            endif
-
-!          waq output
-             if(jawaqproc > 0) then
-               if (noout_user > 0) then
-                  call realloc(id_hwq, noout_user, keepExisting = .false.)
-                  do j=1,noout_user
-                     tmpstr = ' '
-                     write (tmpstr, "('water_quality_output_',I0)") j
-                     if ( kmx > 0 ) then  !        3D
-                        ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_hwq(j))
-                        ierr = nf90_put_att(ihisfile, id_hwq(j), 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                     else
-                        ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_statdim, id_timedim /), id_hwq(j))
-                        ierr = nf90_put_att(ihisfile, id_hwq(j), 'coordinates', statcoordstring)
-                     end if
-                     tmpstr = trim(outputs%names(j))//' - '//trim(outputs%descrs(j))//' in flow element'
-                     call replace_multiple_spaces_by_single_spaces(tmpstr)
-                     ierr = nf90_put_att(ihisfile, id_hwq(j), '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_hwq(j), 'long_name', trim(outputs%names(j)))
-                     ierr = nf90_put_att(ihisfile, id_hwq(j), 'units', trim(outputs%units(j)))
-                     ierr = nf90_put_att(ihisfile, id_hwq(j), 'description', tmpstr)
-                     ierr = nf90_put_att(ihisfile, id_hwq(j), 'geometry', station_geom_container_name)
-                  enddo
-               endif
-               if (noout_statt > 0) then
-                  call realloc(id_hwq, noout_user + noout_statt, keepExisting = .true.)
-                  do j=1,noout_statt
-                     jj = noout_user + j
-                     tmpstr = ' '
-                     write (tmpstr, "('water_quality_stat_',I0)") j
-                     if ( kmx > 0 ) then  !        3D
-                        ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_hwq(jj))
-                        ierr = nf90_put_att(ihisfile, id_hwq(jj), 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                     else
-                        ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_statdim, id_timedim /), id_hwq(jj))
-                        ierr = nf90_put_att(ihisfile, id_hwq(jj), 'coordinates', statcoordstring)
-                     end if
-                     tmpstr = trim(outputs%names(jj))//' - '//trim(outputs%descrs(jj))//' in flow element'
-                     call replace_multiple_spaces_by_single_spaces(tmpstr)
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'long_name', trim(outputs%names(jj)))
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'units', trim(outputs%units(jj)))
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'description', tmpstr)
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'geometry', station_geom_container_name)
-                  enddo
-               endif
-               if (noout_state> 0) then
-                  call realloc(id_hwq, noout, keepExisting = .true.)
-                  do j=1,noout_state
-                     jj = noout_user + noout_statt + j
-                     tmpstr = ' '
-                     write (tmpstr, "('water_quality_stat_',I0)") noout_statt + j
-                     if ( kmx > 0 ) then  !        3D
-                        ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_laydim, id_statdim /), id_hwq(jj))
-                        ierr = nf90_put_att(ihisfile, id_hwq(jj), 'coordinates', statcoordstring)
-                     else
-                        ierr = nf90_def_var(ihisfile, trim(tmpstr), nf90_double, (/ id_statdim /), id_hwq(jj))
-                        ierr = nf90_put_att(ihisfile, id_hwq(jj), 'coordinates', statcoordstring)
-                     end if
-                     tmpstr = trim(outputs%names(jj))//' - '//trim(outputs%descrs(jj))//' in flow element'
-                     call replace_multiple_spaces_by_single_spaces(tmpstr)
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'long_name', trim(outputs%names(jj)))
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'units', trim(outputs%units(jj)))
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'description', tmpstr)
-                     ierr = nf90_put_att(ihisfile, id_hwq(jj), 'geometry', station_geom_container_name)
-                  enddo
-               endif
-            endif
-
-            if (stm_included .and. ISED1 > 0 .and. jahissed > 0) then
-               ! New implementation, sedsus fraction is additional dimension
-               ierr = nf90_def_dim(ihisfile, 'nSedTot', stmpar%lsedtot, id_sedtotdim)
-               ierr = nf90_def_dim(ihisfile, 'nSedSus', stmpar%lsedsus, id_sedsusdim)
-               !
-               ierr = nf90_def_var(ihisfile, 'sedfrac_name', nf90_char, (/ id_strlendim, id_sedtotdim /), id_frac_name)
-               ierr = nf90_put_att(ihisfile, id_frac_name,'long_name', 'sediment fraction identifier')
-               !
-               if (kmx>0) then
-                  ierr = nf90_def_var(ihisfile, 'sed', nf90_double, (/  id_laydim, id_statdim, id_sedsusdim, id_timedim /), id_sf)
-                  ierr = nf90_def_var(ihisfile, 'ws', nf90_double, (/  id_laydimw, id_statdim, id_sedsusdim, id_timedim /), id_ws)
-                  ierr = nf90_def_var(ihisfile, 'seddif', nf90_double, (/  id_laydimw, id_statdim, id_sedsusdim, id_timedim /), id_seddif)
-                  ierr = nf90_put_att(ihisfile, id_seddif, 'long_name', 'Sediment vertical diffusion')
-                  ierr = nf90_put_att(ihisfile, id_seddif, 'units', 'm2 s-1')
-                  ierr = nf90_put_att(ihisfile, id_seddif, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_seddif, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_seddif, 'geometry', station_geom_container_name)
-                  !
-                  jawrizc = 1
-                  jawrizw = 1
-               else
-                  ierr = nf90_def_var(ihisfile, 'sed', nf90_double, (/  id_statdim, id_sedsusdim, id_timedim /), id_sf)
-                  ierr = nf90_def_var(ihisfile, 'ws', nf90_double, (/ id_statdim, id_sedsusdim, id_timedim /), id_ws)
-               endif
-               !
-               ierr = nf90_put_att(ihisfile, id_sf, 'long_name', 'Sediment concentration')
-               ierr = nf90_put_att(ihisfile, id_sf, 'units', 'kg m-3')
-               ierr = nf90_put_att(ihisfile, id_sf, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_sf, 'geometry', station_geom_container_name)
-               !
-               ierr = nf90_put_att(ihisfile, id_ws, 'long_name', 'Sediment settling velocity')
-               ierr = nf90_put_att(ihisfile, id_ws, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_ws, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_ws, 'geometry', station_geom_container_name)
-               !
-            endif
-            !
-            ! Sediment transports
-            !
-            if (jased > 0 .and. stm_included .and. jahissed > 0) then
-               !
-               if (stmpar%morpar%moroutput%taub) then
-                  ierr = nf90_def_var(ihisfile, 'taub', nf90_double, (/ id_statdim, id_timedim /), id_taub)
-                  ierr = nf90_put_att(ihisfile, id_taub, 'long_name', 'Bed shear stress for morphology')
-                  ierr = nf90_put_att(ihisfile, id_taub, 'units', 'Pa')
-                  ierr = nf90_put_att(ihisfile, id_taub, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_taub, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_taub, 'geometry', station_geom_container_name)
-               endif
-               !
-               select case(stmpar%morpar%moroutput%transptype)
-                  case (0)
-                     transpunit = 'kg s-1 m-1'
-                  case (1)
-                     transpunit = 'm3 s-1 m-1'
-                  case (2)
-                     transpunit = 'm3 s-1 m-1'
-               end select
-               !
-               if (stmpar%morpar%moroutput%sbcuv) then
-                  ierr = nf90_def_var(ihisfile, 'sbcx', nf90_double, (/  id_statdim, id_sedtotdim, id_timedim /), id_sbcx)
-                  ierr = nf90_put_att(ihisfile, id_sbcx, 'long_name', 'Current related bedload transport, x-component')
-                  ierr = nf90_put_att(ihisfile, id_sbcx, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sbcx, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sbcx, 'geometry', station_geom_container_name)
-                  ierr = nf90_def_var(ihisfile, 'sbcy', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_sbcy)
-                  ierr = nf90_put_att(ihisfile, id_sbcy, 'long_name', 'Current related bedload transport, y-component')
-                  ierr = nf90_put_att(ihisfile, id_sbcy, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sbcy, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sbcy, 'geometry', station_geom_container_name)
-               endif
-               if (stmpar%morpar%moroutput%sbwuv .and. jawave>0 .and. .not. flowWithoutWaves) then
-                  ierr = nf90_def_var(ihisfile, 'sbwx', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_sbwx)
-                  ierr = nf90_put_att(ihisfile, id_sbwx, 'long_name', 'Wave related bedload transport, x-component')
-                  ierr = nf90_put_att(ihisfile, id_sbwx, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sbwx, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sbwx, 'geometry', station_geom_container_name)
-                  ierr = nf90_def_var(ihisfile, 'sbwy', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_sbwy)
-                  ierr = nf90_put_att(ihisfile, id_sbwy, 'long_name', 'Wave related bedload transport, y-component')
-                  ierr = nf90_put_att(ihisfile, id_sbwy, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sbwy, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sbwy, 'geometry', station_geom_container_name)
-               endif
-               if (stmpar%morpar%moroutput%sswuv .and. jawave>0 .and. .not. flowWithoutWaves) then
-                  ierr = nf90_def_var(ihisfile, 'sswx', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_sswx)
-                  ierr = nf90_put_att(ihisfile, id_sswx, 'long_name', 'Wave related suspended transport, x-component')
-                  ierr = nf90_put_att(ihisfile, id_sswx, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sswx, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sswx, 'geometry', station_geom_container_name)
-                  ierr = nf90_def_var(ihisfile, 'sswy', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_sswy)
-                  ierr = nf90_put_att(ihisfile, id_sswy, 'long_name', 'Wave related suspended transport, y-component')
-                  ierr = nf90_put_att(ihisfile, id_sswy, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sswy, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sswy, 'geometry', station_geom_container_name)
-               end if
-               if (stmpar%morpar%moroutput%sscuv) then
-                  ierr = nf90_def_var(ihisfile, 'sscx', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_sscx)
-                  ierr = nf90_put_att(ihisfile, id_sscx, 'long_name', 'Current related suspended transport, x-component')
-                  ierr = nf90_put_att(ihisfile, id_sscx, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sscx, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sscx, 'geometry', station_geom_container_name)
-                  ierr = nf90_def_var(ihisfile, 'sscy', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_sscy)
-                  ierr = nf90_put_att(ihisfile, id_sscy, 'long_name', 'Current related suspended transport, y-component')
-                  ierr = nf90_put_att(ihisfile, id_sscy, 'units', transpunit)
-                  ierr = nf90_put_att(ihisfile, id_sscy, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sscy, 'geometry', station_geom_container_name)
-               endif
-               !
-               ! Source and sink terms
-               !
-               if (stmpar%morpar%moroutput%sourcesink) then
-                  ierr = nf90_def_var(ihisfile, 'sourse', nf90_double, (/ id_statdim, id_sedsusdim, id_timedim /), id_sour)
-                  ierr = nf90_put_att(ihisfile, id_sour, 'long_name', 'Source term suspended sediment transport')
-                  ierr = nf90_put_att(ihisfile, id_sour, 'units', 'kg m-3 s-1')
-                  ierr = nf90_put_att(ihisfile, id_sour, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sour, 'geometry', station_geom_container_name)
-
-                  ierr = nf90_def_var(ihisfile, 'sinkse', nf90_double, (/ id_statdim, id_sedsusdim, id_timedim /), id_sink)
-                  ierr = nf90_put_att(ihisfile, id_sink, 'long_name', 'Sink term suspended sediment transport')
-                  ierr = nf90_put_att(ihisfile, id_sink, 'units', 's-1')
-                  ierr = nf90_put_att(ihisfile, id_sink, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sink, 'geometry', station_geom_container_name)
-               endif
-               !
-               ! Bed composition variables
-               !
-               select case (stmpar%morlyr%settings%iunderlyr)
-                  case (1)
-                     ierr = nf90_def_var(ihisfile, 'bodsed', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_bodsed)
-                     ierr = nf90_put_att(ihisfile, id_bodsed, 'long_name', 'Available sediment mass in the bed')
-                     ierr = nf90_put_att(ihisfile, id_bodsed, 'units', 'kg m-2')
-                     ierr = nf90_put_att(ihisfile, id_bodsed, '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_bodsed, 'coordinates', statcoordstring)
-                     ierr = nf90_put_att(ihisfile, id_bodsed, 'geometry', station_geom_container_name)
-                     !
-                     ierr = nf90_def_var(ihisfile, 'dpsed', nf90_double, (/ id_statdim, id_timedim /), id_dpsed)
-                     ierr = nf90_put_att(ihisfile, id_dpsed, 'long_name', 'Sediment thickness in the bed')
-                     ierr = nf90_put_att(ihisfile, id_dpsed, 'units', 'm')
-                     ierr = nf90_put_att(ihisfile, id_dpsed, '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_dpsed, 'coordinates', statcoordstring)
-                     ierr = nf90_put_att(ihisfile, id_dpsed, 'geometry', station_geom_container_name)
-                  case (2)
-                     ierr = nf90_def_dim(ihisfile, 'nBedLayers', stmpar%morlyr%settings%nlyr, id_nlyrdim)
-                     !
-                     ierr = nf90_def_var(ihisfile, 'msed', nf90_double, (/ id_nlyrdim, id_statdim, id_sedtotdim, id_timedim /), id_msed)
-                     ierr = nf90_put_att(ihisfile, id_msed, 'long_name', 'Available sediment mass in a layer of the bed')
-                     ierr = nf90_put_att(ihisfile, id_msed, 'units', 'kg m-2')
-                     ierr = nf90_put_att(ihisfile, id_msed, '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_msed, 'coordinates', statcoordstring)
-                     ierr = nf90_put_att(ihisfile, id_msed, 'geometry', station_geom_container_name)
-                     !
-                     ierr = nf90_def_var(ihisfile, 'thlyr', nf90_double, (/ id_nlyrdim, id_statdim, id_timedim /), id_thlyr)
-                     ierr = nf90_put_att(ihisfile, id_thlyr, 'long_name', 'Thickness of a layer of the bed')
-                     ierr = nf90_put_att(ihisfile, id_thlyr, 'units', 'm')
-                     ierr = nf90_put_att(ihisfile, id_thlyr, '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_thlyr, 'coordinates', statcoordstring)
-                     ierr = nf90_put_att(ihisfile, id_thlyr, 'geometry', station_geom_container_name)
-                     !
-                     if (stmpar%morlyr%settings%iporosity>0) then
-                        ierr = nf90_def_var(ihisfile, 'poros', nf90_double, (/ id_nlyrdim, id_statdim, id_timedim /), id_poros)
-                        ierr = nf90_put_att(ihisfile, id_poros, 'long_name', 'Porosity of a layer of the bed')
-                        ierr = nf90_put_att(ihisfile, id_poros, 'units', '-')
-                        ierr = nf90_put_att(ihisfile, id_poros, '_FillValue', dmiss)
-                        ierr = nf90_put_att(ihisfile, id_poros, 'coordinates', statcoordstring)
-                        ierr = nf90_put_att(ihisfile, id_poros, 'geometry', station_geom_container_name)
-            endif
-            !
-                     ierr = nf90_def_var(ihisfile, 'lyrfrac', nf90_double, (/ id_nlyrdim, id_statdim,  id_sedtotdim, id_timedim /), id_lyrfrac)
-                     ierr = nf90_put_att(ihisfile, id_lyrfrac, 'long_name', 'Volume fraction in a layer of the bed')
-                     ierr = nf90_put_att(ihisfile, id_lyrfrac, 'units', 'm')
-                     ierr = nf90_put_att(ihisfile, id_lyrfrac, '_FillValue', dmiss)
-                     ierr = nf90_put_att(ihisfile, id_lyrfrac, 'coordinates', statcoordstring)
-                     ierr = nf90_put_att(ihisfile, id_lyrfrac, 'geometry', station_geom_container_name)
-               end select
-		         !
-		         if (stmpar%morpar%moroutput%frac) then
-                  ierr = nf90_def_var(ihisfile, 'frac', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_frac)
-                  ierr = nf90_put_att(ihisfile, id_frac, 'long_name', 'Availability fraction in top layer')
-                  ierr = nf90_put_att(ihisfile, id_frac, 'units', '-')
-                  ierr = nf90_put_att(ihisfile, id_frac, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_frac, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_frac, 'geometry', station_geom_container_name)
-               endif
-               !
-               if (stmpar%morpar%moroutput%mudfrac) then
-                  ierr = nf90_def_var(ihisfile, 'mudfrac', nf90_double, (/ id_statdim, id_timedim /), id_mudfrac)
-                  ierr = nf90_put_att(ihisfile, id_mudfrac, 'long_name', 'Mud fraction in top layer')
-                  ierr = nf90_put_att(ihisfile, id_mudfrac, 'units', '-')
-                  ierr = nf90_put_att(ihisfile, id_mudfrac, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_mudfrac, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_mudfrac, 'geometry', station_geom_container_name)
-               endif
-               !
-               if (stmpar%morpar%moroutput%sandfrac) then
-                  ierr = nf90_def_var(ihisfile, 'sandfrac', nf90_double, (/ id_statdim, id_timedim /), id_sandfrac)
-                  ierr = nf90_put_att(ihisfile, id_sandfrac, 'long_name', 'Sand fraction in top layer')
-                  ierr = nf90_put_att(ihisfile, id_sandfrac, 'units', '-')
-                  ierr = nf90_put_att(ihisfile, id_sandfrac, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_sandfrac, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_sandfrac, 'geometry', station_geom_container_name)
-               endif
-               !
-               if (stmpar%morpar%moroutput%fixfac) then
-                  ierr = nf90_def_var(ihisfile, 'fixfac', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_fixfac)
-                  ierr = nf90_put_att(ihisfile, id_fixfac, 'long_name', 'Reduction factor due to limited sediment thickness')
-                  ierr = nf90_put_att(ihisfile, id_fixfac, 'units', '-')
-                  ierr = nf90_put_att(ihisfile, id_fixfac, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_fixfac, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_fixfac, 'geometry', station_geom_container_name)
-               endif
-               !
-               if (stmpar%morpar%moroutput%hidexp) then
-                  ierr = nf90_def_var(ihisfile, 'hidexp', nf90_double, (/ id_statdim, id_sedtotdim, id_timedim /), id_hidexp)
-                  ierr = nf90_put_att(ihisfile, id_hidexp, 'long_name', 'Hiding and exposure factor')
-                  ierr = nf90_put_att(ihisfile, id_hidexp, 'units', '-')
-                  ierr = nf90_put_att(ihisfile, id_hidexp, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_hidexp, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_hidexp, 'geometry', station_geom_container_name)
-               endif
-               !
-               if (stmpar%morpar%flufflyr%iflufflyr>0 .and. stmpar%lsedsus>0) then
-                  ierr = nf90_def_var(ihisfile, 'mfluff', nf90_double, (/ id_statdim, id_sedsusdim, id_timedim /), id_mfluff)
-                  ierr = nf90_put_att(ihisfile, id_mfluff, 'long_name', 'Sediment mass in fluff layer')
-                  ierr = nf90_put_att(ihisfile, id_mfluff, 'units', '-')
-                  ierr = nf90_put_att(ihisfile, id_mfluff, '_FillValue', dmiss)
-                  ierr = nf90_put_att(ihisfile, id_mfluff, 'coordinates', statcoordstring)
-                  ierr = nf90_put_att(ihisfile, id_mfluff, 'geometry', station_geom_container_name)
-               end if
-            endif
-            !
-            if (jased > 0 .and. .not. stm_included .and. jahissed > 0) then
-               if ( kmx.gt.0 ) then
-                  ierr = nf90_def_var(ihisfile, 'sediment_concentration', nf90_double, (/ id_laydim, id_statdim, id_timedim /), id_varsed)
-                  ierr = nf90_put_att(ihisfile, id_varsed, 'coordinates', trim(statcoordstring) // ' zcoordinate_c')
-                  jawrizc = 1
-               else
-                  ierr = nf90_def_var(ihisfile, 'sediment_concentration', nf90_double, (/ id_statdim, id_timedim /), id_varsed)
-                  ierr = nf90_put_att(ihisfile, id_varsed, 'coordinates', statcoordstring)
-               end if
-               ierr = nf90_put_att(ihisfile, id_varsed, 'units', 'kg m-3')
-               ierr = nf90_put_att(ihisfile, id_varsed, 'geometry', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_varsed, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_varsed, 'long_name', 'sediment_concentration')
-            endif
-
-            if (japatm > 0 .and. jahiswind > 0) then
-               call definencvar(ihisfile,id_varpatm   ,nf90_double,(/ id_statdim, id_timedim /),2, 'patm'  , 'atmospheric pressure', 'N m-2', statcoordstring, station_geom_container_name)
-            endif
-
-            if (jawind > 0 .and. jahiswind > 0) then
-               ierr = nf90_def_var(ihisfile, 'windx', nf90_double, (/ id_statdim, id_timedim /), id_varwx)
-               ierr = nf90_put_att(ihisfile, id_varwx, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_varwx, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_varwx, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_varwx, 'geometry', station_geom_container_name)
-               ierr = nf90_def_var(ihisfile, 'windy', nf90_double, (/ id_statdim, id_timedim /), id_varwy)
-               ierr = nf90_put_att(ihisfile, id_varwy, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_varwy, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_varwy, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_varwy, 'geometry', station_geom_container_name)
-               if (jsferic == 0) then
-                  ierr = nf90_put_att(ihisfile, id_varwx, 'standard_name', 'x_wind')
-                  ierr = nf90_put_att(ihisfile, id_varwy, 'standard_name', 'y_wind')
-               else
-                  ierr = nf90_put_att(ihisfile, id_varwx, 'standard_name', 'eastward_wind')
-                  ierr = nf90_put_att(ihisfile, id_varwy, 'standard_name', 'northward_wind')
-               end if
-               ierr = nf90_put_att(ihisfile, id_varwx, 'long_name', 'velocity of air on flow element center, x-component')
-               ierr = nf90_put_att(ihisfile, id_varwy, 'long_name', 'velocity of air on flow element center, y-component')
-            endif
-
-            if (jarain > 0 .and. jahisrain > 0) then
-               ierr = nf90_def_var(ihisfile, 'rain', nf90_double, (/ id_statdim, id_timedim /), id_varrain)
-               ierr = nf90_put_att(ihisfile, id_varrain, 'units', 'mm day-1')
-               ierr = nf90_put_att(ihisfile, id_varrain, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_varrain, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_varrain, 'standard_name', 'lwe_precipitation_rate')
-               ierr = nf90_put_att(ihisfile, id_varrain, 'long_name', 'precipitation depth per time unit')
-               ierr = nf90_put_att(ihisfile, id_varrain, 'geometry', station_geom_container_name)
-            endif
-
-            if ((infiltrationmodel == DFM_HYD_INFILT_CONST .or. infiltrationmodel == DFM_HYD_INFILT_HORTON) .and. jahisinfilt > 0) then
-               ierr = nf90_def_var(ihisfile, 'infiltration_cap', nf90_double, (/ id_statdim, id_timedim /), id_infiltcap)
-               ierr = nf90_put_att(ihisfile, id_infiltcap, 'units', 'mm hr-1')
-               ierr = nf90_put_att(ihisfile, id_infiltcap, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_infiltcap, 'coordinates', statcoordstring)
-               !ierr = nf90_put_att(ihisfile, id_infiltcap, 'standard_name', 'infiltration_rate)
-               ierr = nf90_put_att(ihisfile, id_infiltcap, 'long_name', 'Infiltration capacity')
-               ierr = nf90_put_att(ihisfile, id_infiltcap, 'geometry', station_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'infiltration_actual', nf90_double, (/ id_statdim, id_timedim /), id_infiltact)
-               ierr = nf90_put_att(ihisfile, id_infiltact, 'units', 'mm hr-1')
-               ierr = nf90_put_att(ihisfile, id_infiltact, '_FillValue', dmiss)
-               ierr = nf90_put_att(ihisfile, id_infiltact, 'coordinates', statcoordstring)
-               ierr = nf90_put_att(ihisfile, id_infiltact, 'long_name', 'Actual infiltration rate')
-               ierr = nf90_put_att(ihisfile, id_infiltact, 'geometry', station_geom_container_name)
-            endif
-
-            if (kmx.gt.0 .and. jawrizc == 1) then
-               idims(1) = id_laydim
-               idims(2) = id_statdim
-               idims(3) = id_timedim
-               call definencvar   (ihisfile, id_zcs, nf90_double, idims,3, 'zcoordinate_c' , 'vertical coordinate at center of flow element and layer'   , 'm',  'station_x_coordinate station_y_coordinate station_name zcoordinate_c', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_zcs, 'positive' , 'up')
-               ierr = nf90_put_att(ihisfile, id_zcs, '_FillValue' , dmiss)
-            endif
-            if (kmx.gt.0 .and. jawrizw == 1) then
-               idims(1) = id_laydimw
-               idims(2) = id_statdim
-               idims(3) = id_timedim
-               call definencvar   (ihisfile, id_zws, nf90_double, idims,3, 'zcoordinate_w' , 'vertical coordinate at centre of flow element and at layer interface'   , 'm',  'station_x_coordinate station_y_coordinate station_name zcoordinate_w', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_zws, 'positive' , 'up')
-               ierr = nf90_put_att(ihisfile, id_zws, '_FillValue' , dmiss)
-               call definencvar   (ihisfile, id_zwu, nf90_double, idims,3, 'zcoordinate_wu' , 'vertical coordinate at edge of flow element and at layer interface'   , 'm',  'station_x_coordinate station_y_coordinate station_name zcoordinate_wu', station_geom_container_name)
-               ierr = nf90_put_att(ihisfile, id_zwu, 'positive' , 'up')
-               ierr = nf90_put_att(ihisfile, id_zwu, '_FillValue' , dmiss)
-            endif
         end if
-        endif ! (.false.)
 
         if (ncrs > 0) then
             mnp = 0
@@ -1350,14 +571,6 @@ subroutine unc_write_his(tim)            ! wrihis
            ntmp = ngenstru
         end if
         if(jahiscgen > 0 .and. ntmp > 0) then
-
-            ierr = nf90_def_dim(ihisfile, 'general_structures', ntmp, id_genstrudim)
-            ierr = nf90_def_var(ihisfile, 'general_structure_id',  nf90_char,   (/ id_strlendim, id_genstrudim /), id_genstru_id)
-            ierr = nf90_put_att(ihisfile, id_genstru_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_id,  'long_name', 'Id of general structure'    )
-
-            ! Define geometry related variables
-            genstru_geom_container_name = 'general_structure_geom'
             nNodeTot = 0
             if (network%sts%numGeneralStructures > 0) then ! new general structure
                nNodeTot = nNodesGenstru
@@ -1373,168 +586,9 @@ subroutine unc_write_his(tim)            ! wrihis
                   nNodeTot = nNodeTot + nNodes
                end do
             end if
-
-            ierr = sgeom_def_geometry_variables(ihisfile, genstru_geom_container_name, 'general_structure', 'line', nNodeTot, id_genstrudim, &
-               id_genstrugeom_node_count, id_genstrugeom_node_coordx, id_genstrugeom_node_coordy)
-
-
-            if (.false.) then
-            ierr = nf90_def_var(ihisfile, 'general_structure_discharge',     nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_dis)
-            !ierr = nf90_put_att(ihisfile, id_genstru_dis, 'standard_name', 'integral_of_discharge_wrt_time') ! TODO: introduce time windows in nc
-            ierr = nf90_put_att(ihisfile, id_genstru_dis, 'long_name', 'Total discharge through general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_genstru_dis, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_dis, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_crest_level', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_crestl)
-            !ierr = nf90_put_att(ihisfile, id_genstru_crestl, 'standard_name', 'cgen_crest_level')
-            ierr = nf90_put_att(ihisfile, id_genstru_crestl, 'long_name', 'Crest level of general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_crestl, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_genstru_crestl, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_crestl, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_gate_lower_edge_level', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_edgel)
-            ierr = nf90_put_att(ihisfile, id_genstru_edgel, 'long_name', 'Gate lower edge level of general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_edgel, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_genstru_edgel, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_edgel, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_gate_opening_width', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_openw)
-            ierr = nf90_put_att(ihisfile, id_genstru_openw, 'long_name', 'Gate opening width of general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_openw, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_genstru_openw, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_openw, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_s1up',     nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_s1up)
-            ierr = nf90_put_att(ihisfile, id_genstru_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1up, 'long_name', 'Water level upstream of general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1up, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1up, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_s1dn',     nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_s1dn)
-            ierr = nf90_put_att(ihisfile, id_genstru_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1dn, 'long_name', 'Water level downstream of general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1dn, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_s1dn, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_head', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_head)
-            ierr = nf90_put_att(ihisfile, id_genstru_head, 'long_name', 'Head difference across general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_genstru_head, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_head, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_flow_area', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_au)
-            ierr = nf90_put_att(ihisfile, id_genstru_au, 'long_name', 'Flow area at general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_genstru_au, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_au, 'geometry', genstru_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'general_structure_velocity', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_vel)
-            ierr = nf90_put_att(ihisfile, id_genstru_vel, 'long_name', 'Velocity through general structure')
-            ierr = nf90_put_att(ihisfile, id_genstru_vel, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_genstru_vel, 'coordinates', 'general_structure_id')
-            ierr = nf90_put_att(ihisfile, id_genstru_vel, 'geometry', genstru_geom_container_name)
-
-            if (network%sts%numGeneralStructures > 0) then ! write extra fields for new general structure
-               ierr = nf90_def_var(ihisfile, 'general_structure_crest_width', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_crestw)
-               ierr = nf90_put_att(ihisfile, id_genstru_crestw, 'long_name', 'Crest width of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_crestw, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_genstru_crestw, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_crestw, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_discharge_through_gate_opening', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_dis_gate_open)
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_open, 'long_name', 'Discharge through gate opening of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_open, 'units', 'm3 s-1')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_open, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_open, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_discharge_over_gate', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_dis_gate_over)
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_over, 'long_name', 'Discharge over gate of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_over, 'units', 'm3 s-1')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_over, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_over, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_discharge_under_gate', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_dis_gate_under)
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_under, 'long_name', 'Discharge under gate of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_under, 'units', 'm3 s-1')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_under, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_dis_gate_under, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_gate_opening_height', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_openh)
-               ierr = nf90_put_att(ihisfile, id_genstru_openh, 'long_name', 'Gate opening height of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_openh, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_genstru_openh, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_openh, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_gate_upper_edge_level', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_uppl)
-               ierr = nf90_put_att(ihisfile, id_genstru_uppl, 'long_name', 'Gate upper edge level of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_uppl, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_genstru_uppl, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_uppl, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_velocity_through_gate_opening', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_velgateopen)
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateopen, 'long_name', 'Velocity through gate opening of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateopen, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateopen, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateopen, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_velocity_over_gate', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_velgateover)
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateover, 'long_name', 'Velocity over gate of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateover, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateover, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateover, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_velocity_under_gate', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_velgateunder)
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateunder, 'long_name', 'Velocity under gate of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateunder, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateunder, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_velgateunder, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_flow_area_in_gate_opening', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_au_open)
-               ierr = nf90_put_att(ihisfile, id_genstru_au_open, 'long_name', 'Flow area in gate opening of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_open, 'units', 'm2')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_open, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_open, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_flow_area_over_gate', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_au_over)
-               ierr = nf90_put_att(ihisfile, id_genstru_au_over, 'long_name', 'Flow area over gate of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_over, 'units', 'm2')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_over, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_over, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_flow_area_under_gate', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_au_under)
-               ierr = nf90_put_att(ihisfile, id_genstru_au_under, 'long_name', 'Flow area under gate of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_under, 'units', 'm2')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_under, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_au_under, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_state', nf90_int, (/ id_genstrudim, id_timedim /), id_genstru_stat)
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'long_name', 'Flow state at general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'units', '-')
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'units', '-')
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'flag_values', (/ 0, 1, 2, 3, 4 /))
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'flag_meanings', 'no_flow weir_free weir_submerged gate_free gate_submerged')
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'valid_range', (/ 0, 4 /))
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, '_FillValue', int(dmiss))
-               ierr = nf90_put_att(ihisfile, id_genstru_stat, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_s1_on_crest', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_s1crest)
-               ierr = nf90_put_att(ihisfile, id_genstru_s1crest, 'long_name', 'Water level on crest of general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_s1crest, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_genstru_s1crest, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_s1crest, 'geometry', genstru_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'general_structure_force_difference', nf90_double, (/ id_genstrudim, id_timedim /), id_genstru_forcedif)
-               ierr = nf90_put_att(ihisfile, id_genstru_forcedif, 'long_name', 'Force difference per unit at general structure')
-               ierr = nf90_put_att(ihisfile, id_genstru_forcedif, 'units', 'N m-1')
-               ierr = nf90_put_att(ihisfile, id_genstru_forcedif, 'coordinates', 'general_structure_id')
-               ierr = nf90_put_att(ihisfile, id_genstru_forcedif, 'geometry', genstru_geom_container_name)
-            end if
-            end if !(.false.)
-        endif
+        end if
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'general_structure', 'general structure', jahiscgen, ntmp, 'line', nNodeTot, id_strlendim, &
+                                                 id_genstrudim, id_genstru_id, id_genstrugeom_node_count, id_genstrugeom_node_coordx, id_genstrugeom_node_coordy)
 
         if(jahispump > 0 .and. npumpsg > 0) then
             ierr = nf90_def_dim(ihisfile, 'pumps', npumpsg, id_pumpdim)
@@ -1543,7 +597,6 @@ subroutine unc_write_his(tim)            ! wrihis
             ierr = nf90_put_att(ihisfile, id_pump_id,  'long_name', 'Id of pump'    )
 
             ! Define geometry related variables
-            pump_geom_container_name = 'pump_geom'
             nNodeTot = 0
             if (network%sts%numPumps > 0) then ! newpump
                nNodeTot = nNodesPump
@@ -1558,127 +611,22 @@ subroutine unc_write_his(tim)            ! wrihis
                   nNodeTot = nNodeTot + nNodes
                end do
             end if
+        end if
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'pump', 'pump', jahispump, npumpsg, 'line', nNodeTot, id_strlendim, &
+                                                 id_pumpdim, id_pump_id, id_pumpgeom_node_count, id_pumpgeom_node_coordx, id_pumpgeom_node_coordy)
+        ! TODO: UNST-6904: check x/ymid:
+            !ierr = nf90_def_var(ihisfile, 'pump_xmid', nf90_double, (/ id_pumpdim /), id_pump_xmid)
+            !ierr = nf90_def_var(ihisfile, 'pump_ymid', nf90_double, (/ id_pumpdim /), id_pump_ymid)
+            !ierr = unc_addcoordatts(ihisfile, id_pump_xmid, id_pump_ymid, jsferic)
+            !ierr = nf90_put_att(ihisfile, id_pump_xmid, 'long_name', 'x-coordinate of representative mid point of pump location (snapped polyline)')
+            !ierr = nf90_put_att(ihisfile, id_pump_ymid, 'long_name', 'y-coordinate of representative mid point of pump location (snapped polyline)')
 
-            ierr = sgeom_def_geometry_variables(ihisfile, pump_geom_container_name, 'pump', 'line', nNodeTot, id_pumpdim, &
-               id_pumpgeom_node_count, id_pumpgeom_node_coordx, id_pumpgeom_node_coordy)
+        ! Gate (Old .ext file, QUANTITY='gateloweredgelevel')
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'gate', 'gate', jahisgate, ngatesg, 'none', 0, id_strlendim, &
+                                                 id_gatedim, id_gate_id)
 
-            ierr = nf90_def_var(ihisfile, 'pump_xmid', nf90_double, (/ id_pumpdim /), id_pump_xmid)
-            ierr = nf90_def_var(ihisfile, 'pump_ymid', nf90_double, (/ id_pumpdim /), id_pump_ymid)
-            ierr = unc_addcoordatts(ihisfile, id_pump_xmid, id_pump_ymid, jsferic)
-            ierr = nf90_put_att(ihisfile, id_pump_xmid, 'long_name', 'x-coordinate of representative mid point of pump location (snapped polyline)')
-            ierr = nf90_put_att(ihisfile, id_pump_ymid, 'long_name', 'y-coordinate of representative mid point of pump location (snapped polyline)')
-
-            ierr = nf90_def_var(ihisfile, 'pump_structure_discharge', nf90_double, (/ id_pumpdim, id_timedim /), id_pump_dis)
-            ierr = nf90_put_att(ihisfile, id_pump_dis, 'long_name', 'Discharge through pump')
-            ierr = nf90_put_att(ihisfile, id_pump_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_pump_dis, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_dis, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_capacity', nf90_double, (/ id_pumpdim, id_timedim /), id_pump_cap)
-            ierr = nf90_put_att(ihisfile, id_pump_cap, 'long_name', 'Capacity of pump')
-            ierr = nf90_put_att(ihisfile, id_pump_cap, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_pump_cap, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_cap, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_discharge_dir', nf90_double, (/ id_pumpdim, id_timedim /), id_pump_disdir)
-            ierr = nf90_put_att(ihisfile, id_pump_disdir, 'long_name', 'Discharge of pump w.r.t. pump orientation')
-            ierr = nf90_put_att(ihisfile, id_pump_disdir, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_pump_disdir, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_disdir, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_s1up',     nf90_double, (/ id_pumpdim, id_timedim /), id_pump_s1up)    ! Nabi
-            ierr = nf90_put_att(ihisfile, id_pump_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_pump_s1up, 'long_name', 'Water level upstream of pump')
-            ierr = nf90_put_att(ihisfile, id_pump_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_pump_s1up, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_s1up, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_s1dn',     nf90_double, (/ id_pumpdim, id_timedim /), id_pump_s1dn)
-            ierr = nf90_put_att(ihisfile, id_pump_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_pump_s1dn, 'long_name', 'Water level downstream of pump')
-            ierr = nf90_put_att(ihisfile, id_pump_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_pump_s1dn, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_s1dn, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_structure_head', nf90_double, (/ id_pumpdim, id_timedim /), id_pump_struhead)
-            ierr = nf90_put_att(ihisfile, id_pump_struhead, 'long_name', 'Head difference across pump structure')
-            ierr = nf90_put_att(ihisfile, id_pump_struhead, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_pump_struhead, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_struhead, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_actual_stage',    nf90_int, (/ id_pumpdim, id_timedim /), id_pump_stage)
-            ierr = nf90_put_att(ihisfile, id_pump_stage, 'long_name', 'Actual stage of pump')
-            ierr = nf90_put_att(ihisfile, id_pump_stage, 'units', '-')
-            ierr = nf90_put_att(ihisfile, id_pump_stage, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_stage, '_FillValue', int(dmiss))
-            ierr = nf90_put_att(ihisfile, id_pump_stage, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_head', nf90_double, (/ id_pumpdim, id_timedim /), id_pump_head)
-            ierr = nf90_put_att(ihisfile, id_pump_head, 'long_name', 'Head difference in pumping direction')
-            ierr = nf90_put_att(ihisfile, id_pump_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_pump_head, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_head, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_reduction_factor',    nf90_double, (/ id_pumpdim, id_timedim /), id_pump_redufact)
-            ierr = nf90_put_att(ihisfile, id_pump_redufact, 'long_name', 'Reduction factor of pump')
-            ierr = nf90_put_att(ihisfile, id_pump_redufact, 'units', '-')
-            ierr = nf90_put_att(ihisfile, id_pump_redufact, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_redufact, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_s1_delivery_side', nf90_double, (/ id_pumpdim, id_timedim /), id_pump_s1del)
-            ierr = nf90_put_att(ihisfile, id_pump_s1del, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_pump_s1del, 'long_name', 'Water level at delivery side of pump')
-            ierr = nf90_put_att(ihisfile, id_pump_s1del, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_pump_s1del, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_s1del, 'geometry', pump_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'pump_s1_suction_side', nf90_double, (/ id_pumpdim, id_timedim /), id_pump_s1suc)
-            ierr = nf90_put_att(ihisfile, id_pump_s1suc, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_pump_s1suc, 'long_name', 'Water level at suction side of pump')
-            ierr = nf90_put_att(ihisfile, id_pump_s1suc, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_pump_s1suc, 'coordinates', 'pump_id')
-            ierr = nf90_put_att(ihisfile, id_pump_s1suc, 'geometry', pump_geom_container_name)
-        endif
-
-        if(jahisgate > 0 .and. ngatesg > 0 ) then
-            ierr = nf90_def_dim(ihisfile, 'gates', ngatesg, id_gatedim)
-            ierr = nf90_def_var(ihisfile, 'gate_name',  nf90_char,   (/ id_strlendim, id_gatedim /), id_gatename)
-            ierr = nf90_put_att(ihisfile, id_gatename,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_gatename,  'long_name', 'gate name'    )
-
-            ierr = nf90_def_var(ihisfile, 'gate_discharge', nf90_double, (/ id_gatedim, id_timedim /), id_gate_dis)
-            !ierr = nf90_put_att(ihisfile, id_gate_dis, 'standard_name', 'gate_discharge')
-            ierr = nf90_put_att(ihisfile, id_gate_dis, 'long_name', 'gate discharge')
-            ierr = nf90_put_att(ihisfile, id_gate_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_gate_dis, 'coordinates', 'gate_name')
-
-            ierr = nf90_def_var(ihisfile, 'gate_lower_edge_level', nf90_double, (/ id_gatedim, id_timedim /), id_gate_edgel)
-            ierr = nf90_put_att(ihisfile, id_gate_edgel, 'standard_name', 'gate_lower_edge_level')
-            ierr = nf90_put_att(ihisfile, id_gate_edgel, 'long_name', 'gate lower edge level')
-            ierr = nf90_put_att(ihisfile, id_gate_edgel, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gate_edgel, 'coordinates', 'gate_name')
-
-            ierr = nf90_def_var(ihisfile, 'gate_s1up',     nf90_double, (/ id_gatedim, id_timedim /), id_gate_s1up)
-            ierr = nf90_put_att(ihisfile, id_gate_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_gate_s1up, 'long_name', 'gate water level up')
-            ierr = nf90_put_att(ihisfile, id_gate_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gate_s1up, 'coordinates', 'gate_name')
-
-            ierr = nf90_def_var(ihisfile, 'gate_s1dn',     nf90_double, (/ id_gatedim, id_timedim /), id_gate_s1dn)
-            ierr = nf90_put_att(ihisfile, id_gate_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_gate_s1dn, 'long_name', 'gate water level down')
-            ierr = nf90_put_att(ihisfile, id_gate_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gate_s1dn, 'coordinates', 'gate_name')
-        endif
-
-         if(jahisgate > 0 .and. ngategen > 0 ) then
-            ierr = nf90_def_dim(ihisfile, 'gategens', ngategen, id_gategendim)
-            ierr = nf90_def_var(ihisfile, 'gategen_name',  nf90_char,   (/ id_strlendim, id_gategendim /), id_gategenname)
-            ierr = nf90_put_att(ihisfile, id_gategenname,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_gategenname,  'long_name', 'gate name'    )
-
+        if(jahisgate > 0 .and. ngategen > 0 ) then
             ! Define geometry related variables
-            gategen_geom_container_name = 'gategen_geom'
             nNodeTot = 0
             do n = 1, ngategen
                i = gate2cgen(n)
@@ -1690,105 +638,20 @@ subroutine unc_write_his(tim)            ! wrihis
                end if
                nNodeTot = nNodeTot + nNodes
             end do
-            ierr = sgeom_def_geometry_variables(ihisfile, gategen_geom_container_name, 'gategen', 'line', nNodeTot, id_gategendim, &
-               id_gategengeom_node_count, id_gategengeom_node_coordx, id_gategengeom_node_coordy)
+        end if
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'gategen', 'gate', jahisgate, ngategen, 'line', nNodeTot, id_strlendim, &
+                                                 id_gategendim, id_gategen_id, id_gategengeom_node_count, id_gategengeom_node_coordx, id_gategengeom_node_coordy)
 
-            ierr = nf90_def_var(ihisfile, 'gategen_discharge',     nf90_double, (/ id_gategendim, id_timedim /), id_gategen_dis)
-            !ierr = nf90_put_att(ihisfile, id_gategen_dis, 'standard_name', 'integral_of_discharge_wrt_time') ! TODO: introduce time windows in nc
-            ierr = nf90_put_att(ihisfile, id_gategen_dis, 'long_name', 'gate discharge (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_gategen_dis, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_dis, 'geometry', gategen_geom_container_name)
+        ! Controllable dam (Old .ext file QUANTITY='damlevel')
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'cdam', 'controllable dam', jahiscdam, ncdamsg, 'none', 0, id_strlendim, &
+                                                 id_cdamdim, id_cdam_id)
 
-            ierr = nf90_def_var(ihisfile, 'gategen_crest_level', nf90_double, (/ id_gategendim, id_timedim /), id_gategen_sillh)
-            ierr = nf90_put_att(ihisfile, id_gategen_sillh, 'long_name', 'gate crest level (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_sillh, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gategen_sillh, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_sillh, 'geometry', gategen_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'gategen_crest_width', nf90_double, (/ id_gategendim, id_timedim /), id_gategen_sillw)
-            ierr = nf90_put_att(ihisfile, id_gategen_sillw, 'long_name', 'gate crest width (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_sillw, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gategen_sillw, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_sillw, 'geometry', gategen_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'gategen_gate_lower_edge_level', nf90_double, (/ id_gategendim, id_timedim /), id_gategen_edgel)
-            ierr = nf90_put_att(ihisfile, id_gategen_edgel, 'long_name', 'gate lower edge level (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_edgel, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gategen_edgel, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_edgel, 'geometry', gategen_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'gategen_flow_through_height', nf90_double, (/ id_gategendim, id_timedim /), id_gategen_flowh)
-            ierr = nf90_put_att(ihisfile, id_gategen_flowh, 'standard_name', 'gategen_flow_through_height')
-            ierr = nf90_put_att(ihisfile, id_gategen_flowh, 'long_name', 'gate flow through height (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_flowh, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gategen_flowh, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_flowh, 'geometry', gategen_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'gategen_gate_opening_width', nf90_double, (/ id_gategendim, id_timedim /), id_gategen_openw)
-            ierr = nf90_put_att(ihisfile, id_gategen_openw, 'long_name', 'gate opening width (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_openw, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gategen_openw, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_openw, 'geometry', gategen_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'gategen_s1up',     nf90_double, (/ id_gategendim, id_timedim /), id_gategen_s1up)
-            ierr = nf90_put_att(ihisfile, id_gategen_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1up, 'long_name', 'gate water level up (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1up, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1up, 'geometry', gategen_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'gategen_s1dn',     nf90_double, (/ id_gategendim, id_timedim /), id_gategen_s1dn)
-            ierr = nf90_put_att(ihisfile, id_gategen_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1dn, 'long_name', 'gate water level down (via general structure)')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1dn, 'coordinates', 'gategen_name')
-            ierr = nf90_put_att(ihisfile, id_gategen_s1dn, 'geometry', gategen_geom_container_name)
-        endif
-
-        if(jahiscdam > 0 .and. ncdamsg > 0 ) then
-            ierr = nf90_def_dim(ihisfile, 'dams', ncdamsg, id_cdamdim)
-            !ierr = nf90_def_dim(ihisfile, 'cdam_name_len', strlen_netcdf, id_cdamlendim)
-            ierr = nf90_def_var(ihisfile, 'cdam_name',  nf90_char,   (/ id_strlendim, id_cdamdim /), id_cdamname)
-            ierr = nf90_put_att(ihisfile, id_cdamname,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_cdamname,  'long_name', 'controllable dam name'    )
-
-            ierr = nf90_def_var(ihisfile, 'cdam_discharge',     nf90_double, (/ id_cdamdim, id_timedim /), id_cdam_dis)
-            !ierr = nf90_put_att(ihisfile, id_cdam_dis, 'standard_name', 'cdam_discharge')
-            ierr = nf90_put_att(ihisfile, id_cdam_dis, 'long_name', 'controllable dam discharge')
-            ierr = nf90_put_att(ihisfile, id_cdam_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_cdam_dis, 'coordinates', 'cdam_name')
-
-            ierr = nf90_def_var(ihisfile, 'cdam_crest_level',     nf90_double, (/ id_cdamdim, id_timedim /), id_cdam_crestl)
-            !ierr = nf90_put_att(ihisfile, id_cdam_crestl, 'standard_name', 'cdam_crest_level')
-            ierr = nf90_put_att(ihisfile, id_cdam_crestl, 'long_name', 'controllable dam crest level')
-            ierr = nf90_put_att(ihisfile, id_cdam_crestl, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_cdam_crestl, 'coordinates', 'cdam_name')
-
-            ierr = nf90_def_var(ihisfile, 'cdam_s1up',     nf90_double, (/ id_cdamdim, id_timedim /), id_cdam_s1up)
-            ierr = nf90_put_att(ihisfile, id_cdam_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_cdam_s1up, 'long_name', 'controllable dam water level up')
-            ierr = nf90_put_att(ihisfile, id_cdam_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_cdam_s1up, 'coordinates', 'cdam_name')
-
-            ierr = nf90_def_var(ihisfile, 'cdam_s1dn',     nf90_double, (/ id_cdamdim, id_timedim /), id_cdam_s1dn)
-            ierr = nf90_put_att(ihisfile, id_cdam_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_cdam_s1dn, 'long_name', 'controllable dam water level down')
-            ierr = nf90_put_att(ihisfile, id_cdam_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_cdam_s1dn, 'coordinates', 'cdam_name')
-        endif
-
+        ! Weir
         if(jahisweir > 0 .and. nweirgen > 0 ) then
-           ierr = nf90_def_dim(ihisfile, 'weirgens', nweirgen, id_weirgendim)
-           ierr = nf90_def_var(ihisfile, 'weirgen_id',  nf90_char,   (/ id_strlendim, id_weirgendim /), id_weirgen_id)
-           ierr = nf90_put_att(ihisfile, id_weirgen_id,  'cf_role',   'timeseries_id')
-           ierr = nf90_put_att(ihisfile, id_weirgen_id,  'long_name', 'Id of weir'    )
-
-           ! Define geometry related variables
-           weir_geom_container_name = 'weirgen_geom'
-           nNodeTot = 0
-           i = 1
-           if (network%sts%numWeirs > 0) then ! new weir
+            ! Define geometry related variables
+            nNodeTot = 0
+            if (network%sts%numWeirs > 0) then ! new weir
+               nNodeTot = nNodesWeir
             else ! old weir
                do n = 1, nweirgen
                   i = weir2cgen(n)
@@ -1801,579 +664,38 @@ subroutine unc_write_his(tim)            ! wrihis
                   nNodeTot = nNodeTot + nNodes
                end do
             end if
-
-           
-            ierr = sgeom_def_geometry_variables(ihisfile, weir_geom_container_name, 'weir', 'line', nNodesWeir, id_weirgendim, &
-               id_weirgeom_node_count, id_weirgeom_node_coordx, id_weirgeom_node_coordy)
-
-            ierr = nf90_def_var(ihisfile, 'weirgen_discharge',     nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_dis)
-            !ierr = nf90_put_att(ihisfile, id_weirgen_dis, 'standard_name', 'integral_of_discharge_wrt_time') ! TODO: introduce time windows in nc
-            ierr = nf90_put_att(ihisfile, id_weirgen_dis, 'long_name', 'Discharge through weir')
-            ierr = nf90_put_att(ihisfile, id_weirgen_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_weirgen_dis, 'coordinates', 'weirgen_id')
-            ierr = nf90_put_att(ihisfile, id_weirgen_dis, 'geometry', weir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'weirgen_crest_level', nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_crestl)
-            !ierr = nf90_put_att(ihisfile, id_weirgen_crestl, 'standard_name', 'weirgen_crest_level')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestl, 'long_name', 'Crest level of weir')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestl, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestl, 'coordinates', 'weirgen_id')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestl, 'geometry', weir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'weirgen_crest_width', nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_crestw)
-            !ierr = nf90_put_att(ihisfile, id_weirgen_crestw, 'standard_name', 'weirgen_crest_width')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestw, 'long_name', 'Crest width of weir')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestw, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestw, 'coordinates', 'weirgen_id')
-            ierr = nf90_put_att(ihisfile, id_weirgen_crestw, 'geometry', weir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'weirgen_s1up',     nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_s1up)
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1up, 'long_name', 'Water level upstream of weir')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1up, 'coordinates', 'weirgen_id')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1up, 'geometry', weir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'weirgen_s1dn',     nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_s1dn)
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1dn, 'long_name', 'Water level downstream of weir')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1dn, 'coordinates', 'weirgen_id')
-            ierr = nf90_put_att(ihisfile, id_weirgen_s1dn, 'geometry', weir_geom_container_name)
-
-            if (network%sts%numWeirs > 0) then ! write extra files for new weirs
-               ierr = nf90_def_var(ihisfile, 'weirgen_structure_head', nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_head)
-               ierr = nf90_put_att(ihisfile, id_weirgen_head, 'long_name', 'Head difference across weir')
-               ierr = nf90_put_att(ihisfile, id_weirgen_head, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_weirgen_head, 'coordinates', 'weirgen_id')
-               ierr = nf90_put_att(ihisfile, id_weirgen_head, 'geometry', weir_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'weirgen_velocity', nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_vel)
-               ierr = nf90_put_att(ihisfile, id_weirgen_vel, 'long_name', 'Velocity through weir')
-               ierr = nf90_put_att(ihisfile, id_weirgen_vel, 'units', 'm s-1')
-               ierr = nf90_put_att(ihisfile, id_weirgen_vel, 'coordinates', 'weirgen_id')
-               ierr = nf90_put_att(ihisfile, id_weirgen_vel, 'geometry', weir_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'weirgen_flow_area', nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_au)
-               ierr = nf90_put_att(ihisfile, id_weirgen_au, 'long_name', 'Flow area at weir')
-               ierr = nf90_put_att(ihisfile, id_weirgen_au, 'units', 'm2')
-               ierr = nf90_put_att(ihisfile, id_weirgen_au, 'coordinates', 'weirgen_id')
-               ierr = nf90_put_att(ihisfile, id_weirgen_au, 'geometry', weir_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'weirgen_state', nf90_int, (/ id_weirgendim, id_timedim /), id_weir_stat)
-               ierr = nf90_put_att(ihisfile, id_weir_stat, 'long_name', 'Flow state at weir')
-               ierr = nf90_put_att(ihisfile, id_weir_stat, 'units', '-')
-               ierr = nf90_put_att(ihisfile, id_weir_stat, 'coordinates', 'weirgen_id')
-               ierr = nf90_put_att(ihisfile, id_weir_stat, 'flag_values', (/ 0, 1, 2 /))
-               ierr = nf90_put_att(ihisfile, id_weir_stat, 'flag_meanings', 'no_flow weir_free weir_submerged')
-               ierr = nf90_put_att(ihisfile, id_weir_stat, 'valid_range', (/ 0, 2 /))
-               ierr = nf90_put_att(ihisfile, id_weir_stat, '_FillValue', int(dmiss))
-               ierr = nf90_put_att(ihisfile, id_weir_stat, 'geometry', weir_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'weirgen_force_difference', nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_forcedif)
-               ierr = nf90_put_att(ihisfile, id_weirgen_forcedif, 'long_name', 'Force difference per unit width at weir')
-               ierr = nf90_put_att(ihisfile, id_weirgen_forcedif, 'units', 'N m-1')
-               ierr = nf90_put_att(ihisfile, id_weirgen_forcedif, 'coordinates', 'weirgen_id')
-               ierr = nf90_put_att(ihisfile, id_weirgen_forcedif, 'geometry', weir_geom_container_name)
-
-               ierr = nf90_def_var(ihisfile, 'weirgen_s1_on_crest', nf90_double, (/ id_weirgendim, id_timedim /), id_weirgen_s1crest)
-               ierr = nf90_put_att(ihisfile, id_weirgen_s1crest, 'long_name', 'Water level on crest of weir')
-               ierr = nf90_put_att(ihisfile, id_weirgen_s1crest, 'units', 'm')
-               ierr = nf90_put_att(ihisfile, id_weirgen_s1crest, 'coordinates', 'weirgen_id')
-               ierr = nf90_put_att(ihisfile, id_weirgen_s1crest, 'geometry', weir_geom_container_name)
-            end if
-        endif
+        end if
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'weirgen', 'weir', jahisweir, nweirgen, 'line', nNodeTot, id_strlendim, &
+                                                 id_weirgendim, id_weirgen_id, id_weirgengeom_node_count, id_weirgengeom_node_coordx, id_weirgengeom_node_coordy)
 
         ! Orifice
-        if(jahisorif > 0 .and. network%sts%numOrifices > 0) then
-            ierr = nf90_def_dim(ihisfile, 'orifice', network%sts%numOrifices, id_orifgendim)
-            ierr = nf90_def_var(ihisfile, 'orifice_id',  nf90_char,   (/ id_strlendim, id_orifgendim /), id_orifgen_id)
-            ierr = nf90_put_att(ihisfile, id_orifgen_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_id,  'long_name', 'Id of orifice')
-
-            ! Define geometry related variables
-            orif_geom_container_name = 'orifice_geom'
-            nNodeTot = nNodesOrif
-
-            ierr = sgeom_def_geometry_variables(ihisfile, orif_geom_container_name, 'orifice', 'line', nNodeTot, id_orifgendim, &
-               id_orifgeom_node_count, id_orifgeom_node_coordx, id_orifgeom_node_coordy)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_discharge',     nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_dis)
-            ierr = nf90_put_att(ihisfile, id_orifgen_dis, 'long_name', 'Discharge through orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_orifgen_dis, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_dis, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_crest_level', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_crestl)
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestl, 'long_name', 'Crest level of orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestl, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestl, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestl, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_crest_width', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_crestw)
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestw, 'long_name', 'Crest width of orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestw, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestw, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_crestw, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_gate_lower_edge_level', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_edgel)
-            ierr = nf90_put_att(ihisfile, id_orifgen_edgel, 'long_name', 'Gate lower edge level of orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_edgel, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_edgel, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_edgel, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_s1up',     nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_s1up)
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1up, 'long_name', 'Water level upstream of orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1up, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1up, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_s1dn',     nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_s1dn)
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1dn, 'long_name', 'Water level downstream of orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1dn, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1dn, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_gate_opening_height', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_openh)
-            ierr = nf90_put_att(ihisfile, id_orifgen_openh, 'long_name', 'Gate opening height of orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_openh, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_openh, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_openh, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_head', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_head)
-            ierr = nf90_put_att(ihisfile, id_orifgen_head, 'long_name', 'Head difference across orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_head, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_head, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_flow_area', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_au)
-            ierr = nf90_put_att(ihisfile, id_orifgen_au, 'long_name', 'Flow area at orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_orifgen_au, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_au, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_state', nf90_int, (/ id_orifgendim, id_timedim /), id_orifgen_stat)
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'long_name', 'Flow state at orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'units', '-')
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'units', '-')
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'flag_values', (/ 0, 1, 2, 3, 4 /))
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'flag_meanings', 'no_flow weir_free weir_submerged gate_free gate_submerged')
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'valid_range', (/ 0, 4 /))
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, '_FillValue', int(dmiss))
-            ierr = nf90_put_att(ihisfile, id_orifgen_stat, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_s1_on_crest', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_s1crest)
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1crest, 'long_name', 'Water level on crest of orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1crest, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1crest, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_s1crest, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_velocity', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_vel)
-            ierr = nf90_put_att(ihisfile, id_orifgen_vel, 'long_name', 'Velocity through orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_vel, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_orifgen_vel, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_vel, 'geometry', orif_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'orifice_force_difference', nf90_double, (/ id_orifgendim, id_timedim /), id_orifgen_forcedif)
-            ierr = nf90_put_att(ihisfile, id_orifgen_forcedif, 'long_name', 'Force difference per unit width at orifice')
-            ierr = nf90_put_att(ihisfile, id_orifgen_forcedif, 'units', 'N m-1')
-            ierr = nf90_put_att(ihisfile, id_orifgen_forcedif, 'coordinates', 'orifice_id')
-            ierr = nf90_put_att(ihisfile, id_orifgen_forcedif, 'geometry', orif_geom_container_name)
-        endif
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'orifice', 'orifice', jahisorif, network%sts%numOrifices, 'line', nNodesOrif, id_strlendim, &
+                                                 id_orifgendim, id_orifgen_id, id_orifgengeom_node_count, id_orifgengeom_node_coordx, id_orifgengeom_node_coordy)
 
         ! Bridge
-        if(jahisbridge > 0 .and. network%sts%numBridges > 0) then
-            ierr = nf90_def_dim(ihisfile, 'bridge', network%sts%numbridges, id_bridgedim)
-            ierr = nf90_def_var(ihisfile, 'bridge_id',  nf90_char,   (/ id_strlendim, id_bridgedim /), id_bridge_id)
-            ierr = nf90_put_att(ihisfile, id_bridge_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_id,  'long_name', 'Id of bridge')
-
-            ! Define geometry related variables
-            bridge_geom_container_name = 'bridge_geom'
-            nNodeTot = nNodesBridge
-
-            ierr = sgeom_def_geometry_variables(ihisfile, bridge_geom_container_name, 'bridge', 'line', nNodeTot, id_bridgedim, &
-               id_bridgegeom_node_count, id_bridgegeom_node_coordx, id_bridgegeom_node_coordy)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_discharge',     nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_dis)
-            ierr = nf90_put_att(ihisfile, id_bridge_dis, 'long_name', 'Discharge through bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_bridge_dis, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_dis, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_s1up',     nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_s1up)
-            ierr = nf90_put_att(ihisfile, id_bridge_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1up, 'long_name', 'Water level upstream of bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1up, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1up, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_s1dn',     nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_s1dn)
-            ierr = nf90_put_att(ihisfile, id_bridge_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1dn, 'long_name', 'Water level downstream of bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1dn, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_s1dn, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_head', nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_head)
-            ierr = nf90_put_att(ihisfile, id_bridge_head, 'long_name', 'Head difference across bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_bridge_head, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_head, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_flow_area', nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_au)
-            ierr = nf90_put_att(ihisfile, id_bridge_au, 'long_name', 'Flow area at bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_bridge_au, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_au, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_velocity', nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_vel)
-            ierr = nf90_put_att(ihisfile, id_bridge_vel, 'long_name', 'Velocity through bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_vel, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_bridge_vel, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_vel, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_blup',  nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_blup)
-            ierr = nf90_put_att(ihisfile, id_bridge_blup, 'standard_name', 'altitude')
-            ierr = nf90_put_att(ihisfile, id_bridge_blup, 'long_name', 'Bed level at upstream of bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_blup, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_bridge_blup, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_blup, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_bldn',  nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_bldn)
-            ierr = nf90_put_att(ihisfile, id_bridge_bldn, 'standard_name', 'altitude')
-            ierr = nf90_put_att(ihisfile, id_bridge_bldn, 'long_name', 'Bed level at downstream of bridge')
-            ierr = nf90_put_att(ihisfile, id_bridge_bldn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_bridge_bldn, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_bldn, 'geometry', bridge_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'bridge_bl_actual',  nf90_double, (/ id_bridgedim, id_timedim /), id_bridge_bl_act)
-            ierr = nf90_put_att(ihisfile, id_bridge_bl_act, 'standard_name', 'altitude')
-            ierr = nf90_put_att(ihisfile, id_bridge_bl_act, 'long_name', 'Actual bed level of bridge (crest)')
-            ierr = nf90_put_att(ihisfile, id_bridge_bl_act, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_bridge_bl_act, 'coordinates', 'bridge_id')
-            ierr = nf90_put_att(ihisfile, id_bridge_bl_act, 'geometry', bridge_geom_container_name)
-        endif
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'bridge', 'bridge', jahisbridge, network%sts%numBridges, 'line', nNodesBridge, id_strlendim, &
+                                                 id_bridgedim, id_bridge_id, id_bridgegeom_node_count, id_bridgegeom_node_coordx, id_bridgegeom_node_coordy)
 
         ! Culvert
-        if(jahisculv > 0 .and. network%sts%numculverts > 0) then
-            ierr = nf90_def_dim(ihisfile, 'culvert', network%sts%numculverts, id_culvertdim)
-            ierr = nf90_def_var(ihisfile, 'culvert_id',  nf90_char,   (/ id_strlendim, id_culvertdim /), id_culvert_id)
-            ierr = nf90_put_att(ihisfile, id_culvert_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_id,  'long_name', 'Id of culvert'    )
-
-            ! Define geometry related variables
-            culvert_geom_container_name = 'culvert_geom'
-            nNodeTot = nNodesCulv
-
-            ierr = sgeom_def_geometry_variables(ihisfile, culvert_geom_container_name, 'culvert', 'line', nNodeTot, id_culvertdim, &
-               id_culvertgeom_node_count, id_culvertgeom_node_coordx, id_culvertgeom_node_coordy)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_discharge',     nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_dis)
-            ierr = nf90_put_att(ihisfile, id_culvert_dis, 'long_name', 'Discharge through culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_culvert_dis, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_dis, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_crest_level', nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_crestl)
-            ierr = nf90_put_att(ihisfile, id_culvert_crestl, 'long_name', 'Crest level of culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_crestl, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_culvert_crestl, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_crestl, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_gate_lower_edge_level', nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_edgel)
-            ierr = nf90_put_att(ihisfile, id_culvert_edgel, 'long_name', 'Gate lower edge level of culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_edgel, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_culvert_edgel, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_edgel, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_s1up',     nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_s1up)
-            ierr = nf90_put_att(ihisfile, id_culvert_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1up, 'long_name', 'Water level upstream of culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1up, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1up, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_s1dn',     nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_s1dn)
-            ierr = nf90_put_att(ihisfile, id_culvert_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1dn, 'long_name', 'Water level downstream of culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1dn, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_s1dn, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_gate_opening_height', nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_openh)
-            ierr = nf90_put_att(ihisfile, id_culvert_openh, 'long_name', 'Gate opening height of culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_openh, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_culvert_openh, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_openh, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_head', nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_head)
-            ierr = nf90_put_att(ihisfile, id_culvert_head, 'long_name', 'Head difference across culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_culvert_head, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_head, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_flow_area', nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_au)
-            ierr = nf90_put_att(ihisfile, id_culvert_au, 'long_name', 'Flow area in culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_culvert_au, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_au, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_state', nf90_int, (/ id_culvertdim, id_timedim /), id_culvert_stat)
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, 'long_name', 'Flow state in culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, 'units', '-')
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, 'flag_values', (/ 0, 1, 2/))
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, 'flag_meanings', 'no_flow culvert_free culvert_submerged')
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, 'valid_range', (/ 0, 2 /))
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, '_FillValue', int(dmiss))
-            ierr = nf90_put_att(ihisfile, id_culvert_stat, 'geometry', culvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'culvert_velocity', nf90_double, (/ id_culvertdim, id_timedim /), id_culvert_vel)
-            ierr = nf90_put_att(ihisfile, id_culvert_vel, 'long_name', 'Velocity in culvert')
-            ierr = nf90_put_att(ihisfile, id_culvert_vel, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_culvert_vel, 'coordinates', 'culvert_id')
-            ierr = nf90_put_att(ihisfile, id_culvert_vel, 'geometry', culvert_geom_container_name)
-        endif
-
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'culvert', 'culvert', jahisculv, network%sts%numculverts, 'line', nNodesCulv, id_strlendim, &
+                                                 id_culvertdim, id_culvert_id, id_culvertgeom_node_count, id_culvertgeom_node_coordx, id_culvertgeom_node_coordy)
 
         ! Dambreak
-        if (jahisdambreak > 0 .and. ndambreaksg > 0 ) then
-            ierr = nf90_def_dim(ihisfile, 'dambreaks', ndambreaksg, id_dambreakdim)
-            ierr = nf90_def_var(ihisfile, 'dambreak_id',  nf90_char,   (/ id_strlendim, id_dambreakdim /), id_dambreak_id)
-            ierr = nf90_put_att(ihisfile, id_dambreak_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_id,  'long_name', 'Id of dambreak')
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_s1up', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_s1up)
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1up, 'long_name', 'Water level upstream of dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1up, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1up, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_s1dn',     nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_s1dn)
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1dn, 'long_name', 'Water level downstream of dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1dn, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_s1dn, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_discharge', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_discharge)
-            ierr = nf90_put_att(ihisfile, id_dambreak_discharge, 'long_name', 'Instantaneous discharge through dambreaks')
-            ierr = nf90_put_att(ihisfile, id_dambreak_discharge, 'units', 'm3 s-1') !link_sum
-            ierr = nf90_put_att(ihisfile, id_dambreak_discharge, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_discharge, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_cumulative_discharge', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_cumulative_discharge)
-            ierr = nf90_put_att(ihisfile, id_dambreak_cumulative_discharge, 'long_name', 'Cumulative discharge through dambreaks')
-            ierr = nf90_put_att(ihisfile, id_dambreak_cumulative_discharge, 'units', 'm3') !link_sum
-            ierr = nf90_put_att(ihisfile, id_dambreak_cumulative_discharge, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_cumulative_discharge, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_breach_width_time_derivative', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_breach_width_time_derivative)
-            ierr = nf90_put_att(ihisfile, id_dambreak_breach_width_time_derivative, 'long_name', 'Breach width time derivative of dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_breach_width_time_derivative, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_dambreak_breach_width_time_derivative, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_breach_width_time_derivative, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_water_level_jump', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_water_level_jump)
-            ierr = nf90_put_att(ihisfile, id_dambreak_water_level_jump, 'long_name', 'Breach water level jump of dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_water_level_jump, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_dambreak_water_level_jump, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_water_level_jump, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_normal_velocity', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_normal_velocity)
-            ierr = nf90_put_att(ihisfile, id_dambreak_normal_velocity, 'long_name', 'Normal velocity through dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_normal_velocity, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_dambreak_normal_velocity, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_normal_velocity, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_structure_head', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_head)
-            ierr = nf90_put_att(ihisfile, id_dambreak_head, 'long_name', 'Head difference across dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_dambreak_head, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_head, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_flow_area', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_au)
-            ierr = nf90_put_att(ihisfile, id_dambreak_au, 'long_name', 'Flow area at dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_dambreak_au, 'coordinates', 'dambreak_id')
-            ierr = nf90_put_att(ihisfile, id_dambreak_au, '_FillValue', dmiss)
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_crest_level', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_cresth)
-            ierr = nf90_put_att(ihisfile, id_dambreak_cresth, 'long_name', 'Crest level of dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_cresth, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_dambreak_cresth, 'coordinates', 'dambreak_id')
-
-            ierr = nf90_def_var(ihisfile, 'dambreak_crest_width', nf90_double, (/ id_dambreakdim, id_timedim /), id_dambreak_crestw)
-            ierr = nf90_put_att(ihisfile, id_dambreak_crestw, 'long_name', 'Crest width of dambreak')
-            ierr = nf90_put_att(ihisfile, id_dambreak_crestw, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_dambreak_crestw, 'coordinates', 'dambreak_id')
-        endif
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'dambreak', 'dambreak', jahisdambreak, ndambreaksg, 'none', 0, id_strlendim, &
+                                                 id_dambreakdim, id_dambreak_id)
 
         ! Universal weir
-        if(jahisuniweir > 0 .and. network%sts%numuniweirs > 0) then
-            ierr = nf90_def_dim(ihisfile, 'universalWeirs', network%sts%numuniweirs, id_uniweirdim)
-            ierr = nf90_def_var(ihisfile, 'uniweir_id',  nf90_char,   (/ id_strlendim, id_uniweirdim /), id_uniweir_id)
-            ierr = nf90_put_att(ihisfile, id_uniweir_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_id,  'long_name', 'Id of universal weir'    )
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'uniweir', 'universal weir', jahisuniweir, network%sts%numuniweirs, 'line', nNodesUniweir, id_strlendim, &
+                                                 id_uniweirdim, id_uniweir_id, id_uniweirgeom_node_count, id_uniweirgeom_node_coordx, id_uniweirgeom_node_coordy)
 
-            ! Define geometry related variables
-            uniweir_geom_container_name = 'uniweir_geom'
-            nNodeTot = nNodesUniweir
-
-            ierr = sgeom_def_geometry_variables(ihisfile, uniweir_geom_container_name, 'uniweir', 'line', nNodeTot, id_uniweirdim, &
-               id_uniweirgeom_node_count, id_uniweirgeom_node_coordx, id_uniweirgeom_node_coordy)
-
-            ierr = nf90_def_var(ihisfile, 'uniweir_discharge',     nf90_double, (/ id_uniweirdim, id_timedim /), id_uniweir_dis)
-            ierr = nf90_put_att(ihisfile, id_uniweir_dis, 'long_name', 'Discharge through universal weir')
-            ierr = nf90_put_att(ihisfile, id_uniweir_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_uniweir_dis, 'coordinates', 'uniweir_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_dis, 'geometry', uniweir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'uniweir_crest_level', nf90_double, (/ id_uniweirdim, id_timedim /), id_uniweir_crestl)
-            ierr = nf90_put_att(ihisfile, id_uniweir_crestl, 'long_name', 'Crest level of universal weir')
-            ierr = nf90_put_att(ihisfile, id_uniweir_crestl, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_uniweir_crestl, 'coordinates', 'uniweir_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_crestl, 'geometry', uniweir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'uniweir_s1up',     nf90_double, (/ id_uniweirdim, id_timedim /), id_uniweir_s1up)
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1up, 'long_name', 'Water level upstream of universal weir')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1up, 'coordinates', 'uniweir_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1up, 'geometry', uniweir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'uniweir_s1dn',     nf90_double, (/ id_uniweirdim, id_timedim /), id_uniweir_s1dn)
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1dn, 'long_name', 'Water level downstream of universal weir')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1dn, 'coordinates', 'uniweir_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_s1dn, 'geometry', uniweir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'uniweir_head', nf90_double, (/ id_uniweirdim, id_timedim /), id_uniweir_head)
-            ierr = nf90_put_att(ihisfile, id_uniweir_head, 'long_name', 'Head difference across universal weir')
-            ierr = nf90_put_att(ihisfile, id_uniweir_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_uniweir_head, 'coordinates', 'uniweir_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_head, 'geometry', uniweir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'uniweir_flow_area', nf90_double, (/ id_uniweirdim, id_timedim /), id_uniweir_au)
-            ierr = nf90_put_att(ihisfile, id_uniweir_au, 'long_name', 'Flow area in universal weir')
-            ierr = nf90_put_att(ihisfile, id_uniweir_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_uniweir_au, 'coordinates', 'uniweir_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_au, 'geometry', uniweir_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'uniweir_velocity', nf90_double, (/ id_uniweirdim, id_timedim /), id_uniweir_vel)
-            ierr = nf90_put_att(ihisfile, id_uniweir_vel, 'long_name', 'Velocity through universal weir')
-            ierr = nf90_put_att(ihisfile, id_uniweir_vel, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_uniweir_vel, 'coordinates', 'uniweir_id')
-            ierr = nf90_put_att(ihisfile, id_uniweir_vel, 'geometry', uniweir_geom_container_name)
-        endif
 
         ! compound structure
-        if(jahiscmpstru > 0 .and. network%cmps%count > 0) then
-            ierr = nf90_def_dim(ihisfile, 'compoundStructures', network%cmps%count, id_cmpstrudim)
-            ierr = nf90_def_var(ihisfile, 'cmpstru_id',  nf90_char,   (/ id_strlendim, id_cmpstrudim /), id_cmpstru_id)
-            ierr = nf90_put_att(ihisfile, id_cmpstru_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_id,  'long_name', 'Id of compound structure')
-
-            ierr = nf90_def_var(ihisfile, 'cmpstru_discharge',     nf90_double, (/ id_cmpstrudim, id_timedim /), id_cmpstru_dis)
-            ierr = nf90_put_att(ihisfile, id_cmpstru_dis, 'long_name', 'Discharge through compound structure')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_dis, 'coordinates', 'cmpstru_id')
-
-            ierr = nf90_def_var(ihisfile, 'cmpstru_s1up',     nf90_double, (/ id_cmpstrudim, id_timedim /), id_cmpstru_s1up)
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1up, 'long_name', 'Water level upstream of compound structure')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1up, 'coordinates', 'cmpstru_id')
-
-            ierr = nf90_def_var(ihisfile, 'cmpstru_s1dn',     nf90_double, (/ id_cmpstrudim, id_timedim /), id_cmpstru_s1dn)
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1dn, 'long_name', 'Water level downstream of compound structure')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_s1dn, 'coordinates', 'cmpstru_id')
-
-            ierr = nf90_def_var(ihisfile, 'cmpstru_head', nf90_double, (/ id_cmpstrudim, id_timedim /), id_cmpstru_head)
-            ierr = nf90_put_att(ihisfile, id_cmpstru_head, 'long_name', 'Head difference across compound structure')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_head, 'coordinates', 'cmpstru_id')
-
-            ierr = nf90_def_var(ihisfile, 'cmpstru_flow_area', nf90_double, (/ id_cmpstrudim, id_timedim /), id_cmpstru_au)
-            ierr = nf90_put_att(ihisfile, id_cmpstru_au, 'long_name', 'Flow area in compound structure')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_au, 'coordinates', 'cmpstru_id')
-
-            ierr = nf90_def_var(ihisfile, 'cmpstru_velocity', nf90_double, (/ id_cmpstrudim, id_timedim /), id_cmpstru_vel)
-            ierr = nf90_put_att(ihisfile, id_cmpstru_vel, 'long_name', 'Velocity through compound structure')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_vel, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_cmpstru_vel, 'coordinates', 'cmpstru_id')
-        endif
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'cmpstru', 'compound structure', jahiscmpstru, network%cmps%count, 'none', 0, id_strlendim, &
+                                                 id_cmpstrudim, id_cmpstru_id)
 
         ! Long culvert
-        if(jahislongculv > 0 .and. nlongculverts > 0) then
-            ierr = nf90_def_dim(ihisfile, 'longculvert', nlongculverts, id_longculvertdim)
-            ierr = nf90_def_var(ihisfile, 'longculvert_id',  nf90_char,   (/ id_strlendim, id_longculvertdim /), id_longculvert_id)
-            ierr = nf90_put_att(ihisfile, id_longculvert_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_id,  'long_name', 'Id of long culvert')
-
-            ! Define geometry related variables
-            longculvert_geom_container_name = 'longculvert_geom'
-            nNodeTot = 0
-            nNodeTot = nNodesLongCulv
-
-            ierr = sgeom_def_geometry_variables(ihisfile, longculvert_geom_container_name, 'longculvert', 'line', nNodeTot, id_longculvertdim, &
-               id_longculvertgeom_node_count, id_longculvertgeom_node_coordx, id_longculvertgeom_node_coordy)
-            !ierr = ncu_clone_vardef(ihisfile, ihisfile, id_longculvertgeom_node_coordx, 'longculvert_geom_lon', id_laydim, & !id_statlon, &
-            !              'longitude', 'blabla1', 'degrees_east')
-
-            ierr = nf90_def_var(ihisfile, 'longculvert_discharge', nf90_double, (/ id_longculvertdim, id_timedim /), id_longculvert_dis)
-            ierr = nf90_put_att(ihisfile, id_longculvert_dis, 'long_name', 'Discharge through long culvert')
-            ierr = nf90_put_att(ihisfile, id_longculvert_dis, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_longculvert_dis, 'coordinates', 'longculvert_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_dis, 'geometry', longculvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'longculvert_s1up', nf90_double, (/ id_longculvertdim, id_timedim /), id_longculvert_s1up)
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1up, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1up, 'long_name', 'Water level upstream of long culvert')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1up, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1up, 'coordinates', 'longculvert_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1up, 'geometry', longculvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'longculvert_s1dn', nf90_double, (/ id_longculvertdim, id_timedim /), id_longculvert_s1dn)
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1dn, 'standard_name', 'sea_surface_height')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1dn, 'long_name', 'Water level downstream of long culvert')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1dn, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1dn, 'coordinates', 'longculvert_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_s1dn, 'geometry', longculvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'longculvert_head', nf90_double, (/ id_longculvertdim, id_timedim /), id_longculvert_head)
-            ierr = nf90_put_att(ihisfile, id_longculvert_head, 'long_name', 'Head difference across long culvert')
-            ierr = nf90_put_att(ihisfile, id_longculvert_head, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_longculvert_head, 'coordinates', 'longculvert_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_head, 'geometry', longculvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'longculvert_flow_area', nf90_double, (/ id_longculvertdim, id_timedim /), id_longculvert_au)
-            ierr = nf90_put_att(ihisfile, id_longculvert_au, 'long_name', 'Flow area in long culvert')
-            ierr = nf90_put_att(ihisfile, id_longculvert_au, 'units', 'm2')
-            ierr = nf90_put_att(ihisfile, id_longculvert_au, 'coordinates', 'longculvert_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_au, 'geometry', longculvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'longculvert_velocity', nf90_double, (/ id_longculvertdim, id_timedim /), id_longculvert_vel)
-            ierr = nf90_put_att(ihisfile, id_longculvert_vel, 'long_name', 'Velocity in long culvert')
-            ierr = nf90_put_att(ihisfile, id_longculvert_vel, 'units', 'm s-1')
-            ierr = nf90_put_att(ihisfile, id_longculvert_vel, 'coordinates', 'longculvert_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_vel, 'geometry', longculvert_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'longculvert_valve_relative_opening', nf90_double, (/ id_longculvertdim, id_timedim /), id_longculvert_valveopen)
-            ierr = nf90_put_att(ihisfile, id_longculvert_valveopen, 'long_name', 'Valve relative opening in long culvert')
-            ierr = nf90_put_att(ihisfile, id_longculvert_valveopen, 'units', '1')
-            ierr = nf90_put_att(ihisfile, id_longculvert_valveopen, 'coordinates', 'longculvert_id')
-            ierr = nf90_put_att(ihisfile, id_longculvert_valveopen, 'geometry', longculvert_geom_container_name)
-        endif
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'longculvert', 'long culvert', jahislongculv, nlongculverts, 'line', nNodesLongCulv, id_strlendim, &
+                                                 id_longculvertdim, id_longculvert_id, id_longculvertgeom_node_count, id_longculvertgeom_node_coordx, id_longculvertgeom_node_coordy)
 
         ! Lateral
         if(jahislateral > 0 .and. numlatsg > 0) then
@@ -2455,19 +777,6 @@ subroutine unc_write_his(tim)            ! wrihis
            ierr = nf90_def_var(ihisfile, 'comp_time', nf90_double, id_timedim, id_comp_time)
         end if
 
-        ierr = nf90_def_var(ihisfile, 'time', nf90_double, id_timedim, id_time)
-        ierr = nf90_put_att(ihisfile, id_time,  'units'        , trim(Tudunitstr))
-        ierr = nf90_put_att(ihisfile, id_time,  'standard_name', 'time')
-        ierr = nf90_put_att(ihisfile, id_time,  'bounds', 'time_bds')
-
-        ierr = nf90_def_var(ihisfile, 'time_bds', nf90_double, (/ id_twodim, id_timedim /), id_timebds)
-        ierr = nf90_put_att(ihisfile, id_timebds,  'units'        , trim(Tudunitstr))
-        ierr = nf90_put_att(ihisfile, id_timebds,  'standard_name', 'time')
-        ierr = nf90_put_att(ihisfile, id_timebds,  'long_name', 'Time interval for each point in time.')
-
-        ! Size of latest timestep
-        ierr = unc_def_var_nonspatial(ihisfile, id_timestep, nf90_double, (/ id_timedim /), 'timestep', '',     'latest computational timestep size in each output interval', 's')
-
         if ( japart.gt.0 ) then
 !          write partiles header to hisfile
            call unc_write_part_header(ihisfile,id_timedim,id_partdim,id_parttime,id_partx,id_party,id_partz)
@@ -2479,7 +788,19 @@ subroutine unc_write_his(tim)            ! wrihis
                
             if (config%location_specifier /= UNC_LOC_STATION &
                   .and. config%location_specifier /= UNC_LOC_GLOBAL &
-                  .and. config%location_specifier /= UNC_LOC_GENSTRU) then
+                  .and. config%location_specifier /= UNC_LOC_GENSTRU &
+                  .and. config%location_specifier /= UNC_LOC_DAM &
+                  .and. config%location_specifier /= UNC_LOC_PUMP &
+                  .and. config%location_specifier /= UNC_LOC_GATE &
+                  .and. config%location_specifier /= UNC_LOC_WEIRGEN &
+                  .and. config%location_specifier /= UNC_LOC_ORIFICE &
+                  .and. config%location_specifier /= UNC_LOC_BRIDGE &
+                  .and. config%location_specifier /= UNC_LOC_CULVERT &
+                  .and. config%location_specifier /= UNC_LOC_DAMBREAK &
+                  .and. config%location_specifier /= UNC_LOC_UNIWEIR &
+                  .and. config%location_specifier /= UNC_LOC_CMPSTRU &
+                  .and. config%location_specifier /= UNC_LOC_LONGCULVERT &
+            ) then
                call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station/global/genstru.')
                cycle
             end if
@@ -2512,12 +833,34 @@ subroutine unc_write_his(tim)            ! wrihis
 
             select case(config%location_specifier)
             case (UNC_LOC_GENSTRU)
-               call definencvar(ihisfile, id_var, config%nc_type, (/ id_genstrudim, id_timedim /), 2, var_name, var_long_name, config%unit, 'general_structure_id', genstru_geom_container_name, fillVal=dmiss)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_genstrudim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'general_structure_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_DAM)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_cdamdim,        id_timedim /), 2, var_name, var_long_name, config%unit, 'cdam_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_PUMP)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_pumpdim,        id_timedim /), 2, var_name, var_long_name, config%unit, 'pump_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_GATE)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_gategendim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'gategen_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_WEIRGEN)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_weirgendim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'weirgen_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_ORIFICE)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_orifgendim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'orif_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_BRIDGE)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_bridgedim,      id_timedim /), 2, var_name, var_long_name, config%unit, 'bridge_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_CULVERT)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_culvertdim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'culvert_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_DAMBREAK)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_dambreakdim,    id_timedim /), 2, var_name, var_long_name, config%unit, 'dambreak_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_UNIWEIR)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_uniweirdim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'uniweir_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_CMPSTRU)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_cmpstrudim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'cmpstru_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_LONGCULVERT)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_longculvertdim, id_timedim /), 2, var_name, var_long_name, config%unit, 'longculvert_id', fillVal=dmiss, attset=config%additional_attributes)
             case (UNC_LOC_STATION)
-               call definencvar(ihisfile, id_var, config%nc_type, (/ id_statdim, id_timedim /), 2, var_name, var_long_name, config%unit, statcoordstring, station_geom_container_name, fillVal=dmiss, add_gridmapping = .true.)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_statdim, id_timedim /), 2, var_name, var_long_name, config%unit, statcoordstring, fillVal=dmiss, add_gridmapping = .true., attset=config%additional_attributes)
             case (UNC_LOC_GLOBAL)
                if (timon) call timstrt ( "unc_write_his DEF bal", handle_extra(59))
-               call definencvar(ihisfile, id_var, config%nc_type, (/ id_timedim /), 1, var_name, var_long_name, config%unit, "", fillVal=dmiss)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_timedim /), 1, var_name, var_long_name, config%unit, "", fillVal=dmiss, attset=config%additional_attributes)
                if (timon) call timstop (handle_extra(59))
             end select
 
@@ -2536,7 +879,7 @@ subroutine unc_write_his(tim)            ! wrihis
         do i=1,numobs+nummovobs
 !           ierr = nf90_put_var(ihisfile, id_statx,    xobs(i),         (/ i /))
 !           ierr = nf90_put_var(ihisfile, id_staty,    yobs(i),         (/ i /))
-           ierr = nf90_put_var(ihisfile, id_statid, trimexact(namobs(i), strlen_netcdf), (/ 1, i /)) ! Extra for OpenDA-wrapper
+           ierr = nf90_put_var(ihisfile, id_stat_id, trimexact(namobs(i), strlen_netcdf), (/ 1, i /)) ! Extra for OpenDA-wrapper
            ierr = nf90_put_var(ihisfile, id_statname, trimexact(namobs(i), strlen_netcdf), (/ 1, i /))
         end do
 
@@ -2671,18 +1014,18 @@ subroutine unc_write_his(tim)            ! wrihis
         end if
         if (jahisgate > 0 .and. ngatesg > 0) then
             do i=1,ngatesg
-               ierr = nf90_put_var(ihisfile, id_gatename,  trimexact(gate_ids(i), strlen_netcdf),      (/ 1, i /))
+               ierr = nf90_put_var(ihisfile, id_gate_id,  trimexact(gate_ids(i), strlen_netcdf),      (/ 1, i /))
             end do
         end if
         if (jahisgate > 0 .and. ngategen > 0) then
            do i=1,ngategen
               igen = gate2cgen(i)
-              ierr = nf90_put_var(ihisfile, id_gategenname,  trimexact(cgen_ids(igen), strlen_netcdf),      (/ 1, i /))
+              ierr = nf90_put_var(ihisfile, id_gategen_id,  trimexact(cgen_ids(igen), strlen_netcdf),      (/ 1, i /))
            end do
         end if
         if (jahiscdam > 0 .and. ncdamsg > 0) then
             do i=1,ncdamsg
-               ierr = nf90_put_var(ihisfile, id_cdamname,  trimexact(cdam_ids(i), strlen_netcdf),      (/ 1, i /))
+               ierr = nf90_put_var(ihisfile, id_cdam_id,  trimexact(cdam_ids(i), strlen_netcdf),      (/ 1, i /))
             end do
         end if
         if (jahisweir > 0 .and. nweirgen > 0 ) then
@@ -2764,13 +1107,36 @@ subroutine unc_write_his(tim)            ! wrihis
                
       if (config%location_specifier /= UNC_LOC_STATION &
             .and. config%location_specifier /= UNC_LOC_GLOBAL &
-            .and. config%location_specifier /= UNC_LOC_GENSTRU) then
-         call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station/global/genstru.')
+            .and. config%location_specifier /= UNC_LOC_GENSTRU &
+            .and. config%location_specifier /= UNC_LOC_DAM &
+            .and. config%location_specifier /= UNC_LOC_PUMP &
+            .and. config%location_specifier /= UNC_LOC_GATE &
+            .and. config%location_specifier /= UNC_LOC_WEIRGEN &
+            .and. config%location_specifier /= UNC_LOC_ORIFICE &
+            .and. config%location_specifier /= UNC_LOC_BRIDGE &
+            .and. config%location_specifier /= UNC_LOC_CULVERT &
+            .and. config%location_specifier /= UNC_LOC_DAMBREAK &
+            .and. config%location_specifier /= UNC_LOC_UNIWEIR &
+            .and. config%location_specifier /= UNC_LOC_CMPSTRU &
+            .and. config%location_specifier /= UNC_LOC_LONGCULVERT &
+            ) then
+         call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station/global/genstru/uniweir.')
          cycle
       end if
 
       select case(config%location_specifier)
-      case (UNC_LOC_GENSTRU)
+      case (UNC_LOC_GENSTRU, &
+         UNC_LOC_DAM, &
+         UNC_LOC_PUMP, &
+         UNC_LOC_GATE, &
+         UNC_LOC_WEIRGEN, &
+         UNC_LOC_ORIFICE, &
+         UNC_LOC_BRIDGE, &
+         UNC_LOC_CULVERT, &
+         UNC_LOC_DAMBREAK, &
+         UNC_LOC_UNIWEIR, &
+         UNC_LOC_CMPSTRU, &
+         UNC_LOC_LONGCULVERT)
          ierr = nf90_put_var(ihisfile, id_var,   out_variable_set_his%statout(ivar)%stat_output,    start = (/ 1, it_his /)) ! , count = (/ ngenstru, 1 /)
       case (UNC_LOC_STATION)
          ierr = nf90_put_var(ihisfile, id_var,   out_variable_set_his%statout(ivar)%stat_output,    start = (/ 1, it_his /), count = (/ ntot, 1 /))
@@ -3490,9 +1856,9 @@ subroutine unc_write_his(tim)            ! wrihis
          enddo
          ! write geometry variables at the first time of history output
          if (it_his == 1) then
-            ierr = nf90_put_var(ihisfile, id_orifgeom_node_coordx, geomXOrif,     start = (/ 1 /), count = (/ nNodesOrif /))
-            ierr = nf90_put_var(ihisfile, id_orifgeom_node_coordy, geomYOrif,     start = (/ 1 /), count = (/ nNodesOrif /))
-            ierr = nf90_put_var(ihisfile, id_orifgeom_node_count,  nodeCountOrif, start = (/ 1 /), count = (/ network%sts%numOrifices /))
+            ierr = nf90_put_var(ihisfile, id_orifgengeom_node_coordx, geomXOrif,     start = (/ 1 /), count = (/ nNodesOrif /))
+            ierr = nf90_put_var(ihisfile, id_orifgengeom_node_coordy, geomYOrif,     start = (/ 1 /), count = (/ nNodesOrif /))
+            ierr = nf90_put_var(ihisfile, id_orifgengeom_node_count,  nodeCountOrif, start = (/ 1 /), count = (/ network%sts%numOrifices /))
             if (allocated(geomXOrif))     deallocate(geomXOrif)
             if (allocated(geomYOrif))     deallocate(geomYOrif)
             if (allocated(nodeCountOrif)) deallocate(nodeCountOrif)
@@ -3699,9 +2065,9 @@ subroutine unc_write_his(tim)            ! wrihis
 
             if (network%sts%numWeirs > 0) then ! new weir
 
-               ierr = nf90_put_var(ihisfile, id_weirgeom_node_coordx, geomXWeir,     start = (/ 1 /), count = (/ nNodesWeir /))
-               ierr = nf90_put_var(ihisfile, id_weirgeom_node_coordy, geomYWeir,     start = (/ 1 /), count = (/ nNodesWeir /))
-               ierr = nf90_put_var(ihisfile, id_weirgeom_node_count,  nodeCountWeir, start = (/ 1 /), count = (/ network%sts%numWeirs /))
+               ierr = nf90_put_var(ihisfile, id_weirgengeom_node_coordx, geomXWeir,     start = (/ 1 /), count = (/ nNodesWeir /))
+               ierr = nf90_put_var(ihisfile, id_weirgengeom_node_coordy, geomYWeir,     start = (/ 1 /), count = (/ nNodesWeir /))
+               ierr = nf90_put_var(ihisfile, id_weirgengeom_node_count,  nodeCountWeir, start = (/ 1 /), count = (/ network%sts%numWeirs /))
                
                if (allocated(geomXWeir))     deallocate(geomXWeir)
                if (allocated(geomYWeir))     deallocate(geomYWeir)
@@ -3721,12 +2087,12 @@ subroutine unc_write_his(tim)            ! wrihis
 
                   if (nNodes > 0) then
                      call get_geom_coordinates_of_generalstructure_oldext(i, nNodes, geom_x, geom_y)
-                     ierr = nf90_put_var(ihisfile, id_weirgeom_node_coordx, geom_x(1:nNodes), start = (/ j /), count = (/ nNodes /))
-                     ierr = nf90_put_var(ihisfile, id_weirgeom_node_coordy, geom_y(1:nNodes), start = (/ j /), count = (/ nNodes /))
+                     ierr = nf90_put_var(ihisfile, id_weirgengeom_node_coordx, geom_x(1:nNodes), start = (/ j /), count = (/ nNodes /))
+                     ierr = nf90_put_var(ihisfile, id_weirgengeom_node_coordy, geom_y(1:nNodes), start = (/ j /), count = (/ nNodes /))
                      j = j + nNodes
                   end if
                end do
-               ierr = nf90_put_var(ihisfile, id_weirgeom_node_count, node_count, start = (/ 1 /), count = (/ nweirgen /))
+               ierr = nf90_put_var(ihisfile, id_weirgengeom_node_count, node_count, start = (/ 1 /), count = (/ nweirgen /))
             end if
          end if
       end if
@@ -3906,33 +2272,45 @@ subroutine unc_write_his(tim)            ! wrihis
 
     if (timon) call timstop (handle_extra(54))
 
+contains
+   !> Define the static variables for a single structure type.
+   !! This includes: NetCDF dimension ids, character Id variable and simple geometry container variables.
+   !! Note: the writing ('putting') of data is done by another subroutine: unc_put_his_structure_static_vars.
+   function unc_def_his_structure_static_vars(ncid, prefix, name, output_enabled, count, geom_type, ngeom_node, id_strlendim, &
+                                             id_strdim, id_strid, id_geom_node_count, id_geom_coordx, id_geom_coordy) result(ierr)
+   use string_module, only: strcmpi
+      integer,           intent(in   ) :: ncid       !< NetCDF id of already open dataset
+      character(len=*),  intent(in   ) :: prefix     !< Base name of this structure type, e.g., 'uniweir'
+      character(len=*),  intent(in   ) :: name       !< Human readable name of this structure type, e.g., 'universal weir'
+      integer,           intent(in   ) :: output_enabled !< Whether or not (1/0) this structure's output must be written.
+      integer,           intent(in   ) :: count      !< Number of structures for this structure_type
+      character(len=*),  intent(in   ) :: geom_type  !< Geometry type, one of: 'point', 'line', 'polygon' (or 'none')
+      integer,           intent(in   ) :: ngeom_node !< Total number of geometry nodes for this structure_type
+      integer,           intent(in   ) :: id_strlendim !< Already created NetCDF dimension id for max string length of the character Ids.
+      integer,           intent(  out) :: id_strdim  !< NetCDF dimension id created for this structure type
+      integer,           intent(  out) :: id_strid   !< NetCDF variable id created for the character Ids of the structures of this type
+      integer, optional, intent(  out) :: id_geom_node_count !< NetCDF variable id created for the node count of the structures of this type
+      integer, optional, intent(  out) :: id_geom_coordx     !< NetCDF variable id created for the node x coordinates for all structures of this type
+      integer, optional, intent(  out) :: id_geom_coordy     !< NetCDF variable id created for the node y coordinates for all structures of this type
+
+      integer                         :: ierr       !< Result status (NF90_NOERR if successful)
+
+      ierr = NF90_NOERR
+
+      if (output_enabled > 0 .and. count > 0) then
+         ierr = nf90_def_dim(ihisfile, prefix, count, id_strdim)
+         ierr = nf90_def_var(ihisfile, prefix//'_id',  nf90_char,   (/ id_strlendim, id_strdim /), id_strid)
+         ierr = nf90_put_att(ihisfile, id_strid,  'cf_role',   'timeseries_id')
+         ierr = nf90_put_att(ihisfile, id_strid,  'long_name', 'Id of '//trim(name))
+     
+         if (.not. strcmpi(geom_type, 'none') .and. len_trim(geom_type) > 0) then
+            ! Define geometry related variables
+            ierr = sgeom_def_geometry_variables(ihisfile, prefix//'_geom', name, geom_type, ngeom_node, id_strdim, &
+                                                id_geom_node_count, id_geom_coordx, id_geom_coordy)
+         end if
+
+      end if
+
+   end function unc_def_his_structure_static_vars
+
 end subroutine unc_write_his
-
-!> A test subroutine for writing s1 to his-file, to be removed later.
-subroutine test_s1_his_output(output_set)
-   use m_observations
-   use m_statistical_output
-   use m_output_config
-   use fm_statistical_output
-   implicit none
-   type(t_output_variable_set), intent(inout) :: output_set     !> output set that needs to be initialized
-   integer :: i
-   
-   call realloc(output_set)
-   i = 1
-   output_set%count = i
-   output_set%statout(i)%output_config => out_quan_conf_his%statout(IDX_HIS_WATERLEVEL)
-   output_set%statout(i)%operation_type = SO_CURRENT
-   output_set%statout(i)%source_input => valobs(IPNT_S1,:)
-   output_set%statout(i)%stat_input => valobs(IPNT_S1,:)
-   output_set%statout(i)%stat_output => valobs(IPNT_S1,:)
-   i = i+1
-   output_set%count = i
-   output_set%statout(i)%output_config => out_quan_conf_his%statout(IDX_HIS_WATERLEVEL)
-   output_set%statout(i)%operation_type = SO_AVERAGE
-   output_set%statout(i)%source_input => valobs(IPNT_S1,:)
-   output_set%statout(i)%stat_input => valobs(IPNT_S1,:)
-   output_set%statout(i)%stat_output => valobs(IPNT_S1,:)
-   call initialize_statistical_output(output_set)
-
-end subroutine test_s1_his_output

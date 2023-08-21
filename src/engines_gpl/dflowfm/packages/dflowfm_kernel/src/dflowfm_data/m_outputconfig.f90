@@ -2,8 +2,10 @@
 !! MDU file.
 module m_output_config
    use MessageHandling
-   use coordinate_reference_system
-   
+   use netcdf_utils, only: realloc, nc_att_set
+   use coordinate_reference_system, only: nc_attribute
+   use netcdf, only: nf90_double
+   implicit none
 private
    
    public scan_input_tree
@@ -446,8 +448,7 @@ private
       character(len=Idlen)             :: description     !< Description of the input paragraph, key combination.
       integer                          :: location_specifier !< Specifies the locationwhere the variable is specified (One of UNC_LOC_CN, UNC_LOC_S
                                                              !< UNC_LOC_U, UNC_LOC_L, UNC_LOC_S3D, UNC_LOC_U3, DUNC_LOC_W, UNC_LOC_WU, ...)
-      integer                          :: num_additional_attributes  !< number of additional attributes
-      type(nc_attribute), pointer      :: additional_attributes(:)   !< optional additional attributes for this entity
+      type(nc_att_set)                 :: additional_attributes !< optional additional NetCDF attributes for this quantity
    end type t_output_quantity_config
 
    type, public :: t_output_quantity_config_set
@@ -503,8 +504,8 @@ subroutine dealloc_config_output(confoutput)
    endif
 end subroutine dealloc_config_output
 
-   !> Define an output configuration quantity. And set the IDX variable to the current entry
-subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit, location_specifier, nc_type, description)
+!> Define an output configuration quantity. And set the IDX variable to the current entry
+subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit, location_specifier, nc_type, nc_atts, description)
    type(t_output_quantity_config_set),  intent(inout) :: config_set         !< Array containing all output quantity configs.
    integer,                         intent(inout) :: idx                 !< Index for the current variable.
    character(len=*),                intent(in   ) :: key                 !< Key in the MDU file.
@@ -514,10 +515,12 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
    character(len=*),                intent(in   ) :: unit                !< Unit of the variable on the NETCDF file.
    integer,                         intent(in   ) :: location_specifier  !< Location specifier of the variable.
    integer,          optional,      intent(in   ) :: nc_type             !< NetCDF variable type, one of: nf90_double, nf90_int, etc. Default: nf90_double.
+   type(nc_attribute), optional,    intent(in   ) :: nc_atts(:)          !< (optional) list of additional NetCDF attributes to be stored for this output variable.
    character(len=*), optional,      intent(in   ) :: description         !< Description of the MDU key, used when printing an MDU or .dia file.
 
    integer :: numentries
    integer :: nc_type_
+   integer :: numatt
    
    if (present(nc_type)) then
       nc_type_ = nc_type
@@ -538,7 +541,14 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
    config_set%statout(numentries)%standard_name      = standard_name   
    config_set%statout(numentries)%unit               = unit            
    config_set%statout(numentries)%location_specifier = location_specifier
-   config_set%statout(numentries)%num_additional_attributes = 0
+
+   if (present(nc_atts)) then
+      numatt = size(nc_atts)
+      call realloc(config_set%statout(numentries)%additional_attributes, numatt, keepExisting=.false.)
+      config_set%statout(numentries)%additional_attributes%count = numatt
+      config_set%statout(numentries)%additional_attributes%atts = nc_atts
+   end if
+
    if (present(description)) then
       config_set%statout(numentries)%description = description
    else
