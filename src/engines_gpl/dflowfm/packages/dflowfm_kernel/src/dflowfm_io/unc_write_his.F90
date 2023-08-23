@@ -156,7 +156,7 @@ subroutine unc_write_his(tim)            ! wrihis
     double precision, allocatable, save :: valobsT(:,:)
     integer :: maxlocT, maxvalT !< row+column count of valobsT
 
-    integer                      :: IP, num, ntmp, n, nlyrs
+    integer                      :: IP, num, ngenstru_, n, nlyrs
 
     double precision, save       :: curtime_split = 0d0 ! Current time-partition that the file writer has open.
     integer                      :: ntot, k, i, j, jj, ierr, mnp, kk, idims(3),L, Lf, k3, k4, nNodeTot, nNodes, L0, k1, k2, nlinks
@@ -470,43 +470,32 @@ subroutine unc_write_his(tim)            ! wrihis
             endif
         
 
-        ! runup gauges
+        ! Runup gauges
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'runup_gauge', 'runup gauge', 1, nrug, 'none', 0, id_strlendim, &
+                                                 id_rugdim, id_rugid) ! No geometry
         if (nrug > 0) then
-           ierr = nf90_def_dim(ihisfile, 'runupgauges', nrug, id_rugdim)
-
            ierr = nf90_def_var(ihisfile, 'rug_x_coordinate', nf90_double, (/ id_rugdim, id_timedim /), id_rugx)
            ierr = nf90_def_var(ihisfile, 'rug_y_coordinate', nf90_double, (/ id_rugdim, id_timedim /), id_rugy)
 
-            ierr = unc_addcoordatts(ihisfile, id_rugx, id_rugy, jsferic)
-            ierr = nf90_put_att(ihisfile, id_rugx, 'long_name', 'time-varying x-coordinate of shoreline position')
-            ierr = nf90_put_att(ihisfile, id_rugy, 'long_name', 'time-varying y-coordinate of shoreline position')
+           ierr = unc_addcoordatts(ihisfile, id_rugx, id_rugy, jsferic)
+           ierr = nf90_put_att(ihisfile, id_rugx, 'long_name', 'time-varying x-coordinate of shoreline position')
+           ierr = nf90_put_att(ihisfile, id_rugy, 'long_name', 'time-varying y-coordinate of shoreline position')
 
-            ierr = nf90_def_var(ihisfile, 'rug_id', nf90_char,   (/ id_strlendim, id_rugdim /), id_rugid)
-            ierr = nf90_put_att(ihisfile, id_rugid,  'long_name'    , 'runup gauge identifier') ! REF
+           ierr = nf90_def_var(ihisfile, 'rug_name', nf90_char,   (/ id_strlendim, id_rugdim /), id_rugname)
+           ierr = nf90_put_att(ihisfile, id_rugname,  'cf_role', 'timeseries_id')
+           ierr = nf90_put_att(ihisfile, id_rugname,  'long_name'    , 'runup gauge name') ! REF
 
-            ierr = nf90_def_var(ihisfile, 'rug_name', nf90_char,   (/ id_strlendim, id_rugdim /), id_rugname)
-            ierr = nf90_put_att(ihisfile, id_rugname,  'cf_role', 'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_rugname,  'long_name'    , 'runup gauge name') ! REF
-
-            ierr = nf90_def_var(ihisfile, 'runup_height', nf90_double, (/ id_rugdim, id_timedim /), id_varruh)
-            ierr = nf90_put_att(ihisfile, id_varruh, 'standard_name', 'runup_height')
-            ierr = nf90_put_att(ihisfile, id_varruh, 'long_name', 'runup height')
-            ierr = nf90_put_att(ihisfile, id_varruh, 'units', 'm')
-            ierr = nf90_put_att(ihisfile, id_varruh, 'coordinates', 'rug_x_coordinate rug_y_coordinate rug_name')
-            ierr = nf90_put_att(ihisfile, id_varruh, '_FillValue', dmiss)
+           ierr = nf90_def_var(ihisfile, 'runup_height', nf90_double, (/ id_rugdim, id_timedim /), id_varruh)
+           ierr = nf90_put_att(ihisfile, id_varruh, 'standard_name', 'runup_height')
+           ierr = nf90_put_att(ihisfile, id_varruh, 'long_name', 'runup height')
+           ierr = nf90_put_att(ihisfile, id_varruh, 'units', 'm')
+           ierr = nf90_put_att(ihisfile, id_varruh, 'coordinates', 'rug_x_coordinate rug_y_coordinate rug_name')
+           ierr = nf90_put_att(ihisfile, id_varruh, '_FillValue', dmiss)
         endif
 
+        ! Source-sinks
         if (jahissourcesink > 0 .and. numsrc > 0) then
-           ierr = nf90_def_dim(ihisfile, 'source_sink', numsrc, id_srcdim)
-           ierr = nf90_def_dim(ihisfile, 'source_sink_name_len', strlen_netcdf, id_srclendim)
-           ierr = nf90_def_dim(ihisfile, 'source_sink_pts', msrc, id_srcptsdim)
-
-           ierr = nf90_def_var(ihisfile, 'source_sink_name', nf90_char, (/ id_srclendim, id_srcdim/), id_srcname)
-           ierr = nf90_put_att(ihisfile, id_srcname,  'cf_role', 'timeseries_id')
-           ierr = nf90_put_att(ihisfile, id_srcname,  'long_name', 'source and sink name'    )
-
            ! Define geometry related variables
-            src_geom_container_name = 'source_sink_geom'
             nNodeTot = 0
             do i = 1, numsrc
                nNodes = 0
@@ -520,57 +509,27 @@ subroutine unc_write_his(tim)            ! wrihis
                end if
                nNodeTot = nNodeTot + nNodes
             end do
-
-            ierr = sgeom_def_geometry_variables(ihisfile, src_geom_container_name, 'source_sink', 'line', nNodeTot, id_srcdim, &
-               id_srcgeom_node_count, id_srcgeom_node_coordx, id_srcgeom_node_coordy)
-
+        end if
+        
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'source_sink', 'source and sink', jahissourcesink, numsrc, 'line', nNodeTot, id_strlendim, &
+                                                 id_srcdim, id_srcname, id_srcgeom_node_count, id_srcgeom_node_coordx, id_srcgeom_node_coordy)
+        if (jahissourcesink > 0 .and. numsrc > 0) then
            ierr = nf90_def_var(ihisfile, 'source_sink_x_coordinate', nf90_double, (/ id_srcdim, id_srcptsdim  /), id_srcx)
            ierr = nf90_def_var(ihisfile, 'source_sink_y_coordinate', nf90_double, (/ id_srcdim, id_srcptsdim /), id_srcy)
            ierr = unc_addcoordatts(ihisfile, id_srcx, id_srcy, jsferic)
            ierr = nf90_put_att(ihisfile, id_srcx, '_FillValue', dmiss)
            ierr = nf90_put_att(ihisfile, id_srcy, '_FillValue', dmiss)
-
-           ierr = nf90_def_var(ihisfile, 'source_sink_prescribed_discharge', nf90_double, (/ id_srcdim, id_timedim /), id_pred)
-           ierr = nf90_put_att(ihisfile, id_pred,    'units', 'm3 s-1')
-           ierr = nf90_put_att(ihisfile, id_pred,    'coordinates', 'source_sink_name')
-           ierr = nf90_put_att(ihisfile, id_pred,    'geometry', src_geom_container_name)
-
-           ierr = nf90_def_var(ihisfile, 'source_sink_prescribed_salinity_increment', nf90_double, (/ id_srcdim, id_timedim /), id_presa)
-           ierr = nf90_put_att(ihisfile, id_presa,    'units', '1e-3')
-           ierr = nf90_put_att(ihisfile, id_presa,    'coordinates', 'source_sink_name')
-           ierr = nf90_put_att(ihisfile, id_presa,    'geometry', src_geom_container_name)
-
-           ierr = nf90_def_var(ihisfile, 'source_sink_prescribed_temperature_increment', nf90_double, (/ id_srcdim, id_timedim /), id_pretm)
-           ierr = nf90_put_att(ihisfile, id_pretm,    'units', 'degC')
-           ierr = nf90_put_att(ihisfile, id_pretm,    'coordinates', 'source_sink_name')
-           ierr = nf90_put_att(ihisfile, id_pretm,    'geometry', src_geom_container_name)
-
-           ierr = nf90_def_var(ihisfile, 'source_sink_current_discharge', nf90_double, (/ id_srcdim, id_timedim /), id_qsrccur)
-           ierr = nf90_put_att(ihisfile, id_qsrccur,    'units', 'm3 s-1')
-           ierr = nf90_put_att(ihisfile, id_qsrccur,    'coordinates', 'source_sink_name')
-           ierr = nf90_put_att(ihisfile, id_qsrccur,    'geometry', src_geom_container_name)
-
-           ierr = nf90_def_var(ihisfile, 'source_sink_cumulative_volume', nf90_double, (/ id_srcdim, id_timedim /), id_vsrccum)
-           ierr = nf90_put_att(ihisfile, id_vsrccum,    'long_name', 'Cumulative volume from the start time until current time at each source/sink')
-           ierr = nf90_put_att(ihisfile, id_vsrccum,    'units', 'm3')
-           ierr = nf90_put_att(ihisfile, id_vsrccum,    'coordinates', 'source_sink_name')
-           ierr = nf90_put_att(ihisfile, id_vsrccum,    'geometry', src_geom_container_name)
-
-           ierr = nf90_def_var(ihisfile, 'source_sink_discharge_average', nf90_double, (/ id_srcdim, id_timedim /), id_qsrcavg)
-           ierr = nf90_put_att(ihisfile, id_qsrcavg,    'long_name', 'Average discharge in the past his-file output-interval at each source/sink')
-           ierr = nf90_put_att(ihisfile, id_qsrcavg,    'units', 'm3 s-1')
-           ierr = nf90_put_att(ihisfile, id_qsrcavg,    'coordinates', 'source_sink_name')
-           ierr = nf90_put_att(ihisfile, id_qsrcavg,    'geometry', src_geom_container_name)
-        endif
-
+        end if
 
         if (timon) call timstrt ( "unc_write_his DEF structures", handle_extra(60))
+
+        ! General structure (either via old .ext file or new structures.ini file)
         if (jaoldstr == 1) then
-           ntmp = ncgensg
+           ngenstru_ = ncgensg
         else
-           ntmp = ngenstru
+           ngenstru_ = ngenstru
         end if
-        if(jahiscgen > 0 .and. ntmp > 0) then
+        if (jahiscgen > 0 .and. ngenstru_ > 0) then
             nNodeTot = 0
             if (network%sts%numGeneralStructures > 0) then ! new general structure
                nNodeTot = nNodesGenstru
@@ -587,9 +546,10 @@ subroutine unc_write_his(tim)            ! wrihis
                end do
             end if
         end if
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'general_structure', 'general structure', jahiscgen, ntmp, 'line', nNodeTot, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'general_structure', 'general structure', jahiscgen, ngenstru_, 'line', nNodeTot, id_strlendim, &
                                                  id_genstrudim, id_genstru_id, id_genstrugeom_node_count, id_genstrugeom_node_coordx, id_genstrugeom_node_coordy)
 
+        ! Pump
         if(jahispump > 0 .and. npumpsg > 0) then
             ierr = nf90_def_dim(ihisfile, 'pumps', npumpsg, id_pumpdim)
             ierr = nf90_def_var(ihisfile, 'pump_id',  nf90_char,   (/ id_strlendim, id_pumpdim /), id_pump_id)
@@ -698,42 +658,9 @@ subroutine unc_write_his(tim)            ! wrihis
                                                  id_longculvertdim, id_longculvert_id, id_longculvertgeom_node_count, id_longculvertgeom_node_coordx, id_longculvertgeom_node_coordy)
 
         ! Lateral
-        if(jahislateral > 0 .and. numlatsg > 0) then
-            ierr = nf90_def_dim(ihisfile, 'lateral', numlatsg, id_latdim)
-            ierr = nf90_def_var(ihisfile, 'lateral_id',  nf90_char,   (/ id_strlendim, id_latdim /), id_lat_id)
-            ierr = nf90_put_att(ihisfile, id_lat_id,  'cf_role',   'timeseries_id')
-            ierr = nf90_put_att(ihisfile, id_lat_id,  'long_name', 'Id of lateral')
-
-            ! Define geometry related variables
-            lat_geom_container_name = 'lateral_geom'
-            nNodeTot = nNodesLat
-            ierr = sgeom_def_geometry_variables(ihisfile, lat_geom_container_name, 'lateral', 'point', nNodeTot, id_latdim, &
-               id_latgeom_node_count, id_latgeom_node_coordx, id_latgeom_node_coordy)
-
-            ierr = nf90_def_var(ihisfile, 'lateral_prescribed_discharge_instantaneous', nf90_double, (/ id_latdim, id_timedim /), id_lat_predis_inst)
-            ierr = nf90_put_att(ihisfile, id_lat_predis_inst, 'long_name', 'Prescribed discharge through lateral at current time step (instantaneous)')
-            ierr = nf90_put_att(ihisfile, id_lat_predis_inst, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_lat_predis_inst, 'coordinates', 'lateral_id')
-            ierr = nf90_put_att(ihisfile, id_lat_predis_inst, 'geometry', lat_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'lateral_prescribed_discharge_average', nf90_double, (/ id_latdim, id_timedim /), id_lat_predis_ave)
-            ierr = nf90_put_att(ihisfile, id_lat_predis_ave, 'long_name', 'Prescribed discharge through lateral, average over the last history time interval')
-            ierr = nf90_put_att(ihisfile, id_lat_predis_ave, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_lat_predis_ave, 'coordinates', 'lateral_id')
-            ierr = nf90_put_att(ihisfile, id_lat_predis_ave, 'geometry', lat_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'lateral_realized_discharge_instantaneous', nf90_double, (/ id_latdim, id_timedim /), id_lat_realdis_inst)
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_inst, 'long_name', 'Realized discharge through lateral at current time step (instantaneous)')
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_inst, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_inst, 'coordinates', 'lateral_id')
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_inst, 'geometry', lat_geom_container_name)
-
-            ierr = nf90_def_var(ihisfile, 'lateral_realized_discharge_average', nf90_double, (/ id_latdim, id_timedim /), id_lat_realdis_ave)
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_ave, 'long_name', 'Realized discharge through lateral, average over the last history time interval')
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_ave, 'units', 'm3 s-1')
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_ave, 'coordinates', 'lateral_id')
-            ierr = nf90_put_att(ihisfile, id_lat_realdis_ave, 'geometry', lat_geom_container_name)
-        endif
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'lateral', 'lateral', jahislateral, numlatsg, 'point', nNodesLat, id_strlendim, &
+                                                 id_latdim, id_lat_id, id_latgeom_node_count, id_latgeom_node_coordx, id_latgeom_node_coordy)
+        ! TODO: UNST-7239: remove separate average IDX?
         if (timon) call timstop (handle_extra(60))
 
         if(dad_included) then  ! Output for dredging and dumping
@@ -788,6 +715,8 @@ subroutine unc_write_his(tim)            ! wrihis
                
             if (config%location_specifier /= UNC_LOC_STATION &
                   .and. config%location_specifier /= UNC_LOC_GLOBAL &
+                  .and. config%location_specifier /= UNC_LOC_SOSI &
+                  .and. config%location_specifier /= UNC_LOC_RUG &
                   .and. config%location_specifier /= UNC_LOC_GENSTRU &
                   .and. config%location_specifier /= UNC_LOC_DAM &
                   .and. config%location_specifier /= UNC_LOC_PUMP &
@@ -800,6 +729,7 @@ subroutine unc_write_his(tim)            ! wrihis
                   .and. config%location_specifier /= UNC_LOC_UNIWEIR &
                   .and. config%location_specifier /= UNC_LOC_CMPSTRU &
                   .and. config%location_specifier /= UNC_LOC_LONGCULVERT &
+                  .and. config%location_specifier /= UNC_LOC_LATERAL &
             ) then
                call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station/global/genstru.')
                cycle
@@ -832,6 +762,10 @@ subroutine unc_write_his(tim)            ! wrihis
             end if
 
             select case(config%location_specifier)
+            case (UNC_LOC_SOSI)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_srcdim,         id_timedim /), 2, var_name, var_long_name, config%unit, 'source_sink_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_RUG)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_rugdim,         id_timedim /), 2, var_name, var_long_name, config%unit, 'rug_x_coordinate rug_y_coordinate rug_id', fillVal=dmiss, attset=config%additional_attributes)
             case (UNC_LOC_GENSTRU)
                call definencvar(ihisfile, id_var, config%nc_type, (/ id_genstrudim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'general_structure_id', fillVal=dmiss, attset=config%additional_attributes)
             case (UNC_LOC_DAM)
@@ -856,6 +790,8 @@ subroutine unc_write_his(tim)            ! wrihis
                call definencvar(ihisfile, id_var, config%nc_type, (/ id_cmpstrudim,     id_timedim /), 2, var_name, var_long_name, config%unit, 'cmpstru_id', fillVal=dmiss, attset=config%additional_attributes)
             case (UNC_LOC_LONGCULVERT)
                call definencvar(ihisfile, id_var, config%nc_type, (/ id_longculvertdim, id_timedim /), 2, var_name, var_long_name, config%unit, 'longculvert_id', fillVal=dmiss, attset=config%additional_attributes)
+            case (UNC_LOC_LATERAL)
+               call definencvar(ihisfile, id_var, config%nc_type, (/ id_latdim,         id_timedim /), 2, var_name, var_long_name, config%unit, 'lat_id', fillVal=dmiss, attset=config%additional_attributes)
             case (UNC_LOC_STATION)
                call definencvar(ihisfile, id_var, config%nc_type, (/ id_statdim, id_timedim /), 2, var_name, var_long_name, config%unit, statcoordstring, fillVal=dmiss, add_gridmapping = .true., attset=config%additional_attributes)
             case (UNC_LOC_GLOBAL)
@@ -876,6 +812,8 @@ subroutine unc_write_his(tim)            ! wrihis
         if (timon) call timstop (handle_extra(61))
 
         if (timon) call timstrt ('unc_write_his timeindep data', handle_extra(63))
+        
+        ! Observation stations
         do i=1,numobs+nummovobs
 !           ierr = nf90_put_var(ihisfile, id_statx,    xobs(i),         (/ i /))
 !           ierr = nf90_put_var(ihisfile, id_staty,    yobs(i),         (/ i /))
@@ -883,6 +821,7 @@ subroutine unc_write_his(tim)            ! wrihis
            ierr = nf90_put_var(ihisfile, id_statname, trimexact(namobs(i), strlen_netcdf), (/ 1, i /))
         end do
 
+        ! Observation cross sections
         if (ncrs > 0) then
             do i=1,ncrs
                 !ierr = nf90_put_var(ihisfile, id_crsx,     crs(i)%path%xp(1:crs(i)%path%np), (/ 1, i /))
@@ -896,9 +835,10 @@ subroutine unc_write_his(tim)            ! wrihis
                if (allocated(geomXCrs))     deallocate(geomXCrs)
                if (allocated(geomYCrs))     deallocate(geomYCrs)
                if (allocated(nodeCountCrs)) deallocate(nodeCountCrs)
-               end if
-                  end if
+            end if
+        end if
 
+        ! Run-up gauges
         if (nrug>0) then
             do i=1,nrug
                 ierr = nf90_put_var(ihisfile, id_rugname,  trimexact(rug(i)%name, strlen_netcdf), (/ 1, i /))
@@ -906,8 +846,47 @@ subroutine unc_write_his(tim)            ! wrihis
             end do
         endif
 
-        if (jahiscgen > 0 .and. ntmp > 0) then
-            do i=1,ntmp
+        ! Source-sinks
+        if (jahissourcesink > 0 .and. numsrc > 0) then
+           do i = 1, numsrc
+              ierr = nf90_put_var(ihisfile, id_srcname, trimexact(srcname(i), strlen_netcdf), (/ 1, i/) )
+              ierr = nf90_put_var(ihisfile, id_qsrccur, qstss((numconst+1)*(i-1)+1), (/ i, it_his /)) ! Intentionally here for the first output time
+           enddo
+           ierr = nf90_put_var(ihisfile, id_srcx, xsrc)
+           ierr = nf90_put_var(ihisfile, id_srcy, ysrc)
+           j = 1
+           call realloc(node_count, numsrc, fill = 0)
+           call realloc(geom_x, 2)
+           call realloc(geom_y, 2)
+           do i = 1, numsrc
+              k1 = ksrc(1,i)
+              k2 = ksrc(4,i)
+              nNodes = 0
+              if (k1 > 0) then
+                 nNodes = nNodes + 1
+                 geom_x(nNodes) = xz(k1)
+                 geom_y(nNodes) = yz(k1)
+              end if
+              if (k2 > 0) then
+                 nNodes = nNodes + 1
+                 geom_x(nNodes) = xz(k2)
+                 geom_y(nNodes) = yz(k2)
+              end if
+ 
+              node_count(i) = nNodes
+              if (nNodes > 0) then
+                 ierr = nf90_put_var(ihisfile, id_srcgeom_node_coordx,  geom_x(1:nNodes), start = (/ j /), count = (/ nNodes /))
+                 ierr = nf90_put_var(ihisfile, id_srcgeom_node_coordy,  geom_y(1:nNodes), start = (/ j /), count = (/ nNodes /))
+              end if
+ 
+              j = j + nNodes
+           end do
+           ierr = nf90_put_var(ihisfile, id_srcgeom_node_count, node_count)
+        end if
+
+        ! General structures
+        if (jahiscgen > 0 .and. ngenstru_ > 0) then
+            do i=1,ngenstru_
                if (jaoldstr == 1) then
                   igen = i
                else
@@ -958,10 +937,14 @@ subroutine unc_write_his(tim)            ! wrihis
            end do
         end if
 
+        ! Lateral discharges
         if (jahislateral > 0 .and. numlatsg > 0) then
            do i = 1, numlatsg
               ierr = nf90_put_var(ihisfile, id_lat_id,  trimexact(lat_ids(i), strlen_netcdf), (/ 1, i /))
            end do
+           ierr = nf90_put_var(ihisfile, id_latgeom_node_coordx, geomXLat(1:nNodesLat), start = (/ 1 /), count = (/ nlatnd /))
+           ierr = nf90_put_var(ihisfile, id_latgeom_node_coordy, geomYLat(1:nNodesLat), start = (/ 1 /), count = (/ nlatnd /))
+           ierr = nf90_put_var(ihisfile, id_latgeom_node_count,  nodeCountLat)
         end if
 
         if (jahispump > 0 .and. npumpsg > 0) then
@@ -1107,6 +1090,8 @@ subroutine unc_write_his(tim)            ! wrihis
                
       if (config%location_specifier /= UNC_LOC_STATION &
             .and. config%location_specifier /= UNC_LOC_GLOBAL &
+            .and. config%location_specifier /= UNC_LOC_SOSI &
+            .and. config%location_specifier /= UNC_LOC_RUG &
             .and. config%location_specifier /= UNC_LOC_GENSTRU &
             .and. config%location_specifier /= UNC_LOC_DAM &
             .and. config%location_specifier /= UNC_LOC_PUMP &
@@ -1119,13 +1104,17 @@ subroutine unc_write_his(tim)            ! wrihis
             .and. config%location_specifier /= UNC_LOC_UNIWEIR &
             .and. config%location_specifier /= UNC_LOC_CMPSTRU &
             .and. config%location_specifier /= UNC_LOC_LONGCULVERT &
+            .and. config%location_specifier /= UNC_LOC_LATERAL &
             ) then
          call mess(LEVEL_DEBUG, 'unc_write_his: skipping item '//trim(config%name)//', because it''s not on a station/global/genstru/uniweir.')
          cycle
       end if
 
       select case(config%location_specifier)
-      case (UNC_LOC_GENSTRU, &
+      case (UNC_LOC_STATION, &
+         UNC_LOC_SOSI, &
+         UNC_LOC_RUG, &
+         UNC_LOC_GENSTRU, &
          UNC_LOC_DAM, &
          UNC_LOC_PUMP, &
          UNC_LOC_GATE, &
@@ -1136,10 +1125,10 @@ subroutine unc_write_his(tim)            ! wrihis
          UNC_LOC_DAMBREAK, &
          UNC_LOC_UNIWEIR, &
          UNC_LOC_CMPSTRU, &
-         UNC_LOC_LONGCULVERT)
+         UNC_LOC_LONGCULVERT, &
+         UNC_LOC_LATERAL &
+         )
          ierr = nf90_put_var(ihisfile, id_var,   out_variable_set_his%statout(ivar)%stat_output,    start = (/ 1, it_his /)) ! , count = (/ ngenstru, 1 /)
-      case (UNC_LOC_STATION)
-         ierr = nf90_put_var(ihisfile, id_var,   out_variable_set_his%statout(ivar)%stat_output,    start = (/ 1, it_his /), count = (/ ntot, 1 /))
       case (UNC_LOC_GLOBAL)
          if (timon) call timstrt('unc_write_his IDX data', handle_extra(67))
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output,  start=(/ it_his /))
@@ -1609,79 +1598,22 @@ subroutine unc_write_his(tim)            ! wrihis
     if (nrug>0) then
        call realloc(geom_x,   nrug, fill=dmiss)
        call realloc(geom_y,   nrug, fill=dmiss)
-       call realloc(toutput1, nrug, fill=dmiss)
        do i=1,nrug
           geom_x(i)   = rug(i)%maxx
           geom_y(i)   = rug(i)%maxy
-          toutput1(i) = rug(i)%maxruh
        end do
        ierr = nf90_put_var(ihisfile, id_rugx,   geom_x(:),   start = (/ 1, it_his /), count = (/ nrug, 1 /))
        ierr = nf90_put_var(ihisfile, id_rugy,   geom_y(:),   start = (/ 1, it_his /), count = (/ nrug, 1 /))
-       ierr = nf90_put_var(ihisfile, id_varruh, toutput1(:), start = (/ 1, it_his /), count = (/ nrug, 1 /))
+       ! ierr = nf90_put_var(ihisfile, id_varruh, toutput1(:), start = (/ 1, it_his /), count = (/ nrug, 1 /)) ! Via stat output
     endif
 
     if (timon) call timstop(handle_extra(65))
 
     if (timon) call timstrt ( "unc_write_his str write", handle_extra(62))
-    if (jahissourcesink > 0 .and. numsrc > 0) then
-      if (tim == tstart_user) then
-        do i = 1, numsrc
-          ierr = nf90_put_var(ihisfile, id_srcname, trimexact(srcname(i), strlen_netcdf), (/ 1, i/) )
-          ierr = nf90_put_var(ihisfile, id_qsrccur, qstss((numconst+1)*(i-1)+1), (/ i, it_his /))
-        enddo
-        ierr = nf90_put_var(ihisfile, id_srcx, xsrc)
-        ierr = nf90_put_var(ihisfile, id_srcy, ysrc)
-      else
-         ierr = nf90_put_var(ihisfile, id_qsrccur, qsrc, (/ 1, it_his /))
-      endif
-
-      ! write geometry variables at the first time of history output
-       if (it_his == 1) then
-          j = 1
-          call realloc(node_count, numsrc, fill = 0)
-          call realloc(geom_x, 2)
-          call realloc(geom_y, 2)
-          do i = 1, numsrc
-             k1 = ksrc(1,i)
-             k2 = ksrc(4,i)
-             nNodes = 0
-             if (k1 > 0) then
-                nNodes = nNodes + 1
-                geom_x(nNodes) = xz(k1)
-                geom_y(nNodes) = yz(k1)
-             end if
-             if (k2 > 0) then
-                nNodes = nNodes + 1
-                geom_x(nNodes) = xz(k2)
-                geom_y(nNodes) = yz(k2)
-             end if
-
-             node_count(i) = nNodes
-             if (nNodes > 0) then
-                ierr = nf90_put_var(ihisfile, id_srcgeom_node_coordx,  geom_x(1:nNodes), start = (/ j /), count = (/ nNodes /))
-                ierr = nf90_put_var(ihisfile, id_srcgeom_node_coordy,  geom_y(1:nNodes), start = (/ j /), count = (/ nNodes /))
-             end if
-
-             j = j + nNodes
-          end do
-          ierr = nf90_put_var(ihisfile, id_srcgeom_node_count, node_count)
-       end if
-
-      ierr = nf90_put_var(ihisfile, id_vsrccum, vsrccum, (/ 1, it_his /))
-      ierr = nf90_put_var(ihisfile, id_qsrcavg, qsrcavg, (/ 1, it_his /))
-      do i = 1, numsrc
-        ierr = nf90_put_var(ihisfile, id_pred,  qstss((numconst+1)*(i-1) + 1), (/ i, it_his /))
-        j = 1
-        if (isalt > 0) then
-           j = j + 1
-           ierr = nf90_put_var(ihisfile, id_presa, qstss((numconst+1)*(i-1) + j), (/ i, it_his /))
-        endif
-        if (itemp > 0) then
-           j = j + 1
-           ierr = nf90_put_var(ihisfile, id_pretm, qstss((numconst+1)*(i-1) + j), (/ i, it_his /))
-        endif
-      enddo
-    endif
+    ! TODO: UNST-7239: ensure that stat output items have correct value also at it_his==1
+      !if (tim > tstart_user) then
+      !   ierr = nf90_put_var(ihisfile, id_qsrccur, qsrc, (/ 1, it_his /))
+      !endif
 
       if (jahiscgen > 0 ) then
          if (ncgensg > 0) then
@@ -1977,19 +1909,6 @@ subroutine unc_write_his(tim)            ! wrihis
             if (allocated(nodeCountLongCulv)) deallocate(nodeCountLongCulv)
                end if
          end if
-
-      if (jahislateral > 0 .and. numlatsg > 0) then
-         ierr = nf90_put_var(ihisfile, id_lat_predis_inst,  qplat,       start = (/1,it_his/), count = (/numlatsg,1/))
-         ierr = nf90_put_var(ihisfile, id_lat_predis_ave,   qplatAve,    start = (/1,it_his/), count = (/numlatsg,1/))
-         ierr = nf90_put_var(ihisfile, id_lat_realdis_inst, qLatReal,    start = (/1,it_his/), count = (/numlatsg,1/))
-         ierr = nf90_put_var(ihisfile, id_lat_realdis_ave,  qLatRealAve, start = (/1,it_his/), count = (/numlatsg,1/))
-         ! write geometry variables at the first time of history output
-         if (it_his == 1) then
-            ierr = nf90_put_var(ihisfile, id_latgeom_node_coordx, geomXLat(1:nNodesLat), start = (/ 1 /), count = (/ nlatnd /))
-            ierr = nf90_put_var(ihisfile, id_latgeom_node_coordy, geomYLat(1:nNodesLat), start = (/ 1 /), count = (/ nlatnd /))
-            ierr = nf90_put_var(ihisfile, id_latgeom_node_count,  nodeCountLat)
-         end if
-      end if
 
       if (jahisgate > 0 .and. ngatesg > 0) then
          do i=1,ngatesg

@@ -16,7 +16,8 @@ private
    type(t_output_variable_set), public :: out_variable_set_clm
    
    double precision, dimension(:), allocatable, target, public :: constit_crs_obs_data !< constituent data on observation cross sections to be written
-   
+   double precision, dimension(:), allocatable, target, public :: rug_ruheight !< Run-up height on run-up gauges to be written.
+
    public default_fm_statistical_output, flow_init_statistical_output_his !aggregate_constit_crs_obs_data
 
    contains
@@ -62,7 +63,30 @@ private
    endif
 
    end subroutine aggregate_constit_crs_obs_data
+   
+   
+   !> Calculates run-up gauge data for his output.
+   !! Will allocate and fill the rug_ruheight array.
+   subroutine calculate_rug_data(source_input)
+      use m_monitoring_runupgauges, only: nrug, rug
+      double precision, pointer, dimension(:), intent(inout) :: source_input
+   
+      integer :: i
+   
+      if (.not. allocated(rug_ruheight)) then
+         allocate(rug_ruheight(nrug))
+      endif
+   
+      if (.not. associated(source_input))then
+         source_input => rug_ruheight
+      endif
 
+      do i=1,nrug
+         rug_ruheight(i) = rug(i)%maxruh
+      end do
+   end subroutine calculate_rug_data
+
+   
    !> Set all possible statistical quantity items in the quantity configuration sets.
    subroutine default_fm_statistical_output()
       use netcdf_utils, only: ncu_set_att
@@ -160,7 +184,7 @@ private
                      'Wrihis_balance', 'water_balance_'//trim(voltotname(IDX_EVAP_ICEPT)), '', '', 'm3', UNC_LOC_GLOBAL)
       call addoutval(out_quan_conf_his, IDX_HIS_PRECIP_GROUND,                                      &
                      'Wrihis_balance', 'water_balance_'//trim(voltotname(IDX_PRECIP_GROUND)), '', '', 'm3', UNC_LOC_GLOBAL)
-  
+
       !
       ! HIS: source sinks
       !
@@ -185,6 +209,13 @@ private
                      'Wrihis_sourcesink', 'source_sink_discharge_average' , '', '',                     &
                      'm3 s-1', UNC_LOC_SOSI, nc_atts = atts(1:1)   )
 
+      !
+      ! HIS: run-up gauges
+      !
+      call addoutval(out_quan_conf_his, IDX_HIS_RUG_RUHEIGHT,                   &
+                     'Wrihis_runupgauge', 'runup_height', 'runup height', '',                     &
+                     'm', UNC_LOC_RUG, description='Write run-up gauge statistics to his file')
+  
       !
       ! HIS: hydraulic structures
       !
@@ -825,7 +856,6 @@ private
       !
       ! HIS: Lateral discharges
       !
-      ! TODO: UNST-7239:
       call ncu_set_att(atts(1), 'geometry', 'lateral_geom')
 
       call addoutval(out_quan_conf_his, IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_INSTANTANEOUS,         &
@@ -845,8 +875,6 @@ private
                      'Realized discharge through lateral, average over the last history time interval',             &
                      '', 'm3 s-1', UNC_LOC_LATERAL, nc_atts = atts(1:1))
 
-      ! TODO: UNST-7239: runup gauges
-      
       !
       ! MAP:
       !
@@ -1339,6 +1367,7 @@ private
       use m_transport, only: numconst, isalt, itemp, numconst_mdu
       use m_longculverts, only: nlongculverts
       USE m_monitoring_crosssections, only: ncrs
+      use m_monitoring_runupgauges, only: nrug
       USE, INTRINSIC :: ISO_C_BINDING
    
       type(t_output_quantity_config_set), intent(in   ) :: output_config !< output config for which an output set is needed.
@@ -1399,7 +1428,6 @@ private
       !
       ! Source-sink variables
       !
-      ! TODO: UNST-7239:
       if (jahissourcesink > 0 .and. numsrc > 0) then
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_PRESCRIBED_DISCHARGE),               qstss(1:(numconst+1)*numsrc:(numconst+1)))
          i = 1
@@ -1414,6 +1442,15 @@ private
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_CURRENT_DISCHARGE),qsrc)
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_CUMULATIVE_VOLUME),vsrccum)
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SOURCE_SINK_DISCHARGE_AVERAGE),qsrcavg)
+      endif
+
+      !
+      ! Run-up gauge variables
+      !
+      if (nrug > 0) then
+         function_pointer => calculate_rug_data
+         temp_pointer => null()
+         call add_stat_output_items(output_set, output_config%statout(IDX_HIS_RUG_RUHEIGHT), temp_pointer, function_pointer)
       endif
 
       !

@@ -45,6 +45,7 @@ private
    integer, parameter, public :: UNC_LOC_LONGCULVERT = 34 !< Data location: his file long culvert data
    integer, parameter, public :: UNC_LOC_STATION     = 35 !< Data location: his file monitoring station data
    integer, parameter, public :: UNC_LOC_LATERAL     = 36 !< Data location: his file lateral locations data
+   integer, parameter, public :: UNC_LOC_RUG      = 37 !< Data location: his file run-up gauge data
    
    !> indexes for output variables 
    integer, public :: IDX_HIS_VOLTOT
@@ -87,6 +88,7 @@ private
    integer, public :: IDX_HIS_ICEPT
    integer, public :: IDX_HIS_EVAP_ICEPT
    integer, public :: IDX_HIS_PRECIP_GROUND
+   integer, public :: IDX_HIS_RUG_RUHEIGHT
    integer, public :: IDX_HIS_SOURCE_SINK_PRESCRIBED_DISCHARGE
    integer, public :: IDX_HIS_SOURCE_SINK_PRESCRIBED_SALINITY_INCREMENT
    integer, public :: IDX_HIS_SOURCE_SINK_PRESCRIBED_TEMPERATURE_INCREMENT
