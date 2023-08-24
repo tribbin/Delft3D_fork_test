@@ -2926,7 +2926,6 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
     use m_GlobalParameters
     use m_longculverts
     use m_structures_saved_parameters
-    use m_initsedtra, only: initsedtra
 
     integer,           intent(in) :: irstfile
     real(kind=hp),     intent(in) :: tim
@@ -12507,6 +12506,7 @@ subroutine unc_read_map_or_rst(filename, ierr)
     use m_GlobalParameters
     use netcdf_utils, only: ncu_get_att
     use m_structures_saved_parameters
+    use m_initsedtra, only: initsedtra
 
     character(len=*),  intent(in)       :: filename   !< Name of NetCDF file.
     integer,           intent(out)      :: ierr       !< Return status (NetCDF operations)
