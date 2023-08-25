@@ -214,7 +214,7 @@ subroutine tranb5(u         ,v         ,d50       ,d90       ,chezy     , &
        ssksi = 0.0_fp
        sseta = 0.0_fp
     endif
-    !
+    ! 
     if (utot > 1.0e-10_fp) then
        sbotx = sbota*u + sbksi + ssksi
        sboty = sbota*v + sbeta + sseta
