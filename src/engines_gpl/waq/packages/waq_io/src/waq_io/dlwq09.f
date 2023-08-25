@@ -33,7 +33,7 @@
 
 
       subroutine dlwq09 ( lun    , lchar  , filtype, car    , iar    ,
-     &                    icmax  , iimax  , iwidth , ibflag , vrsion ,
+     &                    icmax  , iimax  , iwidth , ibflag ,
      &                    ioutpt , ioutps , outputs, ierr   , iwar   )
 
 !       Deltares Software Centre
@@ -82,7 +82,6 @@
       integer  ( 4), intent(in   ) :: iimax             !< size of the integer workspace
       integer  ( 4), intent(in   ) :: iwidth            !< width of the output file
       integer  ( 4), intent(in   ) :: ibflag            !< mass balance option flag
-      real     ( 4), intent(in   ) :: vrsion            !< version number of this input
       integer  ( 4), intent(in   ) :: ioutpt            !< flag for more or less output
       integer  ( 4), intent(  out) :: ioutps(7,noutp)   !< output administration array
       type(OutputColl)                Outputs           !< output collection
@@ -209,7 +208,7 @@
       call rdodef ( noutp   , nrvar   , nrvarm  , isrtou  , car     ,
      &              infile  , nx      , ny      , nodump  , ibflag  ,
      &              lmoutp  , ldoutp  , lhoutp  , lncout  , ierr    ,
-     &              igrdou  , ndmpar  , vrsion  )
+     &              igrdou  , ndmpar  )
 
 !     Calculate OUTPUT boot variables NVART, NBUFMX
 

@@ -52,14 +52,9 @@
 
 !     Deltares - Delft Software Centre
 
-!     Created   : Early '90s by Team around Guus Stelling / Jan van Kester
-
 !     Function  : Performs ADI integration in an advanced way (3rd order)
 
 !     Subroutines called: difacr performs horizontal diffusion with anti-creep
-
-!     Modified  : July     2008, Leo Postma  : WAQ performance timers
-!                 Januari  2010, Leo Postma  : Update to recent version
 
 !     The problem with holding this routine up-to-date is in the fact that
 !         it has its own dynamics in the Delft3D-FLOW environment with a

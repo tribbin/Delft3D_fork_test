@@ -277,12 +277,6 @@
 !
 !     output formats
 !
- 2000 FORMAT ( ' WARNING: version proces input ',F5.2,' less than'
-     &        /'          PROCES system version,',F5.2,
-     &        /'          Please upgrade the proc_def when you are not'
-     &        /'          using an OpenPLCT proc_def')
- 2010 FORMAT ( ' WARNING: version proces input ',F5.2,' greater than'
-     &        /'          PROCES system version,',F5.2)
  2020 FORMAT ( ' ERROR  : Proces work file doesn''t match dimensions in'
      &        /'          DELWAQ boot file for NIPMSA',
      &        /'          ',I6,' in proces,',I6,' in boot file.')

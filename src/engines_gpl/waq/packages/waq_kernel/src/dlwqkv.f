@@ -32,8 +32,6 @@
 !
 !     Deltares     SECTOR WATERRESOURCES AND ENVIRONMENT
 !
-!     CREATED:            : december 1994 by Jan van Beek
-!                           Integer version of DLWQT2 by L. Postma
 !
 !     FUNCTION            : Makes values at ITIME for user supplied
 !                                         binary intermediate files

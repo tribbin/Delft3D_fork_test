@@ -46,7 +46,6 @@ contains
    integer             , intent(inout) :: iwar
    integer             , intent(inout) :: ierr
    
-   real                                :: vrsion
    integer                             :: ioutpt
    logical                             :: dtflg1
    logical                             :: dtflg3
@@ -60,7 +59,6 @@ contains
    endif
    npos   = 1000
    cchar  = ';'
-   vrsion = -1.0
    noinfo = 0
    iwar = 0
    ierr = 0
@@ -68,7 +66,7 @@ contains
    dtflg1 = .true.
    dtflg3 = .false.
 
-   call dlwqs1 ( lunrep       , npos         , cchar        , vrsion       , ilun         , lch          , &
+   call dlwqs1 ( lunrep       , npos         , cchar        , ilun         , lch          , &
                  lstack       , ioutpt       , dtflg1       , dtflg3       , statprocesdef, allitems     , &
                  noinfo       , iwar         , ierr         )
    close(ilun(1))
