@@ -36,7 +36,7 @@
      &                    npoins  , dtflg1  , dtflg2  , nodump  , iopt    ,
      &                    noint   , iwidth  , dtflg3  , ndmpar  , ntdmps  ,
      &                    noraai  , ntraaq  , nosys   , notot   , nototp  ,
-     &                    vrsion  , ioutpt  , nsegdmp , isegdmp , nexcraai,
+     &                    ioutpt  , nsegdmp , isegdmp , nexcraai,
      &                    iexcraai, ioptraai, ierr    , iwar    )
 
 !       Deltares Software Centre
@@ -127,7 +127,6 @@
       integer  ( 4), intent(in   ) :: nosys             !< number of transported substances
       integer  ( 4), intent(inout) :: notot             !< total number of substances
       integer  ( 4), intent(  out) :: nototp            !< notot inclusive of partcle substances
-      real     ( 4), intent(in   ) :: vrsion            !< version number of this input
       integer  ( 4), intent(in   ) :: ioutpt            !< flag for more or less output
       integer  ( 4), pointer       :: nsegdmp (:)       !< number of volumes in this monitoring area
       integer  ( 4), pointer       :: isegdmp (:)       !< computational volume numbers
@@ -475,69 +474,13 @@
 
    20 nodump = 0
       nullify(duname)
-      if ( vrsion .le. 4.29 ) then
-
-!             allocate memory
-
-         if ( gettoken( ndmpar, ierr2 ) .gt. 0 ) goto 30
-         write ( lunut , 2340 ) ndmpar
-         allocate ( duname(ndmpar), stat=ierr2 )
-         if ( ierr2 .ne. 0 ) then
-            write ( lunut , 2350 ) ierr2
-            goto 30
-         endif
-         allocate ( nsegdmp(ndmpar),dmpbal(ndmpar),stat=ierr2 )
-         if ( ierr2 .ne. 0 ) then
-            write ( lunut , 2360 ) ierr2
-            goto 30
-         endif
-         ntdmps = ndmpar
-         allocate ( isegdmp(ntdmps),stat=ierr2 )
-         if ( ierr2 .ne. 0 ) then
-            write ( lunut , 2360 ) ierr2
-            goto 30
-         endif
-
-!             read the monitoring information
-
-         do k = 1 , ndmpar
-            dmpbal(k)  = 1
-            nsegdmp(k) = 1
-            if ( gettoken( isegdmp(k), ierr2 ) .gt. 0 ) goto 30
-            if ( gettoken( duname (k), ierr2 ) .gt. 0 ) goto 30
-         enddo
-
-!             check if name is unique
-
-         do i = 1 , ndmpar
-            if ( duname(i) .eq. ' ' ) write ( duname(i), 2370 ) isegdmp(i)
-            do i2 = 1 , i-1
-               call ZOEK( duname(i), 1, duname(i2:), 20, ifound )
-               if ( ifound .gt. 0 ) then
-                  write( lunut, 2380 ) duname(i)
-                  ierr = ierr + 1
-               endif
-            enddo
-         enddo
-
-!             write output
-
-         if ( ioutpt .ge. 3 ) then
-            write ( lunut , 2390 )
-            write ( lunut , 2400 ) ( isegdmp(k), duname(k), k=1, ndmpar)
-         else
-            write ( lunut , 2410 )   ndmpar
-         endif
-      else
-
 !             new input processssing
 
-         ierr2 = 0
-         call readmp ( lun    , lchar  , filtype, duname , nsegdmp,
-     &                 isegdmp, dmpbal , ndmpar , ntdmps , ioutpt ,
-     &                 ierr2  , iwar   )
-         if ( ierr2 .ne. 0 ) goto 30
-      endif
+      ierr2 = 0
+      call readmp ( lun    , lchar  , filtype, duname , nsegdmp,
+     &              isegdmp, dmpbal , ndmpar , ntdmps , ioutpt ,
+     &              ierr2  , iwar   )
+      if ( ierr2 .ne. 0 ) goto 30
 
       if ( ndmpar .gt. 0 ) then
          write ( lun(2) ) ( duname(k), k=1, ndmpar )
@@ -548,27 +491,23 @@
 
 !     Read transects
 
-      if ( vrsion .le. 4.29 ) then
-         noraai = 0
-         ntraaq = 0
-      else
-         ierr2 = 0
-         nullify(raname)
-         call rearaa ( lun     , lchar   , filtype , raname  , nexcraai,
-     &                 iexcraai, ioptraai, noraai  , ntraaq  , ioutpt  ,
-     &                 ierr2   , iwar    )
-         if ( ierr2 .ne. 0 ) goto 30
-         if ( noraai .gt. 0 .and. ibflag .eq. 0 ) then
-            write ( lunut,2420 )
-            iwar2 = iwar2 + 1
-            intopt = ibset(intopt,3)
-            intopt = ibset(intopt,4)
-         endif
-         if ( noraai .gt. 0 .and. ierr .eq. 0 ) then
-            write ( lun(2) ) ( raname(k), k=1, noraai )
-         endif
-         if ( associated(raname) ) deallocate(raname)
+      ierr2 = 0
+      nullify(raname)
+      call rearaa ( lun     , lchar   , filtype , raname  , nexcraai,
+     &              iexcraai, ioptraai, noraai  , ntraaq  , ioutpt  ,
+     &              ierr2   , iwar    )
+      if ( ierr2 .ne. 0 ) goto 30
+      if ( noraai .gt. 0 .and. ibflag .eq. 0 ) then
+         write ( lunut,2420 )
+         iwar2 = iwar2 + 1
+         intopt = ibset(intopt,3)
+         intopt = ibset(intopt,4)
       endif
+      if ( noraai .gt. 0 .and. ierr .eq. 0 ) then
+         write ( lun(2) ) ( raname(k), k=1, noraai )
+      endif
+      if ( associated(raname) ) deallocate(raname)
+
 
 !       Read timings
 

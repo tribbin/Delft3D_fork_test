@@ -111,7 +111,6 @@ module m_delwaq1_data
     integer( 4)                    :: nomult                   !< number of multiple substances
     integer( 4)                    :: iwidth                   !< width of the output file
     integer( 4)                    :: refday                   !< reference day, varying from 1 till 365
-    real( 4)                       :: vrsion                   !< version number of this input
     integer( 4)                    :: ioutpt                   !< flag for more or less output
     integer                        :: ierr                     ! cumulative number of errors
     integer                        :: iwar                     ! cumulative number of warnings

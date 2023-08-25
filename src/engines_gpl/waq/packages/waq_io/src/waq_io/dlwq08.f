@@ -32,7 +32,7 @@
 
 
       subroutine dlwq08 ( lun    , lchar  , filtype, noseg  , notot  ,
-     &                    syname , iwidth , vrsion , ioutpt , inpfil ,
+     &                    syname , iwidth , ioutpt , inpfil ,
      &                    gridps , ierr   , iwar   )
 
 !       Deltares Software Centre
@@ -95,7 +95,6 @@
       integer           ( 4), intent(in   ) :: notot         !< nr of delwaq + delpar state variables
       character         (20), intent(in   ) :: syname(notot) !< names of the substances
       integer           ( 4), intent(in   ) :: iwidth        !< width of the output file
-      real              ( 4), intent(in   ) :: vrsion        !< version of input
       integer           ( 4), intent(in   ) :: ioutpt        !< option for extent of output
       type(inputfilestack)  , intent(inout) :: inpfil        !< input file strucure with include stack and flags
       type(gridpointercoll) , intent(in)    :: gridps        !< collection off all grid definitions

@@ -68,27 +68,6 @@
 !
 !            DELWAQ - Deltares WAter Quality programme
 !
-!                     Version 4.30           june 1997
-!                     Replaces:
-!                     Version 4.22           feb 1997
-!                     Version 4.21           jan 1997
-!                     Version 4.20           may 1996
-!                     Version 4.01           may 1994
-!                     Version 4.00           september 1993
-!                     Release 3.05           november 1991.
-!                     Release 3.0 - RWS-DIV, june 1988.
-!                     Release 2.0 of july     1984.
-!                     Release 1.0 of december 1981.
-!
-!     INFORMATION   : Deltares
-!                     L. Postma,
-!                     Rotterdamse weg 185,
-!                     P.O. Box 177,
-!                     2600 MH Delft,
-!                     Netherlands.
-!                     telephone (31) 15-569353
-!                     telefax   (31) 15-619674
-!
 !     FUNCTION      : Performs the waterquality simulations on a
 !                     consistent set of binary intermediate files.
 !

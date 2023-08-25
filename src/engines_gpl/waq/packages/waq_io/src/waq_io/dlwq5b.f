@@ -30,7 +30,7 @@
       SUBROUTINE DLWQ5B ( LUNUT  , IPOSR  , NPOS   , CCHAR  , CAR    ,
      *                    IAR    , ICMAX  , IIMAX  , ANAME  , ATYPE  ,
      *                    NTITM  , NTTYPE , NOITM  , NOITS  ,
-     *                    CALLR  , ILUN   , LCH    , LSTACK , VRSION ,
+     *                    CALLR  , ILUN   , LCH    , LSTACK ,
      *                    ITYPE  , RAR    , NCONST , ITMNR  , CHULP  ,
      *                                      IOUTPT , IERR   , iwar   )
 !
@@ -68,7 +68,6 @@
 !     ILUN    INTEGER   LSTACK     IN/OUT  unitnumb include stack
 !     LCH     CHAR*(*)  LSTACK     IN/OUT  file name stack, 4 deep
 !     LSTACK  INTEGER    1         INPUT   include file stack size
-!     VRSION  REAL       1         INPUT   Input file version number
 !     ITYPE   INTEGER    1         OUTPUT  Type of the token at exit
 !     RAR     REAL       *         OUTPUT  Array with real values
 !     NCONST  REAL       *         OUTPUT  Number of those values

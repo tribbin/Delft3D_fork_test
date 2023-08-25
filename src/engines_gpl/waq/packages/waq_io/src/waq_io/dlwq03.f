@@ -33,7 +33,7 @@
 
 
       subroutine dlwq03 ( lun    , lchar  , filtype, nrftot , nrharm ,
-     &                    ivflag , dtflg1 , iwidth , dtflg3 , vrsion ,
+     &                    ivflag , dtflg1 , iwidth , dtflg3 , 
      &                    ioutpt , gridps , syname , ierr   , iwar   ,
      &                    has_hydfile     , nexch                    )
 
@@ -50,14 +50,6 @@
 !>                 - constant attribute arrays
 !>                 - time varying attribute arrays
 !>                 - information on the time series of volumes
-
-!       Created           : April '88  BY M.E. Sileon / L. Postma
-
-!       Modified          : ???????    by Jan van Beek  : Fixed and time varying attributes
-!                           April 1996 by Leo Postma    : Version support
-!                         : April 1997 by Rinze Bruinsma: Tokenized input data file reading added
-!                           July  2002 by Leo Postma    : Call to Opt1 changed.
-!                           May   2011 by Leo Postma    : Modernized and merged with layered bed
 
 !       Subroutines called: grid    read grid structures
 !                           opt0    read constant/time-variable block
@@ -100,7 +92,6 @@
       logical      , intent(in   ) :: dtflg1            !< 'date'-format 1st timescale
       integer  ( 4), intent(in   ) :: iwidth            !< width of the output file
       logical      , intent(in   ) :: dtflg3            !< 'date'-format (F;ddmmhhss,T;yydddhh)
-      real     ( 4), intent(in   ) :: vrsion            !< version number of this input
       integer  ( 4), intent(in   ) :: ioutpt            !< flag for more or less output
       character(20), intent(in   ) :: syname (*)        !< array with substance names
       integer  ( 4), intent(inout) :: ierr              !< cumulative error   count
@@ -377,12 +368,8 @@
          if ( ierr2 /= 0 ) goto 240
       endif
 
-      if ( vrsion .lt. 4.20 ) then                             !   attributes not supported
-         nkopt = 0
-      else
-         if ( gettoken( nkopt, ierr2 ) .gt. 0 ) goto 240
-         write ( lunut , 2110 ) nkopt                          !   so many blocks of input are provided
-      endif
+      if ( gettoken( nkopt, ierr2 ) .gt. 0 ) goto 240
+      write ( lunut , 2110 ) nkopt                          !   so many blocks of input are provided
 
       do 20 i = 1 , nkopt                                      !   read those blocks
 
@@ -500,12 +487,9 @@
 
 !     Time dependent attributes
 
-      if ( vrsion .lt. 4.20 ) then                             !   attributes not supported
-         ikopt2 = 0
-      else
-         if ( gettoken( ikopt2, ierr2 ) .gt. 0 ) goto 240
-         write ( lunut , 2300 ) ikopt2
-      endif
+      if ( gettoken( ikopt2, ierr2 ) .gt. 0 ) goto 240
+      write ( lunut , 2300 ) ikopt2
+
       if ( ikopt2 .eq. 1 ) then                                !   this file
          write ( lunut, 2310 )
          if ( gettoken( nopt, ierr2 ) .gt. 0 ) goto 240
@@ -584,7 +568,7 @@
       call opt0   ( lun    , 7      , 0        , 0        , noseg  ,
      &              1      , 1      , nrftot(2), nrharm(2), ifact  ,
      &              dtflg1 , disper , volume   , iwidth   , lchar  ,
-     &              filtype, dtflg3 , vrsion   , ioutpt   , ierr2  ,
+     &              filtype, dtflg3 , ioutpt   , ierr2  ,
      &              iwar2  , has_hydfile       )
 
       call check_volume_time( lunut, lchar(7), noseg, ierr2 )

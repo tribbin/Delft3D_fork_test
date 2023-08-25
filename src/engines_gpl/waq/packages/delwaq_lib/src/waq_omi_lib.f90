@@ -2035,7 +2035,7 @@ subroutine handle_processes( name )
     lch (1) = trim(name) // '.inp'
 
     call dlwq09( lun, lchar, filtype, car, iar, icmax, &
-             iimax, iwidth, ibflag, version,           &
+             iimax, iwidth, ibflag,                    &
              ioutpt, ioutps, outputs, ierr, iwar )
 
     close(  9 ) ! TODO: status = 'delete'

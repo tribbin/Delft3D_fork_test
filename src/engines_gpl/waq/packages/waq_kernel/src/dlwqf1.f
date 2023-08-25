@@ -33,8 +33,6 @@
 
 !     Deltares - Delft Software Department
 
-!     Created   : November 2009 by Leo Postma
-
 !     Function  : modified version of dlwqf1 to create a zero based row pointer and also
 !                 create direct mapping from iq to the matrix with fmat and tmat for from and to
 

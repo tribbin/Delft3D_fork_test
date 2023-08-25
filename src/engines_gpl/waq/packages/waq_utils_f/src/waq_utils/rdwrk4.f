@@ -50,14 +50,6 @@
 
 !     Deltares Software Centre
 
-!     CREATED             : december 92 by Jan van Beek
-!                           ADAPTATION FROM DLWQI2 by L. Postma
-
-!     MODIFIED            : june 1996, version 4.900, id+names for
-!                           bounds and wastes, bound and waste type
-!                           names and type reference integers.
-!                           NOBTYP and NOWTYP added to param. list.
-
 !     LOGICAL UNITNUMBERS : IIN     - system intermediate file
 !                           LUREP   - monitoring output file
 

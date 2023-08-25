@@ -37,7 +37,7 @@
 
       subroutine dlwq04 ( lun     , lchar   , filtype , nrftot  , nrharm  ,
      &                    ilflag  , dtflg1  , iwidth  , intsrt  , dtflg3  ,
-     &                    vrsion  , ioutpt  , nsegdmp , isegdmp , nexcraai,
+     &                    ioutpt  , nsegdmp , isegdmp , nexcraai,
      &                    iexcraai, ioptraai, gridps  , ierr    , iwar    ,
      &                    has_hydfile       , nexch   )
 
@@ -112,7 +112,6 @@
       integer  ( 4), intent(in   ) :: iwidth            !< width of the output file
       integer  ( 4), intent(in   ) :: intsrt            !< integration option
       logical      , intent(in   ) :: dtflg3            !< 'date'-format (F;ddmmhhss,T;yydddhh)
-      real     ( 4), intent(in   ) :: vrsion            !< version number of this input
       integer  ( 4), intent(in   ) :: ioutpt            !< flag for more or less output
       integer  ( 4), intent(in   ) :: nsegdmp (*)       !< number of volumes in this monitoring area
       integer  ( 4), intent(inout) :: isegdmp (*)       !< computational volume numbers
@@ -279,26 +278,25 @@
       write ( lunut, 2050 ) nodisp
       idisp = 0
       if ( nodisp .gt. 0 ) then
-         if ( vrsion .gt. 4.02 ) then      !    they all get a name and if blank a default name
-            allocate ( dispnam(nodisp) )   !    'Dispersion nnnn'
-            do i = 1, nodisp
-               if ( gettoken( dispnam(i), ierr2 ) .gt. 0 ) goto 100
-               if ( dispnam(i) .eq. ' ' ) write ( dispnam(i), 2060 ) i
-               call ZOEK( dispnam(i), i-1, dispnam, 20, ifound )
-               if ( ifound .gt. 0 ) then
-                  write( lunut, 2070 ) dispnam(i)
-                  ierr = ierr + 1
-               endif
-            enddo
-            if ( ioutpt .ge. 2 ) then
-               write ( lunut, 2080 ) ( i, dispnam(i), i=1,nodisp )
-            else
-               write ( lunut, 2090 )
+         allocate ( dispnam(nodisp) )   !    'Dispersion nnnn'
+         do i = 1, nodisp
+            if ( gettoken( dispnam(i), ierr2 ) .gt. 0 ) goto 100
+            if ( dispnam(i) .eq. ' ' ) write ( dispnam(i), 2060 ) i
+            call ZOEK( dispnam(i), i-1, dispnam, 20, ifound )
+            if ( ifound .gt. 0 ) then
+               write( lunut, 2070 ) dispnam(i)
+               ierr = ierr + 1
             endif
-            write ( lunut, *    )
-            write ( lun(2) ) ( dispnam(i), i=1, nodisp)
-            deallocate ( dispnam )
+         enddo
+         if ( ioutpt .ge. 2 ) then
+            write ( lunut, 2080 ) ( i, dispnam(i), i=1,nodisp )
+         else
+            write ( lunut, 2090 )
          endif
+         write ( lunut, *    )
+         write ( lun(2) ) ( dispnam(i), i=1, nodisp)
+         deallocate ( dispnam )
+
          do i = 1, nosys     !   read which dispersion array applies (0=none) for each subst.
             if ( gettoken( idisp(i), ierr2 ) .gt. 0 ) goto 100
             if ( idisp(i) .gt. nodisp) then
@@ -315,26 +313,25 @@
       write ( lunut , 2110 ) novelo
       ivelo = 0
       if ( novelo .gt. 0 ) then
-         if ( vrsion .gt. 4.02 ) then      !
-            allocate ( dispnam(novelo) )   !
-            do i = 1, novelo
-               if ( gettoken( dispnam(i), ierr2 ) .gt. 0 ) goto 100
-               if ( dispnam(i) .eq. ' ' ) write ( dispnam(i), 2120 ) i
-               call ZOEK( dispnam(i), i-1, dispnam, 20, ifound )
-               if ( ifound .gt. 0 ) then
-                  write( lunut, 2130 ) dispnam(i)
-                  ierr = ierr + 1
-               endif
-            enddo
-            if ( ioutpt .ge. 2 ) then
-               write ( lunut, 2080 ) ( i, dispnam(i), i=1,novelo )
-            else
-               write ( lunut, 2090 )
+         allocate ( dispnam(novelo) )   !
+         do i = 1, novelo
+            if ( gettoken( dispnam(i), ierr2 ) .gt. 0 ) goto 100
+            if ( dispnam(i) .eq. ' ' ) write ( dispnam(i), 2120 ) i
+            call ZOEK( dispnam(i), i-1, dispnam, 20, ifound )
+            if ( ifound .gt. 0 ) then
+               write( lunut, 2130 ) dispnam(i)
+               ierr = ierr + 1
             endif
-            write ( lunut, *    )
-            write ( lun(2) ) ( dispnam(i), i=1, novelo)
-            deallocate ( dispnam )
+         enddo
+         if ( ioutpt .ge. 2 ) then
+            write ( lunut, 2080 ) ( i, dispnam(i), i=1,novelo )
+         else
+            write ( lunut, 2090 )
          endif
+         write ( lunut, *    )
+         write ( lun(2) ) ( dispnam(i), i=1, novelo)
+         deallocate ( dispnam )
+
          do i = 1, nosys     !   read which dispersion array applies (0=none) for each subst.
             if ( gettoken( ivelo(i), ierr2 ) .gt. 0 ) goto 100
             if ( ivelo(i) .gt. novelo) then
@@ -434,7 +431,7 @@
       call opt0   ( lun    , 9      , noq1     , noq2     , noq3   ,
      &              nodisp , 1      , nrftot(3), nrharm(3), ifact  ,
      &              dtflg1 , disper , volume   , iwidth   , lchar  ,
-     &              filtype, dtflg3 , vrsion   , ioutpt   , ierr2  ,
+     &              filtype, dtflg3 , ioutpt   , ierr2  ,
      &              iwar   , .false. )
       ierr = ierr + ierr2
       disper = .false.
@@ -446,7 +443,7 @@
       call opt0   ( lun    , 10     , noq1     , noq2     , noq3   ,
      &              1      ,  1     , nrftot(4), nrharm(4), ifact  ,
      &              dtflg1 , disper , volume   , iwidth   , lchar  ,
-     &              filtype, dtflg3 , vrsion   , ioutpt   , ierr2  ,
+     &              filtype, dtflg3 , ioutpt   , ierr2  ,
      &              iwar   , has_hydfile       )
       ierr = ierr + ierr2
 
@@ -457,7 +454,7 @@
       call opt0   ( lun    , 11     , noq1     , noq2     , noq3   ,
      &              1      , 1      , nrftot(5), nrharm(5), ifact  ,
      &              dtflg1 , disper , volume   , iwidth   , lchar  ,
-     &              filtype, dtflg3 , vrsion   , ioutpt   , ierr2  ,
+     &              filtype, dtflg3 , ioutpt   , ierr2  ,
      &              iwar   , has_hydfile       )
       ierr = ierr + ierr2
       if ( .not. alone ) then
@@ -475,7 +472,7 @@
          call opt0   ( lun    , 12     , noq1     , noq2     , noq3   ,
      &                 novelo , 1      , nrftot(6), nrharm(6), ifact  ,
      &                 dtflg1 , disper , volume   , iwidth   , lchar  ,
-     &                 filtype, dtflg3 , vrsion   , ioutpt   , ierr2  ,
+     &                 filtype, dtflg3 , ioutpt   , ierr2  ,
      &                 iwar   , .false. )
          ierr = ierr + ierr2
       endif
@@ -505,7 +502,7 @@
             call opt0   ( lun    , 13     , noq1     , noq2     , noq3   ,
      &                     2     , 1      , nrftot(7), nrharm(7), ifact  ,
      &                    dtflg1 , disper , volume   , iwidth   , lchar  ,
-     &                    filtype, dtflg3 , vrsion   , ioutpt   , ierr2  ,
+     &                    filtype, dtflg3 , ioutpt   , ierr2  ,
      &                    iwar   , has_hydfile       )
 
          case default
