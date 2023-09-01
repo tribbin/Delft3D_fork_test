@@ -368,12 +368,18 @@
       d    = disp (1)
       al   = aleng(1,1)
       do iq = 1, noq
-         if ( iq .eq. noq1+1 ) then
-            d  = disp (2)
-            al = aleng(2,1)
-         elseif ( iq .eq. noqh+1 ) then
+
+         !
+         ! Note: If the model uses an unstructured grid, noq2 may be zero, so noqh == noq1.
+         !       Therefore first check for the vertical direction, then for the second
+         !       horizontal direction
+         !
+         if ( iq .eq. noqh+1 ) then
             d  = 0.0d0
             al = aleng(1,2)
+         elseif ( iq .eq. noq1+1 ) then
+            d  = disp (2)
+            al = aleng(2,1)
          endif
          ifrom = ipoint(1,iq)
          ito   = ipoint(2,iq)
