@@ -200,20 +200,6 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
 contains
 
 
-
-!> initialize_array_with_zero
-subroutine initialize_array_with_zero(array)
-
-    double precision, allocatable, intent(inout) :: array(:)
-
-    if (allocated(array)) then
-         array(:) = 0.d0
-    end if
-    
-end subroutine initialize_array_with_zero
-
-
-
 !> get_timespace_value_by_item_and_array_and_consider_success_value
 subroutine get_timespace_value_by_item_array_consider_success_value(item, array)
 
@@ -583,13 +569,13 @@ subroutine get_wind_data(time_current)
       patm = PavBnd
    end if
 
-   wx = 0.0
-   wy = 0.0
-   wdsu_x = 0.0
-   wdsu_y = 0.0
-   wcharnock = 0.0
-   ec_pwxwy_x = 0.0
-   ec_pwxwy_y = 0.0
+   wx = 0.d0
+   wy = 0.d0
+   wdsu_x = 0.d0
+   wdsu_y = 0.d0
+   wcharnock = 0.d0
+   ec_pwxwy_x = 0.d0
+   ec_pwxwy_y = 0.d0
 
    first_time_wind = (id_last_wind < 0)
    if (first_time_wind) then
