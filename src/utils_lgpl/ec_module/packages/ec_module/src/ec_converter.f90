@@ -2811,19 +2811,38 @@ module m_ec_converter
                         a1 = 0.0
                         ! FOR SIMPLE HARMONIC only one step needed:
                         !   1. calculate with cosine, and time, phase and source (T1) amplitude.
-                        ! note: source file Amplitude lives in T1.
+                        ! note: source file Amplitude lives in T1. Phases are indexed: col, row
                         n_phase_rows = sourceElementSet%n_rows
                         n_phase_cols = sourceElementSet%n_cols
                         omega = 2.0*PI/sourceItem%hframe%ec_period
                         delta_t = (timesteps - sourceItem%tframe%ec_refdate) * 86400.0_hp  !< convert to seconds.
-                        do jj = 1,n_phase_rows
-                            do ii = 1,n_phase_cols
-                                ipt = (jj-1)*n_phase_cols + ii
-                                amplitude = sourceT1Field%arr1d(ipt)
-                                phase0 = sourceItem%hframe%phases(ii,jj)*PI/180.0
-                                sourceT0Field%arr1d(ipt) = amplitude * dcos(omega * delta_t - phase0)
+                        if ( issparse == 1 ) then
+                            ! do sparse things
+                            do j = 1, n_rows
+                                if ( ia(j+1) > ia(j) ) then
+                                    do ipt = ia(j),ia(j+1)-1
+                                        amplitude = sourceT1Field%arr1d(ipt)
+                                        phase0 = sourceItem%hframe%phases(ja(ipt), j) * PI/180.0 
+                                        sourceT0Field%arr1d(ipt) = amplitude * dcos(omega * delta_t - phase0)
+                                    end do
+                                end if
                             end do
-                        end do
+                        else
+                            do j = 1,n_points
+                                np = indexWeight%indices(1,j) ! row
+                                mp = indexWeight%indices(2,j) ! col
+                                if ( np > 0 .and. mp > 0 ) then
+                                    do jj = 0,1
+                                        do ii = 0,1
+                                            ipt = (mp-1+ii) * n_cols + np-1+jj
+                                            amplitude = sourceT1Field%arr1d(ipt)
+                                            phase0 = sourceItem%hframe%phases(mp+ii, np+jj) * PI/180.0
+                                            sourceT0Field%arr1d(ipt) = amplitude * dcos(omega * delta_t - phase0)
+                                        end do
+                                    end do
+                                end if
+                            end do
+                        end if
                      end if
 
                      if (n_layers>0 .and. associated(targetElementSet%z) .and. associated(sourceElementSet%z)) then
