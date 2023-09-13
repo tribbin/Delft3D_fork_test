@@ -1086,8 +1086,6 @@ rem === POST_BUILD_waq_plugin_wasteload
 rem ===================================
 :waq_plugin_wasteload
 
-    echo "postbuild waq_plugin_wasteloadDSADSA . . ."
-    echo "QQQ1"
     echo "postbuild waq_plugin_wasteload . . ."
 
     call :setWaqFolders
