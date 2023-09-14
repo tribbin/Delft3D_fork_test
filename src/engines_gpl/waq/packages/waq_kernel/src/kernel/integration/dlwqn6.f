@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dlwqn6
+      module m_integration_scheme_6
       use m_hsurf
       use m_dlwqtr
       use m_dlwqo2
@@ -31,7 +31,7 @@
       contains
 
 
-      subroutine dlwqn6 ( a     , j     , c     , lun   , lchar  ,
+      subroutine integration_scheme_6 ( a     , j     , c     , lun   , lchar  ,
      &                    action, dlwqd , gridps)
 
 !       Deltares Software Centre
@@ -160,7 +160,7 @@
 !          some initialisation
 !
       ithandl = 0
-      if ( timon ) call timstrt ( "dlwqn6", ithandl )
+      if ( timon ) call timstrt ( "integration_scheme_6", ithandl )
 
       ITIMEL  = ITSTRT
       ITIME   = ITSTRT+IDT
@@ -308,4 +308,4 @@
       RETURN
       END
 
-      end module m_dlwqn6
+      end module m_integration_scheme_6

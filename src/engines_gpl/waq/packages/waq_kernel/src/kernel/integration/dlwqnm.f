@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dlwqnm
+      module m_integration_scheme_21_22
       use m_zlayer
       use m_zercum
       use m_sgmres
@@ -39,7 +39,7 @@
       contains
 
 
-      subroutine dlwqnm ( a     , j     , c     , lun   , lchar  ,
+      subroutine integration_scheme_21_22 ( a     , j     , c     , lun   , lchar  ,
      &                    action, dlwqd , gridps)
 
 !       Deltares Software Centre
@@ -222,7 +222,7 @@
 
       if ( action == ACTION_FINALISATION ) then
           call dlwqdata_restore(dlwqd)
-          if ( timon ) call timstrt ( "dlwqnm", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_21_22", ithandl )
           goto 50
       endif
 
@@ -279,7 +279,7 @@
 !     properly initialised and restored
 !
       if ( action == ACTION_INITIALISATION ) then
-          if ( timon ) call timstrt ( "dlwqnm", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_21_22", ithandl )
           call dlwqdata_save(dlwqd)
           if ( timon ) call timstop ( ithandl )
           return
@@ -291,7 +291,7 @@
 
       antidiffusion = btest(intopt,16)
 
-      if ( timon ) call timstrt ( "dlwqnm", ithandl )
+      if ( timon ) call timstrt ( "integration_scheme_21_22", ithandl )
 
 !======================= simulation loop ============================
    10 continue
@@ -623,6 +623,6 @@
 
       return
 
-      end subroutine dlwqnm
+      end subroutine integration_scheme_21_22
 
-      end module m_dlwqnm
+      end module m_integration_scheme_21_22

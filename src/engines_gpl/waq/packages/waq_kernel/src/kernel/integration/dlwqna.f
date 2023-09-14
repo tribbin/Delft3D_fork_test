@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dlwqna
+      module m_integration_scheme_14
       use m_zercum
       use m_setset
       use m_proint
@@ -36,7 +36,7 @@
       contains
 
 
-      subroutine dlwqna ( a     , j     , c     , lun   , lchar  ,
+      subroutine integration_scheme_14 ( a     , j     , c     , lun   , lchar  ,
      &                    action, dlwqd , gridps)
 
 !       Deltares Software Centre
@@ -158,7 +158,7 @@
 
       if ( action == ACTION_FINALISATION ) then
           call dlwqdata_restore(dlwqd)
-          if ( timon ) call timstrt ( "dlwqna", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_14", ithandl )
           goto 20
       endif
 
@@ -206,7 +206,7 @@
 !     properly initialised and restored
 !
       IF ( ACTION == ACTION_INITIALISATION ) THEN
-          if ( timon ) call timstrt ( "dlwqna", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_14", ithandl )
           call dlwqdata_save(dlwqd)
           if ( timon ) call timstop ( ithandl )
           RETURN
@@ -235,7 +235,7 @@
       LXPNT = IXPNT+NOQT*4
       LQDMP = IQDMP+NOQT
 
-      if ( timon ) call timstrt ( "dlwqna", ithandl )
+      if ( timon ) call timstrt ( "integration_scheme_14", ithandl )
 
 !======================= simulation loop ============================
 
@@ -510,4 +510,4 @@
 !
       END
 
-      end module m_dlwqna
+      end module m_integration_scheme_14

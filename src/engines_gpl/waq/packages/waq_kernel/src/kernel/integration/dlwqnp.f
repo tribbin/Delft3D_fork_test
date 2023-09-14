@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dlwqnp
+      module m_integration_scheme_24
       use m_zercum
       use m_setset
       use m_proint
@@ -35,7 +35,7 @@
       contains
 
 
-      subroutine dlwqnp ( a     , j     , c     , lun   , lchar  ,
+      subroutine integration_scheme_24 ( a     , j     , c     , lun   , lchar  ,
      &                    action, dlwqd , gridps)
 
 !       Deltares Software Centre
@@ -116,7 +116,7 @@ C
 
       if ( action == ACTION_FINALISATION ) then
           call dlwqdata_restore(dlwqd)
-          if ( timon ) call timstrt ( "dlwqnp", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_24", ithandl )
           goto 20
       endif
 
@@ -163,7 +163,7 @@ C     Note: the handle to the timer (ithandl) needs to be
 C     properly initialised and restored
 C
       IF ( ACTION == ACTION_INITIALISATION ) THEN
-          if ( timon ) call timstrt ( "dlwqnp", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_24", ithandl )
           call dlwqdata_save(dlwqd)
           if ( timon ) call timstop ( ithandl )
           RETURN
@@ -192,7 +192,7 @@ C
       LXPNT = IXPNT+NOQT*4
       LQDMP = IQDMP+NOQT
 
-      if ( timon ) call timstrt ( "dlwqnp", ithandl )
+      if ( timon ) call timstrt ( "integration_scheme_24", ithandl )
 
 !======================= simulation loop ============================
 
@@ -435,4 +435,4 @@ C
       RETURN
       END
 
-      end module m_dlwqnp
+      end module m_integration_scheme_24

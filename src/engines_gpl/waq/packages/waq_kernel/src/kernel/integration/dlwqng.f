@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dlwqng
+      module m_integration_scheme_16
       use m_zlayer
       use m_zercum
       use m_sgmres
@@ -38,7 +38,7 @@
       contains
 
 
-      subroutine dlwqng ( a     , j     , c     , lun   , lchar  ,
+      subroutine integration_scheme_16 ( a     , j     , c     , lun   , lchar  ,
      &                    action, dlwqd , gridps)
 
 !       Deltares Software Centre
@@ -226,7 +226,7 @@
 
       if ( action == ACTION_FINALISATION ) then
           call dlwqdata_restore(dlwqd)
-          if ( timon ) call timstrt ( "dlwqng", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_16", ithandl )
           goto 50
       endif
 
@@ -285,7 +285,7 @@
 !     properly initialised and restored
 !
       IF ( ACTION == ACTION_INITIALISATION ) THEN
-          if ( timon ) call timstrt ( "dlwqng", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_16", ithandl )
           call dlwqdata_save(dlwqd)
           if ( timon ) call timstop ( ithandl )
           RETURN
@@ -295,7 +295,7 @@
           call dlwqdata_restore(dlwqd)
       ENDIF
 
-      if ( timon ) call timstrt ( "dlwqng", ithandl )
+      if ( timon ) call timstrt ( "integration_scheme_16", ithandl )
 
       iexseg = 1     !  There is nothing to mask.
 
@@ -627,4 +627,4 @@
       RETURN
       END
 
-      end module m_dlwqng
+      end module m_integration_scheme_16

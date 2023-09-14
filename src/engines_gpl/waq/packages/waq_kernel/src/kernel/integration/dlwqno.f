@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dlwqno
+      module m_integration_scheme_23
       use m_zercum
       use m_setset
       use m_proint
@@ -36,7 +36,7 @@
       contains
 
 
-      subroutine dlwqno ( a     , j     , c     , lun   , lchar  ,
+      subroutine integration_scheme_23 ( a     , j     , c     , lun   , lchar  ,
      &                    action, dlwqd , gridps)
 
 !       Deltares Software Centre
@@ -156,7 +156,7 @@
 
       if ( action == ACTION_FINALISATION ) then
           call dlwqdata_restore(dlwqd)
-          if ( timon ) call timstrt ( "dlwqno", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_23", ithandl )
           goto 20
       endif
 
@@ -210,7 +210,7 @@
 !     properly initialised and restored
 !
       IF ( ACTION == ACTION_INITIALISATION ) THEN
-          if ( timon ) call timstrt ( "dlwqno", ithandl )
+          if ( timon ) call timstrt ( "integration_scheme_23", ithandl )
           call dlwqdata_save(dlwqd)
           if ( timon ) call timstop ( ithandl )
           RETURN
@@ -220,7 +220,7 @@
           call dlwqdata_restore(dlwqd)
       ENDIF
 
-      if ( timon ) call timstrt ( "dlwqno", ithandl )
+      if ( timon ) call timstrt ( "integration_scheme_23", ithandl )
 
 !======================= simulation loop ============================
 
@@ -469,4 +469,4 @@
 
       END
 
-      end module m_dlwqno
+      end module m_integration_scheme_23

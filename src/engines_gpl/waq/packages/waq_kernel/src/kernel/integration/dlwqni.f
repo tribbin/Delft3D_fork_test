@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dlwqni
+      module m_integration_scheme_18
       use m_sgmres
       use m_setset
       use m_proces
@@ -34,7 +34,7 @@
       contains
 
 
-      subroutine dlwqni ( a     , j     , c     , lun   , lchar  ,
+      subroutine integration_scheme_18 ( a     , j     , c     , lun   , lchar  ,
      &                    action, dlwqd , gridps)
 
 !       Deltares Software Centre
@@ -185,7 +185,7 @@
 !       layers in preconditioner [1,KMAX]
 !
       ithandl = 0
-      if ( timon ) call timstrt ( "dlwqni", ithandl )
+      if ( timon ) call timstrt ( "integration_scheme_18", ithandl )
 
       call dlwqf5 ( lun(19) , nocons  , c(icnam), a(icons), ioptpc  ,
      &              iter    , tol     , iscale  , litrep  , noseg   ,
@@ -398,4 +398,4 @@
       RETURN
       END
 
-      end module m_dlwqni
+      end module m_integration_scheme_18
