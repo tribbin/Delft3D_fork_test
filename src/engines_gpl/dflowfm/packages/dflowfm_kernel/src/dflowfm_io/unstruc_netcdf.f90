@@ -593,7 +593,7 @@ end subroutine unc_set_ncformat
 
 
 function unc_add_uuid(ncid) result (ierr)
-   use dlwq_netcdf, only: getuuid
+   use m_universally_unique_id_generator
    use dfm_error
    integer,          intent(in   ) :: ncid            !< NetCDF dataset id
    integer                         :: ierr            !< Result status, DFM_NOERR if successful.
@@ -603,7 +603,7 @@ function unc_add_uuid(ncid) result (ierr)
    ierr = DFM_NOERR
 
    ! Generate the UUID and store it as an attibute
-   call getuuid(uuid)
+   call generate_uuid(uuid)
    ierr = nf90_put_att(ncid, nf90_global, "uuid", uuid)
 end function unc_add_uuid
 

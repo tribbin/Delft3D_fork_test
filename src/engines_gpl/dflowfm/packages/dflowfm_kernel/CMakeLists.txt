@@ -154,10 +154,10 @@ if (UNIX)
                             trachytopes_io
                             trachytopes_kernel
                             triangle_c
+                            wq_processes
                             waq_process
                             waq_utils_c
                             waq_utils_f
-                            wq_processes
                             interacter_stub)
 
     oss_include_libraries(${library_name} oss_dependencies)
