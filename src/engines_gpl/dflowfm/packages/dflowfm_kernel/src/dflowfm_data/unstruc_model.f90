@@ -1763,10 +1763,7 @@ subroutine readMDUFile(filename, istat)
     ti_his_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'HisInterval'   ,  ti_his_array, 3, success)
     if (ti_his_array(1) .gt. 0d0) ti_his_array(1) = max(ti_his_array(1) , dt_user)
-    if ((mod(ti_his_array(1),dt_user) .gt. 0) .or. (mod(ti_his_array(2),dt_user) .gt. 0) .or. (mod(ti_his_array(3),dt_user) .gt. 0)) then
-        write(msgbuf, '(a,f9.1,f9.1,f9.1,a,f9.1,a)') 'HisInterval = ', ti_his_array(1), ti_his_array(2), ti_his_array(3),' should be multiple of DtUser = ', dt_user, ' s'
-        call mess(LEVEL_ERROR, msgbuf)
-    end if
+    call checkTimeInterval(ti_his_array,dt_user,'HisInterval')
     call getOutputTimeArrays(ti_his_array, ti_hiss, ti_his, ti_hise, success)
 
     call prop_get_double(md_ptr, 'output', 'XLSInterval', ti_xls, success)
@@ -1778,10 +1775,7 @@ subroutine readMDUFile(filename, istat)
     ti_map_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'MapInterval'   ,  ti_map_array, 3, success)
     if (ti_map_array(1) .gt. 0d0) ti_map_array(1) = max(ti_map_array(1) , dt_user)
-    if ((mod(ti_map_array(1),dt_user) .gt. 0) .or. (mod(ti_map_array(2),dt_user) .gt. 0) .or. (mod(ti_map_array(3),dt_user) .gt. 0)) then
-        write(msgbuf, '(a,f9.1,f9.1,f9.1,a,f9.1,a)') 'MapInterval = ', ti_map_array(1), ti_map_array(2), ti_map_array(3),' should be multiple of DtUser = ', dt_user, ' s'
-        call mess(LEVEL_ERROR, msgbuf)
-    end if
+    call checkTimeInterval(ti_map_array,dt_user,'MapInterval')
     call getOutputTimeArrays(ti_map_array, ti_maps, ti_map, ti_mape, success)
 
     call prop_get_integer(md_ptr, 'output', 'MapFormat', md_mapformat, success)
@@ -2027,12 +2021,7 @@ subroutine readMDUFile(filename, istat)
     ti_rst_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'RstInterval'   ,  ti_rst_array, 3, success)
     if (ti_rst_array(1) .gt. 0d0) ti_rst_array(1) = max(ti_rst_array(1) , dt_user)
-    if (dt_user .gt. 0 .and. ti_rst_array(1) .gt. 0) then
-        if ((mod(ti_rst_array(1),dt_user) .ne. 0) .or. (mod(ti_rst_array(2),dt_user) .ne. 0) .or. (mod(ti_rst_array(3),dt_user) .ne. 0)) then
-            write(msgbuf, '(a,f9.1,f9.1,f9.1,a,f9.1,a)') 'RstInterval = ', ti_rst_array(1), ti_rst_array(2), ti_rst_array(3),' should be multiple of DtUser = ', dt_user, ' s'
-            call mess(LEVEL_ERROR, msgbuf)
-        end if
-    end if
+    call checkTimeInterval(ti_rst_array,dt_user,'RstInterval')
     call getOutputTimeArrays(ti_rst_array, ti_rsts, ti_rst, ti_rste, success)
 
     call prop_get_double (md_ptr, 'output', 'MbaInterval', ti_mba, success)
@@ -2239,10 +2228,7 @@ subroutine readMDUFile(filename, istat)
     ti_classmap_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'ClassMapInterval', ti_classmap_array, 3, success)
     if (ti_classmap_array(1) .gt. 0d0) ti_classmap_array(1) = max(ti_classmap_array(1) , dt_user)
-    if ((mod(ti_classmap_array(1),dt_user) .gt. 0) .or. (mod(ti_classmap_array(2),dt_user) .gt. 0) .or. (mod(ti_classmap_array(3),dt_user) .gt. 0)) then
-        write(msgbuf, '(a,f9.1,f9.1,f9.1,a,f9.1,a)') 'ClassMapInterval = ', ti_classmap_array(1), ti_classmap_array(2), ti_classmap_array(3),' should be multiple of DtUser = ', dt_user, ' s'
-        call mess(LEVEL_ERROR, msgbuf)
-    end if
+    call checkTimeInterval(ti_classmap_array,dt_user,'ClassMapInterval')
     call getOutputTimeArrays(ti_classmap_array, ti_classmaps, ti_classmap, ti_classmape, success)
 
     if (ti_classmap > 0d0) then
@@ -4409,6 +4395,19 @@ else
 end if
 
 end subroutine getOutputTimeArrays
+
+subroutine checkTimeInterval(ti_array,dt_user,key)
+    implicit none
+    real(kind=hp)    , intent(in)  :: ti_array(3)
+    real(kind=hp)    , intent(in)  :: dt_user
+    character(*)     , intent(in)  :: key
+
+    if ((modulo(ti_array(1),dt_user) .gt. 0) .or. (modulo(ti_array(2),dt_user) .gt. 0) .or. (modulo(ti_array(3),dt_user) .gt. 0)) then
+        write(msgbuf, *) key,' = ', ti_array(1), ti_array(2), ti_array(3),' should be multiple of DtUser = ', dt_user, ' s'
+        call mess(LEVEL_ERROR, msgbuf)
+    end if
+
+end subroutine checkTimeInterval
 
    end module unstruc_model
 
