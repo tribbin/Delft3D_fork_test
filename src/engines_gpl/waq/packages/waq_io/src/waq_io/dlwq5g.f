@@ -31,7 +31,7 @@
      *                    NODIM  , IORDER , IIMAX  , CNAMES , IPOSR  ,
      *                    NPOS   , ILUN   , LCH    , LSTACK , CCHAR  ,
      *                    CHULP  , NOCOL  , DTFLG1 , DTFLG3 , ITFACT ,
-     *                    ITYPE  , IHULP  , RHULP  , IERR   , iwar   )
+     *                    ITYPE  , IHULP  , RHULP  , curr_error   , IWAR   )
 !
 !
 !     Deltares        SECTOR WATERRESOURCES AND ENVIRONMENT
@@ -59,7 +59,7 @@
 !     IDMNR   INTEGER    1         IN/OUT  nr of subst for assignment
 !     NODIM   INTEGER    1         IN      nr of subst in computational rule
 !     NODIS   INTEGER    1         IN      nr of subst entries to be filled
-!     IORDER  INTEGER    1         IN      1 = items first, 2 is subst first
+!     IORDER  INTEGER    1         IN      1 = items first, 2 = substances first
 !     IIMAX   INTEGER    1         INPUT   max. int. workspace dimension
 !     CNAMES  CHAR*(*)  NITM       INPUT   Items to check for presence
 !     IPOSR   INTEGER    1         IN/OUT  Start position on input line
@@ -76,8 +76,8 @@
 !     ITYPE   INTEGER    1         OUTPUT  type of info at end
 !     IHULP   INTEGER    1         OUTPUT  parameter read to be transferred
 !     RHULP   REAL       1         OUTPUT  parameter read to be transferred
-!     IERR    INTEGER    1         OUTPUT  actual error indicator
-!     Iwar    INTEGER    1         OUTPUT  cumulative warning count
+!     curr_error    INTEGER    1         OUTPUT  error indicator within current subroutine
+!     IWAR    INTEGER    1         OUTPUT  cumulative warning count
 !
 !
       use m_dlwq5h
@@ -93,8 +93,8 @@
       integer ( 8)  ihulp8
       integer(4) :: ithndl = 0
       integer    :: I, noitm, idmnr, nodim, iorder, ioffc, ioffd, notim
-      integer    :: itype, lunut, ilun, iposr, nopos, ihulp, ierr
-      integer    :: iar, nocol, ifound, itfact, icnt, iods, k, iwar
+      integer    :: itype, lunut, ilun, iposr, nopos, ihulp, curr_error
+      integer    :: iar, nocol, ifound, itfact, icnt, iods, k, IWAR
       integer    :: ioffi, itmnr, nitm, npos, lstack
       real       :: rhulp
       
@@ -104,14 +104,13 @@
 !     Array offsets
 !
       IOFFI = ITMNR + NOITM + IDMNR + NODIM
-      IF ( IORDER .EQ. 1 ) THEN
+      IF ( IORDER .EQ. 1 ) THEN ! items first
          IOFFC = ITMNR + NOITM + IDMNR
          IOFFD = ITMNR + NOITM
          NITM  = NODIM
-      ENDIF
-      IF ( IORDER .EQ. 2 ) THEN
-         IOFFC = IDMNR + NODIM + ITMNR
-         IOFFD = IDMNR + NODIM
+      ELSE IF ( IORDER .EQ. 2 ) THEN !substances first
+         IOFFC = ITMNR + NODIM + IDMNR 
+         IOFFD =         NODIM + IDMNR
          NITM  = NOITM
       ENDIF
 !
@@ -121,14 +120,15 @@
    20 ITYPE = 0
       CALL RDTOK1 ( LUNUT  , ILUN   , LCH    , LSTACK , CCHAR  ,
      *              IPOSR  , NPOS   , CHULP  , IHULP  , RHULP  ,
-     *                                         ITYPE  , IERR   )
-!          A read error
-      IF ( IERR  .NE. 0 ) goto 9999
-!          A string has arrived
+     *                                         ITYPE  , curr_error   )
+!          A read error has occurred
+      IF ( curr_error  .NE. 0 ) goto 9999
+
+!          No error, a string has arrived
       IF ( ITYPE .EQ. 1 ) THEN
-         CALL DLWQ0T ( CHULP , ihulp, .FALSE., .FALSE., IERR )
-         IF ( IERR .EQ. 0 ) THEN
-            IERR = -2
+         CALL DLWQ0T ( CHULP , ihulp, .FALSE., .FALSE., curr_error )
+         IF ( curr_error .EQ. 0 ) THEN
+            curr_error = -2
             IF ( FIRST ) THEN
                goto 9999
             ELSE
@@ -158,7 +158,7 @@
          IF ( ITYPE .EQ. 2 ) THEN
             CALL CNVTIM ( ihulp  , ITFACT, DTFLG1 , DTFLG3 )
          ENDIF
-         IERR = -1
+         curr_error = -1
          IF ( FIRST ) goto 9999
       ENDIF
 !
@@ -173,14 +173,14 @@
          CALL DLWQ5H ( LUNUT  , IAR    , ITMNR  , NOITM  , IDMNR  ,
      *                 NODIM  , IORDER , CNAMES , IOFFI  , IOFFC  ,
      *                          IODS   , IOFFD  , K      , ICNT   )
-         iwar = iwar + 1
+         curr_error = 2
    70 CONTINUE
 !
  9999 if (timon) call timstop( ithndl )
-      RETURN
+      ! RETURN
 !
  1000 FORMAT ( ' Column:',I3,' contains: ',A40,' Status: ',A8)
 !
-      END
+      END SUBROUTINE DLWQ5G
 
       end module m_dlwq5g

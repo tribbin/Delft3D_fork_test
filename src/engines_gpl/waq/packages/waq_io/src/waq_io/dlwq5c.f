@@ -304,7 +304,8 @@
          CALL DLWQ5H ( LUNUT  , IAR    , ITMNR  , NOITM  , IDMNR  ,
      *                 NODIM  , IORDER , CAR    , K5     , IOFFB  ,
      *                          NSHFT  , IOFFD  , K      , ICNT   )
-         iwar = iwar + 1
+         ierr = 1
+         goto 510
          IF ( J + ICNT .GE. NITM ) GOTO 70
    60 CONTINUE
    70 K1 = K1 + NODIM

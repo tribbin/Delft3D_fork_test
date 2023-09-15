@@ -80,10 +80,10 @@
 !
       WRITE ( LUNUT ,   *  )
       WRITE ( LUNUT , 1010 ) I+ICNT, CNAMES(I+IOFFC)
-      IF ( IORDER .EQ. 1 ) THEN
+      IF ( IORDER .EQ. 1 ) THEN ! items first
           NTT  = IDMNR
           NITM = NODIM
-      ELSE
+      ELSE ! subst first
           NTT  = ITMNR
           NITM = NOITM
       ENDIF
@@ -182,10 +182,9 @@
       if (timon) call timstop( ithndl )
       RETURN
 !
- 1010 FORMAT ( ' WARNING: Input item : ',I3,' not resolved: ',A)
- 1020 FORMAT ( ' WARNING: also not resolved: ',A)
- 1030 FORMAT ( ' WARNING: Item number: ',I3,' also not resolved: ',A)
- 1040 FORMAT ( ' WARNING: Substance  : ',I3,' also not resolved: ',A)
+ 1010 FORMAT ( ' ERROR: Input item : ',I3,' not resolved: ',A)
+ 1030 FORMAT ( ' ERROR: Item number: ',I3,' also not resolved: ',A)
+ 1040 FORMAT ( ' ERROR: Substance  : ',I3,' also not resolved: ',A)
 !
       END
 

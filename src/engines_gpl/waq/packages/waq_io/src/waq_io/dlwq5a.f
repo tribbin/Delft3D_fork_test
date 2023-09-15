@@ -30,6 +30,8 @@
 
 
       implicit none
+      
+      integer  ( 4) :: iwar          !< cumulative warning count
 
       contains
 
@@ -736,7 +738,7 @@
  1370 format (  ' WARNING: all DATA from this block is ignored !' )
  2220 format (  ' Input comes from binary file: ',A      )
 !
-      end
+      end subroutine dlwq5a
 !
 !     Additional documentation on the memory lay out
 !
