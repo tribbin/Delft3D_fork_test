@@ -275,6 +275,9 @@
          case (  1 )     !      backward in space and time
             call integration_scheme_1 ( a , j , c , lun , lchar, action, dlwqd, gridps )
 
+         case (  2, 3, 4 ) ! deprecated
+            goto 991
+            
          case (  5 )     !      Flux corrected transport
             call integration_scheme_5 ( a , j , c , lun , lchar, action, dlwqd, gridps )
 
@@ -283,6 +286,9 @@
 
          case (  7 )     !      Direct steady state, central differences in space
             call integration_scheme_7 ( a , j , c , lun , lchar, action, dlwqd, gridps )
+
+         case (  8, 9, 10 ) ! deprecated
+            goto 991
 
          case ( 11 )     !      Horizontal explicit upwind, vertical implicit central
             call integration_scheme_11 ( a , j , c , lun , lchar, action, dlwqd, gridps )
@@ -307,6 +313,9 @@
 
          case ( 18 )     !      stationary GMRES, horizontal upwind, vertical central
             call integration_scheme_18 ( a , j , c , lun , lchar, action, dlwqd, gridps )
+
+         case (  19, 20 ) ! deprecated
+            goto 991
 
          case ( 21 )     !      Self adjusting teta method (limiter Salezac)
             call integration_scheme_21_22 ( a , j , c , lun , lchar, action, dlwqd, gridps )
@@ -346,6 +355,8 @@
       return
 
   990 WRITE ( * , * ) ' ERROR: INTEGRATION OPTION NOT IMPLEMENTED'
+      CALL SRSTOP(1)
+  991 WRITE ( * , * ) ' ERROR: INTEGRATION OPTION DEPRECATED'
       CALL SRSTOP(1)
   992 WRITE ( * , * ) ' ERROR : INITIALISATION FAILED'
       CALL SRSTOP(1)
