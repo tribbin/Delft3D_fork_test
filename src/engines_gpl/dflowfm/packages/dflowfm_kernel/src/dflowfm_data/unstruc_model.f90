@@ -1762,8 +1762,10 @@ subroutine readMDUFile(filename, istat)
     call prop_get_string(md_ptr, 'output', 'HisFile', md_hisfile, success)
     ti_his_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'HisInterval'   ,  ti_his_array, 3, success)
-    if (ti_his_array(1) .gt. 0d0) ti_his_array(1) = max(ti_his_array(1) , dt_user)
-    call checkTimeInterval(ti_his_array,dt_user,'HisInterval')
+    if (ti_his_array(1) .gt. 0d0) then
+        ti_his_array(1) = max(ti_his_array(1) , dt_user)
+        call checkTimeInterval(ti_his_array,dt_user,'HisInterval')
+    end if
     call getOutputTimeArrays(ti_his_array, ti_hiss, ti_his, ti_hise, success)
 
     call prop_get_double(md_ptr, 'output', 'XLSInterval', ti_xls, success)
@@ -1774,8 +1776,10 @@ subroutine readMDUFile(filename, istat)
 
     ti_map_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'MapInterval'   ,  ti_map_array, 3, success)
-    if (ti_map_array(1) .gt. 0d0) ti_map_array(1) = max(ti_map_array(1) , dt_user)
-    call checkTimeInterval(ti_map_array,dt_user,'MapInterval')
+    if (ti_map_array(1) .gt. 0d0) then
+        ti_map_array(1) = max(ti_map_array(1) , dt_user)
+        call checkTimeInterval(ti_map_array,dt_user,'MapInterval')
+    end if
     call getOutputTimeArrays(ti_map_array, ti_maps, ti_map, ti_mape, success)
 
     call prop_get_integer(md_ptr, 'output', 'MapFormat', md_mapformat, success)
@@ -2020,8 +2024,10 @@ subroutine readMDUFile(filename, istat)
 
     ti_rst_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'RstInterval'   ,  ti_rst_array, 3, success)
-    if (ti_rst_array(1) .gt. 0d0) ti_rst_array(1) = max(ti_rst_array(1) , dt_user)
-    call checkTimeInterval(ti_rst_array,dt_user,'RstInterval')
+    if (ti_rst_array(1) .gt. 0d0) then
+        ti_rst_array(1) = max(ti_rst_array(1) , dt_user)
+        call checkTimeInterval(ti_rst_array,dt_user,'RstInterval')
+    end if
     call getOutputTimeArrays(ti_rst_array, ti_rsts, ti_rst, ti_rste, success)
 
     call prop_get_double (md_ptr, 'output', 'MbaInterval', ti_mba, success)
@@ -2227,8 +2233,10 @@ subroutine readMDUFile(filename, istat)
     ! Map classes output (formerly: incremental file)
     ti_classmap_array = 0d0
     call prop_get_doubles(md_ptr, 'output', 'ClassMapInterval', ti_classmap_array, 3, success)
-    if (ti_classmap_array(1) .gt. 0d0) ti_classmap_array(1) = max(ti_classmap_array(1) , dt_user)
-    call checkTimeInterval(ti_classmap_array,dt_user,'ClassMapInterval')
+    if (ti_classmap_array(1) .gt. 0d0) then
+        ti_classmap_array(1) = max(ti_classmap_array(1) , dt_user)
+        call checkTimeInterval(ti_classmap_array,dt_user,'ClassMapInterval')
+    end if
     call getOutputTimeArrays(ti_classmap_array, ti_classmaps, ti_classmap, ti_classmape, success)
 
     if (ti_classmap > 0d0) then
@@ -4402,7 +4410,7 @@ subroutine checkTimeInterval(ti_array,dt_user,key)
     real(kind=hp)    , intent(in)  :: dt_user
     character(*)     , intent(in)  :: key
 
-    if ((modulo(ti_array(1),dt_user) .gt. 0) .or. (modulo(ti_array(2),dt_user) .gt. 0) .or. (modulo(ti_array(3),dt_user) .gt. 0)) then
+    if ((modulo(ti_array(1),dt_user) /= 0d0) .or. (modulo(ti_array(2),dt_user) /= 0d0) .or. (modulo(ti_array(3),dt_user) /= 0d0)) then
         write(msgbuf, *) key,' = ', ti_array(1), ti_array(2), ti_array(3),' should be multiple of DtUser = ', dt_user, ' s'
         call mess(LEVEL_ERROR, msgbuf)
     end if
