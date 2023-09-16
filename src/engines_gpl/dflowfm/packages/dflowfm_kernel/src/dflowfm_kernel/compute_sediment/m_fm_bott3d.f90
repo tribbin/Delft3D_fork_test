@@ -40,23 +40,22 @@ implicit none
 private !Prevent used modules from being exported
 public :: fm_bott3d
    
-contains
+    contains
 
+   !< Computes suspended sediment transport correction
+   !! vector for sand sediment fractions
+   !! Computes depth integrated suspended sediment
+   !! transport vector for output to map file
+   !! Computes change in BODSED based on source and sink
+   !! terms calculated in EROSED, and new concentrations.
+   !! Calculates new mixing layer thickness based on
+   !! change in BODSED values
+   !! Calculates new depth values based on changes
+   !! in bottom sediment.
+   !! Includes erosion of dry points and associated
+   !! bathymetry changes
    subroutine fm_bott3d()
-   !!--description-----------------------------------------------------------------
-   !
-   !    Function: Computes suspended sediment transport correction
-   !              vector for sand sediment fractions
-   !              Computes depth integrated suspended sediment
-   !              transport vector for output to map file
-   !              Computes change in BODSED based on source and sink
-   !              terms calculated in EROSED, and new concentrations.
-   !              Calculates new mixing layer thickness based on
-   !              change in BODSED values
-   !              Calculates new depth values based on changes
-   !              in bottom sediment.
-   !              Includes erosion of dry points and associated
-   !              bathymetry changes
+
    !!!--declarations----------------------------------------------------------------
    use precision
    use bedcomposition_module
@@ -110,7 +109,7 @@ contains
    integer                                     :: l, nm, ii, ll, Lx, Lf, lstart, j, bedchangemesscount, k, k1, k2, knb, kb, kk, itrac
    integer                                     :: Lb, Lt, ka, kf1, kf2, kt, nto, iL, ac1, ac2
    double precision                            :: dsdnm, eroflx, sedflx, thick1, trndiv, flux, sumflux, dtmor, hsk, ddp
-   double precision                            :: dhmax, h1, totdbodsd, totfixfrac, bamin, thet, dv, zktop, cflux
+   double precision                            :: dhmax, h1, totdbodsd, totfixfrac, bamin, thet, dv
 
    integer,          parameter                 :: bedchangemessmax = 50
    double precision, parameter                 :: dtol = 1d-16
@@ -148,20 +147,9 @@ contains
    integer                                     :: inod
    integer                                     :: ised
    integer                                     :: k3
-   double precision                            :: aksu
-   double precision                            :: apower
-   double precision                            :: cavg
-   double precision                            :: cavg1
-   double precision                            :: cavg2
-   double precision                            :: ceavg
-   double precision                            :: cumflux
    double precision                            :: alfa_dist
    double precision                            :: alfa_mag
-   double precision                            :: dz
-   double precision                            :: dzup
    double precision                            :: rate
-   double precision                            :: r1avg
-   double precision                            :: z
    double precision                            :: timhr
    double precision                            :: Ldir
    !!
@@ -203,216 +191,8 @@ contains
    
    e_ssn  = 0d0
    
-   !======================================================================
-   !======================================================================
-   !======================================================================
-   !START CUT 
-   
-   !
-   !   Calculate suspended sediment transport correction vector (for SAND)
-   !   Note: uses GLM velocities, consistent with DIFU
-   !
-   !   Correct suspended sediment transport rates by estimating the
-   !   quantity of suspended sediment transported in the grid cells below
-   !   Van Rijn's reference height (aks) and making a vector of this in the
-   !   opposite direction to the suspended sediment transport.
-   !
-   !   Ensure suspended sediment correction arrays and suspended sediment
-   !   vector arrays are blank
-   !
-   !
-   e_scrn = 0d0
-   e_scrt = 0d0
-   
-   !
-   ! calculate corrections
-   !
-   if (sus /= 0d0 .and. l_suscor) then
-      !
-      ! suspension transport correction vector only for 3D
-      !
-      if (kmx > 0) then
-         !
-         if (jampi>0) then
-            call update_ghosts(ITYPE_U, NUMCONST,lnx,fluxhortot,ierror)
-         endif
-         !
-         do l = 1, lsed
-            ll = ISED1-1 + l
-            if (tratyp(l) == TRA_COMBINE) then
-               !
-               ! Determine aks
-               !
-               !                call dfexchg( fluxu(:,:,ll) ,1, kmax, dfloat, nm_pos, gdp)
-               !                call dfexchg( fluxv(:,:,ll) ,1, kmax, dfloat, nm_pos, gdp)
-               do Lx = 1, lnx
-                  if (wu_mor(Lx)==0d0) cycle
-                  ac1 = acL(Lx)
-                  ac2 = 1d0 - ac1
-                  k1 = ln(1,Lx); k2 = ln(2,Lx)
-                  call getLbotLtop(Lx, Lb, Lt)
-                  if (Lt<Lb) cycle
-                  !
-                  ! try new approach - should be smoother
-                  ! don't worry about direction of the flow
-                  ! use concentration at velocity point=average of the
-                  ! two adjacent concentrations
-                  ! use aks height at velocity point = average of the
-                  ! two adjacent aks values
-                  !
-                  ! note correction vector only computed for velocity
-                  ! points with active sediment cells on both sides
-                  !
-                  if (kfsed(k1)*kfsed(k2)>0) then  ! bring sedthr into account
-                     cumflux = 0.0_fp
-                     !
-                     ! Determine reference height aks in vel. pt.
-                     if (Lx>lnxi) then ! boundary link, take inner point value
-                        aksu = aks(k2,l)
-                     else
-                        aksu = ac1*aks(k1, l) + ac2*aks(k2, l)
-                     end if
-                     !
-                     ! work up through layers integrating transport flux
-                     ! below aksu, according to Bert's new implementation
-                     !
-                     zktop = 0d0
-                     ka = 0
-                     if (kmx==1) then
-                        if (aksu>hu(Lx)) then
-                           ka = 0
-                        else
-                           ka = Lt
-                        endif   
-                     else   
-                        do Lf = Lb, Lt
-                           zktop = hu(Lf)
-                           dz = hu(Lf)-hu(Lf-1)
-                           !
-                           ! if layer contains aksu
-                           !
-                           if (aksu <= zktop) then
-                              ka = Lf
-                              if (Lf/=Lt) then
-                                 dzup = hu(Lf+1)-hu(Lf)
-                              endif
-                              ! the contribution of this layer is computed below
-                              exit
-                           else
-                              cumflux = cumflux + fluxhortot(ll,Lf)
-                           endif
-                        enddo
-                     endif   
-                     !
-                     if (ka==0) then
-                        ! aksu larger than water depth, so all done
-                     elseif (ka==Lt) then
-                        ! aksu is located in top layer; use simple flux
-                        ! approximation assuming uniform flux
-                        cumflux = cumflux + fluxhortot(ll,ka)*(aksu - hu(Lt-1))/dz    ! kg/s
-                     else
-                        ! aksu is located in a layer below the top layer
-                        !
-                        ! Get reference concentration at aksu
-                        !
-                        if (Lx>lnxi) then ! boundary link, take inner point value
-                           ceavg = rca(k2,l)
-                        else
-                           ceavg = ac1*rca(k1, l) + ac2*rca(k2, l)   ! Perot average
-                        end if
-                        !
-                        ! Get concentration in layer above this layer
-                        !
-                        kf1 = ln(1,ka+1); kf2 = ln(2,ka+1)
-                        r1avg = ac1*constituents(ll,kf1) + ac2*constituents(ll,kf2)
-                        !
-                        ! If there is a significant concentration gradient, and significant
-                        ! reference concentration
-                        !
-                        if (ceavg>r1avg*1.1d0 .and. ceavg>0.05d0) then
-                           !
-                           ! Compute Rouse number based on reference concentration and
-                           ! concentration of the layer above it. Make sure that Rouse number
-                           ! differs significantly from 1, and that it is not too large.
-                           ! Note: APOWER = - Rouse number
-                           !
-                           ! The Rouse profile equation
-                           !
-                           !            [ a*(H-z) ]^R
-                           ! c(z) = c_a*[ ------- ]
-                           !            [ z*(H-a) ]
-                           !
-                           ! is here approximated by
-                           !
-                           ! c(z) = c_a*(a/z)^R = c_a*(z/a)^-R
-                           !
-                           z = zktop + dzup/2.0_fp
-                           apower = log(max(r1avg/ceavg,1d-5)) / log(z/aksu)
-                           if (apower>-1.05d0 .and. apower<=-1.0d0) then           ! you have decide on the eq to -1.0
-                              apower = -1.05d0
-                           elseif (apower>-1.0d0 .and. apower<-0.95d0) then
-                              apower = -0.95d0
-                           endif
-                           apower  = min(max(-10.0d0 , apower), 10.0d0)
-                           !
-                           ! Compute the average concentration cavg between the reference
-                           ! height a and the top of the current layer (bottom of layer above) z.
-                           !           /zktop                           zktop                       zktop
-                           ! cavg*dz = | c(z) dz = c_a/(-R+1)*(z/a)^(-R+1)*a | = c_a/(-R+1)*a^R*z^(-R+1) |
-                           !          /a                                     a                           a
-                           !
-                           cavg1  = (ceavg/(apower+1.0d0)) * (1d0/aksu)**apower
-                           cavg2  = zktop**(apower+1.0d0) - aksu**(apower+1.0d0)
-                           cavg   = cavg1 * cavg2                 ! kg/m3/m
-                           !
-                           ! The corresponding effective suspended load flux is
-                           !
-                           cflux   = u1(ka)*cavg*dz*wu_mor(Lx)
-                           !
-                           ! Increment the correction by the part of the suspended load flux
-                           ! that is in excess of the flux computed above, but never opposite.
-                           !
-                           if (fluxhortot(ll, ka)>0.0d0 .and. cflux>0.0d0) then
-                              cumflux = cumflux + max(0.0d0, fluxhortot(ll, ka)-cflux)
-                           elseif (fluxhortot(ll, ka)<0.0d0 .and. cflux<0.0_fp) then
-                              cumflux = cumflux + min(fluxhortot(ll, ka)-cflux, 0.0d0)
-                           !else
-                           !   cumflux = cumflux + fluxhortot(ll,ka)    ! don't correct in aksu layer
-                           endif
-                        endif
-                     endif
-                     e_scrn(Lx,l) = -suscorfac * cumflux / wu_mor(Lx)
-                     !
-                     ! bedload will be reduced in case of sediment transport
-                     ! over a non-erodible layer (no sediment in bed) in such
-                     ! a case, the suspended sediment transport vector must
-                     ! also be reduced.
-                     !
-                     if (e_scrn(Lx,l) > 0.0d0 .and. Lx<=lnxi) then
-                        e_scrn(Lx,l) = e_scrn(Lx,l)*fixfac(k1, l)      ! outgoing (cumflux<0)
-                     else
-                        e_scrn(Lx,l) = e_scrn(Lx,l)*fixfac(k2, l)      ! take inner point fixfac on bnd
-                     endif
-                  else
-                     e_scrn(Lx,l) = 0.0d0
-                  endif
-               enddo ! nm
-            endif    ! tratyp == TRA_COMBINE
-         enddo       ! l
-      endif          ! kmx>0; end of correction for bed/total load
-      !       !
-      !if (kmx>0 .and. jampi>0) then
-      !   if (lsed > 0) then
-      !      call update_ghosts(ITYPE_U, lsed, lnx, e_scrn, ierror)
-      !   endif
-      !end if
-   endif           ! sus /= 0.0
-
-!======================================================================
-!======================================================================
-!======================================================================
-!END CUT 
-   
+   call fm_suspended_sand_correction()
+      
    !calculation of total face-normal suspended transport
    do ll = 1, lsed
       j = lstart + ll   ! constituent index
@@ -1542,4 +1322,250 @@ contains
 
    end subroutine fm_bott3d
 
+   !< Calculate suspended sediment transport correction vector (for SAND)
+   !! Note: uses GLM velocities, consistent with DIFU
+   !! 
+   !! Correct suspended sediment transport rates by estimating the
+   !! quantity of suspended sediment transported in the grid cells below
+   !! Van Rijn's reference height (aks) and making a vector of this in the
+   !! opposite direction to the suspended sediment transport.
+   !! 
+   !! Ensure suspended sediment correction arrays and suspended sediment
+   !! vector arrays are blank
+   subroutine fm_suspended_sand_correction()
+
+   !!
+   !! Declarations
+   !!
+   
+   use precision
+   use precision_basics
+   use sediment_basics_module
+   use m_debug
+   use m_flow     , only: u1, kmx, hu
+   use m_flowgeom , only: ln, lnx, lnxi, acl, wu_mor
+   use m_transport, only: fluxhortot, ised1, constituents, numconst
+   use m_fm_erosed, only: aks, e_scrn, e_scrt, fixfac, kfsed, lsed, l_suscor, rca, suscorfac, sus, tratyp
+   use m_partitioninfo, only: jampi, itype_u, update_ghosts
+   
+   implicit none
+   
+   !!
+   !! Local variables
+   !!
+   
+   !integer
+   integer                                     :: ierror
+   integer                                     :: l, ll, Lx, Lf, k1, k2
+   integer                                     :: Lb, Lt, ka, kf1, kf2, ac1, ac2
+   
+   !double precision
+   !2DO: explain variables?
+   double precision                            :: cavg
+   double precision                            :: cavg1
+   double precision                            :: cavg2
+   double precision                            :: ceavg
+   double precision                            :: cumflux
+   double precision                            :: aksu
+   double precision                            :: apower
+   double precision                            :: cflux
+   double precision                            :: dz
+   double precision                            :: dzup
+   double precision                            :: r1avg
+   double precision                            :: z
+   double precision                            :: zktop
+   
+   !!
+   !! Execute
+   !!
+   
+   e_scrn = 0d0
+   e_scrt = 0d0
+   
+   !
+   ! calculate corrections
+   !
+   if (sus /= 0d0 .and. l_suscor) then
+      !
+      ! suspension transport correction vector only for 3D
+      !
+      if (kmx > 0) then
+         !
+         if (jampi>0) then
+            call update_ghosts(ITYPE_U, NUMCONST,lnx,fluxhortot,ierror)
+         endif
+         !
+         do l = 1, lsed
+            ll = ISED1-1 + l
+            if (tratyp(l) == TRA_COMBINE) then
+               !
+               ! Determine aks
+               !
+               !                call dfexchg( fluxu(:,:,ll) ,1, kmax, dfloat, nm_pos, gdp)
+               !                call dfexchg( fluxv(:,:,ll) ,1, kmax, dfloat, nm_pos, gdp)
+               do Lx = 1, lnx
+                  if (wu_mor(Lx)==0d0) cycle
+                  ac1 = acL(Lx)
+                  ac2 = 1d0 - ac1
+                  k1 = ln(1,Lx); k2 = ln(2,Lx)
+                  call getLbotLtop(Lx, Lb, Lt)
+                  if (Lt<Lb) cycle
+                  !
+                  ! try new approach - should be smoother
+                  ! don't worry about direction of the flow
+                  ! use concentration at velocity point=average of the
+                  ! two adjacent concentrations
+                  ! use aks height at velocity point = average of the
+                  ! two adjacent aks values
+                  !
+                  ! note correction vector only computed for velocity
+                  ! points with active sediment cells on both sides
+                  !
+                  if (kfsed(k1)*kfsed(k2)>0) then  ! bring sedthr into account
+                     cumflux = 0.0_fp
+                     !
+                     ! Determine reference height aks in vel. pt.
+                     if (Lx>lnxi) then ! boundary link, take inner point value
+                        aksu = aks(k2,l)
+                     else
+                        aksu = ac1*aks(k1, l) + ac2*aks(k2, l)
+                     end if
+                     !
+                     ! work up through layers integrating transport flux
+                     ! below aksu, according to Bert's new implementation
+                     !
+                     zktop = 0d0
+                     ka = 0
+                     if (kmx==1) then
+                        if (aksu>hu(Lx)) then
+                           ka = 0
+                        else
+                           ka = Lt
+                        endif   
+                     else   
+                        do Lf = Lb, Lt
+                           zktop = hu(Lf)
+                           dz = hu(Lf)-hu(Lf-1)
+                           !
+                           ! if layer contains aksu
+                           !
+                           if (aksu <= zktop) then
+                              ka = Lf
+                              if (Lf/=Lt) then
+                                 dzup = hu(Lf+1)-hu(Lf)
+                              endif
+                              ! the contribution of this layer is computed below
+                              exit
+                           else
+                              cumflux = cumflux + fluxhortot(ll,Lf)
+                           endif
+                        enddo
+                     endif   
+                     !
+                     if (ka==0) then
+                        ! aksu larger than water depth, so all done
+                     elseif (ka==Lt) then
+                        ! aksu is located in top layer; use simple flux
+                        ! approximation assuming uniform flux
+                        cumflux = cumflux + fluxhortot(ll,ka)*(aksu - hu(Lt-1))/dz    ! kg/s
+                     else
+                        ! aksu is located in a layer below the top layer
+                        !
+                        ! Get reference concentration at aksu
+                        !
+                        if (Lx>lnxi) then ! boundary link, take inner point value
+                           ceavg = rca(k2,l)
+                        else
+                           ceavg = ac1*rca(k1, l) + ac2*rca(k2, l)   ! Perot average
+                        end if
+                        !
+                        ! Get concentration in layer above this layer
+                        !
+                        kf1 = ln(1,ka+1); kf2 = ln(2,ka+1)
+                        r1avg = ac1*constituents(ll,kf1) + ac2*constituents(ll,kf2)
+                        !
+                        ! If there is a significant concentration gradient, and significant
+                        ! reference concentration
+                        !
+                        if (ceavg>r1avg*1.1d0 .and. ceavg>0.05d0) then
+                           !
+                           ! Compute Rouse number based on reference concentration and
+                           ! concentration of the layer above it. Make sure that Rouse number
+                           ! differs significantly from 1, and that it is not too large.
+                           ! Note: APOWER = - Rouse number
+                           !
+                           ! The Rouse profile equation
+                           !
+                           !            [ a*(H-z) ]^R
+                           ! c(z) = c_a*[ ------- ]
+                           !            [ z*(H-a) ]
+                           !
+                           ! is here approximated by
+                           !
+                           ! c(z) = c_a*(a/z)^R = c_a*(z/a)^-R
+                           !
+                           z = zktop + dzup/2.0_fp
+                           apower = log(max(r1avg/ceavg,1d-5)) / log(z/aksu)
+                           if (apower>-1.05d0 .and. apower<=-1.0d0) then           ! you have decide on the eq to -1.0
+                              apower = -1.05d0
+                           elseif (apower>-1.0d0 .and. apower<-0.95d0) then
+                              apower = -0.95d0
+                           endif
+                           apower  = min(max(-10.0d0 , apower), 10.0d0)
+                           !
+                           ! Compute the average concentration cavg between the reference
+                           ! height a and the top of the current layer (bottom of layer above) z.
+                           !           /zktop                           zktop                       zktop
+                           ! cavg*dz = | c(z) dz = c_a/(-R+1)*(z/a)^(-R+1)*a | = c_a/(-R+1)*a^R*z^(-R+1) |
+                           !          /a                                     a                           a
+                           !
+                           cavg1  = (ceavg/(apower+1.0d0)) * (1d0/aksu)**apower
+                           cavg2  = zktop**(apower+1.0d0) - aksu**(apower+1.0d0)
+                           cavg   = cavg1 * cavg2                 ! kg/m3/m
+                           !
+                           ! The corresponding effective suspended load flux is
+                           !
+                           cflux   = u1(ka)*cavg*dz*wu_mor(Lx)
+                           !
+                           ! Increment the correction by the part of the suspended load flux
+                           ! that is in excess of the flux computed above, but never opposite.
+                           !
+                           if (fluxhortot(ll, ka)>0.0d0 .and. cflux>0.0d0) then
+                              cumflux = cumflux + max(0.0d0, fluxhortot(ll, ka)-cflux)
+                           elseif (fluxhortot(ll, ka)<0.0d0 .and. cflux<0.0_fp) then
+                              cumflux = cumflux + min(fluxhortot(ll, ka)-cflux, 0.0d0)
+                           !else
+                           !   cumflux = cumflux + fluxhortot(ll,ka)    ! don't correct in aksu layer
+                           endif
+                        endif
+                     endif
+                     e_scrn(Lx,l) = -suscorfac * cumflux / wu_mor(Lx)
+                     !
+                     ! bedload will be reduced in case of sediment transport
+                     ! over a non-erodible layer (no sediment in bed) in such
+                     ! a case, the suspended sediment transport vector must
+                     ! also be reduced.
+                     !
+                     if (e_scrn(Lx,l) > 0.0d0 .and. Lx<=lnxi) then
+                        e_scrn(Lx,l) = e_scrn(Lx,l)*fixfac(k1, l)      ! outgoing (cumflux<0)
+                     else
+                        e_scrn(Lx,l) = e_scrn(Lx,l)*fixfac(k2, l)      ! take inner point fixfac on bnd
+                     endif
+                  else
+                     e_scrn(Lx,l) = 0.0d0
+                  endif
+               enddo ! lnx
+            endif    ! tratyp == TRA_COMBINE
+         enddo       ! l
+      endif          ! kmx>0; end of correction for bed/total load
+      !       !
+      !if (kmx>0 .and. jampi>0) then
+      !   if (lsed > 0) then
+      !      call update_ghosts(ITYPE_U, lsed, lnx, e_scrn, ierror)
+      !   endif
+      !end if
+   endif           ! sus /= 0.0
+
+   end subroutine fm_suspended_sand_correction
+   
 end module m_fm_bott3d
