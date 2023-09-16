@@ -27,8 +27,20 @@
 !                                                                               
 !-------------------------------------------------------------------------------
 
-! 
 !
+!
+
+!> Module with subroutines (and no data) for bed level update. 
+module m_fm_bott3d
+
+use precision
+
+implicit none
+
+private !Prevent used modules from being exported
+public :: fm_bott3d
+   
+contains
 
    subroutine fm_bott3d()
    !!--description-----------------------------------------------------------------
@@ -1529,3 +1541,5 @@
    endif
 
    end subroutine fm_bott3d
+
+end module m_fm_bott3d
