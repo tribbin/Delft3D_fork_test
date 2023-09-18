@@ -102,7 +102,7 @@ public :: fm_bott3d
    !!
    !! Local variables
    !!
-   logical                                     :: bedload, error, jamerge, aval
+   logical                                     :: bedload, error, aval
    integer                                     :: ierror
    integer                                     :: l, nm, ii, ll, Lx, Lf, lstart, j, k, k1, k2, knb, kb, kk, itrac
    integer                                     :: Lb, Lt, ka, kf1, kf2, kt, nto, iL, ac1, ac2
@@ -248,62 +248,8 @@ public :: fm_bott3d
          call update_ghosts(ITYPE_Sall, lsedtot, Ndx, dbodsd, ierror)
       end if
       
-!======================================================================
-!======================================================================
-!======================================================================
-!BEGIN CUT 
-      
-      !
-      ! Modifications for running parallel conditions (mormerge)
-      !
-      if (stmpar%morpar%multi) then
-         jamerge = .false.
-         if (jamormergedtuser>0) then
-            mergebodsed = mergebodsed + dbodsd
-            dbodsd = 0d0
-            if (comparereal(time1, time_user, eps10)>= 0) then
-               jamerge = .true.
-            endif
-         else
-            mergebodsed = dbodsd
-            dbodsd = 0d0
-            jamerge = .true.
-         endif
-         if (jamerge) then
-            ii = 0
-            do ll = 1, lsedtot
-               do nm = 1, ndxi
-                  ii = ii + 1
-                  stmpar%morpar%mergebuf(ii) = real(mergebodsed(ll, nm) * kcsmor(nm),hp)
-               enddo
-            enddo
-            call update_mergebuffer(stmpar%morpar%mergehandle, ndxi*lsedtot, stmpar%morpar%mergebuf, &
-                jampi, my_rank, DFM_COMM_DFMWORLD)
-
-            ii = 0
-            do ll = 1, lsedtot
-               do nm = 1, ndxi
-                  ii = ii + 1
-                  dbodsd(ll, nm) = real(stmpar%morpar%mergebuf(ii),fp)
-               enddo
-            enddo
-            mergebodsed = 0d0
-         endif
-      else !=======================================
-!move down (else->endif) 
-!`kcsmor` in 1119 out.
-!think what do we want when we have morphopol different in different runs. 
-          
-         do ll = 1, lsedtot
-            dbodsd(ll,:) = dbodsd(ll,:)*kcsmor
-         end do
-      endif
-      
-!======================================================================
-!======================================================================
-!======================================================================
-!END CUT 
-      
+      call consider_mormerge(dtmor)
+            
       !
       call reconstructsedtransports()   ! reconstruct cell centre transports for morstats and cumulative st output
       call collectcumultransports()     ! Always needed, written on last timestep of simulation
@@ -1619,7 +1565,6 @@ public :: fm_bott3d
    !! Declarations
    !!
    
-   use sediment_basics_module
    use m_flowgeom , only: nd, bai_mor, ndxi, bl, wu_mor, ba, ln
    use m_flow, only: s1, hs
    use m_flowparameters, only: epshs
@@ -1757,5 +1702,90 @@ public :: fm_bott3d
 
       
    end subroutine dry_bed_erosion
+
+   !>Update `dbodsd` considering mormerge
+   subroutine consider_mormerge(dtmor)
+   
+   !!
+   !! Declarations
+   !!
+   
+   use m_sediment , only: stmpar, mergebodsed, jamormergedtuser, kcsmor
+   use m_flowtimes, only: time1, time_user
+   use m_flowgeom , only: ndxi
+   use m_flowparameters, only: eps10
+   use m_fm_erosed, only: lsedtot, dbodsd
+   use m_partitioninfo, only: jampi, my_rank, DFM_COMM_DFMWORLD
+   
+   implicit none
+
+   !!
+   !! I/O
+   !!
+   
+   double precision,                intent(in) :: dtmor
+   
+   !!
+   !! Local variables
+   !!
+      
+   !logical
+   logical                                     :: jamerge
+   
+   !integer
+   integer                                     :: ll, nm, ii
+      
+   !!
+   !! Allocate and initialize
+   !!
+         
+   !!
+   !! Execute
+   !!
+   
+   !
+   ! Modifications for running parallel conditions (mormerge)
+   !
+   if (stmpar%morpar%multi) then
+      jamerge = .false.
+      if (jamormergedtuser>0) then
+         mergebodsed = mergebodsed + dbodsd
+         dbodsd = 0d0
+         if (comparereal(time1, time_user, eps10)>= 0) then
+            jamerge = .true.
+         endif
+      else
+         mergebodsed = dbodsd
+         dbodsd = 0d0
+         jamerge = .true.
+      endif
+      if (jamerge) then
+         ii = 0
+         do ll = 1, lsedtot
+            do nm = 1, ndxi
+               ii = ii + 1
+               !stmpar%morpar%mergebuf(ii) = real(mergebodsed(ll, nm) * kcsmor(nm),hp)
+               stmpar%morpar%mergebuf(ii) = real(mergebodsed(ll, nm),hp)
+            enddo
+         enddo
+         call update_mergebuffer(stmpar%morpar%mergehandle, ndxi*lsedtot, stmpar%morpar%mergebuf, &
+             jampi, my_rank, DFM_COMM_DFMWORLD)
+
+         ii = 0
+         do ll = 1, lsedtot
+            do nm = 1, ndxi
+               ii = ii + 1
+               dbodsd(ll, nm) = real(stmpar%morpar%mergebuf(ii),fp)
+            enddo
+         enddo
+         mergebodsed = 0d0
+      endif
+   endif
+       
+   do ll = 1, lsedtot
+      dbodsd(ll,:) = dbodsd(ll,:)*kcsmor
+   end do
+   
+   end subroutine consider_mormerge
    
 end module m_fm_bott3d
