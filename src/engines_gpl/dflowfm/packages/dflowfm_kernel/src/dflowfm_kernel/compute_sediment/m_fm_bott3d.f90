@@ -241,14 +241,14 @@ public :: fm_bott3d
 
        call fluff_burial(stmpar%morpar%flufflyr, dbodsd, lsed, lsedtot, 1, ndxi, dts, morfac)
        
-       call dry_bed_erosion(dtmor)
+       call fm_dry_bed_erosion(dtmor)
             
       !check whether it is really needed to update ghosts here. Should be applied before `dbodsd` is used
       if ( jampi.gt.0 ) then
          call update_ghosts(ITYPE_Sall, lsedtot, Ndx, dbodsd, ierror)
       end if
       
-      call consider_mormerge(dtmor)
+      call fm_consider_mormerge(dtmor)
             
       !
       call reconstructsedtransports()   ! reconstruct cell centre transports for morstats and cumulative st output
@@ -323,6 +323,8 @@ public :: fm_bott3d
             enddo
          enddo
       endif
+      
+      call fm_apply_bed_boundary_conditions
 !======================================================================
 !======================================================================
 !======================================================================
@@ -1559,7 +1561,7 @@ public :: fm_bott3d
     
    !> Redistribute erosion of wet cell next to dry cell to the dry cell
    !! to consider some sort of bank or beach erosion
-   subroutine dry_bed_erosion(dtmor)
+   subroutine fm_dry_bed_erosion(dtmor)
    
    !!
    !! Declarations
@@ -1701,10 +1703,10 @@ public :: fm_bott3d
    enddo          ! nm
 
       
-   end subroutine dry_bed_erosion
+   end subroutine fm_dry_bed_erosion
 
    !>Update `dbodsd` considering mormerge
-   subroutine consider_mormerge(dtmor)
+   subroutine fm_consider_mormerge(dtmor)
    
    !!
    !! Declarations
@@ -1786,6 +1788,6 @@ public :: fm_bott3d
       dbodsd(ll,:) = dbodsd(ll,:)*kcsmor
    end do
    
-   end subroutine consider_mormerge
+   end subroutine fm_consider_mormerge
    
 end module m_fm_bott3d
