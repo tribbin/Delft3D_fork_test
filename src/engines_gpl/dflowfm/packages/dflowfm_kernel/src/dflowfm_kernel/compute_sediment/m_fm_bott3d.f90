@@ -65,10 +65,10 @@ public :: fm_bott3d
    use m_flow     , only: vol1, s0, s1, hs, u1, kmx, hu, qa
    use m_flowgeom , only: ndxi, nd, wu, bl, ba, ln, ndx, lnx, lnxi, acl, xz, yz, wu_mor, bai_mor, bl_ave
    use m_flowexternalforcings, only: nopenbndsect
-   use m_flowparameters, only: epshs, eps10, jasal, flowWithoutWaves, jawaveswartdelwaq, jawave
+   use m_flowparameters, only: epshs, eps10, flowWithoutWaves, jawaveswartdelwaq, jawave
    use m_sediment, m_sediment_sed=>sed 
    use m_flowtimes, only: dts, tstart_user, time1, dnt, julrefdat, tfac, ti_sed, ti_seds, time_user
-   use m_transport, only: fluxhortot, ised1, constituents, sinksetot, sinkftot, itra1, itran, numconst, isalt
+   use m_transport, only: fluxhortot, ised1, sinksetot, sinkftot, numconst
    use unstruc_files, only: mdia, close_all_files
    use m_fm_erosed
    use Messagehandling
@@ -104,9 +104,9 @@ public :: fm_bott3d
    !!
    logical                                     :: bedload, error, aval
    integer                                     :: ierror
-   integer                                     :: l, nm, ii, ll, Lx, Lf, lstart, j, k, k1, k2, knb, kb, kk, itrac
+   integer                                     :: l, nm, ii, ll, Lx, Lf, lstart, j, k, k1, k2, knb, kk, itrac
    integer                                     :: Lb, Lt, ka, kf1, kf2, kt, nto, iL, ac1, ac2
-   double precision                            :: eroflx, sedflx, trndiv, flux, dtmor, hsk, ddp
+   double precision                            :: eroflx, sedflx, trndiv, flux, dtmor
    double precision                            :: bamin
 
    double precision, parameter                 :: dtol = 1d-16
@@ -267,8 +267,8 @@ public :: fm_bott3d
          enddo
       endif
       !
-!======================================================================
-!check why this can not be moved before the frist if (cmpupd) or after the last if (cmpupd)
+      !
+      !2DO: check why this can not be moved before the first `if (cmpupd)` or after the last `if (cmpupd)`
       if (stmpar%morpar%moroutput%morstats .and. ti_sed>0d0) then
          call morstats(dbodsd, hs_mor, ucxq_mor, ucyq_mor, sbcx, sbcy, sbwx, sbwy, sscx, sscy, sswx, sswy)
       endif
@@ -369,86 +369,8 @@ public :: fm_bott3d
             end do
          end if
       end do
-      
-!======================================================================
-!======================================================================
-!======================================================================
-!BEGIN CUT 
-      
       !
-      ! JRE+BJ: Update concentrations in water column to conserve mass because of bottom update
-      ! This needs to happen in work array sed, not constituents, because of copying back and forth later on
-      !
-      if (kmx==0) then
-         do k = 1, ndx
-            hsk = hs(k)
-            ! After review, botcrit as a parameter is a really bad idea, as it causes concentration explosions if chosen poorly or blchg is high.
-            ! Instead, allow bottom level changes up until 5% of the waterdepth to influence concentrations
-            ! This is in line with the bed change messages above. Above that threshold, change the concentrations as if blchg==0.95hs 
-            if (hsk<epshs) cycle
-            botcrit=0.95*hsk
-            ddp = hsk/max(hsk-blchg(k),botcrit)
-            do ll = 1, stmpar%lsedsus
-               m_sediment_sed(ll,k) = m_sediment_sed(ll,k) * ddp
-            enddo
-            !
-            if (jasal>0) then
-               constituents(isalt,k) =  constituents(isalt,k) * ddp
-            endif
-            !
-            if (ITRA1>0) then
-               do itrac=ITRA1,ITRAN
-                  constituents(itrac,k) = constituents(itrac,k)*ddp
-               enddo
-            endif
-         enddo
-      else
-         do ll = 1, stmpar%lsedsus       ! works for sigma only
-            do k=1,ndx
-               hsk = hs(k)
-               if (hsk<epshs) cycle
-               botcrit=0.95*hsk
-               ddp = hsk/max(hsk-blchg(k),botcrit)
-               call getkbotktop(k,kb,kt)
-               do kk=kb,kt
-                  m_sediment_sed(ll,kk) = m_sediment_sed(ll,kk) * ddp
-               enddo
-            enddo
-         enddo
-         !
-         if (jasal>0) then
-            do k=1,ndx
-               hsk=hs(k)
-               if (hsk<epshs) cycle
-               botcrit=0.95*hsk
-               call getkbotktop(k,kb,kt)
-               do kk=kb,kt
-                  constituents(isalt,kk) = constituents(isalt,kk) * hsk / max(hsk - blchg(k), botcrit)
-               enddo
-            enddo
-         endif
-         !
-         if (ITRA1>0) then
-            do itrac=ITRA1,ITRAN
-               do k=1,ndx
-                  hsk=hs(k)
-                  if (hsk<epshs) cycle
-                  botcrit=0.95*hsk
-                  call getkbotktop(k,kb,kt)
-                  do kk=kb,kt
-                     constituents(itrac,kk) = constituents(itrac,kk)*hsk / max(hsk - blchg(k), botcrit)
-                  enddo
-               enddo
-            enddo
-         endif
-         !
-      endif
-      
-!======================================================================
-!======================================================================
-!======================================================================
-!END CUT 
-      
+      call fm_update_concentrations_after_bed_level_update()
       !
       do nm = 1, ndx
          ! note: if kcs(nm)=0 then blchg(nm)=0.0
@@ -1848,5 +1770,133 @@ public :: fm_bott3d
    enddo    ! jb (open boundary)
 
    end subroutine fm_apply_bed_boundary_condition
+
+   !< Update concentrations in water column to conserve mass because of bottom update
+   !! This needs to happen in work array sed, not constituents, because of copying back and forth later on
+   subroutine fm_update_concentrations_after_bed_level_update()
+   !!
+   !! Declarations
+   !!
+   
+   !use Messagehandling
+   !use message_module, only: writemessages, write_error
+   !use morphology_data_module, only: bedbndtype
+   !use table_handles , only: handletype, gettabledata
+   use m_transport, only: constituents, itra1, itran, isalt
+   use m_sediment, only: stmpar, botcrit
+   use m_sediment, m_sediment_sed=>sed 
+   use m_flow, only: kmx, hs
+   use m_flowparameters, only: epshs, jasal
+   !use m_flowtimes, only: julrefdat
+   !use m_flowgeom , only: bl
+   use m_fm_erosed, only: blchg
+   
+   implicit none
+
+   !!
+   !! I/O
+   !!
+   
+   !double precision,                intent(in) :: dtmor
+   !double precision,                intent(in) :: timhr
+   
+   !!
+   !! Local variables
+   !!
+      
+   !logical
+   !logical                                     :: jamerge
+   
+   !integer
+   integer                                     :: k, ndx, ll, kb, kt, kk, itrac
+      
+   !double 
+   double precision                            :: hsk
+   double precision                            :: ddp
+   !double precision                            :: rate
+   
+   !characters
+   !character(len=256)                             :: msg
+   
+   !pointer
+   !double precision , allocatable, pointer :: m_sediment_sed 
+   
+   !!
+   !! Allocate and initialize
+   !!
+     
+   !m_sediment_sed => sed
+   
+   !!
+   !! Execute
+   !!
+   
+   !
+   if (kmx==0) then
+      do k = 1, ndx
+         hsk = hs(k)
+         ! After review, botcrit as a parameter is a really bad idea, as it causes concentration explosions if chosen poorly or blchg is high.
+         ! Instead, allow bottom level changes up until 5% of the waterdepth to influence concentrations
+         ! This is in line with the bed change messages above. Above that threshold, change the concentrations as if blchg==0.95hs 
+         if (hsk<epshs) cycle
+         botcrit=0.95*hsk
+         ddp = hsk/max(hsk-blchg(k),botcrit)
+         do ll = 1, stmpar%lsedsus
+            m_sediment_sed(ll,k) = m_sediment_sed(ll,k) * ddp
+         enddo
+         !
+         if (jasal>0) then
+            constituents(isalt,k) =  constituents(isalt,k) * ddp
+         endif
+         !
+         if (ITRA1>0) then
+            do itrac=ITRA1,ITRAN
+               constituents(itrac,k) = constituents(itrac,k)*ddp
+            enddo
+         endif
+      enddo
+   else
+      do ll = 1, stmpar%lsedsus       ! works for sigma only
+         do k=1,ndx
+            hsk = hs(k)
+            if (hsk<epshs) cycle
+            botcrit=0.95*hsk
+            ddp = hsk/max(hsk-blchg(k),botcrit)
+            call getkbotktop(k,kb,kt)
+            do kk=kb,kt
+               m_sediment_sed(ll,kk) = m_sediment_sed(ll,kk) * ddp
+            enddo
+         enddo
+      enddo
+      !
+      if (jasal>0) then
+         do k=1,ndx
+            hsk=hs(k)
+            if (hsk<epshs) cycle
+            botcrit=0.95*hsk
+            call getkbotktop(k,kb,kt)
+            do kk=kb,kt
+               constituents(isalt,kk) = constituents(isalt,kk) * hsk / max(hsk - blchg(k), botcrit)
+            enddo
+         enddo
+      endif
+      !
+      if (ITRA1>0) then
+         do itrac=ITRA1,ITRAN
+            do k=1,ndx
+               hsk=hs(k)
+               if (hsk<epshs) cycle
+               botcrit=0.95*hsk
+               call getkbotktop(k,kb,kt)
+               do kk=kb,kt
+                  constituents(itrac,kk) = constituents(itrac,kk)*hsk / max(hsk - blchg(k), botcrit)
+               enddo
+            enddo
+         enddo
+      endif
+      !
+   endif
+
+   end subroutine fm_update_concentrations_after_bed_level_update
    
 end module m_fm_bott3d
