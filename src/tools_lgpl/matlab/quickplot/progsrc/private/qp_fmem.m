@@ -154,6 +154,8 @@ switch cmd
                     try_next='nodelemesh';
                 case {'.14','.gr3'}
                     try_next='adcircmesh';
+                case {'.2dm'}
+                    try_next='smsmesh';
                 case {'.mesh'}
                     try_next='mikemesh';
                 case {'.shy'}
@@ -162,7 +164,7 @@ switch cmd
                     try_next='geomesh';
                 case {'.msh'}
                     try_next='gmsh';
-                case {'.mat'}
+                case {'.mat','.fig'}
                     try_next='matlab';
                 case {'.map'}
                     try_next='pcraster';
@@ -373,10 +375,15 @@ switch cmd
                         else
                             FI=load('-mat',FileName);
                         end
+                        if strcmpi(en,'.fig')
+                            qp_plotmanager('openfigure',[],0,0,{FileName});
+                            FI=[];
+                            break
+                        end
                         if isstruct(FI)
                             f=fieldnames(FI);
-                            if length(f)==1 && strcmp(lower(f{1}),'data')
-                                FI=getfield(FI,f{1});
+                            if numel(f)==1 && strcmpi(f{1},'data')
+                                FI = FI.(f{1});
                                 FI.FileName=FileName;
                                 Tp=try_next;
                             else
@@ -794,6 +801,13 @@ switch cmd
                             FI.Options=0;
                             Tp=FI.FileType;
                         end
+                    case 'tuflowmesh'
+                        asciicheck(isASCII,REASON)
+                        FI=tuflowmesh('open',FileName);
+                        if ~isempty(FI)
+                            FI.Options=0;
+                            Tp=FI.FileType;
+                        end
                     case 'tekal'
                         asciicheck(isASCII,REASON)
                         FI=tekal('open',FileName);
@@ -1206,12 +1220,15 @@ qp_settings('LastFileType',lasttp)
 
 function [isASCII,REASON] = verifyascii(arg)
 fid = fopen(arg,'r');
-S = fread(fid,[1 100],'uint8');
+S = fread(fid,[1 1024],'uint8');
 fclose(fid);
 if isempty(S)
     isASCII = false;
     REASON  = 'the file is empty';
 else
+    if S(end) == 26 % last chracter can be an EOF marker
+        S = S(1:end-1);
+    end
     invalid_chars = S(S~=9 & S~=10 & S~=13 & S<32); % TAB,LF,CR allowed
     if ~isempty(invalid_chars)
         isASCII = false;

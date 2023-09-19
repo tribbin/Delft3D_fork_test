@@ -836,11 +836,16 @@ module m_readCrossSections
          xyz_cross_section = .false.
       endif
       
-      if (success) call prop_get_integer(node_ptr, '', 'sectionCount', frictionCount, success)
-      if (.not. success .or. numLevels <= 0 .or. frictionCount <= 0) then
+      if (.not. success .or. numLevels <= 0 ) then
             call SetMessage(LEVEL_ERROR, 'Error while reading number of levels/sections for YZ-Cross-Section Definition ID: '//trim(pCS%id))
             return
       endif
+
+      frictionCount = 1
+      call prop_get_integer(node_ptr, '', 'sectionCount', frictionCount, success)
+      if (frictioncount <=0 ) then
+         call SetMessage(LEVEL_ERROR, 'Error while reading number of frictionlevels Definition ID: '//trim(pCS%id)//'the frictionCount must be larger than 0.' )
+      endif  
 
       pCS%conveyanceType = CS_VERT_SEGM
       conv_text = 'segmented'

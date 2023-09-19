@@ -82,9 +82,13 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
       call get_and_apply_windstress(time_in_seconds)
    end if
 
+   if (ja_airdensity > 0) then
+      call get_timespace_value_by_item_array_consider_success_value(item_airdensity, airdensity)
+   end if
+
    if (jatem > 1) then
       call set_temperature_models()
-   end if
+   end if 
 
    if (ja_friction_coefficient_time_dependent > 0) then
        call set_friction_coefficient(time_in_seconds)

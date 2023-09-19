@@ -13,12 +13,24 @@ if(NOT TARGET waq_utils_f)
     add_subdirectory(${checkout_src_root}/${waq_utils_f_module} waq_utils_f)
 endif()
 
+if(NOT TARGET waq_netcdf)
+    add_subdirectory(${checkout_src_root}/${waq_netcdf_module} waq_netcdf)
+endif()
+
+if(NOT TARGET waq_validation)
+    add_subdirectory(${checkout_src_root}/${waq_validation_module} waq_validation)
+endif()
+
 if(NOT TARGET waq_process)
     add_subdirectory(${checkout_src_root}/${waq_process_module} waq_process)
 endif()
 
 if(NOT TARGET waq_kernel)
     add_subdirectory(${checkout_src_root}/${waq_kernel_module} waq_kernel)
+endif()
+
+if(NOT TARGET waq_memory)
+    add_subdirectory(${checkout_src_root}/${waq_memory_module} waq_memory)
 endif()
 
 if(NOT TARGET waq_io)
@@ -41,8 +53,12 @@ if(NOT TARGET delwaq2)
     add_subdirectory(${checkout_src_root}/${delwaq2_module} delwaq2)
 endif()
 
-if(NOT TARGET delwaq_lib_examples)
-    add_subdirectory(${checkout_src_root}/${delwaq_lib_examples_module} delwaq_lib_examples)
+if(NOT TARGET ftnunit)
+        add_subdirectory(${checkout_src_root}/${ftnunit_module} ftnunit)
+endif()
+
+if(NOT TARGET delwaq_lib_tests)
+    add_subdirectory(${checkout_src_root}/${delwaq_lib_tests_module} delwaq_lib_tests)
 endif()
 
 if(NOT TARGET wq_processes)

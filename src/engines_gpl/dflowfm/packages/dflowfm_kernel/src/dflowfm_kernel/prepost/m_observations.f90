@@ -161,6 +161,7 @@ implicit none
     integer                           :: IVAL_WIND
     integer                           :: IVAL_RHUM
     integer                           :: IVAL_CLOU
+    integer                           :: IVAL_AIRDENSITY
     integer                           :: IVAL_QSUN
     integer                           :: IVAL_QEVA
     integer                           :: IVAL_QCON
@@ -269,6 +270,7 @@ implicit none
     integer                           :: IPNT_WIND
     integer                           :: IPNT_RHUM
     integer                           :: IPNT_CLOU
+    integer                           :: IPNT_AIRDENSITY
     integer                           :: IPNT_QSUN
     integer                           :: IPNT_QEVA
     integer                           :: IPNT_QCON
@@ -430,6 +432,7 @@ subroutine init_valobs_pointers()
    IVAL_WIND       = 0
    IVAL_RHUM       = 0
    IVAL_CLOU       = 0
+   IVAL_AIRDENSITY = 0
    IVAL_QSUN       = 0
    IVAL_QEVA       = 0
    IVAL_QCON       = 0
@@ -536,6 +539,9 @@ subroutine init_valobs_pointers()
    end if
    if ( jahisrain.gt.0 ) then
       i=i+1;            IVAL_RAIN       = i
+   end if
+   if ( jahis_airdensity > 0 ) then
+      i=i+1;            IVAL_AIRDENSITY = i
    end if
    if ( jahisinfilt.gt.0 ) then
       i=i+1;            IVAL_INFILTCAP  = i
@@ -763,6 +769,7 @@ subroutine init_valobs_pointers()
    IPNT_WIND  = ivalpoint(IVAL_WIND,  kmx, nlyrs)
    IPNT_RHUM  = ivalpoint(IVAL_RHUM,  kmx, nlyrs)
    IPNT_CLOU  = ivalpoint(IVAL_CLOU,  kmx, nlyrs)
+   IPNT_AIRDENSITY = ivalpoint(IVAL_AIRDENSITY,  kmx, nlyrs)
    IPNT_QSUN  = ivalpoint(IVAL_QSUN,  kmx, nlyrs)
    IPNT_QEVA  = ivalpoint(IVAL_QEVA,  kmx, nlyrs)
    IPNT_QCON  = ivalpoint(IVAL_QCON,  kmx, nlyrs)

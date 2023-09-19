@@ -590,7 +590,6 @@ contains
       logical                :: has_more !< Result, whether or not more polyline data may exist in the remainder of the file.
    
       character (len=maxnamelen)   :: rec
-      integer                      :: k
    
       has_more = .false.
 
@@ -6627,6 +6626,7 @@ module m_meteo
    integer, target :: item_normalvelocitybnd                                 !< Unique Item id of the ext-file's 'normalvelocitybnd' quantity
    integer, target :: item_rainfall                                          !< Unique Item id of the ext-file's 'rainfall' quantity
    integer, target :: item_rainfall_rate                                     !< Unique Item id of the ext-file's 'rainfall_rate' quantity
+   integer, target :: item_airdensity                                        !< Unique Item id of the ext-file's 'airdensity' quantity
    integer, target :: item_qhbnd                                             !< Unique Item id of the ext-file's 'qhbnd' quantity
    integer, target :: item_shiptxy                                           !< Unique Item id of the ext-file's 'shiptxy' quantity
    integer, target :: item_movingstationtxy                                  !< Unique Item id of the ext-file's 'movingstationtxy' quantity
@@ -6743,6 +6743,7 @@ module m_meteo
       item_normalvelocitybnd                     = ec_undef_int
       item_rainfall                              = ec_undef_int
       item_rainfall_rate                         = ec_undef_int
+      item_airdensity                            = ec_undef_int
       item_qhbnd                                 = ec_undef_int
       item_shiptxy                               = ec_undef_int
       item_movingstationtxy                      = ec_undef_int
@@ -7067,6 +7068,9 @@ module m_meteo
          case ('rainfall_rate')
             itemPtr1 => item_rainfall_rate
             dataPtr1 => rain
+         case ('airdensity')
+            itemPtr1 => item_airdensity
+            dataPtr1 => airdensity 
          case ('qhbnd')
             itemPtr1 => item_qhbnd
             dataPtr1 => qhbndz
@@ -7193,11 +7197,11 @@ module m_meteo
             itemPtr1 => item_dir
             dataPtr1 => phiwav
             jamapwav_phiwav = 1
-         case ('fx')
+         case ('fx','xwaveforce')
             itemPtr1 => item_fx
             dataPtr1 => sxwav
             jamapwav_sxwav = 1
-         case ('fy')
+         case ('fy','ywaveforce')
             itemPtr1 => item_fy
             dataPtr1 => sywav
             jamapwav_sywav = 1
@@ -7209,23 +7213,23 @@ module m_meteo
             itemPtr1 => item_wsbv
             dataPtr1 => sbywav
             jamapwav_sybwav = 1
-         case ('mx')
+         case ('mx','xwaveinducedvolumeflux')
             itemPtr1 => item_mx
             dataPtr1 => mxwav
             jamapwav_mxwav = 1
-         case ('my')
+         case ('my','ywaveinducedvolumeflux')
             itemPtr1 => item_my
             dataPtr1 => mywav
             jamapwav_mywav = 1
-         case ('dissurf')
+         case ('dissurf','freesurfacedissipation')
             itemPtr1 => item_dissurf
             dataPtr1 => dsurf
             jamapwav_dsurf = 1
-         case ('diswcap')
+         case ('diswcap','whitecappingdissipation')
             itemPtr1 => item_diswcap
             dataPtr1 => dwcap
             jamapwav_dwcap = 1
-         case ('ubot')
+         case ('ubot','bottomorbitalvelocity')
             itemPtr1 => item_ubot
             dataPtr1 => uorbwav            
             jamapwav_uorb = 1
@@ -7782,7 +7786,7 @@ module m_meteo
          if (success) success = ecSetConverterElement(ecInstancePtr, converterId, n_qhbnd)
          ! Each qhbnd polytim file replaces exactly one element in the target data array.
          ! Converter will put qh value in target_array(n_qhbnd)
-      case ('windx', 'windy', 'windxy', 'stressxy', 'airpressure', 'atmosphericpressure', 'airpressure_windx_windy', &
+      case ('windx', 'windy', 'windxy', 'stressxy', 'airpressure', 'atmosphericpressure', 'airpressure_windx_windy','airdensity', &
             'airpressure_windx_windy_charnock', 'airpressure_stressx_stressy','humidity','airtemperature','cloudiness','solarradiation', 'longwaveradiation')
          if (present(srcmaskfile)) then 
             if (ec_filetype == provFile_arcinfo .or. ec_filetype == provFile_curvi) then
@@ -7999,8 +8003,11 @@ module m_meteo
                 ! wave data is read from a com.nc file produced by D-Waves which contains one time field only
                 fileReaderPtr%one_time_field = .true.
             endif
-         case ('wavesignificantheight', 'waveperiod', 'wavedirection')
-            ! the name of the source item created by the file reader will be the same as the ext.force. quant name
+         case ( 'wavesignificantheight', 'waveperiod', 'wavedirection', 'xwaveforce', 'ywaveforce',                     &
+                'xwaveinducedvolumeflux','ywaveinducedvolumeflux','freesurfacedissipation','whitecappingdissipation',   &
+                'bottomorbitalvelocity','totalwaveenergydissipation','bottomdissipation')
+             !BS OWC: wsbu,wsbv might be included here with more appropriate names. 'totalwaveenergydissipation','bottomdissipation': included for now, might be removed if unused
+             ! the name of the source item created by the file reader will be the same as the ext.force. quant name
             sourceItemName = varname
          case ('airpressure', 'atmosphericpressure')
             if (ec_filetype == provFile_arcinfo) then
@@ -8344,6 +8351,16 @@ module m_meteo
             end if
          case ('cloudiness')
             sourceItemName = 'cloudfraction'
+         case ('airdensity')
+            if (ec_filetype == provFile_netcdf) then
+               sourceItemId   = ecFindItemInFileReader(ecInstancePtr, fileReaderId, 'air_density')
+               if (success) success = ecAddConnectionSourceItem(ecInstancePtr, connectionId, sourceItemId)
+            else
+               call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
+               return
+            end if
+            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_airdensity)
+            if (success) success = ecAddItemConnection(ecInstancePtr, item_airdensity, connectionId)
          case ('solarradiation')
             if (ec_filetype == provFile_netcdf) then
                sourceItemName = 'surface_net_downward_shortwave_flux'
@@ -8566,6 +8583,9 @@ module m_meteo
          end if
       if (trim(group_name) == 'rainfall_rate') then
          if (.not.ec_gettimespacevalue_by_itemID(instancePtr, item_rainfall_rate, irefdate, tzone, tunit, timesteps)) return
+      end if
+      if (trim(group_name) == 'airdensity') then
+         if (.not.ec_gettimespacevalue_by_itemID(instancePtr, item_airdensity, irefdate, tzone, tunit, timesteps)) return
       end if
       if (trim(group_name) == 'humidity_airtemperature_cloudiness') then
          if (.not.ec_gettimespacevalue_by_itemID(instancePtr, item_hac_humidity, irefdate, tzone, tunit, timesteps)) return
