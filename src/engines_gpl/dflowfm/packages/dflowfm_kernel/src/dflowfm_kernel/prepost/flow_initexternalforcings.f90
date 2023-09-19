@@ -1457,6 +1457,17 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   japatm = 1
                endif
 
+            else if (qid == 'charnock') then
+               if (.not. allocated(ec_charnock) ) then
+                  allocate ( ec_charnock(ndx) , wcharnock(lnx), stat=ierr)
+                  call aerr('ec_charnock(ndx), wcharnock(lnx)' , ierr, ndx+lnx)
+                  ec_charnock = 0d0
+               endif
+               success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), kcw, kx, filename, filetype, method, operand, varname=varname)
+               if (success) then
+                  jaspacevarcharn = 1
+               endif
+
             else if (qid == 'humidity_airtemperature_cloudiness') then
 
                ! Meteo1
@@ -1574,6 +1585,20 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   jarhum = 1  ; btempforcingtypH = .true.
                endif
 
+            else if (qid == 'dewpoint') then ! Relative humidity array used to store dewpoints
+
+               if (.not. allocated(rhum) ) then
+                  allocate ( rhum(ndx) , stat=ierr)
+                  call aerr('rhum(ndx)', ierr, ndx)
+                  rhum = 0d0
+               endif
+
+               itempforcingtyp = 5
+               success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
+               if (success) then
+                  jarhum = 1  ;
+               endif
+
             else if (qid == 'cloudiness') then
 
                if (.not. allocated(clou) ) then
@@ -1586,7 +1611,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   jaclou = 1 ; btempforcingtypC = .true.
                endif
 
-               else if (qid == 'solarradiation') then
+            else if (qid == 'solarradiation') then
 
                if (.not. allocated(qrad) ) then
                   allocate ( qrad(ndx) , stat=ierr)
@@ -1970,7 +1995,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                endif
            else
               call mess(LEVEL_WARN, 'Reading *.ext forcings file '''//trim(md_extfile)//''', getting unknown QUANTITY '//trim(qid) )
-              call qnerror('Reading *.ext forcings file '''//trim(md_extfile)//''', ', ' getting unknown QUANTITY ', trim(qid) )
+              call qnerror('Reading *.ext forcings file '''//trim(md_extfile)//''', ', 'getting unknown QUANTITY ', trim(qid) )
               success = .false.
            endif
 
@@ -1980,7 +2005,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                      call mess(LEVEL_WARN, rec)
                   end if
                   ! We do a direct goto 888 end, so qnerror for GUI is allowed here.
-                  call qnerror('flow_initexternalforcings: Error while initializing quantity: ', qid, 'Check preceding log lines for details.')
+                  call qnerror('flow_initexternalforcings: Error while initializing quantity: ', qid, '. Check preceding log lines for details.')
                   iresult = DFM_EXTFORCERROR
                   goto 888
             endif
