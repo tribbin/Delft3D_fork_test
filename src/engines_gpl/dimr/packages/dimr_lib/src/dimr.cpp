@@ -837,16 +837,20 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                                 // TODO: This does not work for arrays (yet), only scalar double
                                 //
                                 // Getting data:
-                                double* transfer = new double[thisCoupler->sourceComponent->numProcesses]{ 0 };
+                                // "transfer" is the value on this rank. Set it to a very big negative value
+                                double transfer = -999000.0;
 
                                 // addresses eventually updated
-                                getAddress(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->sourceComponent->dllGetVar, &(thisCoupler->items[k].sourceVarPtr),
-                                    thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, transfer);
-                                // the value of sourceVarPtr is sent here to all MPI processes
+                                // only when the source component is on this rank
+                                // Wanda will drop the value in "transfer" on calling dllGetVar
+                                if (thisCoupler->sourceComponent->onThisRank) {
+                                    getAddress(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->sourceComponent->dllGetVar, &(thisCoupler->items[k].sourceVarPtr),
+                                        thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, &transfer);
+                                }
+                                // Use sourceVarPtr to fill "transfer" and sent it to all ranks, 
+                                // resulting in transferValuePtr pointing to the correct value on all ranks
                                 transferValuePtr = send(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->items[k].sourceVarPtr,
-                                    thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, transfer);
-
-                                delete[] transfer;
+                                    thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, &transfer);
 
                                 // Optional TODO: assuming one source(partition):
                                 //    if there is only one target (partition), and all partitions can act as source partition:
@@ -1064,39 +1068,38 @@ void Dimr::getAddress(
     int          nProc,
     double* transfer)
 {
-    for (int m = 0; m < nProc; m++) {
-        if (my_rank == processes[m]) {
-            log->Write(ALL, my_rank, "Dimr::getAddress (%s)", name);
-            if (compType == COMP_TYPE_DEFAULT_BMI ||
-                compType == COMP_TYPE_RTC ||
-                // compType == COMP_TYPE_RR ||
-                compType == COMP_TYPE_FLOW1D ||
-                compType == COMP_TYPE_FLOW1D2D ||
-                compType == COMP_TYPE_FM || // NOTE: pending new feature of specifying get_var by value/by reference, we now always get the new pointer from dflowfm (needed for UNST-1713).
-                *sourceVarPtr == NULL) {
-                // These components only returns a new pointer to a copy of the double value, so call it each time.
-                // sourceVarPtr=NULL: getVar not yet called for this parameter, probably because "send" is being called
-                //                    via the toplevel "get_var"
-                if (dllGetVar == NULL) {
-                    throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
-                }
-                (dllGetVar)(name, (void**)(sourceVarPtr));
-            }
-            else if (compType == COMP_TYPE_WANDA) {
-                if (dllGetVar == NULL) {
-                    throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
-                }
-                // Wanda does not use pointers to internal structures:
-                // - Use the DIMR-transfer array
-                // - Note the missing & in the dllGetVar call, when comparing with the dllGetVar call above
-                *sourceVarPtr = transfer;
-                (dllGetVar)(name, (void**)(*sourceVarPtr));
-            }
-            else
-            {
-                // Other components already have direct pointer access to the actual variable.
-            }
+    log->Write(ALL, my_rank, "Dimr::getAddress (%s)", name);
+    // The order is important: first catch the Wanda case:
+    // Otherwise the "else if" part might be executed When "*sourceVarPtr==NULL" and "compType==COMP_TYPE_WANDA"
+    if (compType == COMP_TYPE_WANDA) {
+        if (dllGetVar == NULL) {
+            throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
         }
+        // Wanda does not use pointers to internal structures:
+        // - Use the DIMR-transfer array
+        // - Note the added * in the dllGetVar call, when comparing with the dllGetVar call above
+        *sourceVarPtr = transfer;
+        (dllGetVar)(name, (void**)(*sourceVarPtr));
+        log->Write(ALL, my_rank, "Dimr::getAddress:WANDA_GET: (%20.10f)", transfer);
+    }
+    else if (compType == COMP_TYPE_DEFAULT_BMI ||
+        compType == COMP_TYPE_RTC ||
+        // compType == COMP_TYPE_RR ||
+        compType == COMP_TYPE_FLOW1D ||
+        compType == COMP_TYPE_FLOW1D2D ||
+        compType == COMP_TYPE_FM || // NOTE: pending new feature of specifying get_var by value/by reference, we now always get the new pointer from dflowfm (needed for UNST-1713).
+        *sourceVarPtr == NULL) {
+        // These components only return a new pointer to a copy of the double value, so call it each time.
+        // sourceVarPtr=NULL: getVar not yet called for this parameter, probably because "send" is being called
+        //                    via the toplevel "get_var"
+        if (dllGetVar == NULL) {
+            throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
+        }
+        (dllGetVar)(name, (void**)(sourceVarPtr));
+    }
+    else
+    {
+        // Other components already have direct pointer access to the actual variable.
     }
 }
 
@@ -1110,66 +1113,24 @@ double* Dimr::send(
     int          nProc,
     double* transfer)
 {
-    if (compType == COMP_TYPE_FM)
+    log->Write(ALL, my_rank, "Dimr::send (%s)", name);
+    if (sourceVarPtr != NULL && compType != COMP_TYPE_WANDA)
     {
-        // Hack for UNST-7294
-        // In D-Flow FM, all observation points are distributed over all partitions with MPI_Allreduce via subroutine reduce_valobs
-        // That means:
-        // - MPI_Allreduce is not needed below
-        // - Construction below does not seem to work correctly with negative values (in parallel)
-        // Workaround: if COMP_TYPE_FM just use *sourceVarPtr
-        // TODO:
-        // - Test this workaround
-        // - Double-check other communication (from WANDA to D-Flow FM for example)
-        // - Discuss proper solution
+        *transfer = *sourceVarPtr;
+    }
 
-        if (sourceVarPtr != NULL)
-            transferValue = *sourceVarPtr;
-        else
-            transferValue = -999000.0;
-    } 
+    // Do not call MPI_Allreduce when the number of partitions is 1.
+    if (numranks > 1)
+    {
+        // NOTE: here the transfer array has a defined value only at position==my_rank and if *sourceVarPtr != NULL.
+        // We perform a reduction operation to collect the maximum values at each position and afterwards take the maximum of all values.
+        // We could also use only one double instead of a transfer array and perform the reduction on a single scalar (so avoiding the loop below)
+        int ierr = MPI_Allreduce(transfer, &(transferValue), 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+
+    }
     else
     {
-        double* reducedTransfer = new double[nProc];
-
-        for (int m = 0; m < nProc; m++)
-        {
-            //transfer[m] = -999000.0;
-            if (my_rank == processes[m])
-            {
-                log->Write(ALL, my_rank, "Dimr::send (%s)", name);
-                if (sourceVarPtr != NULL && compType != COMP_TYPE_WANDA)
-                {
-                    transfer[m] = *sourceVarPtr;
-                }
-            }
-        }
-
-        //now you have all source values in the transfer array, we can reduce them
-        double maxValue = -999000.0;
-        // Do not call MPI_Allreduce when the number of partitions is 1.
-        if (numranks > 1)
-        {
-            // NOTE: here the transfer array has a defined value only at position==my_rank and if *sourceVarPtr != NULL.
-            // We perform a reduction operation to collect the maximum values at each position and afterwards take the maximum of all values.
-            // We could also use only one double instead of a transfer array and perform the reduction on a single scalar (so avoiding the loop below)
-            int ierr = MPI_Allreduce(transfer, reducedTransfer, nProc, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
-
-            for (int m = 0; m < nProc; m++)
-            {
-                if (reducedTransfer[m] > maxValue)
-                    maxValue = reducedTransfer[m];
-            }
-        }
-        else
-        {
-            maxValue = transfer[0];
-        }
-
-        delete[] reducedTransfer;
-
-        //the reduced value now is set and return to all ranks
-        transferValue = maxValue;
+        transferValue = *transfer;
     }
     return &(transferValue);
 }
