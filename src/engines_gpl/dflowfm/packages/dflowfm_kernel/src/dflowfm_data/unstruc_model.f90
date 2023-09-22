@@ -4396,7 +4396,7 @@ end subroutine getOutputTimeArrays
 subroutine check_time_interval(time_interval,user_time_step,time_interval_name)
     implicit none
     real(kind=hp)    , intent(inout)  :: time_interval(3)     !< Array of time interval to be checked. It contains 3 elements: interval, start_time, stop_time
-    real(kind=hp)    , intent(in)     :: user_time_step       !< User specified time step (s) for external forcing update
+    double precision , intent(in)     :: user_time_step       !< User specified time step (s) for external forcing update
     character(*)     , intent(in)     :: time_interval_name   !< Name of the time interval parameter to check, to be used in the log message.
 
     if (time_interval(1) > 0d0) then
