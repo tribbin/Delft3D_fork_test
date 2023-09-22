@@ -61,18 +61,28 @@
     !
     ! Local variables
     !
-    real(fp) :: depth_flex_precision
-    real(fp) :: period_flex_precision
+    real(fp) ::   depth_flex_precision
+    real(fp) ::  period_flex_precision
     real(fp) :: gravity_flex_precision
-    real(fp) :: wavek
+    !real(fp) :: wavek
+    real     :: wavek
     !
     !! executable statements -------------------------------------------------------
     !
+    
+    depth_flex_precision   = real(deph,fp)
+    period_flex_precision  = real(tp  ,fp)
+    gravity_flex_precision = real(grav,fp)
+    
     ldep   = .false.
     if (deph>0.05 .and. hrm>=0.01 .and. tp>0.0) then
-        call wavenr(depth_flex_precision, period_flex_precision, wavek, gravity_flex_precision)
+        !BS compute in double precision, convert later
+        !call wavenr(depth_flex_precision, period_flex_precision, wavek, gravity_flex_precision)
+        !wavel = twopi_sp/real(wavek)
         !
-        wavel = twopi_sp/real(wavek)
+        !BS compute in single precision
+        call compute_wave_number_in_single_precision(deph, tp, wavek)
+        wavel = twopi_sp/wavek
     else
         !
         ! Too shallow water or waves too small
