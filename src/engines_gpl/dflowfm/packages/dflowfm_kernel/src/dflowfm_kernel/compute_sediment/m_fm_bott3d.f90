@@ -105,7 +105,8 @@ public :: fm_bott3d
    integer                                     :: Lb, Lt, ka, kf1, kf2, kt, nto, iL, ac1, ac2
    double precision                            :: eroflx, sedflx, trndiv, flux, dtmor
    double precision                            :: bamin
-
+   
+   double precision, parameter                 :: day2sec = 86400.0d0 !< seconds in a day
    double precision, parameter                 :: dtol = 1d-16
 
    !double precision                            :: tausum2(1)
@@ -139,7 +140,6 @@ public :: fm_bott3d
       bl_ave0 = 0d0
    endif
 
-   !bedload = .false.
    dtmor   = dts*morfac
    lstart  = ised1-1
    error = .false.
@@ -151,9 +151,9 @@ public :: fm_bott3d
    call fm_suspended_sand_correction()
       
    call fm_total_face_normal_suspended_transport()
-   
    !
    ! Add equilibrium berm slope adjustment
+   !
    if (bermslopetransport) then
       call bermslopenudging(error)
       if (error) then
@@ -170,10 +170,9 @@ public :: fm_bott3d
       aval=.true.
       call fm_adjust_bedload(e_sbcn, e_sbct, aval)
    endif
-
+   !
    !2DO: consider moving call to `apply_nodal_point_relation` after all the calls to `fm_adjust_bedload`
    call apply_nodal_point_relation()
-   
    !
    ! Bed-slope and sediment availability effects for
    ! wave-related bed load transport
@@ -190,7 +189,7 @@ public :: fm_bott3d
       aval=.false.
       call fm_adjust_bedload(e_sswn, e_sswt, aval)
    endif
-   !!
+   !
    if (duneavalan) then
       call duneaval(error)
       if (error) then
@@ -199,21 +198,11 @@ public :: fm_bott3d
       end if
    end if
    !
-   ! Summation of current-related and wave-related transports on links
+   call sum_current_wave_transport_links()
    !
-   e_sbn = 0d0
-   e_sbt = 0d0
-   do l = 1,lsedtot
-      if (has_bedload(tratyp(l))) then
-         do nm = 1, lnx
-            e_sbn(nm, l) = e_sbcn(nm, l) + e_sbwn(nm, l) + e_sswn(nm, l)
-            e_sbt(nm, l) = e_sbct(nm, l) + e_sbwt(nm, l) + e_sswt(nm, l)
-         enddo
-      endif
-   enddo
    !
    !    EROSED CODE MOVED UNTIL THIS POINT ------------------------------------
-
+   !
    !
    ! if bed composition computations have started
    !
@@ -241,20 +230,8 @@ public :: fm_bott3d
       !
       call reconstructsedtransports()   ! reconstruct cell centre transports for morstats and cumulative st output
       call collectcumultransports()     ! Always needed, written on last timestep of simulation
-      !
-      ! Conditionally exclude specific fractions from erosion and sedimentation
-      !
-      if (cmpupd) then
-         !
-         ! exclude specific fractions if cmpupdfrac has been set
-         !
-         do l = 1, lsedtot
-           if (.not. cmpupdfrac(l)) then
-               dbodsd(l, :) = 0.0_fp 
-            endif
-         enddo
-      endif
-      !
+      call fm_exclude_cmpupdfrac() ! Conditionally exclude specific fractions from erosion and sedimentation
+      
       !
       !2DO: check why this can not be moved before the first `if (cmpupd)` or after the last `if (cmpupd)`
       ! JRE: should be at least here, see UNST-6697: move cmpupdfrac before morstats call
@@ -296,24 +273,14 @@ public :: fm_bott3d
       ! Increment morphological time
       ! Note: dtmor in seconds, morft in days!
       !
-      morft = morft + dtmor/86400.0d0
-      if (morfac>0d0) hydrt  = hydrt + dts/86400d0
+      morft = morft + dtmor/day2sec
+      if (morfac>0d0) hydrt  = hydrt + dts/day2sec
       if (stmpar%morpar%moroutput%morstats) then
          if (comparereal(time1,ti_seds,eps10)>=0) morstatt0 = morft
       endif
       !
-      if (.not. cmpupd) then    ! else blchg already determined
-         !
-         ! Compute bed level changes without actually updating the bed composition
-         !
-         blchg = 0d0
-         do ll = 1, lsedtot
-            do nm = 1, ndx
-               blchg(nm) = blchg(nm) + dbodsd(ll, nm)/cdryb(ll)
-            enddo
-         enddo
-      endif
-      
+      call fm_blchg_no_cmpupd() !Compute bed level changes without actually updating the bed composition
+      !      
       call fm_apply_bed_boundary_condition(dtmor,timhr)
       
    else
@@ -324,97 +291,15 @@ public :: fm_bott3d
          blchg(nm) = 0d0
       enddo
    endif       ! time1<tmor
-   !
-   ! Update bottom elevations
-   !
-   if (bedupd) then
-      !
-      if (dad_included) then
-         do nm = 1, ndx
-            bl_ave(nm) = bl_ave(nm) + blchg(nm)
-         enddo
-      endif
-      !
-      call fm_update_crosssections(blchg) ! blchg gets updated for 1d cross-sectional profiles in this routine
-      !
-      do nm = 1, Ndx
-         !
-         bl(nm) = bl(nm) + blchg(nm)
-         !
-      enddo
-      !
-      ! AvD: Sander suggestie: call update_geom(2)
-      !if (jampi>0) then
-      !   call update_ghosts(ITYPE_SALL, 1, Ndx, bl, ierror)
-      !endif
-      !
-      ! Free morpho boundaries get Neumann update
-      !
-      do jb = 1, nto
-         icond = morbnd(jb)%icond
-         if (icond .eq. 0) then
-            do ib = 1, morbnd(jb)%npnt
-               bl(morbnd(jb)%nm(ib))    = bl(morbnd(jb)%nxmx(ib))
-               blchg(morbnd(jb)%nm(ib)) = blchg(morbnd(jb)%nxmx(ib))  ! needed below
-            end do
-         end if
-      end do
-      !
-      call fm_update_concentrations_after_bed_level_update()
-      !
-      do nm = 1, ndx
-         ! note: if kcs(nm)=0 then blchg(nm)=0.0
-         ! should change to following test because blchg may be small
-         ! due to truncation errors
-         !
-         s1(nm) = max(s1(nm), bl(nm))
-         s0(nm) = max(s0(nm), bl(nm))
-         !
-         ! if dry cells are eroded then bring water level down to
-         ! bed or maximum water level in surrounding wet cells
-         ! (whichever is higher)
-         !
-         if (hs(nm)<epshs) then
-            s1(nm) = s1(nm) + blchg(nm)
-            s0(nm) = s0(nm) + blchg(nm)
-         endif
-      enddo
-      !
-      ! Remember erosion velocity for dilatancy
-      if (dtmor>0d0) then
-         do nm = 1, ndx
-            dzbdt(nm) = blchg(nm)/dtmor
-         enddo
-      else
-         dzbdt=0d0
-      endif
-      !
-      ! Dredging and Dumping
-      !
-      if (dad_included) then
-         !
-         bl_ave0 = bl_ave         ! backup average bed level before dredging, needed to compute bed level change due to dredging
-         !
-         call fm_dredge(error)
-         if (error) then
-            call mess(LEVEL_FATAL, 'Error in fm_bott3d :: fm_dredge returned an error.')
-            return
-         end if
-         !
-         do nm = 1, ndx
-            !
-            blchg(nm) = bl_ave(nm) - bl_ave0(nm) ! get average bed level change
-            !
-         enddo
-         !
-         call fm_update_crosssections(blchg)     ! update 1d cross-sections after dredging (updates bl for 1D).
-         !
-         do nm = 1, ndx
-            bl(nm) = bl(nm) + blchg(nm)          ! update bed level
-         enddo
-      endif
-   endif !bedupd
+   
+   call fm_update_bed_level(dtmor)
 
+   !!
+   !! Deallocate
+   !!
+   
+   deallocate(bl_ave0)
+   
    end subroutine fm_bott3d
 
    !< Calculate suspended sediment transport correction vector (for SAND)
@@ -455,7 +340,6 @@ public :: fm_bott3d
    integer                                     :: Lb, Lt, ka, kf1, kf2, ac1, ac2
    
    !double precision
-   !2DO: explain variables?
    double precision                            :: cavg
    double precision                            :: cavg1
    double precision                            :: cavg2
@@ -1854,14 +1738,6 @@ public :: fm_bott3d
    !integer
    integer                                     :: ll, j, L, Lb, Lt, iL, lstart
       
-   !double 
-   !double precision                            :: hsk
-   !double precision                            :: ddp
-   
-   !!
-   !! Allocate and initialize
-   !!
-   
    !!
    !! Execute
    !!
@@ -1880,6 +1756,336 @@ public :: fm_bott3d
       enddo
    enddo
    
-   end subroutine
+   end subroutine fm_total_face_normal_suspended_transport
+
+   !> Summation of current-related and wave-related transports on links
+   subroutine sum_current_wave_transport_links()
+
+   use sediment_basics_module
+   use m_flowgeom, only: lnx
+   use m_fm_erosed, only: lsedtot, e_sbn, e_sbt, e_sbcn, e_sbwn, e_sswn, tratyp, e_sbct, e_sbwt, e_sswt
    
+   implicit none
+   
+   !!
+   !! Local variables
+   !!
+         
+   !integer
+   integer                                     :: nm, l
+      
+   !!
+   !! Execute
+   !!
+   
+   e_sbn = 0d0
+   e_sbt = 0d0
+   do l = 1,lsedtot
+      if (has_bedload(tratyp(l))) then
+         do nm = 1, lnx
+            e_sbn(nm, l) = e_sbcn(nm, l) + e_sbwn(nm, l) + e_sswn(nm, l)
+            e_sbt(nm, l) = e_sbct(nm, l) + e_sbwt(nm, l) + e_sswt(nm, l)
+         enddo
+      endif
+   enddo
+   
+   end subroutine sum_current_wave_transport_links
+
+   !> Conditionally exclude specific fractions from erosion and sedimentation
+   !! exclude specific fractions if cmpupdfrac has been set.
+   subroutine fm_exclude_cmpupdfrac()
+   
+   use m_flowgeom, only: lnx
+   use m_fm_erosed, only: lsedtot, cmpupdfrac, stmpar, dbodsd
+   
+   implicit none
+   
+   !!
+   !! Local variables
+   !!
+         
+   !integer
+   integer                                     :: l
+      
+   !pointer
+   logical                              , pointer :: cmpupd
+   
+   !!
+   !! Point
+   !!
+   
+   cmpupd              => stmpar%morpar%cmpupd
+   
+   !!
+   !! Execute
+   !!
+   
+   if (cmpupd) then
+      do l = 1, lsedtot
+        if (.not. cmpupdfrac(l)) then
+            dbodsd(l, :) = 0.0_fp 
+         endif
+      enddo !l
+   endif !cmpupd   
+      
+   end subroutine fm_exclude_cmpupdfrac
+
+   !> If there is no composition update, compute bed level changes
+   !! without actually updating the bed composition. If there is
+   !! composition update, bed level changes have already been determined
+   subroutine fm_blchg_no_cmpupd()
+
+   use m_flowgeom, only: ndx
+   use m_fm_erosed, only: lsedtot, blchg, stmpar, dbodsd, cdryb
+   
+   implicit none
+   
+   !!
+   !! Local variables
+   !!
+         
+   !integer
+   integer                                     :: ll, nm
+      
+   !pointer
+   logical                              , pointer :: cmpupd
+   
+   !!
+   !! Point
+   !!
+   
+   cmpupd              => stmpar%morpar%cmpupd
+   
+   !!
+   !! Execute
+   !!
+
+   if (.not. cmpupd) then    
+      blchg = 0d0
+      do ll = 1, lsedtot
+         do nm = 1, ndx
+            blchg(nm) = blchg(nm) + dbodsd(ll, nm)/cdryb(ll)
+         enddo
+      enddo
+   endif
+   
+   end subroutine fm_blchg_no_cmpupd
+
+   !> Update bottom elevation
+   subroutine fm_update_bed_level(dtmor)
+
+   !!
+   !! Declarations
+   !!
+   
+   use Messagehandling
+   use message_module, only: writemessages, write_error
+   use m_flowgeom, only: ndx, bl_ave, bl
+   use m_fm_erosed, only: bedupd, blchg, stmpar
+   use m_dad, only: dad_included
+   use m_fm_update_crosssections, only: fm_update_crosssections
+   use morphology_data_module, only: bedbndtype
+   use m_flowexternalforcings, only: nopenbndsect
+   
+   implicit none
+   
+   !!
+   !! I/O
+   !!
+   
+   double precision,                intent(in) :: dtmor
+   
+   !!
+   !! Local variables
+   !!
+         
+   !logical
+   logical                                     :: error
+   
+   !integer
+   integer                                     :: nm, jb, ib
+   integer                                     :: icond
+      
+   !double precision
+   double precision, dimension(:), allocatable :: bl_ave0
+   
+   !structure
+   type (bedbndtype)     , dimension(:) , pointer :: morbnd
+   
+   !pointer
+   !logical                              , pointer :: cmpupd
+   
+   !!
+   !! Point
+   !!
+   
+   morbnd              => stmpar%morpar%morbnd
+   
+   !!
+   !! Execute
+   !!
+
+   if (bedupd) then
+      !
+      if (dad_included) then
+         do nm = 1, ndx
+            bl_ave(nm) = bl_ave(nm) + blchg(nm)
+         enddo
+      endif
+      !
+      call fm_update_crosssections(blchg) ! blchg gets updated for 1d cross-sectional profiles in this routine
+      !
+      call fm_update_bl()
+      !
+      !
+      ! AvD: Sander suggestie: call update_geom(2)
+      !if (jampi>0) then
+      !   call update_ghosts(ITYPE_SALL, 1, Ndx, bl, ierror)
+      !endif
+      !
+      ! Free morpho boundaries get Neumann update
+      !
+      do jb = 1, nopenbndsect
+         icond = morbnd(jb)%icond
+         if (icond .eq. 0) then
+            do ib = 1, morbnd(jb)%npnt
+               bl(morbnd(jb)%nm(ib))    = bl(morbnd(jb)%nxmx(ib))
+               blchg(morbnd(jb)%nm(ib)) = blchg(morbnd(jb)%nxmx(ib))  ! needed below
+            end do
+         end if
+      end do
+      !
+      call fm_update_concentrations_after_bed_level_update()
+      !
+      call fm_correct_water_level()
+      
+      !
+      ! Remember erosion velocity for dilatancy
+      call fm_erosion_velocity(dtmor)
+      !
+      ! Dredging and Dumping
+      !
+      if (dad_included) then
+         !
+         bl_ave0 = bl_ave         ! backup average bed level before dredging, needed to compute bed level change due to dredging
+         !
+         call fm_dredge(error)
+         if (error) then
+            call mess(LEVEL_FATAL, 'Error in fm_bott3d :: fm_dredge returned an error.')
+            return
+         end if
+         !
+         do nm = 1, ndx
+            blchg(nm) = bl_ave(nm) - bl_ave0(nm) ! get average bed level change
+         enddo
+         !
+         call fm_update_crosssections(blchg)     ! update 1d cross-sections after dredging (updates bl for 1D).
+         !
+         call fm_update_bl()
+         !
+      endif
+   endif !bedupd
+
+   end subroutine fm_update_bed_level
+   
+   !> Maximize and minimize water level
+   subroutine fm_correct_water_level()
+
+   use m_flow, only: s0, s1, hs
+   use m_flowgeom, only: ndx, bl
+   use m_fm_erosed, only: blchg
+   use m_flowparameters, only: epshs
+   
+   implicit none
+   
+   !!
+   !! Local variables
+   !!
+         
+   !integer
+   integer                                     :: nm
+         
+   !!
+   !! Execute
+   !!
+
+   do nm = 1, ndx
+      ! note: if kcs(nm)=0 then blchg(nm)=0.0
+      ! should change to following test because blchg may be small
+      ! due to truncation errors
+      !
+      s1(nm) = max(s1(nm), bl(nm))
+      s0(nm) = max(s0(nm), bl(nm))
+      !
+      ! if dry cells are eroded then bring water level down to
+      ! bed or maximum water level in surrounding wet cells
+      ! (whichever is higher)
+      !
+      if (hs(nm)<epshs) then
+         s1(nm) = s1(nm) + blchg(nm)
+         s0(nm) = s0(nm) + blchg(nm)
+      endif
+   enddo
+
+   end subroutine fm_correct_water_level
+
+   !> Update bed level based on bed level change
+   subroutine fm_update_bl()
+   
+   use m_flowgeom, only: ndx, bl
+   use m_fm_erosed, only: blchg
+   
+   implicit none
+   
+   !!
+   !! Local variables
+   !!
+         
+   !integer
+   integer                                     :: nm
+         
+   !!
+   !! Execute
+   !!
+   
+   do nm = 1, Ndx
+      bl(nm) = bl(nm) + blchg(nm)
+   enddo
+   
+   end subroutine fm_update_bl  
+
+   subroutine fm_erosion_velocity(dtmor)
+   
+   use m_flowgeom, only: ndx, bl
+   use m_fm_erosed, only: blchg, dzbdt
+   
+   implicit none
+   
+   !!
+   !! I/O
+   !!
+   
+   double precision,                intent(in) :: dtmor
+   
+   !!
+   !! Local variables
+   !!
+         
+   !integer
+   integer                                     :: nm
+         
+   !!
+   !! Execute
+   !!
+   
+   if (dtmor>0d0) then
+      do nm = 1, ndx
+         dzbdt(nm) = blchg(nm)/dtmor
+      enddo
+   else
+      dzbdt=0d0
+   endif
+
+   end subroutine fm_erosion_velocity
+      
 end module m_fm_bott3d
