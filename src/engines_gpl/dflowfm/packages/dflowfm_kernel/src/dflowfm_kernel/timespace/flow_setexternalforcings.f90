@@ -580,8 +580,8 @@ subroutine get_wind_data(time_current)
    wdsu_x = 0.d0
    wdsu_y = 0.d0
    wcharnock = 0.d0
-   ec_pwxwy_x = 0.d0
-   ec_pwxwy_y = 0.d0
+   call initialize_array_with_zero(ec_pwxwy_x)
+   call initialize_array_with_zero(ec_pwxwy_y)
 
    first_time_wind = (id_last_wind < 0)
    if (first_time_wind) then
@@ -630,16 +630,19 @@ subroutine get_wind_data(time_current)
       call get_timespace_value_by_item_and_array(item_stressy, wdsu_y, time_current)
    end if
 
-   if (jawindstressgiven == 1) then 
-      call perform_additional_spatial_interpolation(wdsu_x, wdsu_y)
-   else
-      call perform_additional_spatial_interpolation(wx, wy)
+   if (allocated(ec_pwxwy_x) .and. allocated( ec_pwxwy_y)) then
+      if (jawindstressgiven == 1) then 
+         call perform_additional_spatial_interpolation(wdsu_x, wdsu_y)
+      else
+         call perform_additional_spatial_interpolation(wx, wy)
+      end if
+      if (allocated(ec_pwxwy_c)) then
+         do link  = 1, lnx
+            wcharnock(link) = wcharnock(link) + 0.5d0*( ec_pwxwy_c(ln(1,link)) + ec_pwxwy_c(ln(2,link)) )
+         end do
+      end if
    end if
-   if (allocated(ec_pwxwy_c)) then
-      do link  = 1, lnx
-         wcharnock(link) = wcharnock(link) + 0.5d0*( ec_pwxwy_c(ln(1,link)) + ec_pwxwy_c(ln(2,link)) )
-      end do
-   end if
+
 
    if (jawindspeedfac > 0) then
       where (windspeedfac /= dmiss)
@@ -713,4 +716,15 @@ subroutine get_and_apply_windstress(time_current)
    end if
 
 end subroutine get_and_apply_windstress
+
+!> initialize_array_with_zero
+subroutine initialize_array_with_zero(array)
+
+   double precision, allocatable, intent(inout) :: array(:)
+
+   if (allocated(array)) then
+        array(:) = 0.d0
+   end if
+
+end subroutine initialize_array_with_zero
 end module m_external_forcings
