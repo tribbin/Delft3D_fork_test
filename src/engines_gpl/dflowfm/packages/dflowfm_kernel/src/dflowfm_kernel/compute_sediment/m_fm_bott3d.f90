@@ -30,7 +30,7 @@
 !
 !
 
-!> Module with subroutines for bed level update. 
+!> Module with subroutines for bed level update.  
 module m_fm_bott3d
 
 use precision
