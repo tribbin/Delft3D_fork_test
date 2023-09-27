@@ -1028,6 +1028,7 @@ end subroutine unc_write_shp_fxw
 subroutine unc_write_shp_src()
 use m_flowexternalforcings, only: ksrc, numsrc, xsrc, ysrc, nxsrc, srcname, arsrc, qstss
 use m_flowgeom, only: xz, yz
+use m_transportdata, only : NUMCONST
 implicit none
 
 integer, parameter          :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
@@ -1141,7 +1142,7 @@ double precision            :: tmp_x(2), tmp_y(2), snkx, snky, srcx, srcy, tmp_q
          endif
          
          ! determine source and sink points
-         tmp_qsrc = qstss(3*(i-1)+1)
+         tmp_qsrc = qstss((NUMCONST+1)*(i-1)+1)
          if (tmp_qsrc > 0) then
             snkx = xsrc(i,1)
             snky = ysrc(i,1)
