@@ -77,12 +77,12 @@ subroutine wavenr(water_height, period, wave_number, local_gravity)
     !
     !! executable statements -------------------------------------------------------
     !
-    omega = (2.0D0*pi_hp/real(period, hp))**2*real(water_height, hp)/real(local_gravity, hp)
+    omega = (2.0D0*pi_hp/real(period, hp))**2*real(water_depth, hp)/real(local_gravity, hp)
 
     numerator   = 1.0D0 + omega*(a1 + omega*(a2 + omega*(a3 + omega*(a4 + omega*(a5 + omega*a6)))))
     denominator = 1.0D0 + omega*(b1 + omega*(b2 + omega*(b3 + omega*(b4 +             omega*a6))))
     
-    wave_number_double_precision = sqrt(omega*numerator/denominator)/real(water_height, hp)
+    wave_number_double_precision = sqrt(omega*numerator/denominator)/real(water_depth, hp)
     wave_number = real(wave_number_double_precision, fp)
     
     end subroutine wavenr
