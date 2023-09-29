@@ -117,6 +117,10 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    type(t_storage), pointer      :: stors(:)
    integer                       :: i, nstor, ec_item
    integer                       :: num_lat_ini_blocks !< Number of [Lateral] providers read from new extforce file.
+   integer                       :: tmp_nbndu
+   integer                       :: tmp_nbndn
+   integer                       :: tmp_nbndt
+
 
    iresult = DFM_NOERR
 
@@ -286,65 +290,68 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    if (allocated(zbndq)) deallocate(  zbndq)
    if (allocated(sigmabndu)) deallocate(sigmabndu)
    if (allocated(zminmaxu)) deallocate(zminmaxu)
+
+   ! allocate the following even if not needed (for debugging purposes)
+   tmp_nbndu = max(nbndu,1)
+   allocate ( xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(n4,tmp_nbndu), kdu(tmp_nbndu) , stat=ierr)
+   call aerr('xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(n4,tmp_nbndu), kdu(tmp_nbndu)', ierr, tmp_nbndu*(n4+5) )
+   if (jased ==1 .or. jased == 2 .and. jaceneqtr == 2) then
+       if (allocated (zkbndu) ) deallocate(zkbndu, kbanu)
+       allocate ( zkbndu(2,tmp_nbndu) , stat= ierr    )
+       call aerr('zkbndu(2,tmp_nbndu)', ierr, 2*tmp_nbndu )
+       allocate ( kbanu (2,tmp_nbndu) , stat= ierr    )
+       call aerr('kbanu (2,tmp_nbndu)', ierr, 2*tmp_nbndu )
+       kbanu = 0
+   endif
+
+   allocate ( zbndu    (tmp_nbndu*kmxd) , stat = ierr       )
+   call aerr('zbndu    (tmp_nbndu*kmxd)', ierr , tmp_nbndu*kmxd )
+   allocate ( zbndu0   (tmp_nbndu*kmxd) , stat = ierr       ) ! TODO: Spee/Reyns: the zbndu array was made 3D by Spee, but Reyns's zbndu0 changes have not been updated for this yet.
+   call aerr('zbndu0   (tmp_nbndu*kmxd)', ierr , tmp_nbndu*kmxd )
+
+   allocate ( zbndq    (tmp_nbndu) , stat = ierr       )
+   call aerr('zbndq    (tmp_nbndu)', ierr , tmp_nbndu      )
+
+   allocate ( zminmaxu (tmp_nbndu*2  )  , stat = ierr       )
+   call aerr('zminmaxu (tmp_nbndu*2  )' , ierr , tmp_nbndu*2    )
+   if (kmx > 0) then                   ! only used in 3D:
+       allocate ( sigmabndu(tmp_nbndu*kmxd) , stat = ierr       )
+       call aerr('sigmabndu(tmp_nbndu*kmxd)', ierr , tmp_nbndu*kmxd )
+   endif
+
    if (nbndu > 0) then                                 ! similar for u bnd's
-      allocate ( xbndu(nbndu), ybndu(nbndu), xy2bndu(2,nbndu), kbndu(n4,nbndu), kdu(nbndu) , stat=ierr)
-      call aerr('xbndu(nbndu), ybndu(nbndu), xy2bndu(2,nbndu), kbndu(n4,nbndu), kdu(nbndu)', ierr, nbndu*(n4+5) )
-      if (jased ==1 .or. jased == 2 .and. jaceneqtr == 2) then
-         if (allocated (zkbndu) ) deallocate(zkbndu, kbanu)
-         allocate ( zkbndu(2,nbndu) , stat= ierr    )
-         call aerr('zkbndu(2,nbndu)', ierr, 2*nbndu )
-         allocate ( kbanu (2,nbndu) , stat= ierr    )
-         call aerr('kbanu (2,nbndu)', ierr, 2*nbndu )
-         kbanu = 0
-      endif
+       kbndu = 0 ; kdu = 1
+       do k = 1, nbndu
+           L          = keu(k)
+           Lf         = lne2ln(L)
+           kb         = ln(1,Lf)
+           kbi        = ln(2,Lf)
+           xbndu(k)   = xe(L) ! xz(kb)
+           ybndu(k)   = ye(L) ! yz(kb)
+           xy2bndu(:,k) = xyen(:,L)
 
-      allocate ( zbndu    (nbndu*kmxd) , stat = ierr       )
-      call aerr('zbndu    (nbndu*kmxd)', ierr , nbndu*kmxd )
-      allocate ( zbndu0   (nbndu*kmxd) , stat = ierr       ) ! TODO: Spee/Reyns: the zbndu array was made 3D by Spee, but Reyns's zbndu0 changes have not been updated for this yet.
-      call aerr('zbndu0   (nbndu*kmxd)', ierr , nbndu*kmxd )
-    
-      allocate ( zbndq    (nbndu) , stat = ierr       )
-      call aerr('zbndq    (nbndu)', ierr , nbndu      )
-    
-      allocate ( zminmaxu (nbndu*2  )  , stat = ierr       )
-      call aerr('zminmaxu (nbndu*2  )' , ierr , nbndu*2    )
-      if (kmx > 0) then                   ! only used in 3D:
-         allocate ( sigmabndu(nbndu*kmxd) , stat = ierr       )
-         call aerr('sigmabndu(nbndu*kmxd)', ierr , nbndu*kmxd )
-      endif
-  
-      kbndu = 0 ; kdu = 1
-      do k = 1, nbndu
-         L          = keu(k)
-         Lf         = lne2ln(L)
-         kb         = ln(1,Lf)
-         kbi        = ln(2,Lf)
-         xbndu(k)   = xe(L) ! xz(kb)
-         ybndu(k)   = ye(L) ! yz(kb)
-         xy2bndu(:,k) = xyen(:,L)
+           kbndu(1,k) = kb
+           kbndu(2,k) = kbi
+           kbndu(3,k) = Lf
+           kbndu(4,k) = itpeu(k)
+           kbndu(5,k) = itpenu(k)
+           kbndu(6,k) = ftpet(k)       ! riemann relaxation time
 
-         kbndu(1,k) = kb
-         kbndu(2,k) = kbi
-         kbndu(3,k) = Lf
-         kbndu(4,k) = itpeu(k)
-         kbndu(5,k) = itpenu(k)
-         kbndu(6,k) = ftpet(k)       ! riemann relaxation time
+           lnxbnd(Lf-lnxi) = itpenu(k)
 
-         lnxbnd(Lf-lnxi) = itpenu(k)
+           do n = 1,nd(kbi)%lnx
+               L = iabs(nd(kbi)%ln(n))
+               teta(L) = 1d0
+           enddo
 
-         do n = 1,nd(kbi)%lnx
-            L = iabs(nd(kbi)%ln(n))
-            teta(L) = 1d0
-         enddo
+           iadv(Lf)   = -1                              ! switch off adv at open u-bnd's
 
-         iadv(Lf)   = -1                              ! switch off adv at open u-bnd's
-
-         if (jased > 1 .and. jaceneqtr == 2 .and. .not. stm_included) then
+           if (jased > 1 .and. jaceneqtr == 2 .and. .not. stm_included) then
                zkbndu(1,k) = zk(lncn(1,Lf) )
                zkbndu(2,k) = zk(lncn(2,Lf) )
-         endif
+           endif
 
-      enddo
+       enddo
    endif
 
    if ( allocated   (kbnds) )  deallocate(  xbnds,ybnds,xy2bnds,zbnds,kbnds)
@@ -615,10 +622,13 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    endif
 
    if (allocated   (kbndt) ) deallocate(xbndt, ybndt, xy2bndt, zbndt, kbndt)
+   ! allocate the following even if not needed (for debugging purposes)
+   tmp_nbndt = max(nbndt,1)
+   allocate ( xbndt(tmp_nbndt), ybndt(tmp_nbndt), xy2bndt(2,tmp_nbndt), zbndt(tmp_nbndt), kbndt(4,tmp_nbndt), kdt(tmp_nbndt) , stat=ierr     )
+   call aerr('xbndt(tmp_nbndt), ybndt(tmp_nbndt), xy2bndt(2,tmp_nbndt), zbndt(tmp_nbndt), kbndt(4,tmp_nbndt), kdt(tmp_nbndt)', ierr, tmp_nbndt*10 )
+   
    if (nbndt > 0) then                                 ! Tangential velocity boundaries as u bnds
       numnos = 0
-      allocate ( xbndt(nbndt), ybndt(nbndt), xy2bndt(2,nbndt), zbndt(nbndt), kbndt(4,nbndt), kdt(nbndt) , stat=ierr     )
-      call aerr('xbndt(nbndt), ybndt(nbndt), xy2bndt(2,nbndt), zbndt(nbndt), kbndt(4,nbndt), kdt(nbndt)', ierr, nbndt*10 )
       kbndt = 0 ; kdt= 1
       do k = 1, nbndt
          L          = ket(k)
@@ -689,10 +699,12 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    endif
 
    if (allocated   (kbndn) ) deallocate(  xbndn,ybndn,xy2bndn,zbndn,kbndn)
+   ! allocate the following even if not needed (for debugging purposes)
+   tmp_nbndn = max(nbndn,1)
+   allocate ( xbndn(tmp_nbndn), ybndn(tmp_nbndn), xy2bndn(2,tmp_nbndn), zbndn(tmp_nbndn), kbndn(4,tmp_nbndn), kdn(tmp_nbndn) , stat=ierr     )
+   call aerr('xbndn(tmp_nbndn), ybndn(tmp_nbndn), xy2bndn(2,tmp_nbndn), zbndn(tmp_nbndn), kbndn(4,tmp_nbndn), kdn(tmp_nbndn)', ierr, tmp_nbndn*10 )
    if (nbndn > 0) then                                 ! Normal velocity boundaries as z bnds
       numnos = 0
-      allocate ( xbndn(nbndn), ybndn(nbndn), xy2bndn(2,nbndn), zbndn(nbndn), kbndn(4,nbndn), kdn(nbndn) , stat=ierr     )
-      call aerr('xbndn(nbndn), ybndn(nbndn), xy2bndn(2,nbndn), zbndn(nbndn), kbndn(4,nbndn), kdn(nbndn)', ierr, nbndn*10 )
       kbndn = 0 ; kdn= 1
       do k = 1, nbndn
          L          = ken(k)
@@ -1457,6 +1469,21 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   japatm = 1
                endif
 
+            else if (qid == 'charnock') then
+               if (.not. allocated(ec_charnock) ) then
+                  allocate ( ec_charnock(ndx)  , stat=ierr)
+                  call aerr('ec_charnock(ndx)' , ierr, ndx)
+                  ec_charnock(:) = 0d0
+               endif
+               if (.not. allocated(wcharnock) ) then
+                  allocate ( wcharnock(lnx)  , stat=ierr)
+                  call aerr('wcharnock(lnx)' , ierr, lnx)
+               endif
+               success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), kcw, kx, filename, filetype, method, operand, varname=varname)
+               if (success) then
+                  jaspacevarcharn = 1
+               endif
+
             else if (qid == 'humidity_airtemperature_cloudiness') then
 
                ! Meteo1
@@ -1574,6 +1601,20 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   jarhum = 1  ; btempforcingtypH = .true.
                endif
 
+            else if (qid == 'dewpoint') then ! Relative humidity array used to store dewpoints
+
+               if (.not. allocated(rhum) ) then
+                  allocate ( rhum(ndx) , stat=ierr)
+                  call aerr('rhum(ndx)', ierr, ndx)
+                  rhum = 0d0
+               endif
+
+               itempforcingtyp = 5
+               success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
+               if (success) then
+                  jarhum = 1  ;
+               endif
+
             else if (qid == 'cloudiness') then
 
                if (.not. allocated(clou) ) then
@@ -1586,7 +1627,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   jaclou = 1 ; btempforcingtypC = .true.
                endif
 
-               else if (qid == 'solarradiation') then
+            else if (qid == 'solarradiation') then
 
                if (.not. allocated(qrad) ) then
                   allocate ( qrad(ndx) , stat=ierr)
@@ -1970,7 +2011,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                endif
            else
               call mess(LEVEL_WARN, 'Reading *.ext forcings file '''//trim(md_extfile)//''', getting unknown QUANTITY '//trim(qid) )
-              call qnerror('Reading *.ext forcings file '''//trim(md_extfile)//''', ', ' getting unknown QUANTITY ', trim(qid) )
+              call qnerror('Reading *.ext forcings file '''//trim(md_extfile)//''', ', 'getting unknown QUANTITY ', trim(qid) )
               success = .false.
            endif
 
@@ -1980,7 +2021,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                      call mess(LEVEL_WARN, rec)
                   end if
                   ! We do a direct goto 888 end, so qnerror for GUI is allowed here.
-                  call qnerror('flow_initexternalforcings: Error while initializing quantity: ', qid, 'Check preceding log lines for details.')
+                  call qnerror('flow_initexternalforcings: Error while initializing quantity: ', qid, '. Check preceding log lines for details.')
                   iresult = DFM_EXTFORCERROR
                   goto 888
             endif

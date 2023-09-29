@@ -63,6 +63,7 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    integer, parameter              :: HUMIDITY_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION = 2
    integer, parameter              :: DEWPOINT_AIRTEMPERATURE_CLOUDINESS = 3
    integer, parameter              :: DEWPOINT_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION = 4
+   integer, parameter              :: DEWPOINT = 5
 
    logical                         :: l_set_frcu_mor = .false.
    logical                         :: first_time_wind
@@ -230,6 +231,8 @@ subroutine set_temperature_models()
         call get_timespace_value_by_name_and_consider_success_value('dewpoint_airtemperature_cloudiness')
     case (DEWPOINT_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION)
         call get_timespace_value_by_name_and_consider_success_value('dewpoint_airtemperature_cloudiness_solarradiation')
+    case (DEWPOINT)
+        call get_timespace_value_by_name_and_consider_success_value('dewpoint')
     end select
 
     foundtempforcing = (itempforcingtyp >= 1 .and. itempforcingtyp <= 4)
