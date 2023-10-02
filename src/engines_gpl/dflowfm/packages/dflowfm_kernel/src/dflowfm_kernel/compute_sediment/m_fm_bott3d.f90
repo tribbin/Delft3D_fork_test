@@ -128,7 +128,7 @@ public :: fm_bott3d
    error = .false.
    timhr = time1 / h2sec
    blchg(:) = 0d0
-   e_ssn(:) = 0d0
+   e_ssn(:,:) = 0d0
    
    call fm_suspended_sand_correction()
       
@@ -339,9 +339,14 @@ public :: fm_bott3d
    !!
    !! Execute
    !!
+
+   !e_scrn(:) = 0d0
+   !e_scrt(:) = 0d0
    
-   e_scrn(:) = 0d0
-   e_scrt(:) = 0d0
+   !2DO: why these do not work?
+   !"the number of 
+   e_scrn(:,:) = 0d0
+   e_scrt(:,:) = 0d0
    
    !
    ! calculate corrections
@@ -597,7 +602,7 @@ public :: fm_bott3d
    if (istat == 0) allocate(sb_dir(network%nds%Count, lsedtot, network%nds%maxnumberofconnections), stat = istat)
    if (istat == 0) allocate(branInIDLn(network%nds%Count), stat = istat)
    
-   qb_out(:) = 0d0; width_out(:) = 0d0; sb_in(:) = 0d0; sb_dir(:) = -1
+   qb_out(:) = 0d0; width_out(:) = 0d0; sb_in(:,:) = 0d0; sb_dir(:,:,:) = -1
    BranInIDLn(:) = 0
    
    !!
