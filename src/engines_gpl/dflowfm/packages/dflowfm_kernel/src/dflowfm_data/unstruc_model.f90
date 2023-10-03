@@ -4396,22 +4396,40 @@ end if
 
 end subroutine getOutputTimeArrays
 
-!> check if time interval is multiple of DtUser
-subroutine check_time_interval(time_interval,user_time_step,time_interval_name)
+!> Check time interval:
+!! If time interval is smaller than DtUser, time interval will be set equal to DtUser.
+!! If time interval is not multiple of DtUser, error will be raised.
+subroutine check_time_interval(time_interval, user_time_step, time_interval_name)
 
     real(kind=hp),    intent(inout) :: time_interval(3)     !< Array of time interval to be checked. It contains 3 elements: interval, start_time, stop_time
     double precision, intent(in   ) :: user_time_step       !< User specified time step (s) for external forcing update
     character(*),     intent(in   ) :: time_interval_name   !< Name of the time interval parameter to check, to be used in the log message.
 
     if (time_interval(1) > 0d0) then
-        time_interval(1) = max(time_interval(1) , user_time_step)
-        if ((modulo(time_interval(1),user_time_step) /= 0d0) .or. (modulo(time_interval(2),user_time_step) /= 0d0) .or. (modulo(time_interval(3),user_time_step) /= 0d0)) then
+        time_interval(1) = max(time_interval(1), user_time_step)
+        if (is_not_multiple(time_interval(1), user_time_step) .or. is_not_multiple(time_interval(2), user_time_step) .or. is_not_multiple(time_interval(3), user_time_step)) then
             write(msgbuf, *) time_interval_name,' = ', time_interval,' should be multiple of DtUser = ', user_time_step, ' s'
             call mess(LEVEL_ERROR, msgbuf)
         end if
     end if
 
 end subroutine check_time_interval
+
+!> Check if time interval is not multiple of DtUser
+logical function is_not_multiple(time_interval, user_time_step)
+
+    real(kind=hp),    intent(in) :: time_interval        !< Time interval to be checked. 
+    double precision, intent(in) :: user_time_step       !< User specified time step (s) for external forcing update
+
+    double precision, parameter :: TIME_INTERVAL_TOLERANCE = 1d-7
+    
+    if (modulo(time_interval, user_time_step) > TIME_INTERVAL_TOLERANCE) then
+        is_not_multiple = .true.
+    else
+        is_not_multiple = .false.
+    end if
+
+end function is_not_multiple
 
    end module unstruc_model
 

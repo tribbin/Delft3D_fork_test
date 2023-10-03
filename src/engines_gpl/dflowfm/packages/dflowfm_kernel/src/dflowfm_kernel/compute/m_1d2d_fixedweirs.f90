@@ -507,7 +507,6 @@ module m_1d2d_fixedweirs
          
          ! The virtual water level is located at the velocity point. For the upstream water level
          ! this water level must be extrapolated to the water level point.
-         au(L) = wu(L)*max((max(s0_2dv(i), s0(k2d))-min(bob0(1,L),bl(k2d))), epshu)
          slopec = 0d0
       
          agp = ag
