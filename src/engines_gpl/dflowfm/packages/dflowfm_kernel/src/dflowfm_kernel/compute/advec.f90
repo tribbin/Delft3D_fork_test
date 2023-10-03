@@ -569,18 +569,10 @@
 
     else if (iadvL == 5 .or. iadvL ==6) then         ! 5,6 = advection like 3,4, now Piaczek teta
 
-       if (jarhoxu == 0) then
-          if (kcu(L) == 1) then
-             volu  = acl(L)*vol1_f(k1) + (1d0-acl(L))*vol1_f(k2)
-          else
-             volu  = acl(L)*vol1(k1) + (1d0-acl(L))*vol1(k2)
-          endif
+       if (kcu(L) ==1) then
+          volu = acl(L)*vol1_f(k1) + (1d0-acl(L))*vol1_f(k2)
        else
-          if (kcu(L) == 1) then
-             volu  = acl(L)*vol1_f(k1)*rho(k1) + (1d0-acl(L))*vol1_f(k2)*rho(k2)
-          else
-             volu  = acl(L)*vol1(k1)*rho(k1) + (1d0-acl(L))*vol1(k2)*rho(k2)
-          endif
+          volu = acl(L)*vol1(k1) + (1d0-acl(L))*vol1(k2)
        endif
 
        if (volu > 0) then
