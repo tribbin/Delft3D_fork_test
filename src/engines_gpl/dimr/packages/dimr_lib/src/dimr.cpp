@@ -305,6 +305,10 @@ void Dimr::runParallelInit(dimr_control_block* cb) {
     MPI_Group mpiGroupComp;
     int nSettingsSet;
 
+    // RTCTools/Wanda/Flow1D2D: impossible to autodetect which partition will deliver this source var
+    //              Assumption: there is only one RTC/Wanda/Flow1D2D-instance
+    std::set<int> single_instance_component_set = { COMP_TYPE_RTC, COMP_TYPE_WANDA, COMP_TYPE_FLOW1D2D };
+
     if (use_mpi) {
         ierr = MPI_Comm_group(MPI_COMM_WORLD, &mpiGroupWorld);
         if (ierr != MPI_SUCCESS) {
@@ -472,12 +476,8 @@ void Dimr::runParallelInit(dimr_control_block* cb) {
                 if (cb->subBlocks[i].subBlocks[j].type != CT_START) {
                     dimr_coupler* thisCoupler = cb->subBlocks[i].subBlocks[j].unit.coupler;
                     for (int k = 0; k < thisCoupler->numItems; k++) {
-                        if (thisCoupler->itemTypes[k] == ITEM_TYPE_PTR ||
-                            thisCoupler->sourceComponent->type == COMP_TYPE_RTC ||
-                            thisCoupler->sourceComponent->type == COMP_TYPE_WANDA ||
-                            thisCoupler->sourceComponent->type == COMP_TYPE_FLOW1D2D) {
-                            // RTCTools/Wanda: impossible to autodetect which partition will deliver this source var
-                            //                 Assumption: there is only one RTC/Wanda-partition
+                        if (IsCouplerItemTypePTR(thisCoupler->itemTypes[k]) ||
+                            single_instance_component_set.find(thisCoupler->sourceComponent->type) != single_instance_component_set.end()) {
                             // ITEM_TYPE_PTR : Arrays to point to are not yet allocated
                             //                 Assumption: they will be when the data actually will be communicated
                             //                 Warning: do not change this into "Component->type == COMP_TYPE_COSUMO",
@@ -536,10 +536,8 @@ void Dimr::runParallelInit(dimr_control_block* cb) {
                         }
 
                         // Target variable
-                        if (thisCoupler->itemTypes[k] == ITEM_TYPE_PTR ||
-                            thisCoupler->targetComponent->type == COMP_TYPE_RTC ||
-                            thisCoupler->targetComponent->type == COMP_TYPE_WANDA ||
-                            thisCoupler->targetComponent->type == COMP_TYPE_FLOW1D2D) {
+                        if (IsCouplerItemTypePTR(thisCoupler->itemTypes[k]) ||
+                            single_instance_component_set.find(thisCoupler->targetComponent->type) != single_instance_component_set.end()) {
                             // nothing
                         }
                         else {
@@ -1749,6 +1747,16 @@ dimr_coupler* Dimr::getCoupler(const char* coupName) {
             return &(couplersList.couplers[i]);
         }
     }
+}
+
+
+//------------------------------------------------------------------------------
+// Search for a named coupler in the list of couplers
+bool Dimr::IsCouplerItemTypePTR(int couplerItem) {
+    if (couplerItem == ITEM_TYPE_PTR)
+        return true;
+    else
+        return false;
 }
 
 
