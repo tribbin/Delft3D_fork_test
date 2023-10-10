@@ -186,15 +186,14 @@ public :: fm_bott3d
    !
    if (time1 >= tstart_user + tcmp * tfac) then   ! tmor/tcmp in tunit since start of computations, time1 in seconds since reference date
        
-       call fm_bed_boundary_conditions(timhr)
-       
-       call fm_change_in_sediment_thickness(dtmor)
-
-       call fluff_burial(stmpar%morpar%flufflyr, dbodsd, lsed, lsedtot, 1, ndxi, dts, morfac)
-       
-       call fm_dry_bed_erosion(dtmor)
+      call fm_bed_boundary_conditions(timhr)
+      
+      call fm_change_in_sediment_thickness(dtmor)
+	  
+      call fluff_burial(stmpar%morpar%flufflyr, dbodsd, lsed, lsedtot, 1, ndxi, dts, morfac)
+      
+      call fm_dry_bed_erosion(dtmor)
             
-      !check whether it is really needed to update ghosts here. Should be applied before `dbodsd` is used
       if ( jampi > 0 ) then
          call update_ghosts(ITYPE_Sall, lsedtot, Ndx, dbodsd, ierror)
       end if
@@ -205,15 +204,10 @@ public :: fm_bott3d
          dbodsd(ll,:) = dbodsd(ll,:)*kcsmor
       end do
             
-      !
-      call reconstructsedtransports()   ! reconstruct cell centre transports for morstats and cumulative st output
-      call collectcumultransports()     ! Always needed, written on last timestep of simulation
+      call reconstructsedtransports() ! reconstruct cell centre transports for morstats and cumulative st output
+      call collectcumultransports() ! Always needed, written on last timestep of simulation
       call fm_exclude_cmpupdfrac() ! Conditionally exclude specific fractions from erosion and sedimentation
       
-      !
-      !2DO: check why this can not be moved before the first `if (cmpupd)` or after the last `if (cmpupd)`
-      ! JRE: should be at least here, see UNST-6697: move cmpupdfrac before morstats call
-      !      could be moved below
       if (stmpar%morpar%moroutput%morstats .and. ti_sed>0d0) then
          call morstats(dbodsd, hs_mor, ucxq_mor, ucyq_mor, sbcx, sbcy, sbwx, sbwy, sscx, sscy, sswx, sswy)
       endif
