@@ -1064,11 +1064,7 @@ public :: fm_bott3d
                         flux = flux + fluxhortot(j,iL)
                      enddo
 					 !See: UNST-7371
-                     if ( LL>0 ) then  ! inward
-                        sumflux = sumflux + flux
-                     else                 ! outward
-                        sumflux = sumflux - flux
-                     end if
+                     call fm_sumflux(LL,sumflux,flux)
                   end do
                else
                   do ii=1,nd(nm)%lnx
@@ -1076,12 +1072,7 @@ public :: fm_bott3d
                      Lf = iabs(LL)
 
                      flux = fluxhortot(j,Lf)
-
-                     if ( LL>0 ) then  ! inward
-                        sumflux = sumflux + flux
-                     else                 ! outward
-                        sumflux = sumflux - flux
-                     end if
+                     call fm_sumflux(LL,sumflux,flux)
                   end do
                endif
                trndiv = trndiv + sumflux * bai_mor(nm)
@@ -1120,12 +1111,7 @@ public :: fm_bott3d
                   LL = nd(nm)%ln(ii)
                   Lf = iabs(LL)
                   flux = e_scrn(Lf,l)*wu(Lf)
-
-                  if ( LL>0 ) then  ! inward
-                     sumflux = sumflux + flux
-                  else                 ! outward
-                     sumflux = sumflux - flux
-                  end if
+                  call fm_sumflux(LL,sumflux,flux)  
                end do
                trndiv = trndiv + sumflux * bai_mor(nm)
             endif
@@ -1136,11 +1122,7 @@ public :: fm_bott3d
                LL = nd(nm)%ln(ii)
                Lf = iabs(LL)
                flux = e_sbn(Lf,l)*wu_mor(Lf)
-               if ( LL>0 ) then     ! inward
-                  sumflux = sumflux + flux
-               else                 ! outward
-                  sumflux = sumflux - flux
-               end if
+               call fm_sumflux(LL,sumflux,flux)
             end do
             trndiv = trndiv + sumflux * bai_mor(nm)
          endif
@@ -1151,11 +1133,7 @@ public :: fm_bott3d
                LL = nd(nm)%ln(ii)
                Lf = iabs(LL)
                flux = avalflux(Lf,l)*wu_mor(Lf)
-               if ( LL>0 ) then  ! inward
-                  sumflux = sumflux + flux
-               else              ! outward
-                  sumflux = sumflux - flux
-               end if
+               call fm_sumflux(LL,sumflux,flux)
             end do
             trndiv = trndiv + sumflux * bai_mor(nm)
          endif
@@ -2036,5 +2014,34 @@ public :: fm_bott3d
    endif
 
    end subroutine fm_erosion_velocity
+   
+   subroutine fm_sumflux(LL,sumflux,flux)
+
+   !!
+   !! Declarations
+   !!
+      
+   implicit none
+   
+   !!
+   !! I/O
+   !!
+   
+   integer,                         intent(in) :: LL
+   
+   double precision,                intent(in) :: flux
+   double precision,                intent(inout) :: sumflux
+   
+   !!
+   !! Execute
+   !!
+   
+   if ( LL>0 ) then  ! inward
+      sumflux = sumflux + flux
+   else                 ! outward
+      sumflux = sumflux - flux
+   end if
+   
+   end subroutine fm_sumflux
       
 end module m_fm_bott3d
