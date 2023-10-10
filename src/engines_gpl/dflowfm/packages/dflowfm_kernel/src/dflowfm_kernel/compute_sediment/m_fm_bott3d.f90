@@ -84,29 +84,24 @@ public :: fm_bott3d
    !! Local parameters
    !!
    
-   double precision, parameter                 :: day2sec = 86400.0d0 !< seconds in a day  
-   double precision, parameter                 :: h2sec   = 3600.0d0  !< seconds in an hour 
+   double precision, parameter                 :: DAY2SEC = 86400.0d0 !< seconds in a day  
+   double precision, parameter                 :: H2SEC   = 3600.0d0  !< seconds in an hour 
    
    !!
    !! Local variables
    !!
    
-   !logical
    logical                                     :: error, aval
    
-   !integer
    integer                                     :: ierror, nm, ll
    
-   !double precision
    double precision                            :: dtmor
    double precision                            :: timhr
    
    double precision, dimension(:), allocatable :: bl_ave0
    
-   !character
    character(len=256)                             :: msg
 
-   !pointer
    logical                              , pointer :: cmpupd
 
    !!
@@ -126,7 +121,7 @@ public :: fm_bott3d
 
    dtmor   = dts*morfac
    error = .false.
-   timhr = time1 / h2sec
+   timhr = time1 / H2SEC
    blchg(:) = 0d0
    e_ssn(:,:) = 0d0
    
@@ -247,8 +242,8 @@ public :: fm_bott3d
       ! Increment morphological time
       ! Note: dtmor in seconds, morft in days!
       !
-      morft = morft + dtmor/day2sec
-      if (morfac>0d0) hydrt  = hydrt + dts/day2sec
+      morft = morft + dtmor/DAY2SEC
+      if (morfac>0d0) hydrt  = hydrt + dts/DAY2SEC
       if (stmpar%morpar%moroutput%morstats) then
          if (comparereal(time1,ti_seds,eps10)>=0) morstatt0 = morft
       endif
@@ -307,12 +302,10 @@ public :: fm_bott3d
    !! Local variables
    !!
    
-   !integer
    integer                                     :: ierror
    integer                                     :: l, ll, Lx, Lf, k1, k2
    integer                                     :: Lb, Lt, ka, kf1, kf2, ac1, ac2
    
-   !double precision
    double precision                            :: cavg
    double precision                            :: cavg1
    double precision                            :: cavg2
@@ -539,23 +532,19 @@ public :: fm_bott3d
    !! Local variables
    !!
    
-   !logical
    logical                                     :: error
    
-   !integer
    integer                                     :: inod, j, istat, ised, ifrac, k1, k3, nrd_idx, L
 
    integer, dimension(:), allocatable          :: branInIDLn       !< ID of Incoming Branch (If there is only one) (nnod)
    
    integer, dimension(:,:,:), allocatable      :: sb_dir       !< direction of transport at node (nnod, lsedtot, nbr) (-1 = incoming or no transport, +1 = outgoing)
 
-   !real
    real(fp), dimension(:), allocatable         :: qb_out          !< sum of outgoing discharge at 1d node
    real(fp), dimension(:), allocatable         :: width_out       !< sum of outgoing main channel widths
    
    real(fp), dimension(:,:), allocatable       :: sb_in         !< sum of incoming sediment transport at 1d node
 
-   !double precision
    double precision                            :: ldir
    double precision                            :: faccheck
    double precision                            :: expQ
@@ -565,7 +554,6 @@ public :: fm_bott3d
    double precision                            :: qb1d, wb1d, sb1d
    double precision                            :: sbrratio, qbrratio, Qbr1, Qbr2
    
-   !structures
    type(t_nodefraction)                 , pointer :: pFrac
    type(t_noderelation)                 , pointer :: pNodRel
    type(t_node)                         , pointer :: pnod
@@ -796,15 +784,11 @@ public :: fm_bott3d
    !! Local variables
    !!
    
-   !logical
-   
-   !integer
    integer                                     :: jb, nto, ib, lm, k2, L, li, nm, nxmx
    integer                                     :: icond
    integer                                     :: jawaveswartdelwaq_local
    integer                                     :: lsedbed
 
-   !double precision
    double precision                            :: tausum2(1)
    double precision                            :: alfa_dist
    double precision                            :: alfa_mag
@@ -815,10 +799,8 @@ public :: fm_bott3d
    
    double precision, dimension(lsedtot)        :: bc_sed_distribution
    
-   !characters
    character(len=256)                             :: msg
    
-   !structures
    type (handletype)                    , pointer :: bcmfile
    type (bedbndtype)     , dimension(:) , pointer :: morbnd
    
@@ -997,18 +979,14 @@ public :: fm_bott3d
    !! Local variables
    !!
    
-   !parameter
-   integer,          parameter                 :: bedchangemessmax = 50
+   integer,          parameter                 :: BEDCHANGEMESSMAX = 50
    
-   !logical
    logical                                     :: bedload
    
-   !integer
    integer                                     :: j, l, ii, il, nm, ll, lt, kb, kt, lb, lf, k
    integer                                     :: bedchangemesscount
    integer                                     :: lstart
 
-   !double precision
    double precision                            :: trndiv
    double precision                            :: sedflx
    double precision                            :: eroflx
@@ -1147,10 +1125,10 @@ public :: fm_bott3d
             !
             ! Only write bed change warning when bed updating is true
             ! (otherwise no problem)
-            ! Limit the number of messages with bedchangemessmax
+            ! Limit the number of messages with BEDCHANGEMESSMAX
             !
             bedchangemesscount = bedchangemesscount + 1
-            if (bedchangemesscount <= bedchangemessmax) then
+            if (bedchangemesscount <= BEDCHANGEMESSMAX) then
                write (mdia, '(a,f5.1,a,i0,a,i0,a,f10.0,a,f10.0)') &
                   & '*** WARNING Bed change exceeds ' , dhmax*100.0d0, ' % of waterdepth after ', int(dnt),  &
                   & ' timesteps, flow node = (', nm,') at x=', xz(nm),', y=', yz(nm)
@@ -1163,8 +1141,8 @@ public :: fm_bott3d
       enddo    ! nm
    enddo       ! l
 
-   if (bedchangemesscount > bedchangemessmax) then
-      write (mdia,'(12x,a,i0,a)') 'Bed change messages skipped (more than ',bedchangemessmax,')'
+   if (bedchangemesscount > BEDCHANGEMESSMAX) then
+      write (mdia,'(12x,a,i0,a)') 'Bed change messages skipped (more than ',BEDCHANGEMESSMAX,')'
       write (mdia,'(12x,2(a,i0))') 'Total number of Bed change messages for timestep ', int(dnt), ' : ',bedchangemesscount
    endif
 
@@ -1195,10 +1173,8 @@ public :: fm_bott3d
    !! Local variables
    !!
       
-   !integer
    integer                                     :: l, nm, k1, k2, knb, ll, lf
 
-   !double precision
    double precision                            :: bamin
    double precision                            :: dv
    double precision                            :: thet
@@ -1338,10 +1314,8 @@ public :: fm_bott3d
    !! Local variables
    !!
       
-   !logical
    logical                                     :: jamerge
    
-   !integer
    integer                                     :: ll, nm, ii
      
    !!
@@ -1418,19 +1392,15 @@ public :: fm_bott3d
    !! Local variables
    !!
    
-   !integer
    integer                                     :: nto, jb, ib, nm, nxmx, lm
    integer                                     :: icond
       
-   !double 
    double precision                            :: alfa_dist
    double precision                            :: alfa_mag
    double precision                            :: rate
    
-   !characters
    character(len=256)                             :: msg
    
-   !structures
    type (handletype)                    , pointer :: bcmfile
    type (bedbndtype)     , dimension(:) , pointer :: morbnd
    
@@ -1573,16 +1543,10 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: k, ll, kb, kt, kk, itrac
       
-   !double 
    double precision                            :: hsk
    double precision                            :: ddp
-   
-   !!
-   !! Allocate and initialize
-   !!
    
    !!
    !! Execute
@@ -1668,7 +1632,6 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: ll, j, L, Lb, Lt, iL, lstart
       
    !!
@@ -1704,7 +1667,6 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: nm, l
       
    !!
@@ -1737,10 +1699,8 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: l
       
-   !pointer
    logical                              , pointer :: cmpupd
    
    !!
@@ -1777,10 +1737,8 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: ll, nm
       
-   !pointer
    logical                              , pointer :: cmpupd
    
    !!
@@ -1833,17 +1791,13 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !logical
    logical                                     :: error
    
-   !integer
    integer                                     :: nm, jb, ib
    integer                                     :: icond
       
-   !double precision
    double precision, dimension(:), allocatable :: bl_ave0
    
-   !structure
    type (bedbndtype)     , dimension(:) , pointer :: morbnd
    
    !!
@@ -1927,7 +1881,6 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: nm
          
    !!
@@ -1966,7 +1919,6 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: nm
          
    !!
@@ -1996,7 +1948,6 @@ public :: fm_bott3d
    !! Local variables
    !!
          
-   !integer
    integer                                     :: nm
          
    !!
