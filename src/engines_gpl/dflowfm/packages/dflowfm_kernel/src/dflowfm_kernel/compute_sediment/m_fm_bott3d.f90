@@ -1059,7 +1059,6 @@ public :: fm_bott3d
                      do iL = Lb,Lt
                         flux = flux + fluxhortot(j,iL)
                      enddo
-                     ! to check: correct for 3D?
                      if ( LL>0 ) then  ! inward
                         sumflux = sumflux + flux
                      else                 ! outward
