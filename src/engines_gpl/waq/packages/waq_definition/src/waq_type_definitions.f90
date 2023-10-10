@@ -21,20 +21,22 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 
-module waq_precision
+module m_waq_type_definitions
 !
 !  module declarations
-!
+      use, intrinsic :: iso_fortran_env
       implicit none
-      integer, parameter :: ip = kind(1)      ! precision of normal integers
-      integer, parameter :: rp = kind(1.0)    ! precision of normal reals
-      integer, parameter :: sp = kind(1.0e0)  ! single precision
-      integer, parameter :: dp = kind(1.0d0)  ! double precision
-      integer, parameter :: fp = sp
-      integer, parameter :: hp = dp
-
-      ! use, intrinsic :: iso_fortran_env
-      ! integer, parameter :: sp = REAL32
-      ! integer, parameter :: dp = REAL64
-      ! integer, parameter :: qp = REAL128
+      
+      ! f77: integer*1, f90: integer(kind=1)
+      integer, parameter :: int_8 = INT8
+      ! f77: integer*2, f90: integer(kind=2)
+      integer, parameter :: int_16 = INT16
+      ! f77: integer*4, f90: integer(kind=4) this is the default value if not mentioned.
+      integer, parameter :: int_32 = INT32
+      ! f77: integer*8, f90: integer(kind=8)
+      integer, parameter :: int_64 = INT64
+      
+      integer, parameter :: sp = REAL32
+      integer, parameter :: dp = REAL64
+      integer, parameter :: qp = REAL128
 end module waq_precision
