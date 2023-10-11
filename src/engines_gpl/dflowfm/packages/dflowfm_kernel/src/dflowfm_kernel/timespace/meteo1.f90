@@ -6613,7 +6613,8 @@ module m_meteo
    integer, target :: item_apwxwy_p                                          !< Unique Item id of the ext-file's 'airpressure_windx_windy' quantity 'p'.
    integer, target :: item_apwxwy_x                                          !< Unique Item id of the ext-file's 'airpressure_windx_windy' quantity 'x'.
    integer, target :: item_apwxwy_y                                          !< Unique Item id of the ext-file's 'airpressure_windx_windy' quantity 'y'.
-   integer, target :: item_apwxwy_c                                          !< Unique Item id of the ext-file's 'space var Charnock' quantity 'C'.
+   integer, target :: item_apwxwy_c                                          !< Unique Item id of the ext-file's 'airpressure_windx_windy_charnock' quantity 'c' (space var Charnock).
+   integer, target :: item_charnock                                          !< Unique Item id of the ext-file's 'space var Charnock' quantity 'C'.
    integer, target :: item_waterlevelbnd                                     !< Unique Item id of the ext-file's 'waterlevelbnd' quantity's ...-component.
    integer, target :: item_atmosphericpressure                               !< Unique Item id of the ext-file's 'atmosphericpressure' quantity
    integer, target :: item_velocitybnd                                       !< Unique Item id of the ext-file's 'velocitybnd' quantity
@@ -6667,7 +6668,7 @@ module m_meteo
    integer, target :: item_hac_airtemperature                                !< Unique Item id of the ext-file's 'airtemperature' quantity
    integer, target :: item_hac_cloudiness                                    !< Unique Item id of the ext-file's 'cloudiness' quantity
 
-   integer, target :: item_humidity                                          !< 'humidity' quantity
+   integer, target :: item_humidity                                          !< 'humidity' (or 'dewpoint') quantity
    integer, target :: item_airtemperature                                    !< 'airtemperature' quantity
    integer, target :: item_cloudiness                                        !< 'cloudiness' quantity
    integer, target :: item_solarradiation                                    !< 'solarradiation' quantity
@@ -6731,6 +6732,7 @@ module m_meteo
       item_apwxwy_x                              = ec_undef_int
       item_apwxwy_y                              = ec_undef_int
       item_apwxwy_c                              = ec_undef_int
+      item_charnock                              = ec_undef_int
       item_waterlevelbnd                         = ec_undef_int
       item_atmosphericpressure                   = ec_undef_int
       item_velocitybnd                           = ec_undef_int
@@ -7002,18 +7004,18 @@ module m_meteo
             dataPtr1 => wx
             itemPtr2 => item_windxy_y
             dataPtr2 => wy
-       case ('stressx')
+         case ('stressx')
             itemPtr1 => item_stressx
             dataPtr1 => wdsu_x
          case ('stressy')
             itemPtr1 => item_stressy
             dataPtr1 => wdsu_y
-         case ( 'stressxy')
+         case ('stressxy')
             itemPtr1 => item_stressxy_x
             dataPtr1 => wdsu_x
             itemPtr2 => item_stressxy_y
             dataPtr2 => wdsu_y
-        case ( 'friction_coefficient_time_dependent')
+         case ('friction_coefficient_time_dependent')
             itemPtr1 => item_frcu
             dataPtr1 => frcu
          case ('airpressure_windx_windy', 'airpressure_stressx_stressy')
@@ -7032,6 +7034,9 @@ module m_meteo
             dataPtr3 => ec_pwxwy_y
             itemPtr4 => item_apwxwy_c
             dataPtr4 => ec_pwxwy_c
+         case ('charnock')
+            itemPtr1 => item_charnock
+            dataPtr1 => ec_charnock
          case ('waterlevelbnd', 'neumannbnd', 'riemannbnd', 'outflowbnd')
             itemPtr1 => item_waterlevelbnd
             dataPtr1 => zbndz
@@ -7053,10 +7058,10 @@ module m_meteo
          case ('tangentialvelocitybnd')
             itemPtr1 => item_tangentialvelocitybnd
             dataPtr1 => zbndt
-        case ('uxuyadvectionvelocitybnd')
+         case ('uxuyadvectionvelocitybnd')
             itemPtr1 => item_uxuyadvectionvelocitybnd
             dataPtr1 => zbnduxy
-        case ('normalvelocitybnd')
+         case ('normalvelocitybnd')
             itemPtr1 => item_normalvelocitybnd
             dataPtr1 => zbndn
          case ('airpressure','atmosphericpressure')
@@ -7162,9 +7167,12 @@ module m_meteo
             dataPtr3 => clou
             itemPtr4 => item_dacs_solarradiation 
             dataPtr4 => qrad
-         case ('humidity')
+         case ('humidity')      
             itemPtr1 => item_humidity
-            dataPtr1 => rhum                 ! Relative humidity 
+            dataPtr1 => rhum                 ! Relative humidity                
+         case ('dewpoint')                   
+            itemPtr1 => item_humidity
+            dataPtr1 => rhum                 ! Relative humidity array used to store dewpoints              
          case ('airtemperature')
             itemPtr1 => item_airtemperature
             dataPtr1 => tair
@@ -7181,7 +7189,7 @@ module m_meteo
             itemPtr2 => item_nudge_sal
             dataPtr2 => nudge_sal 
             itemPtr1 => item_nudge_tem
-            dataPtr1 => nudge_tem            ! Relative humidity array used to store dewpoints
+            dataPtr1 => nudge_tem
          case ('discharge_salinity_temperature_sorsin')
             itemPtr1 => item_discharge_salinity_temperature_sorsin
             dataPtr1 => qstss
@@ -7787,7 +7795,7 @@ module m_meteo
          ! Each qhbnd polytim file replaces exactly one element in the target data array.
          ! Converter will put qh value in target_array(n_qhbnd)
       case ('windx', 'windy', 'windxy', 'stressxy', 'airpressure', 'atmosphericpressure', 'airpressure_windx_windy','airdensity', &
-            'airpressure_windx_windy_charnock', 'airpressure_stressx_stressy','humidity','airtemperature','cloudiness','solarradiation', 'longwaveradiation')
+            'airpressure_windx_windy_charnock', 'charnock', 'airpressure_stressx_stressy','humidity','dewpoint','airtemperature','cloudiness','solarradiation', 'longwaveradiation')
          if (present(srcmaskfile)) then 
             if (ec_filetype == provFile_arcinfo .or. ec_filetype == provFile_curvi) then
                if (.not.ecParseARCinfoMask(srcmaskfile, srcmask, fileReaderPtr)) then
@@ -8084,7 +8092,17 @@ module m_meteo
             if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_windxy_y)
             if (success) success = ecAddItemConnection(ecInstancePtr, item_windxy_x, connectionId)
             if (success) success = ecAddItemConnection(ecInstancePtr, item_windxy_y, connectionId)
-        case ('friction_coefficient_time_dependent')
+        case ('charnock')
+            if (ec_filetype == provFile_netcdf) then
+               sourceItemId   = ecFindItemInFileReader(ecInstancePtr, fileReaderId, 'charnock')
+               if (success) success = ecAddConnectionSourceItem(ecInstancePtr, connectionId, sourceItemId)
+            else
+               call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
+               return
+            end if
+            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_charnock)
+            if (success) success = ecAddItemConnection(ecInstancePtr, item_charnock, connectionId)
+         case ('friction_coefficient_time_dependent')
              if (ec_filetype == provFile_netcdf) then
                sourceItemName = 'friction_coefficient' 
             else
@@ -8337,6 +8355,8 @@ module m_meteo
             if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_solarradiation, connectionId)
          case ('humidity')
             sourceItemName = 'relative_humidity'
+         case ('dewpoint')
+            sourceItemName = 'dew_point_temperature'
          case ('airtemperature')
             if (ec_filetype == provFile_uniform) then
                sourceItemId = ecFindItemInFileReader(ecInstancePtr, fileReaderId, 'uniform_item')
@@ -8350,7 +8370,7 @@ module m_meteo
                sourceItemName = 'air_temperature'
             end if
          case ('cloudiness')
-            sourceItemName = 'cloudfraction'
+            sourceItemName = 'cloud_area_fraction'
          case ('airdensity')
             if (ec_filetype == provFile_netcdf) then
                sourceItemId   = ecFindItemInFileReader(ecInstancePtr, fileReaderId, 'air_density')
@@ -8599,10 +8619,16 @@ module m_meteo
       if (trim(group_name) == 'dewpoint_airtemperature_cloudiness_solarradiation') then
          if (.not.ec_gettimespacevalue_by_itemID(instancePtr, item_dacs_dewpoint, irefdate, tzone, tunit, timesteps)) return
       end if
+      if (trim(group_name) == 'dewpoint') then
+         if (.not.ec_gettimespacevalue_by_itemID(instancePtr, item_humidity, irefdate, tzone, tunit, timesteps)) return ! Relative humidity array used to store dewpoints
+         if (.not.ec_gettimespacevalue_by_itemID(instancePtr, item_airtemperature, irefdate, tzone, tunit, timesteps)) return ! update tair for conversion of dewpoint to humidity
+      end if
       
       if ((trim(group_name) == 'dewpoint_airtemperature_cloudiness' .and. item_dac_dewpoint/=ec_undef_int)    &
           .or.       & 
-          (trim(group_name) == 'dewpoint_airtemperature_cloudiness_solarradiation' .and. item_dacs_dewpoint/=ec_undef_int)) then
+          (trim(group_name) == 'dewpoint_airtemperature_cloudiness_solarradiation' .and. item_dacs_dewpoint/=ec_undef_int)    &
+          .or.       &
+          (trim(group_name) == 'dewpoint' .and. item_humidity/=ec_undef_int)) then
           ! Conversion of dewpoint to relative humidity
           ptd => rhum
           prh => rhum

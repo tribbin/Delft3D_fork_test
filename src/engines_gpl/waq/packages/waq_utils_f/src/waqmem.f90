@@ -78,34 +78,6 @@ MODULE waqmem
    real(8), allocatable :: gm_diac (:,:)    ! gmres unscaled copy of diagonal entries
    real(8), allocatable :: gm_trid (:,:)    ! gmres tridiagonal matrix vertical
 
-!      solver 19 and 20 only
-
-   integer, allocatable :: kadu    (:,:)
-   integer, allocatable :: kadv    (:,:)
-   integer, allocatable :: kcu     (:)
-   real(4), allocatable :: r11     (:,:,:)
-   real(4), allocatable :: dfluxx  (:,:,:)
-   real(4), allocatable :: dfluxy  (:,:,:)
-   real(4), allocatable :: s0      ( : )
-   real(4), allocatable :: s1      ( : )
-   real(4), allocatable :: dps     ( : )
-   real(4), allocatable :: gsqs    ( : )
-   real(4), allocatable :: sigdif  (:)
-   real(4), allocatable :: sigmol  (:)
-   real(4), allocatable :: guu     ( : )
-   real(4), allocatable :: gvv     ( : )
-   real(4), allocatable :: hu      ( : )
-   real(4), allocatable :: hv      ( : )
-   real(4), allocatable :: thick   (:)
-   real(4), allocatable :: sig     ( : )
-   real(4), allocatable :: dicuv   (:,:)
-   real(4), allocatable :: dicww   (:,:)
-   real(4), allocatable :: sour    (:,:,:)
-   real(4), allocatable :: sink    (:,:,:)
-   real(4), allocatable :: areau   (:,:)
-   real(4), allocatable :: areav   (:,:)
-   real(4), allocatable :: rscale  (:,:)
-
 !      if regular grid is provided (for future incorporation PART)
 
    integer, allocatable :: cellpnt (:)      ! backpointer from noseg to mnmaxk
@@ -178,34 +150,6 @@ MODULE waqmem
        if (allocated(gm_diag)) deallocate(gm_diag)
        if (allocated(gm_diac)) deallocate(gm_diac)
        if (allocated(gm_trid)) deallocate(gm_trid)
-
-!      solver 19 and 20 only
-
-       if (allocated(kadu)) deallocate(kadu)
-       if (allocated(kadv)) deallocate(kadv)
-       if (allocated(kcu)) deallocate(kcu)
-       if (allocated(r11)) deallocate(r11)
-       if (allocated(dfluxx)) deallocate(dfluxx)
-       if (allocated(dfluxy)) deallocate(dfluxy)
-       if (allocated(s0)) deallocate(s0)
-       if (allocated(s1)) deallocate(s1)
-       if (allocated(dps)) deallocate(dps)
-       if (allocated(gsqs)) deallocate(gsqs)
-       if (allocated(sigdif)) deallocate(sigdif)
-       if (allocated(sigmol)) deallocate(sigmol)
-       if (allocated(guu)) deallocate(guu)
-       if (allocated(gvv)) deallocate(gvv)
-       if (allocated(hu)) deallocate(hu)
-       if (allocated(hv)) deallocate(hv)
-       if (allocated(thick)) deallocate(thick)
-       if (allocated(sig)) deallocate(sig)
-       if (allocated(dicuv)) deallocate(dicuv)
-       if (allocated(dicww)) deallocate(dicww)
-       if (allocated(sour)) deallocate(sour)
-       if (allocated(sink)) deallocate(sink)
-       if (allocated(areau)) deallocate(areau)
-       if (allocated(areav)) deallocate(areav)
-       if (allocated(rscale)) deallocate(rscale)
 
 !      solver 21 only
 

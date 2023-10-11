@@ -20,53 +20,39 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-      module m_dhcwrd
 
-      implicit none
+module m_waq_data_buffer
+
+    implicit none
+
+    type, public :: waq_data_buffer
+        integer, dimension(:),allocatable              :: ibuf
+        real, dimension(:),allocatable                 :: rbuf
+        character(len=1), dimension(:),allocatable     :: chbuf
 
       contains
+        procedure :: intialize => intialize_buffer
+        final :: destruct_buffer
 
+    end type waq_data_buffer
 
-      INTEGER FUNCTION DHCWRD ( LINE  )
-!
-!
-!     Deltares        SECTOR WATERRESOURCES AND ENVIRONMENT
-!
-!     CREATED       : june  1993 BY J.K.L. van Beek
-!
-!     FUNCTION      : Counts number of words, blank delimitted
-!
-!     SUBROUTINE CALLED  : none
-!
-!     LOGICAL UNITS      : none
-!
-!     PARAMETERS         : none
-!
-!
-!     Local declaration
-!
-      CHARACTER*(*) LINE
-      integer :: IA
-      integer :: LENLIN
-      integer :: ICH
-!
-      IA = 0
-      LENLIN = LEN(LINE)
-!
-!     Count the number of first blanks in a row
-!
-      DO 100 ICH = 1 , LENLIN
-         IF ( LINE(ICH:ICH)     .NE. ' ' .AND.
-     +        LINE(ICH+1:ICH+1) .EQ. ' '       ) THEN
-            IA = IA + 1
-         ENDIF
-  100 CONTINUE
-      IF ( LINE(LENLIN:LENLIN) .NE. ' ' ) THEN
-         IA = IA + 1
-      ENDIF
-!
-      DHCWRD = IA
-!
-      RETURN
-      END
-      end module m_dhcwrd
+    contains
+    subroutine intialize_buffer(this)
+        class(waq_data_buffer), intent(out) :: this
+
+        allocate( this%rbuf(0) )
+        allocate( this%ibuf(0) )
+        allocate( this%chbuf(0) )
+
+    end subroutine intialize_buffer
+
+    subroutine destruct_buffer(this)
+        type(waq_data_buffer) :: this
+        
+        if (allocated(this%ibuf)) deallocate(this%ibuf)
+        if (allocated(this%rbuf)) deallocate(this%rbuf)
+        if (allocated(this%chbuf)) deallocate(this%chbuf)
+
+    end subroutine destruct_buffer
+
+end module m_waq_data_buffer

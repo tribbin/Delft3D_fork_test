@@ -36,6 +36,7 @@
 #define DIMR_LIB
 #include <string>
 #include <iostream>
+#include <set>
 
 using namespace std;
 
@@ -304,6 +305,10 @@ void Dimr::runParallelInit(dimr_control_block* cb) {
     MPI_Group mpiGroupComp;
     int nSettingsSet;
 
+    // RTCTools/Wanda/Flow1D2D: impossible to autodetect which partition will deliver this source var
+    //              Assumption: there is only one RTC/Wanda/Flow1D2D-instance
+    std::set<int> single_instance_component_set = { COMP_TYPE_RTC, COMP_TYPE_WANDA, COMP_TYPE_FLOW1D2D };
+
     if (use_mpi) {
         ierr = MPI_Comm_group(MPI_COMM_WORLD, &mpiGroupWorld);
         if (ierr != MPI_SUCCESS) {
@@ -470,7 +475,125 @@ void Dimr::runParallelInit(dimr_control_block* cb) {
             for (int j = 0; j < cb->subBlocks[i].numSubBlocks; j++) {
                 if (cb->subBlocks[i].subBlocks[j].type != CT_START) {
                     dimr_coupler* thisCoupler = cb->subBlocks[i].subBlocks[j].unit.coupler;
+                    for (int k = 0; k < thisCoupler->numItems; k++) {
+                        if (IsCouplerItemTypePTR(thisCoupler->itemTypes[k]) ||
+                            single_instance_component_set.find(thisCoupler->sourceComponent->type) != single_instance_component_set.end()) {
+                            // ITEM_TYPE_PTR : Arrays to point to are not yet allocated
+                            //                 Assumption: they will be when the data actually will be communicated
+                            //                 Warning: do not change this into "Component->type == COMP_TYPE_COSUMO",
+                            //                          because it will also fail for the related DflowFM item
+                            thisCoupler->items[k].sourceProcess = thisCoupler->sourceComponent->processes[0];
+                        }
+                        else {
+                            // For each item: get the pointers to the variables inside the dlls to be exchanged
+                            // Currently this does not work for RTC-Tools
+                            //
+                            // Source variable
+                            // autodetect which (single!) partition will deliver this source var
+                            int* sources = (int*)malloc(thisCoupler->sourceComponent->numProcesses * sizeof(int));
+                            int* gsources = (int*)malloc(thisCoupler->sourceComponent->numProcesses * sizeof(int));
+                            for (int m = 0; m < thisCoupler->sourceComponent->numProcesses; m++) {
+                                sources[m] = 0;
+                                if (my_rank == thisCoupler->sourceComponent->processes[m]) {
+                                    // Also for RTCTools_BMI: this is a dummy getvar call, just to check whether it works for this partition
+                                    log->Write(DEBUG, my_rank, "%s.getVar(%s)", thisCoupler->sourceComponentName, thisCoupler->items[k].sourceName);
+                                    (thisCoupler->sourceComponent->dllGetVar) (thisCoupler->items[k].sourceName, (void**)(&thisCoupler->items[k].sourceVarPtr));
+                                    if (thisCoupler->items[k].sourceVarPtr != NULL) {
+                                        // Yes, this partition can deliver the source var
+                                        sources[m] = 1;
+                                    }
+                                }
+                            }
+                            // Do not call MPI_Allreduce when the number of partitions is 1. It will cause a crash on free(gsources)
+                            if (numranks > 1) {
+                                int ierr = MPI_Allreduce(sources, gsources, thisCoupler->sourceComponent->numProcesses, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+                            }
+                            else {
+                                for (int m = 0; m < thisCoupler->sourceComponent->numProcesses; m++) {
+                                    gsources[m] = sources[m];
+                                }
+                            }
+                            thisCoupler->items[k].sourceProcess = -1;
+                            for (int m = 0; m < thisCoupler->sourceComponent->numProcesses; m++) {
+                                if (gsources[m] == 1) {
+                                    if (thisCoupler->items[k].sourceProcess == -1) {
+                                        // First partition that can deliver the source var
+                                        thisCoupler->items[k].sourceProcess = m;
+                                    }
+                                    else {
+                                        // Second/Third/... partition that can deliver the source var
+                                        // Produce a warning
+                                        // The "if (my_rank == m)" avoids multiple identical messages
+                                        if (my_rank == m) {
+                                            log->Write(WARNING, my_rank, "WARNING: coupler %s: item %d: \"%s\" will be delivered by partition %d. Ignoring deliverance by partition %d",
+                                                thisCoupler->name, k, thisCoupler->items[k].sourceName, thisCoupler->items[k].sourceProcess, m);
+                                        }
+                                    }
+                                }
+                            }
+                            free(sources);
+                            free(gsources);
+                        }
+
+                        // Target variable
+                        if (IsCouplerItemTypePTR(thisCoupler->itemTypes[k]) ||
+                            single_instance_component_set.find(thisCoupler->targetComponent->type) != single_instance_component_set.end()) {
+                            // nothing
+                        }
+                        else {
+                            // Target variable
+                            // autodetect which (possibly multiple!) partition(s) will accept this target var
+                            int* targets = (int*)malloc(thisCoupler->targetComponent->numProcesses * sizeof(int));
+                            int* gtargets = (int*)malloc(thisCoupler->targetComponent->numProcesses * sizeof(int));
+                            for (int m = 0; m < thisCoupler->targetComponent->numProcesses; m++) {
+                                targets[m] = 0;
+                                if (my_rank == thisCoupler->targetComponent->processes[m]) {
+                                    log->Write(DEBUG, my_rank, "%s.getVar(%s)", thisCoupler->targetComponentName, thisCoupler->items[k].targetName);
+                                    (thisCoupler->targetComponent->dllGetVar) (thisCoupler->items[k].targetName, (void**)(&thisCoupler->items[k].targetVarPtr));
+                                    if (thisCoupler->items[k].targetVarPtr != NULL) {
+                                        // Yes, this partition can accept the target var
+                                        targets[m] = 1;
+                                    }
+                                }
+                            }
+                            // Do not call MPI_Allreduce when the number of partitions is 1. It will cause a crash on free(gtargets)
+                            if (numranks > 1) {
+                                int ierr = MPI_Allreduce(targets, gtargets, thisCoupler->targetComponent->numProcesses, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+                            }
+                            else {
+                                for (int m = 0; m < thisCoupler->targetComponent->numProcesses; m++) {
+                                    gtargets[m] = targets[m];
+                                }
+                            }
+                            thisCoupler->items[k].targetProcess = -1;
+                            for (int m = 0; m < thisCoupler->targetComponent->numProcesses; m++) {
+                                if (gtargets[m] == 1) {
+                                    if (thisCoupler->items[k].targetProcess == -1) {
+                                        // First partition that can accept the target var
+                                        thisCoupler->items[k].targetProcess = m;
+                                    }
+                                    else {
+                                        // Second/Third/... partition that can accept the target var
+                                        // Produce a warning
+                                        // The "if (my_rank == m)" avoids multiple identical messages
+                                        if (my_rank == m) {
+                                            log->Write(WARNING, my_rank, "WARNING: coupler %s: item %d: \"%s\" will be delivered to multiple partitions: %d and %d.",
+                                                thisCoupler->name, k, thisCoupler->items[k].targetName, thisCoupler->items[k].targetProcess, m);
+                                        }
+                                    }
+                                }
+                            }
+                            if (thisCoupler->items[k].targetProcess == -1) {
+                                throw Exception(true, Exception::ERR_MPI, "Coupler %s: item %d: \"%s\" is not accepted by any of the partitions.",
+                                    thisCoupler->name, k, thisCoupler->items[k].targetName);
+                            }
+                            free(targets);
+                            free(gtargets);
+                        }
+                    }
+
                     // create netcdf logfiles
+                    // This must be moved to DELTARES_COMMON_C
                     if (thisCoupler->logger != NULL && my_rank == 0)
                     {
                         // create netcdf file in workingdir
@@ -610,7 +733,6 @@ void Dimr::runParallelInit(dimr_control_block* cb) {
                         varName.append(name_strlen - varName.length(), ' ');
                         nc_put_var_text(ncid, station_var, varName.c_str());
                     }
-                    // Het hele spul MOET NAAR DELTARES_COMMON_C !!!
                 }
             }
         }
@@ -836,16 +958,20 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                                 // TODO: This does not work for arrays (yet), only scalar double
                                 //
                                 // Getting data:
-                                double* transfer = new double[thisCoupler->sourceComponent->numProcesses]{ 0 };
+                                // "transfer" is the value on this rank. Set it to a very big negative value
+                                double transfer = -999000.0;
 
                                 // addresses eventually updated
-                                getAddress(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->sourceComponent->dllGetVar, &(thisCoupler->items[k].sourceVarPtr),
-                                    thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, transfer);
-                                // the value of sourceVarPtr is sent here to all MPI processes
+                                // only when the source component is on this rank
+                                // Wanda will drop the value in "transfer" on calling dllGetVar
+                                if (thisCoupler->sourceComponent->onThisRank) {
+                                    getAddress(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->sourceComponent->dllGetVar, &(thisCoupler->items[k].sourceVarPtr),
+                                        thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, transfer);
+                                }
+                                // Use sourceVarPtr to fill "transfer" and sent it to all ranks, 
+                                // resulting in transferValuePtr pointing to the correct value on all ranks
                                 transferValuePtr = send(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->items[k].sourceVarPtr,
-                                    thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, transfer);
-
-                                delete[] transfer;
+                                    thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, &transfer);
 
                                 // Optional TODO: assuming one source(partition):
                                 //    if there is only one target (partition), and all partitions can act as source partition:
@@ -972,10 +1098,9 @@ void Dimr::receive(const char* name,
 
                     if (targetVarPtr == NULL)
                     {
-                        double* transfer = new double[nProc];
+                        double transfer = -999000.0;
                         //here we get the address (e.g. weir levels)
                         getAddress(name, compType, dllGetVar, &targetVarPtr, processes, nProc, transfer);
-                        delete[] transfer;
                     }
 
                     //  }
@@ -1032,11 +1157,10 @@ void Dimr::receive_ptr(const char * name,
 
 	if (targetVarPtr == NULL)
 	{
-		double * transfer = new double[nProc];
-		//here we get the address (e.g. weir levels)
+        double transfer = -999000.0;
+        //here we get the address (e.g. weir levels)
 		getAddress(name, compType, dllGetVar, &targetVarPtr, processes, nProc, transfer);
-		delete[] transfer;
-	}
+		}
 
 	// Now targetVarPtr must be defined
 	if (targetVarPtr == NULL)
@@ -1061,41 +1185,36 @@ void Dimr::getAddress(
     double** sourceVarPtr,
     int* processes,
     int          nProc,
-    double* transfer)
+    double& transfer)
 {
-    for (int m = 0; m < nProc; m++) {
-        if (my_rank == processes[m]) {
-            log->Write(ALL, my_rank, "Dimr::getAddress (%s)", name);
-            if (compType == COMP_TYPE_DEFAULT_BMI ||
-                compType == COMP_TYPE_RTC ||
-                // compType == COMP_TYPE_RR ||
-                compType == COMP_TYPE_FLOW1D ||
-                compType == COMP_TYPE_FLOW1D2D ||
-                compType == COMP_TYPE_FM || // NOTE: pending new feature of specifying get_var by value/by reference, we now always get the new pointer from dflowfm (needed for UNST-1713).
-                *sourceVarPtr == NULL) {
-                // These components only returns a new pointer to a copy of the double value, so call it each time.
-                // sourceVarPtr=NULL: getVar not yet called for this parameter, probably because "send" is being called
-                //                    via the toplevel "get_var"
-                if (dllGetVar == NULL) {
-                    throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
-                }
-                (dllGetVar)(name, (void**)(sourceVarPtr));
-            }
-            else if (compType == COMP_TYPE_WANDA) {
-                if (dllGetVar == NULL) {
-                    throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
-                }
-                // Wanda does not use pointers to internal structures:
-                // - Use the DIMR-transfer array
-                // - Note the missing & in the dllGetVar call, when comparing with the dllGetVar call above
-                *sourceVarPtr = transfer;
-                (dllGetVar)(name, (void**)(*sourceVarPtr));
-            }
-            else
-            {
-                // Other components already have direct pointer access to the actual variable.
-            }
+    log->Write(ALL, my_rank, "Dimr::getAddress (%s)", name);
+
+    // These components only return a new pointer to a copy of the double value, so call it each time.
+    std::set<int> second_component_set = { COMP_TYPE_DEFAULT_BMI, COMP_TYPE_RTC, COMP_TYPE_FLOW1D, COMP_TYPE_FLOW1D2D, COMP_TYPE_FM };
+
+    // The order is important: first catch the Wanda case:
+    // Otherwise the "else if" part might be executed When "*sourceVarPtr==NULL" and "compType==COMP_TYPE_WANDA"
+    if (compType == COMP_TYPE_WANDA) {
+        if (dllGetVar == NULL) {
+            throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
         }
+        // Wanda does not use pointers to internal structures:
+        // - Use the DIMR-transfer array
+        // - Note the added * in the dllGetVar call, when comparing with the dllGetVar call below
+        *sourceVarPtr = &transfer;
+        (dllGetVar)(name, (void**)(*sourceVarPtr));
+    }
+    else if (second_component_set.find(compType) != second_component_set.end() || *sourceVarPtr == NULL) {
+        // sourceVarPtr=NULL: getVar not yet called for this parameter, probably because "send" is being called
+        //                    via the toplevel "get_var"
+        if (dllGetVar == NULL) {
+            throw Exception(true, Exception::ERR_METHOD_NOT_IMPLEMENTED, "ABORT: get_var function not defined while processing %s", name);
+        }
+        (dllGetVar)(name, (void**)(sourceVarPtr));
+    }
+    else
+    {
+        // Other components already have direct pointer access to the actual variable.
     }
 }
 
@@ -1109,46 +1228,25 @@ double* Dimr::send(
     int          nProc,
     double* transfer)
 {
-    double* reducedTransfer = new double[nProc];
-
-    for (int m = 0; m < nProc; m++)
+    log->Write(ALL, my_rank, "Dimr::send (%s)", name);
+    if (sourceVarPtr != NULL && compType != COMP_TYPE_WANDA)
     {
-        //transfer[m] = -999000.0;
-        if (my_rank == processes[m])
-        {
-            log->Write(ALL, my_rank, "Dimr::send (%s)", name);
-            if (sourceVarPtr != NULL && compType != COMP_TYPE_WANDA)
-            {
-                transfer[m] = *sourceVarPtr;
-            }
-        }
+        *transfer = *sourceVarPtr;
     }
 
-    //now you have all source values in the transfer array, we can reduce them
-    double maxValue = -999000.0;
     // Do not call MPI_Allreduce when the number of partitions is 1.
     if (numranks > 1)
     {
         // NOTE: here the transfer array has a defined value only at position==my_rank and if *sourceVarPtr != NULL.
         // We perform a reduction operation to collect the maximum values at each position and afterwards take the maximum of all values.
         // We could also use only one double instead of a transfer array and perform the reduction on a single scalar (so avoiding the loop below)
-        int ierr = MPI_Allreduce(transfer, reducedTransfer, nProc, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        int ierr = MPI_Allreduce(transfer, &(transferValue), 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
 
-        for (int m = 0; m < nProc; m++)
-        {
-            if (reducedTransfer[m] > maxValue)
-                maxValue = reducedTransfer[m];
-        }
     }
     else
     {
-        maxValue = transfer[0];
+        transferValue = *transfer;
     }
-
-    delete[] reducedTransfer;
-
-    //the reduced value now is set and return to all ranks
-    transferValue = maxValue;
     return &(transferValue);
 }
 
@@ -1371,7 +1469,7 @@ void Dimr::scanComponent(XmlTree* xmlComponent, dimr_component* newComp) {
     else if (strstr(libNameLowercase, "rr_dll") != NULL) {
         newComp->type = COMP_TYPE_RR;
     }
-    else if (strstr(libNameLowercase, "wandaengine_native") != NULL) {
+    else if (strstr(libNameLowercase, "wanda") != NULL) {
         newComp->type = COMP_TYPE_WANDA;
     }
     else if (strstr(libNameLowercase, "flow2d3d") != NULL) {
@@ -1649,6 +1747,13 @@ dimr_coupler* Dimr::getCoupler(const char* coupName) {
             return &(couplersList.couplers[i]);
         }
     }
+}
+
+
+//------------------------------------------------------------------------------
+// Search for a named coupler in the list of couplers
+bool Dimr::IsCouplerItemTypePTR(int couplerItem) {
+    return couplerItem == ITEM_TYPE_PTR;
 }
 
 

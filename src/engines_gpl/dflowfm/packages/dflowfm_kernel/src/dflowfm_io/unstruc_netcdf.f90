@@ -6190,8 +6190,10 @@ subroutine unc_write_map_filepointer_ugrid(mapids, tim, md_nc_map_precision, jab
    endif
 
    ! Velocities
-   if (jamapu1 == 1) then
+   if (jamapu1 > 0) then
       ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_u1, iLocU, u1, 0d0, jabndnd=jabndnd_)
+   end if
+   if (jamaphu > 0) then
       ierr = write_array_with_dmiss_for_dry_faces_into_netcdf_file(mapids%ncid, mapids%id_tsp, mapids%id_hu, UNC_LOC_U, hu, jabndnd=jabndnd_)
    end if
    if (jamapu0 == 1) then
@@ -17369,20 +17371,35 @@ function write_array_with_dmiss_for_dry_cells_into_netcdf_file(ncid, id_tsp, id_
    type(t_unc_timespace_id),      intent(in)       :: id_tsp                 !< Map file and other NetCDF ids.
    integer,                       intent(in)       :: id_var(:)              !< Variable ID 
    integer,                       intent(in)       :: data_location          !< Data location
-   double precision, allocatable, intent(in)       :: array(:)               !< array to be written
+   double precision, allocatable, intent(in)       :: array(:)               !< 2D case array to be written
    integer, optional,             intent(in)       :: jabndnd                !< Flag specifying whether boundary nodes are to be written.
    
    integer                                         :: ierr                   !< Result status
+   integer                                         :: cell
    double precision, allocatable                   :: temp_array(:)
 
+   if ( .not. allocated(kfs) ) then
+       call mess(LEVEL_INFO, 'Dry cells are not "removed" in a map file due to the current implementation. Please contact DFM developers.')
+       ierr = unc_put_var_map(ncid, id_tsp, id_var, data_location, array, jabndnd=jabndnd)
+       return
+   end if
+      
+   if ( size(array) /= size(kfs) ) then
+       call mess(LEVEL_INFO, 'Dry cells are not "removed" in a map file due to the current implementation. Please contact DFM developers.')
+       ierr = unc_put_var_map(ncid, id_tsp, id_var, data_location, array, jabndnd=jabndnd)
+       return
+   end if
+   
    allocate(temp_array(size(array)), stat=ierr)
    if (ierr /= 0) call aerr( 'temp_array', ierr, size(array))
-   
-   where (kfs==0)
-       temp_array = dmiss
-   elsewhere
-       temp_array = array
-   end where
+
+   do cell = 1, size(kfs)
+      if ( kfs(cell) == 0 ) then 
+         temp_array(cell) = dmiss
+      else
+         temp_array(cell) = array(cell)
+      end if
+   end do
    ierr = unc_put_var_map(ncid, id_tsp, id_var, data_location, temp_array, jabndnd=jabndnd)
     
    deallocate(temp_array)
@@ -17405,16 +17422,32 @@ function write_array_with_dmiss_for_dry_faces_into_netcdf_file(ncid, id_tsp, id_
    integer, optional,             intent(in)       :: jabndnd                !< Flag specifying whether boundary nodes are to be written.
    
    integer                                         :: ierr                   !< Result status
+   integer                                         :: face
    double precision, allocatable                   :: temp_array(:)
 
+   
+   if ( .not. allocated(hu) ) then
+       call mess(LEVEL_INFO, 'Dry faces are not "removed" in a map file due to the current implementation. Please contact DFM developers.')
+       ierr = unc_put_var_map(ncid, id_tsp, id_var, data_location, array, jabndnd=jabndnd)
+       return
+   end if
+      
+   if ( size(array) /= size(hu) ) then
+       call mess(LEVEL_INFO, 'Dry faces are not "removed" in a map file due to the current implementation. Please contact DFM developers.')
+       ierr = unc_put_var_map(ncid, id_tsp, id_var, data_location, array, jabndnd=jabndnd)
+       return
+   end if
+   
    allocate(temp_array(size(array)), stat=ierr)
    if (ierr /= 0) call aerr( 'temp_array', ierr, size(array))
 
-   where (hu > 0d0) ! taken from setkfs.f90
-       temp_array = array
-   elsewhere
-       temp_array = dmiss
-   end where
+   do face = 1, size(hu)
+      if ( hu(face) == 0 ) then 
+         temp_array(face) = dmiss
+      else
+         temp_array(face) = array(face)
+      end if
+   end do
    ierr = unc_put_var_map(ncid, id_tsp, id_var, data_location, temp_array, jabndnd=jabndnd)
     
    deallocate(temp_array)
