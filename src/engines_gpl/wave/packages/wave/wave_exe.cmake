@@ -44,8 +44,7 @@ if(UNIX)
     find_package(PkgConfig REQUIRED)
 
     # these calls create special `PkgConfig::<MODULE>` variables
-    pkg_check_modules(NETCDF     REQUIRED IMPORTED_TARGET netcdf)
-    #pkg_check_modules(NETCDF_FTN REQUIRED IMPORTED_TARGET netcdf-fortran)
+    pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
 
     set(exe_dependencies    wave_data
                             delftio

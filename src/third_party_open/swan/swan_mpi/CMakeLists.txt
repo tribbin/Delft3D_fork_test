@@ -63,10 +63,9 @@ if(UNIX)
 
     # these calls create special `PkgConfig::<MODULE>` variables
     pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
-#    pkg_check_modules(NETCDF_FTN REQUIRED IMPORTED_TARGET netcdf-fortran)
+
     target_link_libraries(${executable_name}
          PkgConfig::NETCDF
-#         PkgConfig::NETCDF_FTN
          netcdff)
     target_include_directories(${executable_name} PUBLIC netcdff)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include"
