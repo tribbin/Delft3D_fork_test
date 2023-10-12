@@ -50,12 +50,12 @@ if (WIN32)
 endif(WIN32)
 
 if(UNIX)
- # the `pkg_check_modules` function is created with this call
+    # the `pkg_check_modules` function is created with this call
     find_package(PkgConfig REQUIRED)
 
     # these calls create special `PkgConfig::<MODULE>` variables
     pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
-    pkg_check_modules(NETCDF_FTN REQUIRED IMPORTED_TARGET netcdf-fortran)
+    
     target_link_libraries(${executable_name}
          PkgConfig::NETCDF
          netcdff)
@@ -88,9 +88,6 @@ endif(WIN32)
 if (UNIX)
     target_compile_definitions(${executable_name} PRIVATE "SWANEXE")
 endif(UNIX)
-
-
-
 
 # Define how the files should be structured within Visual Studio
 source_group(TREE ${checkout_src_root}/third_party_open/swan FILES ${executable_files})
