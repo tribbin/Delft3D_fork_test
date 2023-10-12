@@ -52,9 +52,9 @@ type t_ug_meshgeom
    integer                   :: numedge         = -1    !< Number of mesh edges (size of kn)
    integer                   :: numface         = -1    !< Number of mesh faces.
    integer                   :: maxnumfacenodes = -1    !< Maximum of number of face nodes.
-   integer                   :: numlayer        = -1    !< Number of mesh layers (num interfaces == numlayer + 1), numlayer = 0 means "no layers".
+   integer                   :: num_layers      = -1    !< Number of mesh layers (num interfaces == num_layers + 1), num_layers = 0 means "no layers".
    integer                   :: numtopsig       = -1    !< Number of top sigma layers in the case of z-sigma coordinates.
-   integer                   :: layertype       = -1    !< Type of vertical layer definition (only if numlayer >= 1), one of LAYERTYPE_* parameters.
+   integer                   :: layertype       = -1    !< Type of vertical layer definition (only if num_layers >= 1), one of LAYERTYPE_* parameters.
    integer                   :: nnodes          = -1    !< Number of branches
    integer                   :: nbranches       = -1    !< Number of branches
    integer                   :: ngeometry       = -1    !< Number of geometrical points
@@ -118,9 +118,9 @@ type, bind(C) :: c_t_ug_meshgeomdim
    integer(kind=c_int)      :: numedge               !< Number of mesh edges.
    integer(kind=c_int)      :: numface               !< Number of mesh faces.
    integer(kind=c_int)      :: maxnumfacenodes       !< Maximum of number of face nodes.
-   integer(kind=c_int)      :: numlayer              !< Number of mesh layers (num interfaces == numlayer + 1), numlayer = 0 means "no layers".
+   integer(kind=c_int)      :: num_layers            !< Number of mesh layers (num interfaces == num_layers + 1), num_layers = 0 means "no layers".
    ! integer(kind=c_int)      :: numtopsig             !< NOTE: UNST-5477: intentionally disabled, to avoid API-change.
-   integer(kind=c_int)      :: layertype             !< Type of vertical layer definition (only if numlayer >= 1), one of LAYERTYPE_* parameters.
+   integer(kind=c_int)      :: layertype             !< Type of vertical layer definition (only if num_layers >= 1), one of LAYERTYPE_* parameters.
    integer(kind=c_int)      :: nnodes
    integer(kind=c_int)      :: nbranches             !< Number of branches
    integer(kind=c_int)      :: ngeometry             !< Number of geometry points
@@ -230,7 +230,7 @@ function convert_meshgeom_to_cptr(meshgeom, c_meshgeom, c_meshgeomdim) result(ie
    c_meshgeomdim%numedge = meshgeom%numedge           
    c_meshgeomdim%numface = meshgeom%numface          
    c_meshgeomdim%maxnumfacenodes = meshgeom%maxnumfacenodes   
-   c_meshgeomdim%numlayer = meshgeom%numlayer          
+   c_meshgeomdim%num_layers = meshgeom%num_layers          
    c_meshgeomdim%layertype = meshgeom%layertype  
    
    c_meshgeomdim%nnodes = meshgeom%nnodes  
@@ -426,7 +426,7 @@ function convert_cptr_to_meshgeom(c_meshgeom, c_meshgeomdim, meshgeom) result(ie
    meshgeom%numedge = c_meshgeomdim%numedge           
    meshgeom%numface = c_meshgeomdim%numface          
    meshgeom%maxnumfacenodes = c_meshgeomdim%maxnumfacenodes    
-   meshgeom%numlayer = c_meshgeomdim%numlayer          
+   meshgeom%num_layers = c_meshgeomdim%num_layers          
    meshgeom%layertype = c_meshgeomdim%layertype   
    
    meshgeom%nnodes = c_meshgeomdim%nnodes  
@@ -465,8 +465,8 @@ function convert_cptr_to_meshgeom(c_meshgeom, c_meshgeomdim, meshgeom) result(ie
    if(c_associated(c_meshgeom%facex)) call c_f_pointer(c_meshgeom%facex, meshgeom%facex,(/c_meshgeomdim%numface/))
    if(c_associated(c_meshgeom%facey)) call c_f_pointer(c_meshgeom%facey, meshgeom%facey,(/c_meshgeomdim%numface/))
    if(c_associated(c_meshgeom%facez)) call c_f_pointer(c_meshgeom%facez, meshgeom%facez,(/c_meshgeomdim%numface/))
-   if(c_associated(c_meshgeom%layer_zs)) call c_f_pointer(c_meshgeom%layer_zs, meshgeom%layer_zs,(/c_meshgeomdim%numlayer/))
-   if(c_associated(c_meshgeom%interface_zs)) call c_f_pointer(c_meshgeom%interface_zs, meshgeom%interface_zs,(/c_meshgeomdim%numlayer + 1/))
+   if(c_associated(c_meshgeom%layer_zs)) call c_f_pointer(c_meshgeom%layer_zs, meshgeom%layer_zs,(/c_meshgeomdim%num_layers/))
+   if(c_associated(c_meshgeom%interface_zs)) call c_f_pointer(c_meshgeom%interface_zs, meshgeom%interface_zs,(/c_meshgeomdim%num_layers + 1/))
 
    if(c_associated(c_meshgeom%nodeids)) call c_f_pointer(c_meshgeom%nodeids, meshgeom%nodeids, (/c_meshgeomdim%numnode/))  
    if(c_associated(c_meshgeom%nodelongnames)) call c_f_pointer(c_meshgeom%nodelongnames, meshgeom%nodelongnames, (/c_meshgeomdim%numnode/))  
@@ -530,7 +530,7 @@ function t_ug_meshgeom_destructor(meshgeom) result(ierr)
    meshgeom%numedge         = -1    
    meshgeom%numface         = -1    
    meshgeom%maxnumfacenodes = -1    
-   meshgeom%numlayer        = -1    
+   meshgeom%num_layers      = -1    
    meshgeom%layertype       = -1    
    meshgeom%nnodes          = -1    
    meshgeom%nbranches       = -1    
