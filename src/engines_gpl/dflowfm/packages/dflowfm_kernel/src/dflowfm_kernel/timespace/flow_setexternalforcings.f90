@@ -32,14 +32,14 @@
 ! 
 module m_external_forcings
 
-public :: set_external_forcings
+implicit none
 
-procedure(fill_open_boundary_cells_with_inner_values_any), pointer :: fill_open_boundary_cells_with_inner_values
+public :: set_external_forcings
   
   abstract interface
-     subroutine fill_open_boundary_cells_with_inner_values_any(number_of_points, references)
-        integer, intent(in) :: number_of_points
-        integer, intent(in) :: references(:,:)
+     subroutine fill_open_boundary_cells_with_inner_values_any(number_of_links, link2cell)
+        integer, intent(in) :: number_of_links      !< number of links
+        integer, intent(in) :: link2cell(:,:)       !< indices of cells connected by links
      end subroutine
   end interface
 
@@ -60,8 +60,7 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    use time_class
    use m_longculverts
    use m_nearfield,            only : nearfield_mode, NEARFIELD_UPDATED, addNearfieldData
-
-   implicit none
+   use m_airdensity,           only : get_airdensity
 
    double precision, intent(in)    :: time_in_seconds  !< Time in seconds
    logical,          intent(in)    :: initialization   !< initialization phase
@@ -76,6 +75,7 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    double precision, parameter     :: SEA_LEVEL_PRESSURE = 101325d0
 
    integer                         :: link, i, first, last
+   integer                         :: ierr             !< error flag
    logical                         :: l_set_frcu_mor = .false.
    logical                         :: first_time_wind
 
@@ -98,6 +98,11 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
 
    if (ja_airdensity > 0) then
       call get_timespace_value_by_item_array_consider_success_value(item_airdensity, airdensity)
+   end if
+   if (ja_varying_airdensity==1) then 
+      call get_timespace_value_by_item_array_consider_success_value(item_atmosphericpressure, patm)
+      call get_timespace_value_by_item_array_consider_success_value(item_airtemperature, tair)
+      call get_airdensity(patm, tair, airdensity, ierr)
    end if
 
    if (jawind == 1 .or. japatm > 0) then
@@ -126,7 +131,7 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    
    call set_wave_parameters()
 
-   call retrive_rainfall()
+   call retrieve_rainfall()
 
    if (ncdamsg > 0) then
       call get_timespace_value_by_item_array_consider_success_value(item_damlevel, zcdam)
@@ -482,8 +487,8 @@ end subroutine get_timespace_value_by_item_and_consider_success_value
 !> set_wave_parameters
 subroutine set_wave_parameters()
    
-   ! local variables
-   logical :: all_wave_variables !< true: jawave==3 or jawave==7 + waveforcing==1,2; false: jawave==7 + waveforcing==3
+   logical                                                            :: all_wave_variables                         !< flag indicating whether _all_ wave variables should be mirrored at the boundary
+   procedure(fill_open_boundary_cells_with_inner_values_any), pointer :: fill_open_boundary_cells_with_inner_values !< boundary update routine to be called 
 
    if (jawave == 3 .or. jawave == 6 .or. jawave == 7) then
       !
@@ -542,8 +547,9 @@ subroutine set_wave_parameters()
          success = .true.
       end if
       
-      all_wave_variables = .not.(jawave == 7 .and. waveforcing /=3)
-      call select_wave_variables_subgroup(all_wave_variables)
+      if(jawave == 7) then
+          phiwav = convert_wave_direction_from_nautical_to_cartesian(phiwav)
+      end if
       
       ! SWAN data used via module m_waves
       !    Data from FLOW 2 SWAN: s1 (water level), bl (bottom level), ucx (vel. x), ucy (vel. y), FlowElem_xcc, FlowElem_ycc, wx, wy
@@ -572,10 +578,15 @@ subroutine set_wave_parameters()
               end if
           end if
          
-         ! In MPI case, partition ghost cells are filled properly already, open boundaires are not
+         all_wave_variables = .not.(jawave == 7 .and. waveforcing /= 3)
+         call select_wave_variables_subgroup(all_wave_variables, fill_open_boundary_cells_with_inner_values)
+         
+         ! In MPI case, partition ghost cells are filled properly already, open boundaries are not
+         !
+         ! velocity boundaries
          call fill_open_boundary_cells_with_inner_values(nbndu, kbndu)
          !
-         ! waterlevels
+         ! waterlevel boundaries
          call fill_open_boundary_cells_with_inner_values(nbndz, kbndz)
          !
          !  normal-velocity boundaries
@@ -609,32 +620,32 @@ end subroutine get_values_and_consider_jawave6
 
 !> select_wave_variables_subgroup
 !! select routine depending on whether all or a subgroup of wave variables are allocated
-subroutine select_wave_variables_subgroup(how_many_wave_parameters)
+subroutine select_wave_variables_subgroup(all_wave_variables, fill_open_boundary_cells_with_inner_values)
     
-    logical, intent(in) :: how_many_wave_parameters
+    logical, intent(in) :: all_wave_variables
+    procedure(fill_open_boundary_cells_with_inner_values_any), pointer :: fill_open_boundary_cells_with_inner_values
     
-    logical, parameter :: FEWER_PARAMETERS = .false.
-    logical, parameter :: ALL_PARAMETERS   = .true.
-    
-    select case(how_many_wave_parameters)
-    case(FEWER_PARAMETERS)
-        fill_open_boundary_cells_with_inner_values => fill_open_boundary_cells_with_inner_values_fewer
-    case(ALL_PARAMETERS)
+    if (all_wave_variables) then
         fill_open_boundary_cells_with_inner_values => fill_open_boundary_cells_with_inner_values_all
-    end select
+    else
+        fill_open_boundary_cells_with_inner_values => fill_open_boundary_cells_with_inner_values_fewer
+    end if
     
 end subroutine select_wave_variables_subgroup
 
 !> fill_open_boundary_cells_with_inner_values_all
-subroutine fill_open_boundary_cells_with_inner_values_all(number_of_points, references)
-    integer, intent(in) :: number_of_points
-    integer, intent(in) :: references(:,:)
+subroutine fill_open_boundary_cells_with_inner_values_all(number_of_links, link2cell)
 
-    integer             :: point, kb, ki
+    integer, intent(in) :: number_of_links      !< number of links
+    integer, intent(in) :: link2cell(:,:)       !< indices of cells connected by links
 
-    do point = 1, number_of_points
-        kb   = references(1,point)
-        ki   = references(2,point)
+    integer             :: link !< link counter
+    integer             :: kb   !< cell index of boundary cell
+    integer             :: ki   !< cell index of internal cell
+
+    do link = 1, number_of_links
+        kb   = link2cell(1,link)
+        ki   = link2cell(2,link)
         hwavcom(kb) = hwavcom(ki)
         twav(kb)    = twav(ki)
         phiwav(kb)  = phiwav(ki)
@@ -652,16 +663,18 @@ subroutine fill_open_boundary_cells_with_inner_values_all(number_of_points, refe
 end subroutine fill_open_boundary_cells_with_inner_values_all
 
 !> fill_open_boundary_cells_with_inner_values_fewer
-subroutine fill_open_boundary_cells_with_inner_values_fewer(number_of_points, references)
+subroutine fill_open_boundary_cells_with_inner_values_fewer(number_of_links, link2cell)
 
-    integer, intent(in) :: number_of_points
-    integer, intent(in) :: references(:,:)
+    integer, intent(in) :: number_of_links      !< number of links
+    integer, intent(in) :: link2cell(:,:)       !< indices of cells connected by links
     
-    integer             :: point, kb, ki 
+    integer             :: link !< link counter
+    integer             :: kb   !< cell index of boundary cell
+    integer             :: ki   !< cell index of internal cell
 
-    do point = 1, number_of_points
-        kb   = references(1,point)
-        ki   = references(2,point)
+    do link = 1, number_of_links
+        kb   = link2cell(1,link)
+        ki   = link2cell(2,link)
         hwavcom(kb) = hwavcom(ki)
         twav(kb)    = twav(ki)
         phiwav(kb)  = phiwav(ki)
@@ -674,8 +687,21 @@ subroutine fill_open_boundary_cells_with_inner_values_fewer(number_of_points, re
  
 end subroutine fill_open_boundary_cells_with_inner_values_fewer
 
-!> retrive_rainfall
-subroutine retrive_rainfall()
+!> convert wave direction [degrees] from nautical to cartesian meteorological convention
+elemental function convert_wave_direction_from_nautical_to_cartesian(nautical_wave_direction) result(cartesian_wave_direction)
+    
+    double precision, intent(in) :: nautical_wave_direction  !< wave direction [degrees] in nautical  convention
+    double precision             :: cartesian_wave_direction !< wave direction [degrees] in cartesian convention
+    
+    double precision, parameter  :: MAX_RANGE_IN_DEGREES            = 360d0
+    double precision, parameter  :: CONVERSION_PARAMETER_IN_DEGREES = 270d0
+    
+    cartesian_wave_direction = modulo(CONVERSION_PARAMETER_IN_DEGREES - nautical_wave_direction, MAX_RANGE_IN_DEGREES)
+    
+end function convert_wave_direction_from_nautical_to_cartesian
+
+!> retrieve_rainfall
+subroutine retrieve_rainfall()
 
    ! Retrieve rainfall for ext-file quantity 'rainfall'.
    if (jarain > 0) then
@@ -687,7 +713,7 @@ subroutine retrive_rainfall()
       end if
    end if
 
-end subroutine retrive_rainfall
+end subroutine retrieve_rainfall
 
 !> update_network_data
 subroutine update_network_data()
