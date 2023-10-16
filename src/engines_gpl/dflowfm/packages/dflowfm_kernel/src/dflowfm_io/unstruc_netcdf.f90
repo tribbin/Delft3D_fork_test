@@ -4283,7 +4283,7 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
        end if
     endif
 
-    if (jamapconst > 0 .and. ITRA1 > 0) then
+    if (ITRA1 > 0) then
        allocate(dum(ndxi))
        do j=ITRA1,ITRAN
           if (kmx > 0) then
