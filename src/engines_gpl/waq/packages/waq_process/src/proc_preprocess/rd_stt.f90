@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_rd_stt
+use m_waq_type_definitions
 use m_dlwqs1
 use m_srstop
 
@@ -38,15 +39,15 @@ contains
 
    implicit none
 
-   integer             , intent(inout) :: lunrep          !< logical unit of report file
+   integer(kind=int_32)             , intent(inout) ::lunrep          !< logical unit of report file
    character(len=256)  , intent(inout) :: sttfil          !< filename stt
    type(procespropcoll), intent(inout) :: statprocesdef   !< the statistical proces definition
    type(itempropcoll)  , intent(inout) :: allitems        !< all items of the proces system
-   integer             , intent(inout) :: noinfo
-   integer             , intent(inout) :: iwar
-   integer             , intent(inout) :: ierr
+   integer(kind=int_32)             , intent(inout) ::noinfo
+   integer(kind=int_32)             , intent(inout) ::iwar
+   integer(kind=int_32)             , intent(inout) ::ierr
 
-   integer                             :: ioutpt
+   integer(kind=int_32)                              ::ioutpt
    logical                             :: dtflg1
    logical                             :: dtflg3
 

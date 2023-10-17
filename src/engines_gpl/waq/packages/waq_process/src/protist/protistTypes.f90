@@ -38,24 +38,26 @@
 !!
 
 module protist_types
+use m_waq_type_definitions
+
 
     implicit none
 
     ! Protist arrays
     type :: protist_array
         ! prey state variables
-        real, dimension(:), allocatable :: preyC, preyChl, preyN, preyP, preySi
+        real(kind=sp), dimension(:), allocatable ::preyC, preyChl, preyN, preyP, preySi
         ! other prey input parameters
-        real, dimension(:), allocatable :: CcellPrey, rPrey, motPrey, PR
+        real(kind=sp), dimension(:), allocatable ::CcellPrey, rPrey, motPrey, PR
         ! food quantity
-        real, dimension(:), allocatable :: preyFlag                       ! protection aginst small prey conc.
-        real, dimension(:), allocatable :: nrPrey                         ! prey abundance
-        real, dimension(:), allocatable :: smallerVel, largerVel          ! velocities
-        real, dimension(:), allocatable :: encPrey                        ! prey encounter
-        real, dimension(:), allocatable :: capturedPrey                   ! prey capture
-        real, dimension(:), allocatable :: propPrey, ingNC, ingPC         ! preyN and preyP proprtion in diet
+        real(kind=sp), dimension(:), allocatable ::preyFlag                       ! protection aginst small prey conc.
+        real(kind=sp), dimension(:), allocatable ::nrPrey                         ! prey abundance
+        real(kind=sp), dimension(:), allocatable ::smallerVel, largerVel          ! velocities
+        real(kind=sp), dimension(:), allocatable ::encPrey                        ! prey encounter
+        real(kind=sp), dimension(:), allocatable ::capturedPrey                   ! prey capture
+        real(kind=sp), dimension(:), allocatable ::propPrey, ingNC, ingPC         ! preyN and preyP proprtion in diet
         ! ingestion of prey by predator fluxes
-        real, dimension(:), allocatable :: dPreyC, dPreyChl, dPreyN, dPreyP, dPreySi
+        real(kind=sp), dimension(:), allocatable ::dPreyC, dPreyChl, dPreyN, dPreyP, dPreySi
     end type
 
 
@@ -64,7 +66,7 @@ module protist_types
     ! allocate arrays
     subroutine allocate_prot_array(prot_array,nrPrey)
         type(protist_array), intent(inout)  :: prot_array
-        integer, intent(in)                 :: nrPrey
+        integer(kind=int_32), intent(in) ::nrPrey
 
         ! allocate statements
         allocate( prot_array%preyC(nrPrey)        )
@@ -99,12 +101,12 @@ module protist_types
     ! initialize arrays
     subroutine initialize_prot_array(prot_array,nrPrey, PMSA, ipnt, nrIndInp, nrSpec, nrSpecInp, iSpec, nrPreyInp)
         type(protist_array), intent(inout)  :: prot_array
-        integer, intent(in)                 :: nrPrey
-        real(4)                             :: pmsa(*)
-        integer, intent(in)                 :: ipnt(:)
-        integer, intent(in)                 :: nrIndInp, nrSpec, nrSpecInp, iSpec, nrPreyInp
-        integer iPrey         ! local prey number counter
-        integer prInc         ! local pray PMSA number increment
+        integer(kind=int_32), intent(in) ::nrPrey
+        real(kind=sp)                              ::pmsa(*)
+        integer(kind=int_32), intent(in) ::ipnt(:)
+        integer(kind=int_32), intent(in) ::nrIndInp, nrSpec, nrSpecInp, iSpec, nrPreyInp
+        integer(kind=int_32)  ::iPrey         ! local prey number counter
+        integer(kind=int_32)  ::prInc         ! local pray PMSA number increment
 
 
         do iPrey = 1, nrPrey

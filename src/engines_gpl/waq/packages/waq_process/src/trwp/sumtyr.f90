@@ -1,4 +1,6 @@
 module m_sumtyr
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -17,37 +19,37 @@ contains
 !                                                                                                     
 !     Type    Name         I/O Description                                                            
 !                                                                                                     
-      real(4) pmsa(*)     !I/O Process Manager System Array, window of routine to process library     
-      real(4) fl(*)       ! O  Array of fluxes made by this process in mass/volume/time               
-      integer ipoint( *)  ! I  Array of pointers in pmsa to get and store the data                    
-      integer increm( *)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying 
-      integer noseg       ! I  Number of computational elements in the whole model schematisation     
-      integer noflux      ! I  Number of fluxes, increment in the fl array                            
-      integer iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces     
-      integer iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use              
-      integer noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
-      integer noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid  
-      integer noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward    
-      integer noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)     
+      real(kind=sp)  ::pmsa(*)     !I/O Process Manager System Array, window of routine to process library     
+      real(kind=sp)  ::fl(*)       ! O  Array of fluxes made by this process in mass/volume/time               
+      integer(kind=int_32)  ::ipoint( *)  ! I  Array of pointers in pmsa to get and store the data                    
+      integer(kind=int_32)  ::increm( *)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying 
+      integer(kind=int_32)  ::noseg       ! I  Number of computational elements in the whole model schematisation     
+      integer(kind=int_32)  ::noflux      ! I  Number of fluxes, increment in the fl array                            
+      integer(kind=int_32)  ::iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces     
+      integer(kind=int_32)  ::iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use              
+      integer(kind=int_32)  ::noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
+      integer(kind=int_32)  ::noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid  
+      integer(kind=int_32)  ::noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward    
+      integer(kind=int_32)  ::noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)     
 !                                                                                                     
 !*******************************************************************************                      
 !                                                                                                     
 !     Type    Name         I/O Description                                        Unit                
 !                                                                                                     
 !     support variables
-      integer iseg,ikmrk1
+      integer(kind=int_32)  ::iseg,ikmrk1
       
 !     output items
-      real(4) sumtrwp
-      real(4) sumtrwpsed
-      real(4) sumsusp
+      real(kind=sp)  ::sumtrwp
+      real(kind=sp)  ::sumtrwpsed
+      real(kind=sp)  ::sumsusp
       
-      integer           :: ipnt(500)  
-      integer,parameter :: ip_ntrwp = 1
-      integer,parameter :: ip_nim = 2
-      integer,parameter :: ip_lastsingle = 2
+      integer(kind=int_32)            ::ipnt(500)  
+      integer(kind=int_32),parameter  ::ip_ntrwp = 1
+      integer(kind=int_32),parameter  ::ip_nim = 2
+      integer(kind=int_32),parameter  ::ip_lastsingle = 2
     
-      integer :: ntrwp, itrwp, nspm, ispm, nitem, offset, itel
+      integer(kind=int_32)  ::ntrwp, itrwp, nspm, ispm, nitem, offset, itel
     
       ntrwp = pmsa(ipoint(ip_ntrwp))
       nspm = pmsa(ipoint(ip_nim))

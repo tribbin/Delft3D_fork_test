@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaqg
+use m_waq_type_definitions
 use m_inverm
 
 
@@ -44,18 +45,18 @@ contains
 !
 !     Type    Name         I/O Description
 !
-      real(4) pmsa(*)     !I/O Process Manager System Array, window of routine to process library
-      real(4) fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
-      integer ipoint(*)  ! I  Array of pointers in pmsa to get and store the data
-      integer increm(*)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
-      integer noseg       ! I  Number of computational elements in the whole model schematisation
-      integer noflux      ! I  Number of fluxes, increment in the fl array
-      integer iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
-      integer iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
-      integer noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
-      integer noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
-      integer noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
-      integer noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
+      real(kind=sp)  ::pmsa(*)     !I/O Process Manager System Array, window of routine to process library
+      real(kind=sp)  ::fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
+      integer(kind=int_32)  ::ipoint(*)  ! I  Array of pointers in pmsa to get and store the data
+      integer(kind=int_32)  ::increm(*)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
+      integer(kind=int_32)  ::noseg       ! I  Number of computational elements in the whole model schematisation
+      integer(kind=int_32)  ::noflux      ! I  Number of fluxes, increment in the fl array
+      integer(kind=int_32)  ::iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
+      integer(kind=int_32)  ::iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
+      integer(kind=int_32)  ::noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
+      integer(kind=int_32)  ::noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
+      integer(kind=int_32)  ::noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
+      integer(kind=int_32)  ::noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
 !
 !*******************************************************************************
 !     This process replaces DELWAQ G in stand alone DELWAQ in the context of DFM-WAQ
@@ -72,503 +73,503 @@ contains
 !     Type    Name         I/O Description                                        Unit
 !
       ! fixed quantities
-      real, parameter  :: NOX_RATIO = 4.57
-      real, parameter  :: OXC_RATIO = 2.667
-      real, parameter  :: NIC_RATIO = 0.933
-      real, parameter  :: FEC_RATIO = 18.67
-      real, parameter  :: SUC_RATIO = 1.333
-      real, parameter  :: CHC_RATIO = 0.5
-      real, parameter  :: COX_RATIO = 5.33
-      real, parameter  :: CSU_RATIO = 2.67
-      real, parameter  :: rhodm = 2.6e6  ! g/m3 solid phase
+      real(kind=sp), parameter   ::NOX_RATIO = 4.57
+      real(kind=sp), parameter   ::OXC_RATIO = 2.667
+      real(kind=sp), parameter   ::NIC_RATIO = 0.933
+      real(kind=sp), parameter   ::FEC_RATIO = 18.67
+      real(kind=sp), parameter   ::SUC_RATIO = 1.333
+      real(kind=sp), parameter   ::CHC_RATIO = 0.5
+      real(kind=sp), parameter   ::COX_RATIO = 5.33
+      real(kind=sp), parameter   ::CSU_RATIO = 2.67
+      real(kind=sp), parameter   ::rhodm = 2.6e6  ! g/m3 solid phase
 
-      integer,parameter   :: nototsed = 34
-      integer,parameter   :: nototseddis = 12
-      integer,parameter   :: nototsedpart = 22
-      integer,parameter   :: nofl = 101
+      integer(kind=int_32),parameter    ::nototsed = 34
+      integer(kind=int_32),parameter    ::nototseddis = 12
+      integer(kind=int_32),parameter    ::nototsedpart = 22
+      integer(kind=int_32),parameter    ::nofl = 101
 
       ! pointers to concrete items
       ! constants
-      integer,parameter :: ip_ku_dFdcC20 = 1
-      integer,parameter :: ip_kl_dFdcC20 = 2
-      integer,parameter :: ip_ku_dFdcN20 = 3
-      integer,parameter :: ip_kl_dFdcN20 = 4
-      integer,parameter :: ip_ku_dFdcP20 = 5
-      integer,parameter :: ip_kl_dFdcP20 = 6
-      integer,parameter :: ip_ku_dMdcC20 = 7
-      integer,parameter :: ip_kl_dMdcC20 = 8
-      integer,parameter :: ip_ku_dMdcN20 = 9
-      integer,parameter :: ip_kl_dMdcN20 = 10
-      integer,parameter :: ip_ku_dMdcP20 = 11
-      integer,parameter :: ip_kl_dMdcP20 = 12
-      integer,parameter :: ip_ku_dSdcC20 = 13
-      integer,parameter :: ip_kl_dSdcC20 = 14
-      integer,parameter :: ip_ku_dSdcN20 = 15
-      integer,parameter :: ip_kl_dSdcN20 = 16
-      integer,parameter :: ip_ku_dSdcP20 = 17
-      integer,parameter :: ip_kl_dSdcP20 = 18
-      integer,parameter :: ip_k_dprdcC20 = 19
-      integer,parameter :: ip_k_DOCdcC20 = 20
-      integer,parameter :: ip_al_dNf = 21
-      integer,parameter :: ip_al_dPf = 22
-      integer,parameter :: ip_au_dNf = 23
-      integer,parameter :: ip_au_dPf = 24
-      integer,parameter :: ip_al_dNm = 25
-      integer,parameter :: ip_al_dPm = 26
-      integer,parameter :: ip_au_dNm = 27
-      integer,parameter :: ip_au_dPm = 28
-      integer,parameter :: ip_al_dNs = 29
-      integer,parameter :: ip_al_dPs = 30
-      integer,parameter :: ip_au_dNs = 31
-      integer,parameter :: ip_au_dPs = 32
-      integer,parameter :: ip_a_dNpr = 33
-      integer,parameter :: ip_a_dPpr = 34
-      integer,parameter :: ip_a_dSpr = 35
-      integer,parameter :: ip_b_ni = 36
-      integer,parameter :: ip_b_poc1doc = 37
-      integer,parameter :: ip_b_poc1poc2 = 38
-      integer,parameter :: ip_b_poc2doc = 39
-      integer,parameter :: ip_b_poc2poc3 = 40
-      integer,parameter :: ip_b_poc3doc = 41
-      integer,parameter :: ip_b_poc3poc4 = 42
-      integer,parameter :: ip_b_su = 43
-      integer,parameter :: ip_kT_dec = 44
-      integer,parameter :: ip_SWOMDec = 45
-      integer,parameter :: ip_KsOxCon = 46
-      integer,parameter :: ip_KsNiDen = 47
-      integer,parameter :: ip_KsFeRed = 48
-      integer,parameter :: ip_KsSuRed = 49
-      integer,parameter :: ip_KsOxDenInh = 50
-      integer,parameter :: ip_KsNiIRdInh = 51
-      integer,parameter :: ip_KsNiSRdInh = 52
-      integer,parameter :: ip_KsSuMetInh = 53
-      integer,parameter :: ip_CoxDenInh = 54
-      integer,parameter :: ip_CoxIRedInh = 55
-      integer,parameter :: ip_CoxSRedInh = 56
-      integer,parameter :: ip_CoxMetInh = 57
-      integer,parameter :: ip_CniMetInh = 58
-      integer,parameter :: ip_RedFacDen = 59
-      integer,parameter :: ip_RedFacIRed = 60
-      integer,parameter :: ip_RedFacSRed = 61
-      integer,parameter :: ip_RedFacMet = 62
-      integer,parameter :: ip_CTBactAc = 63
-      integer,parameter :: ip_SWOxCon = 64
-      integer,parameter :: ip_TcDen = 65
-      integer,parameter :: ip_TcIRed = 66
-      integer,parameter :: ip_TcMet = 67
-      integer,parameter :: ip_TcOxCon = 68
-      integer,parameter :: ip_TcSRed = 69
-      integer,parameter :: ip_RcNit20 = 70
-      integer,parameter :: ip_TcNit = 71
-      integer,parameter :: ip_KsAmNit = 72
-      integer,parameter :: ip_KsOxNit = 73
-      integer,parameter :: ip_ZNit = 74
-      integer,parameter :: ip_Rc0NitOx = 75
-      integer,parameter :: ip_COXNIT = 76
-      integer,parameter :: ip_CTNit = 77
-      integer,parameter :: ip_RcSox20 = 78
-      integer,parameter :: ip_TcSox = 79
-      integer,parameter :: ip_Rc0Sox = 80
-      integer,parameter :: ip_CoxSUD = 81
-      integer,parameter :: ip_DisSEqFeS = 82
-      integer,parameter :: ip_RcDisS20 = 83
-      integer,parameter :: ip_TcDisS = 84
-      integer,parameter :: ip_RcPrcS20 = 85
-      integer,parameter :: ip_lKstH2S = 86
-      integer,parameter :: ip_lKstHS = 87
-      integer,parameter :: ip_TcKstH2S = 88
-      integer,parameter :: ip_TcKstHS = 89
-      integer,parameter :: ip_TcPrcS = 90
-      integer,parameter :: ip_RcMetOx20 = 91
-      integer,parameter :: ip_TcMetOx = 92
-      integer,parameter :: ip_Rc0MetOx = 93
-      integer,parameter :: ip_RcMetSu20 = 94
-      integer,parameter :: ip_TcMetSu = 95
-      integer,parameter :: ip_Rc0MetSu = 96
-      integer,parameter :: ip_CoxMet = 97
-      integer,parameter :: ip_CsuMet = 98
-      integer,parameter :: ip_KsMet = 99
-      integer,parameter :: ip_KsOxMet = 100
-      integer,parameter :: ip_KsSuMet = 101
-      integer,parameter :: ip_CTMetOx = 102
-      integer,parameter :: ip_fScEbul = 103
-      integer,parameter :: ip_FrMetGeCH4 = 104
-      integer,parameter :: ip_KadsP_20 = 105
-      integer,parameter :: ip_TCKadsP = 106
-      integer,parameter :: ip_a_OH_PO4 = 107
-      integer,parameter :: ip_fr_FeIM1 = 108
-      integer,parameter :: ip_fr_FeIM2 = 109
-      integer,parameter :: ip_fr_FeIM3 = 110
-      integer,parameter :: ip_fr_Feox = 111
-      integer,parameter :: ip_Cc_oxPsor = 112
-      integer,parameter :: ip_RcAdPO4AAP = 113
-      integer,parameter :: ip_RCprecP20 = 114
-      integer,parameter :: ip_TCprecipP = 115
-      integer,parameter :: ip_RCdissP20 = 116
-      integer,parameter :: ip_TCdissolP = 117
-      integer,parameter :: ip_EqVivDisP = 118
-      integer,parameter :: ip_RatAPandVP = 119
-      integer,parameter :: ip_RCdisAP20 = 120
-      integer,parameter :: ip_EqAPATDisP = 121
-      integer,parameter :: ip_Cc_oxVivP = 122
-      integer,parameter :: ip_KdPO4AAP = 123
-      integer,parameter :: ip_MaxPO4AAP = 124
-      integer,parameter :: ip_SWAdsP = 125
-      integer,parameter :: ip_Ceq_disSi = 126
-      integer,parameter :: ip_RCdisSi20 = 127
-      integer,parameter :: ip_TCdisSi = 128
-      integer,parameter :: ip_SWDisSi = 129
-      integer,parameter :: ip_DELT = 130
-      integer,parameter :: ip_Poros = 131
-      integer,parameter :: ip_Th_DelwaqG = 132
-      integer,parameter :: ip_OutInt = 133
-      integer,parameter :: ip_ITIME = 134
-      integer,parameter :: ip_Exp_Dif = 135
-      integer,parameter :: ip_Exp_Tur = 136
-      integer,parameter :: linsconstant = 136
+      integer(kind=int_32),parameter  ::ip_ku_dFdcC20 = 1
+      integer(kind=int_32),parameter  ::ip_kl_dFdcC20 = 2
+      integer(kind=int_32),parameter  ::ip_ku_dFdcN20 = 3
+      integer(kind=int_32),parameter  ::ip_kl_dFdcN20 = 4
+      integer(kind=int_32),parameter  ::ip_ku_dFdcP20 = 5
+      integer(kind=int_32),parameter  ::ip_kl_dFdcP20 = 6
+      integer(kind=int_32),parameter  ::ip_ku_dMdcC20 = 7
+      integer(kind=int_32),parameter  ::ip_kl_dMdcC20 = 8
+      integer(kind=int_32),parameter  ::ip_ku_dMdcN20 = 9
+      integer(kind=int_32),parameter  ::ip_kl_dMdcN20 = 10
+      integer(kind=int_32),parameter  ::ip_ku_dMdcP20 = 11
+      integer(kind=int_32),parameter  ::ip_kl_dMdcP20 = 12
+      integer(kind=int_32),parameter  ::ip_ku_dSdcC20 = 13
+      integer(kind=int_32),parameter  ::ip_kl_dSdcC20 = 14
+      integer(kind=int_32),parameter  ::ip_ku_dSdcN20 = 15
+      integer(kind=int_32),parameter  ::ip_kl_dSdcN20 = 16
+      integer(kind=int_32),parameter  ::ip_ku_dSdcP20 = 17
+      integer(kind=int_32),parameter  ::ip_kl_dSdcP20 = 18
+      integer(kind=int_32),parameter  ::ip_k_dprdcC20 = 19
+      integer(kind=int_32),parameter  ::ip_k_DOCdcC20 = 20
+      integer(kind=int_32),parameter  ::ip_al_dNf = 21
+      integer(kind=int_32),parameter  ::ip_al_dPf = 22
+      integer(kind=int_32),parameter  ::ip_au_dNf = 23
+      integer(kind=int_32),parameter  ::ip_au_dPf = 24
+      integer(kind=int_32),parameter  ::ip_al_dNm = 25
+      integer(kind=int_32),parameter  ::ip_al_dPm = 26
+      integer(kind=int_32),parameter  ::ip_au_dNm = 27
+      integer(kind=int_32),parameter  ::ip_au_dPm = 28
+      integer(kind=int_32),parameter  ::ip_al_dNs = 29
+      integer(kind=int_32),parameter  ::ip_al_dPs = 30
+      integer(kind=int_32),parameter  ::ip_au_dNs = 31
+      integer(kind=int_32),parameter  ::ip_au_dPs = 32
+      integer(kind=int_32),parameter  ::ip_a_dNpr = 33
+      integer(kind=int_32),parameter  ::ip_a_dPpr = 34
+      integer(kind=int_32),parameter  ::ip_a_dSpr = 35
+      integer(kind=int_32),parameter  ::ip_b_ni = 36
+      integer(kind=int_32),parameter  ::ip_b_poc1doc = 37
+      integer(kind=int_32),parameter  ::ip_b_poc1poc2 = 38
+      integer(kind=int_32),parameter  ::ip_b_poc2doc = 39
+      integer(kind=int_32),parameter  ::ip_b_poc2poc3 = 40
+      integer(kind=int_32),parameter  ::ip_b_poc3doc = 41
+      integer(kind=int_32),parameter  ::ip_b_poc3poc4 = 42
+      integer(kind=int_32),parameter  ::ip_b_su = 43
+      integer(kind=int_32),parameter  ::ip_kT_dec = 44
+      integer(kind=int_32),parameter  ::ip_SWOMDec = 45
+      integer(kind=int_32),parameter  ::ip_KsOxCon = 46
+      integer(kind=int_32),parameter  ::ip_KsNiDen = 47
+      integer(kind=int_32),parameter  ::ip_KsFeRed = 48
+      integer(kind=int_32),parameter  ::ip_KsSuRed = 49
+      integer(kind=int_32),parameter  ::ip_KsOxDenInh = 50
+      integer(kind=int_32),parameter  ::ip_KsNiIRdInh = 51
+      integer(kind=int_32),parameter  ::ip_KsNiSRdInh = 52
+      integer(kind=int_32),parameter  ::ip_KsSuMetInh = 53
+      integer(kind=int_32),parameter  ::ip_CoxDenInh = 54
+      integer(kind=int_32),parameter  ::ip_CoxIRedInh = 55
+      integer(kind=int_32),parameter  ::ip_CoxSRedInh = 56
+      integer(kind=int_32),parameter  ::ip_CoxMetInh = 57
+      integer(kind=int_32),parameter  ::ip_CniMetInh = 58
+      integer(kind=int_32),parameter  ::ip_RedFacDen = 59
+      integer(kind=int_32),parameter  ::ip_RedFacIRed = 60
+      integer(kind=int_32),parameter  ::ip_RedFacSRed = 61
+      integer(kind=int_32),parameter  ::ip_RedFacMet = 62
+      integer(kind=int_32),parameter  ::ip_CTBactAc = 63
+      integer(kind=int_32),parameter  ::ip_SWOxCon = 64
+      integer(kind=int_32),parameter  ::ip_TcDen = 65
+      integer(kind=int_32),parameter  ::ip_TcIRed = 66
+      integer(kind=int_32),parameter  ::ip_TcMet = 67
+      integer(kind=int_32),parameter  ::ip_TcOxCon = 68
+      integer(kind=int_32),parameter  ::ip_TcSRed = 69
+      integer(kind=int_32),parameter  ::ip_RcNit20 = 70
+      integer(kind=int_32),parameter  ::ip_TcNit = 71
+      integer(kind=int_32),parameter  ::ip_KsAmNit = 72
+      integer(kind=int_32),parameter  ::ip_KsOxNit = 73
+      integer(kind=int_32),parameter  ::ip_ZNit = 74
+      integer(kind=int_32),parameter  ::ip_Rc0NitOx = 75
+      integer(kind=int_32),parameter  ::ip_COXNIT = 76
+      integer(kind=int_32),parameter  ::ip_CTNit = 77
+      integer(kind=int_32),parameter  ::ip_RcSox20 = 78
+      integer(kind=int_32),parameter  ::ip_TcSox = 79
+      integer(kind=int_32),parameter  ::ip_Rc0Sox = 80
+      integer(kind=int_32),parameter  ::ip_CoxSUD = 81
+      integer(kind=int_32),parameter  ::ip_DisSEqFeS = 82
+      integer(kind=int_32),parameter  ::ip_RcDisS20 = 83
+      integer(kind=int_32),parameter  ::ip_TcDisS = 84
+      integer(kind=int_32),parameter  ::ip_RcPrcS20 = 85
+      integer(kind=int_32),parameter  ::ip_lKstH2S = 86
+      integer(kind=int_32),parameter  ::ip_lKstHS = 87
+      integer(kind=int_32),parameter  ::ip_TcKstH2S = 88
+      integer(kind=int_32),parameter  ::ip_TcKstHS = 89
+      integer(kind=int_32),parameter  ::ip_TcPrcS = 90
+      integer(kind=int_32),parameter  ::ip_RcMetOx20 = 91
+      integer(kind=int_32),parameter  ::ip_TcMetOx = 92
+      integer(kind=int_32),parameter  ::ip_Rc0MetOx = 93
+      integer(kind=int_32),parameter  ::ip_RcMetSu20 = 94
+      integer(kind=int_32),parameter  ::ip_TcMetSu = 95
+      integer(kind=int_32),parameter  ::ip_Rc0MetSu = 96
+      integer(kind=int_32),parameter  ::ip_CoxMet = 97
+      integer(kind=int_32),parameter  ::ip_CsuMet = 98
+      integer(kind=int_32),parameter  ::ip_KsMet = 99
+      integer(kind=int_32),parameter  ::ip_KsOxMet = 100
+      integer(kind=int_32),parameter  ::ip_KsSuMet = 101
+      integer(kind=int_32),parameter  ::ip_CTMetOx = 102
+      integer(kind=int_32),parameter  ::ip_fScEbul = 103
+      integer(kind=int_32),parameter  ::ip_FrMetGeCH4 = 104
+      integer(kind=int_32),parameter  ::ip_KadsP_20 = 105
+      integer(kind=int_32),parameter  ::ip_TCKadsP = 106
+      integer(kind=int_32),parameter  ::ip_a_OH_PO4 = 107
+      integer(kind=int_32),parameter  ::ip_fr_FeIM1 = 108
+      integer(kind=int_32),parameter  ::ip_fr_FeIM2 = 109
+      integer(kind=int_32),parameter  ::ip_fr_FeIM3 = 110
+      integer(kind=int_32),parameter  ::ip_fr_Feox = 111
+      integer(kind=int_32),parameter  ::ip_Cc_oxPsor = 112
+      integer(kind=int_32),parameter  ::ip_RcAdPO4AAP = 113
+      integer(kind=int_32),parameter  ::ip_RCprecP20 = 114
+      integer(kind=int_32),parameter  ::ip_TCprecipP = 115
+      integer(kind=int_32),parameter  ::ip_RCdissP20 = 116
+      integer(kind=int_32),parameter  ::ip_TCdissolP = 117
+      integer(kind=int_32),parameter  ::ip_EqVivDisP = 118
+      integer(kind=int_32),parameter  ::ip_RatAPandVP = 119
+      integer(kind=int_32),parameter  ::ip_RCdisAP20 = 120
+      integer(kind=int_32),parameter  ::ip_EqAPATDisP = 121
+      integer(kind=int_32),parameter  ::ip_Cc_oxVivP = 122
+      integer(kind=int_32),parameter  ::ip_KdPO4AAP = 123
+      integer(kind=int_32),parameter  ::ip_MaxPO4AAP = 124
+      integer(kind=int_32),parameter  ::ip_SWAdsP = 125
+      integer(kind=int_32),parameter  ::ip_Ceq_disSi = 126
+      integer(kind=int_32),parameter  ::ip_RCdisSi20 = 127
+      integer(kind=int_32),parameter  ::ip_TCdisSi = 128
+      integer(kind=int_32),parameter  ::ip_SWDisSi = 129
+      integer(kind=int_32),parameter  ::ip_DELT = 130
+      integer(kind=int_32),parameter  ::ip_Poros = 131
+      integer(kind=int_32),parameter  ::ip_Th_DelwaqG = 132
+      integer(kind=int_32),parameter  ::ip_OutInt = 133
+      integer(kind=int_32),parameter  ::ip_ITIME = 134
+      integer(kind=int_32),parameter  ::ip_Exp_Dif = 135
+      integer(kind=int_32),parameter  ::ip_Exp_Tur = 136
+      integer(kind=int_32),parameter  ::linsconstant = 136
 
       ! variables
-      integer,parameter :: ip_pH = 137
-      integer,parameter :: ip_Temp = 138
-      integer,parameter :: ip_Diflen = 139
-      integer,parameter :: ip_TurCoef = 140
-      integer,parameter :: ip_DifCoef = 141
-      integer,parameter :: ip_Depth = 142
+      integer(kind=int_32),parameter  ::ip_pH = 137
+      integer(kind=int_32),parameter  ::ip_Temp = 138
+      integer(kind=int_32),parameter  ::ip_Diflen = 139
+      integer(kind=int_32),parameter  ::ip_TurCoef = 140
+      integer(kind=int_32),parameter  ::ip_DifCoef = 141
+      integer(kind=int_32),parameter  ::ip_Depth = 142
 
       ! dissolved concentrations in overlying water (dissolved)
-      integer,parameter :: OFFSET_cwater = ip_Depth
+      integer(kind=int_32),parameter  ::OFFSET_cwater = ip_Depth
 
       ! S1 concentrations (dissolved+particulate)
-      integer,parameter :: OFFSET_S1 = ip_Depth + nototseddis
+      integer(kind=int_32),parameter  ::OFFSET_S1 = ip_Depth + nototseddis
 
       ! settling fluxes (particulate)
-      integer,parameter :: OFFSET_Setl = ip_Depth + nototseddis + nototsed
+      integer(kind=int_32),parameter  ::OFFSET_Setl = ip_Depth + nototseddis + nototsed
 
       ! VB fluxes
-      integer,parameter :: OFFSET_VB = ip_Depth + nototseddis + nototsed + nototsedpart
-      integer,parameter :: nflvb = 22
-      integer,parameter :: ip_fN1VBup = OFFSET_VB + 1
-      integer,parameter :: ip_fN2VBup = OFFSET_VB + 2
-      integer,parameter :: ip_fP1VBup = OFFSET_VB + 3
-      integer,parameter :: ip_fP2VBup = OFFSET_VB + 4
-      integer,parameter :: ip_fS1VBup = OFFSET_VB + 5
-      integer,parameter :: ip_fS2VBup = OFFSET_VB + 6
-      integer,parameter :: ip_fC1VBrel = OFFSET_VB + 7
-      integer,parameter :: ip_fC2VBrel = OFFSET_VB + 8
-      integer,parameter :: ip_fC3VBrel = OFFSET_VB + 9
-      integer,parameter :: ip_fC4VBrel = OFFSET_VB + 10
-      integer,parameter :: ip_fN1VBrel = OFFSET_VB + 11
-      integer,parameter :: ip_fN2VBrel = OFFSET_VB + 12
-      integer,parameter :: ip_fN3VBrel = OFFSET_VB + 13
-      integer,parameter :: ip_fN4VBrel = OFFSET_VB + 14
-      integer,parameter :: ip_fP1VBrel = OFFSET_VB + 15
-      integer,parameter :: ip_fP2VBrel = OFFSET_VB + 16
-      integer,parameter :: ip_fP3VBrel = OFFSET_VB + 17
-      integer,parameter :: ip_fP4VBrel = OFFSET_VB + 18
-      integer,parameter :: ip_fS1VBrel = OFFSET_VB + 19
-      integer,parameter :: ip_fS2VBrel = OFFSET_VB + 20
-      integer,parameter :: ip_fS3VBrel = OFFSET_VB + 21
-      integer,parameter :: ip_fS4VBrel = OFFSET_VB + 22
+      integer(kind=int_32),parameter  ::OFFSET_VB = ip_Depth + nototseddis + nototsed + nototsedpart
+      integer(kind=int_32),parameter  ::nflvb = 22
+      integer(kind=int_32),parameter  ::ip_fN1VBup = OFFSET_VB + 1
+      integer(kind=int_32),parameter  ::ip_fN2VBup = OFFSET_VB + 2
+      integer(kind=int_32),parameter  ::ip_fP1VBup = OFFSET_VB + 3
+      integer(kind=int_32),parameter  ::ip_fP2VBup = OFFSET_VB + 4
+      integer(kind=int_32),parameter  ::ip_fS1VBup = OFFSET_VB + 5
+      integer(kind=int_32),parameter  ::ip_fS2VBup = OFFSET_VB + 6
+      integer(kind=int_32),parameter  ::ip_fC1VBrel = OFFSET_VB + 7
+      integer(kind=int_32),parameter  ::ip_fC2VBrel = OFFSET_VB + 8
+      integer(kind=int_32),parameter  ::ip_fC3VBrel = OFFSET_VB + 9
+      integer(kind=int_32),parameter  ::ip_fC4VBrel = OFFSET_VB + 10
+      integer(kind=int_32),parameter  ::ip_fN1VBrel = OFFSET_VB + 11
+      integer(kind=int_32),parameter  ::ip_fN2VBrel = OFFSET_VB + 12
+      integer(kind=int_32),parameter  ::ip_fN3VBrel = OFFSET_VB + 13
+      integer(kind=int_32),parameter  ::ip_fN4VBrel = OFFSET_VB + 14
+      integer(kind=int_32),parameter  ::ip_fP1VBrel = OFFSET_VB + 15
+      integer(kind=int_32),parameter  ::ip_fP2VBrel = OFFSET_VB + 16
+      integer(kind=int_32),parameter  ::ip_fP3VBrel = OFFSET_VB + 17
+      integer(kind=int_32),parameter  ::ip_fP4VBrel = OFFSET_VB + 18
+      integer(kind=int_32),parameter  ::ip_fS1VBrel = OFFSET_VB + 19
+      integer(kind=int_32),parameter  ::ip_fS2VBrel = OFFSET_VB + 20
+      integer(kind=int_32),parameter  ::ip_fS3VBrel = OFFSET_VB + 21
+      integer(kind=int_32),parameter  ::ip_fS4VBrel = OFFSET_VB + 22
 
       ! Initialisation "fluxes"
-      integer, parameter :: OFFSET_FL = nototseddis + 101
+      integer(kind=int_32), parameter  ::OFFSET_FL = nototseddis + 101
 
-      integer,parameter :: lins = ip_Depth + nototseddis + nototsed + nototsedpart + nflvb
+      integer(kind=int_32),parameter  ::lins = ip_Depth + nototseddis + nototsed + nototsedpart + nflvb
 
       ! input constants and variables
-      real :: ku_dFdcC20
-      real :: kl_dFdcC20
-      real :: ku_dFdcN20
-      real :: kl_dFdcN20
-      real :: ku_dFdcP20
-      real :: kl_dFdcP20
-      real :: ku_dMdcC20
-      real :: kl_dMdcC20
-      real :: ku_dMdcN20
-      real :: kl_dMdcN20
-      real :: ku_dMdcP20
-      real :: kl_dMdcP20
-      real :: ku_dSdcC20
-      real :: kl_dSdcC20
-      real :: ku_dSdcN20
-      real :: kl_dSdcN20
-      real :: ku_dSdcP20
-      real :: kl_dSdcP20
-      real :: k_dprdcC20
-      real :: k_DOCdcC20
-      real :: al_dNf
-      real :: al_dPf
-      real :: au_dNf
-      real :: au_dPf
-      real :: al_dNm
-      real :: al_dPm
-      real :: au_dNm
-      real :: au_dPm
-      real :: al_dNs
-      real :: al_dPs
-      real :: au_dNs
-      real :: au_dPs
-      real :: a_dNpr
-      real :: a_dPpr
-      real :: a_dSpr
-      real :: b_ni
-      real :: b_poc1doc
-      real :: b_poc1poc2
-      real :: b_poc2doc
-      real :: b_poc2poc3
-      real :: b_poc3doc
-      real :: b_poc3poc4
-      real :: b_su
-      real :: kT_dec
-      real :: SWOMDec
-      real :: KsOxCon
-      real :: KsNiDen
-      real :: KsFeRed
-      real :: KsSuRed
-      real :: KsOxDenInh
-      real :: KsNiIRdInh
-      real :: KsNiSRdInh
-      real :: KsSuMetInh
-      real :: CoxDenInh
-      real :: CoxIRedInh
-      real :: CoxSRedInh
-      real :: CoxMetInh
-      real :: CniMetInh
-      real :: RedFacDen
-      real :: RedFacIRed
-      real :: RedFacSRed
-      real :: RedFacMet
-      real :: CTBactAc
-      real :: SWOxCon
-      real :: TcDen
-      real :: TcIRed
-      real :: TcMet
-      real :: TcOxCon
-      real :: TcSRed
-      real :: RcNit20
-      real :: TcNit
-      real :: KsAmNit
-      real :: KsOxNit
-      real :: ZNit
-      real :: Rc0NitOx
-      real :: COXNIT
-      real :: CTNit
-      real :: RcSox20
-      real :: TcSox
-      real :: Rc0Sox
-      real :: CoxSUD
-      real :: DisSEqFeS
-      real :: RcDisS20
-      real :: TcDisS
-      real :: RcPrcS20
-      real :: lKstH2S
-      real :: lKstHS
-      real :: TcKstH2S
-      real :: TcKstHS
-      real :: TcPrcS
-      real :: RcMetOx20
-      real :: TcMetOx
-      real :: Rc0MetOx
-      real :: RcMetSu20
-      real :: TcMetSu
-      real :: Rc0MetSu
-      real :: CoxMet
-      real :: CsuMet
-      real :: KsMet
-      real :: KsOxMet
-      real :: KsSuMet
-      real :: CTMetOx
-      real :: fScEbul
-      real :: FrMetGeCH4
-      real :: KadsP_20
-      real :: TCKadsP
-      real :: a_OH_PO4
-      real :: fr_FeIM1
-      real :: fr_FeIM2
-      real :: fr_FeIM3
-      real :: fr_Feox
-      real :: Cc_oxPsor
-      real :: RcAdPO4AAP
-      real :: RCprecP20
-      real :: TCprecipP
-      real :: RCdissP20
-      real :: TCdissolP
-      real :: EqVivDisP
-      real :: RatAPandVP
-      real :: RCdisAP20
-      real :: EqAPATDisP
-      real :: Cc_oxVivP
-      real :: KdPO4AAP
-      real :: MaxPO4AAP
-      real :: SWAdsP
-      real :: Ceq_disSi
-      real :: RCdisSi20
-      real :: TCdisSi
-      real :: SWDisSi
-      real :: DELT
-      real :: Poros
-      real :: Th_DelwaqG
-      integer :: OutInt
-      integer :: Itime
-      real :: Exp_Dif
-      real :: Exp_Tur
-      real :: pH
-      real :: Temp
-      real :: Diflen
-      real :: TurCoef
-      real :: DifCoef
-      real :: Depth
+      real(kind=sp)  ::ku_dFdcC20
+      real(kind=sp)  ::kl_dFdcC20
+      real(kind=sp)  ::ku_dFdcN20
+      real(kind=sp)  ::kl_dFdcN20
+      real(kind=sp)  ::ku_dFdcP20
+      real(kind=sp)  ::kl_dFdcP20
+      real(kind=sp)  ::ku_dMdcC20
+      real(kind=sp)  ::kl_dMdcC20
+      real(kind=sp)  ::ku_dMdcN20
+      real(kind=sp)  ::kl_dMdcN20
+      real(kind=sp)  ::ku_dMdcP20
+      real(kind=sp)  ::kl_dMdcP20
+      real(kind=sp)  ::ku_dSdcC20
+      real(kind=sp)  ::kl_dSdcC20
+      real(kind=sp)  ::ku_dSdcN20
+      real(kind=sp)  ::kl_dSdcN20
+      real(kind=sp)  ::ku_dSdcP20
+      real(kind=sp)  ::kl_dSdcP20
+      real(kind=sp)  ::k_dprdcC20
+      real(kind=sp)  ::k_DOCdcC20
+      real(kind=sp)  ::al_dNf
+      real(kind=sp)  ::al_dPf
+      real(kind=sp)  ::au_dNf
+      real(kind=sp)  ::au_dPf
+      real(kind=sp)  ::al_dNm
+      real(kind=sp)  ::al_dPm
+      real(kind=sp)  ::au_dNm
+      real(kind=sp)  ::au_dPm
+      real(kind=sp)  ::al_dNs
+      real(kind=sp)  ::al_dPs
+      real(kind=sp)  ::au_dNs
+      real(kind=sp)  ::au_dPs
+      real(kind=sp)  ::a_dNpr
+      real(kind=sp)  ::a_dPpr
+      real(kind=sp)  ::a_dSpr
+      real(kind=sp)  ::b_ni
+      real(kind=sp)  ::b_poc1doc
+      real(kind=sp)  ::b_poc1poc2
+      real(kind=sp)  ::b_poc2doc
+      real(kind=sp)  ::b_poc2poc3
+      real(kind=sp)  ::b_poc3doc
+      real(kind=sp)  ::b_poc3poc4
+      real(kind=sp)  ::b_su
+      real(kind=sp)  ::kT_dec
+      real(kind=sp)  ::SWOMDec
+      real(kind=sp)  ::KsOxCon
+      real(kind=sp)  ::KsNiDen
+      real(kind=sp)  ::KsFeRed
+      real(kind=sp)  ::KsSuRed
+      real(kind=sp)  ::KsOxDenInh
+      real(kind=sp)  ::KsNiIRdInh
+      real(kind=sp)  ::KsNiSRdInh
+      real(kind=sp)  ::KsSuMetInh
+      real(kind=sp)  ::CoxDenInh
+      real(kind=sp)  ::CoxIRedInh
+      real(kind=sp)  ::CoxSRedInh
+      real(kind=sp)  ::CoxMetInh
+      real(kind=sp)  ::CniMetInh
+      real(kind=sp)  ::RedFacDen
+      real(kind=sp)  ::RedFacIRed
+      real(kind=sp)  ::RedFacSRed
+      real(kind=sp)  ::RedFacMet
+      real(kind=sp)  ::CTBactAc
+      real(kind=sp)  ::SWOxCon
+      real(kind=sp)  ::TcDen
+      real(kind=sp)  ::TcIRed
+      real(kind=sp)  ::TcMet
+      real(kind=sp)  ::TcOxCon
+      real(kind=sp)  ::TcSRed
+      real(kind=sp)  ::RcNit20
+      real(kind=sp)  ::TcNit
+      real(kind=sp)  ::KsAmNit
+      real(kind=sp)  ::KsOxNit
+      real(kind=sp)  ::ZNit
+      real(kind=sp)  ::Rc0NitOx
+      real(kind=sp)  ::COXNIT
+      real(kind=sp)  ::CTNit
+      real(kind=sp)  ::RcSox20
+      real(kind=sp)  ::TcSox
+      real(kind=sp)  ::Rc0Sox
+      real(kind=sp)  ::CoxSUD
+      real(kind=sp)  ::DisSEqFeS
+      real(kind=sp)  ::RcDisS20
+      real(kind=sp)  ::TcDisS
+      real(kind=sp)  ::RcPrcS20
+      real(kind=sp)  ::lKstH2S
+      real(kind=sp)  ::lKstHS
+      real(kind=sp)  ::TcKstH2S
+      real(kind=sp)  ::TcKstHS
+      real(kind=sp)  ::TcPrcS
+      real(kind=sp)  ::RcMetOx20
+      real(kind=sp)  ::TcMetOx
+      real(kind=sp)  ::Rc0MetOx
+      real(kind=sp)  ::RcMetSu20
+      real(kind=sp)  ::TcMetSu
+      real(kind=sp)  ::Rc0MetSu
+      real(kind=sp)  ::CoxMet
+      real(kind=sp)  ::CsuMet
+      real(kind=sp)  ::KsMet
+      real(kind=sp)  ::KsOxMet
+      real(kind=sp)  ::KsSuMet
+      real(kind=sp)  ::CTMetOx
+      real(kind=sp)  ::fScEbul
+      real(kind=sp)  ::FrMetGeCH4
+      real(kind=sp)  ::KadsP_20
+      real(kind=sp)  ::TCKadsP
+      real(kind=sp)  ::a_OH_PO4
+      real(kind=sp)  ::fr_FeIM1
+      real(kind=sp)  ::fr_FeIM2
+      real(kind=sp)  ::fr_FeIM3
+      real(kind=sp)  ::fr_Feox
+      real(kind=sp)  ::Cc_oxPsor
+      real(kind=sp)  ::RcAdPO4AAP
+      real(kind=sp)  ::RCprecP20
+      real(kind=sp)  ::TCprecipP
+      real(kind=sp)  ::RCdissP20
+      real(kind=sp)  ::TCdissolP
+      real(kind=sp)  ::EqVivDisP
+      real(kind=sp)  ::RatAPandVP
+      real(kind=sp)  ::RCdisAP20
+      real(kind=sp)  ::EqAPATDisP
+      real(kind=sp)  ::Cc_oxVivP
+      real(kind=sp)  ::KdPO4AAP
+      real(kind=sp)  ::MaxPO4AAP
+      real(kind=sp)  ::SWAdsP
+      real(kind=sp)  ::Ceq_disSi
+      real(kind=sp)  ::RCdisSi20
+      real(kind=sp)  ::TCdisSi
+      real(kind=sp)  ::SWDisSi
+      real(kind=sp)  ::DELT
+      real(kind=sp)  ::Poros
+      real(kind=sp)  ::Th_DelwaqG
+      integer(kind=int_32)  ::OutInt
+      integer(kind=int_32)  ::Itime
+      real(kind=sp)  ::Exp_Dif
+      real(kind=sp)  ::Exp_Tur
+      real(kind=sp)  ::pH
+      real(kind=sp)  ::Temp
+      real(kind=sp)  ::Diflen
+      real(kind=sp)  ::TurCoef
+      real(kind=sp)  ::DifCoef
+      real(kind=sp)  ::Depth
 
       ! VB fluxes
-      real :: fN1VBup
-      real :: fN2VBup
-      real :: fP1VBup
-      real :: fP2VBup
-      real :: fS1VBup
-      real :: fS2VBup
-      real :: fC1VBrel
-      real :: fC2VBrel
-      real :: fC3VBrel
-      real :: fC4VBrel
-      real :: fN1VBrel
-      real :: fN2VBrel
-      real :: fN3VBrel
-      real :: fN4VBrel
-      real :: fP1VBrel
-      real :: fP2VBrel
-      real :: fP3VBrel
-      real :: fP4VBrel
-      real :: fS1VBrel
-      real :: fS2VBrel
-      real :: fS3VBrel
-      real :: fS4VBrel
+      real(kind=sp)  ::fN1VBup
+      real(kind=sp)  ::fN2VBup
+      real(kind=sp)  ::fP1VBup
+      real(kind=sp)  ::fP2VBup
+      real(kind=sp)  ::fS1VBup
+      real(kind=sp)  ::fS2VBup
+      real(kind=sp)  ::fC1VBrel
+      real(kind=sp)  ::fC2VBrel
+      real(kind=sp)  ::fC3VBrel
+      real(kind=sp)  ::fC4VBrel
+      real(kind=sp)  ::fN1VBrel
+      real(kind=sp)  ::fN2VBrel
+      real(kind=sp)  ::fN3VBrel
+      real(kind=sp)  ::fN4VBrel
+      real(kind=sp)  ::fP1VBrel
+      real(kind=sp)  ::fP2VBrel
+      real(kind=sp)  ::fP3VBrel
+      real(kind=sp)  ::fP4VBrel
+      real(kind=sp)  ::fS1VBrel
+      real(kind=sp)  ::fS2VBrel
+      real(kind=sp)  ::fS3VBrel
+      real(kind=sp)  ::fS4VBrel
 
 
       ! states (2 versions for particulates, local without "S1", external with "S1"
-      real :: CH4
-      real :: DOC
-      real :: DON
-      real :: DOP
-      real :: DOS
-      real :: NH4
-      real :: NO3
-      real :: OXY
-      real :: PO4
-      real :: Si
-      real :: SO4
-      real :: SUD
+      real(kind=sp)  ::CH4
+      real(kind=sp)  ::DOC
+      real(kind=sp)  ::DON
+      real(kind=sp)  ::DOP
+      real(kind=sp)  ::DOS
+      real(kind=sp)  ::NH4
+      real(kind=sp)  ::NO3
+      real(kind=sp)  ::OXY
+      real(kind=sp)  ::PO4
+      real(kind=sp)  ::Si
+      real(kind=sp)  ::SO4
+      real(kind=sp)  ::SUD
 
-      real :: AAP
-      real :: APATP
-      real :: FeIIIpa
-      real :: Opal
-      real :: POC1
-      real :: POC2
-      real :: POC3
-      real :: POC4
-      real :: PON1
-      real :: PON2
-      real :: PON3
-      real :: PON4
-      real :: POP1
-      real :: POP2
-      real :: POP3
-      real :: POP4
-      real :: POS1
-      real :: POS2
-      real :: POS3
-      real :: POS4
-      real :: SUP
-      real :: VIVP
+      real(kind=sp)  ::AAP
+      real(kind=sp)  ::APATP
+      real(kind=sp)  ::FeIIIpa
+      real(kind=sp)  ::Opal
+      real(kind=sp)  ::POC1
+      real(kind=sp)  ::POC2
+      real(kind=sp)  ::POC3
+      real(kind=sp)  ::POC4
+      real(kind=sp)  ::PON1
+      real(kind=sp)  ::PON2
+      real(kind=sp)  ::PON3
+      real(kind=sp)  ::PON4
+      real(kind=sp)  ::POP1
+      real(kind=sp)  ::POP2
+      real(kind=sp)  ::POP3
+      real(kind=sp)  ::POP4
+      real(kind=sp)  ::POS1
+      real(kind=sp)  ::POS2
+      real(kind=sp)  ::POS3
+      real(kind=sp)  ::POS4
+      real(kind=sp)  ::SUP
+      real(kind=sp)  ::VIVP
 
       ! local declarations per parent subroutine
       ! adspo4
-      real tfe     , cads    , kads    , oh      , fra     , eqaapm  , im1     , im2     , im3     , cadst   , eqaap   , fads
+      real(kind=sp)  ::tfe     , cads    , kads    , oh      , fra     , eqaapm  , im1     , im2     , im3     , cadst   , eqaap   , fads
       ! qim1  , qim2  , qim3  , fim1  , fim2  , fim3
       ! nitrif
-      real k0nit   , tempc   , amfunc  , oxfunc  , flnit, k1nit
+      real(kind=sp)  ::k0nit   , tempc   , amfunc  , oxfunc  , flnit, k1nit
       !Dec
-      integer icfrac
-      integer,parameter :: ncfrac = 5
-      real poc     , pon     , pop     , pos     , rc20upc , rc20loc , rc20upn , rc20lon , rc20upp , rc20lop , &
+      integer(kind=int_32)  ::icfrac
+      integer(kind=int_32),parameter  ::ncfrac = 5
+      real(kind=sp)  ::poc     , pon     , pop     , pos     , rc20upc , rc20loc , rc20upn , rc20lon , rc20upp , rc20lop , &
            aln     , alp     , aun     , aup     , b_dtp   , b_dtd   , swomd   ,                   decflx(12), &
            rc20c   , elfact  , rc20n   , rc20p   , n_fact  , p_fact  , s_fact  , fnut    , rc20s
       !Vivianit & APATITE
-      real fprc    , tmpsol  , fsol    , tmpprc
+      real(kind=sp)  ::fprc    , tmpsol  , fsol    , tmpprc
       !CONSELAC
-      real rtmin   , froxc   , frnic   , frfec   , frsuc   , frch4c  , fct2    , fct3    , fct4    , fct5    , &
+      real(kind=sp)  ::rtmin   , froxc   , frnic   , frfec   , frsuc   , frch4c  , fct2    , fct3    , fct4    , fct5    , &
            tempc1  , tempc2  , tempc3  , tempc4  , tempc5  , fox20   , fni20   , ffe20   , fsu20   , fch420  , &
            fox     , fni     , ffe     , fsu     , fch4    , fsum    , frox    , frni    , frfe    , frsu    , &
            frch4   , romax   , rdmax   , rimax   , rsmax   , rden    , roxc    , rired   , rsred   , conflx(6)
       !EBULCH4
-      real laythick, cch4s   , dch4    , ebulfl
+      real(kind=sp)  ::laythick, cch4s   , dch4    , ebulfl
       !SPECSUD
-      real h_ion   , ks1     , ks2     , csdt    , csd1    , csd2    , csd3    , dish2swk, dishswk , disswk  , &
+      real(kind=sp)  ::h_ion   , ks1     , ks2     , csdt    , csd1    , csd2    , csd3    , dish2swk, dishswk , disswk  , &
            frh2sdis, frhsdis , frsdis
       !OXIDSUD
-      real fluxox  , k0sox   , k1sox
+      real(kind=sp)  ::fluxox  , k0sox   , k1sox
       !PRECSUL
-      real tempcp  , tempcd  , fluxpr  , fluxds
+      real(kind=sp)  ::tempcp  , tempcd  , fluxpr  , fluxds
       !OXIDCH4
-      real chfunc  , sufunc  , lifunc  , flcox   , flcsu   , k0metox , k1metox , k0metsu , k1metsu
+      real(kind=sp)  ::chfunc  , sufunc  , lifunc  , flcox   , flcsu   , k0metox , k1metox , k0metsu , k1metsu
       !     INTERFACE TO VB
-      real s1_nh4, s1_no3, s1_aap, s1_po4, s1_so4, s1_sud, vbflux
+      real(kind=sp)  ::s1_nh4, s1_no3, s1_aap, s1_po4, s1_so4, s1_sud, vbflux
       !     other
-      real temp20  , thick
+      real(kind=sp)  ::temp20  , thick
 
       ! sediment substances definition
-      integer,parameter :: is_CH4 = 1
-      integer,parameter :: is_DOC = 2
-      integer,parameter :: is_DON = 3
-      integer,parameter :: is_DOP = 4
-      integer,parameter :: is_DOS = 5
-      integer,parameter :: is_NH4 = 6
-      integer,parameter :: is_NO3 = 7
-      integer,parameter :: is_OXY = 8
-      integer,parameter :: is_PO4 = 9
-      integer,parameter :: is_Si = 10
-      integer,parameter :: is_SO4 = 11
-      integer,parameter :: is_SUD = 12
-      integer,parameter :: is_AAP = 13
-      integer,parameter :: is_APATP = 14
-      integer,parameter :: is_FeIIIpa = 15
-      integer,parameter :: is_Opal = 16
-      integer,parameter :: is_POC1 = 17
-      integer,parameter :: is_POC2 = 18
-      integer,parameter :: is_POC3 = 19
-      integer,parameter :: is_POC4 = 20
-      integer,parameter :: is_PON1 = 21
-      integer,parameter :: is_PON2 = 22
-      integer,parameter :: is_PON3 = 23
-      integer,parameter :: is_PON4 = 24
-      integer,parameter :: is_POP1 = 25
-      integer,parameter :: is_POP2 = 26
-      integer,parameter :: is_POP3 = 27
-      integer,parameter :: is_POP4 = 28
-      integer,parameter :: is_POS1 = 29
-      integer,parameter :: is_POS2 = 30
-      integer,parameter :: is_POS3 = 31
-      integer,parameter :: is_POS4 = 32
-      integer,parameter :: is_SUP = 33
-      integer,parameter :: is_VIVP = 34
+      integer(kind=int_32),parameter  ::is_CH4 = 1
+      integer(kind=int_32),parameter  ::is_DOC = 2
+      integer(kind=int_32),parameter  ::is_DON = 3
+      integer(kind=int_32),parameter  ::is_DOP = 4
+      integer(kind=int_32),parameter  ::is_DOS = 5
+      integer(kind=int_32),parameter  ::is_NH4 = 6
+      integer(kind=int_32),parameter  ::is_NO3 = 7
+      integer(kind=int_32),parameter  ::is_OXY = 8
+      integer(kind=int_32),parameter  ::is_PO4 = 9
+      integer(kind=int_32),parameter  ::is_Si = 10
+      integer(kind=int_32),parameter  ::is_SO4 = 11
+      integer(kind=int_32),parameter  ::is_SUD = 12
+      integer(kind=int_32),parameter  ::is_AAP = 13
+      integer(kind=int_32),parameter  ::is_APATP = 14
+      integer(kind=int_32),parameter  ::is_FeIIIpa = 15
+      integer(kind=int_32),parameter  ::is_Opal = 16
+      integer(kind=int_32),parameter  ::is_POC1 = 17
+      integer(kind=int_32),parameter  ::is_POC2 = 18
+      integer(kind=int_32),parameter  ::is_POC3 = 19
+      integer(kind=int_32),parameter  ::is_POC4 = 20
+      integer(kind=int_32),parameter  ::is_PON1 = 21
+      integer(kind=int_32),parameter  ::is_PON2 = 22
+      integer(kind=int_32),parameter  ::is_PON3 = 23
+      integer(kind=int_32),parameter  ::is_PON4 = 24
+      integer(kind=int_32),parameter  ::is_POP1 = 25
+      integer(kind=int_32),parameter  ::is_POP2 = 26
+      integer(kind=int_32),parameter  ::is_POP3 = 27
+      integer(kind=int_32),parameter  ::is_POP4 = 28
+      integer(kind=int_32),parameter  ::is_POS1 = 29
+      integer(kind=int_32),parameter  ::is_POS2 = 30
+      integer(kind=int_32),parameter  ::is_POS3 = 31
+      integer(kind=int_32),parameter  ::is_POS4 = 32
+      integer(kind=int_32),parameter  ::is_SUP = 33
+      integer(kind=int_32),parameter  ::is_VIVP = 34
 
       character*255 errorstring
-      integer item, iflux, iseg, itel, noseg2d, iatt1, iatt2, ilay, isys, iseg2d, ip, ifl
-      real                 :: mass3d, sedwatflx, cwater, totmas
-      integer, allocatable :: bottomsegments(:)
-      real, allocatable    :: sedconc(:,:,:)
+      integer(kind=int_32)  ::item, iflux, iseg, itel, noseg2d, iatt1, iatt2, ilay, isys, iseg2d, ip, ifl
+      real(kind=sp)                  ::mass3d, sedwatflx, cwater, totmas
+      integer(kind=int_32), allocatable ::bottomsegments(:)
+      real(kind=sp), allocatable ::sedconc(:,:,:)
 
-      integer                             :: nolay
-      real, allocatable                   :: tt(:), td(:)
-      real, allocatable                   :: dl(:)  ! layer thickness
-      real, allocatable                   :: sd(:)  ! depth of upper surface of layer
-      real, allocatable                   :: bd(:)  ! bottomdepth (depth of lower surface of layer)
-      real(kind=kind(1.0d0)), allocatable :: av(:,:), bv(:), rwork(:)
-      real(kind=kind(1.0d0))              :: term
-      real, allocatable                   :: kp(:,:), lp(:,:)
-      integer, allocatable                :: iwork(:)
+      integer(kind=int_32)                              ::nolay
+      real(kind=sp), allocatable ::tt(:), td(:)
+      real(kind=sp), allocatable ::dl(:)  ! layer thickness
+      real(kind=sp), allocatable ::sd(:)  ! depth of upper surface of layer
+      real(kind=sp), allocatable ::bd(:)  ! bottomdepth (depth of lower surface of layer)
+      real(kind=dp), allocatable :: av(:,:), bv(:), rwork(:)
+      real(kind=dp)              :: term
+      real(kind=sp), allocatable ::kp(:,:), lp(:,:)
+      integer(kind=int_32), allocatable ::iwork(:)
 
-      integer :: ierror
+      integer(kind=int_32)  ::ierror
 
       logical :: default_profile
 
@@ -581,8 +582,8 @@ contains
                    'POP1-bulk   ', 'POP2-bulk   ', 'POP3-bulk   ', 'POP4-bulk   ', 'POS1-bulk   ', 'POS2-bulk   ', &
                    'POS3-bulk   ', 'POS4-bulk   ', 'SUP-bulk    ', 'VIVP-bulk   ']
 
-      integer, save      :: lumap, lurestart
-      integer            :: luinp ! Extra DELWAQG input parameters
+      integer(kind=int_32), save       ::lumap, lurestart
+      integer(kind=int_32)             ::luinp ! Extra DELWAQG input parameters
       character(len=200) :: mapfile
       character(len=200) :: initfile
       character(len=200) :: restartfile
@@ -590,8 +591,8 @@ contains
       logical, save :: first = .true.
       logical       :: only_ox, dissub, sw_vb
 
-      integer, save :: ipnt(1) = -999
-      integer       :: i
+      integer(kind=int_32), save  ::ipnt(1) = -999
+      integer(kind=int_32)        ::i
 
       save
 !
@@ -2102,13 +2103,13 @@ contains
       !
       subroutine initialise_layers
 
-      integer, parameter           :: nolay_default = 7
-      real, parameter              :: dl_default(nolay_default) = [ 0.001, 0.002, 0.004, 0.008, 0.016, 0.032, 0.037 ]   ! layer thickness
+      integer(kind=int_32), parameter            ::nolay_default = 7
+      real(kind=sp), parameter               ::dl_default(nolay_default) = [ 0.001, 0.002, 0.004, 0.008, 0.016, 0.032, 0.037 ]   ! layer thickness
 
       character(len=40), parameter :: param_file = 'delwaqg.parameters'
       character(len=100)           :: line
       logical                      :: exists, skip_tt_td
-      integer                      :: i, lumon, ierr
+      integer(kind=int_32)                       ::i, lumon, ierr
 
       call getmlu( lumon )
 
@@ -2194,11 +2195,11 @@ contains
       !
       subroutine initialise_sedconc
      
-      integer :: ilay, iseg, iseg2d, ip, isys, iflux
-      integer :: ierr, luinit, lumon
-      integer :: timeini, nosysini, nosegini
-      real    :: mass3d, totmas
-      real    :: thickness, poros
+      integer(kind=int_32)  ::ilay, iseg, iseg2d, ip, isys, iflux
+      integer(kind=int_32)  ::ierr, luinit, lumon
+      integer(kind=int_32)  ::timeini, nosysini, nosegini
+      real(kind=sp)     ::mass3d, totmas
+      real(kind=sp)     ::thickness, poros
       character(len=20), allocatable :: synameinit(:)
       character(len=40)              :: title(4)
 
@@ -2256,8 +2257,8 @@ contains
       ! detailed sediment concentrations and the S1 substances in one time step
       !
       subroutine sync_S1_sedconc
-          integer :: iseg2d, iseg, isys, ilay, iflux, ip
-          real    :: totmas
+          integer(kind=int_32)  ::iseg2d, iseg, isys, ilay, iflux, ip
+          real(kind=sp)     ::totmas
 
           do iseg2d = 1,noseg2d
               iseg = bottomsegments(iseg2d)
@@ -2320,17 +2321,17 @@ contains
       subroutine handle_zone_information( thickness, poros )
       use m_monsys
 
-      real, intent(in)       :: thickness, poros
+      real(kind=sp), intent(in) ::thickness, poros
 
-      integer                            :: ierr, luzone, lumon, idx, ic, ip, ip2, ilay
+      integer(kind=int_32)                             ::ierr, luzone, lumon, idx, ic, ip, ip2, ilay
       character(len=200)                 :: zonefile
-      integer, dimension(:), allocatable :: zone
-      integer                            :: nzones
-      real, dimension(:), allocatable    :: initvalue
+      integer(kind=int_32), dimension(:), allocatable ::zone
+      integer(kind=int_32)                             ::nzones
+      real(kind=sp), dimension(:), allocatable ::initvalue
       character(len=20)                  :: name
       character(len=200)                 :: inputline
 
-      integer, parameter                 :: first_s1 = 142
+      integer(kind=int_32), parameter                  ::first_s1 = 142
 
       call getmlu( lumon )
 
@@ -2423,7 +2424,7 @@ contains
       character(len=*), intent(in) :: name
       type known
           character(len=20) :: name
-          integer           :: index
+          integer(kind=int_32)            ::index
       end type
 
       type(known), dimension(40) :: known_name = [ &

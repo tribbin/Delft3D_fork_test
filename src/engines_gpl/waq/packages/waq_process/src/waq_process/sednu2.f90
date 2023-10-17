@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_sednu2
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -41,18 +43,18 @@ contains
 !
 !     Type    Name         I/O Description
 !
-      real(4) pmsa(*)     !I/O Process Manager System Array, window of routine to process library
-      real(4) fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
-      integer ipoint(12)  ! I  Array of pointers in pmsa to get and store the data
-      integer increm(12)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
-      integer noseg       ! I  Number of computational elements in the whole model schematisation
-      integer noflux      ! I  Number of fluxes, increment in the fl array
-      integer iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
-      integer iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
-      integer noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
-      integer noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
-      integer noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
-      integer noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
+      real(kind=sp)  ::pmsa(*)     !I/O Process Manager System Array, window of routine to process library
+      real(kind=sp)  ::fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
+      integer(kind=int_32)  ::ipoint(12)  ! I  Array of pointers in pmsa to get and store the data
+      integer(kind=int_32)  ::increm(12)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
+      integer(kind=int_32)  ::noseg       ! I  Number of computational elements in the whole model schematisation
+      integer(kind=int_32)  ::noflux      ! I  Number of fluxes, increment in the fl array
+      integer(kind=int_32)  ::iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
+      integer(kind=int_32)  ::iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
+      integer(kind=int_32)  ::noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
+      integer(kind=int_32)  ::noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
+      integer(kind=int_32)  ::noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
+      integer(kind=int_32)  ::noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
 !
 !*******************************************************************************
 !>\file
@@ -64,21 +66,21 @@ contains
 !
 !     Logical Units : -
 
-      integer     ipnt(12)
-      real        SFL  !   R*4 1 I  sedimention flux organic                      [gX/m2/d]
-      real        sfl2
-      real        CN   !   R*4 1 I  CN ratio substance                             [gC/gN]
-      real        CP   !   R*4 1 I  CP ratio substance                             [gC/gP]
-      real        CS   !   R*4 1 I  CS ratio substance                             [gC/gS]
-      real        depth
-      real        FSEDDN
-      real        FSEDDP
-      real        FSEDDS
-      real        FSEDDN2
-      real        FSEDDP2
-      real        FSEDDS2
+      integer(kind=int_32)      ::ipnt(12)
+      real(kind=sp)         ::SFL  !   R*4 1 I  sedimention flux organic                      [gX/m2/d]
+      real(kind=sp)         ::sfl2
+      real(kind=sp)         ::CN   !   R*4 1 I  CN ratio substance                             [gC/gN]
+      real(kind=sp)         ::CP   !   R*4 1 I  CP ratio substance                             [gC/gP]
+      real(kind=sp)         ::CS   !   R*4 1 I  CS ratio substance                             [gC/gS]
+      real(kind=sp)         ::depth
+      real(kind=sp)         ::FSEDDN
+      real(kind=sp)         ::FSEDDP
+      real(kind=sp)         ::FSEDDS
+      real(kind=sp)         ::FSEDDN2
+      real(kind=sp)         ::FSEDDP2
+      real(kind=sp)         ::FSEDDS2
       
-      integer    iflux, iseg, ikmrk2
+      integer(kind=int_32)     ::iflux, iseg, ikmrk2
 
       ipnt = ipoint
 !

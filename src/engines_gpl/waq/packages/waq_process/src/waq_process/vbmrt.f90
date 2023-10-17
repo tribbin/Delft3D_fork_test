@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_vbmrt
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -39,154 +41,154 @@ contains
 !
 !     Type    Name         I/O Description
 !
-      real(4) pmsa(*)     !I/O Process Manager System Array, window of routine to process library
-      real(4) fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
-      integer ipoint( 79) ! I  Array of pointers in pmsa to get and store the data
-      integer increm( 79) ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
-      integer noseg       ! I  Number of computational elements in the whole model schematisation
-      integer noflux      ! I  Number of fluxes, increment in the fl array
-      integer iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
-      integer iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
-      integer noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
-      integer noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
-      integer noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
-      integer noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
-      integer ipnt( 79)   !    Local work array for the pointering
-      integer iseg        !    Local loop counter for computational element loop
+      real(kind=sp)  ::pmsa(*)     !I/O Process Manager System Array, window of routine to process library
+      real(kind=sp)  ::fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
+      integer(kind=int_32)  ::ipoint( 79) ! I  Array of pointers in pmsa to get and store the data
+      integer(kind=int_32)  ::increm( 79) ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
+      integer(kind=int_32)  ::noseg       ! I  Number of computational elements in the whole model schematisation
+      integer(kind=int_32)  ::noflux      ! I  Number of fluxes, increment in the fl array
+      integer(kind=int_32)  ::iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
+      integer(kind=int_32)  ::iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
+      integer(kind=int_32)  ::noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
+      integer(kind=int_32)  ::noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
+      integer(kind=int_32)  ::noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
+      integer(kind=int_32)  ::noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
+      integer(kind=int_32)  ::ipnt( 79)   !    Local work array for the pointering
+      integer(kind=int_32)  ::iseg        !    Local loop counter for computational element loop
 !
 !*******************************************************************************
 !
 !     Type    Name         I/O Description                                        Unit
 !
-      real(4) VB1         ! I  vegetation biomass cohort 1                        (gC/m2)
-      real(4) F1VB01      ! I  allocation factor comp. 1 (stem) VB 01             (-)
-      real(4) F2VB01      ! I  allocation factor comp. 2 (foliage) VB 01          (-)
-      real(4) F3VB01      ! I  allocation factor comp. 3 (branch) VB 01           (-)
-      real(4) F4VB01      ! I  allocation factor comp. 4 (root) VB 01             (-)
-      real(4) F5VB01      ! I  allocation factor comp. 5 (fineroot) VB 01         (-)
-      real(4) SwVB01Mrt   ! I  vegetation biomass dead (0=no,1=yes)               (-)
-      real(4) SwDying     ! I  vegetation biomass dying (0=no,1=yes)              (-)
-      real(4) ageVB1      ! I  age of vegation cohort 1                           (d)
-      real(4) CNf1VB01    ! I  carbon-nitrogen ratio in stem VB01                 (gC/gN)
-      real(4) CNf2VB01    ! I  carbon-nitrogen ratio in foliage VB01              (gC/gN)
-      real(4) CNf3VB01    ! I  carbon-nitrogen ratio in branch VB01               (gC/gN)
-      real(4) CNf4VB01    ! I  carbon-nitrogen ratio in root VB01                 (gC/gN)
-      real(4) CNf5VB01    ! I  carbon-nitrogen ratio in fineroot VB01             (gC/gN)
-      real(4) CPf1VB01    ! I  carbon-phosporus ratio in stem VB01                (gC/gP)
-      real(4) CPf2VB01    ! I  carbon-phosporus ratio in foliage VB01             (gC/gP)
-      real(4) CPf3VB01    ! I  carbon-phosporus ratio in branch VB01              (gC/gP)
-      real(4) CPf4VB01    ! I  carbon-phosporus ratio in root VB01                (gC/gP)
-      real(4) CPf5VB01    ! I  carbon-phosporus ratio in fineroot VB01            (gC/gP)
-      real(4) CSf1VB01    ! I  carbon-sulphur ratio in stem VB01                  (gC/gS)
-      real(4) CSf2VB01    ! I  carbon-sulphur ratio in foliage VB01               (gC/gS)
-      real(4) CSf3VB01    ! I  carbon-sulphur ratio in branch VB01                (gC/gS)
-      real(4) CSf4VB01    ! I  carbon-sulphur ratio in root VB01                  (gC/gS)
-      real(4) CSf5VB01    ! I  carbon-sulphur ratio in fineroot                   (gC/gS)
-      real(4) FfolPOC1    ! I  fraction of biomass foliage to POC1                (-)
-      real(4) FfolPOC2    ! I  fraction of biomass foliage to POC2                (-)
-      real(4) FfrootPOC1  ! I  fraction of biomass root to POC1                   (-)
-      real(4) FfrootPOC2  ! I  fraction of biomass root to POC2                   (-)
-      real(4) DELT        ! I  timestep for processes                             (d)
-      real(4) Depth       ! I  depth of computational cell                        (m)
+      real(kind=sp)  ::VB1         ! I  vegetation biomass cohort 1                        (gC/m2)
+      real(kind=sp)  ::F1VB01      ! I  allocation factor comp. 1 (stem) VB 01             (-)
+      real(kind=sp)  ::F2VB01      ! I  allocation factor comp. 2 (foliage) VB 01          (-)
+      real(kind=sp)  ::F3VB01      ! I  allocation factor comp. 3 (branch) VB 01           (-)
+      real(kind=sp)  ::F4VB01      ! I  allocation factor comp. 4 (root) VB 01             (-)
+      real(kind=sp)  ::F5VB01      ! I  allocation factor comp. 5 (fineroot) VB 01         (-)
+      real(kind=sp)  ::SwVB01Mrt   ! I  vegetation biomass dead (0=no,1=yes)               (-)
+      real(kind=sp)  ::SwDying     ! I  vegetation biomass dying (0=no,1=yes)              (-)
+      real(kind=sp)  ::ageVB1      ! I  age of vegation cohort 1                           (d)
+      real(kind=sp)  ::CNf1VB01    ! I  carbon-nitrogen ratio in stem VB01                 (gC/gN)
+      real(kind=sp)  ::CNf2VB01    ! I  carbon-nitrogen ratio in foliage VB01              (gC/gN)
+      real(kind=sp)  ::CNf3VB01    ! I  carbon-nitrogen ratio in branch VB01               (gC/gN)
+      real(kind=sp)  ::CNf4VB01    ! I  carbon-nitrogen ratio in root VB01                 (gC/gN)
+      real(kind=sp)  ::CNf5VB01    ! I  carbon-nitrogen ratio in fineroot VB01             (gC/gN)
+      real(kind=sp)  ::CPf1VB01    ! I  carbon-phosporus ratio in stem VB01                (gC/gP)
+      real(kind=sp)  ::CPf2VB01    ! I  carbon-phosporus ratio in foliage VB01             (gC/gP)
+      real(kind=sp)  ::CPf3VB01    ! I  carbon-phosporus ratio in branch VB01              (gC/gP)
+      real(kind=sp)  ::CPf4VB01    ! I  carbon-phosporus ratio in root VB01                (gC/gP)
+      real(kind=sp)  ::CPf5VB01    ! I  carbon-phosporus ratio in fineroot VB01            (gC/gP)
+      real(kind=sp)  ::CSf1VB01    ! I  carbon-sulphur ratio in stem VB01                  (gC/gS)
+      real(kind=sp)  ::CSf2VB01    ! I  carbon-sulphur ratio in foliage VB01               (gC/gS)
+      real(kind=sp)  ::CSf3VB01    ! I  carbon-sulphur ratio in branch VB01                (gC/gS)
+      real(kind=sp)  ::CSf4VB01    ! I  carbon-sulphur ratio in root VB01                  (gC/gS)
+      real(kind=sp)  ::CSf5VB01    ! I  carbon-sulphur ratio in fineroot                   (gC/gS)
+      real(kind=sp)  ::FfolPOC1    ! I  fraction of biomass foliage to POC1                (-)
+      real(kind=sp)  ::FfolPOC2    ! I  fraction of biomass foliage to POC2                (-)
+      real(kind=sp)  ::FfrootPOC1  ! I  fraction of biomass root to POC1                   (-)
+      real(kind=sp)  ::FfrootPOC2  ! I  fraction of biomass root to POC2                   (-)
+      real(kind=sp)  ::DELT        ! I  timestep for processes                             (d)
+      real(kind=sp)  ::Depth       ! I  depth of computational cell                        (m)
 
-      real(4) SwWV        ! I  use wetland vegetation model (0=no,1=yes)          (-)
-      real(4) Rc0MSWV     ! I  senescence mortality rate for VB01 at 20 oC        (1/d)
-      real(4) TcMSWV      ! I  temperature coefficient of WV mort. for VB01       (-)
-      real(4) RcMGRWV     ! I  grazing mortality pressure for VB01                (g/m2/d)
-      real(4) AcMWV       ! I  acceleration factor for senescence mort VB0#       (-)
-      real(4) MinRWV      ! I  maximum biomass ratio for VB0#                     (-)
-      real(4) MaxRWV      ! I  maximum biomass ratio for VB0#                     (-)
-      real(4) TBmWV       ! I  target total biomass for VB01                      (tC/ha)
-      real(4) TempAir     ! I  Air temperature                                    (oC)
-      real(4) minVB       ! I  minimum biomass for all vegetation                 (gC/m2)
+      real(kind=sp)  ::SwWV        ! I  use wetland vegetation model (0=no,1=yes)          (-)
+      real(kind=sp)  ::Rc0MSWV     ! I  senescence mortality rate for VB01 at 20 oC        (1/d)
+      real(kind=sp)  ::TcMSWV      ! I  temperature coefficient of WV mort. for VB01       (-)
+      real(kind=sp)  ::RcMGRWV     ! I  grazing mortality pressure for VB01                (g/m2/d)
+      real(kind=sp)  ::AcMWV       ! I  acceleration factor for senescence mort VB0#       (-)
+      real(kind=sp)  ::MinRWV      ! I  maximum biomass ratio for VB0#                     (-)
+      real(kind=sp)  ::MaxRWV      ! I  maximum biomass ratio for VB0#                     (-)
+      real(kind=sp)  ::TBmWV       ! I  target total biomass for VB01                      (tC/ha)
+      real(kind=sp)  ::TempAir     ! I  Air temperature                                    (oC)
+      real(kind=sp)  ::minVB       ! I  minimum biomass for all vegetation                 (gC/m2)
 
-      real(4) fMrtVB      ! O Total mortality flux for VB0                        (gC/m2/d)
+      real(kind=sp)  ::fMrtVB      ! O Total mortality flux for VB0                        (gC/m2/d)
 
-      real(4) fMC2VB01P1  ! O  mortality foliage VB01 to POC1                     (gC/m2/d)
-      real(4) fMC2VB01P2  ! O  mortality foliage VB01 to POC2                     (gC/m2/d)
-      real(4) fMC2VB01P3  ! O  mortality foliage VB01 to POC3                     (gC/m2/d)
-      real(4) fMN2VB01P1  ! O  mortality foliage VB01 to PON1                     (gN/m2/d)
-      real(4) fMN2VB01P2  ! O  mortality foliage VB01 to PON2                     (gN/m2/d)
-      real(4) fMN2VB01P3  ! O  mortality foliage VB01 to PON3                     (gN/m2/d)
-      real(4) fMP2VB01P1  ! O  mortality foliage VB01 to POP1                     (gP/m2/d)
-      real(4) fMP2VB01P2  ! O  mortality foliage VB01 to POP2                     (gP/m2/d)
-      real(4) fMP2VB01P3  ! O  mortality foliage VB01 to POP3                     (gP/m2/d)
-      real(4) fMS2VB01P1  ! O  mortality foliage VB01 to POS1                     (gS/m2/d)
-      real(4) fMS2VB01P2  ! O  mortality foliage VB01 to POS2                     (gS/m2/d)
-      real(4) fMS2VB01P3  ! O  mortality foliage VB01 to POS3                     (gS/m2/d)
-      real(4) fMC5VB01P1  ! O  mortality fineroot VB01 to POC1                    (gC/m2/d)
-      real(4) fMC5VB01P2  ! O  mortality fineroot VB01 to POC2                    (gC/m2/d)
-      real(4) fMC5VB01P3  ! O  mortality fineroot VB01 to POC3                    (gC/m2/d)
-      real(4) fMN5VB01P1  ! O  mortality fineroot VB01 to PON1                    (gN/m2/d)
-      real(4) fMN5VB01P2  ! O  mortality fineroot VB01 to PON2                    (gN/m2/d)
-      real(4) fMN5VB01P3  ! O  mortality fineroot VB01 to PON3                    (gN/m2/d)
-      real(4) fMP5VB01P1  ! O  mortality fineroot VB01 to POP1                    (gP/m2/d)
-      real(4) fMP5VB01P2  ! O  mortality fineroot VB01 to POP2                    (gP/m2/d)
-      real(4) fMP5VB01P3  ! O  mortality fineroot VB01 to POP3                    (gP/m2/d)
-      real(4) fMS5VB01P1  ! O  mortality fineroot VB01 to POS1                    (gS/m2/d)
-      real(4) fMS5VB01P2  ! O  mortality fineroot VB01 to POS2                    (gS/m2/d)
-      real(4) fMS5VB01P3  ! O  mortality fineroot VB01 to POS3                    (gS/m2/d)
-      real(4) dMrtC1VB01  ! F  mortality stem VB01                                (gC/m3/d)
-      real(4) dMrtC3VB01  ! F  mortality branch VB01                              (gC/m3/d)
-      real(4) dMrtC4VB01  ! F  mortality root VB01                                (gC/m3/d)
+      real(kind=sp)  ::fMC2VB01P1  ! O  mortality foliage VB01 to POC1                     (gC/m2/d)
+      real(kind=sp)  ::fMC2VB01P2  ! O  mortality foliage VB01 to POC2                     (gC/m2/d)
+      real(kind=sp)  ::fMC2VB01P3  ! O  mortality foliage VB01 to POC3                     (gC/m2/d)
+      real(kind=sp)  ::fMN2VB01P1  ! O  mortality foliage VB01 to PON1                     (gN/m2/d)
+      real(kind=sp)  ::fMN2VB01P2  ! O  mortality foliage VB01 to PON2                     (gN/m2/d)
+      real(kind=sp)  ::fMN2VB01P3  ! O  mortality foliage VB01 to PON3                     (gN/m2/d)
+      real(kind=sp)  ::fMP2VB01P1  ! O  mortality foliage VB01 to POP1                     (gP/m2/d)
+      real(kind=sp)  ::fMP2VB01P2  ! O  mortality foliage VB01 to POP2                     (gP/m2/d)
+      real(kind=sp)  ::fMP2VB01P3  ! O  mortality foliage VB01 to POP3                     (gP/m2/d)
+      real(kind=sp)  ::fMS2VB01P1  ! O  mortality foliage VB01 to POS1                     (gS/m2/d)
+      real(kind=sp)  ::fMS2VB01P2  ! O  mortality foliage VB01 to POS2                     (gS/m2/d)
+      real(kind=sp)  ::fMS2VB01P3  ! O  mortality foliage VB01 to POS3                     (gS/m2/d)
+      real(kind=sp)  ::fMC5VB01P1  ! O  mortality fineroot VB01 to POC1                    (gC/m2/d)
+      real(kind=sp)  ::fMC5VB01P2  ! O  mortality fineroot VB01 to POC2                    (gC/m2/d)
+      real(kind=sp)  ::fMC5VB01P3  ! O  mortality fineroot VB01 to POC3                    (gC/m2/d)
+      real(kind=sp)  ::fMN5VB01P1  ! O  mortality fineroot VB01 to PON1                    (gN/m2/d)
+      real(kind=sp)  ::fMN5VB01P2  ! O  mortality fineroot VB01 to PON2                    (gN/m2/d)
+      real(kind=sp)  ::fMN5VB01P3  ! O  mortality fineroot VB01 to PON3                    (gN/m2/d)
+      real(kind=sp)  ::fMP5VB01P1  ! O  mortality fineroot VB01 to POP1                    (gP/m2/d)
+      real(kind=sp)  ::fMP5VB01P2  ! O  mortality fineroot VB01 to POP2                    (gP/m2/d)
+      real(kind=sp)  ::fMP5VB01P3  ! O  mortality fineroot VB01 to POP3                    (gP/m2/d)
+      real(kind=sp)  ::fMS5VB01P1  ! O  mortality fineroot VB01 to POS1                    (gS/m2/d)
+      real(kind=sp)  ::fMS5VB01P2  ! O  mortality fineroot VB01 to POS2                    (gS/m2/d)
+      real(kind=sp)  ::fMS5VB01P3  ! O  mortality fineroot VB01 to POS3                    (gS/m2/d)
+      real(kind=sp)  ::dMrtC1VB01  ! F  mortality stem VB01                                (gC/m3/d)
+      real(kind=sp)  ::dMrtC3VB01  ! F  mortality branch VB01                              (gC/m3/d)
+      real(kind=sp)  ::dMrtC4VB01  ! F  mortality root VB01                                (gC/m3/d)
 
-      real(4) dMrtC2VB01  ! F  mortality foliage VB01                             (gC/m3/d)
-      real(4) dMrtC5VB01  ! F  mortality fineroot VB01                            (gC/m3/d)
+      real(kind=sp)  ::dMrtC2VB01  ! F  mortality foliage VB01                             (gC/m3/d)
+      real(kind=sp)  ::dMrtC5VB01  ! F  mortality fineroot VB01                            (gC/m3/d)
 
 
-      real(4) dMrtN1VB01  ! F  mortality stem VB01                                (gN/m3/d)
-      real(4) dMrtN3VB01  ! F  mortality branch VB01                              (gN/m3/d)
-      real(4) dMrtN4VB01  ! F  mortality root VB01                                (gN/m3/d)
-      real(4) dMrtP1VB01  ! F  mortality stem VB01                                (gP/m3/d)
-      real(4) dMrtP3VB01  ! F  mortality branch VB01                              (gP/m3/d)
-      real(4) dMrtP4VB01  ! F  mortality root VB01                                (gP/m3/d)
-      real(4) dMrtS1VB01  ! F  mortality stem VB01                                (gS/m3/d)
-      real(4) dMrtS3VB01  ! F  mortality branch VB01                              (gS/m3/d)
-      real(4) dMrtS4VB01  ! F  mortality root VB01                                (gS/m3/d)
+      real(kind=sp)  ::dMrtN1VB01  ! F  mortality stem VB01                                (gN/m3/d)
+      real(kind=sp)  ::dMrtN3VB01  ! F  mortality branch VB01                              (gN/m3/d)
+      real(kind=sp)  ::dMrtN4VB01  ! F  mortality root VB01                                (gN/m3/d)
+      real(kind=sp)  ::dMrtP1VB01  ! F  mortality stem VB01                                (gP/m3/d)
+      real(kind=sp)  ::dMrtP3VB01  ! F  mortality branch VB01                              (gP/m3/d)
+      real(kind=sp)  ::dMrtP4VB01  ! F  mortality root VB01                                (gP/m3/d)
+      real(kind=sp)  ::dMrtS1VB01  ! F  mortality stem VB01                                (gS/m3/d)
+      real(kind=sp)  ::dMrtS3VB01  ! F  mortality branch VB01                              (gS/m3/d)
+      real(kind=sp)  ::dMrtS4VB01  ! F  mortality root VB01                                (gS/m3/d)
 
-      real(4) fMrtC1VB01  ! O  mortality stem VB01                                (gC/m3/d)
-      real(4) fMrtC3VB01  ! O  mortality branch VB01                              (gC/m3/d)
-      real(4) fMrtC4VB01  ! O  mortality root VB01                                (gC/m3/d)
-      real(4) fMrtN1VB01  ! O  mortality stem VB01                                (gN/m3/d)
-      real(4) fMrtN3VB01  ! O  mortality branch VB01                              (gN/m3/d)
-      real(4) fMrtN4VB01  ! O  mortality root VB01                                (gN/m3/d)
-      real(4) fMrtP1VB01  ! O  mortality stem VB01                                (gP/m3/d)
-      real(4) fMrtP3VB01  ! O  mortality branch VB01                              (gP/m3/d)
-      real(4) fMrtP4VB01  ! O  mortality root VB01                                (gP/m3/d)
-      real(4) fMrtS1VB01  ! O  mortality stem VB01                                (gS/m3/d)
-      real(4) fMrtS3VB01  ! O  mortality branch VB01                              (gS/m3/d)
-      real(4) fMrtS4VB01  ! O  mortality root VB01                                (gS/m3/d)
+      real(kind=sp)  ::fMrtC1VB01  ! O  mortality stem VB01                                (gC/m3/d)
+      real(kind=sp)  ::fMrtC3VB01  ! O  mortality branch VB01                              (gC/m3/d)
+      real(kind=sp)  ::fMrtC4VB01  ! O  mortality root VB01                                (gC/m3/d)
+      real(kind=sp)  ::fMrtN1VB01  ! O  mortality stem VB01                                (gN/m3/d)
+      real(kind=sp)  ::fMrtN3VB01  ! O  mortality branch VB01                              (gN/m3/d)
+      real(kind=sp)  ::fMrtN4VB01  ! O  mortality root VB01                                (gN/m3/d)
+      real(kind=sp)  ::fMrtP1VB01  ! O  mortality stem VB01                                (gP/m3/d)
+      real(kind=sp)  ::fMrtP3VB01  ! O  mortality branch VB01                              (gP/m3/d)
+      real(kind=sp)  ::fMrtP4VB01  ! O  mortality root VB01                                (gP/m3/d)
+      real(kind=sp)  ::fMrtS1VB01  ! O  mortality stem VB01                                (gS/m3/d)
+      real(kind=sp)  ::fMrtS3VB01  ! O  mortality branch VB01                              (gS/m3/d)
+      real(kind=sp)  ::fMrtS4VB01  ! O  mortality root VB01                                (gS/m3/d)
 
-      real(4) rcdec       ! I  decay rate for vegetation mortality
+      real(kind=sp)  ::rcdec       ! I  decay rate for vegetation mortality
 
-      real(4) rcdecact    ! O  actual decay rate for vegetation mortality
-      real(4) fMrt        ! O  total decay for vegetation mortality
+      real(kind=sp)  ::rcdecact    ! O  actual decay rate for vegetation mortality
+      real(kind=sp)  ::fMrt        ! O  total decay for vegetation mortality
 
-      integer IdMrtC1VB01 !    Pointer to the mortality stem VB01
-      integer IdMrtC3VB01 !    Pointer to the mortality branch VB01
-      integer IdMrtC4VB01 !    Pointer to the mortality root VB01
+      integer(kind=int_32)  ::IdMrtC1VB01 !    Pointer to the mortality stem VB01
+      integer(kind=int_32)  ::IdMrtC3VB01 !    Pointer to the mortality branch VB01
+      integer(kind=int_32)  ::IdMrtC4VB01 !    Pointer to the mortality root VB01
 
-      integer IdMrtC2VB01 !    Pointer to the mortality foliage VB01
-      integer IdMrtC5VB01 !    Pointer to the mortality fineroots VB01
+      integer(kind=int_32)  ::IdMrtC2VB01 !    Pointer to the mortality foliage VB01
+      integer(kind=int_32)  ::IdMrtC5VB01 !    Pointer to the mortality fineroots VB01
 
-      integer IdMrtN1VB01 !    Pointer to the mortality stem VB01
-      integer IdMrtN3VB01 !    Pointer to the mortality branch VB01
-      integer IdMrtN4VB01 !    Pointer to the mortality root VB01
-      integer IdMrtP1VB01 !    Pointer to the mortality stem VB01
-      integer IdMrtP3VB01 !    Pointer to the mortality branch VB01
-      integer IdMrtP4VB01 !    Pointer to the mortality root VB01
-      integer IdMrtS1VB01 !    Pointer to the mortality stem VB01
-      integer IdMrtS3VB01 !    Pointer to the mortality branch VB01
-      integer IdMrtS4VB01 !    Pointer to the mortality root VB01
-      integer             :: ikmrk1         ! first feature
-      integer             :: ikmrk2         ! second feature
+      integer(kind=int_32)  ::IdMrtN1VB01 !    Pointer to the mortality stem VB01
+      integer(kind=int_32)  ::IdMrtN3VB01 !    Pointer to the mortality branch VB01
+      integer(kind=int_32)  ::IdMrtN4VB01 !    Pointer to the mortality root VB01
+      integer(kind=int_32)  ::IdMrtP1VB01 !    Pointer to the mortality stem VB01
+      integer(kind=int_32)  ::IdMrtP3VB01 !    Pointer to the mortality branch VB01
+      integer(kind=int_32)  ::IdMrtP4VB01 !    Pointer to the mortality root VB01
+      integer(kind=int_32)  ::IdMrtS1VB01 !    Pointer to the mortality stem VB01
+      integer(kind=int_32)  ::IdMrtS3VB01 !    Pointer to the mortality branch VB01
+      integer(kind=int_32)  ::IdMrtS4VB01 !    Pointer to the mortality root VB01
+      integer(kind=int_32)              ::ikmrk1         ! first feature
+      integer(kind=int_32)              ::ikmrk2         ! second feature
 
 ! Local variables
-      integer nrofinputs  !    Number of inputs
-      real(4) Temp20      !    Air temperature minus 20                              (oC)
-      real(4) TempCof     !    Temperature coefficient
-      real(4) rVB1        !    Ratio between current biomass and target biomass       (-)
-      real(4) maxfMrtVB   !    Maximum biomass flux                              (g/m2/d)
+      integer(kind=int_32)  ::nrofinputs  !    Number of inputs
+      real(kind=sp)  ::Temp20      !    Air temperature minus 20                              (oC)
+      real(kind=sp)  ::TempCof     !    Temperature coefficient
+      real(kind=sp)  ::rVB1        !    Ratio between current biomass and target biomass       (-)
+      real(kind=sp)  ::maxfMrtVB   !    Maximum biomass flux                              (g/m2/d)
 !
 !*******************************************************************************
 !

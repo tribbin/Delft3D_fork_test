@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_vbgro
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -41,106 +43,106 @@ contains
 !
 !     Type    Name         I/O Description
 !
-      real(4) pmsa(*)     !I/O Process Manager System Array, window of routine to process library
-      real(4) fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
-      integer ipoint( 60) ! I  Array of pointers in pmsa to get and store the data
-      integer increm( 60) ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
-      integer noseg       ! I  Number of computational elements in the whole model schematisation
-      integer noflux      ! I  Number of fluxes, increment in the fl array
-      integer iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
-      integer iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
-      integer noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
-      integer noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
-      integer noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
-      integer noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
-      integer ipnt( 60)   !    Local work array for the pointering
-      integer iseg        !    Local loop counter for computational element loop
+      real(kind=sp)  ::pmsa(*)     !I/O Process Manager System Array, window of routine to process library
+      real(kind=sp)  ::fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
+      integer(kind=int_32)  ::ipoint( 60) ! I  Array of pointers in pmsa to get and store the data
+      integer(kind=int_32)  ::increm( 60) ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
+      integer(kind=int_32)  ::noseg       ! I  Number of computational elements in the whole model schematisation
+      integer(kind=int_32)  ::noflux      ! I  Number of fluxes, increment in the fl array
+      integer(kind=int_32)  ::iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
+      integer(kind=int_32)  ::iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
+      integer(kind=int_32)  ::noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
+      integer(kind=int_32)  ::noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
+      integer(kind=int_32)  ::noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
+      integer(kind=int_32)  ::noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
+      integer(kind=int_32)  ::ipnt( 60)   !    Local work array for the pointering
+      integer(kind=int_32)  ::iseg        !    Local loop counter for computational element loop
 !
 !*******************************************************************************
 !
 !     Type    Name         I/O Description                                        Unit
 !
-      real(4) VB1         ! I  vegetation biomass cohort 1                        (gC/m2)
-      real(4) maxVB1      ! I  maximum vegetation biomass cohort 1                (Tdm/hac)
-      real(4) minVB1      ! I  minimum vegetation biomass cohort 1                (Tdm/hac)
-      real(4) hlfAgeVB1   ! I  age where biomass is half of maximum cohort 1      (d)
-      real(4) sfVB1       ! I  shape factor growth curve cohort 1                 (-)
-      real(4) dmCfVB1     ! I  dry matter carbon ratio veg. cohort 1              (dm/gC)
-      real(4) iniVB1      ! I  initial veg. biomass cohort 1                      (Tdm/hac)
-      real(4) iniCovVB1   ! I  initial veg. coverage cohort 1                     (hac/ha)
-!     real(4), allocatable       ::SWini(:)
+      real(kind=sp)  ::VB1         ! I  vegetation biomass cohort 1                        (gC/m2)
+      real(kind=sp)  ::maxVB1      ! I  maximum vegetation biomass cohort 1                (Tdm/hac)
+      real(kind=sp)  ::minVB1      ! I  minimum vegetation biomass cohort 1                (Tdm/hac)
+      real(kind=sp)  ::hlfAgeVB1   ! I  age where biomass is half of maximum cohort 1      (d)
+      real(kind=sp)  ::sfVB1       ! I  shape factor growth curve cohort 1                 (-)
+      real(kind=sp)  ::dmCfVB1     ! I  dry matter carbon ratio veg. cohort 1              (dm/gC)
+      real(kind=sp)  ::iniVB1      ! I  initial veg. biomass cohort 1                      (Tdm/hac)
+      real(kind=sp)  ::iniCovVB1   ! I  initial veg. coverage cohort 1                     (hac/ha)
+!     real(kind=sp), allocatable ::SWini(:)
 !                         ! I  switch 0=firsttime init 1=biomass 2=fr coverage cohort 1   (-)
-      real(4) Surf        ! I  horizontal surface area of a DELWAQ segment        (m2)
-      real(4) DELT        ! I  timestep for processes                             (d)
-      real(4) Volume      ! I  volume of computational cell                       (m3)
-      real(4) ageVB1      ! O  age of vegation cohort 1                           (d)
-      real(4) VB1ha       ! O  vegetation biomass cohort 1                        (TC/hac)
-      real(4) VBA1ha      ! O  attainable vegetation biomass cohort 1             (TC/hac)
-      real(4) rGWV1       ! O  growth rate vegetation biomass cohort 1            (1/d)
-      real(4) fVB1        ! O  growth rate vegetation biomass cohort 1            (gC/m2/d)
-      real(4) dVB1        ! F  growth rate vegetation biomass cohort 1            (gC/m3/d)
-      real(4) SwGrowth    ! I  switch 0=no growth 1=growth                        (-)
-      real(4) SwMrt       ! I  switch 0=no mortality 1=mortality                  (-)
-      real(4) VBAge0ha    ! O  vegetation biomass per ha at age is zero       (gC/ha)
-      integer IdVB1       !    Pointer to the growth rate vegetation biomass cohort 1
-      integer VBType      ! I  code of vegetation type for error and warnings      (-)
-      integer SWiniVB1    !    0=no init, 1=init.
-      integer SWregro     !    0=no regrowth, 1=regrowth allowed
+      real(kind=sp)  ::Surf        ! I  horizontal surface area of a DELWAQ segment        (m2)
+      real(kind=sp)  ::DELT        ! I  timestep for processes                             (d)
+      real(kind=sp)  ::Volume      ! I  volume of computational cell                       (m3)
+      real(kind=sp)  ::ageVB1      ! O  age of vegation cohort 1                           (d)
+      real(kind=sp)  ::VB1ha       ! O  vegetation biomass cohort 1                        (TC/hac)
+      real(kind=sp)  ::VBA1ha      ! O  attainable vegetation biomass cohort 1             (TC/hac)
+      real(kind=sp)  ::rGWV1       ! O  growth rate vegetation biomass cohort 1            (1/d)
+      real(kind=sp)  ::fVB1        ! O  growth rate vegetation biomass cohort 1            (gC/m2/d)
+      real(kind=sp)  ::dVB1        ! F  growth rate vegetation biomass cohort 1            (gC/m3/d)
+      real(kind=sp)  ::SwGrowth    ! I  switch 0=no growth 1=growth                        (-)
+      real(kind=sp)  ::SwMrt       ! I  switch 0=no mortality 1=mortality                  (-)
+      real(kind=sp)  ::VBAge0ha    ! O  vegetation biomass per ha at age is zero       (gC/ha)
+      integer(kind=int_32)  ::IdVB1       !    Pointer to the growth rate vegetation biomass cohort 1
+      integer(kind=int_32)  ::VBType      ! I  code of vegetation type for error and warnings      (-)
+      integer(kind=int_32)  ::SWiniVB1    !    0=no init, 1=init.
+      integer(kind=int_32)  ::SWregro     !    0=no regrowth, 1=regrowth allowed
       logical, save       :: first = .true.      !
-      integer             :: ikmrk1         ! first feature
-      integer             :: ikmrk2         ! second feature
-      integer ILUMON
-!     integer, allocatable, save  ::  SWDying(:)     ! keep track off whether veg. is dying
-      integer  SWDying
+      integer(kind=int_32)              ::ikmrk1         ! first feature
+      integer(kind=int_32)              ::ikmrk2         ! second feature
+      integer(kind=int_32)  ::ILUMON
+!     integer(kind=int_32), allocatable, save ::SWDying(:)     ! keep track off whether veg. is dying
+      integer(kind=int_32)   ::SWDying
 
 
-      real(4) navail      ! i  available nitrogen                                 (g/m2)
-      real(4) pavail      ! i  available nitrogen                                 (g/m2)
-      real(4) savail      ! i  available nitrogen                                 (g/m2)
-      real(4) FravailM    ! i  fraction available nutrient for uptake             (-)
-      real(4) F1VB        ! I  allocation factor comp. 1 (stem) VB01              (-)
-      real(4) F2VB        ! I  allocation factor comp. 2 (foliage) VB01           (-)
-      real(4) F3VB        ! I  allocation factor comp. 3 (branch) VB01            (-)
-      real(4) F4VB        ! I  allocation factor comp. 4 (root) VB01              (-)
-      real(4) F5VB        ! I  allocation factor comp. 5 (fineroot) VB01          (-)
-      real(4) CNf1VB      ! I  carbon-nitrogen ratio in stem VB01                 (gC/gN)
-      real(4) CNf2VB      ! I  carbon-nitrogen ratio in foliage VB01              (gC/gN)
-      real(4) CNf3VB      ! I  carbon-nitrogen ratio in branch VB01               (gC/gN)
-      real(4) CNf4VB      ! I  carbon-nitrogen ratio in root VB01                 (gC/gN)
-      real(4) CNf5VB      ! I  carbon-nitrogen ratio in fineroot VB01             (gC/gN)
-      real(4) CPf1VB      ! I  carbon-phosporus ratio in stem VB01                (gC/gP)
-      real(4) CPf2VB      ! I  carbon-phosporus ratio in foliage VB01             (gC/gP)
-      real(4) CPf3VB      ! I  carbon-phosporus ratio in branch VB01              (gC/gP)
-      real(4) CPf4VB      ! I  carbon-phosporus ratio in root VB01                (gC/gP)
-      real(4) CPf5VB      ! I  carbon-phosporus ratio in fineroot VB01            (gC/gP)
-      real(4) CSf1VB      ! I  carbon-sulphur ratio in stem VB01                  (gC/gS)
-      real(4) CSf2VB      ! I  carbon-sulphur ratio in foliage VB01               (gC/gS)
-      real(4) CSf3VB      ! I  carbon-sulphur ratio in branch VB01                (gC/gS)
-      real(4) CSf4VB      ! I  carbon-sulphur ratio in root VB01                  (gC/gS)
-      real(4) CSf5VB      ! I  carbon-sulphur ratio in fineroot                   (gC/gS)
-      real(4) weighCN     ! I  n content of VB01                                     (gN)
-      real(4) weighCP     ! I  p content of VB01                                     (gP)
-      real(4) weighCS     ! I  s content of VB01                                     (gS)
-      real(4) NutGroFac   ! I  nutrient growth factor <0=full lim, 1=no lim           (-)
-      real(4) dVB1MaxNl   ! O  maximum growth rate acc to avail nutrients       (gC/m2/d)
-      real(4) initAge     ! I  initial age of vegetation at start of simulation       (d)
-      real(4) iniSWDying  ! I  initial status of vegetation at start of simulation    (d)
-      real(4) SwWV        ! I  use wetland vegetation model (0=no,1=yes)              (-)
-      real(4) Rc0GWV      ! I  wetland vegetation growth rate VB01 at 20 oC         (1/d)
-      real(4) TcGWV       ! I  temperature coefficient of WV growth for VB01          (-)
-      real(4) AcGWV       ! I  acceleration factor for WV growth of VB01              (-)
-      real(4) MinRWV      ! I  minimum biomass ratio for VB01                         (-)
-      real(4) TBmWV       ! I  target total biomass for VB01                      (tc/ha)
-      real(4) TempAir     ! I  Air temperature                                       (oC)
-      real(4) minVB       ! I  minimum biomass for all vegetation                 (gC/m2)
+      real(kind=sp)  ::navail      ! i  available nitrogen                                 (g/m2)
+      real(kind=sp)  ::pavail      ! i  available nitrogen                                 (g/m2)
+      real(kind=sp)  ::savail      ! i  available nitrogen                                 (g/m2)
+      real(kind=sp)  ::FravailM    ! i  fraction available nutrient for uptake             (-)
+      real(kind=sp)  ::F1VB        ! I  allocation factor comp. 1 (stem) VB01              (-)
+      real(kind=sp)  ::F2VB        ! I  allocation factor comp. 2 (foliage) VB01           (-)
+      real(kind=sp)  ::F3VB        ! I  allocation factor comp. 3 (branch) VB01            (-)
+      real(kind=sp)  ::F4VB        ! I  allocation factor comp. 4 (root) VB01              (-)
+      real(kind=sp)  ::F5VB        ! I  allocation factor comp. 5 (fineroot) VB01          (-)
+      real(kind=sp)  ::CNf1VB      ! I  carbon-nitrogen ratio in stem VB01                 (gC/gN)
+      real(kind=sp)  ::CNf2VB      ! I  carbon-nitrogen ratio in foliage VB01              (gC/gN)
+      real(kind=sp)  ::CNf3VB      ! I  carbon-nitrogen ratio in branch VB01               (gC/gN)
+      real(kind=sp)  ::CNf4VB      ! I  carbon-nitrogen ratio in root VB01                 (gC/gN)
+      real(kind=sp)  ::CNf5VB      ! I  carbon-nitrogen ratio in fineroot VB01             (gC/gN)
+      real(kind=sp)  ::CPf1VB      ! I  carbon-phosporus ratio in stem VB01                (gC/gP)
+      real(kind=sp)  ::CPf2VB      ! I  carbon-phosporus ratio in foliage VB01             (gC/gP)
+      real(kind=sp)  ::CPf3VB      ! I  carbon-phosporus ratio in branch VB01              (gC/gP)
+      real(kind=sp)  ::CPf4VB      ! I  carbon-phosporus ratio in root VB01                (gC/gP)
+      real(kind=sp)  ::CPf5VB      ! I  carbon-phosporus ratio in fineroot VB01            (gC/gP)
+      real(kind=sp)  ::CSf1VB      ! I  carbon-sulphur ratio in stem VB01                  (gC/gS)
+      real(kind=sp)  ::CSf2VB      ! I  carbon-sulphur ratio in foliage VB01               (gC/gS)
+      real(kind=sp)  ::CSf3VB      ! I  carbon-sulphur ratio in branch VB01                (gC/gS)
+      real(kind=sp)  ::CSf4VB      ! I  carbon-sulphur ratio in root VB01                  (gC/gS)
+      real(kind=sp)  ::CSf5VB      ! I  carbon-sulphur ratio in fineroot                   (gC/gS)
+      real(kind=sp)  ::weighCN     ! I  n content of VB01                                     (gN)
+      real(kind=sp)  ::weighCP     ! I  p content of VB01                                     (gP)
+      real(kind=sp)  ::weighCS     ! I  s content of VB01                                     (gS)
+      real(kind=sp)  ::NutGroFac   ! I  nutrient growth factor <0=full lim, 1=no lim           (-)
+      real(kind=sp)  ::dVB1MaxNl   ! O  maximum growth rate acc to avail nutrients       (gC/m2/d)
+      real(kind=sp)  ::initAge     ! I  initial age of vegetation at start of simulation       (d)
+      real(kind=sp)  ::iniSWDying  ! I  initial status of vegetation at start of simulation    (d)
+      real(kind=sp)  ::SwWV        ! I  use wetland vegetation model (0=no,1=yes)              (-)
+      real(kind=sp)  ::Rc0GWV      ! I  wetland vegetation growth rate VB01 at 20 oC         (1/d)
+      real(kind=sp)  ::TcGWV       ! I  temperature coefficient of WV growth for VB01          (-)
+      real(kind=sp)  ::AcGWV       ! I  acceleration factor for WV growth of VB01              (-)
+      real(kind=sp)  ::MinRWV      ! I  minimum biomass ratio for VB01                         (-)
+      real(kind=sp)  ::TBmWV       ! I  target total biomass for VB01                      (tc/ha)
+      real(kind=sp)  ::TempAir     ! I  Air temperature                                       (oC)
+      real(kind=sp)  ::minVB       ! I  minimum biomass for all vegetation                 (gC/m2)
 
 ! Local variables
-      integer nrofinputs  !    Number of inputs
-      real(4) Temp20      !    Air temperature minus 20                              (oC)
-      real(4) TempCof     !    Temperature coefficient
-      real(4) rVB1        !    Ratio between current biomass and target biomass       (-)
-      integer, save       :: ifirst(1:18) = 0     !    for 2x initialisation of 9 types veg
-!      integer, allocatable, save  :: iknmrk_save(:) ! copy of the original feature array
+      integer(kind=int_32)  ::nrofinputs  !    Number of inputs
+      real(kind=sp)  ::Temp20      !    Air temperature minus 20                              (oC)
+      real(kind=sp)  ::TempCof     !    Temperature coefficient
+      real(kind=sp)  ::rVB1        !    Ratio between current biomass and target biomass       (-)
+      integer(kind=int_32), save        ::ifirst(1:18) = 0     !    for 2x initialisation of 9 types veg
+!      integer(kind=int_32), allocatable, save ::iknmrk_save(:) ! copy of the original feature array
 !
 !*******************************************************************************
 !

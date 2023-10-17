@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_vbxs12
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -42,18 +44,18 @@ contains
 !
 !     Type    Name         I/O Description
 !
-      real(4) pmsa(*)     !I/O Process Manager System Array, window of routine to process library
-      real(4) fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
-      integer ipoint(*)  ! I  Array of pointers in pmsa to get and store the data
-      integer increm(*)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
-      integer noseg       ! I  Number of computational elements in the whole model schematisation
-      integer noflux      ! I  Number of fluxes, increment in the fl array
-      integer iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
-      integer iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
-      integer noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
-      integer noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
-      integer noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
-      integer noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
+      real(kind=sp)  ::pmsa(*)     !I/O Process Manager System Array, window of routine to process library
+      real(kind=sp)  ::fl(*)       ! O  Array of fluxes made by this process in mass/volume/time
+      integer(kind=int_32)  ::ipoint(*)  ! I  Array of pointers in pmsa to get and store the data
+      integer(kind=int_32)  ::increm(*)  ! I  Increments in ipoint for segment loop, 0=constant, 1=spatially varying
+      integer(kind=int_32)  ::noseg       ! I  Number of computational elements in the whole model schematisation
+      integer(kind=int_32)  ::noflux      ! I  Number of fluxes, increment in the fl array
+      integer(kind=int_32)  ::iexpnt(4,*) ! I  From, To, From-1 and To+1 segment numbers of the exchange surfaces
+      integer(kind=int_32)  ::iknmrk(*)   ! I  Active-Inactive, Surface-water-bottom, see manual for use
+      integer(kind=int_32)  ::noq1        ! I  Nr of exchanges in 1st direction (the horizontal dir if irregular mesh)
+      integer(kind=int_32)  ::noq2        ! I  Nr of exchanges in 2nd direction, noq1+noq2 gives hor. dir. reg. grid
+      integer(kind=int_32)  ::noq3        ! I  Nr of exchanges in 3rd direction, vertical direction, pos. downward
+      integer(kind=int_32)  ::noq4        ! I  Nr of exchanges in the bottom (bottom layers, specialist use only)
 !
 !*******************************************************************************
 !     This process replaces the 8 pre-existing VB processes for the S12 mode, in combination with DELWAQG
@@ -65,297 +67,297 @@ contains
       ! fixed quantities
 
       ! pointers to input items
-      integer,parameter :: ip_SwEmersion = 1
-      integer,parameter :: ip_SwVegMod = 2
-      integer,parameter :: ip_VBType = 3
-      integer,parameter :: ip_nsfVB = 4
-      integer,parameter :: ip_CrnsfVB = 5
-      integer,parameter :: ip_Initnsfd = 6
-      integer,parameter :: ip_CrdepVB = 7
-      integer,parameter :: ip_nscdVB = 8
-      integer,parameter :: ip_InnscdVB = 9
-      integer,parameter :: ip_DELT = 10
-      integer,parameter :: ip_TotalDepth = 11
-      integer,parameter :: ip_Depth = 12
-      integer,parameter :: ip_LocalDepth = 13
-      integer,parameter :: ip_Volume = 14
-      integer,parameter :: ip_Surf = 15
-      integer,parameter :: ip_RootDeVB = 16
-      integer,parameter :: ip_NH4 = 17
-      integer,parameter :: ip_NO3 = 18
-      integer,parameter :: ip_AAP = 19
-      integer,parameter :: ip_PO4 = 20
-      integer,parameter :: ip_SO4 = 21
-      integer,parameter :: ip_SUD = 22
-      integer,parameter :: ip_SWRootVB = 23
-      integer,parameter :: ip_VmaxVB = 24
-      integer,parameter :: ip_KmVB = 25
-      integer,parameter :: ip_ViniVB = 26
-      integer,parameter :: ip_PorSed = 27
-      integer,parameter :: ip_S1_NH4 = 28
-      integer,parameter :: ip_S1_NO3 = 29
-      integer,parameter :: ip_S1_AAP = 30
-      integer,parameter :: ip_S1_PO4 = 31
-      integer,parameter :: ip_S1_SO4 = 32
-      integer,parameter :: ip_S1_SUD = 33
-      integer,parameter :: ip_HSED = 34
-      integer,parameter :: ip_VB = 35
-      integer,parameter :: ip_maxVB = 36
-      integer,parameter :: ip_minVB = 37
-      integer,parameter :: ip_hlfAgeVB = 38
-      integer,parameter :: ip_sfVB = 39
-      integer,parameter :: ip_dmCfVB = 40
-      integer,parameter :: ip_iniVB = 41
-      integer,parameter :: ip_iniCovVB = 42
-      integer,parameter :: ip_SWiniVB = 43
-      integer,parameter :: ip_ageVB = 44
-      integer,parameter :: ip_VBNavail = 45
-      integer,parameter :: ip_VBPavail = 46
-      integer,parameter :: ip_VBSavail = 47
-      integer,parameter :: ip_VBFrMaxU = 48
-      integer,parameter :: ip_F1VB = 49
-      integer,parameter :: ip_F2VB = 50
-      integer,parameter :: ip_F3VB = 51
-      integer,parameter :: ip_F4VB = 52
-      integer,parameter :: ip_F5VB = 53
-      integer,parameter :: ip_CNf1VB = 54
-      integer,parameter :: ip_CNf2VB = 55
-      integer,parameter :: ip_CNf3VB = 56
-      integer,parameter :: ip_CNf4VB = 57
-      integer,parameter :: ip_CNf5VB = 58
-      integer,parameter :: ip_CPf1VB = 59
-      integer,parameter :: ip_CPf2VB = 60
-      integer,parameter :: ip_CPf3VB = 61
-      integer,parameter :: ip_CPf4VB = 62
-      integer,parameter :: ip_CPf5VB = 63
-      integer,parameter :: ip_CSf1VB = 64
-      integer,parameter :: ip_CSf2VB = 65
-      integer,parameter :: ip_CSf3VB = 66
-      integer,parameter :: ip_CSf4VB = 67
-      integer,parameter :: ip_CSf5VB = 68
-      integer,parameter :: ip_SWRegrVB = 69
-      integer,parameter :: ip_SWVBDec = 70
-      integer,parameter :: ip_IniAgeVB = 71
-      integer,parameter :: ip_IniVBdec = 72
-      integer,parameter :: ip_Rc0GWV = 73
-      integer,parameter :: ip_TcGWV = 74
-      integer,parameter :: ip_AcGWV = 75
-      integer,parameter :: ip_MinRWV = 76
-      integer,parameter :: ip_TBmWV = 77
-      integer,parameter :: ip_TempAir = 78
-      integer,parameter :: ip_MinVBAll = 79
-      integer,parameter :: ip_FfolPOC1 = 80
-      integer,parameter :: ip_FfolPOC2 = 81
-      integer,parameter :: ip_FfrootPOC1 = 82
-      integer,parameter :: ip_FfrootPOC2 = 83
-      integer,parameter :: ip_RcMrtVB = 84
-      integer,parameter :: ip_Rc0MSWV = 85
-      integer,parameter :: ip_TcMSWV = 86
-      integer,parameter :: ip_RcMGRWV = 87
-      integer,parameter :: ip_AcMWV = 88
-      integer,parameter :: ip_MaxRWV = 89
-      integer,parameter :: ip_SwDisVB = 90
-      integer,parameter :: ip_VegHeVB = 91
-      integer,parameter :: ip_FfacVB = 92
-      integer,parameter :: ip_fNVBup   = 93
-      integer,parameter :: ip_fPVBup   = 94
-      integer,parameter :: ip_fSVBup   = 95
-      integer,parameter :: nin = 95
+      integer(kind=int_32),parameter  ::ip_SwEmersion = 1
+      integer(kind=int_32),parameter  ::ip_SwVegMod = 2
+      integer(kind=int_32),parameter  ::ip_VBType = 3
+      integer(kind=int_32),parameter  ::ip_nsfVB = 4
+      integer(kind=int_32),parameter  ::ip_CrnsfVB = 5
+      integer(kind=int_32),parameter  ::ip_Initnsfd = 6
+      integer(kind=int_32),parameter  ::ip_CrdepVB = 7
+      integer(kind=int_32),parameter  ::ip_nscdVB = 8
+      integer(kind=int_32),parameter  ::ip_InnscdVB = 9
+      integer(kind=int_32),parameter  ::ip_DELT = 10
+      integer(kind=int_32),parameter  ::ip_TotalDepth = 11
+      integer(kind=int_32),parameter  ::ip_Depth = 12
+      integer(kind=int_32),parameter  ::ip_LocalDepth = 13
+      integer(kind=int_32),parameter  ::ip_Volume = 14
+      integer(kind=int_32),parameter  ::ip_Surf = 15
+      integer(kind=int_32),parameter  ::ip_RootDeVB = 16
+      integer(kind=int_32),parameter  ::ip_NH4 = 17
+      integer(kind=int_32),parameter  ::ip_NO3 = 18
+      integer(kind=int_32),parameter  ::ip_AAP = 19
+      integer(kind=int_32),parameter  ::ip_PO4 = 20
+      integer(kind=int_32),parameter  ::ip_SO4 = 21
+      integer(kind=int_32),parameter  ::ip_SUD = 22
+      integer(kind=int_32),parameter  ::ip_SWRootVB = 23
+      integer(kind=int_32),parameter  ::ip_VmaxVB = 24
+      integer(kind=int_32),parameter  ::ip_KmVB = 25
+      integer(kind=int_32),parameter  ::ip_ViniVB = 26
+      integer(kind=int_32),parameter  ::ip_PorSed = 27
+      integer(kind=int_32),parameter  ::ip_S1_NH4 = 28
+      integer(kind=int_32),parameter  ::ip_S1_NO3 = 29
+      integer(kind=int_32),parameter  ::ip_S1_AAP = 30
+      integer(kind=int_32),parameter  ::ip_S1_PO4 = 31
+      integer(kind=int_32),parameter  ::ip_S1_SO4 = 32
+      integer(kind=int_32),parameter  ::ip_S1_SUD = 33
+      integer(kind=int_32),parameter  ::ip_HSED = 34
+      integer(kind=int_32),parameter  ::ip_VB = 35
+      integer(kind=int_32),parameter  ::ip_maxVB = 36
+      integer(kind=int_32),parameter  ::ip_minVB = 37
+      integer(kind=int_32),parameter  ::ip_hlfAgeVB = 38
+      integer(kind=int_32),parameter  ::ip_sfVB = 39
+      integer(kind=int_32),parameter  ::ip_dmCfVB = 40
+      integer(kind=int_32),parameter  ::ip_iniVB = 41
+      integer(kind=int_32),parameter  ::ip_iniCovVB = 42
+      integer(kind=int_32),parameter  ::ip_SWiniVB = 43
+      integer(kind=int_32),parameter  ::ip_ageVB = 44
+      integer(kind=int_32),parameter  ::ip_VBNavail = 45
+      integer(kind=int_32),parameter  ::ip_VBPavail = 46
+      integer(kind=int_32),parameter  ::ip_VBSavail = 47
+      integer(kind=int_32),parameter  ::ip_VBFrMaxU = 48
+      integer(kind=int_32),parameter  ::ip_F1VB = 49
+      integer(kind=int_32),parameter  ::ip_F2VB = 50
+      integer(kind=int_32),parameter  ::ip_F3VB = 51
+      integer(kind=int_32),parameter  ::ip_F4VB = 52
+      integer(kind=int_32),parameter  ::ip_F5VB = 53
+      integer(kind=int_32),parameter  ::ip_CNf1VB = 54
+      integer(kind=int_32),parameter  ::ip_CNf2VB = 55
+      integer(kind=int_32),parameter  ::ip_CNf3VB = 56
+      integer(kind=int_32),parameter  ::ip_CNf4VB = 57
+      integer(kind=int_32),parameter  ::ip_CNf5VB = 58
+      integer(kind=int_32),parameter  ::ip_CPf1VB = 59
+      integer(kind=int_32),parameter  ::ip_CPf2VB = 60
+      integer(kind=int_32),parameter  ::ip_CPf3VB = 61
+      integer(kind=int_32),parameter  ::ip_CPf4VB = 62
+      integer(kind=int_32),parameter  ::ip_CPf5VB = 63
+      integer(kind=int_32),parameter  ::ip_CSf1VB = 64
+      integer(kind=int_32),parameter  ::ip_CSf2VB = 65
+      integer(kind=int_32),parameter  ::ip_CSf3VB = 66
+      integer(kind=int_32),parameter  ::ip_CSf4VB = 67
+      integer(kind=int_32),parameter  ::ip_CSf5VB = 68
+      integer(kind=int_32),parameter  ::ip_SWRegrVB = 69
+      integer(kind=int_32),parameter  ::ip_SWVBDec = 70
+      integer(kind=int_32),parameter  ::ip_IniAgeVB = 71
+      integer(kind=int_32),parameter  ::ip_IniVBdec = 72
+      integer(kind=int_32),parameter  ::ip_Rc0GWV = 73
+      integer(kind=int_32),parameter  ::ip_TcGWV = 74
+      integer(kind=int_32),parameter  ::ip_AcGWV = 75
+      integer(kind=int_32),parameter  ::ip_MinRWV = 76
+      integer(kind=int_32),parameter  ::ip_TBmWV = 77
+      integer(kind=int_32),parameter  ::ip_TempAir = 78
+      integer(kind=int_32),parameter  ::ip_MinVBAll = 79
+      integer(kind=int_32),parameter  ::ip_FfolPOC1 = 80
+      integer(kind=int_32),parameter  ::ip_FfolPOC2 = 81
+      integer(kind=int_32),parameter  ::ip_FfrootPOC1 = 82
+      integer(kind=int_32),parameter  ::ip_FfrootPOC2 = 83
+      integer(kind=int_32),parameter  ::ip_RcMrtVB = 84
+      integer(kind=int_32),parameter  ::ip_Rc0MSWV = 85
+      integer(kind=int_32),parameter  ::ip_TcMSWV = 86
+      integer(kind=int_32),parameter  ::ip_RcMGRWV = 87
+      integer(kind=int_32),parameter  ::ip_AcMWV = 88
+      integer(kind=int_32),parameter  ::ip_MaxRWV = 89
+      integer(kind=int_32),parameter  ::ip_SwDisVB = 90
+      integer(kind=int_32),parameter  ::ip_VegHeVB = 91
+      integer(kind=int_32),parameter  ::ip_FfacVB = 92
+      integer(kind=int_32),parameter  ::ip_fNVBup   = 93
+      integer(kind=int_32),parameter  ::ip_fPVBup   = 94
+      integer(kind=int_32),parameter  ::ip_fSVBup   = 95
+      integer(kind=int_32),parameter  ::nin = 95
 
       ! pointers to output items (except fluxes to S12 and those that are also input)
-      integer,parameter :: ip_SwVBGro  = 96
-      integer,parameter :: ip_SwVBMrt  = 97
-      integer,parameter :: ip_VBha     = 98
-      integer,parameter :: ip_VBAha    = 99
-      integer,parameter :: ip_rGWV     = 100
-      integer,parameter :: ip_fVB      = 101
-      integer,parameter :: ip_VBAge0ha = 102
-      integer,parameter :: ip_NutLimVB = 103
-      integer,parameter :: ip_rMrtVB   = 104
-      integer,parameter :: ip_fMrtVB   = 105
+      integer(kind=int_32),parameter  ::ip_SwVBGro  = 96
+      integer(kind=int_32),parameter  ::ip_SwVBMrt  = 97
+      integer(kind=int_32),parameter  ::ip_VBha     = 98
+      integer(kind=int_32),parameter  ::ip_VBAha    = 99
+      integer(kind=int_32),parameter  ::ip_rGWV     = 100
+      integer(kind=int_32),parameter  ::ip_fVB      = 101
+      integer(kind=int_32),parameter  ::ip_VBAge0ha = 102
+      integer(kind=int_32),parameter  ::ip_NutLimVB = 103
+      integer(kind=int_32),parameter  ::ip_rMrtVB   = 104
+      integer(kind=int_32),parameter  ::ip_fMrtVB   = 105
       ! offset in parameter array for 6 uptake fluxes
-      integer,parameter :: ip_offsetufl = 105
+      integer(kind=int_32),parameter  ::ip_offsetufl = 105
       ! offset in parameter array for 16 release fluxes
-      integer,parameter :: ip_offsetrfl = 111
-      integer,parameter :: nout = 47
+      integer(kind=int_32),parameter  ::ip_offsetrfl = 111
+      integer(kind=int_32),parameter  ::nout = 47
       ! follow 22 fluxes tofrom sediment
       ! follow duplicate input items
 
       ! pointers to fluxes
-      integer,parameter :: if_dVB = 1
-      integer,parameter :: if_dMrtC1VB = 2
-      integer,parameter :: if_dMrtC3VB = 4
-      integer,parameter :: if_dMrtC4VB = 5
-      integer,parameter :: if_dMrtC2VB = 3
-      integer,parameter :: if_dMrtC5VB = 6
-      integer,parameter :: if_dN1VBupw = 7
-      integer,parameter :: if_dN2VBupw = 8
-      integer,parameter :: if_dP1VBupw = 9
-      integer,parameter :: if_dP2VBupw = 10
-      integer,parameter :: if_dS1VBupw = 11
-      integer,parameter :: if_dS2VBupw = 12
-!      integer,parameter :: if_dN1VBups = 13
-!      integer,parameter :: if_dN2VBups = 14
-!      integer,parameter :: if_dP1VBups = 15
-!      integer,parameter :: if_dP2VBups = 16
-!      integer,parameter :: if_dS1VBups = 17
-!      integer,parameter :: if_dS2VBups = 18
+      integer(kind=int_32),parameter  ::if_dVB = 1
+      integer(kind=int_32),parameter  ::if_dMrtC1VB = 2
+      integer(kind=int_32),parameter  ::if_dMrtC3VB = 4
+      integer(kind=int_32),parameter  ::if_dMrtC4VB = 5
+      integer(kind=int_32),parameter  ::if_dMrtC2VB = 3
+      integer(kind=int_32),parameter  ::if_dMrtC5VB = 6
+      integer(kind=int_32),parameter  ::if_dN1VBupw = 7
+      integer(kind=int_32),parameter  ::if_dN2VBupw = 8
+      integer(kind=int_32),parameter  ::if_dP1VBupw = 9
+      integer(kind=int_32),parameter  ::if_dP2VBupw = 10
+      integer(kind=int_32),parameter  ::if_dS1VBupw = 11
+      integer(kind=int_32),parameter  ::if_dS2VBupw = 12
+!      integer(kind=int_32),parameter  ::if_dN1VBups = 13
+!      integer(kind=int_32),parameter  ::if_dN2VBups = 14
+!      integer(kind=int_32),parameter  ::if_dP1VBups = 15
+!      integer(kind=int_32),parameter  ::if_dP2VBups = 16
+!      integer(kind=int_32),parameter  ::if_dS1VBups = 17
+!      integer(kind=int_32),parameter  ::if_dS2VBups = 18
       ! follow the mortality fluxes
 
-!      integer,parameter :: if_firstWat = if_dS2VBups
-      integer,parameter :: if_firstWat = if_dS2VBupw
-      integer,parameter :: NFlxWat = 20
-!      integer,parameter :: if_firstSed = if_firstWat + NFlxWat
-      integer,parameter :: NFlxSed = 16
+!      integer(kind=int_32),parameter  ::if_firstWat = if_dS2VBups
+      integer(kind=int_32),parameter  ::if_firstWat = if_dS2VBupw
+      integer(kind=int_32),parameter  ::NFlxWat = 20
+!      integer(kind=int_32),parameter  ::if_firstSed = if_firstWat + NFlxWat
+      integer(kind=int_32),parameter  ::NFlxSed = 16
 
       ! conversion of units
-      real, parameter :: tonha_gm2 = 100.0   ! Converts tons/ha to g/m2
-      real, parameter :: perc_frac = 100.0   ! Converts percentage to fraction
+      real(kind=sp), parameter  ::tonha_gm2 = 100.0   ! Converts tons/ha to g/m2
+      real(kind=sp), parameter  ::perc_frac = 100.0   ! Converts percentage to fraction
 
       ! input items
-      real :: SwEmersion
-      integer :: SwVegMod
-      integer :: VBType
-      real :: nsfVB
-      real :: CrnsfVB
-      real :: Initnsfd
-      real :: CrdepVB
-      real :: nscdVB
-      real :: InnscdVB
-      real :: DELT
-      real :: TotalDepth
-      real :: Depth
-      real :: LocalDepth
-      real :: Volume
-      real :: Surf
-      real :: RootDeVB
-      real :: NH4
-      real :: NO3
-      real :: AAP
-      real :: PO4
-      real :: SO4
-      real :: SUD
-      real :: SWRootVB
-      real :: VmaxVB
-      real :: KmVB
-      real :: ViniVB
-      real :: PorSed
-      real :: S1_NH4
-      real :: S1_NO3
-      real :: S1_AAP
-      real :: S1_PO4
-      real :: S1_SO4
-      real :: S1_SUD
-      real :: HSED
-      real :: VB
-      real :: maxVB
-      real :: minVB
-      real :: hlfAgeVB
-      real :: sfVB
-      real :: dmCfVB
-      real :: iniVB
-      real :: iniCovVB
-      integer :: SWiniVB
-      real :: ageVB
-      real :: VBNavail
-      real :: VBPavail
-      real :: VBSavail
-      real :: VBFrMaxU
-      real :: F1VB
-      real :: F2VB
-      real :: F3VB
-      real :: F4VB
-      real :: F5VB
-      real :: CNf1VB
-      real :: CNf2VB
-      real :: CNf3VB
-      real :: CNf4VB
-      real :: CNf5VB
-      real :: CPf1VB
-      real :: CPf2VB
-      real :: CPf3VB
-      real :: CPf4VB
-      real :: CPf5VB
-      real :: CSf1VB
-      real :: CSf2VB
-      real :: CSf3VB
-      real :: CSf4VB
-      real :: CSf5VB
-      integer :: SWRegrVB
-      integer :: SWVBDec
-      real :: IniAgeVB
-      real :: IniVBdec
-      real :: Rc0GWV
-      real :: TcGWV
-      real :: AcGWV
-      real :: MinRWV
-      real :: TBmWV
-      real :: TempAir
-      real :: MinVBAll
-      real :: FfolPOC1
-      real :: FfolPOC2
-      real :: FfrootPOC1
-      real :: FfrootPOC2
-      real :: RcMrtVB
-      real :: Rc0MSWV
-      real :: TcMSWV
-      real :: RcMGRWV
-      real :: AcMWV
-      real :: MaxRWV
-      integer :: SwDisVB
-      real :: VegHeVB
-      real :: FfacVB
-      real :: fNVBup
-      real :: fPVBup
-      real :: fSVBup
+      real(kind=sp)  ::SwEmersion
+      integer(kind=int_32)  ::SwVegMod
+      integer(kind=int_32)  ::VBType
+      real(kind=sp)  ::nsfVB
+      real(kind=sp)  ::CrnsfVB
+      real(kind=sp)  ::Initnsfd
+      real(kind=sp)  ::CrdepVB
+      real(kind=sp)  ::nscdVB
+      real(kind=sp)  ::InnscdVB
+      real(kind=sp)  ::DELT
+      real(kind=sp)  ::TotalDepth
+      real(kind=sp)  ::Depth
+      real(kind=sp)  ::LocalDepth
+      real(kind=sp)  ::Volume
+      real(kind=sp)  ::Surf
+      real(kind=sp)  ::RootDeVB
+      real(kind=sp)  ::NH4
+      real(kind=sp)  ::NO3
+      real(kind=sp)  ::AAP
+      real(kind=sp)  ::PO4
+      real(kind=sp)  ::SO4
+      real(kind=sp)  ::SUD
+      real(kind=sp)  ::SWRootVB
+      real(kind=sp)  ::VmaxVB
+      real(kind=sp)  ::KmVB
+      real(kind=sp)  ::ViniVB
+      real(kind=sp)  ::PorSed
+      real(kind=sp)  ::S1_NH4
+      real(kind=sp)  ::S1_NO3
+      real(kind=sp)  ::S1_AAP
+      real(kind=sp)  ::S1_PO4
+      real(kind=sp)  ::S1_SO4
+      real(kind=sp)  ::S1_SUD
+      real(kind=sp)  ::HSED
+      real(kind=sp)  ::VB
+      real(kind=sp)  ::maxVB
+      real(kind=sp)  ::minVB
+      real(kind=sp)  ::hlfAgeVB
+      real(kind=sp)  ::sfVB
+      real(kind=sp)  ::dmCfVB
+      real(kind=sp)  ::iniVB
+      real(kind=sp)  ::iniCovVB
+      integer(kind=int_32)  ::SWiniVB
+      real(kind=sp)  ::ageVB
+      real(kind=sp)  ::VBNavail
+      real(kind=sp)  ::VBPavail
+      real(kind=sp)  ::VBSavail
+      real(kind=sp)  ::VBFrMaxU
+      real(kind=sp)  ::F1VB
+      real(kind=sp)  ::F2VB
+      real(kind=sp)  ::F3VB
+      real(kind=sp)  ::F4VB
+      real(kind=sp)  ::F5VB
+      real(kind=sp)  ::CNf1VB
+      real(kind=sp)  ::CNf2VB
+      real(kind=sp)  ::CNf3VB
+      real(kind=sp)  ::CNf4VB
+      real(kind=sp)  ::CNf5VB
+      real(kind=sp)  ::CPf1VB
+      real(kind=sp)  ::CPf2VB
+      real(kind=sp)  ::CPf3VB
+      real(kind=sp)  ::CPf4VB
+      real(kind=sp)  ::CPf5VB
+      real(kind=sp)  ::CSf1VB
+      real(kind=sp)  ::CSf2VB
+      real(kind=sp)  ::CSf3VB
+      real(kind=sp)  ::CSf4VB
+      real(kind=sp)  ::CSf5VB
+      integer(kind=int_32)  ::SWRegrVB
+      integer(kind=int_32)  ::SWVBDec
+      real(kind=sp)  ::IniAgeVB
+      real(kind=sp)  ::IniVBdec
+      real(kind=sp)  ::Rc0GWV
+      real(kind=sp)  ::TcGWV
+      real(kind=sp)  ::AcGWV
+      real(kind=sp)  ::MinRWV
+      real(kind=sp)  ::TBmWV
+      real(kind=sp)  ::TempAir
+      real(kind=sp)  ::MinVBAll
+      real(kind=sp)  ::FfolPOC1
+      real(kind=sp)  ::FfolPOC2
+      real(kind=sp)  ::FfrootPOC1
+      real(kind=sp)  ::FfrootPOC2
+      real(kind=sp)  ::RcMrtVB
+      real(kind=sp)  ::Rc0MSWV
+      real(kind=sp)  ::TcMSWV
+      real(kind=sp)  ::RcMGRWV
+      real(kind=sp)  ::AcMWV
+      real(kind=sp)  ::MaxRWV
+      integer(kind=int_32)  ::SwDisVB
+      real(kind=sp)  ::VegHeVB
+      real(kind=sp)  ::FfacVB
+      real(kind=sp)  ::fNVBup
+      real(kind=sp)  ::fPVBup
+      real(kind=sp)  ::fSVBup
 
       ! output items (except ...)
-      real :: SwVBGro
-      real :: SwVBMrt
-      real :: VBha
-      real :: VBAha
-      real :: rGWV
-      real :: fVB
-      real :: VBAge0ha
-      real :: NutLimVB
-      real :: rMrtVB
-      real :: fMrtVB
+      real(kind=sp)  ::SwVBGro
+      real(kind=sp)  ::SwVBMrt
+      real(kind=sp)  ::VBha
+      real(kind=sp)  ::VBAha
+      real(kind=sp)  ::rGWV
+      real(kind=sp)  ::fVB
+      real(kind=sp)  ::VBAge0ha
+      real(kind=sp)  ::NutLimVB
+      real(kind=sp)  ::rMrtVB
+      real(kind=sp)  ::fMrtVB
 
       ! fluxes
-      real :: dVB
-      real :: dMrtC1VB
-      real :: dMrtC3VB
-      real :: dMrtC4VB
-      real :: dMrtC2VB
-      real :: dMrtC5VB
-      real :: dN1VBupw
-      real :: dN2VBupw
-      real :: dP1VBupw
-      real :: dP2VBupw
-      real :: dS1VBupw
-      real :: dS2VBupw
-      real :: dN1VBups
-      real :: dN2VBups
-      real :: dP1VBups
-      real :: dP2VBups
-      real :: dS1VBups
-      real :: dS2VBups
-      real :: FlxSed(NFlxSed)
+      real(kind=sp)  ::dVB
+      real(kind=sp)  ::dMrtC1VB
+      real(kind=sp)  ::dMrtC3VB
+      real(kind=sp)  ::dMrtC4VB
+      real(kind=sp)  ::dMrtC2VB
+      real(kind=sp)  ::dMrtC5VB
+      real(kind=sp)  ::dN1VBupw
+      real(kind=sp)  ::dN2VBupw
+      real(kind=sp)  ::dP1VBupw
+      real(kind=sp)  ::dP2VBupw
+      real(kind=sp)  ::dS1VBupw
+      real(kind=sp)  ::dS2VBupw
+      real(kind=sp)  ::dN1VBups
+      real(kind=sp)  ::dN2VBups
+      real(kind=sp)  ::dP1VBups
+      real(kind=sp)  ::dP2VBups
+      real(kind=sp)  ::dS1VBups
+      real(kind=sp)  ::dS2VBups
+      real(kind=sp)  ::FlxSed(NFlxSed)
 
       ! local declarations
-      integer,parameter   :: ncohort = 9
-      integer, save       :: ifirst(2*ncohort) = 0    ! Separate actions required per cohort
+      integer(kind=int_32),parameter    ::ncohort = 9
+      integer(kind=int_32), save        ::ifirst(2*ncohort) = 0    ! Separate actions required per cohort
       logical, save       :: first = .true.           ! Actions independent of cohort
       logical, save       :: first_handled = .false.  ! Actions independent of cohort - but keep in mind multiple threads
-      integer,allocatable, save :: botseg(:)
-      real,allocatable, save    :: work(:,:)          ! local workarray, used for items that can be "forgotten" between calls
-      integer             :: ipnt(nin+nout)
-      real                :: zm, z1, z2, frlay, fbot, tin, a, b, weighCN, weighCP, weighCS, dVBMaxNL, rvb, temp20, &
+      integer(kind=int_32),allocatable, save ::botseg(:)
+      real(kind=sp),allocatable, save ::work(:,:)          ! local workarray, used for items that can be "forgotten" between calls
+      integer(kind=int_32)              ::ipnt(nin+nout)
+      real(kind=sp)                 ::zm, z1, z2, frlay, fbot, tin, a, b, weighCN, weighCP, weighCS, dVBMaxNL, rvb, temp20, &
                              tempcof, maxfMrtVB
-      integer             :: ipb, iseg, iq, ifrom, ito, ikmrk1, ikmrk2, itel, ibotseg
-      integer, save       :: ilumon
+      integer(kind=int_32)              ::ipb, iseg, iq, ifrom, ito, ikmrk1, ikmrk2, itel, ibotseg
+      integer(kind=int_32), save        ::ilumon
 
-      real, parameter     :: tinyavail = 1.0e-10 ! Avoid division by zero
+      real(kind=sp), parameter      ::tinyavail = 1.0e-10 ! Avoid division by zero
 
 !
 !******************************************************************************* INITIAL PROCESSING
@@ -493,7 +495,7 @@ contains
               SWVBGro = 1.0
               SWVBMrt = 0.0
               if ( SwVegMod .eq. 0) then
-                  if (ifirst(1) .eq. 0) nsfVB = Initnsfd      ! not really understood ...
+                  if (ifirst(1) .eq. 0) nsfVB = Initnsfd      ! not real(kind=sp) ::ly understood ...
                   if ( NINT(SwEmersion) .eq. 0 ) then
                       nsfVB = nsfVB + DELT
                       SWVBGro = 0.0
