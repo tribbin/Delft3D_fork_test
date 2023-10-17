@@ -4,11 +4,12 @@ set(library_name waq_netcdf)
 create_library(${library_name} ${CMAKE_CURRENT_SOURCE_DIR} src)
 
 # Set dependencies
-set(oss_dependencies deltares_common
+set(oss_dependencies waq_definition
+                     deltares_common
                      waq_utils_f
                      netcdff
                      io_netcdf
-                     waq_definition
+                     io_netcdf_data
                      )
 
 target_link_libraries(${library_name} ${oss_dependencies})

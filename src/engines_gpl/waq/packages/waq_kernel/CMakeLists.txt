@@ -8,7 +8,8 @@ set(library_name waq_kernel)
 create_library_recursive(${library_name} ${CMAKE_CURRENT_SOURCE_DIR} src)
 
 # Set dependencies
-set(oss_dependencies deltares_common
+set(oss_dependencies waq_definition
+                     deltares_common
                      deltares_common_c
                      part_data_f
                      part_io_f
@@ -23,9 +24,11 @@ set(oss_dependencies deltares_common
                      waq_netcdf
                      netcdff
                      io_netcdf
+                     io_netcdf_data
                      io_hyd
-                     waq_definition
-                     )
+                     waq_hyd_data
+)
+
 
 oss_include_libraries(${library_name} oss_dependencies)
 target_link_libraries(${library_name} ${oss_dependencies})
