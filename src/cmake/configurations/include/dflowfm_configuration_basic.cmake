@@ -34,29 +34,11 @@ if(NOT TARGET flow1d)
 endif()
 
 # Waq
-if(NOT TARGET waq_data)
-    add_subdirectory(${checkout_src_root}/${waq_data_module} waq_data)
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_base.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_dflowfm_online_coupling.cmake)
 
-if(NOT TARGET waq_utils_c)
-    add_subdirectory(${checkout_src_root}/${waq_utils_c_module} waq_utils_c)
-endif()
 
-if(NOT TARGET waq_utils_f)
-    add_subdirectory(${checkout_src_root}/${waq_utils_f_module} waq_utils_f)
-endif()
 
-if(NOT TARGET waq_process)
-    add_subdirectory(${checkout_src_root}/${waq_process_module} waq_process)
-endif()
-
-if(NOT TARGET waq_hyd_data)
-    add_subdirectory(${checkout_src_root}/${waq_hyd_data_module} waq_hyd_data)
-endif()
-
-if(NOT TARGET wq_processes)
-    add_subdirectory(${checkout_src_root}/${wq_processes_module} wq_processes)
-endif()
 
 # Morphology
 if(NOT TARGET morphology_plugins_c)
@@ -207,10 +189,6 @@ if(NOT TARGET nefis)
     add_subdirectory(${checkout_src_root}/${nefis_module} nefis)
 endif()
 
-# Solvesaphe
-if(NOT TARGET solvesaphe)
-    add_subdirectory(${checkout_src_root}/${solvesaphe_module} solvesaphe)
-endif()
 
 # Unit tests for dflowfm
 # Only for the version without interacter
