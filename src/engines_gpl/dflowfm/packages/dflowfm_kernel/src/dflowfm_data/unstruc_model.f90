@@ -1506,7 +1506,7 @@ subroutine readMDUFile(filename, istat)
     call prop_get_double (md_ptr, 'wind' , 'PavIni'                   , PavIni )
     call prop_get_double (md_ptr, 'wind' , 'PavBnd'                   , PavBnd )
     call prop_get_integer(md_ptr, 'wind' , 'Stresstowind'             , jastresstowind )
-    call prop_get_integer(md_ptr, 'wind' , 'Wind_eachstep'            , update_wind_stress_each_time_step)
+    call prop_get_integer(md_ptr, 'wind' , 'Wind_eachstep'            , update_wind_stress_each_time_step )
 
 
     call prop_get_integer(md_ptr, 'waves', 'Wavemodelnr'              , jawave)
