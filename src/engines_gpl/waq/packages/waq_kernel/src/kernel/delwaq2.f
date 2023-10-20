@@ -120,7 +120,7 @@
       LOGICAL                                 :: exists
       INTEGER                                 :: ACTION
       TYPE(DELWAQ_DATA), TARGET               :: DLWQD
-      type(GridPointerColl), pointer          :: GridPs               ! collection of all grid definitions
+      type(GridPointerColl), pointer, save    :: GridPs               ! collection of all grid definitions
 
 
 !
