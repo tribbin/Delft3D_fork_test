@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_wq_processes_velocities
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -38,29 +40,29 @@ contains
 
       ! declaration of arguments
 
-      integer, intent(in)       :: nveln                           ! number of new velocities
-      integer, intent(in)       :: nvelx                           ! number of velocities from processes
-      integer, intent(in)       :: nosys                           ! number of active substances
-      integer, intent(in)       :: noq                             ! number of exchanges
-      real   , intent(inout)    :: velonw(nveln,noq)               ! new velocity array
-      integer, intent(in)       :: ivpnew(nosys)                   ! pointer to new velo array (actually only input)
-      real   , intent(in)       :: velx(nvelx,noq)                 ! velocities from processes
-      real   , intent(in)       :: vsto(nosys,nvelx)               ! factor for velocities
+      integer(kind=int_32), intent(in) ::  nveln                            ! number of new velocities
+      integer(kind=int_32), intent(in) ::  nvelx                            ! number of velocities from processes
+      integer(kind=int_32), intent(in) ::  nosys                            ! number of active substances
+      integer(kind=int_32), intent(in) ::  noq                              ! number of exchanges
+      real(kind=sp), intent(inout) ::  velonw(nveln,noq)                ! new velocity array
+      integer(kind=int_32), intent(in) ::  ivpnew(nosys)                    ! pointer to new velo array (actually only input)
+      real(kind=sp), intent(in) ::  velx(nvelx,noq)                  ! velocities from processes
+      real(kind=sp), intent(in) ::  vsto(nosys,nvelx)                ! factor for velocities
 
       ! local declarations
 
-      integer                   :: isys                            ! index substances
-      integer                   :: isys2                           ! index substances
-      integer                   :: ivnw                            ! index new velocities
-      integer                   :: ivx                             ! index velocities from process
-      integer                   :: ivp                             ! index velocities from input
-      integer                   :: iq                              ! index exchange
-      integer                   :: ivpnew_loc(nosys)               ! local copy of ivpnew
+      integer(kind=int_32) ::  isys                             ! index substances
+      integer(kind=int_32) ::  isys2                            ! index substances
+      integer(kind=int_32) ::  ivnw                             ! index new velocities
+      integer(kind=int_32) ::  ivx                              ! index velocities from process
+      integer(kind=int_32) ::  ivp                              ! index velocities from input
+      integer(kind=int_32) ::  iq                               ! index exchange
+      integer(kind=int_32) ::  ivpnew_loc(nosys)                ! local copy of ivpnew
       logical                   :: lfirst                          ! first velocity in combination of velocities
       logical                   :: update                          ! update of the combined velocity needed
-      real                      :: factor                          ! factor for susbtance velocity combination
+      real(kind=sp) ::  factor                           ! factor for susbtance velocity combination
 
-      integer(4), save :: ithndl = 0
+      integer(kind=int_32), save ::  ithndl = 0 
       if (timon) call timstrt( "wq_processes_velocities", ithndl )
 
       ! local copy of ivpnew

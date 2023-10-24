@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_wq_processes_initialise
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -89,7 +91,7 @@ contains
 
       ! declaration of arguments
 
-      integer             , intent(inout) :: lunlsp          !< unit number spe
+      integer(kind=int_32), intent(inout) ::  lunlsp           !< unit number spe
       character(len=*)    , intent(in   ) :: pdffil          !< filename proc_def
       character(len=*)    , intent(in   ) :: shared_dll_so      !< name of the open processes library dll/so to be loaded during runtime
       character(len=*)    , intent(inout) :: blmfil          !< filename spe
@@ -100,62 +102,62 @@ contains
       type(outputcoll)    , intent(inout) :: outputs         !< output structure
       character(len=20)                   :: statproc        !< name of statistics proces
       character(len=20)                   :: statname        !< name of stat output variable
-      integer                             :: statival        !< pointer in waq arrays of stat output
-      integer  ( 4)       , intent(in   ) :: nomult          !< number of multiple substances
-      integer  ( 4)       , intent(in   ) :: imultp(2,nomult)!< multiple substance administration
+      integer(kind=int_32) ::  statival         !< pointer in waq arrays of stat output
+      integer(kind=int_32), intent(in   ) ::  nomult           !< number of multiple substances
+      integer(kind=int_32), intent(in   ) ::  imultp(2,nomult) !< multiple substance administration
       type(t_dlwq_item)   , intent(inout) :: constants       !< delwaq constants list
-      integer             , intent(inout) :: noinfo          !< count of informative message
-      integer             , intent(inout) :: nowarn          !< count of warnings
-      integer             , intent(inout) :: ierr            !< error count
+      integer(kind=int_32), intent(inout) ::  noinfo           !< count of informative message
+      integer(kind=int_32), intent(inout) ::  nowarn           !< count of warnings
+      integer(kind=int_32), intent(inout) ::  ierr             !< error count
 
       ! local declarations
       type(itempropcoll)        :: allitems        !< all items of the proces system
 
-      real                      :: verspe = 1.0    ! version bloom.spe file
-      integer, parameter        :: novarm = 15000  ! max number of variables overall
-      integer, parameter        :: nbprm  = 1750   ! max number of processes
-      integer, parameter        :: nopred = 6      ! number of pre-defined variables
-      integer                   :: open_shared_library
+      real(kind=sp)                   :: verspe = 1.0    ! version bloom.spe file
+      integer(kind=int_32), parameter ::  novarm = 15000   ! max number of variables overall
+      integer(kind=int_32), parameter ::  nbprm  = 1750    ! max number of processes
+      integer(kind=int_32), parameter ::  nopred = 6       ! number of pre-defined variables
+      integer(kind=int_32) ::  open_shared_library
+ 
+      integer(kind=int_32) ::  noqtt            ! total number of exhanges
+      integer(kind=int_32) ::  no_ins           ! number of output items
+      integer(kind=int_32) ::  no_ine           ! number of output items
+      integer(kind=int_32) ::  no_ous           ! number of output items
+      integer(kind=int_32) ::  no_oue           ! number of output items
+      integer(kind=int_32) ::  no_sto           ! number of output items
+      integer(kind=int_32) ::  no_dis           ! number of output items
+      integer(kind=int_32) ::  no_vel           ! number of output items
+      integer(kind=int_32) ::  nocon2           ! number of constants plus some extra
+      integer(kind=int_32) ::  nmis             ! number of missing items
+      integer(kind=int_32) ::  maxdef           ! length defaul array
 
-      integer                   :: noqtt           ! total number of exhanges
-      integer                   :: no_ins          ! number of output items
-      integer                   :: no_ine          ! number of output items
-      integer                   :: no_ous          ! number of output items
-      integer                   :: no_oue          ! number of output items
-      integer                   :: no_sto          ! number of output items
-      integer                   :: no_dis          ! number of output items
-      integer                   :: no_vel          ! number of output items
-      integer                   :: nocon2          ! number of constants plus some extra
-      integer                   :: nmis            ! number of missing items
-      integer                   :: maxdef          ! length defaul array
+      integer(kind=int_32) ::  lunblm           ! unit number bloom file
+      integer(kind=int_32) ::  lunfrm           ! unit number bloom frm file
 
-      integer                   :: lunblm          ! unit number bloom file
-      integer                   :: lunfrm          ! unit number bloom frm file
+      integer(kind=int_32) ::  isys             ! index variable
+      integer(kind=int_32) ::  igrp             ! index variable
+      integer(kind=int_32) ::  iatyp            ! index variable
+      integer(kind=int_32) ::  ialg             ! index variable
+      integer(kind=int_32) ::  icof             ! index variable
+      integer(kind=int_32) ::  istat            ! index variable
+      integer(kind=int_32) ::  ioutp            ! index variable
+      integer(kind=int_32) ::  iitem            ! index variable
+      integer(kind=int_32) ::  iproc            ! index variable
+      integer(kind=int_32) ::  iindx            ! index variable
+      integer(kind=int_32) ::  ix_act           ! index variable
+      integer(kind=int_32) ::  ioff             ! offset for index item
+      integer(kind=int_32) ::  ioffx            ! offset for index item on exchange
+      integer(kind=int_32) ::  idef             ! offset to defualt items
+      integer(kind=int_32) ::  iflx             ! offset to flux items
+      integer(kind=int_32) ::  nflx             ! offset to flux items
+      integer(kind=int_32) ::  ifluxsys         ! index of flux items
+      integer(kind=int_32) ::  istochi          ! offset to stochi
+      integer(kind=int_32) ::  mxpmsa           ! maximum size of ipmsa (=max nr of input variables)
+      integer(kind=int_32) ::  iret             ! return value
+      integer(kind=int_32) ::  ierr2            ! error count
 
-      integer                   :: isys            ! index variable
-      integer                   :: igrp            ! index variable
-      integer                   :: iatyp           ! index variable
-      integer                   :: ialg            ! index variable
-      integer                   :: icof            ! index variable
-      integer                   :: istat           ! index variable
-      integer                   :: ioutp           ! index variable
-      integer                   :: iitem           ! index variable
-      integer                   :: iproc           ! index variable
-      integer                   :: iindx           ! index variable
-      integer                   :: ix_act          ! index variable
-      integer                   :: ioff            ! offset for index item
-      integer                   :: ioffx           ! offset for index item on exchange
-      integer                   :: idef            ! offset to defualt items
-      integer                   :: iflx            ! offset to flux items
-      integer                   :: nflx            ! offset to flux items
-      integer                   :: ifluxsys        ! index of flux items
-      integer                   :: istochi         ! offset to stochi
-      integer                   :: mxpmsa          ! maximum size of ipmsa (=max nr of input variables)
-      integer                   :: iret            ! return value
-      integer                   :: ierr2           ! error count
-
-      integer                   :: idummy          ! dummy variable
-      real                      :: rdummy          ! dummy variable
+      integer(kind=int_32) ::  idummy           ! dummy variable
+      real(kind=sp) ::  rdummy           ! dummy variable
       character                 :: cdummy          ! dummy variable
 
       character*20 ,allocatable :: ainame(:)       ! all item names names in the proc_def
@@ -164,20 +166,20 @@ contains
       character*40 ,allocatable :: subunit(:)      ! substance unit
       character*60 ,allocatable :: subdescr(:)     ! substance description
       character*20              :: outname         ! output name
-      integer  ( 4), intent(in) :: refday          ! reference day, varying from 1 till 365
+      integer(kind=int_32), intent(in) ::  refday           ! reference day, varying from 1 till 365
 
       ! proces definition structure
 
       type(procespropcoll)      :: procesdef       ! the complete process definition
       type(procesprop), pointer :: proc            ! process description
       type(arrayprop)           :: aarrayprop      !  one array property to add into collection
-      real                      :: scale           ! stochi factor
+      real(kind=sp) ::  scale            ! stochi factor
       character(len=20)         :: flxnam          ! output buffer
-      integer                   :: nbpr            ! number of processes
-      integer                   :: no_act          ! number of activated processes
-      integer                   :: serial          ! serial number process definition
-      integer                   :: target_serial   ! target serial number process definition
-      real                      :: versio          ! version process defintion
+      integer(kind=int_32) ::  nbpr             ! number of processes
+      integer(kind=int_32) ::  no_act           ! number of activated processes
+      integer(kind=int_32) ::  serial           ! serial number process definition
+      integer(kind=int_32) ::  target_serial    ! target serial number process definition
+      real(kind=sp) ::  versio           ! version process defintion
       character*20 , allocatable :: actlst(:)
 
       ! settings
@@ -189,7 +191,7 @@ contains
       character*20   rundat
       character*10   config
       logical        lfound, laswi , swi_nopro
-      integer        blm_act                       ! index of ACTIVE_BLOOM_P
+      integer(kind=int_32) :: blm_act                        ! index of ACTIVE_BLOOM_P
 
       ! information
 
@@ -198,24 +200,24 @@ contains
       ! bloom-species database
 
       logical        l_eco
-      integer       maxtyp, maxcof
-      parameter   ( maxtyp = 500 , maxcof = 50 )
-      integer       notyp , nocof , nogrp
+      integer(kind=int_32) :: maxtyp, maxcof
+      parameter   ( maxtyp = 500 , maxcof = 50 ) 
+      integer(kind=int_32) :: notyp , nocof , nogrp 
       character*10  alggrp(maxtyp), algtyp(maxtyp)
       character*5   abrgrp(maxtyp), abrtyp(maxtyp)
       character*80  algdsc(maxtyp)
       character*10  cofnam(maxcof)
-      real          algcof(maxcof,maxtyp)
-      integer       algact(maxtyp)
-      integer       noutgrp, nouttyp
+      real(kind=sp) :: algcof(maxcof,maxtyp) 
+      integer(kind=int_32) :: algact(maxtyp) 
+      integer(kind=int_32) :: noutgrp, nouttyp 
       character*10  outgrp(maxtyp), outtyp(maxtyp)
-      integer       noprot , nopralg
+      integer(kind=int_32) :: noprot , nopralg 
       character*10  namprot(maxtyp), nampact(maxtyp), nampralg(maxtyp)
       character(256) filnam       ! File name with extention
 
       ! actual algae
 
-      integer       noalg
+      integer(kind=int_32) :: noalg 
       character*10  name10
       character*10  grpnam(maxtyp)
       character*5   grpabr(maxtyp)
@@ -225,13 +227,13 @@ contains
       ! output things
 
       character(len=20)     :: parnam                    ! output parameter name
-      integer               :: parindx                   ! index in output parameter name array
+      integer(kind=int_32) ::  parindx                    ! index in output parameter name array
 
       ! old_items and replacent things
 
       type(old_item_coll)                :: old_items        ! the old_items table
 
-      integer(4), save :: ithndl = 0
+      integer(kind=int_32), save ::  ithndl = 0 
       if (timon) call timstrt( "wq_processes_initialise", ithndl )
 
       ierr = 0
