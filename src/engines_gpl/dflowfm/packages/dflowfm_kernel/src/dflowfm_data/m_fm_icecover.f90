@@ -326,41 +326,42 @@ subroutine preprocess_icecover(n, Qlong_ice, tempwat, wind, timhr)
     integer             :: iter      !< iteration number
     integer             :: icount    !< number of flow links
     integer             :: LL        !< flow link index
-    logical             :: converged !< convergence flag
-    real(fp)            :: b         !< empirical constant in computation of
+    logical             :: converged !< flag for convergence in iterative process for computation of effective back radiation based on ice or snow
+    real(fp)            :: b         !< empirical constant in computation of c_tz
     real(fp)            :: p_r       !< molecular Prandtl number (-)
     real(fp)            :: p_rt      !< turbulent Prandtl number (-)
     real(fp)            :: kin_vis   !< kinematic viscosity (kg m-1 s-1)
     real(fp)            :: t_freeze  !< freezing temperature of water (degC)
     real(fp)            :: sum       !< sum of water depths at flow links (m)
     real(fp)            :: b_t       !< molecular sublayer correction
-    real(fp)            :: c_tz      !< heat transfer coefficient (W m-2 K-1)
-    real(fp)            :: conduc    !< thermal conductivity (W m-1 K-1)
+    real(fp)            :: c_tz      !< heat transfer coefficient (J m-2 s-1 K-1)
+    real(fp)            :: conduc    !< auxiliary variable with conductivity of ice (J m-1 s-1 K-1) or product of conductivity of ice times conductivity of snow (J**2 m-2 s-2 K-2)
     real(fp)            :: D_t       !< temperature difference (degC)
-    real(fp)            :: D_ice     !< 
-    real(fp)            :: tsi       !< surface temperature (degC)
-    real(fp)            :: coef1     !< 
-    real(fp)            :: coef2     !< 
+    real(fp)            :: D_ice     !< auxiliary variable with thickness of ice (m) or product of thickness of ice&snow times conductivity of ice&snow (J s-1 K-1)
+    real(fp)            :: tsi       !< surface temperature with surface being either water, ice or snow (degC)
+    real(fp)            :: coef1     !< auxiliary variable; see D-Flow FM Technical Reference Manual for a detailed description (J m-2 s-1)
+    real(fp)            :: coef2     !< auxiliary variable; see D-Flow FM Technical Reference Manual for a detailed description (J m-2 s-1 k-1)
     real(fp)            :: alpha     !< relaxation factor (-)
     real(fp)            :: z00       !< open water roughness height (m)
     real(fp)            :: ustar     !< wind shear velocity (m s-1)
-    real(fp)            :: hdz       !< 
+    real(fp)            :: hdz       !< Vertical coordinate corresponding to the temperature, for which the mid of the water column is taken  [m]
     real(fp)            :: rhow      !< density of water (kg m-3)
-    real(fp)            :: Qlong     !< 
+    real(fp)            :: Qlong     !< effective back radiation, computed after convergence of iteration process (J m-2 s)
     
 !
 !! executable statements -------------------------------------------------------
 !
     ! Initialization
-    b        = 3.0_fp          ! empirical constant in computation of c_tz
-    p_r      = 13.0_fp         ! molecular Prandtl number
-    p_rt     = 0.85_fp         ! turbulent Prandtl number
-    kin_vis  = 0.0000018_fp    ! kinematic viscosity of sea water
-    t_freeze = 0.0_fp          ! freezing temperature of sea water
-    rhow     = 1000.0_fp       ! density of water
-    z00      = 2e-4_fp         ! Open sea roughness height
-    ustar    = 0.025_fp * wind ! See Eq. (12.5) ustar = sqrt(C_D) * U_10
-    hdz      = 0.0_fp          ! is computed in this subroutine
+    b        = 3.0_fp
+    p_r      = 13.0_fp
+    p_rt     = 0.85_fp
+    kin_vis  = 0.0000018_fp
+    t_freeze = 0.0_fp
+    rhow     = 1000.0_fp
+    z00      = 2e-4_fp
+    ustar    = 0.025_fp * wind ! See Eq. (12.5) in D-Flow FM User Manual: ustar = sqrt(C_D) * U_10
+    hdz      = 0.0_fp  
+    converged = .false.
     
     select case (ja_icecover)
     case (ICECOVER_KNMI)
