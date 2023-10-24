@@ -924,6 +924,7 @@ subroutine readMDUFile(filename, istat)
     call prop_get_double ( md_ptr, 'geometry', 'Slotw2D'     , slotw2D)
     call prop_get_double ( md_ptr, 'geometry', 'Slotw1D'     , slotw1D)
     call prop_get_integer( md_ptr, 'geometry', 'Dpuopt'      , jadpuopt)
+    call prop_get_integer( md_ptr, 'geometry', 'ExtrBl'      , jaextrapbl)
     ! use slotw1d also in getcspars routines
     sl = slotw1D
 
@@ -1122,6 +1123,21 @@ subroutine readMDUFile(filename, istat)
     call prop_get_double (md_ptr, 'numerics', 'FixedweirRelaxationcoef' , waquaweirthetaw)
 
     call prop_get_integer(md_ptr, 'numerics', 'Izbndpos'          , Izbndpos)
+    !ideally, we move all this sort of reworking to another subroutine
+    if (jaextrapbl == 1) then
+        if (ibedlevtyp /= 1) then
+            jaextrapbl=0
+            call mess(LEVEL_WARN, 'unstruc_model::readMDUFile: BedlevType /= 1 and jaextrapbl == 1. It is not possible to extrapolate bed level if the bed level is not at cell centres. Extrapolation has been disabled.')
+        endif
+        if (Izbndpos /= 0) then 
+            jaextrapbl=0
+            call mess(LEVEL_WARN, 'unstruc_model::readMDUFile: Izbndpos /= 0 and jaextrapbl == 1. It is not possible to extrapolate bed level if the bed level at the boundary is not set at ghost. Extrapolation has been disabled.')
+        endif
+        if (Jaconveyance2D /= -1) then 
+            jaextrapbl=0
+            call mess(LEVEL_WARN, 'unstruc_model::readMDUFile: Conveyance2D /= -1 and jaextrapbl == 1. It is not possible to extrapolate bed level if conveyance is not calculated as HU. Extrapolation has been disabled.')
+        endif
+    endif !jaextrapbl
     call prop_get_double (md_ptr, 'numerics', 'Tlfsmo'            , Tlfsmo)
     call prop_get_integer(md_ptr, 'numerics', 'Keepstbndonoutflow', keepstbndonoutflow )
     call prop_get_integer(md_ptr, 'numerics', 'Diffusiononbnd'    , jadiffusiononbnd )
@@ -1384,6 +1400,11 @@ subroutine readMDUFile(filename, istat)
     call prop_get_double (md_ptr, 'veg'    , 'Cdleaf'         , Cdleaf)
 
     call prop_get_integer(md_ptr, 'sediment', 'Sedimentmodelnr'    ,  jased) ! 1 = krone, 2 = svr, 3 engelund, 4=D3D
+    !ideally this is moved to a subroutine that groups reworking
+    if (jadpuopt == 2 .and. jased /= 4) then
+        jadpuopt=1
+        call mess(LEVEL_WARN, 'unstruc_model::readMDUFile: Dpuopt = 2 and Sedimentmodelnr /= 4. It is not possible to compute the bed level at velocity points as the mean if you are not running a morphodynamic simulation. Consider running morphodynamics without bed level update. Dpuopt has been set to 1 (min value).')
+    endif
     call prop_get_string (md_ptr, 'sediment', 'SedFile',              md_sedfile,    success)
     call prop_get_string (md_ptr, 'sediment', 'MorFile',              md_morfile,    success)
     call prop_get_string (md_ptr, 'sediment', 'DredgeFile',           md_dredgefile, success)
@@ -2980,7 +3001,9 @@ endif
     endif
     
     call prop_set(prop_ptr, 'geometry', 'Dpuopt', jadpuopt, 'Bed level interpolation at velocity point in case of tile approach bed level: 1 = max (default); 2 = mean' )    
-
+    
+    call prop_set(prop_ptr, 'geometry', 'ExtrBl', jaextrapbl, 'Extrapolation of bed level at boundaries according to the slope: 0 = no extrapolation (default); 1 = extrapolate.' )    
+    
     ! 1D Volume tables
     if (writeall .or. useVolumeTables) then
        call prop_set (prop_ptr, 'volumeTables', 'useVolumeTables',  merge(1, 0, useVolumeTables), 'Use 1D volume tables (0: no, 1: yes).')
