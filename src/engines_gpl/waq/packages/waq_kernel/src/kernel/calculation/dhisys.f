@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dhisys
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -43,15 +45,15 @@
 !
 !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
 !     ----    -----    ------     ------- -----------
-!     ISYSI   INTEGER       *     OUTPUT  copy of the SYSI common block
-!     ISYSN   INTEGER       *     OUTPUT  copy of the SYSI common block
+!     ISYSI   INTEGER(kind=int_32) ::*     OUTPUT  copy of the SYSI common block
+!     ISYSN   INTEGER(kind=int_32) ::*     OUTPUT  copy of the SYSI common block
 !
 !     declarations
       use m_dhimov
       use m_sysn          ! System characteristics
       use m_sysi          ! Timer characteristics
 !
-      INTEGER       ISYSI(:), ISYSN(:)
+      INTEGER(kind=int_32) ::ISYSI(:), ISYSN(:)
 
 !     Fill the array's
 !

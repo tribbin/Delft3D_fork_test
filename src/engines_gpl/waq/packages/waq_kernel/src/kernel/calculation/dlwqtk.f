@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwqtk
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -45,16 +47,16 @@
 !
 !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
 !     ----    -----    ------     ------- -----------
-!     LUN     INTEGER       *     INPUT   unit number intermediate file
-!     ITIME   INTEGER       1     INPUT   Model timer
-!     IKTIM   INTEGER       *     IN/OUT  Timers in file
-!     IKNMRK  INTEGER   NOSEG,*   IN/OUT  Kenmerk array
-!     NOSEG   INTEGER       1     INPUT   number of segments
-!     IS      INTEGER       1     INPUT   Index number intermediate file
+!     LUN     INTEGER(kind=int_32) ::*     INPUT   unit number intermediate file
+!     ITIME   INTEGER(kind=int_32) ::1     INPUT   Model timer
+!     IKTIM   INTEGER(kind=int_32) ::*     IN/OUT  Timers in file
+!     IKNMRK  INTEGER(kind=int_32) ::NOSEG,*   IN/OUT  Kenmerk array
+!     NOSEG   INTEGER(kind=int_32) ::1     INPUT   number of segments
+!     IS      INTEGER(kind=int_32) ::1     INPUT   Index number intermediate file
 !     LUNTXT  CHAR*(*)      *     INPUT   text with the unit number
-!     ISFLAG  INTEGER       1     INPUT   = 1 then 'ddhhmmss' format
-!     IFFLAG  INTEGER       1     INPUT   = 1 then first invocation
-!     IFIOPK  INTEGER       1     IN/OUT  file option kenmerk array
+!     ISFLAG  INTEGER(kind=int_32) ::1     INPUT   = 1 then 'ddhhmmss' format
+!     IFFLAG  INTEGER(kind=int_32) ::1     INPUT   = 1 then first invocation
+!     IFIOPK  INTEGER(kind=int_32) ::1     IN/OUT  file option kenmerk array
 !
 !     DECLARATIONS        :
 !
@@ -66,15 +68,15 @@
       use m_evaluate_waq_attribute
       use m_dhimov
       use timers
-      INTEGER       ITIME , NOSEG , IS    , ISFLAG, IFFLAG,
+      INTEGER(kind=int_32) ::ITIME , NOSEG , IS    , ISFLAG, IFFLAG,
      +              IFIOPK, IKMRK1
-      INTEGER       LUN(*)   , IKNMRK(NOSEG,*),
+      INTEGER(kind=int_32) ::LUN(*)   , IKNMRK(NOSEG,*),
      +              IKTIM(*)
 
       CHARACTER*(*) LUNTXT(*)
 
-      integer  ierr, iseg, lunout, ikmrk4
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ierr, iseg, lunout, ikmrk4
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwqtk", ithandl )
 
 !

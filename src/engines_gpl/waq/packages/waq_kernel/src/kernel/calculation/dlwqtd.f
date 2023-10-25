@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwqtd
+      use m_waq_type_definitions
       use m_values
 
 
@@ -53,57 +54,57 @@
 !
 !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
 !     ----    -----    ------     ------- -----------
-!     NOSEG   INTEGER    1        INPUT   Number of water segments
-!     NSEG2   INTEGER    1        INPUT   Number of bottom segments
-!     NOLAY   INTEGER    1        INPUT   Number of water layers
-!     NOGRID  INTEGER    1        INPUT   Nunber of grids
-!     NOQ     INTEGER    1        INPUT   Nunber of water exchanges
-!     NOQ4    INTEGER    1        INPUT   Nunber of bottom exchanges
-!     IGREF   INTEGER  NOGRID     INPUT   Ref, neg = nr of bottom layers
-!     IGSEG   INTEGER NOSEG,NOGRID INPUT  pointer from water to bottom
-!     NOCONS  INTEGER    1        INPUT   Number of constants used
-!     NOPA    INTEGER    1        INPUT   Number of parameters
-!     NOFUN   INTEGER    1        INPUT   Number of functions ( user )
-!     NOSFUN  INTEGER    1        INPUT   Number of segment functions
-!     CONST   REAL     NOCONS     INPUT   value of constants
+!     NOSEG   INTEGER(kind=int_32) ::1        INPUT   Number of water segments
+!     NSEG2   INTEGER(kind=int_32) ::1        INPUT   Number of bottom segments
+!     NOLAY   INTEGER(kind=int_32) ::1        INPUT   Number of water layers
+!     NOGRID  INTEGER(kind=int_32) ::1        INPUT   Nunber of grids
+!     NOQ     INTEGER(kind=int_32) ::1        INPUT   Nunber of water exchanges
+!     NOQ4    INTEGER(kind=int_32) ::1        INPUT   Nunber of bottom exchanges
+!     IGREF   INTEGER(kind=int_32) ::NOGRID     INPUT   Ref, neg = nr of bottom layers
+!     IGSEG   INTEGER(kind=int_32) ::NOSEG,NOGRID INPUT  pointer from water to bottom
+!     NOCONS  INTEGER(kind=int_32) ::1        INPUT   Number of constants used
+!     NOPA    INTEGER(kind=int_32) ::1        INPUT   Number of parameters
+!     NOFUN   INTEGER(kind=int_32) ::1        INPUT   Number of functions ( user )
+!     NOSFUN  INTEGER(kind=int_32) ::1        INPUT   Number of segment functions
+!     CONST   REAL(kind=sp) ::NOCONS     INPUT   value of constants
 !     CONAME  CHAR*20  NOCONS     INPUT   Constant names
-!     PARAM   REAL    NOPA,NOSEG  INPUT   value of parameters
+!     PARAM   REAL(kind=sp) ::NOPA,NOSEG  INPUT   value of parameters
 !     PANAME  CHAR*20  NOPA       INPUT   Parameter names
-!     FUNCS   REAL     NOFUN      INPUT   Function values
+!     FUNCS   REAL(kind=sp) ::NOFUN      INPUT   Function values
 !     FUNAME  CHAR*20  NOFUN      INPUT   Function names
-!     SFUNCS  REAL   NOSEG,NOSFUN INPUT   Segment function values
+!     SFUNCS  REAL(kind=sp) ::NOSEG,NOSFUN INPUT   Segment function values
 !     SFNAME  CHAR*20  NOSFUN     INPUT   Segment function names
-!     IPOINT  INTEGER   4,NOQT    INPUT   All exchange pointers
-!     VOLUME  REAL   NOSEG+NSEG2  IN/OUT  Segment volumes
-!     AREA    REAL    NOQ+NOQ4    IN/OUT  Exchange surfaces
-!     FLOW    REAL    NOQ+NOQ4    IN/OUT  Exchange flows
-!     ALENG   REAL   2,NOQ+NOQ4   IN/OUT  Diffusion lengthes
+!     IPOINT  INTEGER(kind=int_32) ::4,NOQT    INPUT   All exchange pointers
+!     VOLUME  REAL(kind=sp) ::NOSEG+NSEG2  IN/OUT  Segment volumes
+!     AREA    REAL(kind=sp) ::NOQ+NOQ4    IN/OUT  Exchange surfaces
+!     FLOW    REAL(kind=sp) ::NOQ+NOQ4    IN/OUT  Exchange flows
+!     ALENG   REAL(kind=sp) ::2,NOQ+NOQ4   IN/OUT  Diffusion lengthes
 !
 !
       use m_srstop
       use dlwqgrid_mod
       use timers
 
-      INTEGER              LUN(*), IGREF(NOGRID), IGSEG(NOSEG,NOGRID),
+      INTEGER(kind=int_32) ::LUN(*), IGREF(NOGRID), IGSEG(NOSEG,NOGRID),
      *                     IPOINT(  4   ,NOQ+NOQ4)
-      REAL                 CONST (NOCONS), PARAM (NOPA ,NOSEG ),
+      REAL(kind=sp) ::CONST (NOCONS), PARAM (NOPA ,NOSEG ),
      *                     FUNCS (NOFUN ), SFUNCS(NOSEG,NOSFUN),
      *                     VOLUME(NOSEG+NSEG2), AREA(NOQ+NOQ4) ,
      *                     ALENG (2,NOQ+NOQ4 ), FLOW(NOQ+NOQ4)
       CHARACTER*20         CONAME(NOCONS), PANAME(NOPA  ),
      *                     FUNAME(NOFUN ), SFNAME(NOSFUN)
-      integer              NOSEG, NSEG2, NOLAY, NOGRID, NOQ, NOQ4, NOCONS
-      integer              NOFUN, NOSFUN, NOPA
+      integer(kind=int_32) ::NOSEG, NSEG2, NOLAY, NOGRID, NOQ, NOQ4, NOCONS
+      integer(kind=int_32) ::NOFUN, NOSFUN, NOPA
 
 !     local
       LOGICAL              LGET
       logical           :: first_q_column
-      REAL, Allocatable :: Horsurf(:), Thickn(:)
+      REAL(kind=sp), Allocatable  ::Horsurf(:), Thickn(:)
       CHARACTER*20         CTAG
-      integer              ierr, iq, iseg, nosss
+      integer(kind=int_32) ::ierr, iq, iseg, nosss
 
 
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwqtd", ithandl )
 !
       NOSSS = NOSEG + NSEG2

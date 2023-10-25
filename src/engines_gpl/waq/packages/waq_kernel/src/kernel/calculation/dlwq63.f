@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwq63
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -45,27 +47,27 @@
 !
 !     NAME    KIND       LENGTH       FUNCT.  DESCRIPTION
 !     ----    -----      ------       ------- -----------
-!     CONC    REAL     NOTOT*NOSEG    INPUT   first order term
-!     DERIV   REAL     NOTOT*NOSEG    IN/OUT  right hand side matrix
-!     AMASS2  REAL     NOTOT*5        IN/OUT  mass accumulation array
-!     NOSEG   INTEGER       1         INPUT   number of segments
-!     NOTOT   INTEGER       1         INPUT   total number of systems
-!     ISYS    INTEGER       1         INPUT   system considered
-!     NSYS    INTEGER       1         INPUT   number of systems to take
-!     DMPS    REAL          *         IN/OUT  dumped segment fluxes
+!     CONC    REAL(kind=sp) ::NOTOT*NOSEG    INPUT   first order term
+!     DERIV   REAL(kind=sp) ::NOTOT*NOSEG    IN/OUT  right hand side matrix
+!     AMASS2  REAL(kind=sp) ::NOTOT*5        IN/OUT  mass accumulation array
+!     NOSEG   INTEGER(kind=int_32) ::1         INPUT   number of segments
+!     NOTOT   INTEGER(kind=int_32) ::1         INPUT   total number of systems
+!     ISYS    INTEGER(kind=int_32) ::1         INPUT   system considered
+!     NSYS    INTEGER(kind=int_32) ::1         INPUT   number of systems to take
+!     DMPS    REAL(kind=sp) ::*         IN/OUT  dumped segment fluxes
 !                                             if INTOPT > 7
-!     INTOPT  INTEGER     1       INPUT   Integration suboptions
+!     INTOPT  INTEGER(kind=int_32) ::1       INPUT   Integration suboptions
 !
-!     ISDMP   INTEGER  NOSEG      INPUT   pointer dumped segments
+!     ISDMP   INTEGER(kind=int_32) ::NOSEG      INPUT   pointer dumped segments
 !
       use timers
 
-      INTEGER     ISDMP(*)
-      real        CONC(NOTOT,*) , DERIV(*) , AMASS2(NOTOT,*) ,
+      INTEGER(kind=int_32) ::ISDMP(*)
+      real(kind=sp) ::CONC(NOTOT,*) , DERIV(*) , AMASS2(NOTOT,*) ,
      *            DMPS(*)
-      integer    notot, nsys, noseg
-      integer    i, ip, i4, i5, i6, ntot, iset, intopt, iseg, isys
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::notot, nsys, noseg
+      integer(kind=int_32) ::i, ip, i4, i5, i6, ntot, iset, intopt, iseg, isys
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwq63", ithandl )
 !
 !         gets concentrations

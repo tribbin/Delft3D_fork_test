@@ -22,11 +22,12 @@
 !!  rights reserved.
 
       module dryfld_mod
+       use m_waq_type_definitions
        use m_zoek
        use m_dhkmst
 
           implicit none
-          real(4), dimension(:), allocatable, save :: sumvol
+          real(kind=sp), dimension(:), allocatable, save  ::sumvol
       end module dryfld_mod
 
       subroutine dryfld ( nosegw , noseg  , nolay  , volume , noq12  ,                &
@@ -64,33 +65,33 @@
 
 !     kind           function         name                   description
 
-      integer  ( 4), intent(in   ) :: nosegw               !< number of computational volumes water
-      integer  ( 4), intent(in   ) :: noseg                !< number of computational volumes total
-      integer  ( 4), intent(in   ) :: nolay                !< number of layers
-      real     ( 4), intent(inout) :: volume (noseg)       !< volumes at start of time step
-      integer  ( 4), intent(in   ) :: noq12                !< number of horizontal exchanges
-      real     ( 4), intent(inout) :: area   (noq12)       !< areas at start of time step
-      integer  ( 4), intent(in   ) :: nocons               !< number of constants
+      integer(kind=int_32), intent(in   )  ::nosegw               !< number of computational volumes water
+      integer(kind=int_32), intent(in   )  ::noseg                !< number of computational volumes total
+      integer(kind=int_32), intent(in   )  ::nolay                !< number of layers
+      real(kind=sp), intent(inout)  ::volume (noseg)       !< volumes at start of time step
+      integer(kind=int_32), intent(in   )  ::noq12                !< number of horizontal exchanges
+      real(kind=sp), intent(inout)  ::area   (noq12)       !< areas at start of time step
+      integer(kind=int_32), intent(in   )  ::nocons               !< number of constants
       character(20), intent(in   ) :: coname (nocons)      !< names of the constants
-      real     ( 4), intent(in   ) :: cons   (nocons)      !< values of the constants
-      real     ( 4), intent(in   ) :: surface(noseg)       !< horizontal surface area
-      integer  ( 4), intent(in   ) :: iknmrk (noseg)       !< constant feature array
-      integer  ( 4), intent(  out) :: iknmkv (noseg)       !< time varying feature array
+      real(kind=sp), intent(in   )  ::cons   (nocons)      !< values of the constants
+      real(kind=sp), intent(in   )  ::surface(noseg)       !< horizontal surface area
+      integer(kind=int_32), intent(in   )  ::iknmrk (noseg)       !< constant feature array
+      integer(kind=int_32), intent(  out)  ::iknmkv (noseg)       !< time varying feature array
 
 !     Local declarations
 
-      integer  ( 4)    idryfld         ! help variable to find dry_tresh constant
-      real     ( 4)    threshold       ! drying and flooding value
-      real     ( 4)    minvolume       ! minimum volume in a cell
-      real     ( 4)    minarea         ! minimum exhange area of a horizontal exchange
-      integer  ( 4)    nosegl          ! number of computational volumes per layer
-      integer  ( 4)    isegl           ! loop variable volumes
-      integer  ( 4)    ivol            ! index for this computational volumes
-      integer  ( 4)    ilay            ! loop variable layers
-      integer  ( 4)    ikm             ! feature
-      real     ( 4)    sum             ! help variable
+      integer(kind=int_32) ::idryfld         ! help variable to find dry_tresh constant
+      real(kind=sp) ::threshold       ! drying and flooding value
+      real(kind=sp) ::minvolume       ! minimum volume in a cell
+      real(kind=sp) ::minarea         ! minimum exhange area of a horizontal exchange
+      integer(kind=int_32) ::nosegl          ! number of computational volumes per layer
+      integer(kind=int_32) ::isegl           ! loop variable volumes
+      integer(kind=int_32) ::ivol            ! index for this computational volumes
+      integer(kind=int_32) ::ilay            ! loop variable layers
+      integer(kind=int_32) ::ikm             ! feature
+      real(kind=sp) ::sum             ! help variable
 
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dryfld", ithandl )
 
 !        Initialisations
@@ -98,7 +99,7 @@
       nosegl = nosegw / nolay
 
       !
-      ! Allocate the work array - reallocate if
+      ! Allocate the work array - real(kind=sp) ::locate if
       ! for some reason the model size has changed
       !
       if ( .not. allocated(sumvol) ) then
@@ -188,34 +189,34 @@
 
 !     kind           function         name                   description
 
-      integer  ( 4), intent(in   ) :: nosegw               !< number of computational volumes water
-      integer  ( 4), intent(in   ) :: noseg                !< number of computational volumes
-      real     ( 4), intent(inout) :: volume (noseg)       !< volumes at end of time step
-      integer  ( 4), intent(in   ) :: nolay                !< number of layers
-      integer  ( 4), intent(in   ) :: nocons               !< number of constants
+      integer(kind=int_32), intent(in   )  ::nosegw               !< number of computational volumes water
+      integer(kind=int_32), intent(in   )  ::noseg                !< number of computational volumes
+      real(kind=sp), intent(inout)  ::volume (noseg)       !< volumes at end of time step
+      integer(kind=int_32), intent(in   )  ::nolay                !< number of layers
+      integer(kind=int_32), intent(in   )  ::nocons               !< number of constants
       character(20), intent(in   ) :: coname (nocons)      !< names of the constants
-      real     ( 4), intent(in   ) :: cons   (nocons)      !< values of the constants
-      real     ( 4), intent(in   ) :: surface(noseg)       !< horizontal surface area
-      integer  ( 4), intent(in   ) :: iknmrk (noseg)       !< constant feature array
-      integer  ( 4), intent(inout) :: iknmkv (noseg)       !< time varying feature array
+      real(kind=sp), intent(in   )  ::cons   (nocons)      !< values of the constants
+      real(kind=sp), intent(in   )  ::surface(noseg)       !< horizontal surface area
+      integer(kind=int_32), intent(in   )  ::iknmrk (noseg)       !< constant feature array
+      integer(kind=int_32), intent(inout)  ::iknmkv (noseg)       !< time varying feature array
 
-      integer  ( 4)    idryfld         ! help variable to find dry_tresh constant
-      real     ( 4)    threshold       ! drying and flooding value
-      real     ( 4)    minvolume       ! minimum volume in a cell
-      integer  ( 4)    nosegl          ! number of computational volumes per layer
-      integer  ( 4)    isegl           ! loop variable
-      integer  ( 4)    ivol            ! this computational volume
-      integer  ( 4)    ilay            ! loop variable layers
-      integer  ( 4)    ikm             ! feature
-      real     ( 4)    sum             ! help variable
+      integer(kind=int_32) ::idryfld         ! help variable to find dry_tresh constant
+      real(kind=sp) ::threshold       ! drying and flooding value
+      real(kind=sp) ::minvolume       ! minimum volume in a cell
+      integer(kind=int_32) ::nosegl          ! number of computational volumes per layer
+      integer(kind=int_32) ::isegl           ! loop variable
+      integer(kind=int_32) ::ivol            ! this computational volume
+      integer(kind=int_32) ::ilay            ! loop variable layers
+      integer(kind=int_32) ::ikm             ! feature
+      real(kind=sp) ::sum             ! help variable
 
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dryfle", ithandl )
 
       nosegl = nosegw / nolay
 
       !
-      ! Allocate the work array - reallocate if
+      ! Allocate the work array - real(kind=sp) ::locate if
       ! for some reason the model size has changed
       !
       if ( .not. allocated(sumvol) ) then

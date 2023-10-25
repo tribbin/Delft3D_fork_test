@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwq66
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -43,21 +45,21 @@
 !
 !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
 !     ----    -----    ------     ------- -----------
-!     AMASS   REAL   NOTOT*NOSEG  OUTPUT  closure error correction
-!     VOLUME  REAL      NOSEG     INPUT   volume
-!     CONC    REAL   NOTOT*NOSEG  INPUT   concentrations
-!     NOTOT   INTEGER     1       INPUT   number of systems
-!     NOSEG   INTEGER     1       INPUT   number of segments
+!     AMASS   REAL(kind=sp) ::NOTOT*NOSEG  OUTPUT  closure error correction
+!     VOLUME  REAL(kind=sp) ::NOSEG     INPUT   volume
+!     CONC    REAL(kind=sp) ::NOTOT*NOSEG  INPUT   concentrations
+!     NOTOT   INTEGER(kind=int_32) ::1       INPUT   number of systems
+!     NOSEG   INTEGER(kind=int_32) ::1       INPUT   number of segments
 !
       use timers
 
-      real       AMASS(NOTOT,*) , VOLUME(*) , CONC(NOTOT,*)
-      real       v1
+      real(kind=sp) ::AMASS(NOTOT,*) , VOLUME(*) , CONC(NOTOT,*)
+      real(kind=sp) ::v1
 
-      integer    notot, noseg
-      integer    isys, iseg
+      integer(kind=int_32) ::notot, noseg
+      integer(kind=int_32) ::isys, iseg
 
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwq66", ithandl )
 !
 !         loop over the number of segments and systems

@@ -22,6 +22,7 @@
 !!  rights reserved.
 
       module dlwqi0_mod
+      use m_waq_type_definitions
       use m_zlayer
       use m_segcol
       use m_dlwqtd
@@ -71,7 +72,7 @@
 !                           DLWQT0, sets time functions
 !                           open_waq_files, opens files
 !                           MOVE  , copy's arrays
-!                           ZERO  , zeros an real arrays
+!                           ZERO  , zeros an real(kind=sp) ::arrays
 !
       use m_dhisys
       use dlwqgrid_mod
@@ -82,39 +83,39 @@
       use string_module  ! string manipulation tools
       use m_sysn          ! System characteristics
       use m_sysi          ! Timer characteristics
-      use m_sysa          ! Pointers in real array workspace
-      use m_sysj          ! Pointers in integer array workspace
+      use m_sysa          ! Pointers in real(kind=sp) ::array workspace
+      use m_sysj          ! Pointers in integer(kind=int_32) ::array workspace
       use m_sysc          ! Pointers in character array workspace
 
 !     Parameters          :
 
 !     kind           function         name            description
       type(waq_data_buffer), intent(inout) :: buffer        !< System total array space
-      integer              , intent(in   ) :: nlun          !< Number of files
-      integer              , intent(inout) :: imaxa         !< dimension   A-array
-      integer              , intent(inout) :: imaxi         !< dimension   J-array
-      integer              , intent(inout) :: imaxc         !< dimension   C-array
-      integer              , intent(in   ) :: ipage         !< pagelength of the output file
-      integer              , intent(inout) :: lun    (nlun) !< array with unit numbers
+      integer(kind=int_32), intent(in   )  ::nlun          !< Number of files
+      integer(kind=int_32), intent(inout)  ::imaxa         !< dimension   A-array
+      integer(kind=int_32), intent(inout)  ::imaxi         !< dimension   J-array
+      integer(kind=int_32), intent(inout)  ::imaxc         !< dimension   C-array
+      integer(kind=int_32), intent(in   )  ::ipage         !< pagelength of the output file
+      integer(kind=int_32), intent(inout)  ::lun    (nlun) !< array with unit numbers
       character(*)         , intent(in   ) :: lchar  (nlun) !< filenames
-      integer              , intent(in   ) :: filtype(nlun) !< type of file
+      integer(kind=int_32), intent(in   )  ::filtype(nlun) !< type of file
       type(gridpointercoll), intent(out)   :: gridps        !< collection off all grid definitions
       type(delwaq_data)    , intent(inout) :: dlwqd         !< derived type for persistent storage
-      integer              , intent(inout) :: ierr          !< error count
+      integer(kind=int_32), intent(inout)  ::ierr          !< error count
 
 !
 !     Local declaration
 !
-      REAL          RDUMMY(1)
+      REAL(kind=sp) ::RDUMMY(1)
       LOGICAL       LDUMMY    , UPDATR
       CHARACTER*200 FINAM
-      INTEGER       SENDBUF(3)
+      INTEGER(kind=int_32) ::SENDBUF(3)
       CHARACTER*4   cext                          ! inital conditions file extention
 
-      INTEGER       IERRIO, new_lun
+      INTEGER(kind=int_32) ::IERRIO, new_lun
 
       LOGICAL       propor
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
 
       if ( timon ) call timstrt ( "dlwqi0", ithandl )
 
@@ -448,22 +449,22 @@
 
       implicit none
 
-      integer  (4), intent(in   ) :: noseg              !< number of computational volumes
-      integer  (4), intent(in   ) :: nosys              !< number of transported substances
-      integer  (4), intent(in   ) :: notot              !< total number of substances
-      real     (4), intent(inout) :: conc (notot,noseg) !< the concentration values
-      real     (4), intent(  out) :: amass(notot,noseg) !< the mass values
-      integer  (4), intent(in   ) :: nopa               !< number of parameters or segment functions
-      integer  (4), intent(in   ) :: iparm              !< selected parameter
-      real     (4), intent(in   ) :: parm (nopa *noseg) !< parameter or segment function array
+      integer(kind=int_32), intent(in   )  ::noseg              !< number of computational volumes
+      integer(kind=int_32), intent(in   )  ::nosys              !< number of transported substances
+      integer(kind=int_32), intent(in   )  ::notot              !< total number of substances
+      real(kind=sp), intent(inout)  ::conc (notot,noseg) !< the concentration values
+      real(kind=sp), intent(  out)  ::amass(notot,noseg) !< the mass values
+      integer(kind=int_32), intent(in   )  ::nopa               !< number of parameters or segment functions
+      integer(kind=int_32), intent(in   )  ::iparm              !< selected parameter
+      real(kind=sp), intent(in   )  ::parm (nopa *noseg) !< parameter or segment function array
       character(1), intent(  out) :: string(7)          !< model docu substring
       logical     , intent(in   ) :: propor             !< if .true. then /m2 in the input
       logical     , intent(in   ) :: direct             !< if .false. segments is first index
 
-      integer iseg   ! loop counter computational volumes
-      integer isys   ! loop counter modelled substances
-      real(4) surf   ! help variable
-      integer indx   ! index
+      integer(kind=int_32) ::iseg   ! loop counter computational volumes
+      integer(kind=int_32) ::isys   ! loop counter modelled substances
+      real(kind=sp) ::surf   ! help variable
+      integer(kind=int_32) ::indx   ! index
 
       string(1:7) = ['m','a','s', 's', '/', 'm', '2']   ! always in the output and keep debugger happy
       if ( direct ) then

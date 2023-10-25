@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_chknmr
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -42,17 +44,17 @@
 !
       use timers
       implicit none
-      integer, intent(in)    :: lunrep         ! unit number of output file
-      integer, intent(in)    :: noseg          ! number of segments
+      integer(kind=int_32), intent(in)     ::lunrep         ! unit number of output file
+      integer(kind=int_32), intent(in)     ::noseg          ! number of segments
 
-      integer, intent(inout) :: iknmrk(noseg)  ! property array
+      integer(kind=int_32), intent(inout)  ::iknmrk(noseg)  ! property array
 !
 !     Local variables :
 !
-      integer :: iseg                ! segment index
-      integer :: var1,var2,var3,var4 ! 1st, 2nd, 3rd and 4th number of feature
-      integer :: icount              ! counts the number of changes
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::iseg                ! segment index
+      integer(kind=int_32) ::var1,var2,var3,var4 ! 1st, 2nd, 3rd and 4th number of feature
+      integer(kind=int_32) ::icount              ! counts the number of changes
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "chknmr", ithandl )
 !
 !     on input, the kenmerk-array contains two digits:

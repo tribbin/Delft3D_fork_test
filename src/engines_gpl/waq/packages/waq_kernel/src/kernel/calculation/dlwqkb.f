@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwqkb
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -36,7 +38,7 @@
 !     CREATED             : december 1994 by Jan van Beek
 !
 !     FUNCTION            : Steps along in a time variable database
-!                           for integer block functions
+!                           for integer(kind=int_32) ::block functions
 !
 !     LOGICAL UNITNUMBERS : LUNIN  - input unit intermediate file
 !                           LUNOUT - monitor file
@@ -47,27 +49,27 @@
 !
 !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
 !     ----    -----    ------     ------- -----------
-!     LUNIN   INTEGER       1     INPUT   unit number intermediate file
-!     LUNOUT  INTEGER       1     INPUT   unit number monitor file
-!     ITIME   INTEGER       1     INPUT   Model timer
-!     IDTIME  INTEGER       1     IN/OUT  Delta for this function
-!     ITIME1  INTEGER       1     IN/OUT  Lower time in file
-!     ITIME2  INTEGER       1     IN/OUT  Higher time in file
-!     IARRA1  REAL       NFTOT    IN/OUT  record at lower time
-!     IARRA2  REAL       NFTOT    IN/OUT  record at higher time
-!     NFTOT   INTEGER       1     INPUT   record length
+!     LUNIN   INTEGER(kind=int_32) ::1     INPUT   unit number intermediate file
+!     LUNOUT  INTEGER(kind=int_32) ::1     INPUT   unit number monitor file
+!     ITIME   INTEGER(kind=int_32) ::1     INPUT   Model timer
+!     IDTIME  INTEGER(kind=int_32) ::1     IN/OUT  Delta for this function
+!     ITIME1  INTEGER(kind=int_32) ::1     IN/OUT  Lower time in file
+!     ITIME2  INTEGER(kind=int_32) ::1     IN/OUT  Higher time in file
+!     IARRA1  REAL(kind=sp) ::NFTOT    IN/OUT  record at lower time
+!     IARRA2  REAL(kind=sp) ::NFTOT    IN/OUT  record at higher time
+!     NFTOT   INTEGER(kind=int_32) ::1     INPUT   record length
 !     LUNTXT  CHAR*(*)      1     INPUT   text with the unit number
-!     ISFLAG  INTEGER       1     INPUT   = 1 then 'ddhhmmss' format
-!     IFFLAG  INTEGER       1     INPUT   = 1 then first invocation
+!     ISFLAG  INTEGER(kind=int_32) ::1     INPUT   = 1 then 'ddhhmmss' format
+!     IFFLAG  INTEGER(kind=int_32) ::1     INPUT   = 1 then first invocation
 !
 !     DECLARATIONS        :
 !
       use m_srstop
       use m_dhimov
       use timers
-      INTEGER       LUNIN  , LUNOUT , ITIME  , IDTIME , ITIME1 ,
+      INTEGER(kind=int_32) ::LUNIN  , LUNOUT , ITIME  , IDTIME , ITIME1 ,
      +              ITIME2 , NFTOT  , ISFLAG , IFFLAG
-      INTEGER       IARRA1(*), IARRA2(*)
+      INTEGER(kind=int_32) ::IARRA1(*), IARRA2(*)
       CHARACTER*(*) LUNTXT
 !
 !     Local
@@ -77,10 +79,10 @@
       CHARACTER*16  MSGTXT(3)
       DATA          MSGTXT / ' REWIND ON      ' , ' WARNING READING' ,
      +                       ' REWIND ERROR   ' /
-      integer    messge, k, ierr
+      integer(kind=int_32) ::messge, k, ierr
 
 
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwqkb", ithandl )
 !
       MESSGE = 0

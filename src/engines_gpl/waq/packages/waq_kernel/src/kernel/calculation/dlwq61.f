@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwq61
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -58,13 +60,13 @@
 !
       use timers
 
-      real        CONC (NOTOT,*)  ,  DERIV(*)  ,  AMAT(*)  ,
+      real(kind=sp) ::CONC (NOTOT,*)  ,  DERIV(*)  ,  AMAT(*)  ,
      *            AMASS(      *)
 
-      integer ntot, nsys, notot, noseg
-      integer i, isys, istep, iset, iseg, ioff, jtrack
+      integer(kind=int_32) ::ntot, nsys, notot, noseg
+      integer(kind=int_32) ::i, isys, istep, iset, iseg, ioff, jtrack
 
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwq61", ithandl )
 !
 !         zero the matrix

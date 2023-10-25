@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwq41
+      use m_waq_type_definitions
       use m_dlwqt1
 
 
@@ -63,40 +64,40 @@
 
 !     Kind        Function         Name                  Description
 
-      integer(4), intent(in   ) :: lun   (*)           !< Array with unit numbers
-      integer(4), intent(in   ) :: itime               !< The model timer
-      integer(4), intent(in   ) :: itimel              !< The model timer last step
-      real   (4), intent(inout) :: harmat(*)           !< Matrices harmonic components
-      real   (4), intent(inout) :: array (*)           !< Set of double file buffers
-      integer(4), intent(in   ) :: iharm (*)           !< Harmonic time space
-      integer(4), intent(in   ) :: nrharm(*)           !< Set of nrs of harmonic records
-      integer(4), intent(in   ) :: nrftot(*)           !< Set of record lengthes
-      integer(4), intent(in   ) :: noseg               !< Nr of computational volumes
-      real   (4), intent(  out) :: volume(noseg)       !< Array of volumes per gridcell
-      integer(4), intent(in   ) :: ipoint(*)           !< Set of pointers to destination
+      integer(kind=int_32), intent(in   )  ::lun   (*)           !< Array with unit numbers
+      integer(kind=int_32), intent(in   )  ::itime               !< The model timer
+      integer(kind=int_32), intent(in   )  ::itimel              !< The model timer last step
+      real(kind=sp), intent(inout)  ::harmat(*)           !< Matrices harmonic components
+      real(kind=sp), intent(inout)  ::array (*)           !< Set of double file buffers
+      integer(kind=int_32), intent(in   )  ::iharm (*)           !< Harmonic time space
+      integer(kind=int_32), intent(in   )  ::nrharm(*)           !< Set of nrs of harmonic records
+      integer(kind=int_32), intent(in   )  ::nrftot(*)           !< Set of record lengthes
+      integer(kind=int_32), intent(in   )  ::noseg               !< Nr of computational volumes
+      real(kind=sp), intent(  out)  ::volume(noseg)       !< Array of volumes per gridcell
+      integer(kind=int_32), intent(in   )  ::ipoint(*)           !< Set of pointers to destination
       character*(*), intent(in) :: luntxt(*)           !< Text with the unit numbers
-      integer(4), intent(in   ) :: ftype (*)           !< Type of file to read
-      integer(4), intent(in   ) :: isflag              !< = 1 then 'ddhhmmss' format
-      integer(4), intent(in   ) :: ivflag              !< = 1 then computed volumes
+      integer(kind=int_32), intent(in   )  ::ftype (*)           !< Type of file to read
+      integer(kind=int_32), intent(in   )  ::isflag              !< = 1 then 'ddhhmmss' format
+      integer(kind=int_32), intent(in   )  ::ivflag              !< = 1 then computed volumes
       logical   , intent(  out) :: updatv              !< set to T if volume is updated
-      integer(4), intent(inout) :: inwspc(*)           !< Integer space new time functions
-      real   (4), intent(inout) :: anwspc(*)           !< Real space new time functions
-      integer(4), intent(in   ) :: inwtyp(*)           !< Types of items
-      integer(4), intent(inout) :: iwork (*)           !< Integer workspace
+      integer(kind=int_32), intent(inout)  ::inwspc(*)           !< Integer(kind=int_32) ::space new time functions
+      real(kind=sp), intent(inout)  ::anwspc(*)           !< Real(kind=sp) ::space new time functions
+      integer(kind=int_32), intent(in   )  ::inwtyp(*)           !< Types of items
+      integer(kind=int_32), intent(inout)  ::iwork (*)           !< Integer(kind=int_32) ::workspace
       logical   , intent(in   ) :: lstrec              !< Switch last record on rewind wanted
       logical   , intent(  out) :: lrewin              !< If T then rewindtook place
-      real   (4), intent(  out) :: vollst(noseg)       !< Last volume record before rewind
+      real(kind=sp), intent(  out)  ::vollst(noseg)       !< Last volume record before rewind
       type(delwaq_data), intent(inout) :: dlwqd        !< derived type for persistent storage
 
 
 !     Local
 
-      integer(4)  iph, ipf, ipa, ipi      ! pointers in the arrays
-      integer(4)  ifflag                  ! if 1, then it was the first invoke
+      integer(kind=int_32) ::iph, ipf, ipa, ipi      ! pointers in the arrays
+      integer(kind=int_32) ::ifflag                  ! if 1, then it was the first invoke
       logical     update, ldum(2)         ! logicals on rewind
-      integer(4)  ierr                    ! error indicator
+      integer(kind=int_32) ::ierr                    ! error indicator
 
-      integer(4)  ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwq41", ithandl )
 
 !         initialisation

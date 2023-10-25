@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_values
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -36,14 +38,14 @@
 
 !
       CHARACTER*20 NAME  , CONAME(*), PANAME(*), FUNAME(*), SFNAME(*)
-      REAL         VALUE(NOSSS), CONST(NOCONS), PARAM (NOPA ,NOSSS ),
+      REAL(kind=sp) ::VALUE(NOSSS), CONST(NOCONS), PARAM (NOPA ,NOSSS ),
      *                           FUNCS(NOFUN ), SFUNCS(NOSSS,NOSFUN)
       LOGICAL      LGET
-      integer      NOSSS, NOCONS , NOPA, NOFUN, NOSFUN, IERR
+      integer(kind=int_32) ::NOSSS, NOCONS , NOPA, NOFUN, NOSFUN, IERR
 
 !     local
-      integer INDX
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::INDX
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "values", ithandl )
 !
       IERR = 1

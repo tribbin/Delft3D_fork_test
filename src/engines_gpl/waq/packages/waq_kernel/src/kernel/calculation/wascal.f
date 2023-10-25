@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_wascal
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -49,32 +51,32 @@
 
       ! arguments declarations
 
-      integer                             :: nowst
-      integer                             :: notot
-      integer                             :: nosys
-      integer                             :: noseg
+      integer(kind=int_32) ::nowst
+      integer(kind=int_32) ::notot
+      integer(kind=int_32) ::nosys
+      integer(kind=int_32) ::noseg
       character(len=20)                   :: syname(notot)
-      real                                :: conc(notot,noseg)
-      integer                             :: itime
-      integer                             :: nowtyp
+      real(kind=sp) ::conc(notot,noseg)
+      integer(kind=int_32) ::itime
+      integer(kind=int_32) ::nowtyp
       character(len=20)                   :: wastid(nowst)
       character(len=40)                   :: wstnam(nowst)
       character(len=20)                   :: wsttyp(nowtyp)
-      integer                             :: iwaste(nowst)
-      integer                             :: iwtype(nowst)
-      real                                :: waste(0:notot,nowst)
+      integer(kind=int_32) ::iwaste(nowst)
+      integer(kind=int_32) ::iwtype(nowst)
+      real(kind=sp) ::waste(0:notot,nowst)
 
       ! local declarations
 
-      integer, save       :: ifirst = 1
-      integer             :: ierror
-      integer             :: iwst
-      integer             :: isys
-      integer             :: lunrep
+      integer(kind=int_32), save        ::ifirst = 1
+      integer(kind=int_32) ::ierror
+      integer(kind=int_32) ::iwst
+      integer(kind=int_32) ::isys
+      integer(kind=int_32) ::lunrep
       character(len=256)  :: load_routine
-      type(wasteload),pointer, save :: wasteloads(:)
-      integer             :: ierr_alloc
-      integer(4), save    :: ithandl = 0
+      integer(kind=int_32) ::ierr_alloc
+      integer(kind=int_32), save     ::ithandl = 0
+
       if ( timon ) call timstrt ( "wascal", ithandl )
 
       ! initialise dll

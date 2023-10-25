@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwqkv
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -45,22 +47,22 @@
 !
 !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
 !     ----    -----    ------     ------- -----------
-!     LUNIN   INTEGER       1     INPUT   unit number intermediate file
-!     LUNOUT  INTEGER       1     INPUT   unit number monitor file
-!     ITIME   INTEGER       1     INPUT   Model timer
-!     IARRAY  INTEGER  NTOTAL     OUTPUT  result array at time ITIME
-!     NTOTAL  INTEGER       1     INPUT   number of items to be filled
+!     LUNIN   INTEGER(kind=int_32) ::1     INPUT   unit number intermediate file
+!     LUNOUT  INTEGER(kind=int_32) ::1     INPUT   unit number monitor file
+!     ITIME   INTEGER(kind=int_32) ::1     INPUT   Model timer
+!     IARRAY  INTEGER(kind=int_32) ::NTOTAL     OUTPUT  result array at time ITIME
+!     NTOTAL  INTEGER(kind=int_32) ::1     INPUT   number of items to be filled
 !     LUNTXT  CHAR*(*)      1     INPUT   text concerning unit numbers
-!     ISFLAG  INTEGER       1     INPUT   = 1 then 'ddhhmmss' format
-!     IFFLAG  INTEGER       1     INPUT   = 1 then first invocation
+!     ISFLAG  INTEGER(kind=int_32) ::1     INPUT   = 1 then 'ddhhmmss' format
+!     IFFLAG  INTEGER(kind=int_32) ::1     INPUT   = 1 then first invocation
 !
 !     DECLARATIONS        :
 !
       use m_srstop
       use timers
-      INTEGER       LUNIN , LUNOUT, ITIME , NTOTAL, ISFLAG,
+      INTEGER(kind=int_32) ::LUNIN , LUNOUT, ITIME , NTOTAL, ISFLAG,
      +              IFFLAG
-      INTEGER       IARRAY(NTOTAL)
+      INTEGER(kind=int_32) ::IARRAY(NTOTAL)
       CHARACTER*(*) LUNTXT
 !
 !     Local
@@ -70,9 +72,9 @@
       CHARACTER*10  MSGTXT(3)
       DATA          MSGTXT /' REWIND   ' , ' CONSTANT ' , ' ERROR    '/
 
-      integer   messge, itime1, ierr
+      integer(kind=int_32) ::messge, itime1, ierr
 
-      integer(4) ithandl /0/
+      integer(kind=int_32) ::ithandl = 0
       if ( timon ) call timstrt ( "dlwqkv", ithandl )
 !
 !         is this the first time?
