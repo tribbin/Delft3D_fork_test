@@ -108,18 +108,18 @@
 !     kind           function         name                Descriptipon
 
       integer(kind=int_32), intent(inout) ::  lun    (*)         !< array with unit numbers
-      character( *), intent(inout) :: lchar  (*)        !< array with file names of the files
+      character( *), intent(inout)        :: lchar  (*)        !< array with file names of the files
       integer(kind=int_32), intent(inout) ::  filtype(*)         !< type of binary file
       integer(kind=int_32), intent(inout) ::  nrftot (*)         !< number of function items
       integer(kind=int_32), intent(inout) ::  nlines             !< cumulative record  space
       integer(kind=int_32), intent(inout) ::  npoins             !< cumulative pointer space
-      logical      , intent(  out) :: dtflg1            !< 'date'-format 1st timescale
-      logical      , intent(  out) :: dtflg2            !< 'date'-format 2nd timescale
+      logical      , intent(  out)        :: dtflg1            !< 'date'-format 1st timescale
+      logical      , intent(  out)        :: dtflg2            !< 'date'-format 2nd timescale
       integer(kind=int_32), intent(  out) ::  nodump             !< number of monitoring points output
       integer(kind=int_32), intent(in   ) ::  iopt (*)           !< array with valid integration options
       integer(kind=int_32), intent(in   ) ::  noint              !< dimension of iopt
       integer(kind=int_32), intent(in   ) ::  iwidth             !< width of the output file
-      logical      , intent(  out) :: dtflg3            !< 'date'-format (F;ddmmhhss,T;yydddhh)
+      logical      , intent(  out)        :: dtflg3              !< 'date'-format (F;ddmmhhss,T;yydddhh)
       integer(kind=int_32), intent(  out) ::  ndmpar             !< number of dump areas
       integer(kind=int_32), intent(  out) ::  ntdmps             !< total number segments in dump area
       integer(kind=int_32), intent(  out) ::  noraai             !< number of raaien
@@ -128,11 +128,11 @@
       integer(kind=int_32), intent(inout) ::  notot              !< total number of substances
       integer(kind=int_32), intent(  out) ::  nototp             !< notot inclusive of partcle substances
       integer(kind=int_32), intent(in   ) ::  ioutpt             !< flag for more or less output
-      integer(kind=int_32), pointer ::  nsegdmp (:)        !< number of volumes in this monitoring area
-      integer(kind=int_32), pointer ::  isegdmp (:)        !< computational volume numbers
-      integer(kind=int_32), pointer ::  nexcraai(:)        !< number of exchanges in this monitoring transect
-      integer(kind=int_32), pointer ::  iexcraai(:)        !< exchange area numbers of the transect
-      integer(kind=int_32), pointer ::  ioptraai(:)        !< option for the transects
+      integer(kind=int_32), pointer       ::  nsegdmp (:)        !< number of volumes in this monitoring area
+      integer(kind=int_32), pointer       ::  isegdmp (:)        !< computational volume numbers
+      integer(kind=int_32), pointer       ::  nexcraai(:)        !< number of exchanges in this monitoring transect
+      integer(kind=int_32), pointer       ::  iexcraai(:)        !< exchange area numbers of the transect
+      integer(kind=int_32), pointer       ::  ioptraai(:)        !< option for the transects
       integer(kind=int_32), intent(inout) ::  ierr               !< cumulative error   count
       integer(kind=int_32), intent(inout) ::  iwar               !< cumulative warning count
 
