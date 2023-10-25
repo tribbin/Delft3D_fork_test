@@ -4413,22 +4413,33 @@ subroutine check_time_interval(time_interval_start, time_interval, time_interval
     character(*),     intent(in   ) :: time_interval_name   !< Name of the time interval parameter to check, to be used in the log message.
     double precision, intent(in   ) :: time_start_user      !< User specified time start (s) w.r.t. refdat
 
+    logical :: is_error
+    
+    is_error=.false.
+    
     if (time_interval > 0d0) then
         time_interval = max(time_interval, user_time_step)
         if (is_not_multiple(time_interval, user_time_step)) then
+            is_error=.true.
             write(msgbuf, *) time_interval_name,' (Step) = ', time_interval, ' should be multiple of DtUser = ', user_time_step, ' s.'
-            call mess(LEVEL_ERROR, msgbuf)
+            call mess(LEVEL_INFO, msgbuf)
         endif
         if (is_not_multiple(time_interval_start - time_start_user, user_time_step)) then 
+            is_error=.true.
             write(msgbuf, *) time_interval_name ,' (Start) - TStart = ', time_interval_start, ' - ', time_start_user, ' should be multiple of DtUser = ', user_time_step, ' s.'
-            call mess(LEVEL_ERROR, msgbuf)
+            call mess(LEVEL_INFO, msgbuf)
         endif
         if (is_not_multiple(time_interval_end - time_start_user, user_time_step)) then            
+            is_error=.true.
             write(msgbuf, *) time_interval_name,' (End) - TStart = ', time_interval_end, ' - ', time_start_user, ' should be multiple of DtUser = ', user_time_step, ' s.'
-            call mess(LEVEL_ERROR, msgbuf)
+            call mess(LEVEL_INFO, msgbuf)
         endif
     endif
 
+    if (is_error==.true.) then
+        call mess(LEVEL_ERROR, 'See info messages above')
+    endif
+    
 end subroutine check_time_interval
 
 !> Check if time interval is not multiple of DtUser
