@@ -23,7 +23,6 @@
 
       module delwaq_user_wasteloads
 
-      use m_waq_type_definitions
       use m_zoek
       use m_srstop
       use m_open_waq_files
@@ -42,13 +41,13 @@
 
       ! arguments declarations
 
-      integer(kind=int_32), intent(in) ::  nowst                   ! number of wasteloads
-      type(wasteload), intent(inout)   :: wasteloads(:)          ! array of all wasteloads (structure)
-      integer(kind=int_32), intent(in) ::  notot                   ! total number of substances
-      integer(kind=int_32), intent(in) ::  nosys                   ! number of active substances
-      integer(kind=int_32), intent(in) ::  noseg                   ! number of segments
-      integer(kind=int_32), intent(in) ::  itime                   ! system time
-      real(kind=sp), intent(in) ::  conc(:,:)               ! concentration array
+      integer, intent(in)                 :: nowst                  ! number of wasteloads
+      type(wasteload), intent(inout)      :: wasteloads(:)          ! array of all wasteloads (structure)
+      integer, intent(in)                 :: notot                  ! total number of substances
+      integer, intent(in)                 :: nosys                  ! number of active substances
+      integer, intent(in)                 :: noseg                  ! number of segments
+      integer, intent(in)                 :: itime                  ! system time
+      real, intent(in)                    :: conc(:,:)              ! concentration array
       character(len=*), intent(in)        :: syname(:)              ! substance names
 
       character(len=120)                  :: idstr                  ! waq_plugin_wasteload version number
@@ -56,12 +55,12 @@
       ! local declarations
 
       logical, save       :: first = .true.
-      integer(kind=int_32), save ::  lunrep 
-      integer(kind=int_32) ::  ierr 
-      integer(kind=int_32) ::  iwst 
-      integer(kind=int_32) ::  isys
+      integer, save       :: lunrep
+      integer             :: ierr
+      integer             :: iwst
+      integer             :: isys
 
-       ! the inlet outlet coupling
+      ! the inlet outlet coupling
 
       if (first) then
          first = .false.
@@ -116,30 +115,30 @@
 
 !       arguments declarations
 
-      integer(kind=int_32), intent(in) ::  nowst              ! number of wasteloads
+      integer, intent(in)                  :: nowst             ! number of wasteloads
       type(wasteload), intent(inout)       :: wls(:)            ! array of all wasteloads (structure)
-      integer(kind=int_32), intent(in) ::  notot              ! total number of substances
-      integer(kind=int_32), intent(in) ::  nosys              ! number of active substances
-      integer(kind=int_32), intent(in) ::  noseg              ! number of segments
-      integer(kind=int_32), intent(in) ::  itime              ! system time
-      real(kind=sp), intent(in) ::  conc(:,:)          ! concentration array
+      integer, intent(in)                  :: notot             ! total number of substances
+      integer, intent(in)                  :: nosys             ! number of active substances
+      integer, intent(in)                  :: noseg             ! number of segments
+      integer, intent(in)                  :: itime             ! system time
+      real, intent(in)                     :: conc(:,:)         ! concentration array
       character(len=*), intent(in)         :: syname(:)         ! substance names
 
 !       local declarations
 
       logical                  :: first = .true.    ! initialisation indicator
-      integer(kind=int_32) ::  lunrep             ! logical unit of report file
-      integer(kind=int_32) ::  lunscr             ! logical unit of screen file
+      integer                  :: lunrep            ! logical unit of report file
+      integer                  :: lunscr            ! logical unit of screen file
       logical                  :: l_exi             ! file exists or not
-      integer(kind=int_32) ::  noscrn             ! number of bubble screens
-      integer(kind=int_32) ::  iscrn              ! loop counter screens
-      integer(kind=int_32) ::  iwst               ! loop counter loads
-      integer(kind=int_32) ::  isub               ! loop counter substances
-      real(kind=sp) ::  wflow              ! flow of a load
+      integer                  :: noscrn            ! number of bubble screens
+      integer                  :: iscrn             ! loop counter screens
+      integer                  :: iwst              ! loop counter loads
+      integer                  :: isub              ! loop counter substances
+      real                     :: wflow             ! flow of a load
       character(len=IDLEN), pointer :: scrnam(:)    ! array with screen names
-      integer(kind=int_32), pointer ::  scrloc(:)     ! array with screen locations
-      real(kind=sp), pointer ::  scrwtd(:,:)   ! withdrawal mass per substance
-      real(kind=sp), pointer ::  scrwdf(:)     ! withdrawal flow
+      integer             , pointer :: scrloc(:)    ! array with screen locations
+      real                , pointer :: scrwtd(:,:)  ! withdrawal mass per substance
+      real                , pointer :: scrwdf(:)    ! withdrawal flow
 
       ! Save all local variables
 
@@ -249,40 +248,40 @@
 
       ! arguments declarations
 
-      integer(kind=int_32), intent(in) ::  nowst                   ! number of wasteloads
+      integer, intent(in)                  :: nowst                  ! number of wasteloads
       type(wasteload), intent(inout)       :: wasteloads(:)          ! array of all wasteloads (structure)
-      integer(kind=int_32), intent(in) ::  notot                   ! total number of substances
-      integer(kind=int_32), intent(in) ::  nosys                   ! number of active substances
-      integer(kind=int_32), intent(in) ::  noseg                   ! number of segments
-      integer(kind=int_32), intent(in) ::  itime                   ! system time
-      real(kind=sp), intent(in) ::  conc(:,:)               ! concentration array
+      integer, intent(in)                  :: notot                  ! total number of substances
+      integer, intent(in)                  :: nosys                  ! number of active substances
+      integer, intent(in)                  :: noseg                  ! number of segments
+      integer, intent(in)                  :: itime                  ! system time
+      real, intent(in)                     :: conc(:,:)              ! concentration array
       character(len=*), intent(in)         :: syname(:)              ! substance names
 
       ! local declarations
 
       logical, save       :: first = .true.                   ! initialisation indicator
-      integer(kind=int_32) ::  lunrep                            ! report file
-      integer(kind=int_32) ::  luninout                          ! inlet/outlet file
+      integer             :: lunrep                           ! report file
+      integer             :: luninout                         ! inlet/outlet file
       logical             :: l_exi                            ! file exists or not
-      integer(kind=int_32) ::  ncomb                             ! number of possible inlet outlet combinations
-      integer(kind=int_32) ::  ninout                            ! actual number of inlet outlet combinations
+      integer             :: ncomb                            ! number of possible inlet outlet combinations
+      integer             :: ninout                           ! actual number of inlet outlet combinations
       character(len=20)   :: c_in                             ! read buffer name inlet
       character(len=20)   :: c_out                            ! read buffer name outlet
       character(len=20), dimension(:), allocatable  :: namin  ! names inlet in the possible combinations
       character(len=20), dimension(:), allocatable  :: namout ! names outlet in the possible combinations
-      integer(kind=int_32), dimension(:), allocatable   ::            iwin    ! wasteload number inlet of the actual combinations
-      integer(kind=int_32), dimension(:), allocatable   ::            iwout   ! wasteload number outlet of the actual combinations
-      real(kind=sp) ::  flow                              ! inlet flow rate
-      integer(kind=int_32) ::  ipin                              ! wasteload number inlet
-      integer(kind=int_32) ::  ipout                             ! wasteload number outlet
-      integer(kind=int_32) ::  iseg                              ! inlet segment number
-      integer(kind=int_32) ::  isego                             ! outlet segment number
-      integer(kind=int_32) ::  iwst                              ! loop counter wasteloads
-      integer(kind=int_32) ::  isys                              ! loop counter substances
-      integer(kind=int_32) ::  icomb                             ! loop counter combinations
-      integer(kind=int_32) ::  iinout                            ! loop counter of inlet outlet combinations
-      integer(kind=int_32) ::  ierr                              ! local I/O error
-      integer(kind=int_32) ::  i                                 ! loop counter
+      integer, dimension(:), allocatable  ::           iwin   ! wasteload number inlet of the actual combinations
+      integer, dimension(:), allocatable  ::           iwout  ! wasteload number outlet of the actual combinations
+      real                :: flow                             ! inlet flow rate
+      integer             :: ipin                             ! wasteload number inlet
+      integer             :: ipout                            ! wasteload number outlet
+      integer             :: iseg                             ! inlet segment number
+      integer             :: isego                            ! outlet segment number
+      integer             :: iwst                             ! loop counter wasteloads
+      integer             :: isys                             ! loop counter substances
+      integer             :: icomb                            ! loop counter combinations
+      integer             :: iinout                           ! loop counter of inlet outlet combinations
+      integer             :: ierr                             ! local I/O error
+      integer             :: i                                ! loop counter
 
       ! Save all local variables
 
@@ -408,14 +407,14 @@
 
          character(len=*)                    :: waste_id               ! wasteload id to be found
          type(wasteload)                     :: wasteloads(:)          ! array of all wasteloads (structure)
-         integer(kind=int_32) ::  iwst                    ! on return if found wasteload number, otherwise zero
+         integer                             :: iwst                   ! on return if found wasteload number, otherwise zero
 
          ! local declarations
 
          character(len=20)                   :: name                   ! fixed length copy of waste_id
-         integer(kind=int_32) ::  nowst                   ! length of wasteloads array
-         integer(kind=int_32) ::  i                       ! loop counter
-         integer(kind=int_32) ::  ifound                  ! loop counter
+         integer                             :: nowst                  ! length of wasteloads array
+         integer                             :: i                      ! loop counter
+         integer                             :: ifound                 ! loop counter
 
          ! loop over the wasteloads and compare id with delwaq routine zoekns
 
@@ -438,12 +437,12 @@
 
          character(len=*)                    :: substance_id           ! substance id to be found
          character(len=20)                   :: syname(:)              ! substance names
-         integer(kind=int_32) ::  isys                    ! on return if found substance number, otherwise zero
+         integer                             :: isys                   ! on return if found substance number, otherwise zero
 
          ! local declarations
 
          character(len=20)                   :: name                   ! fixed length copy of waste_id
-         integer(kind=int_32) ::  notot                   ! length of syname array
+         integer                             :: notot                  ! length of syname array
 
          ! call the delwaq routine zoekns
 
@@ -463,8 +462,8 @@
 
 !            local declarations
 
-      integer(kind=int_32) :: lens, lent, i
- 
+      integer      lens, lent, i
+
       found = .true.
       lens  = len_trim(string) - 1
       lent  = len_trim(test  )
@@ -495,35 +494,35 @@
 
       ! arguments declarations
 
-      integer(kind=int_32), intent(in) ::  nowst                   ! number of wasteloads
+      integer, intent(in)                  :: nowst                  ! number of wasteloads
       type(wasteload), intent(inout)       :: wasteloads(:)          ! array of all wasteloads (structure)
-      integer(kind=int_32), intent(in) ::  notot                   ! total number of substances
-      integer(kind=int_32), intent(in) ::  nosys                   ! number of active substances
-      integer(kind=int_32), intent(in) ::  noseg                   ! number of segments
-      integer(kind=int_32), intent(in) ::  itime                   ! system time
-      real(kind=sp), intent(in) ::  conc(:,:)               ! concentration array
+      integer, intent(in)                  :: notot                  ! total number of substances
+      integer, intent(in)                  :: nosys                  ! number of active substances
+      integer, intent(in)                  :: noseg                  ! number of segments
+      integer, intent(in)                  :: itime                  ! system time
+      real, intent(in)                     :: conc(:,:)              ! concentration array
       character(len=*), intent(in)         :: syname(:)              ! substance names
 
       ! local variables
 
       logical, save                       :: first = .true.
-      integer(kind=int_32), save ::  nowalk                  !< number of walking discharges
-      integer(kind=int_32), save ::  next_time_in_file       !< next time to read the locations
-      integer(kind=int_32), save ::  time_offset             !< time offset because of rewinding
-      integer(kind=int_32), save ::  timestep                !< timestep, anticipate next time
-      integer(kind=int_32), save ::  period                  !< period covered in the file
-      integer(kind=int_32), save ::  nosegl                  !< number of segments per layer
-      integer(kind=int_32), save ::  nolay                   !< number of layers
-      integer(kind=int_32), dimension(:,:), allocatable, save ::  lgrid            !< matrix with segment numbers
+      integer, save                       :: nowalk                 !< number of walking discharges
+      integer, save                       :: next_time_in_file      !< next time to read the locations
+      integer, save                       :: time_offset            !< time offset because of rewinding
+      integer, save                       :: timestep               !< timestep, anticipate next time
+      integer, save                       :: period                 !< period covered in the file
+      integer, save                       :: nosegl                 !< number of segments per layer
+      integer, save                       :: nolay                  !< number of layers
+      integer, dimension(:,:), allocatable, save :: lgrid           !< matrix with segment numbers
 
-      integer(kind=int_32) ::  newsegment 
-      integer(kind=int_32) ::  i 
-      integer(kind=int_32) ::  id 
-      integer(kind=int_32) ::  ierr 
-      integer(kind=int_32) ::  lunrep, lunlga 
-      integer(kind=int_32), save ::  lunwlk 
-      integer(kind=int_32) ::  ix, iy, iz, jz, offset 
-      integer(kind=int_32) ::  mmax, nmax, noq1, noq2, noq3 
+      integer                             :: newsegment
+      integer                             :: i
+      integer                             :: id
+      integer                             :: ierr
+      integer                             :: lunrep, lunlga
+      integer, save                       :: lunwlk
+      integer                             :: ix, iy, iz, jz, offset
+      integer                             :: mmax, nmax, noq1, noq2, noq3
       logical                             :: l_exi
 
       ! test if there are any walking discharges
@@ -651,11 +650,11 @@
       ! Scan the file to determine the start time and the period
       ! Then reposition the pointer
       !
-      integer(kind=int_32) ::  lunwlk, nowalk, start_time, period, timestep
- 
-      integer(kind=int_32) ::  i, next_time, dummy 
-      integer(kind=int_32) ::  ierr
- 
+      integer :: lunwlk, nowalk, start_time, period, timestep
+
+      integer :: i, next_time, dummy
+      integer :: ierr
+
       read( lunwlk, * ) start_time
 
       ! Skip the second block
@@ -693,11 +692,11 @@
 
       subroutine reposition_file( lunwlk )
 
-      integer(kind=int_32), intent(in) ::  lunwlk
- 
-      integer(kind=int_32) ::  i, dummy, nolines
+      integer, intent(in) :: lunwlk
 
-      rewind( lunwlk ) 
+      integer :: i, dummy, nolines
+
+      rewind( lunwlk )
       read( lunwlk, * ) nolines
       do i = 1,nolines
          read( lunwlk, * ) dummy, dummy, dummy
@@ -726,21 +725,21 @@
 
 !       arguments declarations
 
-      integer(kind=int_32), intent(in) ::  nowst              ! number of wasteloads
+      integer, intent(in)                  :: nowst             ! number of wasteloads
       type(wasteload), intent(inout)       :: wls(:)            ! array of all wasteloads (structure)
-      integer(kind=int_32), intent(in) ::  notot              ! total number of substances
-      integer(kind=int_32), intent(in) ::  nosys              ! number of active substances
-      integer(kind=int_32), intent(in) ::  noseg              ! number of segments
-      integer(kind=int_32), intent(in) ::  itime              ! system time
-      real(kind=sp), intent(in) ::  conc(:,:)          ! concentration array
+      integer, intent(in)                  :: notot             ! total number of substances
+      integer, intent(in)                  :: nosys             ! number of active substances
+      integer, intent(in)                  :: noseg             ! number of segments
+      integer, intent(in)                  :: itime             ! system time
+      real, intent(in)                     :: conc(:,:)         ! concentration array
       character(len=*), intent(in)         :: syname(:)         ! substance names
-      integer(kind=int_32), intent(in) ::  lunrep             ! logical unit of report file
+      integer, intent(in)                  :: lunrep            ! logical unit of report file
 
 !       local declarations
 
-      integer(kind=int_32) ::  i
+      integer                  :: i
 
-      do i = 1,nowst 
+      do i = 1,nowst
           if ( wls(i)%set_factor /= 0.0 ) then
               wls(i)%flow = wls(i)%flow * wls(i)%set_factor
           else

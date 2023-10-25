@@ -1,6 +1,7 @@
 #
-# WAQ
+# D-WAQ kernel
 #=============
+
 if(NOT TARGET waq_definition)
     add_subdirectory(${checkout_src_root}/${waq_definition_module} waq_definition)
 endif()
@@ -69,137 +70,33 @@ if(NOT TARGET wq_processes)
     add_subdirectory(${checkout_src_root}/${wq_processes_module} wq_processes)
 endif()
 
-#
-# WAQ Tools
-#=============
-# Waqpb
-if(NOT TARGET waqpb_export)
-    add_subdirectory(${checkout_src_root}/${waqpb_export_module} waqpb_export)
-endif()
-if(NOT TARGET waqpb_import)
-    add_subdirectory(${checkout_src_root}/${waqpb_import_module} waqpb_import)
-endif()
-if(NOT TARGET waqpb_lib)
-    add_subdirectory(${checkout_src_root}/${waqpb_lib_module} waqpb_lib)
-endif()
-if(NOT TARGET waqmerge)
-    add_subdirectory(${checkout_src_root}/${waqmerge_module} waqmerge)
-endif()
-if(NOT TARGET ddcouple)
-    add_subdirectory(${checkout_src_root}/${ddcouple_module} ddcouple)
-endif()
-if(NOT TARGET agrhyd)
-    add_subdirectory(${checkout_src_root}/${agrhyd_module} agrhyd)
-endif()
-if(NOT TARGET maptonetcdf)
-    add_subdirectory(${checkout_src_root}/${maptonetcdf_module} maptonetcdf)
-endif()
-
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_base.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_kernel.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_dflowfm_online_coupling.cmake)
 
 
 #
-# PART
+# D-Waq tools
 #=============
-if(NOT TARGET part_data_f)
-    add_subdirectory(${checkout_src_root}/${part_data_f_module} part_data_f)
-endif()
-
-if(NOT TARGET part_utils_f)
-    add_subdirectory(${checkout_src_root}/${part_utils_f_module} part_utils_f)
-endif()
-
-if(NOT TARGET part_io_f)
-    add_subdirectory(${checkout_src_root}/${part_io_f_module} part_io_f)
-endif()
-
-if(NOT TARGET part_kernel_f)
-    add_subdirectory(${checkout_src_root}/${part_kernel_f_module} part_kernel_f)
-endif()
-
-if(NOT TARGET delpar)
-    add_subdirectory(${checkout_src_root}/${delpar_module} delpar)
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_tools.cmake)
 
 #
-# Third party libraries
+# D-Part kernel
 #=============
-# kdtree2
-if(NOT TARGET kdtree2)
-    add_subdirectory(${checkout_src_root}/${kdtree_module} kdtree2)
-endif()
-
-if(NOT TARGET kdtree_wrapper)
-    add_subdirectory(${checkout_src_root}/${kdtree_wrapper_module} kdtree_wrapper)
-endif()
-
-# triangle
-if(NOT TARGET triangle_c)
-    add_subdirectory(${checkout_src_root}/${triangle_c_module} triangle_c)
-endif()
-
-# fortrangis
-if(NOT TARGET fortrangis)
-    add_subdirectory(${checkout_src_root}/${fortrangis_module} fortrangis)
-endif()
-
-if(NOT TARGET shp)
-    add_subdirectory(${checkout_src_root}/${shp_module} shp)
-endif()
-
-
-if(NOT TARGET proj)
-    add_subdirectory(${checkout_src_root}/${proj_module} proj)
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dpart.cmake)
 
 #
-# Utils
+# Third party libraries for D-Waq
 #=============
-# Deltares_common
-if(NOT TARGET deltares_common)
-    add_subdirectory(${checkout_src_root}/${deltares_common_module} deltares_common)
-endif()
-if(NOT TARGET deltares_common_c)
-    add_subdirectory(${checkout_src_root}/${deltares_common_c_module} deltares_common_c)
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_third_party.cmake)
 
-# netcdf
-if(NOT TARGET netcdff)
-    add_subdirectory(${checkout_src_root}/${netcdf_module} netcdff)
-endif()
 
-# io_netcdf
-if(NOT TARGET io_netcdf)
-    add_subdirectory(${checkout_src_root}/${io_netcdf_module} io_netcdf)
-endif()
+#
+# Utils for D-Waq
+#=============
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_utils.cmake)
 
-if(NOT TARGET io_netcdf_data)
-    add_subdirectory(${checkout_src_root}/${io_netcdf_data_module} io_netcdf_data)
-endif()
 
-# gridgeom
-if(NOT TARGET gridgeom)
-    add_subdirectory(${checkout_src_root}/${gridgeom_module} gridgeom)
-endif()
-
-# Nefis
-if(NOT TARGET nefis)
-    add_subdirectory(${checkout_src_root}/${nefis_module} nefis)
-endif()
-
-# Solvesaphe
-if(NOT TARGET solvesaphe)
-    add_subdirectory(${checkout_src_root}/${solvesaphe_module} solvesaphe)
-endif()
-
-# io_hyd
-if(NOT TARGET io_hyd)
-    add_subdirectory(${checkout_src_root}/${io_hyd_module} io_hyd)
-endif()
-
-# waq_hyd_data
-if(NOT TARGET waq_hyd_data)
-    add_subdirectory(${checkout_src_root}/${waq_hyd_data_module} waq_hyd_data)
-endif()
 
 #
 # Linux installation

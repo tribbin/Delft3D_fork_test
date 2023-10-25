@@ -22,9 +22,6 @@
 !!  rights reserved.
 
 module m_caltau
-use m_waq_type_definitions
-
-
     implicit none
     private
 
@@ -49,36 +46,36 @@ use m_waq_type_definitions
         implicit none
 
         ! arguments of the subroutine
-        real(kind=sp)     :: pmsa(*), fl(*)
-        integer(kind=int_32)  :: ipoint(*), increm(*), segment_count, noflux, &
+        real     :: pmsa(*), fl(*)
+        integer  :: ipoint(*), increm(*), segment_count, noflux, &
                   iexpnt(4, *), iknmrk(*), noq1, noq2, noq3, noq4
 
         ! process-specific variable
-        real(kind=sp) ::  h            !< Significant wave height                              [m]
-        real(kind=sp) ::  rl           !< Significant wave length                              [m]
-        real(kind=sp) ::  t            !< Significant wave period                              [s]
-        real(kind=sp) ::  chz          !< Chezy coefficient                            [sqrt(m)/s]
-        real(kind=sp) ::  depth        !< Water depth                                          [m]
-        real(kind=sp) ::  totdep       !< Total water depth                                    [m]
-        real(kind=sp) ::  tauwin       !< Shearstress by wind                     [kg/m/s2 = N/m2]
-        real(kind=sp) ::  tauflo       !< Shearstress by flow                               [N/m2]
-        real(kind=sp) ::  tausch       !< Shearstress by ships and human activity           [N/m2]
-        real(kind=sp) ::  tau          !< Total shearstress                                 [N/m2]
-        real(kind=sp) ::  tauvel       !< Calculated velocity based on TAU                   [m/s]
-        real(kind=sp) ::  veloc        !< Velocity                                           [m/s]
-        real(kind=sp) ::  max_nelson   !< Quotient between maximum wave height and total depth [-]
-        integer(kind=int_32) ::  iswtau       !< Switch to indicate wave shear sterss formulation     [-]
+        real     :: h           !< Significant wave height                              [m]
+        real     :: rl          !< Significant wave length                              [m]
+        real     :: t           !< Significant wave period                              [s]
+        real     :: chz         !< Chezy coefficient                            [sqrt(m)/s]
+        real     :: depth       !< Water depth                                          [m]
+        real     :: totdep      !< Total water depth                                    [m]
+        real     :: tauwin      !< Shearstress by wind                     [kg/m/s2 = N/m2]
+        real     :: tauflo      !< Shearstress by flow                               [N/m2]
+        real     :: tausch      !< Shearstress by ships and human activity           [N/m2]
+        real     :: tau         !< Total shearstress                                 [N/m2]
+        real     :: tauvel      !< Calculated velocity based on TAU                   [m/s]
+        real     :: veloc       !< Velocity                                           [m/s]
+        real     :: max_nelson  !< Quotient between maximum wave height and total depth [-]
+        integer  :: iswtau      !< Switch to indicate wave shear sterss formulation     [-]
                                 !< 1 => Tamminga, 2 => Swart, 3 => Soulsby
-        integer(kind=int_32) ::  iswtauveloc  !< Switch shear stress by flow                          [-]
+        integer  :: iswtauveloc !< Switch shear stress by flow                          [-]
                                 !< 1 => calculate, 2 => use value from input
-        integer(kind=int_32) ::  iswtaumax    !< Switch for factor in shear stress formula            [-]
+        integer  :: iswtaumax   !< Switch for factor in shear stress formula            [-]
                                 !< 1 => 0.5, any other value => 0.25
 
         ! Other local variables
-        integer(kind=int_32) ::  params_count                        !< Number of parameters (input+output variables) in this process
-        integer(kind=int_32) ::  iflux                               !< Index fluxes
-        integer(kind=int_32) ::  isegment                            !< index of current segment
-        integer(kind=int_32), dimension(:), allocatable   ::  iparray  !< Array with integer pointers for parameters
+        integer  :: params_count                       !< Number of parameters (input+output variables) in this process
+        integer  :: iflux                              !< Index fluxes
+        integer  :: isegment                           !< index of current segment
+        integer, dimension(:), allocatable  :: iparray !< Array with integer pointers for parameters
 
         
         call initialize_variables(params_count, iparray, ipoint, iflux)
@@ -98,10 +95,12 @@ use m_waq_type_definitions
 
     subroutine initialize_variables(count_params, iparray, ipoint, iflux)
         !< Initializes arrays and other variables.
-        integer(kind=int_32), intent(inout) ::  count_params, iflux 
+
+        integer, intent(inout) :: count_params, iflux
         integer, allocatable, intent(out) :: iparray(:)
-        integer(kind=int_32), intent(in) ::  ipoint(*)
- 
+        integer, intent(in) :: ipoint(*)
+
+
         count_params = 17
         allocate(iparray(1:count_params))
         iparray(:) = ipoint(1:count_params)
@@ -111,11 +110,11 @@ use m_waq_type_definitions
     subroutine assign_input_params(iparray, pmsa, h, rl, t, tausch, iswtauveloc, tauflo, &
                                   veloc, chz, totdep, iswtau, depth, iswtaumax, max_nelson)
         !< Transfer values from generic array to process-specific input parameters.
-        real(kind=sp), intent(out) ::  h, rl, t, tausch,tauflo, veloc, chz, totdep, depth, max_nelson 
-        integer(kind=int_32), intent(out) ::  iswtauveloc, iswtau, iswtaumax 
-        real(kind=sp), intent(in) ::  pmsa(*) 
-        integer(kind=int_32), intent(in) ::  iparray(*)
- 
+        real, intent(out)    :: h, rl, t, tausch,tauflo, veloc, chz, totdep, depth, max_nelson
+        integer, intent(out) :: iswtauveloc, iswtau, iswtaumax
+        real, intent(in)     :: pmsa(*)
+        integer, intent(in)  :: iparray(*)
+
         h           = pmsa(iparray(1))
         rl          = pmsa(iparray(2))
         t           = pmsa(iparray(3))
@@ -134,7 +133,9 @@ use m_waq_type_definitions
     subroutine validate_switches(switch_tau, switch_tau_velocity)
         !< Evaluates, based on switches, whether the proces calculation must be carried out or not. If not, it immediately stops entire calculation.
         use m_write_error_message, only : write_error_message
-        integer(kind=int_32), intent(in) ::  switch_tau, switch_tau_velocity 
+
+        integer, intent(in) :: switch_tau, switch_tau_velocity
+
         if (.not. (ANY( (/ 1, 2, 3 /) == switch_tau ))) then
             call write_error_message('invalid switch for tau (iswtau) in caltau')
         end if
@@ -149,14 +150,14 @@ use m_waq_type_definitions
         !< Carry out all process-specific calculations.
         use m_evaluate_waq_attribute, only : evaluate_waq_attribute
 
-        real(kind=sp), intent(in) ::  rl, depth, max_nelson, t, tausch, totdep, veloc 
-        integer(kind=int_32), intent(in) ::  segment_attribute, iswtau, iswtaumax, iswtauveloc 
-        real(kind=sp), intent(inout) ::  h, chz, tauflo 
-        real(kind=sp), intent(out) ::  tau, tauvel, tauwin
- 
-        integer(kind=int_32) ::  ikmrk2 
-        real(kind=sp) ::  rough, chz3d, karmc1, karmc2 
-        real(kind=sp), parameter :: karman = 0.41,   &
+        real, intent(in)    :: rl, depth, max_nelson, t, tausch, totdep, veloc
+        integer, intent(in) :: segment_attribute, iswtau, iswtaumax, iswtauveloc
+        real, intent(inout) :: h, chz, tauflo
+        real, intent(out)   :: tau, tauvel, tauwin
+
+        integer :: ikmrk2
+        real :: rough, chz3d, karmc1, karmc2
+        real, parameter :: karman = 0.41,   &
                            gravity = 9.811, & !< Acceleration of gravity  [m/s2]
                            rhow = 1000.0      !< Density of water        [kg/m3]
 
@@ -196,9 +197,10 @@ use m_waq_type_definitions
 
     subroutine assign_output_params(iparray, pmsa, tau, tauflo, tauwin, tauvel)
         !< Transfer values from the process-specific output parameters to a generic array.
-        integer(kind=int_32), intent(in) ::  iparray(*) 
-        real(kind=sp), intent(in) ::  tau, tauflo, tauwin, tauvel 
-        real(kind=sp), intent(out) ::  pmsa(*) 
+        integer, intent(in) :: iparray(*)
+        real, intent(in) :: tau, tauflo, tauwin, tauvel
+        real, intent(out) :: pmsa(*)
+
         pmsa(iparray(14)) = tau
         pmsa(iparray(15)) = tauflo
         pmsa(iparray(16)) = tauwin
@@ -207,11 +209,13 @@ use m_waq_type_definitions
 
     subroutine update_loop_vars(iflux, noflux, count_params, iparray, increm)
         !< Update all variables for the next cell (segment) iteration.
-        integer(kind=int_32), intent(in) ::  noflux, count_params 
-        integer(kind=int_32), intent(inout) ::  iflux, iparray(*) 
-        integer(kind=int_32), intent(in) ::  increm(*)
-   
-        integer(kind=int_32) ::  idx 
+
+        integer, intent(in) :: noflux, count_params
+        integer, intent(inout) :: iflux, iparray(*)
+        integer, intent(in) :: increm(*)
+  
+        integer :: idx
+
         iflux = iflux + noflux
              do idx = 1, count_params
                 iparray(idx) = iparray(idx) + increm(idx)
@@ -222,10 +226,12 @@ use m_waq_type_definitions
         !< Boolean indicating whether the calculation for current cell (segement) should be carries out or not. If false, then the cell is skipped.
         use m_evaluate_waq_attribute   
 
-        integer(kind=int_32), intent(in) ::  segment_attribute 
-        integer(kind=int_32) ::  ikmrk2
 
-        call evaluate_waq_attribute(2, segment_attribute, ikmrk2) 
+        integer, intent(in) :: segment_attribute
+        integer :: ikmrk2
+
+        call evaluate_waq_attribute(2, segment_attribute, ikmrk2)
+
         must_calculate_segment = ((btest(segment_attribute, 0)) .and. (ikmrk2 .eq. 0 .or. ikmrk2 .eq. 3))
     end function must_calculate_segment
 
