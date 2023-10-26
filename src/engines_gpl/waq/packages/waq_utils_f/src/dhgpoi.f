@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dhgpoi
+      use m_waq_type_definitions
       use m_srstop
       use m_monsys
 
@@ -34,8 +35,8 @@
      +                   IDIM2 , IP_AR , IGRID , ISYS  , NOTOT ,
      +                   IP_VAR)
 !
-      INTEGER IVAR, IKIND, ISYS, IGRID, IDIM1, IDIM2
-      INTEGER NOTOT, IP_AR, IARRAY, LUREP, IP_VAR, IVINDX
+      INTEGER(kind=int_32) ::IVAR, IKIND, ISYS, IGRID, IDIM1, IDIM2
+      INTEGER(kind=int_32) ::NOTOT, IP_AR, IARRAY, LUREP, IP_VAR, IVINDX
       
       IF ( IKIND .EQ. 2 ) THEN
          ISYS   = IVINDX

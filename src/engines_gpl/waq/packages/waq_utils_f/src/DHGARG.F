@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dhgarg
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -37,20 +39,20 @@
 !
 !     Arguments
 !
-      INTEGER       NARG
-      INTEGER       IARG
+      INTEGER(kind=int_32) ::NARG
+      INTEGER(kind=int_32) ::IARG
       CHARACTER*(*) LINE
 !
 !     Local
 !
-      INTEGER*2     N, STATUS
+      INTEGER(kind=int_16) ::N, STATUS
       CHARACTER*256 BUFFER
-      INTEGER       COUNT
-      INTEGER       STORED
+      INTEGER(kind=int_32) ::COUNT
+      INTEGER(kind=int_32) ::STORED
       LOGICAL       OPENED, EXISTS
-      INTEGER       IERR
-      INTEGER       LUN
-      INTEGER       I
+      INTEGER(kind=int_32) ::IERR
+      INTEGER(kind=int_32) ::LUN
+      INTEGER(kind=int_32) ::I
 
 !
 !     Any stored arguments?

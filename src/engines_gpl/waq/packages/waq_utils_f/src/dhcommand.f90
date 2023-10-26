@@ -22,6 +22,8 @@
 !!  rights reserved.
 
 module dhcommand
+use m_waq_type_definitions
+
 
     implicit none
 
@@ -53,10 +55,10 @@ subroutine dhstore_command( args )
 !
     character(len=*), dimension(:) :: args
 
-    integer                        :: i
-    integer                        :: count
-    integer                        :: ierr
-    integer                        :: lun
+    integer(kind=int_32)                         ::i
+    integer(kind=int_32)                         ::count
+    integer(kind=int_32)                         ::ierr
+    integer(kind=int_32)                         ::lun
     logical                        :: opened
     logical                        :: exists
     character(len=256)             :: line
@@ -122,7 +124,7 @@ function dhstored_arg( idx )
 !     ----    -----    ------     ------- -----------
 !     IDX     INTEGER       :     INPUT   Index of the requested argument
 !
-    integer, intent(in) :: idx
+    integer(kind=int_32), intent(in) ::idx
     character(len=len(cmdargs(1))) :: dhstored_arg
 
     if ( idx < 0 .or. idx >= size(cmdargs) ) then
