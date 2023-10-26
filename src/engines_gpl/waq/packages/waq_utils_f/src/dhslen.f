@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dhslen
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -52,7 +54,7 @@
 !
 !     ISLEN   INTEGER  1          LOCAL   length of variable
 !
-      INTEGER    ISLEN, I
+      INTEGER(kind=int_32) ::ISLEN, I
 !
       ISLEN = LEN(STRING)
       ILEN  = 1

@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_filldm
+      use m_waq_type_definitions
+
 
       implicit none
 
@@ -81,7 +83,7 @@
 !
 !  declaration and specification
 !
-      integer elmdms( 6, *), ielem,
+      integer(kind=int_32) :: elmdms( 6, *), ielem,
      *        dm1   ,dm2   ,dm3   ,dm4   ,dm5   ,dm6
 !-----------------------------------------------------------------------
 !-----define element dimensions

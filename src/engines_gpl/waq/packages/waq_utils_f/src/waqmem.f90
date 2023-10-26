@@ -22,6 +22,8 @@
 !!  rights reserved.
 
 MODULE waqmem
+use m_waq_type_definitions
+
 
 !     Deltares Software Centre
 
@@ -39,80 +41,80 @@ MODULE waqmem
 
 !      wasteloads
 
-   integer, pointer     :: iwstkind(:)      ! steers flow-concentration processing
-   integer                 ftype   (50)     ! copy of filtype in delwaq2
+   integer(kind=int_32),  pointer     :: iwstkind(:)      ! steers flow-concentration processing
+   integer(kind=int_32)                  ::ftype   (50)     ! copy of filtype in delwaq2
 
 !      general solvers
 
-   real(4), allocatable :: surface (:)      ! horizontal surface
-   real(8), allocatable :: volume0 (:)      ! begin volume of a time step
-   real(8), allocatable :: volume1 (:)      ! end   volume of a time step
-   real(4), allocatable :: mixlen  (:)      ! standard mixing flow m3/s
-   real(4), allocatable :: wdrawal (:)      ! withdrawal term
-   integer, allocatable :: rowpnt  (:)      ! start of each row in the matrix (0:n)-array
-   integer, allocatable :: fmat    (:)      ! pointer from(iq) in matrix
-   integer, allocatable :: tmat    (:)      ! pointer to  (iq) in matrix
-   integer, pointer     :: iexseg  (:,:)    ! zero if volume is explicit
-   integer, pointer     :: iknmkv  (:,:)    ! time variable feature array (for drying/flooding)
-   integer, allocatable :: isegcol (:)      ! pointer from segment to top of column
+   real(kind=sp), allocatable ::surface (:)      ! horizontal surface
+   real(kind=dp), allocatable ::volume0 (:)      ! begin volume of a time step
+   real(kind=dp), allocatable ::volume1 (:)      ! end   volume of a time step
+   real(kind=sp), allocatable ::mixlen  (:)      ! standard mixing flow m3/s
+   real(kind=sp), allocatable ::wdrawal (:)      ! withdrawal term
+   integer(kind=int_32), allocatable ::rowpnt  (:)      ! start of each row in the matrix (0:n)-array
+   integer(kind=int_32), allocatable ::fmat    (:)      ! pointer from(iq) in matrix
+   integer(kind=int_32), allocatable ::tmat    (:)      ! pointer to  (iq) in matrix
+   integer(kind=int_32),  pointer     :: iexseg  (:,:)    ! zero if volume is explicit
+   integer(kind=int_32),  pointer     :: iknmkv  (:,:)    ! time variable feature array (for drying/flooding)
+   integer(kind=int_32), allocatable ::isegcol (:)      ! pointer from segment to top of column
 
 !      solver  6, 7 and 10 only
 
-   real(4), allocatable :: rhs     (:,:)    ! delmat right hand side
+   real(kind=sp), allocatable ::rhs     (:,:)    ! delmat right hand side
 
 !      solver 11, 12, 13, 14 and 24 only
 
-   real(8), allocatable :: arhs    (:,:)    ! right hand side vertically implicit schemes
-   real(8), allocatable :: adiag   (:,:)    ! diagonal filled with volumes vertically implicit schemes
-   real(8), allocatable :: acodia  (:,:)    ! workarray under codiagonal vertical transport
-   real(8), allocatable :: bcodia  (:,:)    ! workarray upper codiagonal vertical transport
+   real(kind=dp), allocatable ::arhs    (:,:)    ! right hand side vertically implicit schemes
+   real(kind=dp), allocatable ::adiag   (:,:)    ! diagonal filled with volumes vertically implicit schemes
+   real(kind=dp), allocatable ::acodia  (:,:)    ! workarray under codiagonal vertical transport
+   real(kind=dp), allocatable ::bcodia  (:,:)    ! workarray upper codiagonal vertical transport
 
 !      solver 15 and 16 only
 
-   real(8), allocatable :: gm_rhs  (:,:)    ! gmres right hand side
-   real(8), allocatable :: gm_sol  (:,:)    ! gmres solution
-   real(8), allocatable :: gm_work (:,:)    ! gmres workspace
-   real(8), allocatable :: gm_hess (:,:)    ! gmres Hessenberg matrix
-   real(8), allocatable :: gm_amat (:,:)    ! gmres off-diagonal entries of matrix
-   real(8), allocatable :: gm_diag (:,:)    ! gmres diagonal entries of matrix
-   real(8), allocatable :: gm_diac (:,:)    ! gmres unscaled copy of diagonal entries
-   real(8), allocatable :: gm_trid (:,:)    ! gmres tridiagonal matrix vertical
+   real(kind=dp), allocatable ::gm_rhs  (:,:)    ! gmres right hand side
+   real(kind=dp), allocatable ::gm_sol  (:,:)    ! gmres solution
+   real(kind=dp), allocatable ::gm_work (:,:)    ! gmres workspace
+   real(kind=dp), allocatable ::gm_hess (:,:)    ! gmres Hessenberg matrix
+   real(kind=dp), allocatable ::gm_amat (:,:)    ! gmres off-diagonal entries of matrix
+   real(kind=dp), allocatable ::gm_diag (:,:)    ! gmres diagonal entries of matrix
+   real(kind=dp), allocatable ::gm_diac (:,:)    ! gmres unscaled copy of diagonal entries
+   real(kind=dp), allocatable ::gm_trid (:,:)    ! gmres tridiagonal matrix vertical
 
 !      if regular grid is provided (for future incorporation PART)
 
-   integer, allocatable :: cellpnt (:)      ! backpointer from noseg to mnmaxk
-   integer, allocatable :: flowpnt (:)      ! backpointer from noq to 3*mnmaxk - mnmax
-   real(4), allocatable :: cell_x  (:,:)    ! x-values at the corner points of the grid
-   real(4), allocatable :: cell_y  (:,:)    ! y-values at the corner points of the grid
+   integer(kind=int_32), allocatable ::cellpnt (:)      ! backpointer from noseg to mnmaxk
+   integer(kind=int_32), allocatable ::flowpnt (:)      ! backpointer from noq to 3*mnmaxk - mnmax
+   real(kind=sp), allocatable ::cell_x  (:,:)    ! x-values at the corner points of the grid
+   real(kind=sp), allocatable ::cell_y  (:,:)    ! y-values at the corner points of the grid
 
 !      solver 21 and 22 only
 
-   real(4), allocatable :: theta   (:,:)    ! theta per exchange per processor
-   real(4), allocatable :: thetaseg(:,:)    ! theta per volume per processor
-   real(4), allocatable :: flowtot (:,:)    ! flow per processor
-   real(4), allocatable :: disptot (:,:)    ! dispersion per processor
-   real(4), allocatable :: flux    (:,:)    ! flux corrections
-   real(4), allocatable :: lim     (:,:)    ! limiter
-   real(4), allocatable :: maxi    (:,:)
-   real(4), allocatable :: mini    (:,:)
-   real(4), allocatable :: l1      (:,:)
-   real(4), allocatable :: l2      (:,:)
-   real(4), allocatable :: m1      (:,:)
-   real(4), allocatable :: m2      (:,:)
-   real(4), allocatable :: n1      (:,:)
-   real(4), allocatable :: n2      (:,:)
+   real(kind=sp), allocatable ::theta   (:,:)    ! theta per exchange per processor
+   real(kind=sp), allocatable ::thetaseg(:,:)    ! theta per volume per processor
+   real(kind=sp), allocatable ::flowtot (:,:)    ! flow per processor
+   real(kind=sp), allocatable ::disptot (:,:)    ! dispersion per processor
+   real(kind=sp), allocatable ::flux    (:,:)    ! flux corrections
+   real(kind=sp), allocatable ::lim     (:,:)    ! limiter
+   real(kind=sp), allocatable ::maxi    (:,:)
+   real(kind=sp), allocatable ::mini    (:,:)
+   real(kind=sp), allocatable ::l1      (:,:)
+   real(kind=sp), allocatable ::l2      (:,:)
+   real(kind=sp), allocatable ::m1      (:,:)
+   real(kind=sp), allocatable ::m2      (:,:)
+   real(kind=sp), allocatable ::n1      (:,:)
+   real(kind=sp), allocatable ::n2      (:,:)
 
 !      solver 24 only
 
-   real(8), allocatable :: dwork   (:,:)    ! work array self adjusting step
-   real(8), allocatable :: volint  (:)      ! interpolation array for volumes
-   real(8), allocatable :: dconc2  (:,:)    ! first guess array concentrations
-   integer, allocatable :: ibas    (:)      ! administrative arrays for the self
-   integer, allocatable :: ibaf    (:)      ! adjusting time step procedure
-   integer, allocatable :: iords   (:)      ! id.
-   integer, allocatable :: iordf   (:)      ! id.
-   integer, allocatable :: nvert   (:,:)    ! id.
-   integer, allocatable :: ivert   (:)      ! id.
+   real(kind=dp), allocatable ::dwork   (:,:)    ! work array self adjusting step
+   real(kind=dp), allocatable ::volint  (:)      ! interpolation array for volumes
+   real(kind=dp), allocatable ::dconc2  (:,:)    ! first guess array concentrations
+   integer(kind=int_32), allocatable ::ibas    (:)      ! administrative arrays for the self
+   integer(kind=int_32), allocatable ::ibaf    (:)      ! adjusting time step procedure
+   integer(kind=int_32), allocatable ::iords   (:)      ! id.
+   integer(kind=int_32), allocatable ::iordf   (:)      ! id.
+   integer(kind=int_32), allocatable ::nvert   (:,:)    ! id.
+   integer(kind=int_32), allocatable ::ivert   (:)      ! id.
 
    contains
 
