@@ -25,6 +25,7 @@
 !     Collect the unit tests
 !
 module unit_tests_module
+    use m_waq_type_definitions
     use m_dlwq13
     use m_dlwq13
     use ftnunit
@@ -55,7 +56,7 @@ end subroutine unit_tests
 !
 subroutine test_recognise_nans
 
-    real :: x
+    real(kind=sp) ::  x
 
     x = log10( -1.0 )
 
@@ -74,11 +75,11 @@ end subroutine test_recognise_nans
 !
 subroutine test_dlwq13_no_nans
 
-    integer, parameter                :: notot = 10
-    integer, parameter                :: noseg = 23
-    real,    dimension(notot,noseg)   :: conc
-    integer                           :: itime
-    integer, dimension(30)            :: lun
+    integer(kind=int_32), parameter ::  notot = 10 
+    integer(kind=int_32), parameter ::  noseg = 23 
+    real(kind=sp), dimension(notot,noseg) ::  conc 
+    integer(kind=int_32) ::  itime 
+    integer(kind=int_32), dimension(30) ::  lun 
     character(len=255), dimension(30) :: lchar
     character(len=40), dimension(4)   :: mname
     character(len=20), dimension(10)  :: sname
@@ -113,11 +114,11 @@ end subroutine test_dlwq13_no_nans
 !
 subroutine test_dlwq13_with_nans
 
-    integer, parameter                :: notot = 10
-    integer, parameter                :: noseg = 23
-    real,    dimension(notot,noseg)   :: conc
-    integer                           :: itime
-    integer, dimension(30)            :: lun
+    integer(kind=int_32), parameter ::  notot = 10 
+    integer(kind=int_32), parameter ::  noseg = 23 
+    real(kind=sp), dimension(notot,noseg) ::  conc 
+    integer(kind=int_32) ::  itime 
+    integer(kind=int_32), dimension(30) ::  lun 
     character(len=255), dimension(30) :: lchar
     character(len=40), dimension(4)   :: mname
     character(len=20), dimension(10)  :: sname

@@ -22,23 +22,25 @@
 !!  rights reserved.
 
 module m_openda_quantities
+use m_waq_type_definitions
+
 ! quantity-id's : in (from delwaq to openDA)
 
-integer, parameter :: accepting = 0
+integer(kind=int_32), parameter  ::accepting = 0
 
 
 !quantity-id's : out (from openDA to delwaq)
-integer, parameter :: providing = 1
+integer(kind=int_32), parameter  ::providing = 1
 
 !todo:  this should be variable
-integer, parameter :: max_quantity_ids = 30   ! account for several substances
-integer, parameter :: max_location_ids = 30
+integer(kind=int_32), parameter  ::max_quantity_ids = 30   ! account for several substances
+integer(kind=int_32), parameter  ::max_location_ids = 30
 
 
 ! possible operation for modifying the boundary values
-integer, parameter :: oper_set      = 1
-integer, parameter :: oper_add      = 2
-integer, parameter :: oper_multiply = 3
+integer(kind=int_32), parameter  ::oper_set      = 1
+integer(kind=int_32), parameter  ::oper_add      = 2
+integer(kind=int_32), parameter  ::oper_multiply = 3
 
 contains
 
@@ -48,7 +50,7 @@ subroutine openda_quantities_initialize(notot,nobnd)
 
   implicit none
 
-  integer notot,nobnd
+  integer(kind=int_32)  ::notot,nobnd
 
 !  max_quantity_ids = notot
 !  max_location_ids = nobnd
@@ -68,7 +70,7 @@ logical, save :: l_ei(max_location_ids,max_quantity_ids) = .false.
 logical, save :: doLogging = .false.
 
 double precision, save :: ei_val(max_location_ids,max_quantity_ids)
-integer, save          :: ei_oper(max_location_ids,max_quantity_ids)
+integer(kind=int_32), save           ::ei_oper(max_location_ids,max_quantity_ids)
 
 contains
 
@@ -87,10 +89,10 @@ contains
 
   implicit none
 
-  integer, intent(in)          :: location_id   !   location identifier
-  integer, intent(in)          :: quantity_id   !   quantity identifier
+  integer(kind=int_32), intent(in) ::location_id   !   location identifier
+  integer(kind=int_32), intent(in) ::quantity_id   !   quantity identifier
   double precision, intent(in) :: val           !   value to be set
-  integer, intent(in)          :: operation     !   operation: oper_multiply, oper_add, oper_set
+  integer(kind=int_32), intent(in) ::operation     !   operation: oper_multiply, oper_add, oper_set
 
   if (doLogging) then
      write (*,*) 'set_openda_buffer, loc-id=', location_id, ', q_id=', quantity_id, ', val=', val, ', oper:', operation
@@ -109,12 +111,12 @@ contains
   
   implicit none
 
-  integer, intent(in)    :: dim1, dim2, loc_from_waq
-  integer , intent (in) :: quantity
-  real    , dimension(dim1, dim2), target, intent(out) :: qarray
+  integer(kind=int_32), intent(in) ::dim1, dim2, loc_from_waq
+  integer(kind=int_32) , intent (in) :: quantity
+  real(kind=sp)    , dimension(dim1, dim2) , target, intent(out) :: qarray
 
   ! locals
-  integer          :: location_id, quantity_id
+  integer(kind=int_32)           ::location_id, quantity_id
   double precision :: org_value
 
   location_id = loc_from_waq

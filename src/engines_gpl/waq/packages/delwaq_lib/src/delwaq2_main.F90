@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq2_main
+use m_waq_type_definitions
 use m_delwaq2_main_init
 
 
@@ -65,19 +66,19 @@ subroutine dlwqmain(action, argc, argv, dlwqd)
 
       implicit none
 
-      integer, intent(in)                           :: action
-      integer, intent(in)                           :: argc
+      integer(kind=int_32), intent(in) ::  action 
+      integer(kind=int_32), intent(in) ::  argc 
       character(len=*), dimension(argc), intent(in) :: argv
       type(delwaq_data)                             :: dlwqd
 
       character(len=20)                             :: rundat
 
       logical                                       :: init        ! do not save!
-      integer                                       :: lunrep
+      integer(kind=int_32) ::  lunrep
 
-      integer, save                                 :: itota
-      integer, save                                 :: itoti
-      integer, save                                 :: itotc
+      integer(kind=int_32), save ::  itota 
+      integer(kind=int_32), save ::  itoti 
+      integer(kind=int_32), save ::  itotc
 
       init = action == action_initialisation .or. &
              action == action_fullcomputation

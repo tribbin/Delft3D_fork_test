@@ -21,7 +21,10 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq1_init
+
 use m_create_working_files_1, only: create_working_files_1
+use m_waq_type_definitions
+
 
 
 implicit none
@@ -41,7 +44,7 @@ contains
 
         implicit none
 
-        integer, intent(in)                           :: argc
+        integer(kind=int_32), intent(in) ::  argc
         character(len=*), dimension(argc), intent(in) :: argv
 
         !     Special system init

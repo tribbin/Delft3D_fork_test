@@ -26,50 +26,51 @@
 !!
       module delwaq2_data
 
+      use m_waq_type_definitions
       use hydroset
       use dlwq_hyd_data
       use m_waq_data_buffer
       use m_operation_data
       use dlwqgrid_mod
 
-      integer, parameter, private                 :: iisize = 21  ! from sysi.inc
-      integer, parameter, private                 :: insize = 72  ! from sysn.inc
+      integer(kind=int_32), parameter, private                  ::iisize = 21  ! from sysi.inc
+      integer(kind=int_32), parameter, private                  ::insize = 72  ! from sysn.inc
 
       type delwaq_data
           type(waq_data_buffer)                       :: buffer
-          integer, dimension(:), pointer              :: iwstkind   ! steers flow-concentration processing
-          integer, dimension(:,:), pointer            :: iexseg     ! zero if volume is explicit
-          integer, dimension(:,:), pointer            :: iknmkv     ! time variable feature array (for drying/flooding)
+          integer(kind=int_32), dimension(:) , pointer              :: iwstkind   ! steers flow-concentration processing
+          integer(kind=int_32), dimension(:,:) , pointer            :: iexseg     ! zero if volume is explicit
+          integer(kind=int_32), dimension(:,:) , pointer            :: iknmkv     ! time variable feature array (for drying/flooding)
 
-          integer, dimension(insize)                  :: in
-          integer, dimension(iisize)                  :: ii
-          integer                                     :: itime
-          integer                                     :: ifflag
-          integer                                     :: iaflag
-          integer                                     :: ibflag
-          integer                                     :: nddim
-          integer                                     :: nvdim
-          integer                                     :: nosss
-          integer                                     :: noqtt
-          integer                                     :: noqt
-          integer                                     :: nopred
-          integer                                     :: itimel
-          integer                                     :: ithandl = 0 ! needs to be zero at the start
-          integer                                     :: inwtyp
-          integer                                     :: nowarn
-          integer                                     :: ioptzb
-          integer                                     :: lleng
+          integer(kind=int_32), dimension(insize)                   ::in
+          integer(kind=int_32), dimension(iisize)                   ::ii
+          integer(kind=int_32) ::itime
+          integer(kind=int_32) ::ifflag
+          integer(kind=int_32) ::iaflag
+          integer(kind=int_32) ::ibflag
+          integer(kind=int_32) ::nddim
+          integer(kind=int_32) ::nvdim
+          integer(kind=int_32) ::nosss
+          integer(kind=int_32) ::noqtt
+          integer(kind=int_32) ::noqt
+          integer(kind=int_32) ::nopred
+          integer(kind=int_32) ::itimel
+          integer(kind=int_32) ::ithandl = 0 ! needs to be zero at the start
+          integer(kind=int_32) ::inwtyp
+          integer(kind=int_32) ::nowarn
+          integer(kind=int_32) ::ioptzb
+          integer(kind=int_32) ::lleng
           logical                                     :: lstrec
           logical                                     :: forester
           logical                                     :: updatr
           logical                                     :: litrep
           logical                                     :: ldummy
           type(operation_data), dimension(:), pointer :: operation => null()
-          integer                                     :: number_operations = 0
-          real(kind=kind(1.0d0))                      :: tol
-          real(kind=kind(1.0d0))                      :: otime
-          real(kind=kind(1.0d0))                      :: deltim
-          real(kind=kind(1.0d0))                      :: tscale
+          integer(kind=int_32) ::number_operations = 0
+          real(kind=dp)                       :: tol
+          real(kind=dp)                       :: otime
+          real(kind=dp)                       :: deltim
+          real(kind=dp)                       :: tscale
           logical                                     :: set_timer = .false.
           logical                                     :: inopenda  = .false.
 
@@ -80,9 +81,9 @@
           logical                                     :: wstset
           logical                                     :: funset
           logical                                     :: othset
-          integer                                     :: ibndmx
-          integer                                     :: iwstmx
-          integer                                     :: ifunmx
+          integer(kind=int_32) ::ibndmx
+          integer(kind=int_32) ::iwstmx
+          integer(kind=int_32) ::ifunmx
 
           !
           ! Components for dealing with the time-dependent data from files

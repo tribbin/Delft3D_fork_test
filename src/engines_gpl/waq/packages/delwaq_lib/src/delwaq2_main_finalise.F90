@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq2_main_finalise
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -36,9 +38,9 @@ subroutine delwaq2_main_finalise(action, lunrep, rundat)
     use m_dattim
 
     implicit none
-    integer, intent(in)                           :: action
+    integer(kind=int_32), intent(in) ::  action 
     character(len=20), intent(in)                 :: rundat
-    integer, intent(in)                           :: lunrep
+    integer(kind=int_32), intent(in) ::  lunrep
 
     !     Finalise - only if the full computation was done
     if ((action == action_fullcomputation).or.(action == action_finalisation)) then

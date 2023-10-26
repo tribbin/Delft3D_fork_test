@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq1_allocate_workspace
+use m_waq_type_definitions
 use m_delwaq1_write_messages
 
 
@@ -39,9 +40,9 @@ subroutine delwaq1_allocate_workspace(argc, argv, errorcode)
 
     implicit none
 
-    integer, intent(in)                           :: argc
+    integer(kind=int_32), intent(in) ::  argc 
     character(len=*), dimension(argc), intent(in) :: argv
-    integer, intent(inout)                        :: errorcode
+    integer(kind=int_32), intent(inout) ::  errorcode
 
 
 

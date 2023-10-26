@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq1_write_messages
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -38,8 +40,8 @@ subroutine delwaq1_write_messages(errorcode)
 
     implicit none
 
-    integer, intent(inout)                        :: errorcode
-
+    integer(kind=int_32), intent(inout) ::  errorcode
+ 
     write ( lunrep,'(//'' Messages presented including .lsp file:'')')
     write ( lunrep,'(  '' Number of WARNINGS            :'',I6)') iwar
     write ( lunrep,'( /'' Number of ERRORS during input :'',I6)') ierr

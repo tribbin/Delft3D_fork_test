@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
       module m_dlwqp1
+      use m_waq_type_definitions
       use m_wr_proceswrk
       use m_wrwrko
       use m_wrtoys
@@ -94,84 +95,84 @@
 
       ! declaration of arguments
 
-      integer             , intent(inout) :: lun(*)          !< unit numbers
+      integer(kind=int_32), intent(inout) ::  lun(*)           !< unit numbers
       character(len=*)    , intent(inout) :: lchar(*)        !< filenames
       type(procespropcoll), intent(in   ) :: statprocesdef   !< the statistical proces definition
       type(itempropcoll)  , intent(inout) :: allitems        !< all items of the proces system
-      integer             , intent(inout) :: ioutps(7,*)     !< (old) output structure
+      integer(kind=int_32), intent(inout) ::  ioutps(7,*)      !< (old) output structure
       type(outputcoll)    , intent(inout) :: outputs         !< output structure
-      integer  ( 4)       , intent(in   ) :: nomult          !< number of multiple substances
-      integer  ( 4)       , intent(in   ) :: imultp(2,nomult)!< multiple substance administration
+      integer(kind=int_32), intent(in   ) ::  nomult           !< number of multiple substances
+      integer(kind=int_32), intent(in   ) ::  imultp(2,nomult) !< multiple substance administration
       type(t_dlwq_item)   , intent(inout) :: constants       !< delwaq constants list
-      integer             , intent(inout) :: noinfo          !< count of informative message
-      integer  ( 4)       , intent(in)    :: refday          !< reference day, varying from 1 till 365
-      integer             , intent(inout) :: nowarn          !< count of warnings
-      integer             , intent(inout) :: ierr            !< error count
+      integer(kind=int_32), intent(inout) ::  noinfo           !< count of informative message
+      integer(kind=int_32), intent(in) ::  refday           !< reference day, varying from 1 till 365
+      integer(kind=int_32), intent(inout) ::  nowarn           !< count of warnings
+      integer(kind=int_32), intent(inout) ::  ierr             !< error count
 
       ! local declarations
 
-      real, parameter           :: versip = 5.07   ! version process system
-      real                      :: verspe = 1.0    ! version bloom.spe file
-      integer, parameter        :: novarm = 15000  ! max number of variables overall
-      integer, parameter        :: nbprm  = 1750   ! max number of processes
-      integer, parameter        :: nopred = 6      ! number of pre-defined variables
+      real(kind=sp), parameter        :: versip = 5.07   ! version process system
+      real(kind=sp)                   :: verspe = 1.0    ! version bloom.spe file
+      integer(kind=int_32), parameter ::  novarm = 15000   ! max number of variables overall
+      integer(kind=int_32), parameter ::  nbprm  = 1750    ! max number of processes
+      integer(kind=int_32), parameter ::  nopred = 6       ! number of pre-defined variables
 
-      integer                   :: noqtt           ! total number of exhanges
-      integer                   :: nosss           ! total number of segments
-      integer                   :: no_in           ! number of input items
-      integer                   :: no_out          ! number of output items
-      integer                   :: no_ins          ! number of output items
-      integer                   :: no_ine          ! number of output items
-      integer                   :: no_ous          ! number of output items
-      integer                   :: no_oue          ! number of output items
-      integer                   :: no_flu          ! number of output items
-      integer                   :: no_sto          ! number of output items
-      integer                   :: no_dis          ! number of output items
-      integer                   :: no_vel          ! number of output items
-      integer                   :: noconm          ! number of constants plus some extra max
-      integer                   :: nocon2          ! number of constants plus some extra
-      integer                   :: nmis            ! number of missing items
-      integer                   :: maxdef          ! length defaul array
+      integer(kind=int_32) ::  noqtt            ! total number of exhanges
+      integer(kind=int_32) ::  nosss            ! total number of segments
+      integer(kind=int_32) ::  no_in            ! number of input items
+      integer(kind=int_32) ::  no_out           ! number of output items
+      integer(kind=int_32) ::  no_ins           ! number of output items
+      integer(kind=int_32) ::  no_ine           ! number of output items
+      integer(kind=int_32) ::  no_ous           ! number of output items
+      integer(kind=int_32) ::  no_oue           ! number of output items
+      integer(kind=int_32) ::  no_flu           ! number of output items
+      integer(kind=int_32) ::  no_sto           ! number of output items
+      integer(kind=int_32) ::  no_dis           ! number of output items
+      integer(kind=int_32) ::  no_vel           ! number of output items
+      integer(kind=int_32) ::  noconm           ! number of constants plus some extra max
+      integer(kind=int_32) ::  nocon2           ! number of constants plus some extra
+      integer(kind=int_32) ::  nmis             ! number of missing items
+      integer(kind=int_32) ::  maxdef           ! length defaul array
 
-      integer                   :: lurep           ! unit number report file
-      integer                   :: lunblm          ! unit number bloom file
-      integer                   :: lunfrm          ! unit number bloom frm file
-      integer                   :: lund09          ! unit number bloom d09 file
-      integer                   :: mlevel          ! monitoring level
+      integer(kind=int_32) ::  lurep            ! unit number report file
+      integer(kind=int_32) ::  lunblm           ! unit number bloom file
+      integer(kind=int_32) ::  lunfrm           ! unit number bloom frm file
+      integer(kind=int_32) ::  lund09           ! unit number bloom d09 file
+      integer(kind=int_32) ::  mlevel           ! monitoring level
 
-      integer                   :: isys            ! index variable
-      integer                   :: igrp            ! index variable
-      integer                   :: iatyp           ! index variable
-      integer                   :: ialg            ! index variable
-      integer                   :: icof            ! index variable
-      integer                   :: ico             ! index variable
-      integer                   :: iconf           ! index variable
-      integer                   :: istat           ! index variable
-      integer                   :: iioitem         ! index variable
-      integer                   :: ioutp           ! index variable
-      integer                   :: i               ! index variable
-      integer                   :: iitem           ! index variable
-      integer                   :: iindx           ! index variable
-      integer                   :: ix_act          ! index variable
-      integer                   :: ix_dbl          ! index variable
-      integer                   :: ioff            ! offset for index item
-      integer                   :: ioffx           ! offset for index item on exchange
-      integer                   :: idef            ! offset to defualt items
-      integer                   :: iflx            ! offset to flux items
-      integer                   :: iret            ! return value
-      integer                   :: ierr2           ! error count
-      integer                   :: ierr_alloc      ! error
-      integer                   :: ierr_dalloc     ! error
+      integer(kind=int_32) ::  isys             ! index variable
+      integer(kind=int_32) ::  igrp             ! index variable
+      integer(kind=int_32) ::  iatyp            ! index variable
+      integer(kind=int_32) ::  ialg             ! index variable
+      integer(kind=int_32) ::  icof             ! index variable
+      integer(kind=int_32) ::  ico              ! index variable
+      integer(kind=int_32) ::  iconf            ! index variable
+      integer(kind=int_32) ::  istat            ! index variable
+      integer(kind=int_32) ::  iioitem          ! index variable
+      integer(kind=int_32) ::  ioutp            ! index variable
+      integer(kind=int_32) ::  i                ! index variable
+      integer(kind=int_32) ::  iitem            ! index variable
+      integer(kind=int_32) ::  iindx            ! index variable
+      integer(kind=int_32) ::  ix_act           ! index variable
+      integer(kind=int_32) ::  ix_dbl           ! index variable
+      integer(kind=int_32) ::  ioff             ! offset for index item
+      integer(kind=int_32) ::  ioffx            ! offset for index item on exchange
+      integer(kind=int_32) ::  idef             ! offset to defualt items
+      integer(kind=int_32) ::  iflx             ! offset to flux items
+      integer(kind=int_32) ::  iret             ! return value
+      integer(kind=int_32) ::  ierr2            ! error count
+      integer(kind=int_32) ::  ierr_alloc       ! error
+      integer(kind=int_32) ::  ierr_dalloc      ! error
 
-      integer                   :: idummy          ! dummy variable
-      real                      :: rdummy          ! dummy variable
+      integer(kind=int_32) ::  idummy           ! dummy variable
+      real(kind=sp) ::  rdummy           ! dummy variable
       character                 :: cdummy          ! dummy variable
 
-      integer     ,allocatable  :: idpnt(:)        ! dispersion pointers
-      integer     ,allocatable  :: ivpnt(:)        ! velocity pointers
-      integer     ,allocatable  :: grdref(:)       ! reference grid
-      integer     ,allocatable  :: sysgrd(:)       ! substance grid
-      integer     ,allocatable  :: sysndt(:)       ! substance timestep multiplier
+      integer(kind=int_32), allocatable ::  idpnt(:)         ! dispersion pointers
+      integer(kind=int_32), allocatable ::  ivpnt(:)         ! velocity pointers
+      integer(kind=int_32), allocatable ::  grdref(:)        ! reference grid
+      integer(kind=int_32), allocatable ::  sysgrd(:)        ! substance grid
+      integer(kind=int_32), allocatable ::  sysndt(:)        ! substance timestep multiplier
 
       character*40              :: modid (4)       ! model id
       character*20,allocatable  :: syname(:)       ! substance names
@@ -194,22 +195,22 @@
       ! proces definition structure
 
       type(procespropcoll)      :: procesdef       ! the complete process definition
-      integer                   :: nbpr            ! number of processes
-      integer                   :: no_act          ! number of activated processes
-      integer                   :: serial          ! serial number process definition
-      integer                   :: target_serial   ! target serial number process definition
-      real                      :: versio          ! version process defintion
+      integer(kind=int_32) ::  nbpr             ! number of processes
+      integer(kind=int_32) ::  no_act           ! number of activated processes
+      integer(kind=int_32) ::  serial           ! serial number process definition
+      integer(kind=int_32) ::  target_serial    ! target serial number process definition
+      real(kind=sp) ::  versio           ! version process defintion
       character*20 , allocatable :: actlst(:)
 
       ! proces "output" structure
 
-      integer      , pointer :: idpnw(:)
-      integer      , pointer :: ivpnw(:)
-      real         , pointer :: defaul(:)
-      real         , pointer :: dsto(:)
-      real         , pointer :: vsto(:)
+      integer(kind=int_32), pointer ::  idpnw(:) 
+      integer(kind=int_32), pointer ::  ivpnw(:) 
+      real(kind=sp), pointer ::  defaul(:) 
+      real(kind=sp), pointer ::  dsto(:) 
+      real(kind=sp), pointer ::  vsto(:)
 
-      ! settings
+       ! settings
 
       character*80   swinam
       character*80   blmnam
@@ -217,7 +218,7 @@
       character*256  pdffil
       character*10   config
       logical        lfound, laswi , swi_nopro
-      integer        blm_act                       ! index of ACTIVE_BLOOM_P
+      integer(kind=int_32) :: blm_act                        ! index of ACTIVE_BLOOM_P
 
 
       ! information
@@ -229,24 +230,24 @@
 
       character*256 blmfil
       logical        l_eco
-      integer       maxtyp, maxcof
-      parameter   ( maxtyp = 500 , maxcof = 50 )
-      integer       notyp , nocof , nogrp
+      integer(kind=int_32) :: maxtyp, maxcof
+      parameter   ( maxtyp = 500 , maxcof = 50 ) 
+      integer(kind=int_32) :: notyp , nocof , nogrp 
       character*10  alggrp(maxtyp), algtyp(maxtyp)
       character*5   abrgrp(maxtyp), abrtyp(maxtyp)
       character*80  algdsc(maxtyp)
       character*10  cofnam(maxcof)
-      real          algcof(maxcof,maxtyp)
-      integer       algact(maxtyp)
-      integer       noutgrp, nouttyp
+      real(kind=sp) :: algcof(maxcof,maxtyp) 
+      integer(kind=int_32) :: algact(maxtyp) 
+      integer(kind=int_32) :: noutgrp, nouttyp 
       character*10  outgrp(maxtyp), outtyp(maxtyp)
-      integer       noprot , nopralg
+      integer(kind=int_32) :: noprot , nopralg 
       character*10  namprot(maxtyp), nampact(maxtyp),
      +              nampralg(maxtyp)
 
       ! actual algae
 
-      integer       noalg
+      integer(kind=int_32) :: noalg 
       character*10  name10
       character*10  grpnam(maxtyp)
       character*5   grpabr(maxtyp)
@@ -256,9 +257,9 @@
       ! output things
 
       character(len=20)     :: parnam                    ! output parameter name
-      integer               :: parindx                   ! index in output parameter name array
-      integer  ,pointer     :: proref(:,:)
-      integer               :: nothread                  ! nr of threads
+      integer(kind=int_32) ::  parindx                    ! index in output parameter name array
+      integer(kind=int_32), pointer ::  proref(:,:) 
+      integer(kind=int_32) ::  nothread                   ! nr of threads
 
       ! old_items and replacent things
 
@@ -266,7 +267,7 @@
 
       ! performance timer
 
-      integer(4)                :: ithndl = 0
+      integer(kind=int_32) ::  ithndl = 0 
       if (timon) call timstrt( "dlwqp1", ithndl )
 
       ! how many threads ?

@@ -32,6 +32,7 @@
 
 module m_time_validation
     
+  use m_waq_type_definitions
   use static_version_info
   use dlwq_hyd_data
   
@@ -48,12 +49,12 @@ module m_time_validation
   ! - ierror
     subroutine validate_time_series_strictly_increasing(lun, data_block, ierror)
   
-      integer               , intent(in   ) :: lun         ! logical unit number for logging error message, if required
+      integer(kind=int_32), intent(in   ) ::  lun          ! logical unit number for logging error message, if required
       type(t_dlwqdata)      , intent(in   ) :: data_block  ! data block containing time series to validate
-      integer               , intent(inout) :: ierror      ! local error count
+      integer(kind=int_32), intent(inout) ::  ierror       ! local error count
       character(:), allocatable             :: errformat   ! format for error message
-      integer                               :: i
-  
+      integer(kind=int_32) ::  i
+   
       errformat = "(/' ERROR: time value ',I0.1,' not larger than previous time value ',I0.1, '.')"
       do i = 2, size(data_block%times)
         if (data_block%times(i) <= data_block%times(i-1)) then

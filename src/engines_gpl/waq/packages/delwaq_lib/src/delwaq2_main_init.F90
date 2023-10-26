@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq2_main_init
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -38,16 +40,16 @@ subroutine delwaq2_main_init(dlwqd, itota, itoti, itotc, argc, argv )
   implicit none
 
   ! Arguments
-  integer       imaxa , imaxi , imaxc
+  integer(kind=int_32) :: imaxa , imaxi , imaxc
 
-  integer, intent(in)                           :: argc
+  integer(kind=int_32), intent(in) ::  argc 
   character(len=*), dimension(argc), intent(in) :: argv
   type(delwaq_data), target                     :: dlwqd
   type(GridPointerColl), pointer                :: GridPs               ! collection of all grid definitions
 
-  integer, intent(inout)                        :: itota
-  integer, intent(inout)                        :: itoti
-  integer, intent(inout)                        :: itotc
+  integer(kind=int_32), intent(inout) ::  itota 
+  integer(kind=int_32), intent(inout) ::  itoti 
+  integer(kind=int_32), intent(inout) ::  itotc
 
   call dhstore_command( argv )
 

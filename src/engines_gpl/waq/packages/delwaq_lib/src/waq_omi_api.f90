@@ -30,6 +30,7 @@
 !> Implementation of the routines that interface to DELWAQ
 module waq_omi_priv
 
+    use m_waq_type_definitions
     use waq_omi_utils
     use delwaq2_global_data
 
@@ -48,13 +49,13 @@ logical function SetValuePriv(dlwqtype, parid, locid, values, operation)
 
     implicit none
 
-    integer, intent(in)              :: dlwqtype         !< Type of parameter to be set
-    integer, intent(in)              :: parid            !< Index of the parameter
-    integer, intent(in)              :: locid            !< Index of the parameter
-    real, dimension(:), intent(in)   :: values           !< Value to be used in the operation
-    integer, intent(in)              :: operation        !< Operation to apply
+    integer(kind=int_32), intent(in) ::  dlwqtype          !< Type of parameter to be set
+    integer(kind=int_32), intent(in) ::  parid             !< Index of the parameter
+    integer(kind=int_32), intent(in) ::  locid             !< Index of the parameter
+    real(kind=sp), dimension(:), intent(in)    ::  values            !< Value to be used in the operation
+    integer(kind=int_32), intent(in) ::  operation         !< Operation to apply
 
-    integer, dimension(6)            :: idx
+    integer(kind=int_32), dimension(6) ::  idx 
     logical                          :: success
 
     !
@@ -102,17 +103,17 @@ function DetermineIndex( dlwqtype, parid, locid )
     use m_sysn          ! System characteristics
     use m_sysa          ! Pointers in real array workspace
 
-    integer, intent(in)   :: dlwqtype
-    integer, intent(in)   :: parid
-    integer, intent(in)   :: locid
-    integer, dimension(6) :: DetermineIndex
-
-    integer               :: idx
-    integer               :: step
-    integer               :: number
-    integer               :: idxmass
-    integer               :: idxvol
-    integer               :: volcorr
+    integer(kind=int_32), intent(in) ::  dlwqtype 
+    integer(kind=int_32), intent(in) ::  parid 
+    integer(kind=int_32), intent(in) ::  locid 
+    integer(kind=int_32), dimension(6) ::  DetermineIndex
+ 
+    integer(kind=int_32) ::  idx 
+    integer(kind=int_32) ::  step 
+    integer(kind=int_32) ::  number 
+    integer(kind=int_32) ::  idxmass 
+    integer(kind=int_32) ::  idxvol 
+    integer(kind=int_32) ::  volcorr
 
 
     idxmass = -1
@@ -136,24 +137,24 @@ end function DetermineIndex
 !
 subroutine StoreOperation( index, number_values, new_value, operation )
 
-    integer, dimension(:), intent(in)     :: index           !< Index into the rbuf array
-    integer, intent(in)                   :: number_values   !< Number of values
-    real, dimension(:), intent(in)        :: new_value       !< Array of new values or modification values
-    integer, intent(in)                   :: operation       !< Operation to be performed
+    integer(kind=int_32), dimension(:), intent(in)      ::  index            !< Index into the rbuf array
+    integer(kind=int_32), intent(in) ::  number_values    !< Number of values
+    real(kind=sp), dimension(:), intent(in)         ::  new_value        !< Array of new values or modification values
+    integer(kind=int_32), intent(in) ::  operation        !< Operation to be performed
 
-    integer                               :: pos
+    integer(kind=int_32) ::  pos
 
 end subroutine StoreOperation
 
-!> Set the new value, based on the operation
+ !> Set the new value, based on the operation
 !!
 !! The operation should actually be applied within a suitable point
 !! in the computational cycle, so it is stored in a buffer for later use
 subroutine SetNewValue( value, new_value, operation )
 
-    real, intent(inout)    :: value
-    real, intent(in)       :: new_value
-    integer, intent(in)    :: operation
+    real(kind=sp), intent(inout) ::  value 
+    real(kind=sp), intent(in) ::  new_value 
+    integer(kind=int_32), intent(in) ::  operation
 
 end subroutine SetNewValue
 
@@ -161,12 +162,12 @@ end subroutine SetNewValue
 !> Retrieve a value
 logical function GetValuePriv(type, parid, locid, value)
 
-    integer, intent(in)              :: type             !< Type of parameter to be set
-    integer, intent(in)              :: parid            !< Index of the parameter
-    integer, intent(in)              :: locid            !< Index of the location
-    real, dimension(:), intent(out)  :: value            !< Value to be used in the operation
+    integer(kind=int_32), intent(in) ::  type              !< Type of parameter to be set
+    integer(kind=int_32), intent(in) ::  parid             !< Index of the parameter
+    integer(kind=int_32), intent(in) ::  locid             !< Index of the location
+    real(kind=sp), dimension(:), intent(out)   ::  value             !< Value to be used in the operation
 
-    integer, dimension(6)            :: idx
+    integer(kind=int_32), dimension(6) ::  idx 
     logical                          :: success
 
     !
@@ -194,8 +195,8 @@ subroutine CheckParameterId( dlwqtype, parid, success )
 
     use m_sysn          ! System characteristics
 
-    integer, intent(in)    :: dlwqtype
-    integer, intent(in)    :: parid
+    integer(kind=int_32), intent(in) ::  dlwqtype 
+    integer(kind=int_32), intent(in) ::  parid 
     logical, intent(inout) :: success
 
     success = .false.
@@ -207,8 +208,8 @@ subroutine CheckLocationId(  dlwqtype, locid, success )
 
     use m_sysn
 
-    integer, intent(in)    :: dlwqtype
-    integer, intent(in)    :: locid
+    integer(kind=int_32), intent(in) ::  dlwqtype 
+    integer(kind=int_32), intent(in) ::  locid 
     logical, intent(inout) :: success
 
     success = .false.
@@ -218,7 +219,7 @@ end subroutine CheckLocationId
 !> Check that the operation is valid
 subroutine CheckOperation(   operation, success )
 
-    integer, intent(in)    :: operation
+    integer(kind=int_32), intent(in) ::  operation 
     logical, intent(inout) :: success
 
     success = .false.
@@ -230,7 +231,7 @@ integer function GetLocationCountPriv( type )
 
     use m_sysn
 
-    integer, intent(in)    :: type
+    integer(kind=int_32), intent(in) ::  type
 
     GetLocationCountPriv = 0
 
@@ -241,12 +242,12 @@ integer function GetLocationIndicesPriv( type, idsSize, ids )
 
     use m_sysn
 
-    integer, intent(in)                :: type
-    integer, intent(in)                :: idsSize
-    integer, dimension(:), intent(out) :: ids
-
-    integer                            :: count
-    integer                            :: i
+    integer(kind=int_32), intent(in) ::  type 
+    integer(kind=int_32), intent(in) ::  idsSize 
+    integer(kind=int_32), dimension(:), intent(out)  ::  ids
+ 
+    integer(kind=int_32) ::  count 
+    integer(kind=int_32) ::  i
 
     count = GetLocationCountPriv( type )
 
@@ -264,7 +265,7 @@ end function GetLocationIndicesPriv
 integer function GetItemCountPriv( type )
     use m_sysn
 
-    integer, intent(in)    :: type
+    integer(kind=int_32), intent(in) ::  type
 
     GetItemCountPriv = 0
 
@@ -276,7 +277,7 @@ integer function GetItemIndexPriv( dlwqtype, name )
     integer, intent(in)             :: dlwqtype
     character(len=*), intent(in)    :: name
 
-    integer                         :: idx
+    integer(kind=int_32) ::  idx
 
     GetItemIndexPriv = 0
 
@@ -287,8 +288,8 @@ integer function GetItemNamePriv( type, idx, name )
 
     integer, intent(in)             :: type
     character(len=*), intent(out)   :: name
-    integer                         :: idx
-
+    integer(kind=int_32) ::  idx
+ 
     GetItemNamePriv = -1
     name             = '?'
 
@@ -300,7 +301,7 @@ integer function GetLocationIndexPriv( type, name )
     integer, intent(in)             :: type
     character(len=*), intent(in)    :: name
 
-    integer                         :: idx
+    integer(kind=int_32) ::  idx
 
     GetLocationIndexPriv = 0
 
@@ -329,6 +330,8 @@ end module waq_omi_priv
 
 
 module waq_omi_api
+use m_waq_type_definitions
+
 contains
 integer function Count_Values(partype, parid, loctype, locid)
     !DEC$ ATTRIBUTES DLLEXPORT::Count_Values
@@ -341,13 +344,13 @@ integer function Count_Values(partype, parid, loctype, locid)
 
     implicit none
 
-    integer, intent(in)                   :: parid            !< Index of the parameter
-    integer, intent(in)                   :: partype          !< Type of parameter to be set
-    integer, intent(in)                   :: locid            !< Index of the location
-    integer, intent(in)                   :: loctype          !< Type of the location
+    integer(kind=int_32), intent(in) ::  parid             !< Index of the parameter
+    integer(kind=int_32), intent(in) ::  partype           !< Type of parameter to be set
+    integer(kind=int_32), intent(in) ::  locid             !< Index of the location
+    integer(kind=int_32), intent(in) ::  loctype           !< Type of the location
 
-    integer                               :: dlwqtype
-    integer                               :: count
+    integer(kind=int_32) ::  dlwqtype 
+    integer(kind=int_32) ::  count
 
     Count_Values = 1
 
@@ -376,27 +379,27 @@ end function Count_Values
 !! Note: Specifically for OpenDA
 integer function Set_Values(partype, parid, loctype, locid, operation, number, values)
 
-    !DEC$ ATTRIBUTES DLLEXPORT::Set_Values
+     !DEC$ ATTRIBUTES DLLEXPORT::Set_Values
     !DEC$ ATTRIBUTES DECORATE, ALIAS : 'SET_VALUES' :: Set_Values
 
     use waq_omi_priv
 
     implicit none
 
-    integer, intent(in)                   :: parid            !< Index of the parameter
-    integer, intent(in)                   :: partype          !< Type of parameter to be set
-    integer, intent(in)                   :: locid            !< Index of the location or ODA_ALL_SEGMENTS
-    integer, intent(in)                   :: loctype          !< Type of location to be set
-    integer, intent(in)                   :: operation        !< Operation to apply
-    integer, intent(in)                   :: number           !< Number of values
+    integer(kind=int_32), intent(in) ::  parid             !< Index of the parameter
+    integer(kind=int_32), intent(in) ::  partype           !< Type of parameter to be set
+    integer(kind=int_32), intent(in) ::  locid             !< Index of the location or ODA_ALL_SEGMENTS
+    integer(kind=int_32), intent(in) ::  loctype           !< Type of location to be set
+    integer(kind=int_32), intent(in) ::  operation         !< Operation to apply
+    integer(kind=int_32), intent(in) ::  number            !< Number of values
     double precision, dimension(number), intent(in)   :: values  !< Value(s) to be used in the operation
 
-    real, dimension(:), allocatable       :: r_values
-
-    integer                               :: idx
-    integer                               :: locid_
-    integer                               :: parid_
-    integer                               :: dlwqtype
+    real(kind=sp), dimension(:), allocatable        ::  r_values
+ 
+    integer(kind=int_32) ::  idx 
+    integer(kind=int_32) ::  locid_ 
+    integer(kind=int_32) ::  parid_ 
+    integer(kind=int_32) ::  dlwqtype 
     logical                               :: success
 
     Set_Values = 1
@@ -431,19 +434,19 @@ end function Set_Values
 !!
 integer function Set_Values_General(dlwqtype, parid, locid, operation, number, values)
 
-    !DEC$ ATTRIBUTES DLLEXPORT::Set_Values_General
+     !DEC$ ATTRIBUTES DLLEXPORT::Set_Values_General
     !DEC$ ATTRIBUTES DECORATE, ALIAS : 'SET_VALUES_GENERAL' :: Set_Values_General
 
     use waq_omi_priv
 
     implicit none
 
-    integer, intent(in)                   :: dlwqtype         !< Type of parameter/location to be set
-    integer, intent(in)                   :: parid            !< Index of the parameter
-    integer, intent(in)                   :: locid            !< Index of the location
-    integer, intent(in)                   :: operation        !< Operation to apply
-    integer, intent(in)                   :: number           !< Number of values
-    real, dimension(number), intent(in)   :: values           !< Value(s) to be used in the operation
+    integer(kind=int_32), intent(in) ::  dlwqtype          !< Type of parameter/location to be set
+    integer(kind=int_32), intent(in) ::  parid             !< Index of the parameter
+    integer(kind=int_32), intent(in) ::  locid             !< Index of the location
+    integer(kind=int_32), intent(in) ::  operation         !< Operation to apply
+    integer(kind=int_32), intent(in) ::  number            !< Number of values
+    real(kind=sp), dimension(number), intent(in)    ::  values            !< Value(s) to be used in the operation
 
     logical                               :: success
 
@@ -474,19 +477,19 @@ integer function Get_Values(partype, parid, loctype, locid, number, values)
 
     implicit none
 
-    integer, intent(in)              :: partype          !< Type of parameter to be set
-    integer, intent(in)              :: parid            !< Index of the parameter
-    integer, intent(in)              :: loctype          !< Type of location to be set
-    integer, intent(in)              :: locid            !< Index of the location
-    integer, intent(in)              :: number           !< Size of array values
+    integer(kind=int_32), intent(in) ::  partype           !< Type of parameter to be set
+    integer(kind=int_32), intent(in) ::  parid             !< Index of the parameter
+    integer(kind=int_32), intent(in) ::  loctype           !< Type of location to be set
+    integer(kind=int_32), intent(in) ::  locid             !< Index of the location
+    integer(kind=int_32), intent(in) ::  number            !< Size of array values
     double precision, dimension(number),intent(out):: values         !< Value to be used in the operation
 
-    real, dimension(:), allocatable  :: r_values
-    integer                          :: idx
-    integer                          :: dlwqtype
+    real(kind=sp), dimension(:), allocatable   ::  r_values 
+    integer(kind=int_32) ::  idx 
+    integer(kind=int_32) ::  dlwqtype 
     logical                          :: success
     real(kind=kind(1.0d0))           :: currentTime
-    integer                          :: dummy
+    integer(kind=int_32) ::  dummy
 
     allocate( r_values(number) )
 
@@ -512,8 +515,8 @@ subroutine CheckParameterId(type, parid, success)
 
     implicit none
 
-    integer, intent(in)              :: type
-    integer, intent(in)              :: parid
+    integer(kind=int_32), intent(in) ::  type 
+    integer(kind=int_32), intent(in) ::  parid 
     logical, intent(out)             :: success
 
     call TestCheckParameterId( type, parid, success )
@@ -531,9 +534,9 @@ subroutine SetNewValue(value, new_value, operation)
 
     implicit none
 
-    real, intent(inout)              :: value
-    real, intent(in)                 :: new_value
-    integer, intent(in)              :: operation
+    real(kind=sp), intent(inout) ::  value 
+    real(kind=sp), intent(in) ::  new_value 
+    integer(kind=int_32), intent(in) ::  operation
 
     call TestSetNewValue( value, new_value, operation )
 
@@ -582,7 +585,7 @@ subroutine SetCommonVars( icons_, iparm_, iconc_, ibset_, iwste_, nosys_, notot_
 
     implicit none
 
-    integer :: icons_, iparm_, iconc_, ibset_, iwste_, nosys_, notot_, nocons_, nopa_, noseg_, nowst_, nobnd_
+    integer(kind=int_32) ::  icons_, iparm_, iconc_, ibset_, iwste_, nosys_, notot_, nocons_, nopa_, noseg_, nowst_, nobnd_
 
     icons  = icons_
     iparm  = iparm_
@@ -610,10 +613,10 @@ subroutine StoreOperation( index, number, new_value, operation )
 
     implicit none
 
-    integer, dimension(3), intent(in)    :: index
-    integer, intent(in)                  :: number
-    real, dimension(number), intent(in)  :: new_value
-    integer, intent(in)                  :: operation
+    integer(kind=int_32), dimension(3), intent(in)     ::  index 
+    integer(kind=int_32), intent(in) ::  number 
+    real(kind=sp), dimension(number), intent(in)   ::  new_value 
+    integer(kind=int_32), intent(in) ::  operation
 
     call TestStoreOperation( index, number, new_value, operation )
 
@@ -646,9 +649,9 @@ integer function GetLocationCount( odatype )
 
     implicit none
 
-    integer, intent(in)    :: odatype
+    integer(kind=int_32), intent(in) ::  odatype
 
-    integer :: dlwqtype
+    integer(kind=int_32) ::  dlwqtype
 
     GetLocationCount = 0
 
@@ -664,7 +667,7 @@ integer function GetItemCount( type )
 
     implicit none
 
-    integer, intent(in)    :: type
+    integer(kind=int_32), intent(in) ::  type
 
     GetItemCount = GetItemCountPriv( type )
 
@@ -680,7 +683,7 @@ integer function GetLocationId( type, name )
 
     implicit none
 
-    integer, intent(in)             :: type
+    integer(kind=int_32), intent(in) ::  type 
     character(len=*), intent(in)    :: name
 
     GetLocationId = GetLocationIndexPriv( type, name )
@@ -697,9 +700,9 @@ integer function GetLocationIds( type, idsSize, ids )
 
     implicit none
 
-    integer, intent(in)                      :: type
-    integer, intent(in)                      :: idsSize
-    integer, dimension(idsSize), intent(out) :: ids
+    integer(kind=int_32), intent(in) ::  type 
+    integer(kind=int_32), intent(in) ::  idsSize 
+    integer(kind=int_32), dimension(idsSize), intent(out)  ::  ids
 
     GetLocationIds = GetLocationIndicesPriv( type, idsSize, ids )
 
@@ -715,7 +718,7 @@ integer function GetItemIndex( type, name )
 
     implicit none
 
-    integer, intent(in)             :: type
+    integer(kind=int_32), intent(in) ::  type 
     character(len=*), intent(in)    :: name
 
     GetItemIndex = GetItemIndexPriv( type, name )
@@ -732,8 +735,8 @@ integer function GetLocationName( type, idx, name )
 
     implicit none
 
-    integer, intent(in)              :: type            !< Type of location
-    integer, intent(in)              :: idx             !< Index of the location
+    integer(kind=int_32), intent(in) ::  type             !< Type of location
+    integer(kind=int_32), intent(in) ::  idx              !< Index of the location
     character(len=*), intent(out)    :: name            !< Name of the location (if successful)
 
    ! GetLocationName = GetLocationNamePriv( type, idx, name )
@@ -752,8 +755,8 @@ integer function GetItemName( type, idx, name )
 
     implicit none
 
-    integer, intent(in)              :: type            !< Type of item
-    integer, intent(in)              :: idx             !< Index of item
+    integer(kind=int_32), intent(in) ::  type             !< Type of item
+    integer(kind=int_32), intent(in) ::  idx              !< Index of item
     character(len=*), intent(out)    :: name            !< Name of the item (if successful)
 
     GetItemName = GetItemNamePriv( type, idx, name )
@@ -798,7 +801,7 @@ integer function GetSubstanceName( subid, name )
 
     implicit none
 
-    integer, intent(in)           :: subid
+    integer(kind=int_32), intent(in) ::  subid 
     character(len=*), intent(out) :: name
 
     GetSubstanceName = 0
@@ -875,11 +878,11 @@ integer function GetWQNextTime( nextTime )
 
     implicit none
 
-    real(kind=kind(1.0d0)), intent(out) :: nextTime
+    real(kind=dp), intent(out) :: nextTime
 
-    real(kind=kind(1.0d0))              :: startTime
-    real(kind=kind(1.0d0))              :: stopTime
-    real(kind=kind(1.0d0))              :: timeStep
+    real(kind=dp)              :: startTime
+    real(kind=dp)              :: stopTime
+    real(kind=dp)              :: timeStep
 
     call GetTimeParameters( startTime, stopTime, timeStep, nextTime )
     nextTime = nextTime + timeStep

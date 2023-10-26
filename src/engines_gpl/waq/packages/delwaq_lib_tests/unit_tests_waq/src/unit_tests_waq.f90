@@ -25,6 +25,7 @@
 !     Run unit tests for routines in Delft3D-WAQ
 !
 program unit_tests_waq
+    use m_waq_type_definitions
     use ftnunit
     use unit_tests_module
 
@@ -48,9 +49,9 @@ contains
 !     are indeed run
 !
 subroutine prepare_tests
-    integer :: lunrun
+    integer(kind=int_32) ::  lunrun
 
-    open( newunit = lunrun, file = 'ftnunit.run' )
+    open( newunit = lunrun, file = 'ftnunit.run' ) 
     write( lunrun, '(a)' ) 'ALL'
     close( lunrun )
 

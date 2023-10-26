@@ -43,6 +43,8 @@
 !
 
 module bmi
+
+    use m_waq_type_definitions
     use m_delwaq2_main
     use delwaq2_global_data
     use delwaq_loads
@@ -65,18 +67,18 @@ module bmi
     !
     ! Store the connections between DELWAQ and external components
     !
-    integer, parameter :: category_hydrodynamics = 1 ! Placeholder!
-    integer, parameter :: category_boundary      = 2
-    integer, parameter :: category_wasteload     = 3
-    integer, parameter :: category_segment       = 4
-    integer, parameter :: category_monitorpoint  = 5
-    integer, parameter :: category_procparam     = 6
-
+    integer(kind=int_32), parameter ::  category_hydrodynamics = 1  ! Placeholder!
+    integer(kind=int_32), parameter ::  category_boundary      = 2 
+    integer(kind=int_32), parameter ::  category_wasteload     = 3 
+    integer(kind=int_32), parameter ::  category_segment       = 4 
+    integer(kind=int_32), parameter ::  category_monitorpoint  = 5 
+    integer(kind=int_32), parameter ::  category_procparam     = 6
+ 
     type :: connection_data
         logical                :: incoming       ! Identifies the direction: if true, data from outside
-        integer                :: category       ! Which category of data: concentrations, process parameters ...
-        integer                :: buffer_idx     ! Index into the RBUF array
-        real(kind=kind(1.0d0)) :: p_value        ! Copy of the value received/sent by DELWAQ
+        integer(kind=int_32) ::  category        ! Which category of data: concentrations, process parameters ...
+        integer(kind=int_32) ::  buffer_idx      ! Index into the RBUF array
+        real(kind=dp) :: p_value        ! Copy of the value received/sent by DELWAQ
         character(len=40)      :: exchange_name  ! Name used by get_var to identify the item
     end type
 
@@ -101,11 +103,11 @@ integer(c_int) function set_var(c_key, xptr) bind(C, name="set_var")
     character(kind=c_char),dimension(:), pointer :: c_value => null()
     character(MAXSTRLEN)                         :: key_given
     character(MAXSTRLEN)                         :: value_given
-    integer                                      :: argc
-    integer                                      :: argnew
-    integer                                      :: iarg
-    integer                                      :: errorcode
-    integer                                      :: i
+    integer(kind=int_32) ::  argc 
+    integer(kind=int_32) ::  argnew 
+    integer(kind=int_32) ::  iarg 
+    integer(kind=int_32) ::  errorcode 
+    integer(kind=int_32) ::  i
 
     write(88,*) 'Set_var ...'
     flush( 88 )
@@ -174,9 +176,9 @@ integer(c_int) function initialize(c_config_file) bind(C, name="initialize")
     character(kind=c_char),intent(in)    :: c_config_file(MAXSTRLEN)  !< Name of the DELWAQ input file
 
     character(len=strlen(c_config_file)) :: runid_given
-    integer                              :: argc
-    integer                              :: iarg
-    integer                              :: errorcode
+    integer(kind=int_32) ::  argc 
+    integer(kind=int_32) ::  iarg 
+    integer(kind=int_32) ::  errorcode
 
     write(88,*) 'Initialise ...'
     flush( 88 )
@@ -331,7 +333,7 @@ integer function update_until(tupdate) bind(C, name="update_until")
     real(c_double), value, intent(in) :: tupdate   !< Time until which the calculation is to be run.
                                                    !! May involve one or more internal timesteps
 
-    integer                           :: update_steps, step
+    integer(kind=int_32) ::  update_steps, step
     character(len=20), dimension(0)   :: argv_dummy
 
     update_steps = nint(tupdate - dlwqd%itime) / idt
@@ -368,8 +370,11 @@ integer function finalize() bind(C, name="finalize")
     use m_actions
 
     character(len=20), dimension(0) :: argv_dummy
-    integer :: ierr
+    integer(kind=int_32) ::  ierr
 
+ 
+    write(88,*) 'Finalise ...', dlwqd%itime
+    flush( 88 )
 
     write(88,*) 'Finalise ...', dlwqd%itime
     flush( 88 )
@@ -399,11 +404,12 @@ subroutine get_start_time(t) bind(C, name="get_start_time")
     !DEC$ ATTRIBUTES DLLEXPORT :: get_start_time
     real(c_double), intent(out) :: t
 
-    integer                     :: rc
+    integer(kind=int_32) ::  rc
 
     rc = BMI2_get_start_time( t )
-
+ 
 end subroutine get_start_time
+
 
 ! get_end_time --
 !>    Return the end time of the calculation
@@ -416,10 +422,10 @@ subroutine get_end_time(t) bind(C, name="get_end_time")
     !DEC$ ATTRIBUTES DLLEXPORT :: get_end_time
     real(c_double), intent(out) :: t
 
-    integer                     :: rc
+    integer(kind=int_32) ::  rc
 
     rc = BMI2_get_end_time( t )
-
+ 
 end subroutine get_end_time
 
 ! get_time_step --
@@ -433,11 +439,12 @@ subroutine get_time_step(dt) bind(C, name="get_time_step")
     !DEC$ ATTRIBUTES DLLEXPORT :: get_time_step
     real(c_double), intent(out) :: dt
 
-    integer                     :: rc
+    integer(kind=int_32) ::  rc
 
     rc = BMI2_get_time_step( dt )
-
+ 
 end subroutine get_time_step
+
 
 ! get_current_time --
 !>    Return the current time in the calculation
@@ -449,11 +456,13 @@ end subroutine get_time_step
 subroutine get_current_time(t) bind(C, name="get_current_time")
     !DEC$ ATTRIBUTES DLLEXPORT :: get_current_time
     real(c_double), intent(out) :: t
-    integer current
+    integer(kind=int_32) :: current
+ 
+    integer(kind=int_32) ::  rc
 
-    integer                     :: rc
 
     rc = BMI2_get_current_time( t )
+ 
 
 end subroutine get_current_time
 
@@ -525,7 +534,8 @@ integer function BMI2_get_current_time(t) bind(C, name="BMI2_get_current_time")
     !DEC$ ATTRIBUTES DLLEXPORT :: BMI2_get_current_time
     use m_sysi
     real(c_double), intent(out) :: t
-    integer current
+
+    integer(kind=int_32) :: current
 
     t = dlwqd%itime
 
@@ -546,9 +556,11 @@ subroutine get_var(c_key, xptr) bind(C, name="get_var")
     character(kind=c_char),intent(in)    :: c_key(MAXSTRLEN)
     type(c_ptr),           intent(inout) :: xptr
 
-    integer                              :: rc
+
+    integer(kind=int_32) ::  rc
 
     rc = get_value_ptr( c_key, xptr )
+ 
 
 end subroutine get_var
 
@@ -573,9 +585,10 @@ integer function get_value_ptr(c_key, xptr) bind(C, name="get_value_ptr")
     type(c_ptr),           intent(inout)         :: xptr
 
     character(MAXSTRLEN)                         :: key_given
-    integer                                      :: idx
 
-    get_value_ptr = 0 ! Assume everyting will be okay
+    integer(kind=int_32) ::  idx
+
+    get_value_ptr = 0  ! Assume everyting will be okay
 
     write(88,*) 'Get_var ...'
     flush( 88 )
@@ -638,7 +651,8 @@ integer function key_index( key_name, connection )
     character(len=*), intent(in)                    :: key_name    !< Connection key to find
     type(connection_data), dimension(:), intent(in) :: connection  !< Array storing the connection information
 
-    integer                                         :: i
+
+    integer(kind=int_32) ::  i
 
     key_index = 0
     do i = 1,size(connection)
@@ -667,14 +681,15 @@ end function key_index
 subroutine split_key( key_name, connection, newidx )
     character(len=*), intent(in)                                    :: key_name     !< Connection key to find
     type(connection_data), dimension(:), allocatable, intent(inout) :: connection   !< Array storing the connection information
-    integer, intent(out)                                            :: newidx       !< Index into the connection array to be used
+
+    integer(kind=int_32), intent(out) ::  newidx        !< Index into the connection array to be used
                                                                                     !! for the new connection
 
     type(connection_data)                                           :: new_connection
     character(len=len(key_name))                                    :: copy_key, component, item_name, subst_param
-    integer                                                         :: i, k
-    integer                                                         :: iseg, isys
-    integer                                                         :: ierr
+    integer(kind=int_32) ::  i, k 
+    integer(kind=int_32) ::  iseg, isys 
+    integer(kind=int_32) ::  ierr
     logical                                                         :: error
 
     !
@@ -851,7 +866,7 @@ subroutine update_from_incoming_data( connection )
     type(connection_data), dimension(:), intent(in) :: connection !< Information about the connections to
                                                                   !! external components
 
-    integer                                         :: idx
+    integer(kind=int_32) ::  idx
 
     !
     ! For now: only waste loads - set by D-RTC

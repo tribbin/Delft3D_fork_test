@@ -40,6 +40,8 @@
 !! \li The parameters file introduced here makes sure that we can control these two aspects from "outside"
 !!
 module waq_omi_substances
+use m_waq_type_definitions
+
 
    !use waq_omi_utils
 
@@ -53,17 +55,17 @@ module waq_omi_substances
     public :: openSubstancesReport ! Public for testing purposes
     public :: testSetLunumbers     ! Public for testing purposes
 
-    integer, parameter    :: type_substance = 1
-    integer, parameter    :: type_inactive  = 2
-    integer, parameter    :: type_constant  = 3
-    integer, parameter    :: type_parameter = 4
-    integer, parameter    :: type_output    = 5
-    integer, parameter    :: type_process   = 6
+    integer(kind=int_32), parameter ::  type_substance = 1 
+    integer(kind=int_32), parameter ::  type_inactive  = 2 
+    integer(kind=int_32), parameter ::  type_constant  = 3 
+    integer(kind=int_32), parameter ::  type_parameter = 4 
+    integer(kind=int_32), parameter ::  type_output    = 5 
+    integer(kind=int_32), parameter ::  type_process   = 6
 
-    type itemInfo
-        integer           :: type
+    type itemInfo 
+        integer(kind=int_32) ::  type 
         logical           :: private
-        real              :: value
+        real(kind=sp) ::  value 
         character(len=20) :: name
         character(len=20) :: unit
         character(len=80) :: description
@@ -71,13 +73,13 @@ module waq_omi_substances
 
     type(itemInfo), dimension(:), allocatable :: item
 
-    integer, private :: lunlst = 0, lunsub, lunpar
+    integer(kind=int_32), private ::  lunlst = 0, lunsub, lunpar
 
 contains
 
 !> Set LU-numbers, specifically for test purposes
 subroutine testSetLunumbers( testsub, testpar )
-    integer, intent(in) :: testsub, testpar
+    integer(kind=int_32), intent(in) ::  testsub, testpar
 
     lunsub = testsub
     lunpar = testpar
@@ -100,8 +102,8 @@ subroutine loadSubstancesFile( substances_file, parameters_file, success )
     character(len=*), intent(in) :: parameters_file
     logical, intent(out)         :: success
 
-    integer                      :: ierr
-
+    integer(kind=int_32) ::  ierr
+ 
     success = .true.
 
     call openSubstancesReport
@@ -147,15 +149,15 @@ subroutine readParametersFile( success )
 
     logical, intent(inout) :: success !< Whether this step was successful or not
 
-    integer                :: i
-    integer                :: k
-    integer                :: lineno
-    integer                :: ierr
+    integer(kind=int_32) ::  i 
+    integer(kind=int_32) ::  k 
+    integer(kind=int_32) ::  lineno 
+    integer(kind=int_32) ::  ierr 
     character(len=80)      :: string
     character(len=80)      :: prev_string
     character(len=20)      :: type
     character(len=20)      :: name
-    real                   :: value
+    real(kind=sp) ::  value 
     type(itemInfo), dimension(:), pointer :: newItems
     type(itemInfo), dimension(:), pointer :: prevItems
 
@@ -250,14 +252,14 @@ subroutine readSubstancesFile( success )
 
     logical, intent(inout) :: success !< Whether this step was successful or not
 
-    integer                :: i
-    integer                :: idx
-    integer                :: k
-    integer                :: lineno
-    integer                :: ierr
-    integer                :: mode
-    integer                :: itemType
-    integer                :: maxidx
+    integer(kind=int_32) ::  i 
+    integer(kind=int_32) ::  idx 
+    integer(kind=int_32) ::  k 
+    integer(kind=int_32) ::  lineno 
+    integer(kind=int_32) ::  ierr 
+    integer(kind=int_32) ::  mode 
+    integer(kind=int_32) ::  itemType 
+    integer(kind=int_32) ::  maxidx 
     logical                :: createItem
     logical                :: isNew
     character(len=80)      :: string
@@ -269,12 +271,12 @@ subroutine readSubstancesFile( success )
     type(itemInfo), dimension(:), pointer :: newItems
     type(itemInfo), dimension(:), pointer :: prevItems
 
-    integer, parameter     :: mode_general   = 0
-    integer, parameter     :: mode_substance = 1
-    integer, parameter     :: mode_parameter = 2
-    integer, parameter     :: mode_output    = 3
-    integer, parameter     :: mode_process   = 4
-
+    integer(kind=int_32), parameter ::  mode_general   = 0 
+    integer(kind=int_32), parameter ::  mode_substance = 1 
+    integer(kind=int_32), parameter ::  mode_parameter = 2 
+    integer(kind=int_32), parameter ::  mode_output    = 3 
+    integer(kind=int_32), parameter ::  mode_process   = 4
+ 
     if ( .not. allocated(item) ) then
         allocate( item(1) )
         item(1)%name = '?'
@@ -488,12 +490,12 @@ contains
 !> Create a new item if necessary (internal routine)
 subroutine createOrFindItem( name, idx, isNew )
     character(len=*), intent(in)  :: name
-    integer         , intent(out) :: idx
+    integer(kind=int_32), intent(out) ::  idx 
     logical         , intent(out) :: isNew
 
-    integer              :: i
-    integer              :: maxused
-
+    integer(kind=int_32) ::  i 
+    integer(kind=int_32) ::  maxused
+ 
     idx     = -1
     isNew   = .true.
     maxused = size(newItems)
@@ -532,8 +534,8 @@ subroutine readSecondString( string, secondString, success )
     logical, intent(out)          :: success
 
     character(len=1)              :: dummy
-    integer                       :: ierr
-
+    integer(kind=int_32) ::  ierr
+ 
     success = .true.
     read( string, *, iostat = ierr ) dummy, secondString
 
@@ -549,11 +551,11 @@ end subroutine readSecondString
 !> Read the value as the second item from the line
 subroutine readValue( string, value, success )
     character(len=*), intent(in)  :: string
-    real, intent(out)             :: value
+    real(kind=sp), intent(out) ::  value 
     logical, intent(out)          :: success
 
     character(len=1)              :: dummy
-    integer                       :: ierr
+    integer(kind=int_32) ::  ierr
 
     success = .true.
     read( string, *, iostat = ierr ) dummy, value
@@ -581,18 +583,18 @@ subroutine registerSubstances( success )
     !
     ! The information in the array "item" gets distributed
     !
-    integer                                      :: number_substances
-    integer                                      :: number_transported
-    integer                                      :: number_parameters
-    integer                                      :: number_processes
-
-    integer                                      :: i
-
+    integer(kind=int_32) ::  number_substances 
+    integer(kind=int_32) ::  number_transported 
+    integer(kind=int_32) ::  number_parameters 
+    integer(kind=int_32) ::  number_processes
+ 
+    integer(kind=int_32) ::  i
+ 
     character(len=20), dimension(:), allocatable :: substance
     character(len=20), dimension(:), allocatable :: process_parameter
     character(len=20), dimension(:), allocatable :: process
-    real, dimension(:), allocatable              :: value
-
+    real(kind=sp), dimension(:), allocatable               ::  value
+ 
     number_substances  = count( item%type == type_substance ) + count( item%type == type_inactive )
     number_transported = count( item%type == type_substance )
     number_parameters  = count( item%type == type_constant  ) + count( item%type == type_parameter )
@@ -621,9 +623,9 @@ end subroutine registerSubstances
 !> Subroutine for testing - write out the contents
 subroutine writeItems( lun )
 
-    integer, intent(in) :: lun
-
-    integer             :: i
+    integer(kind=int_32), intent(in) ::  lun
+ 
+    integer(kind=int_32) ::  i
 
     do i = 1,size(item)
         write( lun, '(3a,i5,l5,e15.6)' ) &

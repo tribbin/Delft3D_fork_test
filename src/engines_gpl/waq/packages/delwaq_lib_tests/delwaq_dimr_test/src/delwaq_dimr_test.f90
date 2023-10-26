@@ -27,6 +27,7 @@
 
     !> Main program steering the computation
     program delwaq_test_dimr
+    use m_waq_type_definitions
     use iso_c_binding
 
     implicit none
@@ -36,6 +37,13 @@
     character,intent(in)    :: c_key
     character,intent(in)    :: c_value
     end function set_var
+
+!    We should use get_var_ptr as that is the function used by DIMR
+!    integer(c_int) function get_value(c_key, real_value) bind(C, name="get_value")
+!    use iso_c_binding
+!    character,intent(in)    :: c_key
+!    real, intent(out)       :: real_value
+!    end function get_value
 
 !    We should use get_var_ptr as that is the function used by DIMR
 !    integer(c_int) function get_value(c_key, real_value) bind(C, name="get_value")
@@ -81,17 +89,19 @@
     end subroutine get_current_time
     end interface
 
-    integer :: dummy
+
+    integer(kind=int_32) ::  dummy
+ 
 
     character(len=1023)    :: version_string
     character(len=1023)    :: key
     character(len=1023)    :: value
     character(len=1023)    :: runid
     character(len=1023)    :: resfile
-    integer                :: itimestamp
-    real                   :: p_value
-    real(kind=kind(1.0d0)) :: startTime, stopTime, currentTime
-    integer                :: i ,status, found, lunlog, k
+    integer(kind=int_32) ::  itimestamp 
+    real(kind=sp) ::  p_value 
+    real(kind=dp) :: startTime, stopTime, currentTime
+    integer(kind=int_32) :: i ,status, found, lunlog, k
     logical                :: log = .true.
 
     if (log) open(newunit=lunlog, file='dimr_test.log',status='replace')

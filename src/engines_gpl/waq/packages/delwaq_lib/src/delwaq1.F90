@@ -21,6 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq1
+use m_waq_type_definitions
 use m_delwaq1_write_messages
 use m_delwaq1_startup_screen
 use m_delwaq1_read_input_data
@@ -55,15 +56,15 @@ use m_delwaq1_allocate_workspace
 
     implicit none
 
-    integer, intent(in)                           :: argc
+    integer(kind=int_32), intent(in) ::  argc 
     character(len=*), dimension(argc), intent(in) :: argv
-    integer, intent(out)                          :: errorcode
+    integer(kind=int_32), intent(out) ::  errorcode
 
     errorcode = 0
 
+
     ! create the lst, delwaq04.wrk, harmonic.wrk, pointers.wrk, and filenaam.wrk files
     call delwaq1_init(argc, argv)
-    ! 
     call delwaq1_startup_screen()
     call delwaq1_allocate_workspace(argc, argv, errorcode)
     if (errorcode==0) then

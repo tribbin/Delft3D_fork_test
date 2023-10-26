@@ -21,6 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 module m_delwaq2
+use m_waq_type_definitions
+
 
 implicit none
 
@@ -36,10 +38,10 @@ subroutine delwaq2( argc, argv, errorcode )
       use m_actions
       implicit none
     
-      integer, intent(in)                           :: argc
+      integer(kind=int_32), intent(in) ::  argc 
       character(len=*), dimension(argc), intent(in) :: argv
-      integer, intent(out)                          :: errorcode
-
+      integer(kind=int_32), intent(out) ::  errorcode
+ 
       type(delwaq_data)                             :: dlwqd
 
       dlwqd%set_timer = .true.
