@@ -22,7 +22,7 @@
 !!  rights reserved.
 module m_rd_stt
 use m_waq_type_definitions
-use m_dlwqs1
+use m_delwaq_statistical_process, only: setup_statistical
 use m_srstop
 
 
@@ -67,7 +67,7 @@ contains
    dtflg1 = .true.
    dtflg3 = .false.
 
-   call dlwqs1 ( lunrep       , npos         , cchar        , ilun         , lch          , &
+   call setup_statistical ( lunrep       , npos         , cchar        , ilun         , lch          , &
                  lstack       , ioutpt       , dtflg1       , dtflg3       , statprocesdef, allitems     , &
                  noinfo       , iwar         , ierr         )
    close(ilun(1))
