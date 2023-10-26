@@ -127,13 +127,6 @@ contains
 
    KEY = 'SUBSTANCE'
    CALL ZOEK(KEY,NOKEY,KEYNAM,20,IKEY)
-   write(*,*) 'A CHECK in setprc'
-   write(*,*) key
-   write(*,*) NOKEY
-   write(*,*) KEYNAM
-   write(*,*) ikey
-   write(*,*) 'A CHECK in setprc'
-   CALL ZOEK(KEY,NOKEY,KEYNAM,20,IKEY)
    IF ( IKEY <= 0 ) THEN
       WRITE(LUNREP,*) 'ERROR no parameter specified for statistics'
       IERR = IERR + 1
@@ -211,12 +204,6 @@ contains
 
    KEY = 'CCRIT'
    CALL ZOEK(KEY, NOKEY, KEYNAM, 20, IKEY)
-   write(*,*) 'B CHECK in setprc'
-   write(*,*) key
-   write(*,*) NOKEY
-   write(*,*) KEYNAM
-   write(*,*) ikey
-   write(*,*) 'B CHECK in setprc'
    IF ( IKEY <= 0 ) THEN
       WRITE(LUNREP,*) 'ERROR no critical level specified for percentage'
       IERR = IERR + 1
