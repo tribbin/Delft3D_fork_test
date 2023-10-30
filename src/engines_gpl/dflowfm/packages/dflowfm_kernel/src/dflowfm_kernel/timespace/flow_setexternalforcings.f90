@@ -648,7 +648,7 @@ subroutine prepare_wind_model_data(time_in_seconds, iresult)
    use m_flowgeom, only: ln, lnx, ndx
    use precision_basics
    use m_flowparameters, only: eps10
-   use dfm_error, only: DFM_EXTFORCERROR
+   use dfm_error
 
    double precision, intent(in   ) :: time_in_seconds !< Current time when setting wind data
    integer,          intent(  out) :: iresult         !< Error indicator
@@ -747,6 +747,7 @@ subroutine prepare_wind_model_data(time_in_seconds, iresult)
       call tauwavefetch(time_in_seconds)
    end if
 
+   iresult = DFM_NOERR
 contains
 
 !> get_ec_item_id
