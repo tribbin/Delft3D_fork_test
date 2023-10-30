@@ -121,7 +121,10 @@
  call timstop(handle_extra(43)) ! End setumod
 
  if (update_wind_stress_each_time_step > 0) then ! Update wind in each computational timestep
-    call calculate_wind_stresses(time0)
+    call calculate_wind_stresses(time0, iresult)
+    if (iresult /= DFM_NOERR) then
+       return
+    end if
  end if
 
 

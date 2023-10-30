@@ -60,7 +60,7 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    use m_longculverts
    use m_nearfield,            only : nearfield_mode, NEARFIELD_UPDATED, addNearfieldData
    use m_airdensity,           only : get_airdensity
-   use dfm_error, only: DFM_EXTFORCERROR
+   use dfm_error
 
    double precision, intent(in   ) :: time_in_seconds  !< Time in seconds
    logical,          intent(in   ) :: initialization   !< initialization phase
@@ -104,7 +104,10 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
 
 
    if (update_wind_stress_each_time_step == 0) then ! Update wind in set_external_forcing (each user timestep)
-      call calculate_wind_stresses(time_in_seconds)
+      call calculate_wind_stresses(time_in_seconds, iresult)
+      if (iresult /= DFM_NOERR) then
+         return
+      end if
    end if
 
    if (jatem > 1) then
@@ -637,7 +640,7 @@ subroutine print_error_message(time_in_seconds)
 end subroutine print_error_message
 
 !> prepare_wind_model_data
-subroutine prepare_wind_model_data(time_in_seconds)
+subroutine prepare_wind_model_data(time_in_seconds, iresult)
    use m_wind
    use m_flowparameters, only: jawave, flowWithoutWaves
    use m_flow, only: windspeedfac
@@ -647,10 +650,11 @@ subroutine prepare_wind_model_data(time_in_seconds)
    use m_flowparameters, only: eps10
    use dfm_error, only: DFM_EXTFORCERROR
 
-   double precision, intent(in) :: time_in_seconds !< Current time when setting wind data
+   double precision, intent(in   ) :: time_in_seconds !< Current time when setting wind data
+   integer,          intent(  out) :: iresult         !< Error indicator
 
    double precision, parameter  :: SEA_LEVEL_PRESSURE = 101325d0
-   integer                      :: ec_item_id, first, last, link, i, iresult, k
+   integer                      :: ec_item_id, first, last, link, i, k
    logical                      :: first_time_wind
 
    wx = 0.d0
@@ -816,12 +820,17 @@ end subroutine initialize_array_with_zero
 end subroutine prepare_wind_model_data
 
 !> Gets windstress (and air pressure) from input files, and sets the windstress
-subroutine calculate_wind_stresses(time_in_seconds)
+subroutine calculate_wind_stresses(time_in_seconds, iresult)
    use m_wind, only: jawind, japatm
+   use dfm_error, only: DFM_NOERR
 
-   double precision, intent(in) :: time_in_seconds !< Current time when getting and applying winds
+   double precision, intent(in   ) :: time_in_seconds !< Current time when getting and applying winds
+   integer,          intent(  out) :: iresult         !< Error indicator
    if (jawind == 1 .or. japatm > 0) then
-      call prepare_wind_model_data(time_in_seconds)
+      call prepare_wind_model_data(time_in_seconds, iresult)
+      if (iresult /= DFM_NOERR) then
+         return
+      end if
    end if
 
    if (jawind > 0) then
