@@ -22,14 +22,14 @@
 !!  rights reserved.
 
 module precision_part
-    use m_waq_type_definitions, only: sp, dp
-!  module declarations
-!
-      implicit none
-      integer, parameter :: ip = kind(1)      ! precision of normal integers
-      integer, parameter :: rp = kind(1.0)    ! precision of normal reals
-      ! integer, parameter :: sp = kind(1.0e0)  ! single precision
-      ! integer, parameter :: dp = kind(1.0d0)  ! double precision
-      integer, parameter :: fp = sp
-      integer, parameter :: hp = dp
+    use m_waq_type_definitions, only: sp, dp, real_wp, int_wp
+    implicit none
+
+    private 
+    public :: ip, rp, fp, hp, sp, dp
+
+    integer, parameter :: ip = int_wp   ! precision of normal integers
+    integer, parameter :: rp = real_wp      ! precision of normal reals
+    integer, parameter :: fp = sp
+    integer, parameter :: hp = dp
 end module precision_part

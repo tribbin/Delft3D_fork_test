@@ -38,7 +38,6 @@ endif()
 
 
 if(NOT TARGET delwaq_dimr_test)
-# if(NOT TARGET delwaq_lib_tests)
     add_subdirectory(${checkout_src_root}/${delwaq_lib_tests_module} delwaq_lib_tests)
 endif()
 

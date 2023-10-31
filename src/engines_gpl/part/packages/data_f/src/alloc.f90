@@ -30,7 +30,7 @@ module alloc_mod
 !  data definition module(s)
 !
       use m_stop_exit
-      use precision_part               ! single and double precision
+      use precision_part, only: ip, dp, sp               ! single and double precision
       implicit none   ! force explicit typing
 
       integer(ip), private :: lunmem        ! output unit memory allocation
@@ -271,7 +271,8 @@ module alloc_mod
       return
 
       end subroutine alloc_double_1D
-! ----------------------------------------------------
+     ! ----------------------------------------------------
+      
       subroutine alloc_real_2D(name,arr,n1,n2)
 
       character( *), intent(in   )    :: name       !< array name
