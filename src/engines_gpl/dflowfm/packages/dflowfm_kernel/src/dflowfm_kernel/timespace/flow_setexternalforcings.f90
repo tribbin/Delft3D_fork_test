@@ -31,10 +31,9 @@
 !
 !
 module m_external_forcings
-
 implicit none
-
 public :: set_external_forcings
+public :: calculate_wind_stresses
 
   abstract interface
      subroutine fill_open_boundary_cells_with_inner_values_any(number_of_links, link2cell)
@@ -61,10 +60,11 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    use m_longculverts
    use m_nearfield,            only : nearfield_mode, NEARFIELD_UPDATED, addNearfieldData
    use m_airdensity,           only : get_airdensity
+   use dfm_error
 
-   double precision, intent(in)    :: time_in_seconds  !< Time in seconds
-   logical,          intent(in)    :: initialization   !< initialization phase
-   integer,          intent(out)   :: iresult          !< Integer error status: DFM_NOERR==0 if succesful.
+   double precision, intent(in   ) :: time_in_seconds  !< Time in seconds
+   logical,          intent(in   ) :: initialization   !< initialization phase
+   integer,          intent(  out) :: iresult          !< Integer error status: DFM_NOERR==0 if succesful.
 
    integer, parameter              :: HUMIDITY_AIRTEMPERATURE_CLOUDINESS = 1
    integer, parameter              :: HUMIDITY_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION = 2
@@ -72,16 +72,13 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    integer, parameter              :: DEWPOINT_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION = 4
    integer, parameter              :: DEWPOINT = 5
 
-   double precision, parameter     :: SEA_LEVEL_PRESSURE = 101325d0
-
-   integer                         :: link, i, first, last
    integer                         :: ierr             !< error flag
    logical                         :: l_set_frcu_mor = .false.
    logical                         :: first_time_wind
 
    logical, external               :: flow_initwaveforcings_runtime, flow_trachy_needs_update
    character(len=255)              :: tmpstr
-   type(c_time)                    :: ecTime         !< Time in EC-module
+   type(c_time)                    :: ecTime           !< Time in EC-module
 
    ! variables for processing the pump with levels, SOBEK style
    logical                         :: success_copy
@@ -99,31 +96,26 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    if (ja_airdensity > 0) then
       call get_timespace_value_by_item_array_consider_success_value(item_airdensity, airdensity)
    end if
-   if (ja_varying_airdensity==1) then
+   if (ja_varying_airdensity==1) then 
       call get_timespace_value_by_item_array_consider_success_value(item_atmosphericpressure, patm)
       call get_timespace_value_by_item_array_consider_success_value(item_airtemperature, tair)
-      call get_airdensity(patm, tair, airdensity, ierr)
+      call get_timespace_value_by_item_array_consider_success_value(item_humidity, rhum)
+      call get_airdensity(patm, tair, rhum, airdensity, ierr)
    end if
 
-   if (jawind == 1 .or. japatm > 0) then
-      call set_wind_data()
-   end if
 
-   if (jawind > 0) then
-      if (jawindspeedfac > 0) then
-         where (windspeedfac /= dmiss)
-            wx = wx * windspeedfac
-            wy = wy * windspeedfac
-         end where
+   if (update_wind_stress_each_time_step == 0) then ! Update wind in set_external_forcing (each user timestep)
+      call calculate_wind_stresses(time_in_seconds, iresult)
+      if (iresult /= DFM_NOERR) then
+         return
       end if
-      call setwindstress()
    end if
 
-    if (jatem > 1) then
-       call set_temperature_models()
-    end if
+   if (jatem > 1) then
+      call set_temperature_models()
+   end if 
 
-    if (ja_friction_coefficient_time_dependent > 0) then
+   if (ja_friction_coefficient_time_dependent > 0) then
        call set_friction_coefficient()
    end if
 
@@ -184,7 +176,8 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    call timstop(handle_ext)
 
    if (.not. success) then
-      call print_error_message()
+      iresult = DFM_EXTFORCERROR
+      call print_error_message(time_in_seconds)
       return
    end if
 
@@ -236,177 +229,16 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
 
 contains
 
-!> set_wind_data data
-subroutine set_wind_data()
-
-    integer  :: ec_item_id
-
-    call initialize_array_with_zero(wx)
-    call initialize_array_with_zero(wy)
-    call initialize_array_with_zero(wdsu_x)
-    call initialize_array_with_zero(wdsu_y)
-    call initialize_array_with_zero(wcharnock)
-    call initialize_array_with_zero(ec_pwxwy_x)
-    call initialize_array_with_zero(ec_pwxwy_y)
-
-    first_time_wind = (id_last_wind < 0)
-    if (first_time_wind) then
-        first = 1
-        last  = get_ec_number_of_items()
-    else
-        first = id_first_wind
-        last  = id_last_wind
-    end if
-    do i = first, last
-        ec_item_id = get_ec_item_id(i)
-        ! Retrieve wind's x- and y-component for ext-file quantity 'windxy'.
-        if (ec_item_id == item_windxy_x .and. item_windxy_y /= ec_undef_int) then
-            call get_timespace_value_by_item(item_windxy_x)
-        ! Retrieve wind's p-, x- and y-component for ext-file quantity 'airpressure_windx_windy'.
-        else if (ec_item_id == item_apwxwy_p .and. item_apwxwy_x /= ec_undef_int .and. item_apwxwy_y /= ec_undef_int) then
-            if (item_apwxwy_c /= ec_undef_int) then
-               call get_timespace_value_by_name('airpressure_windx_windy_charnock')
-            else
-               call get_timespace_value_by_name('airpressure_windx_windy')
-            end if
-        ! Retrieve wind's charnock-component for ext-file quantity 'charnock'.
-        else if (ec_item_id == item_charnock) then
-            call get_timespace_value_by_item(item_charnock)
-        ! Retrieve wind's x-component for ext-file quantity 'windx'.
-        else if (ec_item_id == item_windx) then
-            call get_timespace_value_by_item(item_windx)
-        ! Retrieve wind's y-component for ext-file quantity 'windy'.
-        else if (ec_item_id == item_windy) then
-            call get_timespace_value_by_item(item_windy)
-        ! Retrieve wind's p-component for ext-file quantity 'atmosphericpressure'.
-        else if (ec_item_id == item_atmosphericpressure) then
-            call get_timespace_value_by_item(item_atmosphericpressure)
-        else
-            cycle  ! avoid updating id_first_wind and id_last_wind
-        end if
-        if (.not. success) then
-            call print_error_message()
-            return
-        end if
-        if (first_time_wind) then
-            id_first_wind = min(i, id_first_wind)
-            id_last_wind  = max(i, id_last_wind)
-        end if
-    end do
-
-    if (jawindstressgiven > 0) then
-        call get_timespace_value_by_item_and_array(item_stressx, wdsu_x)
-        call get_timespace_value_by_item_and_array(item_stressy, wdsu_y)
-    end if
-
-    if (allocated(ec_pwxwy_x) .and. allocated( ec_pwxwy_y)) then
-        if (jawindstressgiven == 1) then
-            call perform_additional_spatial_interpolation(wdsu_x, wdsu_y)
-        else
-            call perform_additional_spatial_interpolation(wx, wy)
-        end if
-        if (allocated(ec_pwxwy_c)) then
-            do link  = 1, lnx
-               wcharnock(link) = wcharnock(link) + 0.5d0*( ec_pwxwy_c(ln(1,link)) + ec_pwxwy_c(ln(2,link)) )
-            end do
-        end if
-    end if
-    if (allocated(ec_charnock)) then
-        do link  = 1, lnx
-            wcharnock(link) = wcharnock(link) + 0.5d0*( ec_charnock(ln(1,link)) + ec_charnock(ln(2,link)) )
-        end do
-    end if
-
-    if (item_atmosphericpressure /= ec_undef_int) then
-        where (patm == dmiss)
-            patm = SEA_LEVEL_PRESSURE
-        end where
-    end if
-
-    if (jawave == 1 .or. jawave == 2 .and. .not. flowWithoutWaves) then
-        call tauwavefetch(time_in_seconds)
-    end if
-
-end subroutine set_wind_data
-
-!> initialize_array_with_zero
-subroutine initialize_array_with_zero(array)
-
-    double precision, allocatable, intent(inout) :: array(:)
-
-    if (allocated(array)) then
-         array(:) = 0.d0
-    end if
-
-end subroutine initialize_array_with_zero
-
-!> ec_number_of_items
-integer function get_ec_number_of_items()
-
-    get_ec_number_of_items = ecInstancePtr%nItems
-
-end function get_ec_number_of_items
-
-!> get_ec_item_id
-integer function get_ec_item_id(i)
-
-    integer, intent(in) :: i
-
-    get_ec_item_id = ecInstancePtr%ecItemsPtr(i)%ptr%id
-
-end function get_ec_item_id
-
-!> get_timespace_value_by_item
-subroutine get_timespace_value_by_item(item)
-
-    integer, intent(in) :: item
-
-    success = ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds)
-
-end subroutine get_timespace_value_by_item
-
-!> get_timespace_value_by_name
-subroutine get_timespace_value_by_name(name)
-
-    character(*), intent(in) :: name
-
-    success = ec_gettimespacevalue(ecInstancePtr, name, time_in_seconds)
-
-end subroutine get_timespace_value_by_name
-
-!> get_timespace_value_by_item_and_array
-subroutine get_timespace_value_by_item_and_array(item, array)
-
-    integer, intent(in) :: item
-    double precision, intent(inout) :: array(:)
-
-    success = ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds, array)
-
-end subroutine get_timespace_value_by_item_and_array
-
 
 !> get_timespace_value_by_item_and_array_and_consider_success_value
 subroutine get_timespace_value_by_item_array_consider_success_value(item, array)
 
-    integer, intent(in) :: item
-    double precision, intent(inout) :: array(:)
+    integer,          intent(in   ) :: item      !< Item for getting values
+    double precision, intent(inout) :: array(:)  !< Array that stores the values
 
     success = success .and. ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds, array)
 
 end subroutine get_timespace_value_by_item_array_consider_success_value
-
-subroutine perform_additional_spatial_interpolation(array_x, array_y)
-
-    double precision, intent(inout) :: array_x(:)
-    double precision, intent(inout) :: array_y(:)
-
-    do link  = 1, lnx
-        array_x(link) = array_x(link) + 0.5d0*( ec_pwxwy_x(ln(1,link)) + ec_pwxwy_x(ln(2,link)) )
-        array_y(link) = array_y(link) + 0.5d0*( ec_pwxwy_y(ln(1,link)) + ec_pwxwy_y(ln(2,link)) )
-    end do
-
-end subroutine perform_additional_spatial_interpolation
-
 
 !> set_temperature_models
 subroutine set_temperature_models()
@@ -459,7 +291,7 @@ subroutine set_temperature_models()
 
 end subroutine set_temperature_models
 
-!> set friction coeffciient values at this time moment
+!> set friction coefficient values at this time moment
 subroutine set_friction_coefficient()
 
    call get_timespace_value_by_item_and_array(item_frcu, frcu)
@@ -486,7 +318,6 @@ end subroutine get_timespace_value_by_item_and_consider_success_value
 
 !> set_wave_parameters
 subroutine set_wave_parameters()
-
    logical                                                            :: all_wave_variables                         !< flag indicating whether _all_ wave variables should be mirrored at the boundary
    procedure(fill_open_boundary_cells_with_inner_values_any), pointer :: fill_open_boundary_cells_with_inner_values !< boundary update routine to be called
 
@@ -633,32 +464,33 @@ subroutine select_wave_variables_subgroup(all_wave_variables, fill_open_boundary
 
 end subroutine select_wave_variables_subgroup
 
+
 !> fill_open_boundary_cells_with_inner_values_all
 subroutine fill_open_boundary_cells_with_inner_values_all(number_of_links, link2cell)
 
-    integer, intent(in) :: number_of_links      !< number of links
-    integer, intent(in) :: link2cell(:,:)       !< indices of cells connected by links
+   integer, intent(in) :: number_of_links      !< number of links
+   integer, intent(in) :: link2cell(:,:)       !< indices of cells connected by links
 
-    integer             :: link !< link counter
-    integer             :: kb   !< cell index of boundary cell
-    integer             :: ki   !< cell index of internal cell
+   integer             :: link !< link counter
+   integer             :: kb   !< cell index of boundary cell
+   integer             :: ki   !< cell index of internal cell
 
-    do link = 1, number_of_links
-        kb   = link2cell(1,link)
-        ki   = link2cell(2,link)
-        hwavcom(kb) = hwavcom(ki)
-        twav(kb)    = twav(ki)
-        phiwav(kb)  = phiwav(ki)
-        uorbwav(kb) = uorbwav(ki)
-        sxwav(kb)   = sxwav(ki)
-        sywav(kb)   = sywav(ki)
-        mxwav(kb)   = mxwav(ki)
-        mywav(kb)   = mywav(ki)
-        sbxwav(kb)  = sbxwav(ki)
-        sbywav(kb)  = sbywav(ki)
-        dsurf(kb)   = dsurf(ki)
-        dwcap(kb)   = dwcap(ki)
-    end do
+   do link = 1, number_of_links
+       kb   = link2cell(1,link)
+       ki   = link2cell(2,link)
+       hwavcom(kb) = hwavcom(ki)
+       twav(kb)    = twav(ki)
+       phiwav(kb)  = phiwav(ki)
+       uorbwav(kb) = uorbwav(ki)
+       sxwav(kb)   = sxwav(ki)
+       sywav(kb)   = sywav(ki)
+       mxwav(kb)   = mxwav(ki)
+       mywav(kb)   = mywav(ki)
+       sbxwav(kb)  = sbxwav(ki)
+       sbywav(kb)  = sbywav(ki)
+       dsurf(kb)   = dsurf(ki)
+       dwcap(kb)   = dwcap(ki)
+   end do
 
 end subroutine fill_open_boundary_cells_with_inner_values_all
 
@@ -767,16 +599,247 @@ subroutine update_subsidence_and_uplift_data()
 
 end subroutine update_subsidence_and_uplift_data
 
-!> print_error_message
-subroutine print_error_message()
+!> get_timespace_value_by_item_and_array
+subroutine get_timespace_value_by_item_and_array(item, array)
 
-   iresult = DFM_EXTFORCERROR
+    integer,          intent(in   ) :: item     !< Item for getting values
+    double precision, intent(inout) :: array(:) !< Array that stores the values
+
+    success = ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds, array)
+
+end subroutine get_timespace_value_by_item_and_array
+
+!> get_timespace_value_by_item
+subroutine get_timespace_value_by_item(item)
+
+    integer, intent(in) :: item !< Item for getting values
+
+    success = ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds)
+
+end subroutine get_timespace_value_by_item
+
+
+end subroutine set_external_forcings
+
+
+
+
+!> print_error_message
+subroutine print_error_message(time_in_seconds)
+   use m_ec_message, only: dumpECMessageStack
+   use MessageHandling, only: LEVEL_WARN, mess
+   use unstruc_messages, only: callback_msg
+
+   double precision, intent(in) :: time_in_seconds !< Current time when doing this action
+
+   character(len=255)           :: tmpstr
+
    write(tmpstr,'(f22.11)') time_in_seconds
    call mess(LEVEL_WARN, 'Error while updating meteo/structure forcing at time=' // trim(tmpstr))
    tmpstr = dumpECMessageStack(LEVEL_WARN,callback_msg)
-
 end subroutine print_error_message
 
-end subroutine set_external_forcings
+!> prepare_wind_model_data
+subroutine prepare_wind_model_data(time_in_seconds, iresult)
+   use m_wind
+   use m_flowparameters, only: jawave, flowWithoutWaves
+   use m_flow, only: windspeedfac
+   use m_meteo
+   use m_flowgeom, only: ln, lnx, ndx
+   use precision_basics
+   use m_flowparameters, only: eps10
+   use dfm_error
+
+   double precision, intent(in   ) :: time_in_seconds !< Current time when setting wind data
+   integer,          intent(  out) :: iresult         !< Error indicator
+
+   double precision, parameter  :: SEA_LEVEL_PRESSURE = 101325d0
+   integer                      :: ec_item_id, first, last, link, i, k
+   logical                      :: first_time_wind
+
+   wx = 0.d0
+   wy = 0.d0
+   wdsu_x = 0.d0
+   wdsu_y = 0.d0
+   wcharnock = 0.d0
+   call initialize_array_with_zero(ec_pwxwy_x)
+   call initialize_array_with_zero(ec_pwxwy_y)
+
+   first_time_wind = (id_last_wind < 0)
+   if (first_time_wind) then
+      first = 1
+      last  = get_ec_number_of_items()
+   else
+      first = id_first_wind
+      last  = id_last_wind
+   end if
+   do i = first, last
+      ec_item_id = get_ec_item_id(i)
+      ! Retrieve wind's x- and y-component for ext-file quantity 'windxy'.
+      if (ec_item_id == item_windxy_x .and. item_windxy_y /= ec_undef_int) then
+         call get_timespace_value_by_item(item_windxy_x)
+      ! Retrieve wind's p-, x- and y-component for ext-file quantity 'airpressure_windx_windy'.
+      else if (ec_item_id == item_apwxwy_p .and. item_apwxwy_x /= ec_undef_int .and. item_apwxwy_y /= ec_undef_int) then
+         if (item_apwxwy_c /= ec_undef_int) then
+            call get_timespace_value_by_name('airpressure_windx_windy_charnock')
+         else
+            call get_timespace_value_by_name('airpressure_windx_windy')
+         end if
+      ! Retrieve wind's x-component for ext-file quantity 'windx'.
+      else if (ec_item_id == item_windx) then
+         call get_timespace_value_by_item(item_windx)
+      ! Retrieve wind's y-component for ext-file quantity 'windy'.
+      else if (ec_item_id == item_windy) then
+         call get_timespace_value_by_item(item_windy)
+       ! Retrieve wind's p-component for ext-file quantity 'atmosphericpressure'.
+      else if (ec_item_id == item_atmosphericpressure) then
+         call get_timespace_value_by_item(item_atmosphericpressure)
+      else
+         cycle  ! avoid updating id_first_wind and id_last_wind
+      end if
+      if (.not. success) then
+         iresult = DFM_EXTFORCERROR
+         call print_error_message(time_in_seconds)
+         return
+      end if
+      if (first_time_wind) then
+         id_first_wind = min(i, id_first_wind)
+         id_last_wind  = max(i, id_last_wind)
+      end if
+   end do
+
+   if (jawindstressgiven > 0) then 
+      call get_timespace_value_by_item_and_array(item_stressx, wdsu_x)
+      call get_timespace_value_by_item_and_array(item_stressy, wdsu_y)
+   end if
+
+   if (allocated(ec_pwxwy_x) .and. allocated( ec_pwxwy_y)) then
+      if (jawindstressgiven == 1) then 
+         call perform_additional_spatial_interpolation(wdsu_x, wdsu_y)
+      else
+         call perform_additional_spatial_interpolation(wx, wy)
+      end if
+      if (allocated(ec_pwxwy_c)) then
+         do link  = 1, lnx
+            wcharnock(link) = wcharnock(link) + 0.5d0*( ec_pwxwy_c(ln(1,link)) + ec_pwxwy_c(ln(2,link)) )
+         end do
+      end if
+   end if
+
+   if (jawindspeedfac > 0) then
+      do link = 1, lnx
+         if (windspeedfac(link) /= dmiss) then
+            wx(link) = wx(link) * windspeedfac(link)
+            wy(link) = wy(link) * windspeedfac(link)
+         end if
+      end do
+   end if
+
+   if (item_atmosphericpressure /= ec_undef_int) then
+      do k = 1, ndx
+         if (comparereal(patm(k), dmiss, eps10) == 0) then
+            patm(k) = SEA_LEVEL_PRESSURE
+         end if
+      end do
+   end if
+
+   if (jawave == 1 .or. jawave == 2 .and. .not. flowWithoutWaves) then
+      call tauwavefetch(time_in_seconds)
+   end if
+
+   iresult = DFM_NOERR
+contains
+
+!> get_ec_item_id
+integer function get_ec_item_id(i)
+   integer, intent(in) :: i !< Input index
+
+   get_ec_item_id = ecInstancePtr%ecItemsPtr(i)%ptr%id
+
+end function get_ec_item_id
+
+!> ec_number_of_items
+integer function get_ec_number_of_items()
+
+   get_ec_number_of_items = ecInstancePtr%nItems
+
+end function get_ec_number_of_items
+
+!> get_timespace_value_by_name
+subroutine get_timespace_value_by_name(name)
+
+   character(*), intent(in) :: name !< Input name
+
+   success = ec_gettimespacevalue(ecInstancePtr, name, time_in_seconds)
+
+end subroutine get_timespace_value_by_name
+
+!> get_timespace_value_by_item_and_array
+subroutine get_timespace_value_by_item_and_array(item, array)
+   use m_flowtimes, only: irefdate, tzone, tunit
+
+   integer,          intent(in   ) :: item             !< Input item
+   double precision, intent(inout) :: array(:)         !< Array that stores the obatained values
+
+   success = ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds, array)
+
+end subroutine get_timespace_value_by_item_and_array
+
+!> perform_additional_spatial_interpolation, the size of array_x and array_y is lnx.
+subroutine perform_additional_spatial_interpolation(array_x, array_y)
+
+   double precision, intent(inout) :: array_x(:) !< Array of X-components for interpolation
+   double precision, intent(inout) :: array_y(:) !< Array of Y-components for interpolation
+
+   do link  = 1, lnx
+       array_x(link) = array_x(link) + 0.5d0*( ec_pwxwy_x(ln(1,link)) + ec_pwxwy_x(ln(2,link)) )
+       array_y(link) = array_y(link) + 0.5d0*( ec_pwxwy_y(ln(1,link)) + ec_pwxwy_y(ln(2,link)) )
+   end do
+
+end subroutine perform_additional_spatial_interpolation
+
+!> get_timespace_value_by_item
+subroutine get_timespace_value_by_item(item)
+   use m_flowtimes, only: irefdate, tzone, tunit
+   integer, intent(in) :: item !< Input item
+
+   success = ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds)
+
+end subroutine get_timespace_value_by_item
+
+!> initialize_array_with_zero
+subroutine initialize_array_with_zero(array)
+
+   double precision, allocatable, intent(inout) :: array(:) !< Array that will be initialized
+
+   if (allocated(array)) then
+        array(:) = 0.d0
+   end if
+
+end subroutine initialize_array_with_zero
+
+end subroutine prepare_wind_model_data
+
+!> Gets windstress (and air pressure) from input files, and sets the windstress
+subroutine calculate_wind_stresses(time_in_seconds, iresult)
+   use m_wind, only: jawind, japatm
+   use dfm_error, only: DFM_NOERR
+
+   double precision, intent(in   ) :: time_in_seconds !< Current time when getting and applying winds
+   integer,          intent(  out) :: iresult         !< Error indicator
+   if (jawind == 1 .or. japatm > 0) then
+      call prepare_wind_model_data(time_in_seconds, iresult)
+      if (iresult /= DFM_NOERR) then
+         return
+      end if
+   end if
+
+   if (jawind > 0) then
+      call setwindstress()
+   end if
+
+   iresult = DFM_NOERR
+
+end subroutine calculate_wind_stresses
 
 end module m_external_forcings
