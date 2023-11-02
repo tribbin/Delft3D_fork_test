@@ -1305,7 +1305,7 @@ rem ==========================
         call :copyDwaqDependentRuntimeLibraries                                                 !dest_share!
         call :copyFile "!build_dir!\delpar\!configuration!\delpar.exe"                          !dest_bin!
 
-        call :copyFile "!checkout_src_root!\engines_gpl\part\reources\scripts\run_dpart.bat"    !dest_scripts!
+        call :copyFile "!checkout_src_root!\engines_gpl\part\resources\scripts\run_dpart.bat"    !dest_scripts!
     )
 
     rem profiling information
