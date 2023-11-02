@@ -157,7 +157,7 @@ subroutine delwaq2_global_data_initialize(runid_given)
     enddo
 end subroutine delwaq2_global_data_initialize
 
-subroutine delwaq2_global_data_finalize
+subroutine delwaq2_global_data_finalize()
 
     use waqmem
 
