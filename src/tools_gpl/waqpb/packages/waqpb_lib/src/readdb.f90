@@ -71,7 +71,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 10
  11 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from ITEMS.CSV'')') nitem
-    call validate_names(itemid(1:nitem))
 
 
     !Read Table P3
@@ -102,7 +101,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 20
  21 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from PROCES.CSV'')') nproc
-    call validate_names(procid(1:nproc))
     call validate_names(procfo(1:nproc))
 
 
@@ -117,8 +115,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 100
 101 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from CONFIG.CSV'')') nconf
-    call validate_names(confid(1:nconf))
-    call validate_names(confnm(1:nconf))
 
 
     !Read table R1
@@ -180,8 +176,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 130
 131 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from CON_SUB.CSV'')') ncnsb
-    call validate_names(r2_cid(1:ncnsb))
-    call validate_names(r2_sid(1:ncnsb))
 
 
     !Read table R3
@@ -197,8 +191,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 40
  41 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from INPUTS.CSV'')') ninpu
-    call validate_names(inpupr(1:ninpu))
-    call validate_names(inpuit(1:ninpu))
     !Sort table R3
     call sorts2 ( inpupr, inpuit, inpunm, inpude, inpudo, &
                   inpusx, ninpu , .true., .true.)
@@ -218,8 +210,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 50
  51 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from OUTPUTS.CSV'')') noutp
-    call validate_names(outppr(1:noutp))
-    call validate_names(outpit(1:noutp))
     !Sort table R4
     call sorts2 ( outppr, outpit, outpnm, c1dum , outpdo, &
                   outpsx, noutp , .false., .true.)
@@ -239,8 +229,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 60
  61 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from OUTPFLX.CSV'')') noutf
-    call validate_names(outfpr(1:noutf))
-    call validate_names(outffl(1:noutf))
     !Sort table R5
     call sorts2( outfpr, outffl, outfnm, c1dum , outfdo, &
                 idum  , noutf , .false., .false.)
@@ -259,8 +247,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 70
  71 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from STOCHI.CSV'')') nstoc
-    call validate_names(stocfl(1:nstoc))
-    call validate_names(stocsu(1:nstoc))
     !Sort table R6
     call sortst ( stocfl, stocsu, stocsc, nstoc)
     write(lu_mes,'('' STOCHI.CSV sorted'')')
@@ -278,8 +264,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 90
  91 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from VELOCS.CSV'')') nvelo
-    call validate_names(veloit(1:nvelo))
-    call validate_names(velosu(1:nvelo))
     !Sort table R7
     call sortst ( veloit, velosu, velosc, nvelo)
     write(lu_mes,'('' VELOCS.CSV sorted'')')
@@ -297,8 +281,6 @@ subroutine readdb(lu_inp, lu_mes)
     goto 80
  81 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from DISPS.CSV'')') ndisp
-    call validate_names(dispit(1:ndisp))
-    call validate_names(dispsu(1:ndisp))
     !Sort table R8
     call sortst ( dispit, dispsu, dispsc, ndisp)
     write(lu_mes,'('' DISPS.CSV sorted'')')
@@ -316,8 +298,6 @@ subroutine readdb(lu_inp, lu_mes)
 201 close(lu_inp)
     write(lu_mes,'(i5,'' lines read from TABLE5.CSV'')') nmodv
 202 continue
-    call validate_names(modvci(1:nmodv))
-    call validate_names(modvit(1:nmodv))
     !Table old_items
     open(newunit=lu_inp, file='old_items.csv')
     read(lu_inp, * , end = 302)
