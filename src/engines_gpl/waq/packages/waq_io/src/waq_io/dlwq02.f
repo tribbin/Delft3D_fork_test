@@ -25,9 +25,11 @@
       use m_rearaa
       use m_readmp
       use m_dlwq0i
+      use m_time_validation
 
 
       implicit none
+
 
       contains
 
@@ -464,6 +466,8 @@
             ierr = ierr + 1
       end select
 
+      
+
 !     Copy timers data to dlwqt0_data
       dlwq0t_itstrt = itstrt
       dlwq0t_itstop = itstop
@@ -524,6 +528,14 @@
          if ( ierr2 .gt. 0 ) goto 30
       endif
       ierr2 = 0
+      
+      
+      call validate_time_settings(lunut, ierr,
+     &                            itstrt, itstop, idt,
+     &                            imstrt, imstop, imstep,
+     &                            idstrt, idstop, idstep,
+     &                            ihstrt, ihstop, ihstep)
+      
 
 !        Check number of data in inputfile
 
@@ -612,6 +624,7 @@
  2460 format ( /' ERROR: DELWAQ time step is variable. DELPAR does not support variable step sizes.' )
  2470 format (  ' The following ',i3,' DELPAR substances are added as passive substances to DELWAQ.' )
 
-      end
+      end subroutine dlwq02
+ 
 
       end module m_dlwq02

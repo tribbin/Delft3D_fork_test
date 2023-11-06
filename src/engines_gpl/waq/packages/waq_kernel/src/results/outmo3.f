@@ -104,7 +104,7 @@
       ENDIF
       IP(4) = IP(4) + 1
 !
-      IF ( ITSTOP - ITSTRT .GT. 0 ) THEN
+      IF ( ITSTOP - ITIME .GT. 0 ) THEN
          PERCIT = 100.*(ITIME-ITSTRT)/(ITSTOP-ITSTRT)
       ELSE
          PERCIT = 100.
