@@ -281,15 +281,15 @@ logical function SetOutputTimers(type, startTime, endTime, timeStep)
     integer, intent(in)              :: timeStep
 
     select case ( type )
-        case( 1 )
+        case( 1 ) !monitor
             imstrt = startTime
             imstop = endTime
             imstep = timeStep
-        case( 2 )
+        case( 2 ) !history
             ihstrt = startTime
             ihstop = endTime
             ihstep = timeStep
-        case( 3 )
+        case( 3 ) !map
             idstrt = startTime
             idstop = endTime
             idstep = timeStep
