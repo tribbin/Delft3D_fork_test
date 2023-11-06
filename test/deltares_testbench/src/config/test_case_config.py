@@ -6,7 +6,7 @@ Copyright (C)  Stichting Deltares, 2023
 
 
 # Test case configuration
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from src.config.file_check import FileCheck
 from src.config.location import Location

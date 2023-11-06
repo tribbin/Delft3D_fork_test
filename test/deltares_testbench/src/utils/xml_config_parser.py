@@ -438,7 +438,10 @@ class XmlConfigParser(object):
                 test_case.program_configs = []
 
         test_case.name = str(element["name"][0])
-        test_case.version = str(element["version"][0])
+        if "version" in element:
+            test_case.version = str(element["version"][0])
+        else:
+            test_case.version = ""
 
         if "ignore" in element:
             if str(element["ignore"][0]).lower() == "true":

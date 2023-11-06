@@ -5,7 +5,7 @@ from unittest.mock import ANY, Mock, patch
 from src.utils.minio_rewinder import Rewinder
 
 
-class TestMinioHandler:
+class TestMinioRewinder:
     @staticmethod
     @pytest.mark.parametrize(
         "version, expected_seconds",
