@@ -26,10 +26,7 @@ c     DATA STRUCTURE FOR PROCESSES LIBRARY MANAGEMENT
 c
 c     Reference: bespreekverslag van Gils 3-9-1998 R3252
 
-<<<<<<<< HEAD:src/tools_gpl/waq_tools/waqpb/waqpb_lib/waqpb_data.f
       module m_waqpb_data
-========
->>>>>>>> main:src/tools_gpl/waq_tools/waqpb/include/data.inc
       integer      nsubsm, nitemm, nfortm, nprocm, nfluxm,
      j             nconfm, ninpum, noutpm, noutfm, nmodvm,
      j             nstocm, nvelom, ndispm, nsgrpm, ncnsbm
@@ -213,7 +210,4 @@ c     old_items
      j                   old_items_configuration,
      j                   old_items_serial,
      j                   old_items_action_type
-<<<<<<<< HEAD:src/tools_gpl/waq_tools/waqpb/waqpb_lib/waqpb_data.f
       end module m_waqpb_data
-========
->>>>>>>> main:src/tools_gpl/waq_tools/waqpb/include/data.inc
