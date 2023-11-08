@@ -38,7 +38,7 @@ c     Table R4: index in ITEMS is outpii
 c     Table R4: index in PROCS is outppi
 
 c     Include data structures for tables
-      include 'data.inc'
+      use m_waqpb_data
 
       integer icnsb, iinpu, ioutp, iitem, iproc
 

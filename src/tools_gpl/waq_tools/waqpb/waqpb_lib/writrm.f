@@ -28,13 +28,13 @@
 !  
 
       subroutine writrm
+c     Include data structures for tables
+      use m_waqpb_data
 
       integer lu(15)
 c
 c     Subprogram to write tables for TRM
 c
-c     Include data structures for tables
-      include 'data.inc'
       logical done  , defflg, makflg
 
       integer i     , jndex , iexch , isubs , iitem , iinpu , ioutp ,

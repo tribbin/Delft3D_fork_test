@@ -31,9 +31,9 @@
      j                    grp   , io_mes, iitem , c20   , newfrm,
      j                    bodem )
       use m_zoek
-      use m_validate_units
+      use m_validate_input
 
-      include 'data.inc'
+      use m_waqpb_data
       character*10 c10, naam
       character*20 c20
       character*30 grp
@@ -143,7 +143,7 @@ c             end existing format
           endif
       endif
 
-      call validate_units(itemun(jndex))
+      call validate_units(itemun(jndex), io_mes)
 
 c     Actions below ONLY for new items
 
@@ -204,7 +204,7 @@ c     Set item number
       subroutine upd_p3 ( c10 , newtab , io_mes )
       use m_zoek
 
-      include 'data.inc'
+      use m_waqpb_data
       character*10 c10
       logical newtab
       integer io_mes, jndex

@@ -28,7 +28,7 @@
 !  
 
       subroutine writex
-
+      use m_waqpb_data
       integer lu(15)
 c
 c     Subprogram to write tables for TRM in LaTeX format
@@ -41,7 +41,7 @@ c     > moet nog worden $>$
 c     colsep moet nog worden & 
 c
 c     Include data structures for tables
-      include 'data.inc'
+
       logical done  , defflg, makflg
 
       integer i     , jndex , iexch , isubs , iitem , iinpu , ioutp ,

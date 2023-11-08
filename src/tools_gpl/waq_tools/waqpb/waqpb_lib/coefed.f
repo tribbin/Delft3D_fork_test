@@ -32,7 +32,7 @@ c
 c     Create COEFEDIT.DAT file (Sobek only)
 c
 c     Include data structures for tables
-      include 'data.inc'
+      use m_waqpb_data
 
       integer serial, lu_out, iitem, niteml
       logical itmswi(nitemm)

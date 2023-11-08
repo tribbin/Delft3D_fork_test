@@ -50,6 +50,11 @@ C     IMPLICIT NONE for extra compiler checks
       
       use m_obtain_number_decimals
 C
+C     Common declarations
+C
+      use m_waqpb_data
+
+C
       IMPLICIT NONE
 C
 C     Declaration of arguments
@@ -59,10 +64,6 @@ C
       REAL          VERSIO
       character(len=10) num_decimals_version_char
       integer       num_decimals_version
-C
-C     Common declarations
-C
-      INCLUDE 'data.inc'
 C
 C     Declaration of file identification group
 C

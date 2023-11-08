@@ -28,7 +28,7 @@
 !  
 
       subroutine cldept
-      include 'data.inc'
+      use m_waqpb_data
 
       integer ioffse, aantal, ifort , iproc , istoc , ivelo , idisp ,
      j        iitem , iinpu , ioutp , ioutf , i

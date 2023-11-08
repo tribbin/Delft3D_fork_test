@@ -31,7 +31,7 @@
       use m_zoek
 
 
-      include 'data.inc'
+      use m_waqpb_data
       integer     i, lu, iitem
 
 c     ITEMS with defined ITEMGR are substances

@@ -31,7 +31,7 @@
       use m_zoek
 
 
-      include 'data.inc'
+      use m_waqpb_data
 
       integer lu_mes
       logical item_produced_by_process(nitemm)

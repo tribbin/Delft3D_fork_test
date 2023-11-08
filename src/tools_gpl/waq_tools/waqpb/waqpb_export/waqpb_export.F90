@@ -52,7 +52,7 @@
       character*10 c10, num_decimals_version_char
       character*20 c20
       character*50 adduni
-      character*255 ArgumentString
+      character*255 argument
       real         actdef, version
       integer      lu_inp, lu_mes, status, lunfil, num_decimals_version
       
@@ -62,19 +62,16 @@
       serial = 20230101
       newfrm = .true.
 
-      do i=1,9999
-            call getarg (i,ArgumentString)
-            if (ArgumentString.eq.'') exit
-            if (index(ArgumentString,'-version').gt.0) then
-                c20 = ArgumentString(9:28)
-                read (c20,'(f20.0)',iostat=status) version
+      do i=1,command_argument_count()
+            call get_command_argument(i,argument)
+            if (argument(:8) == '-version') then
+                read(argument(9:), '(f20.0)', iostat=status) version
             endif
-            if (index(ArgumentString,'-serial').gt.0) then
-                c20 = ArgumentString(8:27)
-                read (c20,'(i20)',iostat=status) serial
+            if (argument(:7)=='-serial') then
+                read(argument(8:), '(i20)',iostat=status) serial
             endif
-            if (index(ArgumentString,'-newfrm').gt.0) newfrm = .true.
-            if (index(ArgumentString,'-oldfrm').gt.0) newfrm = .false.
+            if (trim(argument) == '-newfrm') newfrm = .true.
+            if (trim(argument) == '-oldfrm') newfrm = .false.
       enddo
 
 

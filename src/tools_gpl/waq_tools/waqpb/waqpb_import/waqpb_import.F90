@@ -30,7 +30,9 @@
 
 !     Program to decompose a PROCES.ASC file into tables
 
+      use m_validate_input, only: validate_names
       include 'data_ff.inc'
+      
       character*1  c1
       character*10 c10, c10b, c10a
       character*20 c20
@@ -39,7 +41,7 @@
       character*10 initialConfgId
       character*50 initialConfgName
       character*80 pdffil, procesnaam
-      character*255 ArgumentString
+      character*255 argument
       real         value
       integer      jndex , naanta, iaanta, iproc , i     , ihulp , &
                    noffse, ihulp2, ihulp3, ihulp4, nprocl, &
@@ -65,15 +67,14 @@
       newfrm = .true.
       duprol = .false.
       pdffil = 'proces.asc'
-      do i=1,9999
-            call getarg (i,ArgumentString)
-            if (ArgumentString.eq.'') exit
-            if (index(ArgumentString,'-pdf').gt.0) then
-            pdffil = trim(ArgumentString(5:))
+      do i=1, command_argument_count()
+            call get_command_argument (i,argument)
+            if (argument(:4) == '-pdf') then
+                read(argument(5:), *) pdffil
             endif
-            if (index(ArgumentString,'-duprol').gt.0) duprol = .true.
-            if (index(ArgumentString,'-newtab').gt.0) newtab = .true.
-            if (index(ArgumentString,'-oldfrm').gt.0) newfrm = .false.
+            if (trim(argument) == '-duprol') duprol = .true.
+            if (trim(argument) =='-newtab') newtab = .true.
+            if (trim(argument) =='-oldfrm') newfrm = .false.
       enddo
 
       open ( newunit=io_mes, file = 'waqpb_import.log' )
@@ -112,7 +113,7 @@
           write (*,*)
           write (io_mes,'(''Loading database......'')')
 !         Read the existing tables
-          call readdb ( io_inp , io_mes )
+          call readdb(io_inp, io_mes)
 !         Store R1 in relational way
           ncnpr = 0
           do iproc = 1,nproc
@@ -161,6 +162,7 @@
 !         transport code
           read ( io_asc , * ) jndex
           if ( nproc+1 .gt. nprocm ) stop 'DIMENSION NPROCM'
+          call validate_names([c10a], io_mes) ! process Fortran name
           nproc = nproc + 1
           procid(nproc) = c10
           procnm(nproc) = c50
