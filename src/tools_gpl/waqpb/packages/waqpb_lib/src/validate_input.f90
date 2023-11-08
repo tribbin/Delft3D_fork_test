@@ -62,14 +62,12 @@ module m_validate_input
         character(*), dimension(:), intent(in) :: names_array  !< Array with all names to validate
         integer, intent(in)                    :: logging_unit !< Number of the logging unit to which messages are sent.
 
-        character(52) :: valid_start_characters = & 
-        'abcdefghijklmnopqrstuvwxyz' // &
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZ'       !< Characters permitted as start of names
-
-        character(63) :: valid_characters = & 
-        'abcdefghijklmnopqrstuvwxyz' // &
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZ' // &
-        '0123456789_'                       !< Characters permitted in names
+        character(26), parameter :: lower_case_alph = 'abcdefghijklmnopqrstuvwxyz'
+        character(26), parameter :: upper_case_alph = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        character(10), parameter :: digits = '0123456789'
+       
+        character(52) :: valid_start_characters = lower_case_alph // upper_case_alph             !< Characters permitted as start of names
+        character(63) :: valid_characters = lower_case_alph // upper_case_alph // digits // '_'  !< Characters permitted in names
 
          if (.not.starts_with_valid_char(names_array, valid_start_characters, logging_unit)) then
             write(logging_unit,*) 'Only the following characters may start a name:'
