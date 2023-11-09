@@ -133,7 +133,7 @@
       character     callr*10, calit*10, caldit*10, strng1*10, strng2*10,
      *              strng3*10
       integer       iorder   , noitm , nodim , iflag  , itype ,
-     +              ittim    , ident , nottc  , lunwr2,
+     +              ittim    , chkflg, ident , nottc  , lunwr2,
      +              ifilsz   , jfilsz, ipro  , itfacw , iopt  ,
      +              nobrk    , itel  , ioerr , iblock , k     ,
      +              i        , ihulp , ioff  , icm    , iim   ,
@@ -246,7 +246,7 @@
          if( itype .gt. 0 ) ierr = ierr + 1
          goto 530
       endif
-      if ( ierr2 .ne. 0 ) goto 510
+      if ( ierr2 .ne. 0 ) goto 510 !close ( lunwr2 )
 !
 !          All the following has the old file structure
 !
@@ -316,12 +316,13 @@
          endif
 ! Now get the list of locations to apply the DATA_ITEM
          ioff   = 1
+         chkflg = 1
          icm    = icmax - ioff
          iim    = iimax - ioff
          call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff:),
-     *                 iar(ioff:), icm  , iim   , aname , atype    ,
-     *                 ntitm    , nttype, noitm , noits ,
-     *                 calit    , ilun  , lch   , lstack, 
+     *                 iar(ioff:), icm   , iim   , aname , atype    ,
+     *                 ntitm    , nttype, noitm , noits , chkflg   ,
+     *                 calit    , ilun  , lch   , lstack,
      *                 itype    , rar   , nconst, itmnr , chulp    ,
      *                                    ioutpt, ierr2 , iwar     )
 ! Check if data_item already exists
@@ -386,12 +387,13 @@
             ioff  = nodim + idmnr + 1
             ident = 0
          endif
+         chkflg = 1
          icm    = icmax - ioff
          iim    = iimax - ioff
          if ( ident .le. 1) then
-            call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff),
-     *                    iar(ioff:), icm   , iim   , aname , atype   ,
-     *                    ntitm    , nttype, noitm , noits , 
+            call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff:),
+     *                    iar(ioff:), icm   , iim   , aname , atype    ,
+     *                    ntitm    , nttype, noitm , noits , chkflg   ,
      *                    calit    , ilun  , lch   , lstack,
      *                    itype    , rar   , nconst, itmnr , chulp    ,
      *                                       ioutpt, ierr2 , iwar     )
@@ -399,7 +401,7 @@
             call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff:),
      *                    iar(ioff:), icm   , iim   , dlwq_data_items%name(1:ndata_items) ,
      *                    dlwq_data_items%name(1:ndata_items) , ndata_items,
-     *                    ndata_items      , noitm , noits , 
+     *                    ndata_items      , noitm , noits , chkflg   ,
      *                    caldit   , ilun  , lch   , lstack,
      *                    itype    , rar   , nconst, itmnr , chulp    ,
      *                                       ioutpt, ierr2 , iwar     )
@@ -470,11 +472,12 @@
             ierr2 = 1
             goto 510
          endif
+         chkflg = 1
          icm    = icmax - ioff
          iim    = iimax - ioff
-         call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff),
-     *                 iar(ioff:), icm   , iim   , sname , atype   ,
-     *                 ntdim    ,   0   , nodim , nodis ,
+         call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff:),
+     *                 iar(ioff:), icm   , iim   , sname , atype    ,
+     *                 ntdim    ,   0   , nodim , nodis , chkflg   ,
      *                 callr    , ilun  , lch   , lstack,
      *                 itype    , rar   , nconst, idmnr , chulp    ,
      *                                    ioutpt, ierr2 , iwar     )
