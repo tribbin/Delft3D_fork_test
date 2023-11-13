@@ -21,7 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 
-module m_waq_type_definitions
+module m_waq_precision
 
    use, intrinsic :: iso_fortran_env
    implicit none
@@ -35,4 +35,4 @@ module m_waq_type_definitions
    integer, parameter :: dp = REAL64
    integer, parameter :: qp = REAL128
 
-end module m_waq_type_definitions
+end module m_waq_precision

@@ -22,10 +22,10 @@
 !!  rights reserved.
 
 module precision_part
-    use m_waq_type_definitions, only: sp, dp, real_wp, int_wp
+    use m_waq_precision, only: sp, dp, real_wp, int_wp
     implicit none
 
-    private 
+    private
     public :: ip, rp, fp, hp, sp, dp
 
     integer, parameter :: ip = int_wp   ! precision of normal integers
