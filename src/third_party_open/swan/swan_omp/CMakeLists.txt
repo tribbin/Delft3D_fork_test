@@ -66,7 +66,7 @@ if(UNIX)
 
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include"
                         ${version_include_dir}
-                        ${CMAKE_BINARY_DIR}/netcdff)
+                        ${CMAKE_BINARY_DIR}/fortran_module_dir)
 
     add_definitions(-DHAVE_CONFIG_H=1)
     set_target_properties(${executable_name} PROPERTIES COMPILE_FLAGS ${openmp_flag})

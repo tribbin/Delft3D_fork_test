@@ -75,7 +75,7 @@ if(UNIX)
     target_include_directories(${executable_name} PUBLIC netcdff)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include"
                         ${version_include_dir}
-                        ${CMAKE_BINARY_DIR}/netcdff)
+                        ${CMAKE_BINARY_DIR}/fortran_module_dir)
 
     add_definitions(-DHAVE_CONFIG_H=1)
 endif(UNIX)
