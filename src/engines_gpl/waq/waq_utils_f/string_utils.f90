@@ -129,11 +129,13 @@ module m_string_utils
         logical, intent(in), optional :: case_sensitive
         integer :: i, location
         logical :: found
+
+        
         do i = 1, size(array_of_strings)
             if (present(case_sensitive) .and. case_sensitive) then
-                found = string_to_find == array_of_strings(i)
+                found = trim(string_to_find) == (array_of_strings(i))
             else
-                found = index(str_tolower(string_to_find), str_tolower(array_of_strings(i))) > 0
+                found = trim(str_tolower(string_to_find)) == trim(str_tolower(array_of_strings(i)))
             end if
             if (found) then
                 location = i
