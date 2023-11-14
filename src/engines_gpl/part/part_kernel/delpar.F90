@@ -371,7 +371,7 @@ contains
 
       integer             :: iniday  ! day number for initial condition
 
-      real     ( hp)              :: rseed = 0.5d0
+      real     ( dp)              :: rseed = 0.5d0
       real     ( sp)              :: rnorm
 
       integer(4) ithndl              ! handle to time this subroutine

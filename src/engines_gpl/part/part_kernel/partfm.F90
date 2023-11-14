@@ -90,7 +90,7 @@ use m_fm_write_unc
       write (   *  , * ) ' WARNING: 3D hydrodynamics is not yet supported for unstructured grids!'
    endif
    !dts   = real(hyd%cnv_step_sec, 8)  !idelt in seconds taken from the hyd file (conversion timestep)
-   tzone = 0.0_hp
+   tzone = 0.0_dp
    refdat = hyd%HYD_REF(1:8)
    call setTUDUnitString()
 

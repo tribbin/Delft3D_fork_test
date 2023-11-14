@@ -37,15 +37,15 @@ module m_waq_timespace_read
    implicit none
 
   integer,  parameter    :: maxnamelen     = 256
-  double precision, parameter    :: dmiss_default  = -999.0_fp       ! Default missing value in meteo arrays
-  double precision, parameter    :: xymiss         = -999.0_fp       ! Default missing value in elementset
+  double precision, parameter    :: dmiss_default  = -999.0_sp       ! Default missing value in meteo arrays
+  double precision, parameter    :: xymiss         = -999.0_sp       ! Default missing value in elementset
   character(300), target :: errormessage   = ' '             ! When an error occurs, a message is set in message.
                                                              ! function getmeteoerror returns the message
 
   double precision                 :: pi                      ! pi
   double precision                 :: d2r                     ! degrees to radials
   double precision                 :: r2d                     ! degrees to radials
-  double precision, private, parameter     :: earthrad = 6378137.0_fp ! Mathworld, IUGG
+  double precision, private, parameter     :: earthrad = 6378137.0_sp ! Mathworld, IUGG
 
 contains
 
@@ -2348,8 +2348,8 @@ subroutine datumi(jaar      ,jdatum    ,t         )
     endif
     !
     mnd = jdatum(2)
-    t = rmd(mnd)*24d0 + real(jdatum(3) - 1, hp)*24d0 + real(jdatum(4), hp)          &
-      & + real(jdatum(5), hp)/60d0 + real(jdatum(6), hp)/3600d0
+    t = rmd(mnd)*24d0 + real(jdatum(3) - 1, dp)*24d0 + real(jdatum(4), dp)          &
+      & + real(jdatum(5), dp)/60d0 + real(jdatum(6), dp)/3600d0
     !
     ! hypothetisch geval (jhulp = jdatum(1) en jaar = jdatum(1))
     !
@@ -2409,10 +2409,10 @@ subroutine hulpgr(jaar      ,tm1       ,v         ,f         )
     pix2   = 8d0*atan(1d0)
     dhalf  = 0.5d0
     rad    = pix2/360d0
-    rjaar  = real(jaar - 1900, hp)
+    rjaar  = real(jaar - 1900, dp)
     ischrk = int((rjaar - 0.99d0)/4d0) - int((rjaar - 0.99d0)/100d0)        &
            & + int((rjaar + 300d0 - 0.99d0)/400d0)
-    tm3    = real(ischrk, hp) + tm1/24d0
+    tm3    = real(ischrk, dp) + tm1/24d0
     !
     v(1) = (180.000d0 + 360.0000000d0*tm3)*rad
     v(2) = (277.026d0 + 129.3848200d0*rjaar + 13.176396800000d0*tm3)*rad
@@ -3093,12 +3093,12 @@ subroutine bewvuf(ierrs     ,kcmp      ,mxkc      ,inaam     ,knaam     , &
              ie1 = jnaam(16*j - 7)
              if (ie1/=0) then
                 ia1 = abs(ie1)
-                s1 = real(ie1/ia1, hp)
+                s1 = real(ie1/ia1, dp)
                 v0u(ikomp) = v0u(ikomp) + s1*v(ia1)
                 ie2 = jnaam(16*j - 6)
                 if (ie2/=0) then
                    ia2 = abs(ie2)
-                   s2 = real(ie2/ia2, hp)
+                   s2 = real(ie2/ia2, dp)
                    v0u(ikomp) = v0u(ikomp) + s2*v(ia2)
                 endif
              endif
@@ -5021,7 +5021,7 @@ subroutine magdir2uv(u0,u1,a0,a1,uv)
   call regdir(wdir0, wdir1)
   wmag  = a0*u0(1) + a1*u1(1)
   wdir  = a0*wdir0 + a1*wdir1
-  wdir  = (270e0_fp - wdir)*d2r    ! nautical convention
+  wdir  = (270e0_sp - wdir)*d2r    ! nautical convention
   uv(1)  = wmag * cos(wdir)
   uv(2)  = wmag * sin(wdir)
 

@@ -185,8 +185,8 @@ module partmem
       character( 20), pointer  :: subst2 (:)    ! substances' names output file
       real     ( rp), pointer  :: wveloa (:)    ! wind velocity  m/s
       real     ( rp), pointer  :: wdira  (:)    ! wind direction degree from north
-      real     ( hp), pointer  :: wvelo  (:)    ! space varying wind velocity  m/s
-      real     ( hp), pointer  :: wdir   (:)    ! space varying wind direction degree from north
+      real     ( dp), pointer  :: wvelo  (:)    ! space varying wind velocity  m/s
+      real     ( dp), pointer  :: wdir   (:)    ! space varying wind direction degree from north
       integer  ( ip), pointer  :: iwndtm (:)    ! breakpoints wind time series
       real     ( rp), pointer  :: const  (:)    ! constant factors
       character( 20), pointer  :: nmstat (:)    ! names of the monitoring stations
@@ -377,7 +377,7 @@ module spec_feat_par
       real     ( sp), pointer  :: xpolscreens(:)   ! x-coordinates of screen polygon
       real     ( sp), pointer  :: ypolscreens(:)   ! y-coordinates of screen polygon
 
-!     ABM      
+!     ABM
       logical                  :: abmmodel          ! is ABM keyword active
       logical                  :: chronrev          ! is chronology reversed
       character( 256)          :: abmmodelname      ! name of ABM model used
