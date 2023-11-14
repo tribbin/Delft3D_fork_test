@@ -20,7 +20,8 @@ set_source_files_properties(${fortran_version_file_delwaq}
 
 # Add dependencies
 target_include_directories(${executable_name} PRIVATE ${waq_data_path} ${version_include_dir})
-set(oss_dependencies deltares_common
+set(oss_dependencies waq_definition
+                     deltares_common
                      deltares_common_c
                      io_netcdf
                      io_netcdf_data
@@ -58,5 +59,5 @@ if (UNIX)
     install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
 
     install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/scripts/run_agrhyd.sh  DESTINATION bin)
-    install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/default/agrhyd.ini  DESTINATION share/delft3d)
+        install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/default/agrhyd.ini  DESTINATION share/delft3d)
 endif(UNIX)
