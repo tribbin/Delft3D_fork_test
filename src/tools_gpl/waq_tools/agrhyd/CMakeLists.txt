@@ -59,5 +59,5 @@ if (UNIX)
     install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
 
     install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/scripts/run_agrhyd.sh  DESTINATION bin)
-        install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/default/agrhyd.ini  DESTINATION share/delft3d)
+    install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/default/agrhyd.ini  DESTINATION share/delft3d)
 endif(UNIX)
