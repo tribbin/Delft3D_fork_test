@@ -29,3 +29,7 @@ src/engines_gpl/waq/resources/csvFiles/*
 # ignore FortranCInterface header files created on linux
 src/**/config.h
 src/**/FortranCInterface.h
+
+.pre-commit-config.yaml
+src/cmake/cmake-build-*
+install.sh
