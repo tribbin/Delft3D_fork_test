@@ -1899,6 +1899,13 @@ module m_ec_provider
                cycle
             else
                all_points_are_corr = .false.
+               ! For non-harmonic, check if the source side vectormax equals the one requested on the target side
+               if (fileReaderPtr%vectormax /= bcBlockPtr%quantity%vectormax) then
+                  call setECMessage("BC-File '"//trim(bctfilename)//"' quantity '"//trim(quantityname) &
+                                            // "' has the wrong vector rank, please check the vector definition.")
+                  mask(i) = 0
+                  exit
+               endif
             endif
             if (.not. ecProviderConnectSourceItemsToTargets(instancePtr, bcBlockPtr%func, id, itemId, i,        &
                                                      n_signals, maxlay, itemIDList, qname=quantityname)) then
