@@ -23,6 +23,7 @@
 module m_dlwq5b
 
     use timers
+    use m_waq_precision
     implicit none
 
     interface shift_subarray
@@ -46,26 +47,26 @@ module m_dlwq5b
     !use timers
 
 !   Arguments
-    integer, intent(in   )       :: icmax        !< Max. Char workspace dimension
-    integer, intent(in   )       :: iimax        !< Max. Int. Workspace dimension
-    integer, intent(in   )       :: chkflg       !< Check on input or add items
-    integer, intent(in   )       :: lunut        !< Unit Formatted Output File
-    integer, intent(inout)       :: iposr        !< Start position on input line
-    integer, intent(in   )       :: npos         !< Nr of significant characters
-    integer, intent(  out)       :: iar(:)       !< Integer workspace
-    integer, intent(inout)       :: ntitm        !< Number of bounds/wastes
-    integer, intent(in   )       :: nttype       !< Number of bound/waste types
-    integer, intent(  out)       :: noitm        !< Number of items read
-    integer, intent(  out)       :: noits        !< Number of items for scale
-    integer, intent(inout)       :: ilun(lstack) !< Unitnumb include stack
-    integer, intent(in   )       :: lstack       !< Include file stack size
-    integer, intent(  out)       :: itype        !< Type of the token read ('at exit')
-    integer, intent(  out)       :: nconst       !< Number of values in rar
-    integer, intent(in   )       :: ioutpt       !< Output file option
-    integer, intent(  out)       :: error_ind    !< Error indicator
-    integer, intent(  out)       :: iwar         !< Cumulative warning count
+    integer(kind=int_wp), intent(in   )       :: icmax        !< Max. Char workspace dimension
+    integer(kind=int_wp), intent(in   )       :: iimax        !< Max. Int. Workspace dimension
+    integer(kind=int_wp), intent(in   )       :: chkflg       !< Check on input or add items
+    integer(kind=int_wp), intent(in   )       :: lunut        !< Unit Formatted Output File
+    integer(kind=int_wp), intent(inout)       :: iposr        !< Start position on input line
+    integer(kind=int_wp), intent(in   )       :: npos         !< Nr of significant characters
+    integer(kind=int_wp), intent(  out)       :: iar(:)       !< Integer workspace
+    integer(kind=int_wp), intent(inout)       :: ntitm        !< Number of bounds/wastes
+    integer(kind=int_wp), intent(in   )       :: nttype       !< Number of bound/waste types
+    integer(kind=int_wp), intent(  out)       :: noitm        !< Number of items read
+    integer(kind=int_wp), intent(  out)       :: noits        !< Number of items for scale
+    integer(kind=int_wp), intent(inout)       :: ilun(lstack) !< Unitnumb include stack
+    integer(kind=int_wp), intent(in   )       :: lstack       !< Include file stack size
+    integer(kind=int_wp), intent(  out)       :: itype        !< Type of the token read ('at exit')
+    integer(kind=int_wp), intent(  out)       :: nconst       !< Number of values in rar
+    integer(kind=int_wp), intent(in   )       :: ioutpt       !< Output file option
+    integer(kind=int_wp), intent(  out)       :: error_ind    !< Error indicator
+    integer(kind=int_wp), intent(  out)       :: iwar         !< Cumulative warning count
 
-    real, intent(  out)          :: rar(:)       !< Array with real values
+    real(kind=real_wp), intent(  out)          :: rar(:)       !< Array with real values
 
     character(1),  intent(in   ) :: cchar        !< Comment character
     character(*),  intent(  out) :: car(*)       !< Character workspace
@@ -78,10 +79,10 @@ module m_dlwq5b
 !   Local variables
     logical    :: usefor_on, substitution_on, can_compute, operator_on
     logical    :: logging_on
-    integer(4) :: ithndl = 0
-    integer    :: i, parsed_int, ifound, i2, name_index, icm
-    integer    :: itmnr, ioff, ioffc, ioffi
-    real       :: parsed_real
+    integer(kind=int_wp) :: ithndl = 0
+    integer(kind=int_wp) :: i, parsed_int, ifound, i2, name_index, icm
+    integer(kind=int_wp) :: itmnr, ioff, ioffc, ioffi
+    real(kind=real_wp)       :: parsed_real
     character(*), parameter :: operations(6) = ['*', '/', '+', '-', 'MIN', 'MAX']
     character(*), parameter :: keywords(24) = ['BLOCK'        ,&
                                               'BINARY_FILE'   ,&
@@ -461,7 +462,7 @@ module m_dlwq5b
     end subroutine dlwq5b
 
     subroutine update_counters(counter_a, counter_b, counter_c)
-        integer, intent(inout) :: counter_a, counter_b, counter_c
+        integer(kind=int_wp), intent(inout) :: counter_a, counter_b, counter_c
         
         integer i
 
@@ -471,8 +472,8 @@ module m_dlwq5b
     end subroutine update_counters
 
     subroutine shift_int_subarray(total_array, start_shift, end_shift)
-        integer, dimension(:), intent(inout) :: total_array
-        integer, intent(in) :: start_shift, end_shift
+        integer(kind=int_wp), dimension(:), intent(inout) :: total_array
+        integer(kind=int_wp), intent(in) :: start_shift, end_shift
 
         integer i
         do i = end_shift, start_shift, -1
@@ -482,7 +483,7 @@ module m_dlwq5b
 
     subroutine shift_char_subarray(total_array, start_shift, end_shift)
         character(len=*), dimension(:), intent(inout) :: total_array
-        integer, intent(in) :: start_shift, end_shift
+        integer(kind=int_wp), intent(in) :: start_shift, end_shift
 
         integer i
         do i = end_shift, start_shift, -1
@@ -491,8 +492,8 @@ module m_dlwq5b
     end subroutine shift_char_subarray
 
     subroutine log_local_substitution(index, log_unit, string)
-        integer, intent(in) :: index
-        integer, intent(in) :: log_unit 
+        integer(kind=int_wp), intent(in) :: index
+        integer(kind=int_wp), intent(in) :: log_unit 
         character(20), intent(in) :: string
 
         character(20) :: message_start
@@ -515,9 +516,9 @@ module m_dlwq5b
     end subroutine log_local_substitution
 
     subroutine log_item_number_name(index, log_unit, item_number, string)
-        integer, intent(in) :: index
-        integer, intent(in) :: log_unit
-        integer, intent(in) :: item_number
+        integer(kind=int_wp), intent(in) :: index
+        integer(kind=int_wp), intent(in) :: log_unit
+        integer(kind=int_wp), intent(in) :: item_number
         character(20), intent(in) :: string
 
         character(20) :: message_start
@@ -540,9 +541,9 @@ module m_dlwq5b
     end subroutine log_item_number_name
 
     subroutine log_number_in_operation(index, log_unit, number)
-        integer, intent(in) :: index
-        integer, intent(in) :: log_unit 
-        real, intent(in)    :: number
+        integer(kind=int_wp), intent(in) :: index
+        integer(kind=int_wp), intent(in) :: log_unit 
+        real(kind=real_wp), intent(in)    :: number
 
         character(20) :: message_start
 
@@ -564,10 +565,10 @@ module m_dlwq5b
     end subroutine log_number_in_operation
 
     subroutine log_name_substitution(index, log_unit, all_names, caller, itmnr, all_types, target_real, target_char, real_substitution)
-        integer, intent(in) :: index
-        integer, intent(in) :: log_unit
-        integer, intent(in) :: itmnr
-        real, intent(in)    :: target_real
+        integer(kind=int_wp), intent(in) :: index
+        integer(kind=int_wp), intent(in) :: log_unit
+        integer(kind=int_wp), intent(in) :: itmnr
+        real(kind=real_wp), intent(in)    :: target_real
         character(*), intent(in) :: caller
         character(*), intent(in) :: target_char
         logical, intent(in) :: real_substitution
@@ -603,15 +604,15 @@ module m_dlwq5b
     end subroutine log_name_substitution
 
     subroutine error_and_finish(error_ind, ithndl)
-        integer, intent(inout) :: error_ind !< Error index
-        integer, intent(in   ) :: ithndl    !< Handle to stop timing
+        integer(kind=int_wp), intent(inout) :: error_ind !< Error index
+        integer(kind=int_wp), intent(in   ) :: ithndl    !< Handle to stop timing
 
         error_ind = 1
         call finish(ithndl)
     end subroutine error_and_finish
 
     subroutine finish(ithndl)
-        integer, intent(in   ) :: ithndl    !< Handle to stop timing
+        integer(kind=int_wp), intent(in   ) :: ithndl    !< Handle to stop timing
 
         if (timon) call timstop(ithndl)
     end subroutine finish
