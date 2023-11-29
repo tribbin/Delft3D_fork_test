@@ -123,7 +123,8 @@ function dfm_merge_mapfiles(infiles, nfiles, outfile, force) result(ierr)
    integer :: netedgecount, inetedgeglob
 !   integer :: nnetfaceglob, nnetfaceglob0, nnetfacecount, numpg
    integer :: nnetedgeglob0
-   integer :: nitemglob, nitemglob0, nitemcount, maxitems
+   integer :: nitemglob, nitemglob0, nitemcount
+   integer :: maxitems ! the largest value of all topological position counts, including ndx, lnx...
    integer :: nkmxglob
    integer :: id_network ! ID of 'network1d' in one input file
    integer :: varid
@@ -132,23 +133,23 @@ function dfm_merge_mapfiles(infiles, nfiles, outfile, force) result(ierr)
    integer :: idom, n1, n2, n3, k1, k2
    integer :: tmpdimids(NF90_MAX_VAR_DIMS)
 
-   integer, allocatable, target  :: itmpvar1D(:)   !< array buffer for a single global variable slice, size: (kmx1, max(ndx(noutfile),lnx(noutfile)))
+   integer, allocatable, target  :: itmpvar1D(:)   !< array buffer for a single global variable slice, size: (maxitems)
    integer, allocatable, target  :: itmpvar1D_tmp(:)
-   integer, allocatable, target  :: itmpvar2D(:,:) !< array buffer for a single global variable slice, size: (kmx1, max(ndx(noutfile),lnx(noutfile)))
+   integer, allocatable, target  :: itmpvar2D(:,:) !< array buffer for a single global variable slice, size: e.g. (kmx, maxitems)
    integer, allocatable, target  :: itmpvar2D_tmp(:,:)
    integer, allocatable, target  :: itmpvar2D_tmpmax(:,:)
    integer,              pointer :: itmpvarptr(:,:,:)
    ! for class map: store in 1 byte:
-   integer(kind=int8),allocatable,target  :: btmpvar1D(:,:) !< array buffer for a single global variable slice, size: (kmx1, max(ndx(noutfile),lnx(noutfile)))
+   integer(kind=int8),allocatable,target  :: btmpvar1D(:,:) !< array buffer for a single global variable slice, size is the largest of all ndx position counts.
    integer(kind=int8),allocatable,target  :: btmpvar1D_tmp(:,:)
    integer(kind=int8),            pointer :: btmpvarptr(:,:,:,:)
    ! for others: double precision:
-   double precision, allocatable, target  :: tmpvar1D(:) !< array buffer for a single global variable slice, size: (kmx1, max(ndx(noutfile),lnx(noutfile)))
+   double precision, allocatable, target  :: tmpvar1D(:) !< array buffer for a single global variable slice, size: (maxitems)
    double precision, allocatable, target  :: tmpvar1D_tmp(:)
-   double precision, allocatable, target  :: tmpvar2D(:,:) !< array buffer for a single global variable slice, size: (kmx1, max(ndx(noutfile),lnx(noutfile)))
+   double precision, allocatable, target  :: tmpvar2D(:,:) !< array buffer for a single global variable slice, size: e.g. (kmx, maxitems)
    double precision, allocatable, target  :: tmpvar2D_tmp(:,:)
    double precision, allocatable, target  :: tmpvar2D_tmpmax(:,:)
-   double precision, allocatable, target  :: tmpvar3D(:,:,:) !< array buffer for a single global variable slice, size: (kmx1, max(ndx(noutfile),lnx(noutfile)))
+   double precision, allocatable, target  :: tmpvar3D(:,:,:) !< array buffer for a single global variable slice, size: e.g. (kxdim, kmx, maxitems)
    double precision,              pointer :: tmpvarptr(:,:,:)
    character, allocatable :: ctmpvar2D(:,:) !< Character arrays
    character, allocatable :: ctmpvar2D_tmp(:,:)
