@@ -41,7 +41,7 @@
  use unstruc_channel_flow
  use m_structures
  use m_longculverts
- use unstruc_caching, only: cacheRetrieved, copyCachedLongCulverts
+ use unstruc_caching, only: cacheRetrieved
  !\ DEBUG
  use m_missing
 
