@@ -597,7 +597,6 @@ module m_ec_item
                         if (interpol_type == interpolate_time_extrapolation_ok) then
                            exit
                         else
-                           call setECMessage("DEBUG: 'failed' branch: Need to do something harmonic here?")
                            return         ! failed to update item AND no extrapolation allowed !!
                         end if
                      end if

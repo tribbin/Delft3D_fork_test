@@ -799,7 +799,6 @@ end subroutine ecInstanceListSourceItems
          logical                       :: ok       !< check of refdate is found
          character(len=20)             :: date     !< parts of string for date
          character(len=20)             :: time     !< parts of string for time
-         character(len=20)             :: tz       !< parts of string for time zone
          character(len=:), allocatable :: string   !< unit string without comments and in lowercase
          !
          success = .false.

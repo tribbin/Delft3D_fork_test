@@ -725,7 +725,7 @@ module m_ec_filereader_read
          ! sanity checks
          ! =============
          !
-         ! - 1 - Source T0 or T1 Field specified
+         ! - Source T0 or T1 Field specified
          if (t0t1 == 0) then
             fieldPtr => item%sourceT0FieldPtr
          else if (t0t1 == 1) then
@@ -735,13 +735,13 @@ module m_ec_filereader_read
             return
          end if
          !
-         ! - 2a - Check for the presence of times, indicating the presence of further data blocks.
+         ! - Check for the presence of times, indicating the presence of further data blocks.
          if (.not. has_time .and. .not. has_harmonics) then
             call setECMessage("Empty NetCDF time dimension and no harmonic components in "//trim(fileReaderPtr%filename)//".")
             return
          end if
          !
-         ! - 2b - In case of harmonics, just always read at the start of the file.
+         ! - In case of harmonics, just always read at the start of the file.
          if (.not. has_time .and. has_harmonics) then
             timesndx = 1
          end if
@@ -749,7 +749,7 @@ module m_ec_filereader_read
          ! ===================
          ! update source Field
          ! ===================
-         ! - 0 - Determine if the timesteps of the field to be updated are still below the last time in the file
+         ! - Determine if the timesteps of the field to be updated are still below the last time in the file
 
          if (has_time .and. timesndx > fileReaderPtr%tframe%nr_timesteps) then
             mintime = ecSupportTimeIndexToMJD(fileReaderPtr%tframe, 1)
@@ -784,7 +784,7 @@ module m_ec_filereader_read
                Ndatasize = ia(n_rows+1)-1
             end if
 
-            ! - 1 - Create storage for the field data if still unallocated and set to missing value
+            ! - Create storage for the field data if still unallocated and set to missing value
             if (.not.allocated(fieldPtr%arr1d)) then
                allocate(fieldPtr%arr1d(Ndatasize*max(nlay,1)), stat = istat)
                if (istat /= 0) then
@@ -800,17 +800,17 @@ module m_ec_filereader_read
 
             valid_field = (col1 == 0 .and. row1 == 0)
             do while (.not.valid_field)
-               ! - 2 - Read a scalar data block.
+               ! - Read a scalar data block.
                if (item%elementSetPtr%nCoordinates == 0) then
                   ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, fieldPtr%arr1dPtr, start=(/timesndx/), count=(/1/))
                   if (ierror.ne.NF90_NOERR) then
                      call setECMessage("NetCDF:'"//trim(nf90_strerror(ierror))//"' in "//trim(fileReaderPtr%filename)//".")
                      return
                   end if
-                  valid_field = (fieldPtr%arr1dPtr(1)/=dmiss_nc) ! TODO: Check why this is set, as it is effectively ignored below.
+                  valid_field = (fieldPtr%arr1dPtr(1)/=dmiss_nc)
                end if      ! reading scalar data block
                !
-               ! - 3 - Read a grid data block.
+               ! - Read a grid data block.
                valid_field = .false.
                !
                if (issparse /= 1) then
@@ -890,7 +890,7 @@ module m_ec_filereader_read
                end if
             end do         ! loop while fields invalid
 
-            ! - (optional) - Update the source Field's timesteps variable.
+            ! - Update the source Field's timesteps variable if applicable.
             if (has_time) then
                fieldPtr%timesteps = ecSupportTimeIndexToMJD(fileReaderPtr%tframe, timesndx)
                fieldPtr%timesndx = timesndx
@@ -903,7 +903,7 @@ module m_ec_filereader_read
             end if
          endif
 
-         ! - 4 - Apply the scale factor and offset
+         ! - Apply the scale factor and offset
          if (item%quantityPtr%factor /= 1.0_hp .or. item%quantityPtr%offset /= 0.0_hp) then
             do i=1, size(fieldPtr%arr1dPtr)
                if ( fieldPtr%arr1dPtr(i) /= dmiss_nc ) then
@@ -920,10 +920,10 @@ module m_ec_filereader_read
 
       ! =======================================================================
 
-      !> Read all the variable data from a NetCDF file, irrespective of times.
+      !> Read all the data of one variable from a NetCDF file.
       !> This is used to read quantity amplitude data in case of harmonic data.
-      !> Both T0 and T1 are created and filled. T0 holds the amplitude data
-      !> while T1 will be later used to hold calculated values each timestep.
+      !> Both T0 and T1 are created and filled. T1 holds the amplitude data
+      !> while T0 will be later used to hold calculated values each timestep.
       function ecNetcdfReadVariable(fileReaderPtr, item) result(success)
          use netcdf
          !

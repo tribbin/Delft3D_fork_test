@@ -2810,12 +2810,9 @@ module m_ec_converter
                      t0 = sourceT0Field%timesteps
                      t1 = sourceT1Field%timesteps
 
-                     if (.not. has_harmonics) then
-                        call time_weight_factors(a0, a1, timesteps, t0, t1, timeint=time_interpolation)
-                     else
+                     if (has_harmonics) then
                         ! No time interpolation, but we DO have to update source values based on phase and amplitude.
-                        ! We do this here under the assumption that the amount of source points << target points.
-                        ! FieldT0 should contain the current values. (hence a0 = 1, a1 = 0)
+                        ! FieldT0 should contain the currently calculated values. (hence a0 = 1, a1 = 0)
                         a0 = 1.0
                         a1 = 0.0
                         ! FOR SIMPLE HARMONIC only one step needed:
@@ -2823,20 +2820,19 @@ module m_ec_converter
                         ! note: source file Amplitude lives in T1. Phases are indexed: col, row
                         n_phase_rows = sourceElementSet%n_rows
                         n_phase_cols = sourceElementSet%n_cols
-                        omega = 2.0*PI/sourceItem%hframe%ec_period
+                        omega = 2.0_hp*PI/sourceItem%hframe%ec_period
                         delta_t = (timesteps - sourceItem%tframe%ec_refdate) * 86400.0_hp  !< convert to seconds since refdate.
                         if ( issparse == 1 ) then
-                            ! do sparse things
                             do j = 1, n_rows
                                 if ( ia(j+1) > ia(j) ) then
                                     do ipt = ia(j),ia(j+1)-1
                                         amplitude = sourceT1Field%arr1d(ipt)
                                         phase0 = sourceItem%hframe%phases(ja(ipt), j)
                                         if ( comparereal(amplitude, sourceMissing, .true.)==0 .or. &
-                                              comparereal(phase0, sourceMissing, .true.)==0 ) then
+                                            comparereal(phase0, sourceMissing, .true.)==0 ) then
                                             sourceT0Field%arr1d(ipt) = sourceMissing
                                         else
-                                            sourceT0Field%arr1d(ipt) = amplitude * dcos(omega * delta_t - phase0 * PI/180.0)
+                                            sourceT0Field%arr1d(ipt) = amplitude * dcos(omega * delta_t - phase0 * PI/180.0_hp)
                                         end if
                                     end do
                                 end if
@@ -2852,16 +2848,18 @@ module m_ec_converter
                                             amplitude = sourceT1Field%arr1d(ipt)
                                             phase0 = sourceItem%hframe%phases(mp+ii, np+jj)
                                              if ( comparereal(amplitude, sourceMissing, .true.)==0 .or. &
-                                                  comparereal(phase0, sourceMissing, .true.)==0 ) then
+                                                comparereal(phase0, sourceMissing, .true.)==0 ) then
                                                 sourceT0Field%arr1d(ipt) = sourceMissing
                                             else
-                                                sourceT0Field%arr1d(ipt) = amplitude * dcos(omega * delta_t - phase0 * PI/180.0)
+                                                sourceT0Field%arr1d(ipt) = amplitude * dcos(omega * delta_t - phase0 * PI/180.0_hp)
                                             end if
                                         end do
                                     end do
                                 end if
                             end do
                         end if
+                     else
+                        call time_weight_factors(a0, a1, timesteps, t0, t1, timeint=time_interpolation)
                      end if
 
                      if (n_layers>0 .and. associated(targetElementSet%z) .and. associated(sourceElementSet%z)) then

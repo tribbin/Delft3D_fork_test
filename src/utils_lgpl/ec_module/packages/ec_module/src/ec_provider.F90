@@ -2962,7 +2962,7 @@ module m_ec_provider
                   ncol = fileReaderPtr%dim_length(dimids(1))
                   nrow = 1
                   nlay = 0
-                  if (size(dimids) >= 2) then   ! TODO: TEST > -> >= FIX?!
+                  if (size(dimids) >= 2) then
                      nrow = fileReaderPtr%dim_length(dimids(2))
                      if (size(dimids) > 3+dim_offset) then
                         nlay = fileReaderPtr%dim_length(dimids(3+dim_offset))
@@ -3390,7 +3390,6 @@ module m_ec_provider
             case (provFile_netcdf)
                success = ecNetcdfInitializeTimeFrame(fileReaderPtr)
                if (.not. success) then
-                  ! Check if it's an harmonic instead if not a success? TODO: ^Also draw inspiration from provFile_fourier?
                   success = ecNetcdfInitializeHarmonicsFrame(fileReaderPtr)
                end if
                if (.not. success) then
@@ -3580,15 +3579,14 @@ module m_ec_provider
          logical                      :: success       !< function status
          type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
          !
-         integer                      :: amplitude_id !< integer id of variable with standard_name "amplitude"
          integer                      :: phase_id     !< integer id of variable with standard_name "phase"
-         character(len=NF90_MAX_NAME) :: units        !< units attribute of a variable ??
+         character(len=NF90_MAX_NAME) :: units        !< units attribute of a variable
          character(len=NF90_MAX_NAME) :: attrstring   !< global attribute
          integer                      :: period       !< period value in seconds.
          integer, dimension(2)        :: dimids       !< integer id's of amplitude/phase variable's dimension variables eg: phase(y,x) -> id's of y and x.
          integer                      :: numids       !< number of variable id's of amplitude/phase (we expect 2: y,x)
          integer, dimension(2)        :: phase_dims   !< number of points in Y,X directions.
-         integer                      :: istat        !< status of allocation operation ??
+         integer                      :: istat        !< status of allocation operation
          !
          success = .false.
          !
