@@ -160,10 +160,6 @@ subroutine unc_write_his(tim)            ! wrihis
 
     double precision, save       :: curtime_split = 0d0 ! Current time-partition that the file writer has open.
     integer                      :: ntot, k, i, j, jj, ierr, kk, idims(3),L, Lf, k3, k4, nNodeTot, nNodes, L0, k1, k2, nlinks
-    !character(len=255)           :: weir_geom_container_name, orif_geom_container_name, &
-    !                                genstru_geom_container_name, uniweir_geom_container_name, culvert_geom_container_name, longculvert_geom_container_name, &
-    !                                gategen_geom_container_name, pump_geom_container_name, bridge_geom_container_name, src_geom_container_name, &
-    !                                lat_geom_container_name
     double precision             :: cof0
 
     integer                      :: strlen_netcdf  ! string length definition for (station) names on history file
