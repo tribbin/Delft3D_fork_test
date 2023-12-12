@@ -337,12 +337,12 @@
                 </file>
                 <file name="dflowfm/DFM_OUTPUT_FlowFM/FlowFM_his.nc" type="netCDF">
                     <parameters>
-                        <parameter name="water_balance_boundaries_in" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_boundaries_out" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_laterals_in" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_laterals_out" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_storage" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_total_volume" toleranceAbsolute="0.001" />
+                        <parameter name="water_balance_boundaries_in" toleranceRelative="0.000001" />
+                        <parameter name="water_balance_boundaries_out" toleranceRelative="0.000001" />
+                        <parameter name="water_balance_laterals_in" toleranceRelative="0.000001" />
+                        <parameter name="water_balance_laterals_out" toleranceRelative="0.000001" />
+                        <parameter name="water_balance_storage" toleranceRelative="0.000001" />
+                        <parameter name="water_balance_total_volume" toleranceRelative="0.000001" />
 						<parameter name="pump_capacity" toleranceAbsolute="0.001" />
 						<parameter name="pump_head" toleranceAbsolute="0.001" />
 						<parameter name="pump_s1_suction_side" toleranceAbsolute="0.001" />
@@ -433,17 +433,17 @@
                 </file>
                 <file name="fm/DFM_OUTPUT_moergestels_broek/moergestels_broek_his.nc" type="netCDF">
                     <parameters>
-                        <parameter name="water_balance_boundaries_in" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_boundaries_out" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_laterals_in" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_laterals_out" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_storage" toleranceAbsolute="0.001" />
-                        <parameter name="water_balance_total_volume" toleranceAbsolute="0.001" />
+                        <parameter name="water_balance_boundaries_in" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_boundaries_out" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_laterals_in" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_laterals_out" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_storage" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_total_volume" toleranceRelative="0.0001" />
                     </parameters>
                 </file>
                 <file name="rr/rrbalans.his" type="HIS">
                     <parameters>
-                        <parameter name="Boundaries out" location="Total RR system" toleranceAbsolute="0.0001" />
+                        <parameter name="Boundaries out" location="Total RR system" toleranceRelative="0.0001" />
                    </parameters>
                 </file> 
             </checks>

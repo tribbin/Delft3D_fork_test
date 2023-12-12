@@ -70,7 +70,6 @@ subroutine prepareTests
 end subroutine prepareTests
 
 !> Start the browser to show the result
-!!
 subroutine showResult
     !character(len=1) :: answer
     !
