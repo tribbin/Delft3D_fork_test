@@ -73,10 +73,10 @@ module bmi
    integer(kind=int_wp), parameter ::  category_procparam = 6
 
    type :: connection_data
-      logical              :: incoming       ! Identifies the direction: if true, data from outside
-      integer(kind=int_wp) ::  category        ! Which category of data: concentrations, process parameters ...
-      integer(kind=int_wp) ::  buffer_idx      ! Index into the RBUF array
-      integer(kind=int_wp) :: system_idx     ! Index of the substance or quantity in general
+      logical                :: incoming       ! Identifies the direction: if true, data from outside
+      integer(kind=int_wp)   :: category       ! Which category of data: concentrations, process parameters ...
+      integer(kind=int_wp)   :: buffer_idx     ! Index into the RBUF array
+      integer(kind=int_wp)   :: system_idx     ! Index of the substance or quantity in general
       real(kind=dp), pointer :: p_value        ! Copy of the value received/sent by DELWAQ - must be a pointer!
       character(len=40)      :: exchange_name  ! Name used by get_var to identify the item
    end type
@@ -566,286 +566,346 @@ contains
    !
 
    integer function get_value_ptr(c_key, xptr) bind(C, name="get_value_ptr")
-      !DEC$ ATTRIBUTES DLLEXPORT :: get_var
+       !DEC$ ATTRIBUTES DLLEXPORT :: get_var
 
-      use m_sysn
-      use m_sysa
+       use m_sysn
+       use m_sysa
 
-      character(kind=c_char), intent(in)            :: c_key(MAXSTRLEN)
-      type(c_ptr), intent(inout)         :: xptr
+       character(kind=c_char), intent(in)            :: c_key(MAXSTRLEN)
+       type(c_ptr), intent(inout)         :: xptr
 
-      character(MAXSTRLEN)                         :: key_given
+       character(MAXSTRLEN)                         :: key_given
 
-      integer(kind=int_wp) ::  idx
+       integer(kind=int_wp) ::  idx
 
-      get_value_ptr = 0  ! Assume everyting will be okay
+       get_value_ptr = 0  ! Assume everyting will be okay
 
-      write (88, *) 'Get_var ...'
-      flush (88)
+       write (88, *) 'Get_var ...'
+       flush (88)
 
-      key_given = char_array_to_string(c_key)
+       key_given = char_array_to_string(c_key)
 
-      write (88, *) 'Get_var: ', trim(key_given)
-      flush (88)
+       write (88, *) 'Get_var: ', trim(key_given)
+       flush (88)
 
-      !
-      ! * Format of the key:
-      !   direction|category|item-name-or-number|substance-or-parameter-name
-      ! * The part "direction" is meant to indicate whether the data are sent to DELWAQ
-      !   or are to be sent from DELWAQ: TODLWQ and FROMDLWQ
-      ! * Categories: BOUND, WASTE, CONST, OBSRV, SEGMN, MODEL
-      ! * item-name-or-number: name of the waste load and the like or segment number, could also be "*"
-      ! * substance-or-parameter-name: name or "*"
-      !
-      idx = key_index(key_given, connection)
+       !
+       ! * Format of the key:
+       !   direction|category|item-name-or-number|substance-or-parameter-name
+       ! * The part "direction" is meant to indicate whether the data are sent to DELWAQ
+       !   or are to be sent from DELWAQ: TODLWQ and FROMDLWQ
+       ! * Categories: BOUND, WASTE, CONST, OBSRV, SEGMN, MODEL
+       ! * item-name-or-number: name of the waste load and the like or segment number, could also be "*"
+       ! * substance-or-parameter-name: name or "*"
+       !
+       if ( .not. allocated(connection) ) then
+           allocate( connection(0) )
+       endif
 
-      if (idx <= 0) then
-         call split_key(key_given, connection, idx)
+       idx = key_index(key_given, connection)
 
-         !
-         ! If the connection string was not recognised or contained invalid information,
-         ! notify the caller.
-         !
-         if (idx <= 0) then
-            xptr = c_null_ptr
-            get_value_ptr = 1
-            return
-         end if
-      end if
+       if (idx <= 0) then
+          call split_key(key_given, connection, idx)
 
-      !
-      ! If the connection is outgoing, copy the current value into the pointer,
-      ! else leave it to the update routine.
-      !
-      if (.not. connection(idx)%incoming) then
-         connection(idx)%p_value = dlwqd%buffer%rbuf(connection(idx)%buffer_idx)
-      end if
+          !
+          ! If the connection string was not recognised or contained invalid information,
+          ! notify the caller.
+          !
+          if (idx <= 0) then
+             xptr = c_null_ptr
+             get_value_ptr = 1
+             return
+          end if
+       end if
 
-      xptr = c_loc(connection(idx)%p_value)
+       !
+       ! If the connection is outgoing, copy the current value into the pointer,
+       ! else leave it to the update routine.
+       !
+       if (.not. connection(idx)%incoming) then
+          connection(idx)%p_value = dlwqd%buffer%rbuf(connection(idx)%buffer_idx)
+       end if
 
-      write (88, *) 'Get_var done ', idx, connection(idx)%p_value
-      flush (88)
+       xptr = c_loc(connection(idx)%p_value)
+
+       write (88, *) 'Get_var done ', idx, connection(idx)%p_value
+       flush (88)
 
    contains
 
-      ! key_index --
-      !     Find the key in the registered connections and return its index
-      !
-      ! Result:
-      !     Index into the connection array or 0 if not found
-      !
-      ! Note:
-      !     Internal to get_var_ptr
-      !
-      integer function key_index(key_name, connection)
-         character(len=*), intent(in)                    :: key_name    !< Connection key to find
-         type(connection_data), dimension(:), intent(in) :: connection  !< Array storing the connection information
+       ! key_index --
+       !     Find the key in the registered connections and return its index
+       !
+       ! Result:
+       !     Index into the connection array or 0 if not found
+       !
+       ! Note:
+       !     Internal to get_var_ptr
+       !
+       integer function key_index(key_name, connection)
+          character(len=*), intent(in)                    :: key_name    !< Connection key to find
+          type(connection_data), dimension(:), intent(in) :: connection  !< Array storing the connection information
 
-         integer(kind=int_wp) ::  i
+          integer(kind=int_wp) ::  i
 
-         key_index = 0
-         do i = 1, size(connection)
-            if (connection(i)%exchange_name == key_name) then
-               key_index = i
-               exit
-            end if
-         end do
-      end function key_index
+          key_index = 0
+          do i = 1, size(connection)
+             if (connection(i)%exchange_name == key_name) then
+                key_index = i
+                exit
+             end if
+          end do
+       end function key_index
 
-      ! split_key --
-      !     Split a (new) connection key into its components and
-      !     add to the array
-      !
-      ! Arguments:
-      !     key_name           Connection key to find
-      !     connection         Array storing the connection information
-      !     newidx             Index into the connection array to be used
-      !                        for the new connection
-      ! Result:
-      !     Index into the connection array and updated array
-      !
-      ! Note:
-      !     Internal to get_var_ptr
-      !
-      subroutine split_key(key_name, connection, newidx)
-         character(len=*), intent(in)                                    :: key_name     !< Connection key to find
-         type(connection_data), dimension(:), allocatable, intent(inout) :: connection   !< Array storing the connection information
+       ! split_key --
+       !     Split a (new) connection key into its components and
+       !     add to the array
+       !
+       ! Arguments:
+       !     key_name           Connection key to find
+       !     connection         Array storing the connection information
+       !     newidx             Index into the connection array to be used
+       !                        for the new connection
+       ! Result:
+       !     Index into the connection array and updated array
+       !
+       ! Note:
+       !     Internal to get_var_ptr
+       !
+       subroutine split_key(key_name, connection, newidx)
+          character(len=*), intent(in)                                    :: key_name     !< Connection key to find
+          type(connection_data), dimension(:), allocatable, intent(inout) :: connection   !< Array storing the connection information
 
-         integer(kind=int_wp), intent(out) ::  newidx        !< Index into the connection array to be used
-         !! for the new connection
+          integer(kind=int_wp), intent(out) ::  newidx        !< Index into the connection array to be used
+                                                              !! for the new connection
 
-         type(connection_data) :: new_connection
-         character(len=len(key_name)) :: copy_key, component, item_name, subst_param
-         integer(kind=int_wp) ::  i, k
-         integer(kind=int_wp) ::  iseg, isys
-         integer(kind=int_wp) ::  ierr
-         logical :: error
+          type(connection_data) :: new_connection
+          character(len=len(key_name)) :: copy_key, component, item_name, subst_param
+          integer(kind=int_wp)         ::  i, k
+          integer(kind=int_wp)         ::  iseg, isys, monidx, conidx
+          integer(kind=int_wp)         ::  ierr
+          logical                      :: error
 
-         ! Analyse the connection string
-         newidx = 0
-         isys     = -999 ! Just to be safe
+          ! Analyse the connection string
+          newidx = 0
+          isys     = -999 ! Just to be safe
 
-         if (key_name(1:10) /= 'TO_DELWAQ|' .and. key_name(1:12) /= 'FROM_DELWAQ|') then
-            return
-         end if
+          if (key_name(1:10) /= 'TO_DELWAQ|' .and. key_name(1:12) /= 'FROM_DELWAQ|') then
+             return
+          end if
 
-         new_connection%exchange_name = key_name
-         new_connection%incoming = key_name(1:10) == 'TO_DELWAQ|' ! Otherwise automatically outgoing!
+          new_connection%exchange_name = key_name
+          new_connection%incoming = key_name(1:10) == 'TO_DELWAQ|' ! Otherwise automatically outgoing!
 
-         !
-         ! We require four parts, separated by a vertical bar ("|")
-         ! By requiring the position to be larger than 1 and removing spaces on the left
-         ! we ensure that there is something between the bars.
-         !
-         error = .false.
-         copy_key = adjustl(key_name)
-         do i = 1, 3
-            k = index(copy_key, '|')
-            if (k > 1) then
-               copy_key = adjustl(copy_key(k + 1:))
-            else
-               error = .true.
-               exit
-            end if
-         end do
+          !
+          ! We require four parts, separated by a vertical bar ("|")
+          ! By requiring the position to be larger than 1 and removing spaces on the left
+          ! we ensure that there is something between the bars.
+          !
+          error = .false.
+          copy_key = adjustl(key_name)
+          do i = 1, 3
+             k = index(copy_key, '|')
+             if (k > 1) then
+                copy_key = adjustl(copy_key(k + 1:))
+             else
+                if ( index( key_name, '|CONST|' ) == 0 ) then
+                   error = .true.
+                endif
+                exit
+             end if
+          end do
 
-         if (copy_key == ' ') then
-            error = .true.
-         end if
+          if (copy_key == ' ') then
+             error = .true.
+          end if
 
-         if (error) then
-            return
-         end if
+          if (error) then
+             return
+          end if
 
-         copy_key = key_name
-         !
-         ! Strip off the first part
-         !
-         k = index(copy_key, '|')
-         copy_key = copy_key(k + 1:)
+          copy_key = key_name
 
-         !
-         ! The category
-         !
-         k = index(copy_key, '|')
-         component = copy_key(1:k - 1)
-         copy_key = copy_key(k + 1:)
+          !
+          ! Strip off the first part
+          !
+          k = index(copy_key, '|')
+          copy_key = copy_key(k + 1:)
 
-         !
-         ! The item name or index
-         !
-         k = index(copy_key, '|')
-         item_name = copy_key(1:k - 1)
-         copy_key = copy_key(k + 1:)
+          !
+          ! The category
+          !
+          k = index(copy_key, '|')
+          component = copy_key(1:k - 1)
+          copy_key = copy_key(k + 1:)
 
-         !
-         ! The substance or parameter
-         !
-         subst_param = copy_key
+          !
+          ! The item name or index
+          !
+          k = index(copy_key, '|')
+          item_name = copy_key(1:k - 1)
+          copy_key = copy_key(k + 1:)
 
-         selection: &
-                 block
-            select case (component)
-            case ('BOUND')
-               new_connection%category = category_boundary
-               ! TODO = boundary cell - to be worked out
-            case ('WASTE')
-               new_connection%category = category_wasteload
-               !
-               ! Index would be index in the list, name is also allowed
-               !
-               read (item_name, *, iostat=ierr) iseg
-               if (ierr == 0) then
-                  if (iseg < 1 .or. iseg > noseg) then
+          !
+          ! The substance name or parameter name
+          ! (for constants this is the previous part of the connection string)
+          !
+          if ( copy_key == ' ' ) then
+              if ( index( key_name, '|CONST|' ) /= 0 ) then
+                  subst_param = item_name
+              else
+                  return
+              endif
+          else
+              subst_param = copy_key
+          endif
+
+          !
+          ! Create the connection
+          !
+          selection: &
+          block
+             select case (component)
+             case ('BOUND')
+                 new_connection%category = category_boundary
+                 ! TODO = boundary cell - to be worked out
+             case ('WASTE')
+                 new_connection%category = category_wasteload
+                 !
+                 ! Index would be index in the list, name is also allowed
+                 !
+                 read (item_name, *, iostat=ierr) iseg
+                 if (ierr == 0) then
+                     if (iseg < 1 .or. iseg > noseg) then
+                         newidx = 0
+                         exit selection
+                     end if
+                 else
+                     call zoekns(item_name, size(load_name), load_name, len(load_name), iseg)
+
+                     if (iseg < 1) then
+                         newidx = 0
+                         exit selection
+                     end if
+                 end if
+
+                 !
+                 ! The substance/parameter may be "FLOW": handle this carefully.
+                 !
+                 if (subst_param == 'FLOW') then
+                     isys = 1
+                 else
+                     call zoekns(subst_param, size(substance_name), substance_name, len(substance_name), isys)
+                     if (isys <= 0) then
+                         newidx = 0
+                         exit selection
+                     end if
+
+                     isys = isys + 1
+                 end if
+
+                 !
+                 ! If the waste load is to be set, we set the flow, hence store the index
+                 ! of the waste load, not that of the individual value
+                 !
+                 if (new_connection%incoming) then
+                     new_connection%buffer_idx = iseg
+                 else
+                     new_connection%buffer_idx = iwste - 1 + isys + (iseg - 1)*nowst*(notot + 1)
+                 end if
+
+             case ('SEGMN')
+                 new_connection%category = category_segment
+                 !
+                 ! Segments are indicated by segment number. We also need the substance index
+                 !
+                 read (item_name, *, iostat=ierr) iseg
+                 if (ierr == 0) then
+                     if (iseg < 1 .or. iseg > noseg) then
+                         newidx = 0
+                         exit selection
+                     end if
+                 else
+                     newidx = 1
+                     exit selection
+                 end if
+
+                 call zoekns(subst_param, notot, substance_name, 20, isys)
+                 if (isys <= 0) then
                      newidx = 0
                      exit selection
-                  end if
-               else
-                  call zoekns(item_name, size(load_name), load_name, len(load_name), iseg)
+                 end if
 
-                  if (iseg < 1) then
+                 new_connection%buffer_idx = iconc - 1 + isys + (iseg - 1)*notot
+
+             case( 'OBSRV' )
+                 new_connection%category = category_monitorpoint
+                 !
+                 ! Observation points
+                 ! Index would be index in the list, name is also allowed
+                 !
+                 read( item_name, *, iostat = ierr ) monidx
+                 if ( ierr == 0 ) then
+                     if ( monidx < 1 .or. monidx > size(monitor_name) ) then
+                         newidx = 0
+                         exit selection
+                     endif
+                 else
+                     call zoekns( item_name, size(monitor_name), monitor_name, len(monitor_name), monidx )
+                     if ( monidx < 1 ) then
+                         newidx = 0
+                         exit selection
+                     endif
+                 endif
+
+                 iseg = monitor_cell(monidx)
+
+                 call zoekns( subst_param, notot, substance_name, 20, isys )
+                 if ( isys <= 0 ) then
                      newidx = 0
                      exit selection
-                  end if
-               end if
+                 endif
+                 new_connection%buffer_idx = iconc-1 + isys + (iseg-1)*notot
 
-               !
-               ! The substance/parameter may be "FLOW": handle this carefully.
-               !
-               if (subst_param == 'FLOW') then
-                  isys = 1
-               else
-                  call zoekns(subst_param, size(substance_name), substance_name, len(substance_name), isys)
-                  if (isys <= 0) then
+             case( 'CONST' )
+
+                 ! NOTE: parameters/segment functions not supported yet
+
+                 new_connection%category = category_procparam
+                 !
+                 ! Constant (timeseries) or parameter (segment function)
+                 ! Index would be index in the list, name is also allowed
+                 !
+
+                 call zoekns( subst_param, size(procparam_const), procparam_const, len(procparam_const), conidx )   ! procparam_const is the name of constants.
+
+                 if ( conidx < 1 ) then
                      newidx = 0
                      exit selection
-                  end if
+                 endif
+                 new_connection%buffer_idx = icons-1+conidx
 
-                  isys = isys + 1
-               end if
+             case ('HYDRO')
+                new_connection%category = category_hydrodynamics
+                ! TODO - get arrays like volume etc.
+             end select
 
-               !
-               ! If the waste load is to be set, we set the flow, hence store the index
-               ! of the waste load, not that of the individual value
-               !
-               if (new_connection%incoming) then
-                  new_connection%buffer_idx = iseg
-               else
-                  new_connection%buffer_idx = iwste - 1 + isys + (iseg - 1)*nowst*(notot + 1)
-               end if
+             ! Fill in the details
+             ! Implementation note:
+             ! The component p_value must be a pointer, as otherwise the automatic reallocation
+             ! below would result in new memory locations that we cannot correct.
+             ! Alternative implementations are possible, but short of a fixed size, they all
+             ! involve pointers as far as I (AM) can tell. This seems the simplest one.
+             !
+             new_connection%system_idx = isys
+             allocate( new_connection%p_value )
 
-            case ('SEGMN')
-               new_connection%category = category_segment
-               !
-               ! Segments are indicated by segment number. We also need the substance index
-               !
-               read (item_name, *, iostat=ierr) iseg
-               if (ierr == 0) then
-                  if (iseg < 1 .or. iseg > noseg) then
-                     newidx = 0
-                     exit selection
-                  end if
-               else
-                  newidx = 1
-                  exit selection
-               end if
+             connection = [connection, new_connection]
+             newidx = size(connection)
 
-               call zoekns(subst_param, notot, substance_name, 20, isys)
-               if (isys <= 0) then
-                  newidx = 0
-                  exit selection
-               end if
+          end block &
+              selection
 
-               new_connection%buffer_idx = iconc - 1 + isys + (iseg - 1)*notot
-
-            case ('OBSRV')
-               new_connection%category = category_monitorpoint
-               ! TODO - observation points - index would be index in the list, name is also allowed
-            case ('CONST')
-               new_connection%category = category_procparam
-               ! TODO - constant (timeseries) or parameter (segment function)
-            case ('HYDRO')
-               new_connection%category = category_hydrodynamics
-               ! TODO - get arrays like volume etc.
-            end select
-
-            ! Fill in the details
-            ! Implementation note:
-            ! The component p_value must be a pointer, as otherwise the automatic reallocation
-            ! below would result in new memory locations that we cannot correct.
-            ! Alternative implementations are possible, but short of a fixed size, they all
-            ! involve pointers as far as I (AM) can tell. This seems the simplest one.
-            !
-            new_connection%system_idx = isys
-            allocate( new_connection%p_value )
-
-            connection = [connection, new_connection]
-            newidx = size(connection)
-
-         end block &
-                 selection
-
-      end subroutine split_key
+       end subroutine split_key
 
    end function get_value_ptr
 
@@ -856,26 +916,38 @@ contains
    !     Used by update()
    !
    subroutine update_from_incoming_data(connection)
-      type(connection_data), dimension(:), intent(in) :: connection !< Information about the connections to
-      !! external components
+       type(connection_data), dimension(:), intent(in) :: connection !< Information about the connections to
+                                                                     !! external components
 
-      integer :: idx, isys, iwaste
+       integer(kind=int_wp) :: idx, isys, iwaste
 
-      ! For now: only waste loads - set by D-RTC
-      if ( allocated(wasteloads) ) then
-         do idx = 1,size(connection)
-            if ( connection(idx)%category == category_wasteload .and. connection(idx)%incoming ) then
-               iwaste = connection(idx)%buffer_idx
-               if ( .not. allocated(wasteloads(iwaste)%set_factor) ) then
-                  allocate( wasteloads(iwaste)%set_factor(1:size(substance_name)+1) )
-                  wasteloads(iwaste)%set_factor = 1.0
+       !
+       ! Handle waste loads
+       !
+       if ( allocated(wasteloads) ) then
+           do idx = 1,size(connection)
+               if ( connection(idx)%category == category_wasteload .and. connection(idx)%incoming ) then
+                   iwaste = connection(idx)%buffer_idx
+                   if ( .not. allocated(wasteloads(iwaste)%set_factor) ) then
+                       allocate( wasteloads(iwaste)%set_factor(1:size(substance_name)+1) )
+                       wasteloads(iwaste)%set_factor = 1.0
+                   endif
+
+                   isys = connection(idx)%system_idx
+                   wasteloads(iwaste)%set_factor(isys) = connection(idx)%p_value
                endif
+           enddo
+       endif
 
-               isys = connection(idx)%system_idx
-               wasteloads(iwaste)%set_factor(isys) = connection(idx)%p_value
-            endif
-         enddo
-      endif
+       !
+       ! Handle constants (process parameters)
+       !
+       do idx = 1,size(connection)
+           if ( connection(idx)%category == category_procparam .and. connection(idx)%incoming ) then
+               dlwqd%buffer%rbuf(connection(idx)%buffer_idx) = connection(idx)%p_value
+           endif
+       enddo
+
    end subroutine update_from_incoming_data
 
 end module bmi
