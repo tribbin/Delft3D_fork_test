@@ -1006,7 +1006,7 @@ subroutine echotrafrm(lundia    ,trapar      ,ifrac     )
 !! executable statements -------------------------------------------------------
 !
     write (lundia, '(a,a)') '    Formula name              : ',trim(trapar%name(ifrac))
-    if (trapar%iform(ifrac)==15) then
+    if (trapar%iform(ifrac)==15 .or. trapar%iform(ifrac)==21) then
        write (lundia, '(a,a)') '    Dynamic library           : ',trim(trapar%dll_name(ifrac))
        write (lundia, '(a,a)') '    Function in library       : ',trim(trapar%dll_function(ifrac))
        if (trapar%dll_usrfil(ifrac) /= ' ') then
@@ -1495,6 +1495,9 @@ subroutine traparams(iform     ,name      ,nparreq   ,nparopt   ,parkeyw   , &
        parkeyw(14) = 'z0'
        pardef(14)  = 0.006_fp
     elseif (iform == 21) then
+       if (name == ' ') name = 'External subroutine'
+       nparreq    = 0
+    elseif (iform == 22) then
        name       = 'ASMITA'
        nparreq    = 2
        parkeyw(1) = 'CEqui'

@@ -562,7 +562,7 @@ subroutine eqtran(sig       ,thick     ,kmax      ,ws        ,ltur      , &
        !
        sbc_total = .false.
        sus_total = .false.
-    elseif (iform == 21) then
+    elseif (iform == 22) then
        !
        ! ASMITA
        !
