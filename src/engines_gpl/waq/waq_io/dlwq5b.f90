@@ -87,6 +87,7 @@ module m_dlwq5b
     character(*), parameter :: keywords(24) = ['BLOCK'        ,&
                                               'BINARY_FILE'   ,&
                                               'CONCENTRATIONS',&
+                                              'CONCENTRATION' ,&
                                               'CONSTANTS'     ,&
                                               'DATA'          ,&
                                               'DATA_ITEM'     ,&
