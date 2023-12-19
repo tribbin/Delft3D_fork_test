@@ -22,6 +22,7 @@
 !!  rights reserved.
       module m_dlwq5a
       use m_waq_precision
+      use m_string_utils
       use m_read_time_delay
       use m_dlwqj3
       use m_dlwq5g
@@ -31,14 +32,14 @@
 
 
       implicit none
-      
+
       contains
 
 
       subroutine dlwq5a ( lun    , lchar  , iu     , iwidth , icmax  ,
      &                    car    , iimax  , iar    , irmax  , rar    ,
      &                    sname  , aname  , atype  , ntitm  , ntdim  ,
-     &                    nttype , drar   , dtflg1 , dtflg3 , 
+     &                    nttype , drar   , dtflg1 , dtflg3 ,
      &                    ioutpt , ierr2  , ierr   , iwar   )
 
 !       Deltares Software Centre
@@ -92,7 +93,6 @@
 
       use m_dlwq5b
       use m_check
-      use m_zoek
       use m_open_waq_files
       use rd_token
       use timers       !   performance timers
@@ -146,7 +146,7 @@
       character     chulp*255
       logical       newrec   , scale , ods   , binfil , tdelay
       integer(kind=int_wp) ::  ithndl = 0
- 
+
       type(t_dlwq_data_items)          :: dlwq_data_items
       type(t_dlwq_item)                :: dlwq_foritem
       character(20)                    :: data_item_name
@@ -322,13 +322,13 @@
          call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff:),
      *                 iar(ioff:), icm  , iim   , aname , atype    ,
      *                 ntitm    , nttype, noitm , noits ,
-     *                 calit    , ilun  , lch   , lstack, 
+     *                 calit    , ilun  , lch   , lstack,
      *                 itype    , rar   , nconst, itmnr , chulp    ,
      *                                    ioutpt, ierr2 , iwar     )
 ! Check if data_item already exists
 
          if (dlwq_data_items%cursize .gt. 0) then
-            call zoek ( data_item_name,dlwq_data_items%cursize,dlwq_data_items%name(1:dlwq_data_items%cursize),20,idata_item)
+            idata_item = index_in_array( data_item_name,dlwq_data_items%name(1:dlwq_data_items%cursize))
          else
             idata_item = 0
          end if
@@ -344,7 +344,7 @@
 !          Already on the list?
             nitems = dlwq_data_items%dlwq_foritem(idata_item)%no_item
             if (nitems .gt. 0) then
-               call zoek ( car(ioff+iitm-1),nitems,dlwq_data_items%dlwq_foritem(idata_item)%name(1:nitems),20,iitem)
+               iitem = index_in_array( car(ioff+iitm-1),dlwq_data_items%dlwq_foritem(idata_item)%name(1:nitems))
             else
                iitem = -1
             end if
@@ -392,7 +392,7 @@
          if ( ident .le. 1) then
             call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff),
      *                    iar(ioff:), icm   , iim   , aname , atype   ,
-     *                    ntitm    , nttype, noitm , noits , 
+     *                    ntitm    , nttype, noitm , noits ,
      *                    calit    , ilun  , lch   , lstack,
      *                    itype    , rar   , nconst, itmnr , chulp    ,
      *                                       ioutpt, ierr2 , iwar     )
@@ -400,7 +400,7 @@
             call dlwq5b ( lunut    , iposr , npos  , cchar , car(ioff:),
      *                    iar(ioff:), icm   , iim   , dlwq_data_items%name(1:ndata_items) ,
      *                    dlwq_data_items%name(1:ndata_items) , ndata_items,
-     *                    ndata_items      , noitm , noits , 
+     *                    ndata_items      , noitm , noits ,
      *                    caldit   , ilun  , lch   , lstack,
      *                    itype    , rar   , nconst, itmnr , chulp    ,
      *                                       ioutpt, ierr2 , iwar     )

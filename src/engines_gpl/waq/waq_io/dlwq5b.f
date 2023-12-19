@@ -22,7 +22,7 @@
 !!  rights reserved.
       module m_dlwq5b
       use m_waq_precision
-
+      use m_string_utils
 
       implicit none
 
@@ -79,7 +79,6 @@
 !     iwar    INTEGER    1         OUTPUT  Cumulative warning count
 !
 !
-      use m_zoek
       use m_movint
       use m_movchr
       use timers       !   performance timers
@@ -90,7 +89,7 @@
       CHARACTER*1   CCHAR*1 , CALLR*10
       LOGICAL       USEFOR, SETNAM, COMPUT, SIGNON
       integer(kind=int_wp) ::  ithndl = 0
-      integer    :: I, ihulp, ierr, iabs, iar(:), ifound, i2
+      integer    :: I, ihulp, ierr, iabs, iar(:), i2
       integer(kind=int_wp) ::  namset, ioutpt, icm, ntitm, nttype, iwar, lstack
       real(kind=real_wp) ::  vrsion
       integer(kind=int_wp) ::  itmnr, ioff, ioffc, nconst, itype, lunut, ilun(LSTACK)
@@ -191,8 +190,7 @@
       IF ( IABS(ITYPE) .EQ. 1 .AND. SIGNON ) THEN
          DO 15 I = 1 , ITMNR-1
             IF ( IAR(I) .EQ. -1300000000 ) GOTO 15
-            CALL ZOEK ( CHULP, 1,CAR(I+IOFF),20,IFOUND)
-            IF ( IFOUND .EQ. 1 ) THEN
+            IF (string_equals(CHULP(1:20), CAR(I+IOFF))) THEN
                NOITS = NOITS - 1
                I2 = IAR(ITMNR+NOITM)
                IF ( I2 .EQ. -1000000 )    WRITE(LUNUT,1120)I,CHULP
@@ -312,8 +310,9 @@
 !
 !              FLOW is only valid as CONCENTR. and item number is 0
 !
-         CALL ZOEK(CHULP,1,(/'FLOW                '/),20,IFOUND)
-         IF ( IFOUND .EQ. 1 .AND. CALLR .EQ. 'CONCENTR. ' ) THEN
+         IF ( string_equals(CHULP(1:20),'FLOW                ')
+     *        .AND. CALLR .EQ. 'CONCENTR. ' ) THEN
+
             NOITM = NOITM + 1
             NOITS = NOITS + 1
             ITMNR = ITMNR + 1
@@ -334,7 +333,8 @@
 !
 !              CHULP equals an item-NAME
 !
-         CALL ZOEK(CHULP,NTITM,ANAME,20,I2)
+
+         I2 = index_in_array(CHULP(1:20),ANAME(:NTITM))
          IF ( I2 .GE. 1 ) THEN
             NOITM = NOITM + 1
             NOITS = NOITS + 1
@@ -356,7 +356,7 @@
 !
 !              CHULP equals an item-TYPE. IAR now is negative.
 !
-         CALL ZOEK(CHULP,NTTYPE,ATYPE,20,I2)
+         I2 = index_in_array(CHULP(1:20),ATYPE(:NTTYPE))
          IF ( I2 .GE. 1 ) THEN
             NOITM = NOITM + 1
             NOITS = NOITS + 1
