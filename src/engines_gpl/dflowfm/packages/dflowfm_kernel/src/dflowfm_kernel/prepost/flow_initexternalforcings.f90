@@ -183,6 +183,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
       if (exist) then
          iresult = initInitialFields(md_inifieldfile)
          if (iresult /= DFM_NOERR) then
+            call timstop(handle_extra(49)) ! initInitialFields
             goto 888
          end if
       else
@@ -190,6 +191,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          write(msgbuf, '(a,a,a)') 'Initial fields and parameters file ''', trim(md_inifieldfile), ''' not found.'
          call warn_flush()
          iresult = DFM_EXTFORCERROR
+         call timstop(handle_extra(49)) ! initInitialFields
          goto 888
       endif
       call timstop(handle_extra(49)) ! initInitialFields
@@ -802,7 +804,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          maxSearchRadius = -1
          call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname,sourcemask,maxSearchRadius)
          if (ja == 1) then
-            call resolvePath(filename, md_extfile_dir, filename)
+            call resolvePath(filename, md_extfile_dir)
 
             call mess(LEVEL_INFO, 'External Forcing or Initialising '''//trim(qid)//''' from file '''//trim(filename)//'''.')
             ! Initialize success to be .false.
@@ -2016,6 +2018,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   ! We do a direct goto 888 end, so qnerror for GUI is allowed here.
                   call qnerror('flow_initexternalforcings: Error while initializing quantity: ', qid, '. Check preceding log lines for details.')
                   iresult = DFM_EXTFORCERROR
+                  call timstop(handle_extra(50)) ! extforcefile old
                   goto 888
             endif
 
@@ -2078,7 +2081,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for gates again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'gateloweredgelevel') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                ngatesg = ngatesg + 1
                ! Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1
@@ -2133,7 +2136,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cdams again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'damlevel') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                ncdamsg = ncdamsg + 1
                ! Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1
@@ -2158,7 +2161,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cdams again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid(1:7) == 'valve1D') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                nvalv = nvalv + 1
 
                L = index(filename,'.', back=.true.) - 1
@@ -2193,7 +2196,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cdams again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid(1:16) == 'lateraldischarge') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                numlatsg = numlatsg + 1
 
                L = index(filename,'.', back=.true.) - 1
@@ -2263,7 +2266,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cgens again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'generalstructure') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                ncgensg = ncgensg + 1
                ! Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1
@@ -2345,7 +2348,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for pumps again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. ( qid == 'pump1D' .or. qid == 'pump') ) then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                qid = 'pump'
                npumpsg = npumpsg + 1
                success = ec_addtimespacerelation(qid, xpump, ypump, kdp, kx, filename, filetype, method, operand, xy2pump, targetIndex=npumpsg)
@@ -2367,7 +2370,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja == 1)                                 ! for sorsin again read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'discharge_salinity_temperature_sorsin') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                numsrc = numsrc + 1
                ! 2. Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1

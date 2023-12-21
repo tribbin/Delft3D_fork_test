@@ -119,6 +119,10 @@ interface realloc
    module procedure reallocLogical2
    module procedure reallocLogical3
    module procedure reallocLogical4
+   module procedure reallocBool
+   module procedure reallocBool2
+   module procedure reallocBool3
+   module procedure reallocBool4
    module procedure reallocByte2
 end interface
 
@@ -145,6 +149,10 @@ interface reallocP
    module procedure reallocPLogical2
    module procedure reallocPLogical3
    module procedure reallocPLogical4
+   module procedure reallocPBool
+   module procedure reallocPBool2
+   module procedure reallocPBool3
+   module procedure reallocPBool4
 end interface
 
 interface allocSize
@@ -3402,7 +3410,619 @@ subroutine reallocLogical4(arr, uindex, lindex, stat, fill, shift, keepExisting)
       stat = local_err
    endif
 end subroutine reallocLogical4
+!
+!
+!
+!===============================================================================
+subroutine reallocPBool(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), pointer,  intent(inout) :: arr(:)
+   integer,           intent(in)                 :: uindex
+   integer, optional, intent(in)                 :: lindex
+   integer, optional, intent(out)                :: stat
+   logical(kind=c_bool), optional, intent(in)    :: fill
+   integer, optional, intent(in)                 :: shift
+   logical, optional, intent(in)                 :: keepExisting
 
+   logical(kind=c_bool), pointer :: b(:)
+   integer                       :: uind, lind, muind, mlind, lindex_, shift_, i
+   integer                       :: localErr
+   logical                       :: docopy
+   logical                       :: equalSize
+
+   if (present(lindex)) then
+      lindex_ = lindex
+   else
+      lindex_ = 1
+   endif
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = 0
+   endif
+
+   if (present(keepExisting)) then
+      docopy = keepExisting
+   else
+      docopy = .true.
+   end if
+
+   if (present(stat)) stat = 0
+   localErr = 0
+   nullify(b)
+   if (associated(arr)) then
+      uind = ubound(arr,1)
+      lind = lbound(arr,1)
+      equalSize = (uindex == uind) .and. (lindex_ == lind)
+      if (equalSize .and. (docopy .or. .not. present(fill)) .and. shift_==0) then
+         goto 999 ! output=input
+      end if
+!
+      if (docopy) then
+         mlind = max(lind + shift_, lindex_)
+         muind = min(uind + shift_, uindex)
+         b => arr
+         nullify(arr)
+      elseif (.not.equalSize) then
+         deallocate(arr, stat = localErr)
+      endif
+   endif
+   if (.not.associated(arr) .and. localErr==0) then
+       allocate(arr(lindex_:uindex), stat = localErr)
+   endif
+   if (present(fill) .and. localErr==0) arr = fill
+   if (associated(b) .and. localErr==0 .and. size(b)>0) then
+      do i=mlind, muind
+         arr(i) = b(i-shift_)
+      end do
+      deallocate(b, stat = localErr)
+   endif
+999 continue
+   if (present(stat)) stat = localErr
+end subroutine reallocPBool
+!
+!
+!
+!===============================================================================
+subroutine reallocBool(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), allocatable, intent(inout) :: arr(:)
+   integer, intent(in)                              :: uindex
+   integer, intent(in), optional                    :: lindex
+   integer, intent(out), optional                   :: stat
+   logical(kind=c_bool), intent(in), optional       :: fill
+   integer, intent(in), optional                    :: shift
+   logical, intent(in), optional                    :: keepExisting
+
+   logical(kind=c_bool), allocatable                :: temp(:)
+   integer                                          :: original_l_index, original_u_index, data_l_index, data_u_index, new_l_index, new_u_index, shift_
+   integer                                          :: local_err
+   logical                                          :: do_copy
+   logical                                          :: equal_bounds
+
+   if (present(lindex)) then
+      new_l_index = lindex
+   else
+      new_l_index = 1
+   endif
+   new_u_index = uindex
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = 0
+   endif
+
+   if (present(keepExisting)) then
+      do_copy = keepExisting
+   else
+      do_copy = .true.
+   endif
+
+   local_err = 0
+   if (allocated(arr)) then
+      original_l_index = lbound(arr, dim=1)
+      original_u_index = ubound(arr, dim=1)
+      equal_bounds = (new_l_index == original_l_index) .and. (new_u_index == original_u_index)
+      if (equal_bounds .and. (do_copy .or. .not. present(fill)) .and. shift_ == 0) then
+         goto 999 ! output=input
+      endif
+   endif
+
+   allocate(temp(new_l_index : new_u_index), stat=local_err)
+   if (local_err /= 0) then
+      goto 999
+   endif
+
+   if (do_copy .and. allocated(arr)) then
+      data_l_index = max(original_l_index + shift_, new_l_index)
+      data_u_index = min(original_u_index + shift_, new_u_index)
+      ! arr access below is safe, because:
+      ! data_l_index - shift_ >= (original_l_index + shift_) - shift_ = original_l_index
+      ! data_u_index - shift_ <= (original_u_index + shift_) - shift_ = original_u_index
+      temp(data_l_index : data_u_index) = arr(data_l_index - shift_ : data_u_index - shift_)
+      if (present(fill)) then
+         temp(new_l_index : data_l_index - 1) = fill
+         temp(data_u_index + 1 : new_u_index) = fill
+      endif
+   elseif (present(fill)) then
+      temp = fill
+   endif
+   call move_alloc(temp, arr)
+999 continue
+   if (present(stat)) then
+      stat = local_err
+   endif
+end subroutine reallocBool
+!
+!
+!
+!===============================================================================
+subroutine reallocPBool2(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), pointer, intent(inout) :: arr(:,:)
+   integer, intent(in)                          :: uindex(2)
+   integer, intent(in), optional                :: lindex(2)
+   integer, intent(out), optional               :: stat
+   logical(kind=c_bool), intent(in), optional   :: fill
+   integer, intent(in), optional                :: shift(2)
+   logical, intent(in), optional                :: keepExisting
+
+   logical(kind=c_bool), pointer                :: b(:,:)
+   integer                                      :: uind(2), lind(2), muind(2), mlind(2), lindex_(2), shift_(2)
+   integer                                      :: i1,i2
+   integer                                      :: localErr
+   logical                                      :: docopy
+   logical                                      :: equalSize
+
+   if (present(lindex)) then
+      lindex_ = lindex
+   else
+      lindex_ = (/ 1, 1 /)
+   endif
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = (/ 0, 0 /)
+   endif
+
+   if (present(keepExisting)) then
+      docopy = keepExisting
+   else
+      docopy = .true.
+   end if
+
+   if (present(stat)) stat = 0
+   localErr = 0
+   nullify(b)
+   if (associated(arr)) then
+      uind = ubound(arr)
+      lind = lbound(arr)
+      equalSize = all(uindex == uind) .and. all(lindex_ == lind)
+      if (equalSize .and. (docopy .or. .not. present(fill)) .and. all(shift_==0)) then
+         goto 999 ! output=input
+      end if
+!
+      if (docopy) then
+         mlind = max(lind + shift_, lindex_)
+         muind = min(uind + shift_, uindex)
+         b => arr
+         nullify(arr)
+      elseif (.not.equalSize) then
+         deallocate(arr, stat = localErr)
+      endif
+   endif
+   if (.not.associated(arr) .and. localErr==0) then
+       allocate(arr(lindex_(1):uindex(1),lindex_(2):uindex(2)), stat = localErr)
+   endif
+   if (present(fill) .and. localErr==0) arr = fill
+   if (associated(b) .and. localErr==0 .and. size(b)>0) then
+      do i2 = mlind(2),muind(2)
+         do i1 = mlind(1),muind(1)
+             arr(i1,i2) = b(i1-shift_(1),i2-shift_(2))
+         enddo
+      enddo
+      deallocate(b, stat = localErr)
+   endif
+999 continue
+   if (present(stat)) stat = localErr
+end subroutine reallocPBool2
+!
+!
+!
+!===============================================================================
+subroutine reallocBool2(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), allocatable, intent(inout) :: arr(:,:)
+   integer, intent(in)                              :: uindex(2)
+   integer, intent(in), optional                    :: lindex(2)
+   integer, intent(out), optional                   :: stat
+   logical(kind=c_bool), intent(in), optional       :: fill
+   integer, intent(in), optional                    :: shift(2)
+   logical, intent(in), optional                    :: keepExisting
+
+   logical(kind=c_bool), allocatable                :: temp(:,:)
+   integer                                          :: original_l_index(2), original_u_index(2), data_l_index(2), data_u_index(2), new_l_index(2), new_u_index(2), shift_(2)
+   integer                                          :: local_err
+   logical                                          :: do_copy
+   logical                                          :: equal_bounds
+
+   if (present(lindex)) then
+      new_l_index = lindex
+   else
+      new_l_index = 1
+   endif
+   new_u_index = uindex
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = 0
+   endif
+
+   if (present(keepExisting)) then
+      do_copy = keepExisting
+   else
+      do_copy = .true.
+   endif
+
+   local_err = 0
+   if (allocated(arr)) then
+      original_l_index = lbound(arr)
+      original_u_index = ubound(arr)
+      equal_bounds = all(new_l_index == original_l_index) .and. all(new_u_index == original_u_index)
+      if (equal_bounds .and. (do_copy .or. .not. present(fill)) .and. all(shift_ == 0)) then
+         goto 999 ! output=input
+      endif
+   endif
+
+   allocate(temp(new_l_index(1) : new_u_index(1), new_l_index(2) : new_u_index(2)), stat=local_err)
+   if (local_err /= 0) then
+      goto 999
+   endif
+
+   if (present(fill)) then
+      temp = fill
+   endif
+
+   if (do_copy .and. allocated(arr)) then
+      data_l_index = max(original_l_index + shift_, new_l_index)
+      data_u_index = min(original_u_index + shift_, new_u_index)
+      ! arr access below is safe, because:
+      ! data_l_index - shift_ >= (original_l_index + shift_) - shift_ = original_l_index
+      ! data_u_index - shift_ <= (original_u_index + shift_) - shift_ = original_u_index
+      temp(data_l_index(1) : data_u_index(1), &
+           data_l_index(2) : data_u_index(2)) = arr(data_l_index(1) - shift_(1) : data_u_index(1) - shift_(1), &
+                                                    data_l_index(2) - shift_(2) : data_u_index(2) - shift_(2))
+   endif
+   call move_alloc(temp, arr)
+999 continue
+   if (present(stat)) then
+      stat = local_err
+   endif
+end subroutine reallocBool2
+!
+!
+!
+!===============================================================================
+subroutine reallocPBool3(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), pointer, intent(inout) :: arr(:,:,:)
+   integer, intent(in)                          :: uindex(3)
+   integer, intent(in), optional                :: lindex(3)
+   integer, intent(out), optional               :: stat
+   logical(kind=c_bool), intent(in), optional   :: fill
+   integer, intent(in), optional                :: shift(3)
+   logical, intent(in), optional                :: keepExisting
+
+   logical(kind=c_bool), pointer                :: b(:,:,:)
+   integer                                      :: uind(3), lind(3), muind(3), mlind(3), lindex_(3), shift_(3)
+   integer                                      :: i1,i2,i3
+   integer                                      :: localErr
+   logical                                      :: docopy
+   logical                                      :: equalSize
+
+   if (present(lindex)) then
+      lindex_ = lindex
+   else
+      lindex_ = (/ 1, 1, 1 /)
+   endif
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = (/ 0, 0, 0 /)
+   endif
+
+   if (present(keepExisting)) then
+      docopy = keepExisting
+   else
+      docopy = .true.
+   end if
+
+   if (present(stat)) stat = 0
+   localErr = 0
+   nullify(b)
+   if (associated(arr)) then
+      uind = ubound(arr)
+      lind = lbound(arr)
+      equalSize = all(uindex == uind) .and. all(lindex_ == lind)
+      if (equalSize .and. (docopy .or. .not. present(fill)) .and. all(shift_==0)) then
+         goto 999 ! output=input
+      end if
+!
+      if (docopy) then
+         mlind = max(lind + shift_, lindex_)
+         muind = min(uind + shift_, uindex)
+         b => arr
+         nullify(arr)
+      elseif (.not.equalSize) then
+         deallocate(arr, stat = localErr)
+      endif
+   endif
+   if (.not.associated(arr) .and. localErr==0) then
+       allocate(arr(lindex_(1):uindex(1),lindex_(2):uindex(2),lindex_(3):uindex(3)), stat = localErr)
+   endif
+   if (present(fill) .and. localErr==0) arr = fill
+   if (associated(b) .and. localErr==0 .and. size(b)>0) then
+      do i3 = mlind(3),muind(3)
+         do i2 = mlind(2),muind(2)
+            do i1 = mlind(1),muind(1)
+                arr(i1,i2,i3) = b(i1-shift_(1),i2-shift_(2),i3-shift_(3))
+            enddo
+         enddo
+      enddo
+      deallocate(b, stat = localErr)
+   endif
+999 continue
+   if (present(stat)) stat = localErr
+end subroutine reallocPBool3
+!
+!
+!
+!===============================================================================
+subroutine reallocBool3(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), allocatable, intent(inout) :: arr(:,:,:)
+   integer, intent(in)                              :: uindex(3)
+   integer, intent(in), optional                    :: lindex(3)
+   integer, intent(out), optional                   :: stat
+   logical(kind=c_bool), intent(in), optional       :: fill
+   integer, intent(in), optional                    :: shift(3)
+   logical, intent(in), optional                    :: keepExisting
+
+   logical(kind=c_bool), allocatable                :: temp(:,:,:)
+   integer                                          :: original_l_index(3), original_u_index(3), data_l_index(3), data_u_index(3), new_l_index(3), new_u_index(3), shift_(3)
+   integer                                          :: local_err
+   logical                                          :: do_copy
+   logical                                          :: equal_bounds
+
+   if (present(lindex)) then
+      new_l_index = lindex
+   else
+      new_l_index = 1
+   endif
+   new_u_index = uindex
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = 0
+   endif
+
+   if (present(keepExisting)) then
+      do_copy = keepExisting
+   else
+      do_copy = .true.
+   endif
+
+   local_err = 0
+   if (allocated(arr)) then
+      original_l_index = lbound(arr)
+      original_u_index = ubound(arr)
+      equal_bounds = all(new_l_index == original_l_index) .and. all(new_u_index == original_u_index)
+      if (equal_bounds .and. (do_copy .or. .not. present(fill)) .and. all(shift_ == 0)) then
+         goto 999 ! output=input
+      endif
+   endif
+
+   allocate(temp(new_l_index(1) : new_u_index(1), new_l_index(2) : new_u_index(2), new_l_index(3) : new_u_index(3)), stat=local_err)
+   if (local_err /= 0) then
+      goto 999
+   endif
+
+   if (present(fill)) then
+      temp = fill
+   endif
+
+   if (do_copy .and. allocated(arr)) then
+      data_l_index = max(original_l_index + shift_, new_l_index)
+      data_u_index = min(original_u_index + shift_, new_u_index)
+      ! arr access below is safe, because:
+      ! data_l_index - shift_ >= (original_l_index + shift_) - shift_ = original_l_index
+      ! data_u_index - shift_ <= (original_u_index + shift_) - shift_ = original_u_index
+      temp(data_l_index(1) : data_u_index(1), &
+           data_l_index(2) : data_u_index(2), &
+           data_l_index(3) : data_u_index(3)) = arr(data_l_index(1) - shift_(1) : data_u_index(1) - shift_(1), &
+                                                    data_l_index(2) - shift_(2) : data_u_index(2) - shift_(2), &
+                                                    data_l_index(3) - shift_(3) : data_u_index(3) - shift_(3))
+   endif
+   call move_alloc(temp, arr)
+999 continue
+   if (present(stat)) then
+      stat = local_err
+   endif
+end subroutine reallocBool3
+!
+!
+!
+!===============================================================================
+subroutine reallocPBool4(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), pointer, intent(inout) :: arr(:,:,:,:)
+   integer, intent(in)                          :: uindex(4)
+   integer, intent(in), optional                :: lindex(4)
+   integer, intent(out), optional               :: stat
+   logical(kind=c_bool), intent(in), optional   :: fill
+   integer, intent(in), optional                :: shift(4)
+   logical, intent(in), optional                :: keepExisting
+
+   logical(kind=c_bool), pointer                :: b(:,:,:,:)
+   integer                                      :: uind(4), lind(4), muind(4), mlind(4), lindex_(4), shift_(4)
+   integer                                      :: i1,i2,i3,i4
+   integer                                      :: localErr
+   logical                                      :: docopy
+   logical                                      :: equalSize
+
+   if (present(lindex)) then
+      lindex_ = lindex
+   else
+      lindex_ = (/ 1, 1, 1, 1 /)
+   endif
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = (/ 0, 0, 0, 0 /)
+   endif
+
+   if (present(keepExisting)) then
+      docopy = keepExisting
+   else
+      docopy = .true.
+   end if
+
+   if (present(stat)) stat = 0
+   localErr = 0
+   nullify(b)
+   if (associated(arr)) then
+      uind = ubound(arr)
+      lind = lbound(arr)
+      equalSize = all(uindex == uind) .and. all(lindex_ == lind)
+      if (equalSize .and. (docopy .or. .not. present(fill)) .and. all(shift_==0)) then
+         goto 999 ! output=input
+      end if
+!
+      if (docopy) then
+         mlind = max(lind + shift_, lindex_)
+         muind = min(uind + shift_, uindex)
+         b => arr
+         nullify(arr)
+      elseif (.not.equalSize) then
+         deallocate(arr, stat = localErr)
+      endif
+   endif
+   if (.not.associated(arr) .and. localErr==0) then
+       allocate(arr(lindex_(1):uindex(1),lindex_(2):uindex(2),lindex_(3):uindex(3),lindex_(4):uindex(4)), stat = localErr)
+   endif
+   if (present(fill) .and. localErr==0) arr = fill
+   if (associated(b) .and. localErr==0 .and. size(b)>0) then
+      do i4 = mlind(4),muind(4)
+         do i3 = mlind(3),muind(3)
+            do i2 = mlind(2),muind(2)
+               do i1 = mlind(1),muind(1)
+                   arr(i1,i2,i3,i4) = b(i1-shift_(1),i2-shift_(2),i3-shift_(3),i4-shift_(4))
+               enddo
+            enddo
+         enddo
+      enddo
+      deallocate(b, stat = localErr)
+   endif
+999 continue
+   if (present(stat)) stat = localErr
+end subroutine reallocPBool4
+!
+!
+!
+!===============================================================================
+subroutine reallocBool4(arr, uindex, lindex, stat, fill, shift, keepExisting)
+   use stdlib_kinds, only: c_bool
+   implicit none
+   logical(kind=c_bool), allocatable, intent(inout) :: arr(:,:,:,:)
+   integer, intent(in)                              :: uindex(4)
+   integer, intent(in), optional                    :: lindex(4)
+   integer, intent(out), optional                   :: stat
+   logical(kind=c_bool), intent(in), optional       :: fill
+   integer, intent(in), optional                    :: shift(4)
+   logical, intent(in), optional                    :: keepExisting
+
+   logical(kind=c_bool), allocatable                :: temp(:,:,:,:)
+   integer                                          :: original_l_index(4), original_u_index(4), data_l_index(4), data_u_index(4), new_l_index(4), new_u_index(4), shift_(4)
+   integer                                          :: local_err
+   logical                                          :: do_copy
+   logical                                          :: equal_bounds
+
+   if (present(lindex)) then
+      new_l_index = lindex
+   else
+      new_l_index = 1
+   endif
+   new_u_index = uindex
+
+   if (present(shift)) then
+      shift_ = shift
+   else
+      shift_ = 0
+   endif
+
+   if (present(keepExisting)) then
+      do_copy = keepExisting
+   else
+      do_copy = .true.
+   endif
+
+   local_err = 0
+   if (allocated(arr)) then
+      original_l_index = lbound(arr)
+      original_u_index = ubound(arr)
+      equal_bounds = all(new_l_index == original_l_index) .and. all(new_u_index == original_u_index)
+      if (equal_bounds .and. (do_copy .or. .not. present(fill)) .and. all(shift_ == 0)) then
+         goto 999 ! output=input
+      endif
+   endif
+
+   allocate(temp(new_l_index(1) : new_u_index(1), new_l_index(2) : new_u_index(2), &
+                 new_l_index(3) : new_u_index(3), new_l_index(4) : new_u_index(4)), stat=local_err)
+   if (local_err /= 0) then
+      goto 999
+   endif
+
+   if (present(fill)) then
+      temp = fill
+   endif
+
+   if (do_copy .and. allocated(arr)) then
+      data_l_index = max(original_l_index + shift_, new_l_index)
+      data_u_index = min(original_u_index + shift_, new_u_index)
+      ! arr access below is safe, because:
+      ! data_l_index - shift_ >= (original_l_index + shift_) - shift_ = original_l_index
+      ! data_u_index - shift_ <= (original_u_index + shift_) - shift_ = original_u_index
+      temp(data_l_index(1) : data_u_index(1), &
+           data_l_index(2) : data_u_index(2), &
+           data_l_index(3) : data_u_index(3), &
+           data_l_index(4) : data_u_index(4)) = arr(data_l_index(1) - shift_(1) : data_u_index(1) - shift_(1), &
+                                                    data_l_index(2) - shift_(2) : data_u_index(2) - shift_(2), &
+                                                    data_l_index(3) - shift_(3) : data_u_index(3) - shift_(3), &
+                                                    data_l_index(4) - shift_(4) : data_u_index(4) - shift_(4))
+   endif
+   call move_alloc(temp, arr)
+999 continue
+   if (present(stat)) then
+      stat = local_err
+   endif
+end subroutine reallocBool4
+!
+!
+!
 !===============================================================================
 subroutine reallocByte2(arr, uindex, lindex, stat, fill, shift, keepExisting)
    implicit none
@@ -3475,7 +4095,8 @@ subroutine reallocByte2(arr, uindex, lindex, stat, fill, shift, keepExisting)
    endif
 end subroutine reallocByte2
 !
-
+!
+!
 !===============================================================================
 
 !> Determines size of an allocatable array, returning 0 when it is not allocated.
