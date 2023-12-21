@@ -158,8 +158,8 @@ contains
    call set_advection_type_for_slope_large_than_Slopedrop2D()
    call set_advection_type_for_lateral_flow_and_pipes()
 
-   if (japure1D > OFF) then
-      call setiadvpure1D()
+   if (jaPure1D > OFF) then
+      call setiadvpure1D(jaPure1D)
    end if
 
   ! check if at most one structure claims a flowlink

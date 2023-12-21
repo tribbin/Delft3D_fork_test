@@ -395,9 +395,9 @@ integer                            :: javau3onbnd = 0   !< vert. adv. u1 bnd Upw
 
  integer                           :: jaustarint              !< 1=integral bed layer velocity,  0=velocity at half bed layer
 
- integer                           :: jaPure1D                !< along 1D channels: 0 = vectorial approach, 1 = scalar approach using vol1_f, 2 = scalar approach using vol1
+ integer                           :: jaPure1D                !< along 1D channels: 0 = 2D mom Perot, 1 = 1D mom Perot using vol1_f, 2 = 1D mom Perot using vol1, 3,4,5,6,7 = 1D mom on links (2 + Iadvec1D of SOBEK)
 
- integer                           :: jaJunction1D            !< at 1D junctions: 0 = vectorial approach, 1 = same approach as along the 1D channels
+ integer                           :: jaJunction1D            !< at 1D junctions: 0 = 2D mom Perot, 1 = same as along the 1D channels
 
  double precision                  :: Eddyviscositybedfacmax  !< eddyviscosityatbed = min(eddyviscosityatbed, eddyviscosityatbedfacmax*eddyviscosityatbed+1 )
 
@@ -527,6 +527,7 @@ integer                            :: javau3onbnd = 0   !< vert. adv. u1 bnd Upw
  integer                           :: jamapselfal               !< self attraction and loading potential to map file, 0: no, 1: yes
  integer                           :: jamapIntTidesDiss         !< internal tides dissipation to map file, 0: no, 1: yes
  integer                           :: jamapNudge                !< output nudging to map file, 0: no, 1: yes
+ integer                           :: jamapPure1D_debug         !< additional Pure1D debugging output to map file, 0: no, 1: yes
  integer                           :: jamapwav                  !< output waves to map file, 0: no, 1: yes
  integer                           :: jamapwav_hwav             !< output waves to map file for variable hwav,   0: no, 1: yes
  integer                           :: jamapwav_twav             !< output waves to map file for variable twav,   0: no, 1: yes
@@ -906,7 +907,7 @@ subroutine default_flowparameters()
     javatem    = 6       !< vert. adv. tem1 : 0=No, 1=UpwexpL, 2=Centralexpl, 3=UpwimpL, 4=CentraLimpL, 5=switched to 3 for neg stratif.
     javased    = 6       !< vert. adv. suspended sediment concentrations : 0=No, 1=UpwexpL, 2=Centralexpl, 3=UpwimpL, 4=CentraLimpL, 5=switched to 3 for neg stratif., 6=higher-order upwind/explicit
     jahazlayer = 0       !<
-    jaPure1D   = 0       !< 0 = org 1D advec, 1 = pure1D using vol1_f, 2 = pure1D using vol1
+    jaPure1D   = 0       !< 0 = org 1D advec, 1 = 1D mom Perot using vol1_f, 2 = 1D mom Perot using vol1, 3,4,5,6,7 = 1D mom on links (2 + Iadvec1D of SOBEK)
     jaJunction1D = 1     !< 0 = org 1D advec at junctions, 1 = junctions follow jaPure1D approach
     JaZlayercenterbedvel      = 1
     jastructurelayersactive   = 1
@@ -1011,6 +1012,7 @@ subroutine default_flowparameters()
     jamapselfal = 1
     jamapIntTidesDiss = 1
     jamapNudge = 1
+    jamapPure1D_debug = 0
     jamapwav = 1
     jamapdtcell = 0
     jamapTimeWetOnGround = 0
