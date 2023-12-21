@@ -313,6 +313,7 @@ if FI.NumDomains>1
                 zLoc = valLoc;
             end
             Data = mergePartData(Data, partData, FI, zLoc,{'Z'}, hasTimeDim, tDim);
+            Data.ZLocation = zLoc;
         end
         
         % data values 
@@ -1791,7 +1792,7 @@ else
             if ~isnan(Info.TSMNK(i))
                 if i==T_ 
                     if ~isempty(Info.Time)
-                        if isfield(FI.Dataset(Info.Time).Info,'RefDate') && ~isempty(FI.Dataset(Info.Time).Info.RefDate)
+                        if isfield(FI.Dataset(Info.Time).Info,'RefDate') && isnumeric(FI.Dataset(Info.Time).Info.RefDate)
                             Insert.DimFlag(i)=1;
                         elseif isfield(FI.Dataset(Info.Time).Info,'DT') && ~isempty(FI.Dataset(Info.Time).Info.DT)
                             Insert.DimFlag(i)=3;
@@ -1963,40 +1964,39 @@ else
         %end
         %
         streamfunc = false;
-        if strcmp(standard_name,'discharge') && strcmp(Insert.Geom,'UGRID2D-EDGE') && Insert.DimFlag(K_)==0
-           streamfunc = true;
-           prefix = '';
-        else
-           ireg = regexp(Insert.Name,'discharge through flow link');
-           try
-               convFac = qp_unitconversion(Insert.Units,'m3 s-1');
-           catch
-               convFac = 'error';
-           end
-           if ~isempty(ireg) && isnumeric(convFac)
-               streamfunc = true;
-               prefix = Insert.Name(1:ireg-1);
-           end
+        if strcmp(Insert.Geom,'UGRID2D-EDGE') && Insert.DimFlag(K_)==0
+            if strcmp(standard_name,'discharge')
+                streamfunc = true;
+                prefix = '';
+            else
+                ireg = regexp(Insert.Name,'discharge through flow link');
+                try
+                    convFac = qp_unitconversion(Insert.Units,'m3 s-1');
+                catch
+                    convFac = 'error';
+                end
+                if ~isempty(ireg) && isnumeric(convFac)
+                    streamfunc = true;
+                    prefix = Insert.Name(1:ireg-1);
+                end
+            end
         end
         if streamfunc
-            qvar = FI.Dataset(Insert.varid);
-            if iscell(qvar.Mesh) % catch discharges not defined on UGRID ...
-                Insert.Name = [prefix, 'stream function']; % previously: discharge potential
-                Insert.Geom = 'UGRID2D-NODE';
-                Insert.varid = {'stream_function' Insert.varid};
-                Insert.DimName{M_} = FI.Dataset(FI.Dataset(Insert.varid{2}+1).Mesh{3}).Mesh{5};
+            Insert.Name = [prefix, 'stream function']; % previously: discharge potential
+            Insert.Geom = 'UGRID2D-NODE';
+            Insert.varid = {'stream_function' Insert.varid};
+            Insert.DimName{M_} = FI.Dataset(FI.Dataset(Insert.varid{2}+1).Mesh{3}).Mesh{5};
+            %
+            Out(end+1)=Insert;
+            %
+            if ismember('edge_face_connectivity',meshAttribNames)
+                Insert.Name = [prefix, 'net discharge into cell']; % can be used as stationarity check for the stream function
+                Insert.Geom = 'UGRID2D-FACE';
+                Insert.varid{1} = 'net_discharge_into_cell';
+                Insert.DimName{M_} = FI.Dataset(FI.Dataset(Insert.varid{2}+1).Mesh{3}).Mesh{7};
+                Insert.DataInCell = 1;
                 %
                 Out(end+1)=Insert;
-                %
-                if ismember('edge_face_connectivity',meshAttribNames)
-                    Insert.Name = [prefix, 'net discharge into cell']; % can be used as stationarity check for the stream function
-                    Insert.Geom = 'UGRID2D-FACE';
-                    Insert.varid{1} = 'net_discharge_into_cell';
-                    Insert.DimName{M_} = FI.Dataset(FI.Dataset(Insert.varid{2}+1).Mesh{3}).Mesh{7};
-                    Insert.DataInCell = 1;
-                    %
-                    Out(end+1)=Insert;
-                end
             end
         else
             switch lower(Insert.Name)
@@ -2515,6 +2515,8 @@ else
 end
 if ~isstruct(tinfo) % likely even empty
     % continue with T = T;
+elseif ~isfield(tinfo,'RefDate') || isempty(tinfo.RefDate)
+    T = tinfo.DT * T;
 elseif ischar(tinfo.RefDate)
     switch tinfo.RefDate
         case 'day as %Y%m%d.%f'
@@ -2528,10 +2530,8 @@ elseif ischar(tinfo.RefDate)
         otherwise
             T = tinfo.DT * T;
     end
-elseif ~isempty(tinfo.RefDate)
-    T = tinfo.RefDate + tinfo.DT * T;
 else
-    T = tinfo.DT * T;
+    T = tinfo.RefDate + tinfo.DT * T;
 end
 % -----------------------------------------------------------------------------
 
@@ -2940,7 +2940,14 @@ if localfopen
 end
 
 function Psi = compute_stream_function(Discharge, EdgeNodeConnect, nNodes)
-Psi = NaN(nNodes,1);
+mask_edges = isnan(Discharge);
+EdgeNodeConnect(mask_edges,:) = [];
+Discharge(mask_edges) = [];
+%
+Psi = zeros(nNodes,1);
+Psi(EdgeNodeConnect) = NaN;
+nNodes = sum(isnan(Psi));
+%
 if nNodes > 0
     nNodes_done = 0;
     hPB = progressbar(0, 'title', 'Computing stream function ...');
