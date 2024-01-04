@@ -2456,6 +2456,8 @@ stocfl,stocsu,stocsc
 "dM_F6     ","F6        ",  -1.00000
 "dM_F7     ","F7        ",  -1.00000
 "dM_F8     ","F8        ",  -1.00000
+"dM_Pom    ","M_SMOtot  ",   1.00000
+"dM_Pca    ","M_SMItot  ",   1.00000
 "dZ_MortS1 ","DetCS1    ",   1.00000
 "dZ_NMrtS1 ","DetNS1    ",   1.00000
 "dZ_PMrtS1 ","DetPS1    ",   1.00000
@@ -2539,6 +2541,8 @@ stocfl,stocsu,stocsc
 "dZ_F6     ","F6        ",  -1.00000
 "dZ_F7     ","F7        ",  -1.00000
 "dZ_F8     ","F8        ",  -1.00000
+"dZ_Pom    ","Z_SMOtot  ",   1.00000
+"dZ_Pca    ","Z_SMItot  ",   1.00000
 "dG3_MortS1","DetCS1    ",   1.00000
 "dG3_NMrtS1","DetNS1    ",   1.00000
 "dG3_PMrtS1","DetPS1    ",   1.00000
@@ -2622,6 +2626,8 @@ stocfl,stocsu,stocsc
 "dG3_F6    ","F6        ",  -1.00000
 "dG3_F7    ","F7        ",  -1.00000
 "dG3_F8    ","F8        ",  -1.00000
+"dG3_Pom   ","G3_SMOtot ",   1.00000
+"dG3_Pca   ","G3_SMItot ",   1.00000
 "dG4_MortS1","DetCS1    ",   1.00000
 "dG4_NMrtS1","DetNS1    ",   1.00000
 "dG4_PMrtS1","DetPS1    ",   1.00000
@@ -2705,6 +2711,8 @@ stocfl,stocsu,stocsc
 "dG4_F6    ","F6        ",  -1.00000
 "dG4_F7    ","F7        ",  -1.00000
 "dG4_F8    ","F8        ",  -1.00000
+"dG4_Pom   ","G4_SMOtot ",   1.00000
+"dG4_Pca   ","G4_SMItot ",   1.00000
 "dG5_MortS1","DetCS1    ",   1.00000
 "dG5_NMrtS1","DetNS1    ",   1.00000
 "dG5_PMrtS1","DetPS1    ",   1.00000
@@ -2788,6 +2796,8 @@ stocfl,stocsu,stocsc
 "dG5_F6    ","F6        ",  -1.00000
 "dG5_F7    ","F7        ",  -1.00000
 "dG5_F8    ","F8        ",  -1.00000
+"dG5_Pom   ","G5_SMOtot ",   1.00000
+"dG5_Pca   ","G5_SMItot ",   1.00000
 "drdg*IM1S1","IM1S1     ",  -1.00000
 "drdg*IM2S1","IM2S1     ",  -1.00000
 "drdg*IM3S1","IM3S1     ",  -1.00000
