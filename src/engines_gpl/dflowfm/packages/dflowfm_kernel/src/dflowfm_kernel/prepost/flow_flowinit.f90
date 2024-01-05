@@ -247,9 +247,10 @@ contains
    s1(:)  = max(bl(:), s1(:))
 
    nonlin = max(nonlin1D, nonlin2D)
-   if (nonlin == 0) then 
+   if (nonlin > 0) then 
       if (allocated(s00)) deallocate (s00)
-   else
+      allocate ( s00(ndx), STAT=ierror)
+      call aerr('s00(ndx)', ierror, ndx)
       s00(:) = s1(:)
    endif  
 
