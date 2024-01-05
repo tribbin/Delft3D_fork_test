@@ -245,9 +245,14 @@ contains
    end if
 
    s1(:)  = max(bl(:), s1(:))
-   s00(:) = s1(:)
 
    nonlin = max(nonlin1D, nonlin2D)
+   if (nonlin == 0) then 
+      if (allocated(s00)) deallocate (s00)
+   else
+      s00(:) = s1(:)
+   endif  
+
    if (nonlin >= 2) then
       if (allocated(s1m) ) deallocate (s1m, a1m)
       allocate ( s1m(ndx), a1m(ndx) , STAT=ierror)
