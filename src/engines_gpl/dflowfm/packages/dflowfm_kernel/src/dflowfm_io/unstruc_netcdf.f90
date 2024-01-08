@@ -2984,6 +2984,7 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
         id_flowelemxzw, id_flowelemyzw, id_flowlinkxu, id_flowlinkyu,&
         id_flowelemxbnd, id_flowelemybnd, id_bl, id_s0bnd, id_s1bnd, id_blbnd, &
         id_unorma, id_vicwwu, id_tureps1, id_turkin1, id_qw, id_qa, id_squ, id_sqi, &
+        id_squbnd, id_sqibnd, &
         id_jmax, id_flowelemcrsz, id_ncrs, id_morft, id_morCrsName, id_strlendim, &
         id_culvert_openh, id_longculvert_valveopen, &
         id_genstru_crestl, id_genstru_edgel, id_genstru_openw, id_genstru_fu, id_genstru_ru, id_genstru_au, id_genstru_crestw, &
@@ -3005,6 +3006,7 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
     integer, allocatable, dimension(:,:) :: netcellnod
     integer, allocatable, dimension(:)   :: kn1write, kn2write
     double precision, allocatable, dimension(:)   :: tmp_x, tmp_y, tmp_s0, tmp_s1, tmp_bl, tmp_sa1, tmp_tem1
+    double precision, allocatable, dimension(:)   :: tmp_squ, tmp_sqi
 
     character(len=8) :: numformat
     character(len=2) :: numtrastr, numsedfracstr
@@ -3049,6 +3051,8 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
              call realloc(tmp_s0, ndxbnd, stat=ierr, keepExisting=.false.)
              call realloc(tmp_s1, ndxbnd, stat=ierr, keepExisting=.false.)
              call realloc(tmp_bl, ndxbnd, stat=ierr, keepExisting=.false.)
+             call realloc(tmp_squ, ndxbnd, stat=ierr, keepExisting=.false.)
+             call realloc(tmp_sqi, ndxbnd, stat=ierr, keepExisting=.false.)
              if (kmx == 0) then
                 call realloc(tmp_sa1, ndxbnd, stat=ierr, keepExisting=.false.)
                 call realloc(tmp_tem1, ndxbnd, stat=ierr, keepExisting=.false.)
@@ -3741,6 +3745,16 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
        ierr = nf90_put_att(irstfile, id_blbnd,   'coordinates'  , 'FlowElem_xbnd FlowElem_ybnd')
        ierr = nf90_put_att(irstfile, id_blbnd,   'long_name'    , 'bed level at boundaries')
        ierr = nf90_put_att(irstfile, id_blbnd,   'units'        , 'm')
+       
+       ierr = nf90_def_var(irstfile, 'sqi_bnd', nf90_double, (/ id_bnddim, id_timedim/) , id_sqibnd)
+       ierr = nf90_put_att(irstfile, id_sqibnd,  'coordinates'  , 'FlowElem_xbnd FlowElem_ybnd')
+       ierr = nf90_put_att(irstfile, id_sqibnd,  'long_name'    , 'cell center incoming flux at boundaries')
+       ierr = nf90_put_att(irstfile, id_sqibnd,  'units'        , 'm3 s-1')
+
+       ierr = nf90_def_var(irstfile, 'squ_bnd', nf90_double, (/ id_bnddim, id_timedim/) , id_squbnd)
+       ierr = nf90_put_att(irstfile, id_squbnd,  'coordinates'  , 'FlowElem_xbnd FlowElem_ybnd')
+       ierr = nf90_put_att(irstfile, id_squbnd,  'long_name'    , 'cell center outcoming flux at boundaries')
+       ierr = nf90_put_att(irstfile, id_squbnd,  'units'        , 'm3 s-1')
     endif
 
     ! Write structure info.
@@ -4854,6 +4868,8 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
               tmp_s0(i) = s0(j)
               tmp_s1(i) = s1(j)
               tmp_bl(i) = bl(j)
+              tmp_squ(i) = squ(j)
+              tmp_sqi(i) = sqi(j)
            enddo
        else
           do i = 1, ndxbnd
@@ -4864,6 +4880,8 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
              tmp_s0(i) = s0(j)
              tmp_s1(i) = s1(j)
              tmp_bl(i) = bl(j)
+             tmp_squ(i) = squ(j)
+             tmp_sqi(i) = sqi(j)
           enddo
           ierr = nf90_put_var(irstfile, id_flowelemxbnd, tmp_x)
           ierr = nf90_put_var(irstfile, id_flowelemybnd, tmp_y)
@@ -4871,6 +4889,8 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
        ierr = nf90_put_var(irstfile, id_s0bnd, tmp_s0, (/ 1, itim /), (/ ndxbnd, 1 /))
        ierr = nf90_put_var(irstfile, id_s1bnd, tmp_s1, (/ 1, itim /), (/ ndxbnd, 1 /))
        ierr = nf90_put_var(irstfile, id_blbnd, tmp_bl, (/ 1, itim /), (/ ndxbnd, 1 /))
+       ierr = nf90_put_var(irstfile, id_squbnd, tmp_squ, (/ 1, itim /), (/ ndxbnd, 1 /))
+       ierr = nf90_put_var(irstfile, id_sqibnd, tmp_sqi, (/ 1, itim /), (/ ndxbnd, 1 /))
     endif
 
     if (network%loaded) then
@@ -12613,6 +12633,7 @@ subroutine unc_read_map_or_rst(filename, ierr)
                id_lyrfrac,                      &
                id_bodsed,                       &
                id_blbnd, id_s0bnd, id_s1bnd, &
+               id_squbnd, id_sqibnd, &
                id_morft,                         &
                id_jmax, id_ncrs, id_flowelemcrsz, id_flowelemcrsn
 
@@ -12633,6 +12654,7 @@ subroutine unc_read_map_or_rst(filename, ierr)
     double precision, allocatable        :: tmpvar1(:), tmpvar1D(:)
     double precision, allocatable        :: tmpvar2(:,:,:)
     double precision, allocatable        :: tmp_s1(:), tmp_bl(:), tmp_s0(:)
+    double precision, allocatable        :: tmp_sqi(:), tmp_squ(:)
     double precision, allocatable        :: rst_bodsed(:,:), rst_mfluff(:,:), rst_thlyr(:,:)
     double precision, allocatable        :: rst_msed(:,:,:)
     integer,          allocatable        :: itmpvar(:)
@@ -12931,6 +12953,8 @@ subroutine unc_read_map_or_rst(filename, ierr)
           call realloc(tmp_s1, um%nbnd_read, stat=ierr, keepExisting=.false.)
           call realloc(tmp_s0, um%nbnd_read, stat=ierr, keepExisting=.false.)
           call realloc(tmp_bl, um%nbnd_read, stat=ierr, keepExisting=.false.)
+          call realloc(tmp_squ, um%nbnd_read, stat=ierr, keepExisting=.false.)
+          call realloc(tmp_sqi, um%nbnd_read, stat=ierr, keepExisting=.false.)
 
           ierr = nf90_inq_varid(imapfile, 's0_bnd', id_s0bnd)
           if (ierr/=0) goto 999
@@ -12940,6 +12964,10 @@ subroutine unc_read_map_or_rst(filename, ierr)
              ierr = nf90_inq_varid(imapfile, 'bl_bnd', id_blbnd)
              if (ierr/=0) goto 999
           endif
+          ierr = nf90_inq_varid(imapfile, 'sqi_bnd', id_sqibnd)
+          if (ierr/=0) goto 999
+          ierr = nf90_inq_varid(imapfile, 'squ_bnd', id_squbnd)
+          if (ierr/=0) goto 999
 
           ierr = nf90_get_var(imapfile, id_s0bnd, tmp_s0, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
           call check_error(ierr, 's0_bnd')
@@ -12949,6 +12977,10 @@ subroutine unc_read_map_or_rst(filename, ierr)
               ierr = nf90_get_var(imapfile, id_blbnd, tmp_bl, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
               call check_error(ierr, 'bl_bnd')
           endif
+          ierr = nf90_get_var(imapfile, id_squbnd, tmp_squ, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
+          call check_error(ierr, 'squ_bnd')
+          ierr = nf90_get_var(imapfile, id_sqibnd, tmp_sqi, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
+          call check_error(ierr, 'sqi_bnd')
           if (nerr_/=0) goto 999
 
           if (jampi==0) then
@@ -12959,6 +12991,8 @@ subroutine unc_read_map_or_rst(filename, ierr)
                 if (jarstignorebl .eq. 0) then
                    bl(kk) = tmp_bl(i)
                 endif
+                squ(kk) = tmp_squ(i)
+                sqi(kk) = tmp_sqi(i)
              enddo
           else
              do i = 1, um%nbnd_read ! u and z bnd
@@ -12969,6 +13003,8 @@ subroutine unc_read_map_or_rst(filename, ierr)
                 if (jarstignorebl .eq. 0) then
                    bl(kk) = tmp_bl(i)
                 endif
+                squ(kk) = tmp_squ(i)
+                sqi(kk) = tmp_sqi(i)
              enddo
           endif
        endif
@@ -12982,6 +13018,8 @@ subroutine unc_read_map_or_rst(filename, ierr)
           if (jarstignorebl .eq. 0) then
              call realloc(tmp_bl, ndx-ndxi, stat=ierr, keepExisting=.false.)
           endif
+          call realloc(tmp_squ, ndx-ndxi, stat=ierr, keepExisting=.false.)
+          call realloc(tmp_sqi, ndx-ndxi, stat=ierr, keepExisting=.false.)
           ierr = get_var_and_shift(imapfile, 's0_bnd', tmp_s0, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
                                    um%jamergedmap, ibnd_own, um%ibnd_merge)
           call check_error(ierr, 's0_bnd')
@@ -12993,6 +13031,12 @@ subroutine unc_read_map_or_rst(filename, ierr)
                                       um%jamergedmap, ibnd_own, um%ibnd_merge)
              call check_error(ierr, 'bl_bnd')
           endif
+          ierr = get_var_and_shift(imapfile, 'squ_bnd', tmp_squ, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
+                                   um%jamergedmap, ibnd_own, um%ibnd_merge)
+          call check_error(ierr, 'squ_bnd')
+          ierr = get_var_and_shift(imapfile, 'sqi_bnd', tmp_sqi, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
+                                   um%jamergedmap, ibnd_own, um%ibnd_merge)
+          call check_error(ierr, 'sqi_bnd')
 
           do i=1,ndxbnd_own
              j=ibnd_own(i)
@@ -13003,6 +13047,8 @@ subroutine unc_read_map_or_rst(filename, ierr)
              if (jarstignorebl .eq. 0) then
                 bl(kk) = tmp_bl(j)
              endif
+             squ(kk) = tmp_squ(j)
+             sqi(kk) = tmp_sqi(j)
           enddo
        endif
     endif
