@@ -54,6 +54,7 @@
  COMMON /DRAWTHIS/  ndraw(50)
 
  integer            :: key, jposhchk_sav, LL, L, k1,k2, itype
+ integer            :: debugint = 0
  integer            :: ja, k, ierror, n, kt, num, js1, noddifmaxlevm, nsiz
  character (len=40) :: tex
  logical            :: firstnniteration, last_iteration
@@ -127,7 +128,7 @@
     ! endif
 
     if ( time1 > ti_rst ) then 
-        numnodneg=numnodneg+0 ! debug statement 
+        debugint=debugint+1 ! debug statement 
     endif 
 !    synchronise all water-levels
     if ( jampi == 1 ) then
