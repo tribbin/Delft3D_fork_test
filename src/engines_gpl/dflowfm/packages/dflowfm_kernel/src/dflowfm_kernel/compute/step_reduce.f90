@@ -127,9 +127,6 @@
     !    call toemaar()
     ! endif
 
-    if ( time1 > ti_rst ) then 
-        debugint=debugint+1 ! debug statement 
-    endif 
 !    synchronise all water-levels
     if ( jampi == 1 ) then
        if ( jatimer == 1 ) call starttimer(IUPDSALL)
