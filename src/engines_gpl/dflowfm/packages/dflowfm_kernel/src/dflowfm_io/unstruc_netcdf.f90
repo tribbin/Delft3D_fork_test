@@ -12915,6 +12915,13 @@ subroutine unc_read_map_or_rst(filename, ierr)
     call check_error(ierr, 'waterlevels old')
     call readyy('Reading map data',0.35d0)
 
+    ! Read chezy roughness (flow elem)
+    ierr = get_var_and_shift(imapfile, 'czs', czs, tmpvar1, UNC_LOC_S, kmx, kstart, um%ndxi_own, it_read, um%jamergedmap, um%inode_own, &
+                             um%inode_merge)
+
+    call check_error(ierr, 'chezy roughness')
+    call readyy('Reading map data',0.375d0)
+    
     ! Read bedlevels (flow elem)
     if (jaoldrstfile == 1) then
        call mess(LEVEL_INFO, 'The restart file is of an old version, therefore no bedlevel info is read')
