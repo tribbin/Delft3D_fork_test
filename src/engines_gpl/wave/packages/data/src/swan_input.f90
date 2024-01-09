@@ -3833,8 +3833,8 @@ subroutine write_swan_inp (wavedata, calccount, &
              i          = i+1+lc
              if (nnest>1) then
                 line(i:) = 'n'
-                write (line(i+1:), '(I1)') inest
-                i = i+2
+                write (line(i+1:), '(I2.2)') inest
+                i = i+3
              endif
              !
              ! Running online with Delft3D-FLOW: itide contains the output counter 
@@ -3869,8 +3869,8 @@ subroutine write_swan_inp (wavedata, calccount, &
              i          = i+1+len_trim(pointname)
              if (nnest>1) then
                 line(i:) = 'n'
-                write (line(i+1:), '(I1)') inest
-                i = i+2
+                write (line(i+1:), '(I2.2)') inest
+                i = i+3
              endif
              !
              ! Running online with Delft3D-FLOW: itide contains the output counter 
