@@ -70,6 +70,8 @@ contains
    use m_sethu
    use m_external_forcings
    use m_1d2d_fixedweirs, only : n_1d2d_fixedweirs, realloc_1d2d_fixedweirs, initialise_1d2d_fixedweirs
+   use fm_manhole_losses, only: init_manhole_losses
+   use unstruc_channel_flow, only: network
    
    implicit none
 
@@ -158,8 +160,8 @@ contains
    call set_advection_type_for_slope_large_than_Slopedrop2D()
    call set_advection_type_for_lateral_flow_and_pipes()
 
-   if (japure1D > OFF) then
-      call setiadvpure1D()
+   if (jaPure1D > OFF) then
+      call setiadvpure1D(jaPure1D)
    end if
 
   ! check if at most one structure claims a flowlink
@@ -340,7 +342,8 @@ contains
    end if
 
    call upotukinueaa(upot, ukin, ueaa)
-
+   call init_manhole_losses(network%storS)
+   
 end function flow_flowinit
  
 
