@@ -34,7 +34,7 @@
  !! @return Error status: error (/=0) or not (0)
  integer function flow_modelinit() result(iresult)                     ! initialise flowmodel
  use timers
- use m_flowgeom,    only: jaFlowNetChanged, ndx, lnx
+ use m_flowgeom,    only: jaFlowNetChanged, ndx, lnx, ndx2d, ndxi
  use waq,           only: reset_waq
  use m_flow,        only: kmx, jasecflow, iperot
  use m_flowtimes
@@ -72,7 +72,7 @@
  use m_debug
  use m_flow_flowinit
  use m_pre_bedlevel, only: extrapolate_bedlevel_at_boundaries
- 
+ use m_dad, only: dad_included
  !
  ! To raise floating-point invalid, divide-by-zero, and overflow exceptions:
  ! Activate the following line (See also statements below)
@@ -375,8 +375,10 @@
 
  call timstrt('Update MOR width    ', handle_extra(25)) ! update MOR width and mean bed level
  if (stm_included) then
-     call fm_update_mor_width_area()
-     call fm_update_mor_width_mean_bedlevel()
+    call fm_update_mor_width_area()
+    if (dad_included .or. ndxi>ndx2d) then
+       call fm_update_mor_width_mean_bedlevel()
+    endif
  endif
  call timstop(handle_extra(25)) ! end update MOR width
 

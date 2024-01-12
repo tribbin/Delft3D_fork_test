@@ -307,8 +307,10 @@
  end if
 
  if (stm_included) then
-    call realloc(bl_ave, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
-    call aerr('bl_ave(ndx)', ierr, ndx)
+    if (dad_included .or. ndx2d>ndxi) then
+        call realloc(bl_ave, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
+        call aerr('bl_ave(ndx)', ierr, ndx)
+    endif    
     if (dad_included) then
         call realloc(bl_ave0, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
         call aerr('bl_ave0(ndx)', ierr, ndx)
