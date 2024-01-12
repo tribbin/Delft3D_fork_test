@@ -803,6 +803,7 @@ subroutine load_restart_file(file_exist, error)
          call fill_onlyWetLinks()
          call setucxucyucxuucyunew() !reconstruct cell-center velocities
          !u1(:) = u1_tmp(:)
+         call fill_valobs() 
        end if
    end if
 
