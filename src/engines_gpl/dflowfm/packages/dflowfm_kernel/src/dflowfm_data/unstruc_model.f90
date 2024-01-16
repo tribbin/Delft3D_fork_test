@@ -1637,17 +1637,22 @@ subroutine readMDUFile(filename, istat)
     call prop_get_string(md_ptr, 'time', 'Tunit', md_tunit)
     call prop_get_double(md_ptr, 'time', 'TStart', tstart_user)
     tstart_user = max(tstart_user, 0d0)
+    tstart_tlfsmo_user = tstart_user
+    call prop_get_double(md_ptr, 'time', 'TStartTlfsmo', tstart_tlfsmo_user)
     call prop_get_double (md_ptr, 'time', 'TStop', tstop_user)
     select case (md_tunit)                                            ! tfac added here for use in sedmorinit
     case('D')
+        tstart_tlfsmo_user = tstart_tlfsmo_user*3600*24 
         tstart_user = tstart_user*3600*24
         tstop_user  = tstop_user*3600*24
         tfac = 3600d0*24d0
     case('H')
+        tstart_tlfsmo_user = tstart_tlfsmo_user*3600 
         tstart_user = tstart_user*3600
         tstop_user  = tstop_user*3600
         tfac = 3600d0
     case('M')
+        tstart_tlfsmo_user = tstart_tlfsmo_user*60 
         tstart_user = tstart_user*60
         tstop_user  = tstop_user*60
         tfac = 60d0
@@ -3741,6 +3746,7 @@ endif
     end select
     call prop_set(prop_ptr, 'time', 'TStart',             tstart_user/tfac,       'Start time w.r.t. RefDate (in TUnit)')
     call prop_set(prop_ptr, 'time', 'TStop',              tstop_user/tfac,        'Stop  time w.r.t. RefDate (in TUnit)')
+    call prop_set(prop_ptr, 'time', 'TStartTlfsmo',       tstart_tlfsmo_user/tfac,       'Start time of Tlfsmo w.r.t. RefDate (in TUnit)')
 
     if (len_trim(Startdatetime) > 0) then
     call prop_set(prop_ptr, 'time', 'Startdatetime', trim(Startdatetime),  'Computation Startdatetime (yyyymmddhhmmss), when specified, overrides Tstart')
