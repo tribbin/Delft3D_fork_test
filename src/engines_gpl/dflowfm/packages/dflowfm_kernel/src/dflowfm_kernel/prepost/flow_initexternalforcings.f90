@@ -70,6 +70,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    use unstruc_inifields, only: initInitialFields, set_friction_type_values
    use Timers
    use m_subsidence
+ use m_fm_icecover, only: ja_ice_area_fraction_read, ja_ice_thickness_read, fm_ice_activate_by_ext_forces
 
    implicit none
    character(len=256)            :: filename, sourcemask
@@ -1639,6 +1640,24 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   jarhum = 1
                   dewpoint_available = .true.
                endif
+
+        else if (qid == 'sea_ice_area_fraction' .or. qid == 'sea_ice_thickness') then
+
+           ! if ice properties not yet read before, initialize ...
+           if (.not. (ja_ice_area_fraction_read .or. ja_ice_thickness_read)) then
+               call fm_ice_activate_by_ext_forces(ndx)
+           endif
+           ! add the EC link
+           if (len_trim(sourcemask)>0)  then
+              success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, srcmaskfile=sourcemask, varname=varname)
+           else
+              success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
+           endif
+           ! update the administration
+           if (success) then
+               if (qid == 'sea_ice_area_fraction') ja_ice_area_fraction_read = 1
+               if (qid == 'sea_ice_thickness') ja_ice_thickness_read = 1
+           endif
 
             else if (qid == 'cloudiness') then
 
