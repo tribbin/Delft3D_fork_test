@@ -139,13 +139,13 @@ integer, intent(out) :: iresult
 
 888 continue
    
-call update_source_data(out_variable_set_his)
-call update_source_data(out_variable_set_map)
-call update_source_data(out_variable_set_clm)
-
-call update_statistical_output(out_variable_set_his%statout,dts)
-call update_statistical_output(out_variable_set_map%statout,dts)
-call update_statistical_output(out_variable_set_clm%statout,dts)
+!call update_source_data(out_variable_set_his)
+!call update_source_data(out_variable_set_map)
+!call update_source_data(out_variable_set_clm)
+!
+!call update_statistical_output(out_variable_set_his%statout,dts)
+!call update_statistical_output(out_variable_set_map%statout,dts)
+!call update_statistical_output(out_variable_set_clm%statout,dts)
 
    if (md_fou_step == 1) then
       call update_fourier(dts)
