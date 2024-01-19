@@ -3,7 +3,7 @@
 module m_output_config
    use MessageHandling
    use netcdf_utils, only: realloc, nc_att_set
-   use coordinate_reference_system, only: nc_attribute
+   use m_ug_nc_attribute, only: nc_attribute => ug_nc_attribute
    use netcdf, only: nf90_double
    implicit none
 private

@@ -49,7 +49,7 @@ use m_landboundary
 use M_splines
 use m_monitoring_crosssections
 use unstruc_files
-use unstruc_version_module, only : unstruc_basename
+use dflowfm_version_module, only : base_name
 use gridoperations
 use m_samples
 
@@ -62,7 +62,7 @@ use m_samples
     !endif
     !
 
-    call inidia(unstruc_basename)
+    call inidia(base_name)
 
     KMAX = 2
     LMAX = 2
@@ -320,7 +320,6 @@ end subroutine api_loadmodel
    if (jampi == 1) then
       call updateValuesOnCrossSections_mpi(time1)
       call updateValuesOnRunupGauges_mpi()
-      call reduce_particles()
    endif
    call timstop(inner_timerhandle)
    
@@ -418,6 +417,8 @@ use unstruc_netcdf
 use MessageHandling, only: FinalizeMessageHandling
 use m_ec_module
 use m_meteo, only: ecInstancePtr
+use m_nearfield
+    call dealloc_nfarrays()
 
     if (.not.ecFreeInstance(ecInstancePtr)) then
        continue     

@@ -1,34 +1,34 @@
 !----- AGPL --------------------------------------------------------------------
-!                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
-!                                                                               
-!  This file is part of Delft3D (D-Flow Flexible Mesh component).               
-!                                                                               
-!  Delft3D is free software: you can redistribute it and/or modify              
-!  it under the terms of the GNU Affero General Public License as               
-!  published by the Free Software Foundation version 3.                         
-!                                                                               
-!  Delft3D  is distributed in the hope that it will be useful,                  
-!  but WITHOUT ANY WARRANTY; without even the implied warranty of               
-!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                
-!  GNU Affero General Public License for more details.                          
-!                                                                               
-!  You should have received a copy of the GNU Affero General Public License     
-!  along with Delft3D.  If not, see <http://www.gnu.org/licenses/>.             
-!                                                                               
-!  contact: delft3d.support@deltares.nl                                         
-!  Stichting Deltares                                                           
-!  P.O. Box 177                                                                 
-!  2600 MH Delft, The Netherlands                                               
-!                                                                               
-!  All indications and logos of, and references to, "Delft3D",                  
-!  "D-Flow Flexible Mesh" and "Deltares" are registered trademarks of Stichting 
+!
+!  Copyright (C)  Stichting Deltares, 2017-2023.
+!
+!  This file is part of Delft3D (D-Flow Flexible Mesh component).
+!
+!  Delft3D is free software: you can redistribute it and/or modify
+!  it under the terms of the GNU Affero General Public License as
+!  published by the Free Software Foundation version 3.
+!
+!  Delft3D  is distributed in the hope that it will be useful,
+!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!  GNU Affero General Public License for more details.
+!
+!  You should have received a copy of the GNU Affero General Public License
+!  along with Delft3D.  If not, see <http://www.gnu.org/licenses/>.
+!
+!  contact: delft3d.support@deltares.nl
+!  Stichting Deltares
+!  P.O. Box 177
+!  2600 MH Delft, The Netherlands
+!
+!  All indications and logos of, and references to, "Delft3D",
+!  "D-Flow Flexible Mesh" and "Deltares" are registered trademarks of Stichting
 !  Deltares, and remain the property of Stichting Deltares. All rights reserved.
-!                                                                               
+!
 !-------------------------------------------------------------------------------
 
-! 
-! 
+!
+!
 
 !> Write history data in NetCDF format.
 subroutine unc_write_his(tim)            ! wrihis
@@ -43,14 +43,15 @@ subroutine unc_write_his(tim)            ! wrihis
     use m_missing
     use netcdf
     use netcdf_utils
-    !use coordinate_reference_system, only: transform_and_put_latlon_coordinates
+    use coordinate_reference_system, only: transform_and_put_latlon_coordinates
     use unstruc_files, only: defaultFilename
     use unstruc_netcdf, only: unc_create, unc_close, unc_addcoordatts, unc_addcoordmapping, unc_def_var_nonspatial, definencvar, unc_meta_add_user_defined
     use unstruc_netcdf, only: ihisfile
-    use unstruc_netcdf, only: unc_writeopts, unc_noforcedflush, UG_WRITE_LATLON
+    use unstruc_netcdf, only: unc_writeopts, unc_noforcedflush, UG_WRITE_LATLON, nccrs => crs
     use unstruc_netcdf, only: unc_add_time_coverage
     use unstruc_netcdf, only: unc_write_struc_input_coordinates
     use unstruc_messages
+    use m_map_his_precision
     use m_sferic, only: jsferic
     use m_partitioninfo
     use m_timer
@@ -58,7 +59,6 @@ subroutine unc_write_his(tim)            ! wrihis
     use m_flowexternalforcings, only: numtracers, trnames
     use m_transport, only: NUMCONST_MDU, ITRA1, ITRAN, ISED1, ISEDN, const_names, const_units, NUMCONST, itemp, isalt
     use m_structures
-    use m_particles, only: japart
     use m_fm_wq_processes
     use string_module
     use m_dad
@@ -74,10 +74,11 @@ subroutine unc_write_his(tim)            ! wrihis
     use m_statistical_output
     use fm_statistical_output
     use m_output_config
-
+    use m_particles
+   
     implicit none
 
-    double precision, intent(in) :: tim !< Current time, should in fact be time1, since the data written is always s1, ucx, etc.
+    double precision, intent(in) :: tim                  !< Current time, should in fact be time1, since the data written is always s1, ucx, etc.
 
     ! locals
     integer, save :: id_laydim , id_laydimw, &
@@ -91,7 +92,7 @@ subroutine unc_write_his(tim)            ! wrihis
                      id_infiltcap, id_infiltact, &
                      id_qsun, id_qeva, id_qcon, id_qlong, id_qfreva, id_qfrcon, id_qtot, &
                      id_turkin, id_tureps , id_vicwwu, id_rich, id_zcs, id_zws, id_zwu, &
-                     id_wind, id_tair, id_rhum, id_clou, &
+                     id_wind, id_tair, id_rhum, id_clou, id_airdensity, &
                      id_R, id_WH, id_WD, id_WL, id_WT, id_WU, id_hs, &
                      id_pumpdim,    id_pump_id,     id_pump_dis,     id_pump_cap,      id_pump_s1up,      id_pump_s1dn,     id_pump_head,      &
                      id_pump_xmid,  id_pump_ymid,   id_pump_struhead,id_pump_stage,    id_pump_redufact,  id_pump_s1del,    id_pump_s1suc,     id_pump_disdir, &
@@ -101,7 +102,7 @@ subroutine unc_write_his(tim)            ! wrihis
                      id_weir_stat,  id_weirgen_vel, id_weirgen_au,  id_weirgen_head,   id_weirgen_forcedif, id_weirgen_s1crest,               &
                      id_gategendim, id_gategen_id, id_gategen_dis, id_gategen_sillh,  id_gategen_sillw,  id_gategen_edgel, id_gategen_openw, &           ! id_gategen_head,
                      id_gategen_flowh, id_gategen_s1up, id_gategen_s1dn,                                                                      &
-                     id_genstrudim, id_genstru_id, id_genstru_dis, id_genstru_crestl, id_genstru_crestw, id_genstru_edgel, id_genstru_openw, &           ! id_genstru_head,
+                     id_genstrudim, id_genstru_id, id_genstru_dis, id_genstru_crestl, id_genstru_crestw, id_genstru_edgel, id_genstru_openw, &
                      id_genstru_s1up, id_genstru_s1dn, id_genstru_dis_gate_open, id_genstru_dis_gate_over, id_genstru_dis_gate_under, id_genstru_openh, id_genstru_uppl,  &
                      id_genstru_vel, id_genstru_au, id_genstru_au_open, id_genstru_au_over, id_genstru_au_under, id_genstru_stat, id_genstru_head,  id_genstru_velgateopen, &
                      id_genstru_velgateover, id_genstru_velgateunder, id_genstru_s1crest, id_genstru_forcedif, &
@@ -146,13 +147,14 @@ subroutine unc_write_his(tim)            ! wrihis
                id_longculvertgeom_node_count, id_longculvertgeom_node_coordx, id_longculvertgeom_node_coordy
 
     double precision, allocatable :: geom_x(:), geom_y(:)
-    integer, allocatable          :: node_count(:), weirindex(:)
+    integer, allocatable          :: node_count(:)
     integer, allocatable, save :: id_tra(:)
     integer, allocatable, save :: id_hwq(:)
     integer, allocatable, save :: id_hwqb(:)
     integer, allocatable, save :: id_hwqb3d(:)
     integer, allocatable, save :: id_const(:), id_const_cum(:), id_voltot(:)
     integer, allocatable, save :: id_sedbtransfrac(:)
+    integer, allocatable, save :: id_sedstransfrac(:)
     double precision, allocatable, save :: valobsT(:,:)
     integer :: maxlocT, maxvalT !< row+column count of valobsT
 
@@ -184,7 +186,7 @@ subroutine unc_write_his(tim)            ! wrihis
     integer :: ivar
     integer, pointer :: id_var
 
-    integer :: id_twodim
+    integer :: id_twodim, nc_precision
     integer, save :: id_timebds
     double precision, save :: time_his_prev
 
@@ -197,6 +199,11 @@ subroutine unc_write_his(tim)            ! wrihis
     if (jahiszcor > 0) then
        jawrizc = 1
        jawrizw = 1
+    endif
+    
+    nc_precision = nf90_double
+    if ( md_nc_his_precision == SINGLE_PRECISION ) then
+       nc_precision = nf90_float
     endif
 
     if (timon) call timstrt ( "unc_write_his", handle_extra(54))
@@ -553,40 +560,40 @@ subroutine unc_write_his(tim)            ! wrihis
             ierr = nf90_def_var(ihisfile, 'dump_area_name',         nf90_char,   (/ id_strlendim, id_dumpdim /), id_dump_name)
             ierr = nf90_put_att(ihisfile, id_dump_name,  'long_name'    , 'dump area identifier')
 
-            ierr = nf90_def_var(ihisfile, 'dred_link_discharge',     nf90_double, (/ id_dredlinkdim, id_sedtotdim, id_timedim /), id_dredlink_dis)
+            ierr = nf90_def_var(ihisfile, 'dred_link_discharge', nc_precision, (/ id_dredlinkdim, id_sedtotdim, id_timedim /), id_dredlink_dis)
             ierr = nf90_put_att(ihisfile, id_dredlink_dis, 'long_name', 'Cumulative dredged material transported via links per fraction')
             ierr = nf90_put_att(ihisfile, id_dredlink_dis, 'units', 'm3') !link_sum
 
-            ierr = nf90_def_var(ihisfile, 'dred_discharge',     nf90_double, (/ id_dreddim, id_timedim /), id_dred_dis)
+            ierr = nf90_def_var(ihisfile, 'dred_discharge', nc_precision, (/ id_dreddim, id_timedim /), id_dred_dis)
             ierr = nf90_put_att(ihisfile, id_dred_dis, 'long_name', 'Cumulative dredged material for dredge areas')
             ierr = nf90_put_att(ihisfile, id_dred_dis, 'units', 'm3') !totvoldred
 
-            ierr = nf90_def_var(ihisfile, 'dump_discharge',     nf90_double, (/ id_dumpdim, id_timedim /), id_dump_dis)
+            ierr = nf90_def_var(ihisfile, 'dump_discharge', nc_precision, (/ id_dumpdim, id_timedim /), id_dump_dis)
             ierr = nf90_put_att(ihisfile, id_dump_dis, 'long_name', 'Cumulative dredged material for dump areas')
             ierr = nf90_put_att(ihisfile, id_dump_dis, 'units', 'm3') !totvoldump
 
-            ierr = nf90_def_var(ihisfile, 'dred_time_frac',     nf90_double, (/ id_dreddim, id_timedim /), id_dred_tfrac)
+            ierr = nf90_def_var(ihisfile, 'dred_time_frac', nc_precision, (/ id_dreddim, id_timedim /), id_dred_tfrac)
             ierr = nf90_put_att(ihisfile, id_dred_tfrac, 'long_name', 'Time fraction spent dredging')
             ierr = nf90_put_att(ihisfile, id_dred_tfrac, 'units', '-') !ndredged
 
-            ierr = nf90_def_var(ihisfile, 'plough_time_frac',   nf90_double, (/ id_dreddim, id_timedim /), id_plough_tfrac)
+            ierr = nf90_def_var(ihisfile, 'plough_time_frac', nc_precision, (/ id_dreddim, id_timedim /), id_plough_tfrac)
             ierr = nf90_put_att(ihisfile, id_plough_tfrac, 'long_name', 'Time fraction spent ploughing')
             ierr = nf90_put_att(ihisfile, id_plough_tfrac, 'units', '-') !nploughed
         endif
 
         if ( jacheckmonitor.eq.1 ) then
-           ierr = nf90_def_var(ihisfile, 'checkerboard_monitor', nf90_double, (/ id_laydim, id_timedim /), id_checkmon)
+           ierr = nf90_def_var(ihisfile, 'checkerboard_monitor', nc_precision, (/ id_laydim, id_timedim /), id_checkmon)
            ierr = nf90_put_att(ihisfile, id_checkmon, 'long_name', 'Checkerboard mode monitor')
            ierr = nf90_put_att(ihisfile, id_checkmon, 'unit', 'm s-1')
 
            ierr = nf90_def_var(ihisfile, 'num_timesteps', nf90_int, id_timedim, id_num_timesteps)
-           ierr = nf90_def_var(ihisfile, 'comp_time', nf90_double, id_timedim, id_comp_time)
+           ierr = nf90_def_var(ihisfile, 'comp_time', nc_precision, id_timedim, id_comp_time)
         end if
 
-        if ( japart.gt.0 ) then
-!          write partiles header to hisfile
-           call unc_write_part_header(ihisfile,id_timedim,id_partdim,id_parttime,id_partx,id_party,id_partz)
-        end if
+!        if ( japart.gt.0 ) then
+!!          write partiles header to hisfile
+!           call unc_write_part_header(ihisfile,id_timedim,id_partdim,id_parttime,id_partx,id_party,id_partz)
+!        end if
 
          do ivar = 1,out_variable_set_his%count
             config => out_variable_set_his%statout(ivar)%output_config
@@ -964,11 +971,6 @@ subroutine unc_write_his(tim)            ! wrihis
     ierr = nf90_put_var(ihisfile, id_timestep, dts, (/ it_his /))
     if (timon) call timstop ( handle_extra(64))
 
-!   write particles to hisfile (for now)
-    if ( japart.gt.0 ) then
-       call unc_write_part(ihisfile,it_his,id_parttime,id_partx,id_party,id_partz)
-    end if
-
 !   Observation points (fixed+moving)
 
     ntot = numobs + nummovobs
@@ -1053,7 +1055,7 @@ subroutine unc_write_his(tim)            ! wrihis
           ierr = nf90_put_var(ihisfile,    id_statgeom_node_coordy,  yobs(:), start = (/ 1 /), count = (/ numobs /))
 #ifdef HAVE_PROJ
           if (add_latlon) then
-!             call transform_and_put_latlon_coordinates(ihisfile, id_statgeom_node_lon, id_statgeom_node_lat, nccrs%proj_string, xobs, yobs)
+             call transform_and_put_latlon_coordinates(ihisfile, id_statgeom_node_lon, id_statgeom_node_lat, nccrs%proj_string, xobs, yobs)
        end if
 #endif
        end if
@@ -1063,7 +1065,7 @@ subroutine unc_write_his(tim)            ! wrihis
           ierr = nf90_put_var(ihisfile,    id_staty,  yobs(:),            start = (/ 1, it_his /), count = (/ ntot, 1 /))
 #ifdef HAVE_PROJ
           if (add_latlon) then
-!             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs, start = (/ 1, it_his /), count = (/ ntot, 1 /))
+             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs, start = (/ 1, it_his /), count = (/ ntot, 1 /))
           end if
 #endif
        else
@@ -1071,7 +1073,7 @@ subroutine unc_write_his(tim)            ! wrihis
           ierr = nf90_put_var(ihisfile,    id_staty,  yobs(:),            start = (/ 1 /), count = (/ ntot /))
 #ifdef HAVE_PROJ
           if (add_latlon) then
-!             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs)
+             call transform_and_put_latlon_coordinates(ihisfile, id_statlon, id_statlat, nccrs%proj_string, xobs, yobs)
        endif
 #endif
     endif
@@ -1118,12 +1120,11 @@ subroutine unc_write_his(tim)            ! wrihis
        if (jatem > 0) then
              ierr = nf90_put_var(ihisfile, id_vartem, valobsT(:,IPNT_TEM1+kk-1), start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1 /))
        end if
-             if( (jasal > 0 .or. jatem > 0 .or. jased > 0 ) .and. jahisrho > 0) then
-                ierr = nf90_put_var(ihisfile, id_varrhop , valobsT(:,IPNT_RHOP +kk-1), start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1 /))
-                if (idensform > 10) then
-                ierr = nf90_put_var(ihisfile, id_varrho  , valobsT(:,IPNT_RHO +kk-1) , start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1 /))
-                endif
-                ierr = nf90_put_var(ihisfile, id_bruv    , valobsT(:,IPNT_BRUV+kk-1) , start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1 /))
+       if( (jasal > 0 .or. jatem > 0 .or. jased > 0 ) .and. jahisrho > 0) then
+          ierr = nf90_put_var(ihisfile, id_varrhop , valobsT(:,IPNT_RHOP +kk-1), start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1 /))
+          if (idensform > 10) then
+             ierr = nf90_put_var(ihisfile, id_varrho  , valobsT(:,IPNT_RHO +kk-1) , start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1 /))
+          endif
        end if
        if (jased > 0 .and. .not. stm_included) then
              ierr = nf90_put_var(ihisfile, id_varsed, valobsT(:,IPNT_SED +kk-1), start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1 /))
@@ -1148,7 +1149,7 @@ subroutine unc_write_his(tim)            ! wrihis
                else if (comparereal(tim, ti_hise, eps10) == 0) then
                   ierr = nf90_put_var(ihisfile, id_hwq(i), valobsT(:,IPNT_HWQ1 + (i-1)*kmx+kk-1), start = (/ kk, 1 /), count = (/ 1, ntot, 1/))
                endif
-                enddo       
+                enddo
           end if
           if (IVAL_WQB3D1 > 0) then
              do j = IVAL_WQB3D1,IVAL_WQB3DN   ! enumerators of 3d waqbot output in valobs array (not the pointer)
@@ -1190,7 +1191,7 @@ subroutine unc_write_his(tim)            ! wrihis
           if( (jasal > 0 .or. jatem > 0 .or. jased > 0 )  .and. jahisrho > 0) then
              ierr = nf90_put_var(ihisfile, id_varrhop, valobsT(:,IPNT_RHOP) ,  start = (/ 1, it_his /), count = (/ ntot, 1 /))
        end if
-  
+
        if (IVAL_TRA1 > 0) then
           do j = IVAL_TRA1,IVAL_TRAN   ! enumerators of tracers in valobs array (not the pointer)
             i = j - IVAL_TRA1 + 1
@@ -1287,6 +1288,10 @@ subroutine unc_write_his(tim)            ! wrihis
 
     end if ! jamapheatflux > 0! jatem > 0
 
+    if (ja_airdensity + ja_computed_airdensity > 0 .and. jahis_airdensity> 0) then
+       ierr = nf90_put_var(ihisfile, id_airdensity   , valobsT(:,IPNT_AIRDENSITY),  start = (/ 1, it_his /), count = (/ ntot, 1 /))
+    end if
+
     ! 3d layer interface quantities
     if (kmx > 0 ) then
        do kk = 1, kmx+1
@@ -1295,6 +1300,9 @@ subroutine unc_write_his(tim)            ! wrihis
           if (kk > 1) then
              ierr = nf90_put_var(ihisfile, id_zcs,    valobsT(:,IPNT_ZCS+kk-2),   start = (/ kk-1,1, it_his /), count = (/ 1, ntot, 1 /))
           endif
+          if ( (jasal > 0 .or. jatem > 0 .or. jased > 0) .and. jahisrho > 0) then
+             ierr = nf90_put_var(ihisfile, id_bruv,   valobsT(:,IPNT_BRUV+kk-1),  start = (/ kk,  1, it_his /), count = (/ 1, ntot, 1 /))
+          end if
        if (iturbulencemodel >= 3 .and. jahistur > 0) then
              ierr = nf90_put_var(ihisfile, id_turkin, valobsT(:,IPNT_TKIN +kk-1), start = (/ kk,  1, it_his /), count = (/ 1, ntot, 1 /))
              ierr = nf90_put_var(ihisfile, id_tureps, valobsT(:,IPNT_TEPS +kk-1), start = (/ kk,  1, it_his /), count = (/ 1, ntot, 1 /))
@@ -2013,7 +2021,7 @@ subroutine unc_write_his(tim)            ! wrihis
         call unc_write_struc_input_coordinates(ihisfile,n)
       enddo
     endif
-    
+
     if ( jacheckmonitor.eq.1 ) then
       ierr = nf90_put_var(ihisfile, id_checkmon, checkmonitor, start=(/ 1, it_his /))
 
@@ -2069,3 +2077,5 @@ contains
    end function unc_def_his_structure_static_vars
 
 end subroutine unc_write_his
+
+    

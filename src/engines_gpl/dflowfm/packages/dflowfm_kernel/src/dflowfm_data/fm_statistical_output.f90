@@ -33,7 +33,7 @@ private
    !! (only now, with the model fully loaded, because earlier the constituents were not yet known).
    subroutine init_obscrs_data_and_config(num_const_items, output_config, idx_const)
    use m_monitoring_crosssections, only: ncrs
-   use coordinate_reference_system, only: nc_attribute
+   use m_ug_nc_attribute
    use m_transport, only: NUMCONST_MDU, const_names, isedn, ised1, const_units
    use m_sediment, only: stmpar, jased
    use messagehandling, only : Idlen
@@ -47,7 +47,7 @@ private
    integer ::  num, lenunitstr, lsed
    character(len=idlen) :: conststr
    character(len=idlen) :: unitstr
-   type(nc_attribute) :: atts(5)
+   type(ug_nc_attribute) :: atts(5)
  
    if (ncrs == 0) then
       return
@@ -249,12 +249,14 @@ private
    !> Set all possible statistical quantity items in the quantity configuration sets.
    subroutine default_fm_statistical_output()
       use netcdf_utils, only: ncu_set_att
-      use coordinate_reference_system, only: nc_attribute
+      use m_ug_nc_attribute
       use netcdf, only: nf90_int
       use m_flow
+      use m_ug_nc_attribute, only: ug_nc_attribute
+      use netcdf_utils
       use m_missing
       
-      type(nc_attribute) :: atts(5)
+      type(ug_nc_attribute) :: atts(5)
 
       out_quan_conf_his%count = 0
       out_quan_conf_map%count = 0
@@ -1554,7 +1556,7 @@ private
    !! the quantity configuration set and the active model settings.
    !! Must be called as part of flow_modelinit.
    subroutine flow_init_statistical_output_his(output_config,output_set)
-      use coordinate_reference_system, only: nc_attribute
+      use m_ug_nc_attribute
       use string_module, only: replace_char
       use m_flow
       use m_flowexternalforcings
