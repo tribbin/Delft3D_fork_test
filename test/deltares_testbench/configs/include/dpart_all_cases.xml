@@ -487,7 +487,7 @@ e05_f03_zlayers_c14_oil                   e05_part/f03_zlayers/c14_oil
 
 -->
         <testCase name="e05_f03_zlayers_c01_tracer" ref="part_default">
-                <dependency local_dir="e05_f03_zlayers_hydro">e05_f03_zlayers/hydro</dependency>
+                <dependency local_dir="e05_f03_zlayers_hydro">e05_part/f03_zlayers/hydro</dependency>
                 <path>e05_part/f03_zlayers/c01_tracer</path>
                 <programs>
                         <program ref="PART" seq="1">
@@ -545,7 +545,7 @@ e05_f03_zlayers_c14_oil                   e05_part/f03_zlayers/c14_oil
                 </checks>
         </testCase>
         <testCase name="e05_f03_zlayers_c02_tracer" ref="part_default">
-                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_f03_zlayers/hydro_v2</dependency>
+                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_part/f03_zlayers/hydro_v2</dependency>
                 <path>e05_part/f03_zlayers/c02_tracer</path>
                 <programs>
                         <program ref="PART" seq="1">
@@ -603,7 +603,7 @@ e05_f03_zlayers_c14_oil                   e05_part/f03_zlayers/c14_oil
                 </checks>
         </testCase>
         <testCase name="e05_f03_zlayers_c11_oil" ref="part_default">
-                <dependency local_dir="e05_f03_zlayers_hydro">e05_f03_zlayers/hydro</dependency>
+                <dependency local_dir="e05_f03_zlayers_hydro">e05_part/f03_zlayers/hydro</dependency>
                 <path>e05_part/f03_zlayers/c11_oil</path>
                 <programs>
                         <program ref="PART" seq="1">
@@ -685,7 +685,7 @@ e05_f03_zlayers_c14_oil                   e05_part/f03_zlayers/c14_oil
                 </checks>
         </testCase>
         <testCase name="e05_f03_zlayers_c12_oil" ref="part_default">
-                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_f03_zlayers/hydro_v2</dependency>
+                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_part/f03_zlayers/hydro_v2</dependency>
                 <path>e05_part/f03_zlayers/c12_oil</path>
                 <programs>
                         <program ref="PART" seq="1">
@@ -767,7 +767,7 @@ e05_f03_zlayers_c14_oil                   e05_part/f03_zlayers/c14_oil
                 </checks>
         </testCase>
         <testCase name="e05_f03_zlayers_c13_oil" ref="part_default">
-                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_f03_zlayers/hydro</dependency>
+                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_part/f03_zlayers/hydro</dependency>
                 <path>e05_part/f03_zlayers/c13_oil</path>
                 <programs>
                         <program ref="PART" seq="1">
@@ -849,7 +849,7 @@ e05_f03_zlayers_c14_oil                   e05_part/f03_zlayers/c14_oil
                 </checks>
         </testCase>
         <testCase name="e05_f03_zlayers_c14_oil" ref="part_default">
-                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_f03_zlayers/hydro</dependency>
+                <dependency local_dir="e05_f03_zlayers_hydro_v2">e05_part/f03_zlayers/hydro</dependency>
                 <path>e05_part/f03_zlayers/c14_oil</path>
                 <programs>
                         <program ref="PART" seq="1">
