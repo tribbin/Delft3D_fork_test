@@ -13158,6 +13158,15 @@ subroutine unc_read_map_or_rst(filename, ierr)
     call readyy('Reading map data', 0.80d0)
 
 
+    ! Read fixed weirs
+    ierr = get_var_and_shift(imapfile, 'weirdte', map_fixed_weir_energy_loss, tmpvar1, UNC_LOC_U, kmx, Lstart, um%lnx_own, it_read, um%jamergedmap, &
+                         um%ilink_own, um%ilink_merge)
+    do L = 1,lnx 
+        if (iadv(L)==24.or.iadv(L)==25) then
+            weirdte(nfxwL(L))=map_fixed_weir_energy_loss(L)
+        endif
+    enddo
+    
     ! Read the salinity (flow elem)
     if (jasal > 0) then
        if (kmx > 0) then
