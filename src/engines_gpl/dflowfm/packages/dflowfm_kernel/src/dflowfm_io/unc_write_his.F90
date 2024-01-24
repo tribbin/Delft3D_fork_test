@@ -742,6 +742,7 @@ subroutine unc_write_his(tim)            ! wrihis
            do i = 1, numsrc
               ierr = nf90_put_var(ihisfile, id_srcname, trimexact(srcname(i), strlen_netcdf), (/ 1, i/) )
               ierr = nf90_put_var(ihisfile, id_qsrccur, qstss((numconst+1)*(i-1)+1), (/ i, it_his /)) ! Intentionally here for the first output time
+              qsrc(i) = qstss((numconst+1)*(i-1)+1)
            enddo
            ierr = nf90_put_var(ihisfile, id_srcx, xsrc)
            ierr = nf90_put_var(ihisfile, id_srcy, ysrc)
