@@ -75,7 +75,7 @@
  use m_fm_icecover, only: fm_ice_alloc, fm_ice_echo
  use m_dad, only: dad_included
  !use m_restart_debug 
- use m_fixedweirs, only: weirdte
+ use m_fixedweirs, only: weirdte, nfxw
  !
  ! To raise floating-point invalid, divide-by-zero, and overflow exceptions:
  ! Activate the following line (See also statements below)
@@ -441,10 +441,15 @@
  !  call init_debugarr(lnx,stmpar%lsedtot)
  !endif
 
- weirdte_save=weirdte
+ if (nfxw > 0) then 
+    allocate ( weirdte_save(nfxw), STAT=ierr)
+    weirdte_save=weirdte
+ endif 
  call flow_initimestep(1, iresult)                   ! 1 also sets zws0
- weirdte=weirdte_save
- 
+ if (nfxw > 0) then 
+    weirdte=weirdte_save
+    deallocate ( weirdte_save)
+ endif 
  jaFlowNetChanged = 0
 
 

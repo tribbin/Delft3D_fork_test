@@ -73,7 +73,7 @@ contains
    use m_fm_icecover, only: ice_apply_pressure, ice_p, fm_ice_update_press
    use fm_manhole_losses, only: init_manhole_losses
    use unstruc_channel_flow, only: network
-   use m_fixedweirs, only: weirdte
+   use m_fixedweirs, only: weirdte, nfxw
    
    implicit none
 
@@ -290,9 +290,15 @@ contains
    call include_ground_water()
    call include_infiltration_model()
 
-   weirdte_save=weirdte
+   if (nfxw > 0) then 
+      allocate ( weirdte_save(nfxw), STAT=ierror)
+      weirdte_save=weirdte
+   endif
    call calculate_hu_au_and_advection_for_dams_weirs(SET_ZWS0)
-   weirdte=weirdte_save
+   if (nfxw > 0) then 
+       weirdte=weirdte_save
+      deallocate ( weirdte_save)
+   endif
    call temporary_fix_for_sepr_3D()
 
    call volsur()
