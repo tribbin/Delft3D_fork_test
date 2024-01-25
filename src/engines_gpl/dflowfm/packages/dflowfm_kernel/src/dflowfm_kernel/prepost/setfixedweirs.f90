@@ -703,7 +703,8 @@ subroutine check_fixed_weirs_parameters_against_limits()
        end if
    end do
    if (.not. inside_limits) then
-       call mess(LEVEL_ERROR, 'Some fixed weirs have values outside of limits. See messages above.')
+       call mess(LEVEL_WARN, &
+       'Some fixed weirs have values outside of limits. See messages above. This may give problems when writing the shape file.')
    end if
 
 
