@@ -83,15 +83,15 @@ private
                                                                         !< required this variable points to the basic variable (e.g. s1).
                                                                         !< Otherwise during the simulation the intermediate results are stored.
       double precision, pointer, dimension(:)   :: stat_input           !< In case a statistical operation is requested. This pointer points to the
-                                                                        !< basic variable.
-      double precision, pointer, dimension(:)   :: source_input         !< pointer to the basic variable
-      double precision, pointer, dimension(:,:) :: samples              !< In case a moving average is requested. This pointer points to the
+                                                                        !< source_input.
+      double precision, pointer    , dimension(:)   :: source_input         !< pointer to the basic variable
+      double precision, allocatable, dimension(:,:) :: samples              !< In case a moving average is requested. This pointer points to the
                                                                         !< work array, where the different samples are stored.
-      double precision, pointer, dimension(:)   :: moving_average_sum !< In case a moving average is requested. This pointer points to the
+      double precision, allocatable, dimension(:)   :: moving_average_sum !< In case a moving average is requested. This pointer points to the
                                                                         !< actual average values.
       double precision                          :: timestep_sum         !< sum of timesteps (for moving average/ average calculation)
       
-      double precision, pointer, dimension(:)   :: timesteps            !< array of timesteps belonging to samples in samples array
+      double precision, allocatable, dimension(:)   :: timesteps            !< array of timesteps belonging to samples in samples array
       procedure(process_data_double_interface), nopass, pointer      :: source_input_function_pointer => null()          !< function pointer for operation that needs to be performed to produce source_input 
       
    end type t_output_variable_item
