@@ -13330,38 +13330,25 @@ subroutine unc_read_map_or_rst(filename, ierr)
           endif
           if (allocated(tmpvar)) deallocate(tmpvar)
           allocate(tmpvar(max(1,kmx), ndxi))
+          call realloc(tmpvar1D, ndkx, keepExisting = .false.,fill = 0.0d0)
           do iconst = ISED1,ISEDN
              i = iconst - ISED1 + 1
              tmpstr = const_names(iconst)
              ! Forbidden chars in NetCDF names: space, /, and more.
              call replace_char(tmpstr,32,95)
              call replace_char(tmpstr,47,95)
-             ierr = nf90_inq_varid(imapfile, trim(tmpstr), id_sf1(i))
+!            concentrations exists in restart file
              if (kmx > 0) then
-                ierr = nf90_get_var(imapfile, id_sf1(i), tmpvar(1:kmx,1:um%ndxi_own), start=(/ 1, kstart, it_read /), count=(/ kmx, um%ndxi_own, 1 /))
-                do kk = 1, um%ndxi_own
-                   if (um%jamergedmap == 1) then
-                      kloc = um%inode_own(kk)
-                   else
-                      kloc = kk
-                   endif
-                   call getkbotktop(kloc, kb, kt)
-                   ! generally constituents get filled in the transport() loop. For initial restart file this has not happened yet so the value gets assigned twice
-                   constituents(iconst,kb:kt) = tmpvar(1:kt-kb+1,kk)
-                   sed(i,kb:kt) = tmpvar(1:kt-kb+1,kk)
-                enddo
+                tmp_loc = UNC_LOC_S3D
              else
-                ierr = nf90_get_var(imapfile, id_sf1(i), tmpvar(1,1:um%ndxi_own), start = (/ kstart, it_read/), count = (/ndxi,1/))
-                do kk = 1, ndxi
-                   if (um%jamergedmap == 1) then
-                      kloc = um%inode_own(kk)
-                   else
-                      kloc = kk
-                   endif
-                   ! generally constituents get filled in the transport() loop. For initial restart file this has not happened yet so the value gets assigned twice
-                   constituents(iconst, kloc) = tmpvar(1,kk)
-                   sed(i, kloc) = tmpvar(1,kk)
-                enddo
+                tmp_loc = UNC_LOC_S
+             endif
+             ierr = get_var_and_shift(imapfile, trim(tmpstr), tmpvar1D, tmpvar1, tmp_loc, kmx, kstart, um%ndxi_own, it_read, um%jamergedmap, &
+                                 um%inode_own, um%inode_merge)
+             if (ierr /= nf90_noerr) then
+                call mess(LEVEL_WARN, 'unc_read_map_or_rst: cannot read variable '''//trim(tmpstr)//''' from the specified restart file. Skip reading this variable.')
+             else
+                call assign_restart_data_to_local_array(tmpvar1D, constituents, iconst, kmx, um%ndxi_own, um%jamergedmap, um%inode_own, 0, 0)
              endif
              call check_error(ierr, const_names(iconst))
           enddo
@@ -13386,14 +13373,15 @@ subroutine unc_read_map_or_rst(filename, ierr)
              if (allocated(rst_mfluff)) deallocate(rst_mfluff)
              allocate(tmpvar(sedsus_read, ndxi))
              allocate(rst_mfluff(stmpar%lsedsus, ndxi))
-             ierr = nf90_get_var(imapfile, id_mfluff, tmpvar(1:sedsus_read, 1:um%ndxi_own), start = (/ 1, kstart, it_read/), count = (/sedsus_read, ndxi,1/))
+             ierr = nf90_get_var(imapfile, id_mfluff, tmpvar(1:sedsus_read, 1:um%ndxi_own), start = (/ 1, kstart, it_read/), count = (/sedsus_read, ndxi, 1/))
              do kk = 1, ndxi
                 if (um%jamergedmap == 1) then
                    kloc = um%inode_own(kk)
+                   rst_mfluff(:, kloc) = tmpvar(:, um%inode_merge(kk))
                 else
                    kloc = kk
+                   rst_mfluff(:, kloc) = tmpvar(:, kk)
                 endif
-                rst_mfluff(:, kloc) = tmpvar(:,kk)
              enddo
              call check_error(ierr, 'mfluff')
              stmpar%morpar%flufflyr%mfluff(:,1:ndxi) = rst_mfluff(:,1:ndxi)
@@ -13409,17 +13397,18 @@ subroutine unc_read_map_or_rst(filename, ierr)
           if (allocated(rst_bodsed)) deallocate(rst_bodsed)
           allocate(tmpvar(sedtot_read, ndxi))
           allocate(rst_bodsed(sedtot_read, ndxi))
-             ierr = nf90_inq_varid(imapfile, 'bodsed', id_bodsed)
-             ierr = nf90_get_var(imapfile, id_bodsed, tmpvar(1:sedtot_read, 1:um%ndxi_own), start = (/ 1, kstart, it_read/), count = (/sedtot_read, ndxi,1/))
-             do kk = 1, ndxi
-                if (um%jamergedmap == 1) then
-                   kloc = um%inode_own(kk)
-                else
-                   kloc = kk
-                endif
+          ierr = nf90_inq_varid(imapfile, 'bodsed', id_bodsed)
+          ierr = nf90_get_var(imapfile, id_bodsed, tmpvar(1:sedtot_read, 1:um%ndxi_own), start = (/ 1, kstart, it_read/), count = (/sedtot_read, ndxi, 1/))
+          do kk = 1, ndxi
+             if (um%jamergedmap == 1) then
+                kloc = um%inode_own(kk)
+                rst_bodsed(:, kloc) = tmpvar(:, um%inode_merge(kk))
+             else
+                kloc = kk
                 rst_bodsed(:, kloc) = tmpvar(:, kk)
-             enddo
-             call check_error(ierr, 'bodsed')
+             endif
+          enddo
+          call check_error(ierr, 'bodsed')
           stmpar%morlyr%state%bodsed(:,1:ndxi) = rst_bodsed(:,1:ndxi)
           call bedcomp_use_bodsed(stmpar%morlyr)
           layerfrac = 2
@@ -13440,10 +13429,11 @@ subroutine unc_read_map_or_rst(filename, ierr)
              do kk = 1, ndxi
                 if (um%jamergedmap == 1) then
                    kloc = um%inode_own(kk)
+                   rst_msed(:, :, kloc) = tmpvar2(:, :, um%inode_merge(kk))
                 else
                    kloc = kk
+                   rst_msed(:, :, kloc) = tmpvar2(:, :, kk)
                 endif
-                rst_msed(:, :, kloc) = tmpvar2(:, :, kk)
              enddo
              call check_error(ierr, 'msed')
           else
@@ -13461,10 +13451,11 @@ subroutine unc_read_map_or_rst(filename, ierr)
                 do kk = 1, ndxi
                    if (um%jamergedmap == 1) then
                       kloc = um%inode_own(kk)
+                      rst_msed(:, :, kloc) = tmpvar2(:, :, um%inode_merge(kk))
                    else
                       kloc = kk
+                      rst_msed(:, :, kloc) = tmpvar2(:, :, kk)     ! no typo, see restart_lyrs.f90
                    endif
-                   rst_msed(:, :, kloc) = tmpvar2(:, :, kk)     ! no typo, see restart_lyrs.f90
                 enddo
                 layerfrac = 1
              endif
@@ -13485,10 +13476,11 @@ subroutine unc_read_map_or_rst(filename, ierr)
              do kk = 1, ndxi
                 if (um%jamergedmap == 1) then
                    kloc = um%inode_own(kk)
+                   rst_thlyr(:, kloc) = tmpvar(:, um%inode_merge(kk))
                 else
                    kloc = kk
+                   rst_thlyr(:, kloc) = tmpvar(:, kk)
                 endif
-                rst_thlyr(:, kloc) = tmpvar(:, kk)
              enddo
           endif
           call check_error(ierr, 'thlyr')
