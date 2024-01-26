@@ -13026,111 +13026,21 @@ subroutine unc_read_map_or_rst(filename, ierr)
     ierr = get_var_and_shift(imapfile, 'qa', qa, tmpvar1, UNC_LOC_U3D, kmx, Lstart, um%lnx_own, it_read, um%jamergedmap, &
                              um%ilink_own, um%ilink_merge)
 
-    if (um%jamergedmap_same == 1) then
-       ! Read info. on waterlevel boundaries
-       if (um%nbnd_read > 0 .and. jaoldrstfile == 0) then
-          call realloc(tmp_s1, um%nbnd_read, stat=ierr, keepExisting=.false.)
-          call realloc(tmp_s0, um%nbnd_read, stat=ierr, keepExisting=.false.)
-          call realloc(tmp_bl, um%nbnd_read, stat=ierr, keepExisting=.false.)
-          call realloc(tmp_squ, um%nbnd_read, stat=ierr, keepExisting=.false.)
-          call realloc(tmp_sqi, um%nbnd_read, stat=ierr, keepExisting=.false.)
+    ! Read info. on waterlevel boundaries
+    if (um%nbnd_read > 0 .and. jaoldrstfile == 0) then
 
-          ierr = nf90_inq_varid(imapfile, 's0_bnd', id_s0bnd)
-          if (ierr/=0) goto 999
-          ierr = nf90_inq_varid(imapfile, 's1_bnd', id_s1bnd)
-          if (ierr/=0) goto 999
-          if (jarstignorebl .eq. 0) then
-             ierr = nf90_inq_varid(imapfile, 'bl_bnd', id_blbnd)
-             if (ierr/=0) goto 999
-          endif
-          ierr = nf90_inq_varid(imapfile, 'sqi_bnd', id_sqibnd)
-          if (ierr/=0) goto 999
-          ierr = nf90_inq_varid(imapfile, 'squ_bnd', id_squbnd)
-          if (ierr/=0) goto 999
-
-          ierr = nf90_get_var(imapfile, id_s0bnd, tmp_s0, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
-          call check_error(ierr, 's0_bnd')
-          ierr = nf90_get_var(imapfile, id_s1bnd, tmp_s1, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
-          call check_error(ierr, 's1_bnd')
-          if (jarstignorebl .eq. 0) then
-              ierr = nf90_get_var(imapfile, id_blbnd, tmp_bl, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
-              call check_error(ierr, 'bl_bnd')
-          endif
-          ierr = nf90_get_var(imapfile, id_squbnd, tmp_squ, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
-          call check_error(ierr, 'squ_bnd')
-          ierr = nf90_get_var(imapfile, id_sqibnd, tmp_sqi, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
-          call check_error(ierr, 'sqi_bnd')
-          if (nerr_/=0) goto 999
-
-          if (jampi==0) then
-             do i = 1, um%nbnd_read
-                kk = ln(1, lnxi+i)
-                s0(kk) = tmp_s0(i)
-                s1(kk) = tmp_s1(i)
-                if (jarstignorebl .eq. 0) then
-                   bl(kk) = tmp_bl(i)
-                endif
-                squ(kk) = tmp_squ(i)
-                sqi(kk) = tmp_sqi(i)
-             enddo
-          else
-             do i = 1, um%nbnd_read ! u and z bnd
-                Lf = lnxi+ibnd_own(i) ! boundary flow link
-                kk = ln(1, Lf) ! boundary flow node (the external one)
-                s0(kk) = tmp_s0(i)
-                s1(kk) = tmp_s1(i)
-                if (jarstignorebl .eq. 0) then
-                   bl(kk) = tmp_bl(i)
-                endif
-                squ(kk) = tmp_squ(i)
-                sqi(kk) = tmp_sqi(i)
-             enddo
-          endif
+       call unc_read_rst_bnd_vals(imapfile, 's0_bnd', s0, kstart_bnd, it_read, um, kmx, kstart, tmpvar1, ierr)
+       call unc_read_rst_bnd_vals(imapfile, 's1_bnd', s1, kstart_bnd, it_read, um, kmx, kstart, tmpvar1, ierr)
+       if (jarstignorebl .eq. 0) then
+           call unc_read_rst_bnd_vals(imapfile, 'bl_bnd', bl, kstart_bnd, it_read, um, kmx, kstart, tmpvar1, ierr)
        endif
-       call readyy('Reading map data',0.60d0)
+       call unc_read_rst_bnd_vals(imapfile, 'sqi_bnd', sqi, kstart_bnd, it_read, um, kmx, kstart, tmpvar1, ierr)
+       call unc_read_rst_bnd_vals(imapfile, 'squ_bnd', squ, kstart_bnd, it_read, um, kmx, kstart, tmpvar1, ierr)
 
-    else  ! restart with different partitions
-       ! Read info. on waterlevel boundaries
-       if (ndxbnd_own > 0 .and. jaoldrstfile == 0) then
-          call realloc(tmp_s1, ndx-ndxi, stat=ierr, keepExisting=.false.)
-          call realloc(tmp_s0, ndx-ndxi, stat=ierr, keepExisting=.false.)
-          if (jarstignorebl .eq. 0) then
-             call realloc(tmp_bl, ndx-ndxi, stat=ierr, keepExisting=.false.)
-          endif
-          call realloc(tmp_squ, ndx-ndxi, stat=ierr, keepExisting=.false.)
-          call realloc(tmp_sqi, ndx-ndxi, stat=ierr, keepExisting=.false.)
-          ierr = get_var_and_shift(imapfile, 's0_bnd', tmp_s0, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
-                                   um%jamergedmap, ibnd_own, um%ibnd_merge)
-          call check_error(ierr, 's0_bnd')
-          ierr = get_var_and_shift(imapfile, 's1_bnd', tmp_s1, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
-                                   um%jamergedmap, ibnd_own, um%ibnd_merge)
-          call check_error(ierr, 's1_bnd')
-          if (jarstignorebl .eq. 0) then
-             ierr = get_var_and_shift(imapfile, 'bl_bnd', tmp_bl, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
-                                      um%jamergedmap, ibnd_own, um%ibnd_merge)
-             call check_error(ierr, 'bl_bnd')
-          endif
-          ierr = get_var_and_shift(imapfile, 'squ_bnd', tmp_squ, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
-                                   um%jamergedmap, ibnd_own, um%ibnd_merge)
-          call check_error(ierr, 'squ_bnd')
-          ierr = get_var_and_shift(imapfile, 'sqi_bnd', tmp_sqi, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
-                                   um%jamergedmap, ibnd_own, um%ibnd_merge)
-          call check_error(ierr, 'sqi_bnd')
+       if (nerr_/=0) goto 999
 
-          do i=1,ndxbnd_own
-             j=ibnd_own(i)
-             Lf=lnxi+j
-             kk=ln(1,Lf)
-             s0(kk) = tmp_s0(j)
-             s1(kk) = tmp_s1(j)
-             if (jarstignorebl .eq. 0) then
-                bl(kk) = tmp_bl(j)
-             endif
-             squ(kk) = tmp_squ(j)
-             sqi(kk) = tmp_sqi(j)
-          enddo
-       endif
     endif
+    call readyy('Reading map data',0.60d0)
 
     ! compute kbot and ktop after reading s1 from rst/map file
     if (kmx > 0) then
@@ -14318,6 +14228,71 @@ function unc_read_merged_map(um, imapfile, filename, ierr) result (success)
 
    success = .true.
 end function unc_read_merged_map
+
+!> helper routine for unc_read_map_or_rst boundary information
+subroutine unc_read_rst_bnd_vals(imapfile, var_name, var_double, kstart_bnd, it_read, um, kmx, kstart, tmpvar1, ierr)
+use m_partitioninfo, only: jampi
+use m_flowgeom, only: ln, lnxi, ndx, ndxi
+use netcdf
+use m_flowexternalforcings, only : ibnd_own, ndxbnd_own
+use m_alloc
+
+implicit none
+
+integer                     , intent(in)    :: imapfile
+character(len=*)            , intent(in)    :: var_name
+double precision            , intent(inout) :: var_double(ndx)
+integer                     , intent(in)    :: kstart_bnd
+integer                     , intent(in)    :: it_read
+type(t_unc_merged)          , intent(in)    :: um
+integer                     , intent(in)    :: kmx
+integer                     , intent(in)    :: kstart
+double precision            , intent(inout) :: tmpvar1(:)
+integer                     , intent(out)   :: ierr
+! locals 
+integer                                     :: i 
+integer                                     :: kk
+integer                                     :: lf
+integer                                     :: var_id
+double precision, allocatable               :: var_tmp(:)
+
+if (um%jamergedmap_same == 1) then
+    
+   call realloc(var_tmp, um%nbnd_read, stat=ierr, keepExisting=.false.)
+   
+   ierr = nf90_inq_varid(imapfile, var_name, var_id)
+   if (ierr/=0) return ! Error finding var_name, therefore we skip the rest
+   
+   ierr = nf90_get_var(imapfile, var_id, var_double, start=(/ kstart_bnd, it_read/), count = (/ um%nbnd_read, 1 /))
+   call check_error(ierr, var_name)
+   
+   if (jampi==0) then
+      do i = 1, um%nbnd_read
+         kk = ln(1, lnxi+i)
+         var_double(kk) = var_tmp(i)
+      enddo
+   else
+      do i = 1, um%nbnd_read ! u and z bnd
+         lf = lnxi+ibnd_own(i) ! boundary flow link
+         kk = ln(1, lf) ! boundary flow node (the external one)
+         var_double(kk) = var_tmp(i)
+      enddo
+   endif
+else ! restart with different partitions
+   call realloc(var_tmp, ndx-ndxi, stat=ierr, keepExisting=.false.)
+   ierr = get_var_and_shift(imapfile, var_name, var_tmp, tmpvar1, UNC_LOC_S, kmx, kstart, ndxbnd_own, it_read, &
+                            um%jamergedmap, ibnd_own, um%ibnd_merge)
+   call check_error(ierr, var_name)
+
+   do i = 1, um%nbnd_read ! u and z bnd
+      lf = lnxi+ibnd_own(i) ! boundary flow link
+      kk = ln(1, lf) ! boundary flow node (the external one)
+      var_double(kk) = var_tmp(i)
+   enddo   
+endif 
+
+end subroutine unc_read_rst_bnd_vals
+
 
 ! Write input coordinates of all structures of input structuretype to open history file
 subroutine unc_write_struc_input_coordinates(ihisfile,structuretype)
