@@ -30,26 +30,27 @@
 ! 
 ! 
 
-subroutine flow_dredgeinit()
+subroutine flow_bl_ave_init()
+
    use m_dad
-   use dredge_data_module,   only: initdredge
-   use m_fm_dredge,   only: fm_rddredge
+   use m_flowgeom, only: bl_ave, bl_ave0, ndx
+   use m_missing, only: dmiss
+   use m_alloc, only: realloc, aerr
+   use m_sediment, only: stm_included
    use unstruc_model, only: md_dredgefile
-   use m_sediment, only: stm_included, jased
-   use MessageHandling, only: mess, LEVEL_FATAL
    
    implicit none
 
-   logical                   :: error
+   integer                   :: ierr
 
    if (.not.stm_included) return
    dad_included = len_trim(md_dredgefile) /= 0
    if (.not. dad_included) return
-   
-   call initdredge(dadpar)
-   call fm_rddredge(dadpar, md_dredgefile, error)
-   if (error) then
-      call mess(LEVEL_FATAL, 'unstruc::flow_dredgeinit - Error in initialisation of dredging module.')
-   end if
 
-end subroutine flow_dredgeinit
+   call realloc(bl_ave, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
+   call aerr('bl_ave(ndx)', ierr, ndx)
+   
+   call realloc(bl_ave0, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
+   call aerr('bl_ave0(ndx)', ierr, ndx)
+   
+end subroutine flow_bl_ave_init
