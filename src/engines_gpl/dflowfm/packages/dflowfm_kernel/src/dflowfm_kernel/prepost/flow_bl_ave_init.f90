@@ -32,20 +32,13 @@
 
 subroutine flow_bl_ave_init()
 
-   use m_dad
    use m_flowgeom, only: bl_ave, bl_ave0, ndx
    use m_missing, only: dmiss
    use m_alloc, only: realloc, aerr
-   use m_sediment, only: stm_included
-   use unstruc_model, only: md_dredgefile
    
    implicit none
 
    integer                   :: ierr
-
-   if (.not.stm_included) return
-   dad_included = len_trim(md_dredgefile) /= 0
-   if (.not. dad_included) return
 
    call realloc(bl_ave, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
    call aerr('bl_ave(ndx)', ierr, ndx)
