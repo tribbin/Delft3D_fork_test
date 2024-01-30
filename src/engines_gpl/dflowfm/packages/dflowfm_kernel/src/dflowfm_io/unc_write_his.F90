@@ -80,55 +80,55 @@ subroutine unc_write_his(tim)            ! wrihis
 
     double precision, intent(in) :: tim                  !< Current time, should in fact be time1, since the data written is always s1, ucx, etc.
 
-    ! locals
-    integer, save :: id_laydim , id_laydimw, &
-                     id_statdim, id_strlendim, id_crsdim, id_crslendim, id_crsptsdim, id_timedim, &
-                     id_statx, id_staty, id_stat_id, id_statname, id_time, id_timestep, &
-                     id_statlon, id_statlat, id_crs_id, id_crsname, &
-                     id_vars, id_varucx, id_varucy, id_varucz, id_varsal, id_vartem, id_varsed, id_varrhop, id_varrho, id_bruv,  &
-                     id_varQ, id_varQint, id_varb, id_varumag, id_varqmag,&
-                     id_varAu,  &
-                     id_varu,  id_varwx, id_varwy, id_varrain, id_varpatm, &
-                     id_infiltcap, id_infiltact, &
-                     id_qsun, id_qeva, id_qcon, id_qlong, id_qfreva, id_qfrcon, id_qtot, &
-                     id_turkin, id_tureps , id_vicwwu, id_rich, id_zcs, id_zws, id_zwu, &
-                     id_wind, id_tair, id_rhum, id_clou, id_airdensity, &
-                     id_R, id_WH, id_WD, id_WL, id_WT, id_WU, id_hs, &
-                     id_pumpdim,    id_pump_id,     id_pump_dis,     id_pump_cap,      id_pump_s1up,      id_pump_s1dn,     id_pump_head,      &
-                     id_pump_xmid,  id_pump_ymid,   id_pump_struhead,id_pump_stage,    id_pump_redufact,  id_pump_s1del,    id_pump_s1suc,     id_pump_disdir, &
-                     id_gatedim,    id_gate_id,    id_gate_dis,    id_gate_edgel,     id_gate_s1up,      id_gate_s1dn,    &                              ! id_gate_head,
-                     id_cdamdim,    id_cdam_id,    id_cdam_dis,    id_cdam_crestl,    id_cdam_s1up,      id_cdam_s1dn,    &                              ! id_cdam_head,
-                     id_weirgendim,id_weirgendim_input, id_weirgen_id, id_weirgen_dis, id_weirgen_crestl, id_weirgen_crestw, id_weirgen_s1up,  id_weirgen_s1dn,  &        ! id_weirgen_head,
-                     id_weir_stat,  id_weirgen_vel, id_weirgen_au,  id_weirgen_head,   id_weirgen_forcedif, id_weirgen_s1crest,               &
-                     id_gategendim, id_gategen_id, id_gategen_dis, id_gategen_sillh,  id_gategen_sillw,  id_gategen_edgel, id_gategen_openw, &           ! id_gategen_head,
-                     id_gategen_flowh, id_gategen_s1up, id_gategen_s1dn,                                                                      &
-                     id_genstrudim, id_genstru_id, id_genstru_dis, id_genstru_crestl, id_genstru_crestw, id_genstru_edgel, id_genstru_openw, &
-                     id_genstru_s1up, id_genstru_s1dn, id_genstru_dis_gate_open, id_genstru_dis_gate_over, id_genstru_dis_gate_under, id_genstru_openh, id_genstru_uppl,  &
-                     id_genstru_vel, id_genstru_au, id_genstru_au_open, id_genstru_au_over, id_genstru_au_under, id_genstru_stat, id_genstru_head,  id_genstru_velgateopen, &
-                     id_genstru_velgateover, id_genstru_velgateunder, id_genstru_s1crest, id_genstru_forcedif, &
-                     id_orifgendim, id_orifgen_id, id_orifgen_dis, id_orifgen_crestl, id_orifgen_crestw, id_orifgen_edgel, id_orifgen_stat,  &
-                     id_orifgen_s1dn, id_orifgen_openh, id_orifgen_vel, id_orifgen_au, id_orifgen_s1up, id_orifgen_head, id_orifgen_s1crest, id_orifgen_forcedif,&
-                     id_bridgedim, id_bridge_id, id_bridge_dis, id_bridge_s1up,  id_bridge_s1dn, id_bridge_vel, id_bridge_au,  id_bridge_head, &
-                     id_bridge_blup, id_bridge_bldn, id_bridge_bl_act, &
-                     id_culvertdim, id_culvert_id, id_culvert_dis, id_culvert_s1up,  id_culvert_s1dn, id_culvert_crestl, id_culvert_openh, &
-                     id_culvert_edgel, id_culvert_vel, id_culvert_stat, id_culvert_au,  id_culvert_head, &
-                     id_sedbtrans, id_sedstrans,&
-                     id_srcdim, id_srclendim, id_srcname, id_qsrccur, id_vsrccum, id_qsrcavg, id_pred, id_presa, id_pretm, id_srcx, id_srcy, id_srcptsdim, &
-                     id_partdim, id_parttime, id_partx, id_party, id_partz, &
-                     id_dredlinkdim, id_dreddim, id_dumpdim, id_dredlink_dis, id_dred_dis, id_dump_dis, id_dred_tfrac, id_plough_tfrac, id_sedtotdim, id_dred_name, id_dump_name, id_frac_name, &
-                     id_dambreakdim, id_dambreak_id, id_dambreak_s1up, id_dambreak_s1dn, id_dambreak_discharge, id_dambreak_cumulative_discharge, &
-                     id_dambreak_au, id_dambreak_head, id_dambreak_cresth, id_dambreak_crestw, &
-                     id_uniweirdim, id_uniweir_id, id_uniweir_dis, id_uniweir_s1up,  id_uniweir_s1dn, id_uniweir_crestl, &
-                     id_uniweir_vel, id_uniweir_au, id_uniweir_head, &
-                     id_dambreak_breach_width_time_derivative, id_dambreak_water_level_jump, id_dambreak_normal_velocity, id_checkmon, id_num_timesteps, id_comp_time, &
-                     id_cmpstrudim, id_cmpstru_id, id_cmpstru_dis, id_cmpstru_s1up,  id_cmpstru_s1dn, &
-                     id_cmpstru_vel, id_cmpstru_au, id_cmpstru_head, &
-                     id_longculvertdim, id_longculvert_id, id_longculvert_dis, id_longculvert_s1up,  id_longculvert_s1dn, id_longculvert_vel, id_longculvert_au,  id_longculvert_head, id_longculvert_valveopen,&
-                     id_sscx, id_sscy, id_sswx, id_sswy, id_sbcx, id_sbcy, id_sbwx, id_sbwy, &
-                     id_varucxq, id_varucyq, id_sf, id_ws, id_seddif, id_sink, id_sour, id_sedsusdim, &
-                     id_latdim, id_lat_id, id_lat_predis_inst, id_lat_predis_ave, id_lat_realdis_inst, id_lat_realdis_ave, &
-                     id_ustx, id_usty, id_nlyrdim, id_bodsed, id_dpsed, id_msed, id_thlyr, id_poros, id_lyrfrac, id_frac, id_mudfrac, id_sandfrac, id_fixfac, id_hidexp, id_taub, id_mfluff, &
-                     id_rugdim, id_rugx, id_rugy, id_rugid, id_rugname, id_varruh, id_taux, id_tauy
+
+    integer :: id_laydim , id_laydimw, &
+               id_statdim, id_strlendim, id_crsdim, id_crslendim, id_crsptsdim, id_timedim, &
+               id_statx, id_staty, id_stat_id, id_statname, id_time, id_timestep, &
+               id_statlon, id_statlat, id_crs_id, id_crsname, &
+               id_vars, id_varucx, id_varucy, id_varucz, id_varsal, id_vartem, id_varsed, id_varrhop, id_varrho, id_bruv,  &
+               id_varQ, id_varQint, id_varb, id_varumag, id_varqmag,&
+               id_varAu,  &
+               id_varu,  id_varwx, id_varwy, id_varrain, id_varpatm, &
+               id_infiltcap, id_infiltact, &
+               id_qsun, id_qeva, id_qcon, id_qlong, id_qfreva, id_qfrcon, id_qtot, &
+               id_turkin, id_tureps , id_vicwwu, id_rich, id_zcs, id_zws, id_zwu, &
+               id_wind, id_tair, id_rhum, id_clou, id_airdensity, &
+               id_R, id_WH, id_WD, id_WL, id_WT, id_WU, id_hs, &
+               id_pumpdim,    id_pump_id,     id_pump_dis,     id_pump_cap,      id_pump_s1up,      id_pump_s1dn,     id_pump_head,      &
+               id_pump_xmid,  id_pump_ymid,   id_pump_struhead,id_pump_stage,    id_pump_redufact,  id_pump_s1del,    id_pump_s1suc,     id_pump_disdir, &
+               id_gatedim,    id_gate_id,    id_gate_dis,    id_gate_edgel,     id_gate_s1up,      id_gate_s1dn,    &                              ! id_gate_head,
+               id_cdamdim,    id_cdam_id,    id_cdam_dis,    id_cdam_crestl,    id_cdam_s1up,      id_cdam_s1dn,    &                              ! id_cdam_head,
+               id_weirgendim, id_weirgen_id, id_weirgen_dis, id_weirgen_crestl, id_weirgen_crestw, id_weirgen_s1up,  id_weirgen_s1dn,  &        ! id_weirgen_head,
+               id_weir_stat,  id_weirgen_vel, id_weirgen_au,  id_weirgen_head,   id_weirgen_forcedif, id_weirgen_s1crest,               &
+               id_gategendim, id_gategen_id, id_gategen_dis, id_gategen_sillh,  id_gategen_sillw,  id_gategen_edgel, id_gategen_openw, &           ! id_gategen_head,
+               id_gategen_flowh, id_gategen_s1up, id_gategen_s1dn,                                                                      &
+               id_genstrudim, id_genstru_id, id_genstru_dis, id_genstru_crestl, id_genstru_crestw, id_genstru_edgel, id_genstru_openw, &
+               id_genstru_s1up, id_genstru_s1dn, id_genstru_dis_gate_open, id_genstru_dis_gate_over, id_genstru_dis_gate_under, id_genstru_openh, id_genstru_uppl,  &
+               id_genstru_vel, id_genstru_au, id_genstru_au_open, id_genstru_au_over, id_genstru_au_under, id_genstru_stat, id_genstru_head,  id_genstru_velgateopen, &
+               id_genstru_velgateover, id_genstru_velgateunder, id_genstru_s1crest, id_genstru_forcedif, &
+               id_orifgendim, id_orifgen_id, id_orifgen_dis, id_orifgen_crestl, id_orifgen_crestw, id_orifgen_edgel, id_orifgen_stat,  &
+               id_orifgen_s1dn, id_orifgen_openh, id_orifgen_vel, id_orifgen_au, id_orifgen_s1up, id_orifgen_head, id_orifgen_s1crest, id_orifgen_forcedif,&
+               id_bridgedim, id_bridge_id, id_bridge_dis, id_bridge_s1up,  id_bridge_s1dn, id_bridge_vel, id_bridge_au,  id_bridge_head, &
+               id_bridge_blup, id_bridge_bldn, id_bridge_bl_act, &
+               id_culvertdim, id_culvert_id, id_culvert_dis, id_culvert_s1up,  id_culvert_s1dn, id_culvert_crestl, id_culvert_openh, &
+               id_culvert_edgel, id_culvert_vel, id_culvert_stat, id_culvert_au,  id_culvert_head, &
+               id_sedbtrans, id_sedstrans,&
+               id_srcdim, id_srclendim, id_srcname, id_qsrccur, id_vsrccum, id_qsrcavg, id_pred, id_presa, id_pretm, id_srcx, id_srcy, id_srcptsdim, &
+               id_partdim, id_parttime, id_partx, id_party, id_partz, &
+               id_dredlinkdim, id_dreddim, id_dumpdim, id_dredlink_dis, id_dred_dis, id_dump_dis, id_dred_tfrac, id_plough_tfrac, id_sedtotdim, id_dred_name, id_dump_name, id_frac_name, &
+               id_dambreakdim, id_dambreak_id, id_dambreak_s1up, id_dambreak_s1dn, id_dambreak_discharge, id_dambreak_cumulative_discharge, &
+               id_dambreak_au, id_dambreak_head, id_dambreak_cresth, id_dambreak_crestw, &
+               id_uniweirdim, id_uniweir_id, id_uniweir_dis, id_uniweir_s1up,  id_uniweir_s1dn, id_uniweir_crestl, &
+               id_uniweir_vel, id_uniweir_au, id_uniweir_head, &
+               id_dambreak_breach_width_time_derivative, id_dambreak_water_level_jump, id_dambreak_normal_velocity, id_checkmon, id_num_timesteps, id_comp_time, &
+               id_cmpstrudim, id_cmpstru_id, id_cmpstru_dis, id_cmpstru_s1up,  id_cmpstru_s1dn, &
+               id_cmpstru_vel, id_cmpstru_au, id_cmpstru_head, &
+               id_longculvertdim, id_longculvert_id, id_longculvert_dis, id_longculvert_s1up,  id_longculvert_s1dn, id_longculvert_vel, id_longculvert_au,  id_longculvert_head, id_longculvert_valveopen,&
+               id_sscx, id_sscy, id_sswx, id_sswy, id_sbcx, id_sbcy, id_sbwx, id_sbwy, &
+               id_varucxq, id_varucyq, id_sf, id_ws, id_seddif, id_sink, id_sour, id_sedsusdim, &
+               id_latdim, id_lat_id, id_lat_predis_inst, id_lat_predis_ave, id_lat_realdis_inst, id_lat_realdis_ave, &
+               id_ustx, id_usty, id_nlyrdim, id_bodsed, id_dpsed, id_msed, id_thlyr, id_poros, id_lyrfrac, id_frac, id_mudfrac, id_sandfrac, id_fixfac, id_hidexp, id_taub, id_mfluff, &
+               id_rugdim, id_rugx, id_rugy, id_rugid, id_rugname, id_varruh, id_taux, id_tauy
     ! ids for geometry variables, only use them once at the first time of history output
     integer :: id_statgeom_node_count,        id_statgeom_node_coordx,        id_statgeom_node_coordy,    &
                                               id_statgeom_node_lon,           id_statgeom_node_lat,       &
