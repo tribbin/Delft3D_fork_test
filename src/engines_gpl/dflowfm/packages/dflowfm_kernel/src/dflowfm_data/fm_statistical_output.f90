@@ -1057,46 +1057,12 @@ private
                      'Wrihis_sediment', 'seddif', 'Sediment vertical diffusion', &
                      '', 'm2 s-1', UNC_LOC_STATION, nc_atts = atts(1:1),         &
                      nc_dim_ids = t_nc_dim_ids(laydim_interface_center = .true., statdim = .true., sedsusdim = .true., timedim = .true.))
-      call addoutval(out_quan_conf_his, IDX_HIS_SED,                                                &
-                     'Wrihis_sediment', 'sed', 'Sediment concentration',                                           &
-                     '', 'kg m-3', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write sediment transport to his file')
-      call addoutval(out_quan_conf_his, IDX_HIS_WS,                                                 &
-                     'Wrihis_sediment', 'ws', 'Sediment settling velocity',                                       &
-                     '', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1))
-      call addoutval(out_quan_conf_his, IDX_HIS_SEDDIF,                                             &
-                     'Wrihis_sediment', 'seddif', 'Sediment vertical diffusion',                                      &
-                     '', 'm2 s-1', UNC_LOC_STATION, nc_atts = atts(1:1))
       call addoutval(out_quan_conf_his, IDX_HIS_BODSED,                                                &
                      'Wrihis_sediment', 'bodsed', 'Available sediment mass in the bed',                   &
-                     '', 'kg m-2', UNC_LOC_STATION, nc_atts = atts(1:1))
+                     '', 'kg m-2', UNC_LOC_STATION, nc_atts = atts(1:1),nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true., timedim = .true.))
       call addoutval(out_quan_conf_his, IDX_HIS_DPSED,                                                 &
                      'Wrihis_sediment', 'dpsed', 'Sediment thickness in the bed',                         &
-                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1))
-      !case (2)
-      !   ierr = nf90_def_dim(ihisfile, 'nBedLayers', stmpar%morlyr%settings%nlyr, id_nlyrdim)
-      !   !  
-      !   ierr = nf90_def_var(ihisfile, 'msed', nc_precision, (/ id_nlyrdim, id_statdim, id_sedtotdim, id_timedim /), id_msed)
-      !   ierr = nf90_put_att(ihisfile, id_msed, 'long_name', 'Available sediment mass in a layer of the bed')
-      !   ierr = nf90_put_att(ihisfile, id_msed, 'units', 'kg m-2')
-      !   ierr = write_real_fill_value(id_msed)
-      !   ierr = nf90_put_att(ihisfile, id_msed, 'coordinates', statcoordstring)
-      !   ierr = nf90_put_att(ihisfile, id_msed, 'geometry', station_geom_container_name)
-      !   !
-      !   ierr = nf90_def_var(ihisfile, 'thlyr', nc_precision, (/ id_nlyrdim, id_statdim, id_timedim /), id_thlyr)
-      !   ierr = nf90_put_att(ihisfile, id_thlyr, 'long_name', 'Thickness of a layer of the bed')
-      !   ierr = nf90_put_att(ihisfile, id_thlyr, 'units', 'm')
-      !   ierr = write_real_fill_value(id_thlyr)
-      !   ierr = nf90_put_att(ihisfile, id_thlyr, 'coordinates', statcoordstring)
-      !   ierr = nf90_put_att(ihisfile, id_thlyr, 'geometry', station_geom_container_name)
-      !   !
-      !   if (stmpar%morlyr%settings%iporosity>0) then
-      !      ierr = nf90_def_var(ihisfile, 'poros', nc_precision, (/ id_nlyrdim, id_statdim, id_timedim /), id_poros)
-      !      ierr = nf90_put_att(ihisfile, id_poros, 'long_name', 'Porosity of a layer of the bed')
-      !      ierr = nf90_put_att(ihisfile, id_poros, 'units', '-')
-      !      ierr = write_real_fill_value(id_poros)
-      !      ierr = nf90_put_att(ihisfile, id_poros, 'coordinates', statcoordstring)
-      !      ierr = nf90_put_att(ihisfile, id_poros, 'geometry', station_geom_container_name)
-      !   endif
+                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1),nc_dim_ids = t_nc_dim_ids(statdim = .true., timedim = .true.))
 
       !
       ! HIS: Variables on observation cross sections

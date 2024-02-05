@@ -82,7 +82,7 @@ subroutine unc_write_his(tim)            ! wrihis
     double precision, intent(in) :: tim                  !< Current time, should in fact be time1, since the data written is always s1, ucx, etc.
 
 
-    integer :: id_laydim , id_laydimw, &
+    integer, save :: id_laydim , id_laydimw, &
                id_statdim, id_strlendim, id_crsdim, id_crslendim, id_crsptsdim, id_timedim, &
                id_statx, id_staty, id_stat_id, id_statname, id_time, id_timestep, &
                id_statlon, id_statlat, id_crs_id, id_crsname, &
@@ -131,7 +131,7 @@ subroutine unc_write_his(tim)            ! wrihis
                id_ustx, id_usty, id_nlyrdim, id_bodsed, id_dpsed, id_msed, id_thlyr, id_poros, id_lyrfrac, id_frac, id_mudfrac, id_sandfrac, id_fixfac, id_hidexp, id_taub, id_mfluff, &
                id_rugdim, id_rugx, id_rugy, id_rugid, id_rugname, id_varruh, id_taux, id_tauy
     ! ids for geometry variables, only use them once at the first time of history output
-    integer :: id_statgeom_node_count,        id_statgeom_node_coordx,        id_statgeom_node_coordy,    &
+    integer, save :: id_statgeom_node_count,        id_statgeom_node_coordx,        id_statgeom_node_coordy,    &
                                               id_statgeom_node_lon,           id_statgeom_node_lat,       &
                id_crsgeom_node_count,         id_crsgeom_node_coordx,         id_crsgeom_node_coordy,     &
                id_weirgengeom_input_node_count, id_weirgengeom_input_node_coordx, id_weirgengeom_input_node_coordy,&
@@ -292,6 +292,12 @@ subroutine unc_write_his(tim)            ! wrihis
            ierr = nf90_def_dim(ihisfile, 'laydim', kmx, id_laydim)
            ierr = nf90_def_dim(ihisfile, 'laydimw', kmx+1, id_laydimw)
         end if
+
+        if (stm_included .and. ISED1 > 0 .and. jahissed > 0) then
+           ! New implementation, sedsus fraction is additional dimension
+           ierr = nf90_def_dim(ihisfile, 'nSedTot', stmpar%lsedtot, id_sedtotdim)
+           ierr = nf90_def_dim(ihisfile, 'nSedSus', stmpar%lsedsus, id_sedsusdim)
+        endif
 
         !
         ! Time
@@ -1014,8 +1020,7 @@ subroutine unc_write_his(tim)            ! wrihis
       end if
 
       select case(config%location_specifier)
-      case (UNC_LOC_STATION, &
-         UNC_LOC_OBSCRS, &
+      case ( UNC_LOC_OBSCRS, &
          UNC_LOC_SOSI, &
          UNC_LOC_RUG, &
          UNC_LOC_GENSTRU, &
@@ -1032,7 +1037,10 @@ subroutine unc_write_his(tim)            ! wrihis
          UNC_LOC_LONGCULVERT, &
          UNC_LOC_LATERAL &
          )
-         ierr = nf90_put_var(ihisfile, id_var,   out_variable_set_his%statout(ivar)%stat_output,    start = (/ 1, it_his /))
+         ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, start = (/ 1, it_his /))
+         case (UNC_LOC_STATION)
+            
+         ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, count = build_nc_dimension_id_count_array(config%nc_dim_ids), start = build_nc_dimension_id_start_array(config%nc_dim_ids))
       case (UNC_LOC_GLOBAL)
          if (timon) call timstrt('unc_write_his IDX data', handle_extra(67))
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output,  start=(/ it_his /))
@@ -2089,16 +2097,36 @@ contains
 function build_nc_dimension_id_list(nc_dim_ids) result(res)
    type(t_nc_dim_ids), intent(in) :: nc_dim_ids
    integer, allocatable :: res(:)
-   logical :: laydim = .false.
-      logical :: laydimw = .false.
-      logical :: nlyrdim = .false.
-      logical :: statdim = .false.
-      logical :: sedsusdim = .false.
-      logical :: sedtotdim = .false.
-      logical :: timedim = .false.
+
    res = pack([id_laydim, id_laydimw, id_nlyrdim, id_statdim, id_sedsusdim, id_sedtotdim, id_timedim], &
               [nc_dim_ids%laydim, nc_dim_ids%laydim_interface_center .or. nc_dim_ids%laydim_interface_edge, nc_dim_ids%nlyrdim, nc_dim_ids%statdim, nc_dim_ids%sedsusdim, nc_dim_ids%sedtotdim, nc_dim_ids%timedim])
 end function build_nc_dimension_id_list
+
+function build_nc_dimension_id_start_array(nc_dim_ids) result(res)
+   type(t_nc_dim_ids), intent(in) :: nc_dim_ids
+   integer, allocatable :: res(:)
+   
+   res = pack([1, 1, 1, 1, 1, 1, it_his], &
+              [nc_dim_ids%laydim, nc_dim_ids%laydim_interface_center .or. nc_dim_ids%laydim_interface_edge, nc_dim_ids%nlyrdim, nc_dim_ids%statdim, nc_dim_ids%sedsusdim, nc_dim_ids%sedtotdim, nc_dim_ids%timedim])
+end function build_nc_dimension_id_start_array
+
+function build_nc_dimension_id_count_array(nc_dim_ids) result(res)
+   type(t_nc_dim_ids), intent(in) :: nc_dim_ids
+   integer, allocatable :: res(:)
+   
+   res = pack([get_dimid_len(id_laydim),get_dimid_len(id_laydimw), get_dimid_len(id_nlyrdim), get_dimid_len(id_statdim), get_dimid_len(id_sedsusdim), get_dimid_len(id_sedtotdim), 1], &
+              [nc_dim_ids%laydim, nc_dim_ids%laydim_interface_center .or. nc_dim_ids%laydim_interface_edge, nc_dim_ids%nlyrdim, nc_dim_ids%statdim, nc_dim_ids%sedsusdim, nc_dim_ids%sedtotdim, nc_dim_ids%timedim])
+end function build_nc_dimension_id_count_array
+
+integer function get_dimid_len(id)
+integer, intent(in) :: id
+integer :: ierr
+
+ierr =  nf90_inquire_dimension(ihisfile, id, len = get_dimid_len)
+if (ierr /= 0) then
+   get_dimid_len = ierr
+endif
+end function get_dimid_len
 
 end subroutine unc_write_his
 
