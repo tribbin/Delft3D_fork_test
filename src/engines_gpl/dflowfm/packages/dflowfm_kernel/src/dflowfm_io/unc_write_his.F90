@@ -252,7 +252,7 @@ subroutine unc_write_his(tim)            ! wrihis
             filename = defaultFilename('his')
         end if
 
-        ierr = unc_create(filename, 0, ihisfile, .false.)
+        ierr = unc_create(filename, 0, ihisfile)
         if (ierr /= nf90_noerr) then
             call mess(LEVEL_WARN, 'Could not create history file.')
         end if

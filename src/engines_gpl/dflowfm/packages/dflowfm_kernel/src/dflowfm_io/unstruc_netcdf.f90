@@ -2440,27 +2440,15 @@ end function unc_open
 
 !> Creates or opens a NetCDF file for writing.
 !! The file is maintained in the open-file-list.
-function unc_create(filename, cmode, ncid, combine_cmode)
+function unc_create(filename, cmode, ncid)
     character(len=*),  intent(in   ) :: filename      !< Filename to be created
     integer,           intent(in   ) :: cmode         !< Creation mode, must be a valid NetCDF flags integer.
     integer,           intent(  out) :: ncid          !< Resulting NetCDF data set id, undefined in case an error occurred.
-    logical, optional, intent(in   ) :: combine_cmode !< (Optional) whether to combine given cmode with our global cmode setting. Default: .true.. Set to .false. when forcing a specific cmode.
     integer                          :: unc_create    !< Integer result status (nf90_noerr if successful).
 
-    logical :: combine_cmode_
     integer :: cmode_
 
-    if (present(combine_cmode)) then
-       combine_cmode_ = combine_cmode
-    else
-       combine_cmode_ = .true.
-    endif
-
-    if (combine_cmode_) then
-       cmode_ = ior(cmode, unc_cmode)
-    else
-       cmode_ = cmode
-    endif
+    cmode_ = ior(cmode, unc_cmode)
 
     unc_create = nf90_create(filename, cmode_, ncid)
     if (unc_create == nf90_noerr) then
@@ -6047,7 +6035,7 @@ subroutine unc_write_map_filepointer_ugrid(mapids, tim, jabndnd) ! wrimap
          ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_adve, nc_precision, UNC_LOC_U, 'adve', '', 'Explicit advection term', 's', which_meshdim = 1, jabndnd=jabndnd_)
          ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_advi, nc_precision, UNC_LOC_U, 'advi', '', 'Implicit advection term', 's', which_meshdim = 1, jabndnd=jabndnd_)
       endif
-      
+
       if (ndxi-ndx2d>0 .and. jaPure1D >= 3 .and. jamapPure1D_debug) then
          ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_q1d_1, nc_precision, UNC_LOC_U, 'q1d_1', '', 'Discharge at begin of flow link', 's', which_meshdim = 1, jabndnd=jabndnd_)
          ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_q1d_2, nc_precision, UNC_LOC_U, 'q1d_2', '', 'Discharge at end of flow link'  , 's', which_meshdim = 1, jabndnd=jabndnd_)
