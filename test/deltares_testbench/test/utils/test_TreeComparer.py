@@ -212,46 +212,46 @@ class TestTreeComparer:
 
     def test_compareTreePaths_Exception1(self):
         # In this test a full section block will be missing
-        section_missing = open(join(self.rp, "Unit_test_section_missing.fod"), "r")
-        section_missing_tree = DSeriesComparer.buildTrees(self.comp, section_missing)[0]
-        temp, section_missing_branch = TreeComparer.getBranchFromPath(
-            self.trcmp, section_missing_tree, ">DUMPFILE>"
-        )
-        # here the exception is about the keys available in the fod file
-
-        # The right xml is passed to test
-        # Start parsing
-        c = Credentials()
-        c.name = "commandline"
-        # Parse the xml file.
-        xmlcp = XmlConfigParser()
-        settings = TestBenchSettings()
-        settings.local_paths, settings.programs, settings.configs = xmlcp.load(
-            join(self.testdata, "Unit_test.xml"), "", c, ""
-        )
-        file = settings.configs
-
-        # Setting up the parameters
-        parameter = file[0].checks[0].parameters["parameters"][0]
-        # and the path to be checked
-        pathstr = ">DUMPFILE"
-
-        # Run with 'with' so that exceptions are catch in the process
-        with pytest.raises(Exception) as context:
-            logger = TestLogger()
-            TreeComparer.compareTreePaths(
-                self.comp,
-                section_missing_branch,
-                self.refbranch,
-                parameter,
-                pathstr,
-                [],
-                [],
-                logger,
+        with open(join(self.rp, "Unit_test_section_missing.fod"), "r") as section_missing:
+            section_missing_tree = DSeriesComparer.buildTrees(self.comp, section_missing)[0]
+            temp, section_missing_branch = TreeComparer.getBranchFromPath(
+                self.trcmp, section_missing_tree, ">DUMPFILE>"
             )
+            # here the exception is about the keys available in the fod file
 
-        # Check if the correct exception is raised
-        assert "The test file is missing blocks: INPUT DATA" == str(context.value)
+            # The right xml is passed to test
+            # Start parsing
+            c = Credentials()
+            c.name = "commandline"
+            # Parse the xml file.
+            xmlcp = XmlConfigParser()
+            settings = TestBenchSettings()
+            settings.local_paths, settings.programs, settings.configs = xmlcp.load(
+                join(self.testdata, "Unit_test.xml"), "", c, ""
+            )
+            file = settings.configs
+
+            # Setting up the parameters
+            parameter = file[0].checks[0].parameters["parameters"][0]
+            # and the path to be checked
+            pathstr = ">DUMPFILE"
+
+            # Run with 'with' so that exceptions are catch in the process
+            with pytest.raises(Exception) as context:
+                logger = TestLogger()
+                TreeComparer.compareTreePaths(
+                    self.comp,
+                    section_missing_branch,
+                    self.refbranch,
+                    parameter,
+                    pathstr,
+                    [],
+                    [],
+                    logger,
+                )
+
+            # Check if the correct exception is raised
+            assert "The test file is missing blocks: INPUT DATA" == str(context.value)
 
     def test_compare(self):
         # Set the inputs
