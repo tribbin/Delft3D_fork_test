@@ -1040,8 +1040,7 @@ subroutine unc_write_his(tim)            ! wrihis
          UNC_LOC_LATERAL &
          )
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, start = (/ 1, it_his /))
-         case (UNC_LOC_STATION)
-            
+      case (UNC_LOC_STATION)
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, count = build_nc_dimension_id_count_array(config%nc_dim_ids), start = build_nc_dimension_id_start_array(config%nc_dim_ids))
       case (UNC_LOC_GLOBAL)
          if (timon) call timstrt('unc_write_his IDX data', handle_extra(67))
