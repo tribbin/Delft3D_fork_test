@@ -299,6 +299,26 @@ private
    integer, public :: IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_AVERAGE
    integer, public :: IDX_HIS_LATERAL_REALIZED_DISCHARGE_INSTANTANEOUS
    integer, public :: IDX_HIS_LATERAL_REALIZED_DISCHARGE_AVERAGE
+   
+   integer, public :: IDX_HIS_TAUB
+   integer, public :: IDX_HIS_SBCX
+   integer, public :: IDX_HIS_SBCY
+   integer, public :: IDX_HIS_SBWX
+   integer, public :: IDX_HIS_SBWY
+   integer, public :: IDX_HIS_SSWX
+   integer, public :: IDX_HIS_SSWY
+   integer, public :: IDX_HIS_SSCX
+   integer, public :: IDX_HIS_SSCY
+   integer, public :: IDX_HIS_MSED
+   integer, public :: IDX_HIS_THLYR
+   integer, public :: IDX_HIS_POROS
+   integer, public :: IDX_HIS_LYRFRAC
+   integer, public :: IDX_HIS_FRAC
+   integer, public :: IDX_HIS_MUDFRAC
+   integer, public :: IDX_HIS_SANDFRAC
+   integer, public :: IDX_HIS_FIXFRAC
+   integer, public :: IDX_HIS_HIDEXP
+   integer, public :: IDX_HIS_MFLUFF
 
    integer, public :: IDX_MAP_S0
    integer, public :: IDX_MAP_S1

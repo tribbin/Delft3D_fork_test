@@ -2120,12 +2120,8 @@ end function build_nc_dimension_id_count_array
 
 integer function get_dimid_len(id)
 integer, intent(in) :: id
-integer :: ierr
 
 ierr =  nf90_inquire_dimension(ihisfile, id, len = get_dimid_len)
-if (ierr /= 0) then
-   get_dimid_len = ierr
-endif
 end function get_dimid_len
 
 end subroutine unc_write_his

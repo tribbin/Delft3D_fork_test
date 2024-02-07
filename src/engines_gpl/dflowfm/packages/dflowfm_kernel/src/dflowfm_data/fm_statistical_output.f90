@@ -23,11 +23,55 @@ private
 
    double precision, dimension(:,:), allocatable, target, public :: obscrs_data !< observation cross section constituent data on observation cross sections to be written
    double precision, dimension(:), allocatable, target, public :: rug_ruheight !< Run-up height on run-up gauges to be written.
-
+   double precision, dimension(:), allocatable, target, public :: SBCX, SBCY, SBWX, SBWY, SSWX, SSWY, SSCX, SSCY
+   
    public default_fm_statistical_output, flow_init_statistical_output_his
 
    contains
+   
+   !> Wrapper function that computes the sediment transport variables
+   !> Will allocate and fill the sediment transport arrays
+   subroutine calculate_sediment_transport(source_input)
+   use m_sediment
+   use m_observations
+   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "hwav_significant" item, to be assigned once on first call.
+   
+   integer :: l, n, ntot
+   double precision :: rhol
+   
+   ntot = numobs + nummovobs
+   
+   if (.not. allocated(SBCX)) then
+      allocate(SBCX(ntot),SBCY(ntot), SBWX(ntot), SBWY(ntot), SSWX(ntot), SSWY(ntot), SSCX(ntot), SSCY(ntot))
+   endif
+   
+   if (.not. associated(source_input))then
+      source_input => SBCX
+   endif
+   
+   do l = 1, stmpar%lsedtot
+      select case(stmpar%morpar%moroutput%transptype)
+      case (0)
+         rhol = 1d0
+      case (1)
+         rhol = stmpar%sedpar%cdryb(l)
+      case (2)
+         rhol = stmpar%sedpar%rhosol(l)
+      end select
+      do n = 1,ntot
+         SBCY(ntot*(l-1)+n) = valobs(IPNT_SBCY1+l-1,n)/rhol
+         SBCX(ntot*(l-1)+n) = valobs(IPNT_SBCX1+l-1,n)/rhol
+         SSCY(ntot*(l-1)+n) = valobs(IPNT_SSCY1+l-1,n)/rhol
+         SSCX(ntot*(l-1)+n) = valobs(IPNT_SSCX1+l-1,n)/rhol
+         SBWY(ntot*(l-1)+n) = valobs(IPNT_SBWY1+l-1,n)/rhol
+         SBWX(ntot*(l-1)+n) = valobs(IPNT_SBWX1+l-1,n)/rhol
+         SSWY(ntot*(l-1)+n) = valobs(IPNT_SSWY1+l-1,n)/rhol
+         SSWX(ntot*(l-1)+n) = valobs(IPNT_SSWX1+l-1,n)/rhol
+      enddo
+   end do
 
+   end subroutine calculate_sediment_transport
+   
    !> Initialize (allocate) observation crosssection data array obscrs_data.
    !! This subroutine should be called only once, such that afterward individual calls
    !! to add_stat_output_items can point to obscrs_data(:,i) slices in this array.
@@ -1062,9 +1106,85 @@ private
                      '', 'kg m-2', UNC_LOC_STATION, nc_atts = atts(1:1),nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true., timedim = .true.))
       call addoutval(out_quan_conf_his, IDX_HIS_DPSED,                                                 &
                      'Wrihis_sediment', 'dpsed', 'Sediment thickness in the bed',                         &
-                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1),nc_dim_ids = t_nc_dim_ids(statdim = .true., timedim = .true.))
+                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_TAUB,                 &
+                     'wrihis_sediment', 'taub',              &
+                     'Bed shear stress for morphology',             &
+                     '', 'Pa', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., timedim = .true.))
+       !TODO: UNITS
+       call addoutval(out_quan_conf_his, IDX_HIS_SBCX,                 &
+                     'wrihis_sediment', 'sbcx',              &
+                     'Current related bedload transport, x-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_SBCY,                 &
+                     'wrihis_sediment', 'sbcy',              &
+                     'Current related bedload transport, y-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_SBWX,                 &
+                     'wrihis_sediment', 'sbwx',              &
+                     'Wave related bedload transport, x-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_SBWY,                 &
+                     'wrihis_sediment', 'sbwy',              &
+                     'Wave related bedload transport, y-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_SSWX,                 &
+                     'wrihis_sediment', 'sswx',              &
+                     'Wave related suspended transport, x-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_SSWX,                 &
+                     'wrihis_sediment', 'sswy',              &
+                     'Wave related suspended transport, y-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_SSCX,                 &
+                     'wrihis_sediment', 'scwx',              &
+                     'Current related suspended transport, x-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_SSCX,                 &
+                     'wrihis_sediment', 'sscy',              &
+                     'Current related suspended transport, y-component',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_MSED,                 &
+                     'wrihis_sediment', 'msed',              &
+                     'Available sediment mass in a layer of the bed',             &
+                     '', 'kg m-2', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true.,sedtotdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_THLYR,                 &
+                     'wrihis_sediment', 'thlyr',              &
+                     'Thickness of a layer of the bed',             &
+                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_POROS,                 &
+                     'wrihis_sediment', 'poros',              &
+                     'Porosity of a layer of the bed',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., timedim = .true.))
+       call addoutval(out_quan_conf_his, IDX_HIS_LYRFRAC,                 &
+                     'wrihis_sediment', 'lyrfrac',              &
+                     'Volume fraction in a layer of the bed',             &
+                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., sedtotdim = .true., timedim = .true.))s
+      call addoutval(out_quan_conf_his, IDX_HIS_FRAC,                 &
+                     'wrihis_sediment', 'frac',              &
+                     'Availability fraction in top layer',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true., timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_MUDFRAC,                 &
+                     'wrihis_sediment', 'mudfrac',              &
+                     'Mud fraction in top layer',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,  timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_SANDFRAC,                 &
+                     'wrihis_sediment', 'sandfrac',              &
+                     'Sand fraction in top layer',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,  timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_FIXFRAC,                 &
+                     'wrihis_sediment', 'fixfac',              &
+                     'Reduction factor due to limited sediment thickness',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true. , timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_HIDEXP,                 &
+                     'wrihis_sediment', 'hidexp',              &
+                     'Hiding and exposure factor',             &
+                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true. , timedim = .true.))
+      call addoutval(out_quan_conf_his, IDX_HIS_MFLUFF,                 &
+                     'wrihis_sediment', 'mfluff',              &
+                     'Sediment mass in fluff layer',             &
+                     '', 'kg', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedsusdim = .true. , timedim = .true.))
 
-      !
       ! HIS: Variables on observation cross sections
       !
       call ncu_set_att(atts(1), 'geometry', 'cross_section_geom')
@@ -1132,6 +1252,7 @@ private
                      'Wrihis_lateral', 'lateral_realized_discharge_average',              &
                      'Realized discharge through lateral, average over the last history time interval',             &
                      '', 'm3 s-1', UNC_LOC_LATERAL, nc_atts = atts(1:1))
+
 
       !TEST: all his output default on true
       out_quan_conf_his%statout(:)%input_value = 'current'
@@ -1611,6 +1732,7 @@ private
       call addoutval(out_quan_conf_clm, IDX_CLS_UCDIR_EULER,                         &
                      'WriClass_Velocity', 'ucdir', 'Flow element center Eulerian velocity direction',                          &
                      'sea_water_eulerian_velocity_to_direction', 'degree', UNC_LOC_S)
+
    end subroutine default_fm_statistical_output
 
 
@@ -2091,76 +2213,33 @@ private
          call c_f_pointer (c_loc(valobs(1:ntot,IPNT_WS1:IPNT_WS1+(IVAL_WSN-IVAL_WS1*kmx))), temp_pointer, [(IVAL_WSN-IPNT_WS1+1)*kmx*ntot])
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SEDDIF),temp_pointer                                          )
       endif
-      !if (stm_included .and. ISED1 > 0 .and. jahissed > 0) then
-      !   ! New implementation, sedsus fraction is additional dimension
-      !   ierr = nf90_def_dim(ihisfile, 'nSedTot', stmpar%lsedtot, id_sedtotdim)
-      !   ierr = nf90_def_dim(ihisfile, 'nSedSus', stmpar%lsedsus, id_sedsusdim)
-      !   !
-      !   ierr = nf90_def_var(ihisfile, 'sedfrac_name', nf90_char, (/ id_strlendim, id_sedtotdim /), id_frac_name)
-      !   ierr = nf90_put_att(ihisfile, id_frac_name,'long_name', 'sediment fraction identifier')
-      !   !
-      !   if (kmx>0) then
-      !      ierr = nf90_def_var(ihisfile, 'sed', nc_precision, (/  id_laydim, id_statdim, id_sedsusdim, id_timedim /), id_sf)
-      !      ierr = nf90_def_var(ihisfile, 'ws', nc_precision, (/  id_laydimw, id_statdim, id_sedsusdim, id_timedim /), id_ws)
-      !      ierr = nf90_def_var(ihisfile, 'seddif', nc_precision, (/  id_laydimw, id_statdim, id_sedsusdim, id_timedim /), id_seddif)
-      !      ierr = nf90_put_att(ihisfile, id_seddif, 'long_name', 'Sediment vertical diffusion')
-      !      ierr = nf90_put_att(ihisfile, id_seddif, 'units', 'm2 s-1')
-      !      ierr = write_real_fill_value(id_seddif)
-      !      ierr = nf90_put_att(ihisfile, id_seddif, 'coordinates', statcoordstring)
-      !      ierr = nf90_put_att(ihisfile, id_seddif, 'geometry', station_geom_container_name)
-      !      !
-      !      jawrizc = 1
-      !      jawrizw = 1
-      !   else
-      !      ierr = nf90_def_var(ihisfile, 'sed', nc_precision, (/  id_statdim, id_sedsusdim, id_timedim /), id_sf)
-      !      ierr = nf90_def_var(ihisfile, 'ws', nc_precision, (/ id_statdim, id_sedsusdim, id_timedim /), id_ws)
-      !   endif
-      !   !
-      !   ierr = nf90_put_att(ihisfile, id_sf, 'long_name', 'Sediment concentration')
-      !   ierr = nf90_put_att(ihisfile, id_sf, 'units', 'kg m-3')
-      !   ierr = nf90_put_att(ihisfile, id_sf, 'coordinates', statcoordstring)
-      !   ierr = nf90_put_att(ihisfile, id_sf, 'geometry', station_geom_container_name)
-      !   !
-      !   ierr = nf90_put_att(ihisfile, id_ws, 'long_name', 'Sediment settling velocity')
-      !   ierr = nf90_put_att(ihisfile, id_ws, 'units', 'm s-1')
-      !   ierr = nf90_put_att(ihisfile, id_ws, 'coordinates', statcoordstring)
-      !   ierr = nf90_put_att(ihisfile, id_ws, 'geometry', station_geom_container_name)
-      !   !
-      !   if (IVAL_SF1 > 0) then
-      !      call realloc(toutputx, (/ntot, stmpar%lsedsus /), keepExisting=.false., fill = dmiss)
-      !      do j = IVAL_SF1,IVAL_SFN
-      !         i = j - IVAL_SF1 + 1
-      !         toutputx(:,i) = valobs(:,IPNT_SF1 + (i-1)*(kmx+1)+kk-1)
-      !      enddo
-      !      ierr = nf90_put_var(ihisfile, id_sf, toutputx, start = (/ kk, 1, 1, it_his /), count = (/ 1, ntot, stmpar%lsedsus, 1/)
-      !   endif
-      !   if (IVAL_SF1 > 0) then
-      !      call realloc(toutputx, (/ntot, stmpar%lsedsus /), keepExisting=.false., fill = dmiss)
-      !      do j = IVAL_SF1,IVAL_SFN
-      !         i = j - IVAL_SF1 + 1
-      !         toutputx(:,i) = valobs(:,IPNT_SF1 + i-1)
-      !      end do
-      !      ierr = nf90_put_var(ihisfile, id_sf, toutputx, start = (/ 1, 1, it_his /), count = (/ ntot, stmpar%lsedsus, 1/))
-      !   end if
-      !   if (IVAL_WS1 > 0) then
-      !      call realloc(toutputx, (/ntot, stmpar%lsedsus /), keepExisting=.false., fill = dmiss)
-      !      do j = IVAL_WS1,IVAL_WSN
-      !         i = j - IVAL_WS1 + 1
-      !         toutputx(:,i) = valobs(:,IPNT_WS1 + (i-1)*(kmx+1)+kk-1)
-      !      enddo
-      !      ierr = nf90_put_var(ihisfile, id_ws, toutputx, start = (/ kk, 1, 1, it_his /), count = (/ 1, ntot, stmpar%lsedsus, 1/))
-      !   end if
-      !   if (IVAL_WS1 > 0) then
-      !      call realloc(toutputx, (/ntot, stmpar%lsedsus /), keepExisting=.false., fill = dmiss)
-      !      do j = IVAL_WS1,IVAL_WSN
-      !         i = j - IVAL_WS1 + 1
-      !         toutputx(:,i) = valobs(:,IPNT_WS1 + i-1)
-      !         ierr = nf90_put_var(ihisfile, id_ws, toutputx, start = (/ 1, 1, it_his /), count = (/ ntot, stmpar%lsedsus, 1/))
-      !      enddo
-      !   end if
-      !
-      !endif
-
+      
+      if (jahissed>0 .and. jased>0 .and. stm_included) then
+         if (stmpar%morpar%moroutput%taub) then
+            call add_stat_output_items(output_set, output_config%statout(IDX_HIS_TAUB),valobs(IPNT_TAUB,:))
+         endif
+         if (stmpar%lsedtot>0) then
+            if (stmpar%morpar%moroutput%sbcuv) then
+               function_pointer => calculate_sediment_transport
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBCX),null(),function_pointer)
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBCY),SBCY)
+            endif
+            if (stmpar%morpar%moroutput%sscuv) then
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWX),SBWX)
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWY),SBWY)
+            endif
+            if (stmpar%morpar%moroutput%sswuv .and. jawave>0 .and. .not. flowWithoutWaves) then
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SSCX),SSCX)
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SSCY),SSCY)
+            endif
+            if (stmpar%morpar%moroutput%sbwuv .and. jawave>0 .and. .not. flowWithoutWaves) then
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWX),SBWX)
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWY),SBWY)
+            endif
+         endif
+      endif
+       
+       
       !
       ! Variables on observation cross sections
       !
