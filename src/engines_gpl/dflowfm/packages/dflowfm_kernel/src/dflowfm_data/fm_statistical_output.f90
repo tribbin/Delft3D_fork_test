@@ -29,23 +29,36 @@ private
 
    contains
    
-   !> Wrapper function that computes the sediment transport variables
-   !> Will allocate and fill the sediment transport arrays
-   subroutine calculate_sediment_SSW(source_input)
-   use m_sediment
-   use m_observations
-   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
+   !> allocate array and associate pointer with it if not already done.
+   subroutine allocate_and_associate(source_input, size, array1, array2)
+   double precision, pointer, dimension(:), intent(inout)                        :: source_input   !< Pointer to associate with array1
+   double precision, dimension(:), allocatable, target, intent(inout)            :: array1         !< Data array 1 to allocate
+   double precision, dimension(:), allocatable, target, intent(inout), optional  :: array2         !< Data array 2 to allocate (but not point to)
+   integer, intent(in) :: size
    
-   integer :: l, n, ntot
-   double precision :: rhol
-   
-   ntot = numobs + nummovobs
-   if (.not. allocated(SSWX)) then
-      allocate(SSWX(ntot),SSWY(ntot))
+   if (.not. allocated(array1)) then
+         allocate(array1(size))
+      if(present(array2)) then !array 1 and array2 are either both allocated or both not.
+         allocate(array2(size))
+      endif
    endif
    if (.not. associated(source_input))then
-      source_input => SSWX
+      source_input => array1
    endif
+   end subroutine allocate_and_associate
+   
+   !> Subroutine that divides sediment transport x,y variables by rho
+   subroutine assign_sediment_transport(X,Y,IPNT_X,IPNT_Y,ntot)
+   use m_sediment
+   use m_observations
+   
+   double precision, dimension(:), intent(out) :: X,Y !< arrays to assign valobs values to
+   integer, intent(in) :: IPNT_X, IPNT_Y              !< location specifier inside valobs array
+   integer, intent(in) :: ntot                        !< number of stations
+   
+   integer :: l, n
+   double precision :: rhol
+   
    do l = 1, stmpar%lsedtot
       select case(stmpar%morpar%moroutput%transptype)
       case (0)
@@ -56,110 +69,51 @@ private
          rhol = stmpar%sedpar%rhosol(l)
       end select
       do n = 1,ntot
-         SSWY(ntot*(l-1)+n) = valobs(IPNT_SSWX1+l-1,n)/rhol
-         SSWX(ntot*(l-1)+n) = valobs(IPNT_SSWX1+l-1,n)/rhol
+         X(ntot*(l-1)+n) = valobs(IPNT_X-1,n)/rhol
+         Y(ntot*(l-1)+n) = valobs(IPNT_Y-1,n)/rhol
       enddo
    end do
+   end subroutine assign_sediment_transport
+   
+   !> Wrapper function that will allocate and fill the sediment transport arrays
+   subroutine calculate_sediment_SSW(source_input)
+   use m_observations
+   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SSWX" item, to be assigned once on first call.
+   integer :: ntot
+   ntot = numobs + nummovobs
+   call allocate_and_associate(source_input,ntot,SSWX,SSWY)
+   call assign_sediment_transport(SSWX,SSWY,IPNT_SSWX1,IPNT_SSWY1,ntot)
    end subroutine calculate_sediment_SSW
    
-   !> Wrapper function that computes the sediment transport variables
-   !> Will allocate and fill the sediment transport arrays
+   !> Wrapper function that will allocate and fill the sediment transport arrays
    subroutine calculate_sediment_SSC(source_input)
-   use m_sediment
    use m_observations
-   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
-   
-   integer :: l, n, ntot
-   double precision :: rhol
-   
+   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SSCX" item, to be assigned once on first call.
+   integer :: ntot
    ntot = numobs + nummovobs
-   if (.not. allocated(SSCX)) then
-      allocate(SSCX(ntot),SSCY(ntot))
-   endif
-   if (.not. associated(source_input))then
-      source_input => SSCX
-   endif
-   do l = 1, stmpar%lsedtot
-      select case(stmpar%morpar%moroutput%transptype)
-      case (0)
-         rhol = 1d0
-      case (1)
-         rhol = stmpar%sedpar%cdryb(l)
-      case (2)
-         rhol = stmpar%sedpar%rhosol(l)
-      end select
-      do n = 1,ntot
-         SSCY(ntot*(l-1)+n) = valobs(IPNT_SSCX1+l-1,n)/rhol
-         SSCX(ntot*(l-1)+n) = valobs(IPNT_SSCX1+l-1,n)/rhol
-      enddo
-   end do
+   call allocate_and_associate(source_input,ntot,SSCX,SSCY)
+   call assign_sediment_transport(SSCX,SSCY,IPNT_SSCX1,IPNT_SSCY1,ntot)
    end subroutine calculate_sediment_SSC
    
-   !> Wrapper function that computes the sediment transport variables
-   !> Will allocate and fill the sediment transport arrays
-   subroutine calculate_sediment_SBC(source_input)
-   use m_sediment
-   use m_observations
-   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
-   
-   integer :: l, n, ntot
-   double precision :: rhol
-   
-   ntot = numobs + nummovobs
-   if (.not. allocated(SBCX)) then
-      allocate(SBCX(ntot),SBCY(ntot))
-   endif
-   if (.not. associated(source_input))then
-      source_input => SBCX
-   endif
-   do l = 1, stmpar%lsedtot
-      select case(stmpar%morpar%moroutput%transptype)
-      case (0)
-         rhol = 1d0
-      case (1)
-         rhol = stmpar%sedpar%cdryb(l)
-      case (2)
-         rhol = stmpar%sedpar%rhosol(l)
-      end select
-      do n = 1,ntot
-         SBCY(ntot*(l-1)+n) = valobs(IPNT_SBCY1+l-1,n)/rhol
-         SBCX(ntot*(l-1)+n) = valobs(IPNT_SBCX1+l-1,n)/rhol
-      enddo
-   end do
-   end subroutine calculate_sediment_SBC
-   
-   !> Wrapper function that computes the sediment transport variables
-   !> Will allocate and fill the sediment transport arrays
+   !> Wrapper function that will allocate and fill the sediment transport arrays
    subroutine calculate_sediment_SBW(source_input)
-   use m_sediment
    use m_observations
    double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBWX" item, to be assigned once on first call.
-   
-   integer :: l, n, ntot
-   double precision :: rhol
-   
+   integer :: ntot
    ntot = numobs + nummovobs
-   if (.not. allocated(SBWX)) then
-      allocate(SBWX(ntot),SBWY(ntot))
-   endif
-   if (.not. associated(source_input))then
-      source_input => SBWX
-   endif
-   do l = 1, stmpar%lsedtot
-      select case(stmpar%morpar%moroutput%transptype)
-      case (0)
-         rhol = 1d0
-      case (1)
-         rhol = stmpar%sedpar%cdryb(l)
-      case (2)
-         rhol = stmpar%sedpar%rhosol(l)
-      end select
-      do n = 1,ntot
-         SBWY(ntot*(l-1)+n) = valobs(IPNT_SBWY1+l-1,n)/rhol
-         SBWX(ntot*(l-1)+n) = valobs(IPNT_SBWX1+l-1,n)/rhol
-      enddo
-   end do
+   call allocate_and_associate(source_input,ntot,SBWX,SBWY)
+   call assign_sediment_transport(SBWX,SBWY,IPNT_SBWX1,IPNT_SBWY1,ntot)
    end subroutine calculate_sediment_SBW
+   
+   !> Wrapper function that will allocate and fill the sediment transport arrays
+   subroutine calculate_sediment_SBC(source_input)
+   use m_observations
+   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
+   integer :: ntot
+   ntot = numobs + nummovobs
+   call allocate_and_associate(source_input,ntot,SBCX,SBCY)
+   call assign_sediment_transport(SBCX,SBCY,IPNT_SBCX1,IPNT_SBCY1,ntot)
+   end subroutine calculate_sediment_SBC
    
    !> Initialize (allocate) observation crosssection data array obscrs_data.
    !! This subroutine should be called only once, such that afterward individual calls
