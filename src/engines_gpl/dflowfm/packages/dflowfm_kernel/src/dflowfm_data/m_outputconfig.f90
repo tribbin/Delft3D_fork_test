@@ -256,6 +256,7 @@ private
    integer, public :: IDX_HIS_TAUSX
    integer, public :: IDX_HIS_TAUSY
 
+   integer, public :: IDX_HIS_PATM
    integer, public :: IDX_HIS_WINDX
    integer, public :: IDX_HIS_WINDX_SFERIC
    integer, public :: IDX_HIS_WINDY

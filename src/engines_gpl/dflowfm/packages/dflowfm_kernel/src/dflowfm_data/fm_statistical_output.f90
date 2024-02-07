@@ -969,9 +969,13 @@ private
                      nc_dim_ids = nc_dims_2D)
 
       ! Meteo
+
+      call addoutval(out_quan_conf_his, IDX_HIS_PATM, 'Wrihis_wind', 'patm', 'atmospheric pressure', '', &
+                     'N m-2', UNC_LOC_STATION, nc_atts = atts(1:1), description = 'Write wind velocities to his file', &
+                     nc_dim_ids = nc_dims_2D)
       call addoutval(out_quan_conf_his, IDX_HIS_WINDX,                                                               &
                      'Wrihis_wind', 'windx', 'velocity of air on flow element center, x-component', 'eastward_wind', &
-                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write wind velocities to his file', &
+                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
       call addoutval(out_quan_conf_his, IDX_HIS_WINDX_SFERIC,                                                 &
                      'Wrihis_wind', 'windx', 'velocity of air on flow element center, x-component', 'x_wind', &
@@ -2044,6 +2048,10 @@ private
       endif
 
       ! Meteo
+      if (japatm > 0 .and. jahiswind > 0) then
+         call add_stat_output_items(output_set, output_config%statout(IDX_HIS_PATM), valobs(IPNT_PATM, :))
+      end if
+
       if (jawind > 0 .and. jahiswind > 0) then
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_WINDX         ),valobs(IPNT_wx,:)                )
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_WINDX_SFERIC  ),valobs(IPNT_wx,:)                )
