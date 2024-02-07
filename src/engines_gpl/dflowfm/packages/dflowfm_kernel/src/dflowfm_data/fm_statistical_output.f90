@@ -2049,7 +2049,7 @@ private
 
       ! Meteo
       if (japatm > 0 .and. jahiswind > 0) then
-         call add_stat_output_items(output_set, output_config%statout(IDX_HIS_PATM), valobs(IPNT_PATM, :))
+         call add_stat_output_items(output_set, output_config%statout(IDX_HIS_PATM), valobs(:,IPNT_PATM))
       end if
 
       if (jawind > 0 .and. jahiswind > 0) then
