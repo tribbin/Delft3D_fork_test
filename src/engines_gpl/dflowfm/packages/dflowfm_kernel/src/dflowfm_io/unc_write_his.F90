@@ -1038,8 +1038,7 @@ subroutine unc_write_his(tim)            ! wrihis
          UNC_LOC_LATERAL &
          )
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, start = (/ 1, it_his /))
-         case (UNC_LOC_STATION)
-            
+      case (UNC_LOC_STATION)
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, count = build_nc_dimension_id_count_array(config%nc_dim_ids), start = build_nc_dimension_id_start_array(config%nc_dim_ids))
       case (UNC_LOC_GLOBAL)
          if (timon) call timstrt('unc_write_his IDX data', handle_extra(67))
@@ -2094,34 +2093,58 @@ contains
 
    end function unc_def_his_structure_static_vars
 
+!> Convert t_nc_dim_ids to integer array of NetCDF dimension ids
 function build_nc_dimension_id_list(nc_dim_ids) result(res)
-   type(t_nc_dim_ids), intent(in) :: nc_dim_ids
-   integer, allocatable :: res(:)
+   type(t_nc_dim_ids), intent(in) :: nc_dim_ids !< The active NetCDF dimensions for this variable
+   integer, allocatable           :: res(:)     !< Array of NetCDF dimension ids
 
+      logical :: laydimw = .false.
+      logical :: nlyrdim = .false.
+      logical :: statdim = .false.
+      logical :: sedsusdim = .false.
+      logical :: sedtotdim = .false.
+      logical :: timedim = .false.
    res = pack([id_laydim, id_laydimw, id_nlyrdim, id_statdim, id_sedsusdim, id_sedtotdim, id_timedim], &
-              [nc_dim_ids%laydim, nc_dim_ids%laydim_interface_center .or. nc_dim_ids%laydim_interface_edge, nc_dim_ids%nlyrdim, nc_dim_ids%statdim, nc_dim_ids%sedsusdim, nc_dim_ids%sedtotdim, nc_dim_ids%timedim])
+              make_mask_from_dim_ids(nc_dim_ids))
 end function build_nc_dimension_id_list
 
-function build_nc_dimension_id_start_array(nc_dim_ids) result(res)
-   type(t_nc_dim_ids), intent(in) :: nc_dim_ids
-   integer, allocatable :: res(:)
+!> Return array of NetCDF dimension start indices corresponding to NetCDF dimensions
+function build_nc_dimension_id_start_array(nc_dim_ids) result(starts)
+   type(t_nc_dim_ids), intent(in) :: nc_dim_ids !< The active NetCDF dimensions for this variable
+   integer, allocatable           :: starts(:)  !< Array of start indices for each NetCDF dimension
    
-   res = pack([1, 1, 1, 1, 1, 1, it_his], &
-              [nc_dim_ids%laydim, nc_dim_ids%laydim_interface_center .or. nc_dim_ids%laydim_interface_edge, nc_dim_ids%nlyrdim, nc_dim_ids%statdim, nc_dim_ids%sedsusdim, nc_dim_ids%sedtotdim, nc_dim_ids%timedim])
+   starts = pack([1, 1, 1, 1, 1, 1, it_his], &
+              make_mask_from_dim_ids(nc_dim_ids))
 end function build_nc_dimension_id_start_array
 
-function build_nc_dimension_id_count_array(nc_dim_ids) result(res)
-   type(t_nc_dim_ids), intent(in) :: nc_dim_ids
-   integer, allocatable :: res(:)
+!> Return array of NetCDF dimension counts corresponding to NetCDF dimensions
+function build_nc_dimension_id_count_array(nc_dim_ids) result(counts)
+   type(t_nc_dim_ids), intent(in) :: nc_dim_ids !< The active NetCDF dimensions for this variable
+   integer, allocatable           :: counts(:)  !< NetCDF dimension counts
    
-   res = pack([get_dimid_len(id_laydim),get_dimid_len(id_laydimw), get_dimid_len(id_nlyrdim), get_dimid_len(id_statdim), get_dimid_len(id_sedsusdim), get_dimid_len(id_sedtotdim), 1], &
-              [nc_dim_ids%laydim, nc_dim_ids%laydim_interface_center .or. nc_dim_ids%laydim_interface_edge, nc_dim_ids%nlyrdim, nc_dim_ids%statdim, nc_dim_ids%sedsusdim, nc_dim_ids%sedtotdim, nc_dim_ids%timedim])
+   counts = pack([get_dimid_len(id_laydim),get_dimid_len(id_laydimw), get_dimid_len(id_nlyrdim), get_dimid_len(id_statdim), get_dimid_len(id_sedsusdim), get_dimid_len(id_sedtotdim), 1], &
+              make_mask_from_dim_ids(nc_dim_ids))
 end function build_nc_dimension_id_count_array
 
-integer function get_dimid_len(id)
-integer, intent(in) :: id
+!> Build mask of which dimensions to include in netcdf variable, based on nc_dim_ids
+pure function make_mask_from_dim_ids(nc_dim_ids) result(mask)
+   type(t_nc_dim_ids), intent(in) :: nc_dim_ids  !< The active NetCDF dimensions for this variable
+   logical                        :: mask(7)     !< The same but as a 1-D array of logicals
+   
+   mask = [nc_dim_ids%laydim, &
+           nc_dim_ids%laydim_interface_center .or. nc_dim_ids%laydim_interface_edge, &
+           nc_dim_ids%nlyrdim, &
+           nc_dim_ids%statdim, &
+           nc_dim_ids%sedsusdim, &
+           nc_dim_ids%sedtotdim, &
+           nc_dim_ids%timedim]
+end function make_mask_from_dim_ids
 
-ierr =  nf90_inquire_dimension(ihisfile, id, len = get_dimid_len)
+!> Gets dimension length from NetCDF dimension id
+integer function get_dimid_len(id)
+   integer, intent(in) :: id !< NetCDF id obtained from nf90_def_dim
+
+   ierr =  nf90_inquire_dimension(ihisfile, id, len = get_dimid_len)
 end function get_dimid_len
 
 end subroutine unc_write_his

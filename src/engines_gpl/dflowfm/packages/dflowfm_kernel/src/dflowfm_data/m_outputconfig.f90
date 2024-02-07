@@ -250,12 +250,14 @@ private
    integer, public :: IDX_HIS_TWAV
    integer, public :: IDX_HIS_PHIWAV
    integer, public :: IDX_HIS_RLABDA
+   integer, public :: IDX_HIS_R
    integer, public :: IDX_HIS_UORB
    integer, public :: IDX_HIS_USTOKES
    integer, public :: IDX_HIS_VSTOKES
    integer, public :: IDX_HIS_TAUSX
    integer, public :: IDX_HIS_TAUSY
 
+   integer, public :: IDX_HIS_PATM
    integer, public :: IDX_HIS_WINDX
    integer, public :: IDX_HIS_WINDX_SFERIC
    integer, public :: IDX_HIS_WINDY
@@ -555,6 +557,7 @@ end subroutine dealloc_config_output
 
 !> Define an output configuration quantity. And set the IDX variable to the current entry
 subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit, location_specifier, nc_dim_ids, nc_type, nc_atts, description)
+   use m_map_his_precision, only: md_nc_his_precision
    type(t_output_quantity_config_set),  intent(inout) :: config_set         !< Array containing all output quantity configs.
    integer,                         intent(inout) :: idx                 !< Index for the current variable.
    character(len=*),                intent(in   ) :: key                 !< Key in the MDU file.
@@ -575,7 +578,8 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
    if (present(nc_type)) then
       nc_type_ = nc_type
    else
-      nc_type_ = nf90_double
+      ! By default, use the NetCDF precision for his files defined in the MDU (nf90_float for single, nf90_double for double)
+      nc_type_ = md_nc_his_precision
    end if
 
    config_set%count = config_set%count+1

@@ -17397,10 +17397,15 @@ subroutine definencvar(ncid, idq, itype, idims, name, desc, unit, namecoord, geo
    endif
 
    if (present(fillVal)) then
+      ! Add a fill value of the correct type
       if (itype == nf90_short .or. itype == nf90_int) then
          ierr = nf90_put_att(ncid, idq, '_FillValue', int(fillVal))
-      elseif (itype == nf90_float .or. itype == nf90_double) then
+      elseif (itype == nf90_float) then
+         ierr = nf90_put_att(ncid, idq, '_FillValue', real(fillVal))
+      elseif (itype == nf90_double) then
          ierr = nf90_put_att(ncid, idq, '_FillValue', fillVal)
+      else
+         call mess(LEVEL_ERROR,'unstruc_netcdf/definencvar: invalid netcdf type for fill_value!')
       end if
    end if
 

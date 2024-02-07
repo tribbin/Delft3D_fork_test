@@ -3769,7 +3769,7 @@ end subroutine partition_make_globalnumbers
    end subroutine reduce_kobs
    
 !> reduce outputted values at observation stations
-   subroutine reduce_valobs(numvals, numobs, valobs, valobs_all)
+   subroutine reduce_valobs( numobs, valobs, valobs_all,numvals)
       use m_missing
 #ifdef HAVE_MPI
       use mpi

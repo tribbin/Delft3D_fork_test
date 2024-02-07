@@ -1034,6 +1034,10 @@ private
                      'Wrihis_waves', 'rlabda', 'Wave length',                              &
                      'sea_surface_wave_length', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
+      call addoutval(out_quan_conf_his, IDX_HIS_R,                                                       &
+                     'Wrihis_waves', 'R', 'Roller energy per square meter',                              &
+                     'sea_surface_bulk_roller_energy', 'J m-2', UNC_LOC_STATION, nc_atts = atts(1:1),    &
+                     nc_dim_ids = nc_dims_2D)
       call addoutval(out_quan_conf_his, IDX_HIS_UORB,                                                    &
                      'Wrihis_waves', 'uorb', 'Orbital velocity',                                         &
                      'sea_surface_wave_orbital_velocity', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
@@ -1058,9 +1062,13 @@ private
                      nc_dim_ids = nc_dims_2D)
 
       ! Meteo
+
+      call addoutval(out_quan_conf_his, IDX_HIS_PATM, 'Wrihis_wind', 'patm', 'atmospheric pressure', '', &
+                     'N m-2', UNC_LOC_STATION, nc_atts = atts(1:1), description = 'Write wind velocities to his file', &
+                     nc_dim_ids = nc_dims_2D)
       call addoutval(out_quan_conf_his, IDX_HIS_WINDX,                                                               &
                      'Wrihis_wind', 'windx', 'velocity of air on flow element center, x-component', 'eastward_wind', &
-                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write wind velocities to his file', &
+                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
       call addoutval(out_quan_conf_his, IDX_HIS_WINDX_SFERIC,                                                 &
                      'Wrihis_wind', 'windx', 'velocity of air on flow element center, x-component', 'x_wind', &
@@ -2087,14 +2095,14 @@ private
       endif
       if (jahisvelocity > 0) then
          if (jaeulervel==0) then
-            if(kmx>0) then
+            if (model_is_3D()) then
                call c_f_pointer (c_loc(valobs(1:ntot,IPNT_UMAG:IPNT_UMAG+kmx)), temp_pointer, [kmx*ntot])
                call add_stat_output_items(output_set, output_config%statout(IDX_HIS_VELOCITY_MAGNITUDE),temp_pointer)
             else
                call add_stat_output_items(output_set, output_config%statout(IDX_HIS_VELOCITY_MAGNITUDE),valobs(:,IPNT_UMAG)                                        )
             endif
          else
-            if(kmx>0) then
+            if (model_is_3D()) then
                call c_f_pointer (c_loc(valobs(1:ntot,IPNT_UMAG:IPNT_UMAG+kmx)), temp_pointer, [kmx*ntot])
                call add_stat_output_items(output_set, output_config%statout(IDX_HIS_VELOCITY_MAGNITUDE_EULERIAN),temp_pointer)
             else
@@ -2103,7 +2111,7 @@ private
          endif
       endif
       if (jahisdischarge > 0) then
-         if(kmx>0) then
+         if (model_is_3D()) then
             call c_f_pointer (c_loc(valobs(1:ntot,IPNT_QMAG:IPNT_QMAG+kmx)), temp_pointer, [kmx*ntot])
             call add_stat_output_items(output_set, output_config%statout(IDX_HIS_DISCHARGE_MAGNITUDE),temp_pointer)
          else
@@ -2112,7 +2120,7 @@ private
       endif
 
       ! Turbulence model
-      if ( kmx.gt.0 ) then
+      if (model_is_3D()) then
          if (iturbulencemodel >= 3 .and. jahistur > 0) then
             call c_f_pointer (c_loc(valobs(1:ntot,IPNT_TKIN:IPNT_TKIN+kmx)), temp_pointer, [kmx*ntot])
             call add_stat_output_items(output_set, output_config%statout(IDX_HIS_TKE      ),temp_pointer                            )
@@ -2196,6 +2204,10 @@ private
       endif
 
       ! Meteo
+      if (japatm > 0 .and. jahiswind > 0) then
+         call add_stat_output_items(output_set, output_config%statout(IDX_HIS_PATM), valobs(:,IPNT_PATM))
+      end if
+
       if (jawind > 0 .and. jahiswind > 0) then
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_WINDX         ),valobs(:,IPNT_wx)                )
          call add_stat_output_items(output_set, output_config%statout(IDX_HIS_WINDX_SFERIC  ),valobs(:,IPNT_wx)                )
@@ -2543,14 +2555,22 @@ private
       end do
    end subroutine process_output_quantity_configs
 
+   !> Deactivate 3D dimension IDs for 2D variables
    subroutine process_nc_dim_ids(nc_dim_ids)
-      use m_flow, only: kmx
       type(t_nc_dim_ids), intent(inout) :: nc_dim_ids !< The NetCDF dimension IDs for a possible output variable config
 
-      if (.not. (kmx > 0)) then ! Turn off layer dimensions in 2D
+      if (.not. model_is_3D()) then ! Turn off layer dimensions in 2D
          nc_dim_ids%laydim = .false.
          nc_dim_ids%laydim_interface_center = .false.
          nc_dim_ids%laydim_interface_edge = .false.
       end if
    end subroutine process_nc_dim_ids
+
+   !> Check if model is 3D
+   pure function model_is_3D() result(res)
+      use m_flow, only: kmx
+      logical :: res !< Return value
+
+      res = (kmx > 0)
+   end function model_is_3D
 end module fm_statistical_output
