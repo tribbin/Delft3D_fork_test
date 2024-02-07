@@ -31,7 +31,7 @@ private
    
    !> Wrapper function that computes the sediment transport variables
    !> Will allocate and fill the sediment transport arrays
-   subroutine calculate_sediment_transport(source_input)
+   subroutine calculate_sediment_SSW(source_input)
    use m_sediment
    use m_observations
    double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
@@ -40,15 +40,78 @@ private
    double precision :: rhol
    
    ntot = numobs + nummovobs
-   
-   if (.not. allocated(SBCX)) then
-      allocate(SBCX(ntot),SBCY(ntot), SBWX(ntot), SBWY(ntot), SSWX(ntot), SSWY(ntot), SSCX(ntot), SSCY(ntot))
+   if (.not. allocated(SSWX)) then
+      allocate(SSWX(ntot),SSWY(ntot))
    endif
+   if (.not. associated(source_input))then
+      source_input => SSWX
+   endif
+   do l = 1, stmpar%lsedtot
+      select case(stmpar%morpar%moroutput%transptype)
+      case (0)
+         rhol = 1d0
+      case (1)
+         rhol = stmpar%sedpar%cdryb(l)
+      case (2)
+         rhol = stmpar%sedpar%rhosol(l)
+      end select
+      do n = 1,ntot
+         SSWY(ntot*(l-1)+n) = valobs(IPNT_SSWX1+l-1,n)/rhol
+         SSWX(ntot*(l-1)+n) = valobs(IPNT_SSWX1+l-1,n)/rhol
+      enddo
+   end do
+   end subroutine calculate_sediment_SSW
    
+   !> Wrapper function that computes the sediment transport variables
+   !> Will allocate and fill the sediment transport arrays
+   subroutine calculate_sediment_SSC(source_input)
+   use m_sediment
+   use m_observations
+   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
+   
+   integer :: l, n, ntot
+   double precision :: rhol
+   
+   ntot = numobs + nummovobs
+   if (.not. allocated(SSCX)) then
+      allocate(SSCX(ntot),SSCY(ntot))
+   endif
+   if (.not. associated(source_input))then
+      source_input => SSCX
+   endif
+   do l = 1, stmpar%lsedtot
+      select case(stmpar%morpar%moroutput%transptype)
+      case (0)
+         rhol = 1d0
+      case (1)
+         rhol = stmpar%sedpar%cdryb(l)
+      case (2)
+         rhol = stmpar%sedpar%rhosol(l)
+      end select
+      do n = 1,ntot
+         SSCY(ntot*(l-1)+n) = valobs(IPNT_SSCX1+l-1,n)/rhol
+         SSCX(ntot*(l-1)+n) = valobs(IPNT_SSCX1+l-1,n)/rhol
+      enddo
+   end do
+   end subroutine calculate_sediment_SSC
+   
+   !> Wrapper function that computes the sediment transport variables
+   !> Will allocate and fill the sediment transport arrays
+   subroutine calculate_sediment_SBC(source_input)
+   use m_sediment
+   use m_observations
+   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
+   
+   integer :: l, n, ntot
+   double precision :: rhol
+   
+   ntot = numobs + nummovobs
+   if (.not. allocated(SBCX)) then
+      allocate(SBCX(ntot),SBCY(ntot))
+   endif
    if (.not. associated(source_input))then
       source_input => SBCX
    endif
-   
    do l = 1, stmpar%lsedtot
       select case(stmpar%morpar%moroutput%transptype)
       case (0)
@@ -61,16 +124,42 @@ private
       do n = 1,ntot
          SBCY(ntot*(l-1)+n) = valobs(IPNT_SBCY1+l-1,n)/rhol
          SBCX(ntot*(l-1)+n) = valobs(IPNT_SBCX1+l-1,n)/rhol
-         SSCY(ntot*(l-1)+n) = valobs(IPNT_SSCY1+l-1,n)/rhol
-         SSCX(ntot*(l-1)+n) = valobs(IPNT_SSCX1+l-1,n)/rhol
-         SBWY(ntot*(l-1)+n) = valobs(IPNT_SBWY1+l-1,n)/rhol
-         SBWX(ntot*(l-1)+n) = valobs(IPNT_SBWX1+l-1,n)/rhol
-         SSWY(ntot*(l-1)+n) = valobs(IPNT_SSWY1+l-1,n)/rhol
-         SSWX(ntot*(l-1)+n) = valobs(IPNT_SSWX1+l-1,n)/rhol
       enddo
    end do
-
-   end subroutine calculate_sediment_transport
+   end subroutine calculate_sediment_SBC
+   
+   !> Wrapper function that computes the sediment transport variables
+   !> Will allocate and fill the sediment transport arrays
+   subroutine calculate_sediment_SBW(source_input)
+   use m_sediment
+   use m_observations
+   double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBWX" item, to be assigned once on first call.
+   
+   integer :: l, n, ntot
+   double precision :: rhol
+   
+   ntot = numobs + nummovobs
+   if (.not. allocated(SBWX)) then
+      allocate(SBWX(ntot),SBWY(ntot))
+   endif
+   if (.not. associated(source_input))then
+      source_input => SBWX
+   endif
+   do l = 1, stmpar%lsedtot
+      select case(stmpar%morpar%moroutput%transptype)
+      case (0)
+         rhol = 1d0
+      case (1)
+         rhol = stmpar%sedpar%cdryb(l)
+      case (2)
+         rhol = stmpar%sedpar%rhosol(l)
+      end select
+      do n = 1,ntot
+         SBWY(ntot*(l-1)+n) = valobs(IPNT_SBWY1+l-1,n)/rhol
+         SBWX(ntot*(l-1)+n) = valobs(IPNT_SBWX1+l-1,n)/rhol
+      enddo
+   end do
+   end subroutine calculate_sediment_SBW
    
    !> Initialize (allocate) observation crosssection data array obscrs_data.
    !! This subroutine should be called only once, such that afterward individual calls
@@ -2214,21 +2303,24 @@ private
          endif
          if (stmpar%lsedtot>0) then
             if (stmpar%morpar%moroutput%sbcuv) then
-               function_pointer => calculate_sediment_transport
+               function_pointer => calculate_sediment_SBC
                call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBCX),null(),function_pointer)
                call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBCY),SBCY)
             endif
-            if (stmpar%morpar%moroutput%sscuv) then
-               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWX),SBWX)
+            if (stmpar%morpar%moroutput%sbwuv) then
+               function_pointer => calculate_sediment_SBW
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWX),null(),function_pointer)
                call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWY),SBWY)
             endif
-            if (stmpar%morpar%moroutput%sswuv .and. jawave>0 .and. .not. flowWithoutWaves) then
-               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SSCX),SSCX)
+            if (stmpar%morpar%moroutput%sscuv .and. jawave>0 .and. .not. flowWithoutWaves) then
+               function_pointer => calculate_sediment_SSC
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SSCX),null(),function_pointer)
                call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SSCY),SSCY)
             endif
-            if (stmpar%morpar%moroutput%sbwuv .and. jawave>0 .and. .not. flowWithoutWaves) then
-               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWX),SBWX)
-               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SBWY),SBWY)
+            if (stmpar%morpar%moroutput%sswuv .and. jawave>0 .and. .not. flowWithoutWaves) then
+               function_pointer => calculate_sediment_SSW
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SSWX),null(),function_pointer)
+               call add_stat_output_items(output_set, output_config%statout(IDX_HIS_SSWY),SSWY)
             endif
          endif
       endif
