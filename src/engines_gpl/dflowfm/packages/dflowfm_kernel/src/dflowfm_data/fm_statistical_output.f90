@@ -69,8 +69,8 @@ private
          rhol = stmpar%sedpar%rhosol(l)
       end select
       do n = 1,ntot
-         X(ntot*(l-1)+n) = valobs(n,IPNT_X-1)/rhol
-         Y(ntot*(l-1)+n) = valobs(n,IPNT_Y-1)/rhol
+         X(ntot*(l-1)+n) = valobs(n,IPNT_X)/rhol
+         Y(ntot*(l-1)+n) = valobs(n,IPNT_Y)/rhol
       enddo
    end do
    end subroutine assign_sediment_transport
