@@ -236,7 +236,7 @@ class TestTreeComparer:
             # and the path to be checked
             pathstr = ">DUMPFILE"
 
-            # Run with 'with' so that exceptions are catch in the process
+            # Run with 'with' so that exceptions are caught during the process
             with pytest.raises(Exception) as context:
                 logger = TestLogger()
                 TreeComparer.compareTreePaths(
