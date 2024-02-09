@@ -75,6 +75,8 @@
  use m_fm_icecover, only: fm_ice_alloc, fm_ice_echo
  use m_dad, only: dad_included
  use m_fixedweirs, only: weirdte, nfxw
+ use mass_balance_areas_routines, only : mba_init
+ 
  !
  ! To raise floating-point invalid, divide-by-zero, and overflow exceptions:
  ! Activate the following line (See also statements below)
