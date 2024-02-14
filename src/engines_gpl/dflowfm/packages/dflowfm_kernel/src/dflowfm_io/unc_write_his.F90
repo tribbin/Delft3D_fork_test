@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2023.
+!  Copyright (C)  Stichting Deltares, 2017-2024.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -74,7 +74,6 @@ subroutine unc_write_his(tim)            ! wrihis
     use m_statistical_output
     use fm_statistical_output
     use m_output_config
-    use m_particles
     use MessageHandling, only: err
    
     implicit none
@@ -266,7 +265,7 @@ subroutine unc_write_his(tim)            ! wrihis
             filename = defaultFilename('his')
         end if
 
-        ierr = unc_create(filename, 0, ihisfile, .false.)
+        ierr = unc_create(filename, 0, ihisfile)
         if (ierr /= nf90_noerr) then
             call mess(LEVEL_WARN, 'Could not create history file.')
         end if
