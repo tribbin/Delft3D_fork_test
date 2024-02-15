@@ -111,8 +111,9 @@
 
  double precision                  :: Elder       !< add Elder viscosity
  double precision                  :: Smagorinsky !< add Smagorinsky Cs coefficient, vic = vic + (Cs*dx)**2 * S
- double precision, dimension(4)    :: Prandtl_Schmidt_numbers !< Prandtl/Schmidt numbers for resp. salt, temperature, sediments and tracers
- double precision                  :: viuchk  !< if < 0.5 then eddy viscosity cell peclet check viu<viuchk*dx*dx/dt
+ double precision                  :: tps_sal = 0.7d0 !< Turbulent (Prandtl-)Schmidt number for salinity
+ double precision                  :: tps_tem = 0.7d0 !< Turbulent Prandtl(-Schmidt) number for temperature
+ double precision                  :: viuchk      !< if < 0.5 then eddy viscosity cell peclet check viu<viuchk*dx*dx/dt
 
  double precision                  :: vicoww  !< 1D-6   !                 ! user specified constant vertical   eddy viscosity  (m2/s)
  double precision                  :: dicoww  !< 1D-6   !                 ! user specified constant vertical   eddy diffusivity(m2/s)
@@ -198,7 +199,6 @@ dicouv      = 0.1d0     ! constant horizontal eddy diffusivity (m2/s) sal, sed
 
 Elder       = 0d0       ! add Elder viscosity
 Smagorinsky = 0.2d0     ! add Smagorinsky Cs coefficient, vic = vic + (Cs*dx)**2 * S
-Prandtl_Schmidt_numbers = [0.7d0, 0.7d0, 1.0d0, 1.0d0] ! Prandtl/Schmidt numbers for resp. salt, temperature, sediments and tracers. 
 viuchk      = 0.24      ! if < 0.5 then eddy viscosity cell check viu<viuchk*dx*dx/dt
 
 vicoww      = 1d-6      ! 5d-5   !                 ! background vertical eddy viscosity (m2/s)

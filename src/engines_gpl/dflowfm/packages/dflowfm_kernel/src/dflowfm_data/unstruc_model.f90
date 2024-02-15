@@ -1295,16 +1295,6 @@ subroutine readMDUFile(filename, istat)
     call prop_get_double (md_ptr, 'physics', 'Vicwminb'       , Vicwminb)
     call prop_get_double (md_ptr, 'physics', 'Xlozmidov'      , Xlozmidov)
 
-    call realloc(tmpdouble, 4, fill = -999d0)
-    call prop_get_doubles(md_ptr, 'physics', 'Prandtl_Schmidt_numbers', tmpdouble, 4)
-    if ( .not. all(tmpdouble == -999d0) ) then ! Prandtl_Schmidt_numbers was specified by user
-       if ( minval(tmpdouble) < 0 ) then
-          call mess(LEVEL_ERROR, 'Prandtl_Schmidt_numbers requires four numbers for resp. salt, temperature, sediments and tracers (e.g., 0.7 0.7 1.0 1.0), even if your model does not include some of these constituents/processes.')
-       else
-          Prandtl_Schmidt_numbers = tmpdouble
-       endif
-    endif
-
     call prop_get_double (md_ptr, 'physics', 'Smagorinsky'    , Smagorinsky)
     call prop_get_double (md_ptr, 'physics', 'Elder   '       , Elder)
     call prop_get_integer(md_ptr, 'physics', 'irov'           , irov)
@@ -1326,6 +1316,7 @@ subroutine readMDUFile(filename, istat)
 
     call prop_get_integer(md_ptr, 'physics', 'Salinity'       , jasal)
     call prop_get_double (md_ptr, 'physics', 'InitialSalinity', salini)
+    call prop_get_double (md_ptr, 'physics', 'SalinityPrandtlSchmidtNumber', tps_sal)
     call prop_get_double (md_ptr, 'physics', 'DeltaSalinity'  , deltasalinity)
 
     call prop_get_double (md_ptr, 'physics', 'Sal0abovezlev'  , Sal0abovezlev)
@@ -1344,6 +1335,7 @@ subroutine readMDUFile(filename, istat)
    
     call prop_get_integer(md_ptr, 'physics', 'Temperature'       , jatem)
     call prop_get_double (md_ptr, 'physics', 'InitialTemperature', temini)
+    call prop_get_double (md_ptr, 'physics', 'TemperaturePrandtlSchmidtNumber', tps_tem)
     call prop_get_double (md_ptr, 'physics', 'Secchidepth'       , Secchidepth)
     call prop_get_double (md_ptr, 'physics', 'Secchidepth2'      , Secchidepth2)
     call prop_get_double (md_ptr, 'physics', 'Secchidepth2fraction'  , Secchidepth2fraction)
@@ -3444,7 +3436,6 @@ endif
        endif
        call prop_set(prop_ptr, 'physics', 'Xlozmidov',     xlozmidov,    'Ozmidov length scale (m), default=0.0, no contribution of internal waves to vertical diffusion')
     endif
-    call prop_set(prop_ptr, 'physics', 'Prandtl_Schmidt_numbers', Prandtl_Schmidt_numbers, 'Prandtl/Schmidt numbers for resp. salt, temperature, sediments and tracers. E.g., 0.7 0.7 1.0 1.0')
     call prop_set(prop_ptr, 'physics', 'Smagorinsky',      Smagorinsky,  'Smagorinsky factor in horizontal turbulence, e.g. 0.15')
     call prop_set(prop_ptr, 'physics', 'Elder',            Elder,        'Elder factor in horizontal turbulence')
     call prop_set(prop_ptr, 'physics', 'irov',             irov,         '0=free slip, 1 = partial slip using wall_ks')
@@ -3472,6 +3463,7 @@ endif
     call prop_set(prop_ptr,    'physics', 'Salinity',      jasal,        'Include salinity, (0: no, 1: yes)' )
     if (writeall .or. (jasal > 0)) then
        call prop_set(prop_ptr, 'physics','InitialSalinity',salini,       'Uniform initial salinity concentration (ppt)')
+       call prop_set(prop_ptr, 'physics', 'SalinityPrandtlSchmidtNumber', tps_sal, 'Turbulent (Prandtl-)Schmidt number for salinity')
        if (writeall .or. (Sal0abovezlev .ne. dmiss)) then
            call prop_set(prop_ptr, 'physics', 'Sal0abovezlev', Sal0abovezlev, 'Vertical level (m) above which salinity is set 0')
        endif
@@ -3499,6 +3491,7 @@ endif
     call prop_set(prop_ptr, 'physics', 'Temperature'     , jatem,       'Include temperature (0: no, 1: only transport, 3: excess model of D3D, 5: composite (ocean) model)')
     if (writeall .or. (jatem > 0)) then
        call prop_set(prop_ptr, 'physics', 'InitialTemperature', temini, 'Uniform initial water temperature (degC)')
+       call prop_set(prop_ptr, 'physics', 'TemperaturePrandtlSchmidtNumber', tps_sal, 'Turbulent Prandtl(-Schmidt) number for temperature')
        call prop_set(prop_ptr, 'physics', 'Secchidepth', Secchidepth, 'Water clarity parameter (m)')
        if (Secchidepth2 > 0) then
        call prop_set(prop_ptr, 'physics', 'Secchidepth2', Secchidepth2, 'Water clarity parameter 2 (m), only used if > 0')
