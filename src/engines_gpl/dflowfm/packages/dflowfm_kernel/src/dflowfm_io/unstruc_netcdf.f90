@@ -4506,8 +4506,8 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
           else
              dens => stmpar%sedpar%rhosol
           endif
-          do nm = 1, ndxi
-             do k = 1, stmpar%morlyr%settings%nlyr
+          do k = 1, stmpar%morlyr%settings%nlyr
+             do nm = 1, ndxi
                 if (stmpar%morlyr%state%thlyr(k,nm)>0.0_fp) then
                    svthick = stmpar%morlyr%state%svfrac(k, nm) * stmpar%morlyr%state%thlyr(k, nm)
                    do l = 1, stmpar%lsedtot
@@ -5079,7 +5079,7 @@ subroutine unc_write_map_filepointer_ugrid(mapids, tim, jabndnd) ! wrimap
    character(16)                                       :: dxname
    character(64)                                       :: dxdescr
    character(15)                                       :: transpunit
-   double precision                                    :: rhol, dens, mortime, wavfac
+   double precision                                    :: rhol, mortime, wavfac
    double precision                                    :: moravg, dmorft, dmorfs, rhodt
    double precision                                    :: um, ux, uy
    double precision, dimension(:,:), allocatable       :: poros, toutputx, toutputy, sxtotori, sytotori
@@ -5091,6 +5091,8 @@ subroutine unc_write_map_filepointer_ugrid(mapids, tim, jabndnd) ! wrimap
    double precision, dimension(:), allocatable         :: work1d
    double precision                                    :: vicc, dicc
 
+   double precision, dimension(:), pointer             :: dens
+   
 !    Secondary Flow
 !        id_rsi, id_rsiexact, id_dudx, id_dudy, id_dvdx, id_dvdy, id_dsdx, id_dsdy
 
@@ -7083,21 +7085,21 @@ if (jamapsed > 0 .and. jased > 0 .and. stm_included) then
          !
          if (.not. allocated(frac) ) allocate( frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx) )
          frac = -999d0
-         do l = 1, stmpar%lsedtot
-            if (stmpar%morlyr%settings%iporosity==0) then
-               dens = stmpar%sedpar%cdryb(l)
-            else
-               dens = stmpar%sedpar%rhosol(l)
-            endif
-            do k = 1, stmpar%morlyr%settings%nlyr
-               do nm = 1, ndxndxi
-                  if (stmpar%morlyr%state%thlyr(k,nm)>0.0_fp) then
-                       frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm)/(dens*stmpar%morlyr%state%svfrac(k, nm) * &
+         if (stmpar%morlyr%settings%iporosity==0) then
+            dens => stmpar%sedpar%cdryb
+         else
+            dens => stmpar%sedpar%rhosol
+         endif
+         do k = 1, stmpar%morlyr%settings%nlyr
+            do nm = 1, ndxndxi
+               if (stmpar%morlyr%state%thlyr(k,nm)>0.0_fp) then
+                  do l = 1, stmpar%lsedtot
+                       frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm)/(dens(l)*stmpar%morlyr%state%svfrac(k, nm) * &
                                         stmpar%morlyr%state%thlyr(k, nm))
-                  else
-                       frac(l, k, nm) = 0d0
-                  endif
-               enddo
+                  enddo
+               else
+                  frac(:, k, nm) = 0d0
+               endif
             enddo
          enddo
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_lyrfrac  , UNC_LOC_S, frac, locdim=3, jabndnd=jabndnd_)
@@ -7885,7 +7887,7 @@ subroutine unc_write_map_filepointer(imapfile, tim, jaseparate) ! wrimap
     integer :: ndxndxi ! Either ndx or ndxi, depending on whether boundary nodes also need to be written.
     double precision, dimension(:), allocatable :: windx, windy
     double precision, dimension(:), allocatable :: numlimdtdbl ! TODO: WO/AvD: remove this once integer version of unc_def_map_var is available
-    double precision :: vicc, dicc, dens
+    double precision :: vicc, dicc
     integer :: jaeulerloc
 
     double precision   :: rhol
@@ -7896,6 +7898,8 @@ subroutine unc_write_map_filepointer(imapfile, tim, jaseparate) ! wrimap
 
     integer, dimension(:), allocatable :: flag_val
     character(len=10000)               :: flag_mean
+
+    double precision, dimension(:), pointer :: dens
 
     if (.not. allocated(id_dxx) .and. stm_included) allocate(id_dxx(1:stmpar%morpar%nxx,1:2))
 
@@ -10299,21 +10303,21 @@ subroutine unc_write_map_filepointer(imapfile, tim, jaseparate) ! wrimap
              ! lyrfrac
              if (.not. allocated(frac) ) allocate( frac(stmpar%lsedtot,1:stmpar%morlyr%settings%nlyr,1:ndx  ) )
              frac = -999d0
-             do l = 1, stmpar%lsedtot
-                if (stmpar%morlyr%settings%iporosity==0) then
-                   dens = stmpar%sedpar%cdryb(l)
-                else
-                   dens = stmpar%sedpar%rhosol(l)
-                endif
-                do k = 1, stmpar%morlyr%settings%nlyr
-                   do nm = 1, ndxndxi
-                      if (stmpar%morlyr%state%thlyr(k,nm)>0.0_fp) then
-                           frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm)/(dens*stmpar%morlyr%state%svfrac(k, nm) * &
+             if (stmpar%morlyr%settings%iporosity==0) then
+                dens => stmpar%sedpar%cdryb
+             else
+                dens => stmpar%sedpar%rhosol
+             endif
+             do k = 1, stmpar%morlyr%settings%nlyr
+                do nm = 1, ndxndxi
+                   if (stmpar%morlyr%state%thlyr(k,nm)>0.0_fp) then
+                      do l = 1, stmpar%lsedtot
+                           frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm)/(dens(l)*stmpar%morlyr%state%svfrac(k, nm) * &
                                             stmpar%morlyr%state%thlyr(k, nm))
-                      else
-                           frac(l, k, nm) = 0d0
-                      endif
-                   enddo
+                      enddo
+                   else
+                      frac(:, k, nm) = 0d0
+                   endif
                 enddo
              enddo
              !
