@@ -15,7 +15,7 @@ private
    type(t_output_variable_set), public :: out_variable_set_map
    type(t_output_variable_set), public :: out_variable_set_clm
 
-   public default_fm_statistical_output, flow_init_statistical_output_his
+   public default_fm_statistical_output, flow_init_statistical_output_his, model_is_3D
 
    type(t_nc_dim_ids), parameter :: nc_dims_2D = t_nc_dim_ids(statdim = .true., timedim = .true.)
    type(t_nc_dim_ids), parameter :: nc_dims_3D_center = t_nc_dim_ids(laydim = .true., statdim = .true., timedim = .true.)
@@ -367,6 +367,7 @@ private
       use netcdf_utils
       use m_missing
       use m_sediment, only: stmpar
+      use m_output_config, only: id_nc_byte, id_nc_char, id_nc_short, id_nc_int, id_nc_float, id_nc_double
 
       type(ug_nc_attribute) :: atts(5)
      character(len=25)      :: transpunit
@@ -567,7 +568,7 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call addoutval(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_STATE,                            &
                      'Wrihis_structure_gen', 'general_structure_state', 'Flow state at general structure', '',                     &
-                     '', UNC_LOC_GENSTRU, nc_type = nf90_int, nc_atts = atts(1:5))
+                     '', UNC_LOC_GENSTRU, id_nc_type = id_nc_int, nc_atts = atts(1:5))
       call addoutval(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_S1_ON_CREST,                      &
                      'Wrihis_structure_gen', 'general_structure_s1_on_crest', 'Water level on crest of general structure',          &
                      '', 'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
@@ -612,7 +613,7 @@ private
                      '', 'm', UNC_LOC_PUMP, nc_atts = atts(1:1))
       call addoutval(out_quan_conf_his, IDX_HIS_PUMP_ACTUAL_STAGE,                                  &
                      'Wrihis_structure_pump', 'pump_actual_stage', 'Actual stage of pump',                               &
-                     '', '', UNC_LOC_PUMP, nc_atts = atts(1:1), nc_type = nf90_int)
+                     '', '', UNC_LOC_PUMP, nc_atts = atts(1:1), id_nc_type = id_nc_int)
       call addoutval(out_quan_conf_his, IDX_HIS_PUMP_HEAD,                                          &
                      'Wrihis_structure_pump', 'pump_head', 'Head difference in pumping direction',               &
                      '', 'm', UNC_LOC_PUMP, nc_atts = atts(1:1))
@@ -703,7 +704,7 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call addoutval(out_quan_conf_his, IDX_HIS_WEIRGEN_STATE,                                      &
                      'Wrihis_structure_weir', 'weirgen_state', 'Flow state at weir',                                 &
-                     '', '', UNC_LOC_WEIRGEN, nc_atts = atts(1:5), nc_type = nf90_int)
+                     '', '', UNC_LOC_WEIRGEN, nc_atts = atts(1:5), id_nc_type = id_nc_int)
 
       call addoutval(out_quan_conf_his, IDX_HIS_WEIRGEN_FORCE_DIFFERENCE,                           &
                      'Wrihis_structure_weir', 'weirgen_force_difference', 'Force difference per unit width at weir', '',                      &
@@ -749,7 +750,7 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call addoutval(out_quan_conf_his, IDX_HIS_ORIFICE_STATE,                                      &
                      'Wrihis_structure_orifice', 'orifice_state', 'Flow state at orifice', '',                      &
-                     '', UNC_LOC_ORIFICE, nc_atts = atts(1:5), nc_type = nf90_int)
+                     '', UNC_LOC_ORIFICE, nc_atts = atts(1:5), id_nc_type = id_nc_int)
 
       call addoutval(out_quan_conf_his, IDX_HIS_ORIFICE_S1_ON_CREST,                                &
                      'Wrihis_structure_orifice', 'orifice_s1_on_crest', 'Water level on crest of orifice', '',                     &
@@ -829,7 +830,7 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call addoutval(out_quan_conf_his, IDX_HIS_CULVERT_STATE,                                      &
                      'Wrihis_structure_culvert', 'culvert_state', 'Flow state at culvert', '',                     &
-                     '', UNC_LOC_CULVERT, nc_atts = atts(1:5), nc_type = nf90_int)
+                     '', UNC_LOC_CULVERT, nc_atts = atts(1:5), id_nc_type = id_nc_int)
 
       !! Dambreak
       call addoutval(out_quan_conf_his, IDX_HIS_DAMBREAK_S1UP,                                      &
@@ -1490,7 +1491,7 @@ private
                      '', '-', UNC_LOC_U)
       call addoutval(out_quan_conf_map, IDX_MAP_CFUTYP,                                             &
                      'Wrimap_temperature', 'cfutyp', 'Input roughness type on flow links',                                            &
-                     '', '', UNC_LOC_U, nc_type = nf90_int)
+                     '', '', UNC_LOC_U, id_nc_type = id_nc_int)
       call addoutval(out_quan_conf_map, IDX_MAP_TEM1,                                               &
                      'Wrimap_constituents', 'tem1', 'Temperature in flow element',                                                   &
                      'sea_water_temperature', 'degC', UNC_LOC_S, description='Write constituents to map file')
