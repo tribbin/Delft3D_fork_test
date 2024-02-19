@@ -64,8 +64,8 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    const_sink = 0d0
 
    ! User-defined turbulent Prandtl-Schmidt numbers
-   sigsal = max(tps_sal, 1e-10) ! to avoid division by zero
-   sigtem = max(tps_tem, 1e-10) ! to avoid division by zero
+   sigsal = tps_sal
+   sigtem = tps_tem
 
    do k=1,Ndkx
  
