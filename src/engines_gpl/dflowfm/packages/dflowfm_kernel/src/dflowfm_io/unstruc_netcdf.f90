@@ -4524,7 +4524,7 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
           ! thlyr
           ierr = nf90_put_var(irstfile, id_thlyr, stmpar%morlyr%state%thlyr(:,1:ndxi), (/ 1, 1, itim /), (/ stmpar%morlyr%settings%nlyr, ndxi, 1 /))
           ! lyrfrac
-          ierr = nf90_put_var(irstfile, id_lyrfrac, frac(1:ndxi, :, :), (/ 1, 1, 1, itim /), (/ ndxi, stmpar%morlyr%settings%nlyr, stmpar%lsedtot, 1 /))
+          ierr = nf90_put_var(irstfile, id_lyrfrac, frac(:, :, 1:ndxi), (/ 1, 1, 1, itim /), (/ stmpar%lsedtot, stmpar%morlyr%settings%nlyr, ndxi, 1 /))
           ! preload
           ierr = nf90_put_var(irstfile, id_preload, stmpar%morlyr%state%preload(:, 1:ndxi), (/ 1, 1, itim /), (/ stmpar%morlyr%settings%nlyr, ndxi, 1 /))
           ! porosity
@@ -5825,7 +5825,7 @@ subroutine unc_write_map_filepointer_ugrid(mapids, tim, jabndnd) ! wrimap
             case (2)
                ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_msed    , nc_precision, UNC_LOC_S, 'msed'  , '', 'Available sediment mass in a layer of the bed in flow cell center', 'kg m-2', dimids = (/ mapids%id_tsp%id_sedtotdim, mapids%id_tsp%id_nlyrdim, -2, -1 /), jabndnd=jabndnd_)
                ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_thlyr   , nc_precision, UNC_LOC_S, 'thlyr'  , '', 'Thickness of a layer of the bed in flow cell center', 'm', dimids = (/ mapids%id_tsp%id_nlyrdim, -2, -1 /), jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_lyrfrac , nc_precision, UNC_LOC_S, 'lyrfrac'  , '', 'Volume fraction in a layer of the bed in flow cell center', '-', dimids = (/ -2, mapids%id_tsp%id_nlyrdim, mapids%id_tsp%id_sedtotdim, -1 /), jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_lyrfrac , nc_precision, UNC_LOC_S, 'lyrfrac'  , '', 'Volume fraction in a layer of the bed in flow cell center', '-', dimids = (/ mapids%id_tsp%id_sedtotdim, mapids%id_tsp%id_nlyrdim, -2, -1 /), jabndnd=jabndnd_)
                !
                if (stmpar%morlyr%settings%iporosity>0) then
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_poros, nc_precision, UNC_LOC_S, 'poros'  , '', 'Porosity of a layer of the bed in flow cell center', '-', dimids = (/ mapids%id_tsp%id_nlyrdim, -2, -1 /), jabndnd=jabndnd_)
@@ -7085,7 +7085,7 @@ if (jamapsed > 0 .and. jased > 0 .and. stm_included) then
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_msed  , UNC_LOC_S, stmpar%morlyr%state%msed , locdim=3, jabndnd=jabndnd_)
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_thlyr , UNC_LOC_S, stmpar%morlyr%state%thlyr, locdim=2, jabndnd=jabndnd_)
          !
-         if (.not. allocated(frac) ) allocate( frac(1:ndx, 1:stmpar%morlyr%settings%nlyr, stmpar%lsedtot) )
+         if (.not. allocated(frac) ) allocate( frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx) )
          frac = -999d0
          do l = 1, stmpar%lsedtot
             if (stmpar%morlyr%settings%iporosity==0) then
@@ -7096,15 +7096,15 @@ if (jamapsed > 0 .and. jased > 0 .and. stm_included) then
             do k = 1, stmpar%morlyr%settings%nlyr
                do nm = 1, ndxndxi
                   if (stmpar%morlyr%state%thlyr(k,nm)>0.0_fp) then
-                       frac(nm, k, l) = stmpar%morlyr%state%msed(l, k, nm)/(dens*stmpar%morlyr%state%svfrac(k, nm) * &
+                       frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm)/(dens*stmpar%morlyr%state%svfrac(k, nm) * &
                                         stmpar%morlyr%state%thlyr(k, nm))
                   else
-                       frac(nm, k, l) = 0d0
+                       frac(l, k, nm) = 0d0
                   endif
                enddo
             enddo
          enddo
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_lyrfrac  , UNC_LOC_S, frac, jabndnd=jabndnd_)
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp  , mapids%id_lyrfrac  , UNC_LOC_S, frac, locdim=3, jabndnd=jabndnd_)
          !
          if (stmpar%morlyr%settings%iporosity>0) then
             if (.not. allocated(poros) ) allocate( poros(1:stmpar%morlyr%settings%nlyr, 1:ndx ) )
