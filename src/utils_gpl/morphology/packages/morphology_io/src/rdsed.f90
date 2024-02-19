@@ -1124,10 +1124,16 @@ subroutine rdsed01(lsed      ,luninp    ,lundia    ,csoil     ,iopsus    , &
        call tree_create_node(sedblock_ptr,'EroPar',anode)
        call tree_put_data(anode,transfer(trim(line),node_value),"STRING")
        if (iocond == 0) read (luninp, *, iostat = iocond) cdryb(l)
-       if (iocond == 0) read (luninp, *, iostat = iocond) sdbuni(l)
-       if (iocond /= 0) then
-          backspace (luninp)
-          read (luninp, '(a)', iostat = iocond) flsdbd(l)
+       if (iocond == 0) then
+           read (luninp, '(a)', iostat = iocond) flsdbd(l)
+           if (iocond == 0) then
+               read (flsdbd(l), *, iostat = iocond) sdbuni(l)
+               if (iocond == 0) then
+                   flsdbd(l) = ' '
+               else
+                   iocond = 0
+               endif
+           endif
        endif
        if (version==0) then
           facdss(l) = 1.0_fp
