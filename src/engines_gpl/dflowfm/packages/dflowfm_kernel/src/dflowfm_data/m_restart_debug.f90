@@ -26,30 +26,29 @@
 !  Deltares, and remain the property of Stichting Deltares. All rights reserved.
 !                                                                               
 !-------------------------------------------------------------------------------
-
 ! 
 ! 
 
-subroutine flow_dredgeinit()
-   use m_dad
-   use dredge_data_module,   only: initdredge
-   use m_fm_dredge,   only: fm_rddredge
-   use unstruc_model, only: md_dredgefile
-   use m_sediment, only: stm_included, jased
-   use MessageHandling, only: mess, LEVEL_FATAL
-   
-   implicit none
+module m_restart_debug
 
-   logical                   :: error
+ implicit none
 
-   if (.not.stm_included) return
-   dad_included = len_trim(md_dredgefile) /= 0
-   if (.not. dad_included) return
-   
-   call initdredge(dadpar)
-   call fm_rddredge(dadpar, md_dredgefile, error)
-   if (error) then
-      call mess(LEVEL_FATAL, 'unstruc::flow_dredgeinit - Error in initialisation of dredging module.')
-   end if
+ double precision, pointer      :: r_bodsed(:,:)   !< [kg m-2] Available sediment in the bed in flow cell center.            {"location": "face", "shape": ["stmpar%morlyr%settings%nfrac", "ndx"], "internal": "stmpar%morlyr%state%bodsed"}
+ double precision, pointer      :: r_dpsed(:)      !< [m] Sediment thickness in the bed in flow cell center.                 {"location": "face", "shape": ["ndx"], "internal": "stmpar%morlyr%state%dpsed"}
+ double precision, pointer      :: r_msed(:,:,:)   !< [kg m-2] Available sediment in a layer of the bed in flow cell center. {"location": "face", "shape": ["stmpar%morlyr%settings%nfrac", "stmpar%morlyr%settings%nlyr", "ndx"], "internal": "stmpar%morlyr%state%msed"}
+ double precision, pointer      :: r_thlyr(:,:)    !< [m] Thickness of a layer of the bed in flow cell center.               {"location": "face", "shape": ["stmpar%morlyr%settings%nlyr","ndx"], "internal": "stmpar%morlyr%state%thlyr"}
 
-end subroutine flow_dredgeinit
+ contains
+
+ subroutine ini_m_restart_debug()
+  use m_sediment
+  implicit none
+  if (stm_included) then 
+    r_bodsed => stmpar%morlyr%STATE%bodsed
+    r_dpsed => stmpar%morlyr%STATE%dpsed
+    r_msed => stmpar%morlyr%STATE%msed
+    r_thlyr => stmpar%morlyr%STATE%thlyr
+  endif  
+ end subroutine ini_m_restart_debug
+
+end module m_restart_debug

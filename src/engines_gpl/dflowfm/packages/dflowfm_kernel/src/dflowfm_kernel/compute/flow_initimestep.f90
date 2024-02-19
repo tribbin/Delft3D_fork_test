@@ -97,7 +97,7 @@
  end if
 
  if (tlfsmo > 0d0 ) then
-    alfsmo  = (tim1bnd - tstart_user) / tlfsmo
+    alfsmo  = (tim1bnd - tstart_tlfsmo_user) / tlfsmo
  endif
 
  call timstrt('u0u1        ', handle_extra(42)) ! Start u0u1
