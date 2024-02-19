@@ -28,7 +28,6 @@ module m_block_1_input_reader
    use time_module
    use rd_token     !   tokenized reading
    use timers       !   performance timers
-   use m_dlwq01_input_data
    use m_string_utils, only: string_equals
    use date_time_utils, only: system_time_factor_seconds, base_julian_time, compute_reference_day
 
