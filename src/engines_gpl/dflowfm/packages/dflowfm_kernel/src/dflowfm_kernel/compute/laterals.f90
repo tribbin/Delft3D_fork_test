@@ -87,7 +87,7 @@ implicit none
                   if (kmx < 1) then 
                      k = n
                   else
-                     ! For now we only re
+                     ! For now we only use the top layer 
                      call getkbotktop(n, kb, kt)
                      k = kt
                   endif
