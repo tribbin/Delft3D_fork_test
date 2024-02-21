@@ -325,12 +325,10 @@ private
       
       if (stmpar%lsedsus > 0) then
          ! Suspended load (cumulative)
-         if( stmpar%lsedsus > 0 ) then
-            IP = IP + 1
-            do i=1,ncrs
-               obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + stmpar%lsedtot + 1) = crs(i)%sumvalcum(IP)
-            end do
-         end if
+         IP = IP + 1
+         do i=1,ncrs
+            obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + stmpar%lsedtot + 1) = crs(i)%sumvalcum(IP)
+         end do
 
          ! Suspended load (per fraction)
          do lsed = 1,stmpar%lsedsus
