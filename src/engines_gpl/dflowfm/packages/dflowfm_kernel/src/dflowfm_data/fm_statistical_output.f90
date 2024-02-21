@@ -146,16 +146,20 @@ private
 
    call ncu_set_att(atts(1), 'geometry', 'cross_section_geom')
 
-   if (jased == 4 .and. stmpar%lsedtot > 0) then
-      num_const_items = 2 + stmpar%lsedtot
-   else
-      num_const_items = 0
+   num_const_items = 2*NUMCONST_MDU
+   if (jased == 4) then
+      num_const_items = num_const_items + 2
+      if (stmpar%lsedtot > 0) then
+         num_const_items = num_const_items + stmpar%lsedtot
+      end if
+      if (stmpar%lsedsus > 0) then
+         num_const_items = num_const_items + stmpar%lsedsus
+      end if
    end if
-   num_const_items = num_const_items + 2*NUMCONST_MDU
 
    if (.not. allocated(obscrs_data)) then
       allocate(obscrs_data(ncrs, 5 + num_const_items)) ! First 5 are for IPNT_Q1C:IPNT_HUA
-      allocate(idx_const(num_const_items))
+      allocate(idx_const(num_const_items), source = 0)
    else
       call err('Internal error, please report: obscrs_data was already allocated')
    endif
@@ -214,20 +218,29 @@ private
       ! Just to get the complete list of indexes in idx_const
       idx_const(NUMCONST_MDU*2 + 1) = IDX_HIS_OBSCRS_SED_BTRANSPORT
 
-      if( stmpar%lsedsus > 0 ) then
-         idx_const(NUMCONST_MDU*2 + 2) = IDX_HIS_OBSCRS_SED_STRANSPORT
-      else
-         idx_const(NUMCONST_MDU*2 + 2) = 0
-      endif
-
       do lsed = 1,stmpar%lsedtot    ! Making bedload on crosssections per fraction
          ! Just-in-time add *config* item for this fraction's bed load sediment transport
-         call addoutval(output_config, idx_const(NUMCONST_MDU*2 + 2 + lsed),                                       &
+         call addoutval(output_config, idx_const(NUMCONST_MDU*2 + 1 + lsed),                                       &
                'Wrihis_constituents', 'cross_section_bedload_sediment_transport_'//trim(stmpar%sedpar%namsed(lsed)), &
                'Cumulative bed load sediment transport for fraction '//trim(stmpar%sedpar%namsed(lsed)), &
                '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
-         output_config%statout(idx_const(NUMCONST_MDU*2 + 2 + lsed))%input_value =     &
+         output_config%statout(idx_const(NUMCONST_MDU*2 + 1 + lsed))%input_value =     &
                output_config%statout(IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT)%input_value
+      enddo
+   endif
+   
+   if (jased == 4 .and. stmpar%lsedsus > 0) then
+      ! Just to get the complete list of indexes in idx_const
+      idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1) = IDX_HIS_OBSCRS_SED_STRANSPORT
+
+      do lsed = 1,stmpar%lsedsus    ! Making suspended load on crosssections per fraction
+         ! Just-in-time add *config* item for this fraction's suspended load sediment transport
+         call addoutval(output_config, idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1 + lsed), &
+               'Wrihis_constituents', 'cross_section_suspended_sediment_transport_'//trim(stmpar%sedpar%namsed(lsed)), &
+               'Cumulative suspended load sediment transport for fraction '//trim(stmpar%sedpar%namsed(lsed)), &
+               '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+         output_config%statout(idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1 + lsed))%input_value =     &
+               output_config%statout(IDX_HIS_OBSCRS_SED_STRANSPORT_PERFRAC_ABSTRACT)%input_value
       enddo
    endif
 
@@ -290,28 +303,44 @@ private
       end do
    enddo
 
-   if (jased == 4 .and. stmpar%lsedtot > 0) then
-      IP = IPNT_HUA + NUMCONST_MDU + 1
-      ! Bed load
-      do i=1,ncrs
-         obscrs_data(i, 5 + 2*NUMCONST_MDU + 1) = crs(i)%sumvalcum(IP)
-      end do
-
-      ! Suspended load
-      if( stmpar%lsedsus > 0 ) then
-         IP = IP + 1
+   if (jased == 4) then
+      
+      write(0,*) 'stmpar%lsedtot = ', stmpar%lsedtot, ', stmpar%lsedsus = ', stmpar%lsedsus
+      
+      if (stmpar%lsedtot > 0) then
+         ! Bed load (cumulative)
+         IP = IPNT_HUA + NUMCONST_MDU + 1
          do i=1,ncrs
-            obscrs_data(i, 5 + 2*NUMCONST_MDU + 2) = crs(i)%sumvalcum(IP)
+            obscrs_data(i, 5 + 2*NUMCONST_MDU + 1) = crs(i)%sumvalcum(IP)
          end do
-      endif
 
-      ! Bed load per fraction
-      do lsed = 1,stmpar%lsedtot
-         IP = IP + 1
-         do i=1,ncrs
-            obscrs_data(i, 5 + 2*NUMCONST_MDU + 2 + lsed) = crs(i)%sumvalcum(IP)
+         ! Bed load (per fraction)
+         do lsed = 1,stmpar%lsedtot
+            IP = IP + 1
+            do i=1,ncrs
+               obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + lsed) = crs(i)%sumvalcum(IP)
+            end do
          end do
-      enddo
+      end if
+      
+      if (stmpar%lsedsus > 0) then
+         ! Suspended load (cumulative)
+         if( stmpar%lsedsus > 0 ) then
+            IP = IP + 1
+            do i=1,ncrs
+               obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + stmpar%lsedtot + 1) = crs(i)%sumvalcum(IP)
+            end do
+         end if
+
+         ! Suspended load (per fraction)
+         do lsed = 1,stmpar%lsedsus
+            IP = IP + 1
+            do i=1,ncrs
+               obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + stmpar%lsedtot + 1 + lsed) = crs(i)%sumvalcum(IP)
+            end do
+         end do
+      end if
+      
    end if
 
    end subroutine aggregate_obscrs_data
@@ -1256,11 +1285,14 @@ private
             'Cumulative suspended load sediment transport', &
             '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
 
-      ! The following output value is an abstract entry representing all bedload sediment fractions.
-      ! The fractions that are actually available depend on the model initialization
+      ! The following two output values are abstract entries representing all bedload and suspended
+      ! sediment fractions. The fractions that are actually available depend on the model initialization
       ! and will only be added later, during init_fm_statistical_output_his().
       call addoutval(out_quan_conf_his, IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT,                                       &
             'Wrihis_crs_sediment', 'cross_section_bedload_sediment_transport_abstract', '', &
+            '', '-', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+      call addoutval(out_quan_conf_his, IDX_HIS_OBSCRS_SED_STRANSPORT_PERFRAC_ABSTRACT,                                       &
+            'Wrihis_crs_sediment', 'cross_section_suspended_sediment_transport_abstract', '', &
             '', '-', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
 
       !
