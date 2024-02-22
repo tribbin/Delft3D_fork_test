@@ -6,17 +6,15 @@ import sys
 
 
 def get_failed_tests(filename):
-    with open(filename, "r") as file:
-        lines = file.readlines()
-
     # Regular expression pattern to match the test case lines
     pattern = r"\|(.*?)\|.*?\|(ERROR|NOK)"
-
     failed_tests = []
-    for line in lines:
-        match = re.search(pattern, line)
-        if match:
-            failed_tests.append(match.group(1).strip())
+
+    with open(filename, "r") as file:
+        for line in file:
+            match = re.search(pattern, line)
+            if match:
+                failed_tests.append(match.group(1).strip())
 
     return failed_tests
 
