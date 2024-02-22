@@ -31,14 +31,14 @@ contains
    !>\file
    !>                    delwaq1_allocate_workspace
 
-   subroutine delwaq1_allocate_workspace(argc, argv, errorcode)
+   subroutine delwaq1_allocate_workspace(argv, errorcode)
       use m_cli_utils, only : retrieve_command_argument
       use m_delwaq1_data
 
       implicit none
 
-      integer(kind=int_wp), intent(in) ::  argc
-      character(len=*), dimension(argc), intent(in) :: argv
+      character(len=*), dimension(:), intent(in) :: argv
+
       integer(kind=int_wp), intent(inout) ::  errorcode
 
       !  allocate workspace

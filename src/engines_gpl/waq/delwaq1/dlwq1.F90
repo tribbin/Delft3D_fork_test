@@ -44,7 +44,7 @@
           call getarg(i - 1, argv(i))
       end do
 
-      call delwaq1(argc, argv, errorcode)
+      call delwaq1(argv, errorcode)
 
       open  ( newunit=lunfil , file = 'delwaq.rtn' )
       write ( lunfil , * ) errorcode

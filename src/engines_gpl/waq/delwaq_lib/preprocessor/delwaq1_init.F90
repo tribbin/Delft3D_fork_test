@@ -29,17 +29,13 @@ module m_delwaq1_init
 
 contains
 
-   !>\file
-   !>                    delwaq1_init: initializes timer and values
-   !     SUBROUTINES CALLED :
-   !                         *UNISET, reads input filename
+   subroutine delwaq1_init(argv)
+      !< initializes timer and values
 
-   subroutine delwaq1_init(argc, argv)
       use m_delwaq1_data
       use m_cli_utils, only : get_argument_from_list, store_command_arguments, get_number_of_arguments
 
-      integer(kind=int_wp), intent(in) ::  argc
-      character(len=*), dimension(argc), intent(in) :: argv
+      character(len=*), dimension(:), intent(in) :: argv
 
       !     Special system init
 

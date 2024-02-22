@@ -32,37 +32,27 @@ module m_delwaq1
 
 contains
 
-   subroutine delwaq1(argc, argv, errorcode)
+   subroutine delwaq1(argv, errorcode)
+      !> Reads the DELWAQ inputfiles and generates
+      !> a consistent set of binairy intermediate files.
+
       use m_delwaq1_allocate_workspace
 
       !DEC$ ATTRIBUTES DLLEXPORT::delwaq1
 
-      !>\file
-      !>                    DELWAQ - INPUT PROGRAMME
-      !>
-      !>                    Reads the DELWAQ inputfiles and generates
-      !>                    a consistent set of binairy intermediate files.
-      !
-      !     SUBROUTINES CALLED :
-      !                         delwaq1_init, initializes timer and values
-      !                         delwaq1_startup_screen
-      !                         delwaq1_allocate_workspace
-      !                         delwaq1_read_user_data
-      !                         delwaq1_write_messages
-      !                         delwaq1_close_lunfiles
-
       implicit none
 
-      integer(kind=int_wp), intent(in) ::  argc
-      character(len=*), dimension(argc), intent(in) :: argv
-      integer(kind=int_wp), intent(out) ::  errorcode
+      integer(kind=int_wp), intent(out  ) :: errorcode !< return error code
+
+      character(len=*), intent(in   ), dimension(:) :: argv !< arguments as strings
 
       errorcode = 0
 
       ! create the lst, delwaq04.wrk, harmonic.wrk, pointers.wrk, and filenaam.wrk files
-      call delwaq1_init(argc, argv)
+      call delwaq1_init(argv)
+
       call delwaq1_startup_screen()
-      call delwaq1_allocate_workspace(argc, argv, errorcode)
+      call delwaq1_allocate_workspace(argv, errorcode)
       if (errorcode == 0) then
          call delwaq1_read_input_data()
          call delwaq1_write_messages(errorcode)
