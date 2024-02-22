@@ -38,7 +38,7 @@
  use waq,           only: reset_waq
  use m_flow,        only: kmx, jasecflow, iperot
  use m_flowtimes
- use m_wind, only: numlatsg
+ use m_lateral, only: numlatsg
  use network_data,  only: NETSTAT_CELLS_DIRTY
  use gridoperations, only: make1D2Dinternalnetlinks
  use m_partitioninfo

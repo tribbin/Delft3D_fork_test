@@ -1121,7 +1121,7 @@ module m_oned_functions
    subroutine updateTotalInflowLat(dts)
    use m_flow, only: vTotLat, qCurLat
    use m_flowgeom, only: ndx2d, ndxi
-   use m_wind, only: qqlat
+   use m_lateral, only: qqlat
    implicit none
    double precision, intent(in) :: dts ! current computational time step
    integer                      :: n

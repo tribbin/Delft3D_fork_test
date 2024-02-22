@@ -71,6 +71,7 @@ subroutine unc_write_his(tim)            ! wrihis
     use m_structures
     use m_GlobalParameters
     use m_longculverts
+    use m_lateral, only : numlatsg, nNodesLat, lat_ids, qplat, qplatAve, qLatRealAve, geomXLat, geomYLat, nlatnd, qLatReal, nodeCountLat
 
     implicit none
 

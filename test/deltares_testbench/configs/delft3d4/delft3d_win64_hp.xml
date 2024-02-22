@@ -181,7 +181,7 @@
 			<location ref="local" type="check">
 				<from>teamcity_artifacts/x64</from>
 			</location>
-			<path>dmor\bin\mormerge.exe</path>
+			<path>dmor\scripts\run_mormerge.bat</path>
 		</program>
 		<program name="RTC" logOutputToFile="true" addSearchPaths="true">
 			<location ref="dsctestbench-references_bin" type="reference">
@@ -283,5 +283,5 @@
 	<!--
 	testCases
 	-->
-	<xi:include href="../include/delft3d4_cases.xml"/>
+	<xi:include href="../include/delft3d4_hp_cases_win64.xml"/>
 </deltaresTestbench_v3>

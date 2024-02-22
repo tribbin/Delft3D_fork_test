@@ -205,7 +205,7 @@ contains
       end do
       argc = argc + 2
 
-      call delwaq1(argc, argv, errorcode)
+      call delwaq1(argv, errorcode)
       if (errorcode == 0) then
          call delwaq2_global_data_initialize(runid_given)
          call dlwqmain(ACTION_INITIALISATION, argc, argv, dlwqd)

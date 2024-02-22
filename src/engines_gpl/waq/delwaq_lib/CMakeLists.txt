@@ -7,9 +7,10 @@ set(version_include_dir ${CMAKE_SOURCE_DIR}/../version_includes)
 
 # file(GLOB preprocessor_files ${CMAKE_CURRENT_SOURCE_DIR}/${src_path}/waq_bmi.F90)
 create_target(
-    ${library_name} ${CMAKE_CURRENT_SOURCE_DIR} 
-    src_dir . 
-    resource_files ${rc_version_file} 
+    ${library_name} ${CMAKE_CURRENT_SOURCE_DIR}
+    src_dir .
+    recursive TRUE
+    resource_files ${rc_version_file}
     shared
 )
 
