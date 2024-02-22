@@ -26,6 +26,7 @@
 
 module m_delwaq1_data
 
+   use m_delwaq1_const
    use dlwqgrid_mod        !   for the storage of contraction grids
    use dlwq_hyd_data    !   for definition and storage of data
    use results, only : OutputPointers       !!   for the output names and pointers
@@ -43,16 +44,12 @@ module m_delwaq1_data
    use m_waq_data_buffer
 
    implicit none
-   integer, parameter             :: nlun = 50              !< number of input / output files
+
    integer                        :: lun(nlun)              !< unit numbers input / output files
    character(len=lchmax)          :: lchar(nlun)            !< file names input / output files
-   integer, parameter             :: noint = 200            !< number of integration options implemented
    integer                        :: iopt(noint)            !< integration option list
 
    !     work arrays
-   integer, parameter             :: iimax = 2500000        !< default size integer work array
-   integer, parameter             :: irmax = 10000000       !< default size real work array
-   integer, parameter             :: icmax = 1000000        !< default size character work array
    integer                        :: imax                   !< dynamic size integer work array
    integer                        :: rmax                   !< dynamic size real work array
    integer                        :: cmax                   !< dynamic size character work array
@@ -76,8 +73,6 @@ module m_delwaq1_data
    !
    !     various input-output structures
    !
-   integer, parameter             :: noitm = 11             !< number of items with time-functions
-   integer, parameter             :: nooutp = 9             !< number of output files
    integer                        :: nrftot(noitm)          !< number of function per item
    integer                        :: nrharm(noitm)          !< number of harmoncs per item
    integer                        :: ioutps(7, nooutp)      !< output file defintion structure
