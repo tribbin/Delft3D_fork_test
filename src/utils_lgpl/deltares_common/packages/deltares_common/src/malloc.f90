@@ -31,7 +31,8 @@ module m_alloc
 implicit none
 private
 
-public realloc, reallocP, aerr, allocSize
+public realloc, reallocP, aerr, allocSize, reserve_sufficient_space
+
 
 ! TODO: Handle nondefault kinds properly? [AvD]
 
@@ -153,6 +154,10 @@ interface reallocP
    module procedure reallocPBool2
    module procedure reallocPBool3
    module procedure reallocPBool4
+end interface
+
+interface reserve_sufficient_space
+   module procedure reserve_sufficient_space_int
 end interface
 
 interface allocSize
@@ -4111,5 +4116,26 @@ function allocSizeDouble(arr) result(isize)
       isize = 0
    end if
 end function allocSizeDouble
+
+!> Allocate or reallocate an integer array. At first the size will be set to 10, in case of a realloc
+!! the size of the array is doubled.
+subroutine reserve_sufficient_space_int(arr, required_size, fill)
+   integer, allocatable, dimension(:), intent(inout) :: arr             !< Array for which the resize might be required.
+   integer,                            intent(in   ) :: required_size   !< Minimal required size of the array.
+   integer,                            intent(in   ) :: fill            !< Fill value for the new values.
+   
+   integer length
+   if (allocated(arr)) then
+      if (required_size > size(arr)) then
+         length = max(required_size, 2*size(arr))
+         call realloc(arr, length, fill = fill, keepexisting = .true.)
+      endif
+   else
+      length = max(required_size, 10)
+      call realloc(arr, length, fill = fill)
+   endif
+end subroutine reserve_sufficient_space_int
+       
+
 
 end module m_alloc

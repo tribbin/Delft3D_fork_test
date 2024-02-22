@@ -69,8 +69,9 @@ implicit none
    double precision, allocatable, target, public :: geomYLat(:)         !< [m] y coordinates of laterals.
    
    private
-   double precision, allocatable, target, dimension(:,:,:), public :: outgoing_lat_concentration   !< average concentration per lateral discharge location
-   double precision, allocatable, target, dimension(:,:,:), public :: incoming_lat_concentration   !< concentration of the inflowing water at the lateral discharge location
+   double precision, allocatable, target, dimension(:,:,:), public :: outgoing_lat_concentration   !< Average concentration per lateral discharge location.
+   double precision, allocatable, target, dimension(:,:,:), public :: incoming_lat_concentration   !< Concentration of the inflowing water at the lateral discharge location.
+   integer,          allocatable, target, dimension(:),     public :: apply_transport              !< Apply transport for laterals. (0 means only water and no substances are transported)
 
    contains
 
@@ -87,7 +88,7 @@ implicit none
 
    !> allocate the arrays for laterals on 3d/BMI
    subroutine alloc_lateraldata(numconst)
-
+   
       use m_alloc
    
       integer, intent(in) :: numconst        !< number of constitiuents

@@ -908,6 +908,7 @@ logical function initboundaryblocksforcings(filename)
  use m_missing
  use m_ec_parameters, only: provFile_uniform
  use m_partitioninfo, only: jampi, reduce_sum, is_ghost_node
+ use m_lateral, only : apply_transport
 
  implicit none
 
@@ -1188,6 +1189,9 @@ logical function initboundaryblocksforcings(filename)
        case default
           ilattype = ILATTP_ALL
        end select
+       
+       call reserve_sufficient_space(apply_transport, numlatsg+1, 0)
+       call prop_get(node_ptr, '', 'applyTransport', apply_transport(numlatsg+1), success)
 
        ! [lateral]
        ! fileVersion >= 2: nodeId                  => location_specifier = LOCTP_NODEID
