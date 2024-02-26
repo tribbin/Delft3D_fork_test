@@ -64,16 +64,16 @@ function get_alpha_fluff(iflufflyr, lsed, nm, mfluff, trapar, sedpar) result (al
        fluff_cover_factor = sedpar%sc_flcf
        do l = 1,lsed
           if (trapar%iform(l) == -3) then
-             j = trapar%iparfld(15,l)
+             j = trapar%iparfile(15,l)
              if (j>0) then ! spatially varying
-                 parfluff0 = trapar%parfld(nm,j)
+                 parfluff0 = trapar%parfile(j)%parfld(nm)
              else
                  parfluff0 = trapar%par(15,l)
              endif
              !
-             j = trapar%iparfld(16,l)
+             j = trapar%iparfile(16,l)
              if (j>0) then ! spatially varying
-                 parfluff1 = trapar%parfld(nm,j)
+                 parfluff1 = trapar%parfile(j)%parfld(nm)
              else
                  parfluff1 = trapar%par(16,l)
              endif

@@ -53,7 +53,7 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
 !
 !!--declarations----------------------------------------------------------------
     use precision
-    use morphology_data_module, only: trapar_type, MAX_RP, MAX_IP, MAX_SP, WS_MAX_RP, WS_MAX_IP, WS_MAX_SP, PARSOURCE_CONST
+    use morphology_data_module, only: trapar_type, MAX_RP, MAX_IP, MAX_SP, WS_MAX_RP, WS_MAX_IP, WS_MAX_SP
     use message_module
     !
 ! Arguments
@@ -73,35 +73,33 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     integer                          , pointer :: max_strings_settle
     integer                          , pointer :: npar
     integer                          , pointer :: nouttot
-    integer          , dimension(:)  , pointer :: noutpar
-    integer          , dimension(:,:), pointer :: ioutpar
-    character(256)   , dimension(:,:), pointer :: outpar_name
-    character(256)   , dimension(:,:), pointer :: outpar_longname
-    character(256)   , dimension(:)  , pointer :: dll_function_settle
-    character(256)   , dimension(:)  , pointer :: dll_name_settle
-    integer(pntrsize), dimension(:)  , pointer :: dll_handle_settle
-    integer          , dimension(:)  , pointer :: dll_integers_settle
-    real(hp)         , dimension(:)  , pointer :: dll_reals_settle
-    character(256)   , dimension(:)  , pointer :: dll_strings_settle
-    character(256)   , dimension(:)  , pointer :: dll_usrfil_settle
-    integer          , dimension(:)  , pointer :: iform_settle
-    real(fp)         , dimension(:,:), pointer :: par_settle
-    character(256)   , dimension(:)  , pointer :: dll_function
-    character(256)   , dimension(:)  , pointer :: dll_name
-    integer(pntrsize), dimension(:)  , pointer :: dll_handle
-    integer          , dimension(:)  , pointer :: dll_integers
-    real(hp)         , dimension(:)  , pointer :: dll_reals
-    character(256)   , dimension(:)  , pointer :: dll_strings
-    character(256)   , dimension(:)  , pointer :: dll_usrfil
-    character(256)   , dimension(:)  , pointer :: flstrn
-    integer          , dimension(:)  , pointer :: iform
-    character(256)   , dimension(:)  , pointer :: name
-    real(fp)         , dimension(:,:), pointer :: par
-    character(25)    , dimension(:,:), pointer :: parname
-    character(256)   , dimension(:,:), pointer :: parfil
-    integer          , dimension(:,:), pointer :: parsource
-    integer          , dimension(:,:), pointer :: iparfld
-    integer          , dimension(:,:), pointer :: ipartim
+    integer                          , pointer :: noutpar(:)
+    integer                          , pointer :: ioutpar(:,:)
+    character(256)                   , pointer :: outpar_name(:,:)
+    character(256)                   , pointer :: outpar_longname(:,:)
+    character(256)                   , pointer :: dll_function_settle(:)
+    character(256)                   , pointer :: dll_name_settle(:)
+    integer(pntrsize)                , pointer :: dll_handle_settle(:)
+    integer                          , pointer :: dll_integers_settle(:)
+    real(hp)                         , pointer :: dll_reals_settle(:)
+    character(256)                   , pointer :: dll_strings_settle(:)
+    character(256)                   , pointer :: dll_usrfil_settle(:)
+    integer                          , pointer :: iform_settle(:)
+    real(fp)                         , pointer :: par_settle(:,:)
+    character(256)                   , pointer :: dll_function(:)
+    character(256)                   , pointer :: dll_name(:)
+    integer(pntrsize)                , pointer :: dll_handle(:)
+    integer                          , pointer :: dll_integers(:)
+    real(hp)                         , pointer :: dll_reals(:)
+    character(256)                   , pointer :: dll_strings(:)
+    character(256)                   , pointer :: dll_usrfil(:)
+    character(256)                   , pointer :: flstrn(:)
+    integer                          , pointer :: iform(:)
+    character(256)                   , pointer :: name(:)
+    real(fp)                         , pointer :: par(:,:)
+    character(25)                    , pointer :: parname(:,:)
+    character(256)                   , pointer :: parfilename(:,:)
+    integer                          , pointer :: iparfile(:,:)
 !
     integer                        :: istat
     character(256)                 :: errmsg
@@ -118,15 +116,13 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     !
     istat = 0
     if (.not. associated(trapar%par)) then
-                     allocate (trapar%par    (npar,lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%parname(npar,lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%parfil (npar,lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%parsource(npar,lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%iparfld(npar,lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%ipartim(npar,lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%iform       (lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%flstrn      (lsedtot), stat = istat)
-       if (istat==0) allocate (trapar%name        (lsedtot), stat = istat)
+                     allocate (trapar%par        (npar,lsedtot), stat = istat)
+       if (istat==0) allocate (trapar%parname    (npar,lsedtot), stat = istat)
+       if (istat==0) allocate (trapar%parfilename(npar,lsedtot), stat = istat)
+       if (istat==0) allocate (trapar%iparfile   (npar,lsedtot), stat = istat)
+       if (istat==0) allocate (trapar%iform           (lsedtot), stat = istat)
+       if (istat==0) allocate (trapar%flstrn          (lsedtot), stat = istat)
+       if (istat==0) allocate (trapar%name            (lsedtot), stat = istat)
        !
        max_integers = MAX_IP
        max_reals    = MAX_RP
@@ -168,10 +164,8 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     !
     par           => trapar%par
     parname       => trapar%parname
-    parfil        => trapar%parfil
-    parsource     => trapar%parsource
-    iparfld       => trapar%iparfld
-    ipartim       => trapar%ipartim
+    parfilename   => trapar%parfilename
+    iparfile      => trapar%iparfile
     iform         => trapar%iform
     flstrn        => trapar%flstrn
     name          => trapar%name
@@ -181,10 +175,8 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     name    = ' '
     par     = 0.0_fp
     parname = ' '
-    parfil  = ' '
-    parsource = PARSOURCE_CONST
-    iparfld = 0
-    ipartim = 0
+    parfilename = ' '
+    iparfile    = 0
     !
     dll_function  => trapar%dll_function
     dll_name      => trapar%dll_name
@@ -282,8 +274,7 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
     integer       , dimension(:,:) , pointer :: ioutpar
     character(256), dimension(:,:) , pointer :: outpar_name 
     character(256), dimension(:,:) , pointer :: outpar_longname 
-    integer                        , pointer :: nparfld
-    integer                        , pointer :: npartim
+    integer                        , pointer :: nparfile
     character(256), dimension(:)   , pointer :: dll_name
     character(256), dimension(:)   , pointer :: dll_function
     integer(pntrsize), dimension(:), pointer :: dll_handle
@@ -296,10 +287,8 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
     character(256), dimension(:)   , pointer :: name
     real(fp),       dimension(:,:) , pointer :: par
     character(25) , dimension(:,:) , pointer :: parname
-    character(256), dimension(:,:) , pointer :: parfil
-    integer       , dimension(:,:) , pointer :: parsource
-    integer,        dimension(:,:) , pointer :: iparfld
-    integer,        dimension(:,:) , pointer :: ipartim
+    character(256), dimension(:,:) , pointer :: parfilename
+    integer,        dimension(:,:) , pointer :: iparfile
     !
     integer           :: i
     integer           :: iform1tmp
@@ -317,18 +306,15 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
     max_reals_settle     => trapar%max_reals_settle
     max_strings_settle   => trapar%max_strings_settle
     npar                 => trapar%npar
-    nparfld              => trapar%nparfld
-    npartim              => trapar%npartim
+    nparfile             => trapar%nparfile
     !
     iform         => trapar%iform
     flstrn        => trapar%flstrn
     name          => trapar%name
     par           => trapar%par
     parname       => trapar%parname
-    parfil        => trapar%parfil
-    parsource     => trapar%parsource
-    iparfld       => trapar%iparfld
-    ipartim       => trapar%ipartim
+    parfilename   => trapar%parfilename
+    iparfile      => trapar%iparfile
     !
     dll_name      => trapar%dll_name
     dll_function  => trapar%dll_function
@@ -366,8 +352,8 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
        write (lundia, '(a,a)') 'Reading: ',trim(filtrn)
     endif
     call rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
-                 & parfil    ,parsource ,iparfld   ,nparfld   ,ipartim   , &
-                 & npartim   ,0         ,SEDTYP_SAND, max_mud_sedtyp, &
+                 & parfilename,iparfile  , &
+                 & nparfile  ,0         ,SEDTYP_SAND, max_mud_sedtyp, &
                  & filtrn    ,name      ,dll_handle,dll_name  ,dll_function, &
                  & dll_usrfil,ipardef   ,rpardef   ,npardef   ,sedblock  , &
                  & parname    ,noutpar   ,outpar_name, outpar_longname)
@@ -381,10 +367,8 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
           dll_usrfil(ll)        = dll_usrfil(1)
           par(:,ll)             = par(:,1)
           parname(:,ll)         = parname(:,1)
-          parfil(:,ll)          = parfil(:,1)
-          parsource(:,ll)       = parsource(:,1)
-          iparfld(: ,ll)        = iparfld(:,1)
-          ipartim(:,ll)         = ipartim(:,1)
+          parfilename(:,ll)     = parfilename(:,1)
+          iparfile(:,ll)        = iparfile(:,1)
           noutpar(ll)           = noutpar(1)
           outpar_name(:,ll)     = outpar_name(:,1)
           outpar_longname(:,ll) = outpar_longname(:,1)
@@ -401,10 +385,8 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
        dll_usrfil(1) = ' '
        par(:,1) = 0.0_fp
        parname(:,1) = ' '
-       parfil(:,1) = ' '
-       parsource(:,1) = PARSOURCE_CONST
-       iparfld(:,1) = 0
-       ipartim(:,1) = 0
+       parfilename(:,1) = ' '
+       iparfile(:,1) = 0
        noutpar(1) = 0
     endif
     !
@@ -412,8 +394,8 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
        if (flstrn(ll) /= ' ') write (lundia, '(a,a)') 'Reading: ',trim(flstrn(ll))
        if (flstrn(ll) /= ' ' .or. iform(ll)/=-999) then
           call rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
-                       & parfil    ,parsource ,iparfld   ,nparfld   ,ipartim   , &
-                       & npartim   ,ll        ,sedtyp(ll), max_mud_sedtyp, &
+                       & parfilename,iparfile  , &
+                       & nparfile  ,ll        ,sedtyp(ll), max_mud_sedtyp, &
                        & flstrn(ll),name      ,dll_handle,dll_name  ,dll_function, &
                        & dll_usrfil,ipardef   ,rpardef   ,npardef   ,sedblock  , &
                        & parname   ,noutpar   ,outpar_name, outpar_longname)
@@ -423,10 +405,7 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
        if (error) return
     enddo
     !
-    call rdtraparfld(lundia    ,error     ,lsedtot   ,trapar    , &
-                   & dims      )
-    if (error) return
-    call rdtrapartim(lundia    ,error     ,lsedtot   ,trapar    , &
+    call rdtraparfiles(lundia    ,error     ,lsedtot   ,trapar    , &
                    & dims      ,julrefday )
     if (error) return
     !
@@ -446,8 +425,8 @@ end subroutine rdtrafrm
 
 
 subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
-                   & parfil    ,parsource ,iparfld   ,nparfld   ,ipartim   , &
-                   & npartim   ,ifrac     ,sedtyp    ,max_mud_sedtyp, &
+                   & parfilename,iparfile  , &
+                   & nparfile  ,ifrac     ,sedtyp    ,max_mud_sedtyp, &
                    & flname    ,name      ,dll_handle,dll_name  ,dll_func  , &
                    & dll_usrfil,ipardef   ,rpardef   ,npardef   ,sedblock  , &
                    & parname   ,noutpar   ,outpar_name, outpar_longname)
@@ -460,8 +439,8 @@ subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
     use properties
     use string_module
     use message_module
-    use system_utils, only:SHARED_LIB_PREFIX, SHARED_LIB_EXTENSION
-    use morphology_data_module, only:PARSOURCE_CONST, PARSOURCE_FIELD, PARSOURCE_TIME
+    use system_utils, only: SHARED_LIB_PREFIX, SHARED_LIB_EXTENSION
+    use morphology_data_module, only: PARSOURCE_FIELD, PARSOURCE_TIME
 !
 ! Arguments
 !
@@ -476,12 +455,9 @@ subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
     integer(pntrsize), dimension(:)  , intent(out)   :: dll_handle
     real(fp)    , dimension(:,:)                     :: par
     character(*), dimension(:,:)                     :: parname
-    character(*), dimension(:,:)                     :: parfil
-    integer     , dimension(:,:)                     :: parsource
-    integer     , dimension(:,:)                     :: iparfld
-    integer     , dimension(:,:)                     :: ipartim
-    integer                                          :: nparfld
-    integer                                          :: npartim
+    character(*), dimension(:,:)                     :: parfilename
+    integer     , dimension(:,:)                     :: iparfile
+    integer                                          :: nparfile
     integer                          , intent(in)    :: ifrac
     integer                          , intent(in)    :: sedtyp
     integer                          , intent(in)    :: max_mud_sedtyp
@@ -734,43 +710,35 @@ subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
           i10 = i+10
           if (version==1) then
              par(i10,l) = pardef(i)
-             parfil(i10,l) = ' '
+             parfilename(i10,l) = ' '
              !
-             call prop_get(tran_ptr,'TransportFormula',parname(i,l),parfil(i10,l))
-             if (parfil(i10,l) /= ' ') then
+             call prop_get(tran_ptr,'TransportFormula',parname(i,l),parfilename(i10,l))
+             if (parfilename(i10,l) /= ' ') then
                 call prop_get(tran_ptr,'TransportFormula',parname(i,l),par(i10,l))
              elseif (associated(sed_ptr%node_name)) then
                 ! parameter not in transport file, now check sedblock
-                call prop_get(sed_ptr,'Sediment',parname(i,l),parfil(i10,l))
+                call prop_get(sed_ptr,'Sediment',parname(i,l),parfilename(i10,l))
                 call prop_get(sed_ptr,'Sediment',parname(i,l),par(i10,l))
              endif
           else
              par(i10,l) = pardef(i)
-             parfil(i10,l) = ' '
+             parfilename(i10,l) = ' '
              !
              if (ifrac>0 .and. associated(sed_ptr%node_name)) then
                 ! try to locate parameter in sedblock
-                call prop_get(sed_ptr,'Sediment',parname(i,l),parfil(i10,l))
+                call prop_get(sed_ptr,'Sediment',parname(i,l),parfilename(i10,l))
                 call prop_get(sed_ptr,'Sediment',parname(i,l),par(i10,l))
              endif
           endif
           !
-          if (parfil(i10,l) /= ' ') then
-             call split_name_and_source(flname, parfil(i10,l), parsource(i10,l))
-             select case(parsource(i10,l))
-             case (PARSOURCE_CONST)
-                ! par(i10,l) already filled above ...
-             case (PARSOURCE_FIELD)
-                nparfld = nparfld + 1
-                iparfld(i10,l) = nparfld
-             case (PARSOURCE_TIME)
-                npartim = npartim + 1
-                ipartim(i10,l) = npartim
-             end select
+          if (parfilename(i10,l) /= ' ') then
+             if (file_exists(flname, parfilename(i10,l))) then
+                nparfile = nparfile + 1
+                iparfile(i10,l) = nparfile
+             endif
           endif
           !
-          if (parsource(i10,l) == PARSOURCE_CONST .and. &
-             & comparereal(par(i10,l),nodef) == 0) then
+          if (iparfile(i10,l) == 0 .and. comparereal(par(i10,l),nodef) == 0) then
              error  = .true.
              errmsg = 'No value obtained for parameter '//trim(parname(i,l))//' without default value.'
              call write_error(errmsg, unit=lundia)
@@ -789,126 +757,21 @@ subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
 end subroutine rdtrafrm0
 
 
-subroutine split_name_and_source(flname, parfile, parsource)
-    use string_module, only:str_lower, remove_leading_spaces
-    use morphology_data_module, only:PARSOURCE_CONST, PARSOURCE_FIELD, PARSOURCE_TIME
-    
+!> Check whether a file exists
+function file_exists(flname, parfile) result (exists)
     character(*)                 , intent(in)    :: flname
     character(*)                 , intent(inout) :: parfile
-    integer                      , intent(out)   :: parsource
 
     logical :: exists !< flag indicating whether file exists
-    integer :: iclose !< index of ] in parfile string
     
-    parsource = PARSOURCE_CONST
-    if (parfile(1:1) == '[') then
-       iclose = index(parfile,']')
-       if (iclose > 0) then
-          call str_lower(parfile(1:iclose))
-          if (parfile(1:iclose) == '[t]') then
-             parsource = PARSOURCE_TIME
-          elseif (parfile(1:iclose) == '[xy]') then
-             parsource = PARSOURCE_FIELD
-          else
-             parsource = PARSOURCE_CONST
-             return
-          endif
-          parfile = parfile(iclose+1:)
-          call remove_leading_spaces(parfile)
-       endif
-    else
-       parsource = PARSOURCE_FIELD
-    endif
-    !
-    if (parsource /= PARSOURCE_CONST) then
-       call combinepaths(flname, parfile)
-       inquire (file = parfile, exist = exists)
-       if (.not. exists) then
-           parsource = PARSOURCE_CONST
-       endif
-    endif
-end subroutine split_name_and_source
+    call combinepaths(flname, parfile)
+    inquire (file = parfile, exist = exists)
+end function file_exists
 
 
-subroutine rdtraparfld(lundia    ,error     ,lsedtot   ,trapar    , &
-                     & dims      )
-!!--description-----------------------------------------------------------------
-!
-! Reads spatially varying transport formula parameters
-!
-!!--declarations----------------------------------------------------------------
-    use precision
-    use morphology_data_module
-    use grid_dimens_module 
-    use message_module, only: write_error
-    !
-    ! Arguments
-    !
-    integer                      , intent(in)   :: lundia
-    logical                      , intent(out)  :: error
-    integer                      , intent(in)   :: lsedtot !  Description and declaration in iidim.f90
-    type (trapar_type)           , target       :: trapar
-    type (griddimtype), target   , intent(in)   :: dims    !  grid dimensions
-!
-! Local variables
-!
-    integer                        , pointer :: npar
-    integer                        , pointer :: nparfld
-    character(256), dimension(:,:) , pointer :: parfil
-    integer,        dimension(:,:) , pointer :: iparfld
-    real(fp),       dimension(:,:) , pointer :: parfld
-    !
-    integer           :: i
-    integer           :: istat
-    integer           :: j
-    integer           :: ll
-    character(256)    :: filename
-    character(256)    :: errmsg
-    character(11)     :: fmttmp
-!
-!! executable statements -------------------------------------------------------
-!
-    npar          => trapar%npar
-    nparfld       => trapar%nparfld
-    parfil        => trapar%parfil
-    iparfld       => trapar%iparfld
-    !
-    error  = .false.
-    fmttmp = 'formatted'
-    istat  = 0
-    !
-    allocate(trapar%parfld(dims%nmlb:dims%nmub,nparfld), stat=istat)
-    if (istat/=0) then
-       error = .true.
-       return
-    endif
-    parfld        => trapar%parfld
-    !
-    do ll = 1, lsedtot
-       do i = 1, npar
-          j = trapar%iparfld(i,ll)
-          if (j>0) then
-             filename = trapar%parfil(i,ll)
-             write (lundia, '(a,a)') 'Reading: ',trim(filename)
-             call depfil_stm(lundia     ,error      ,filename   ,fmttmp    , &
-                           & parfld(:,j),1          ,1          ,dims      , errmsg)
-             if (error) then 
-                 call write_error(errmsg, unit=lundia)
-                 return
-             endif
-          endif
-       enddo
-    enddo
-end subroutine rdtraparfld
-
-
-subroutine rdtrapartim(lundia    ,error     ,lsedtot   ,trapar    , &
-                     & dims      ,julrefday )
-!!--description-----------------------------------------------------------------
-!
-! Reads time-varying transport formula parameters
-!
-!!--declarations----------------------------------------------------------------
+!> Read transport formula parameter files (time- or space-varying)
+subroutine rdtraparfiles(lundia    ,error     ,lsedtot   ,trapar    , &
+                      & dims      ,julrefday )
     use precision
     use morphology_data_module
     use grid_dimens_module 
@@ -927,10 +790,10 @@ subroutine rdtrapartim(lundia    ,error     ,lsedtot   ,trapar    , &
 ! Local variables
 !
     integer                        , pointer :: npar
-    integer                        , pointer :: npartim
-    character(256), dimension(:,:) , pointer :: parfil
-    integer,        dimension(:,:) , pointer :: ipartim
-    type(partim_type),dimension(:) , pointer :: partim
+    integer                        , pointer :: nparfile
+    character(256)                 , pointer :: parfilename(:,:)
+    integer                        , pointer :: iparfile(:,:)
+    type(parfile_type)             , pointer :: parfile(:)
     !
     integer           :: i
     integer           :: i10
@@ -945,56 +808,99 @@ subroutine rdtrapartim(lundia    ,error     ,lsedtot   ,trapar    , &
 !! executable statements -------------------------------------------------------
 !
     npar          => trapar%npar
-    npartim       => trapar%npartim
-    parfil        => trapar%parfil
-    ipartim       => trapar%ipartim
+    nparfile      => trapar%nparfile
+    parfilename   => trapar%parfilename
+    iparfile      => trapar%iparfile
     !
     error  = .false.
     fmttmp = 'formatted'
     istat  = 0
     !
-    allocate(trapar%partim(npartim), stat=istat)
+    allocate(trapar%parfile(nparfile), stat=istat)
     if (istat/=0) then
        error = .true.
        return
     endif
-    partim        => trapar%partim
+    parfile       => trapar%parfile
     !
     do ll = 1, lsedtot
        do i10 = 11, npar
-          j = trapar%ipartim(i10,ll)
+          j = trapar%iparfile(i10,ll)
           if (j>0) then
              i = i10-10
-             filename = trapar%parfil(i10,ll)
+             filename = trapar%parfilename(i10,ll)
              write (lundia, '(a,a)') 'Reading: ',trim(filename)
-             call readtable(partim(j)%ts, filename, julrefday, errmsg)
-             if (errmsg /= ' ') then
-                 call write_error(errmsg, unit=lundia)
-                 error = .true.
-                 return
-             endif
-             call gettable(partim(j)%ts, 'General' ,trim(trapar%parname(i,ll)), partim(j)%itable_ts, partim(j)%ipar_ts, partim(j)%npar_ts, 1, errmsg)
-             if (errmsg /= ' ') then
-                 call write_error(errmsg, unit=lundia)
-                 error = .true.
-                 return
-             endif
-             partim(j)%irec_ts   = 1 ! start with record 1
-             partim(j)%refjulday = julrefday ! store reference date
-             partim(j)%timhr     = -1.0e10_fp
-             partim(j)%par       = -999.0_fp
+             !
+             parfile(j)%source = determine_source_type(filename)
+             !
+             select case (parfile(j)%source)
+             case (PARSOURCE_FIELD)
+                 allocate(parfile(j)%parfld(dims%nmlb:dims%nmub), stat=istat)
+                 if (istat/=0) then
+                    error = .true.
+                    return
+                 endif
+                 call depfil_stm(lundia     ,error      ,filename   ,fmttmp    , &
+                               & parfile(j)%parfld,1          ,1          ,dims      , errmsg)
+                 if (error) then 
+                     call write_error(errmsg, unit=lundia)
+                     return
+                 endif
+                 
+             case (PARSOURCE_TIME)
+                 call readtable(parfile(j)%ts, filename, julrefday, errmsg)
+                 if (errmsg /= ' ') then
+                     call write_error(errmsg, unit=lundia)
+                     error = .true.
+                     return
+                 endif
+                 call gettable(parfile(j)%ts, 'General' ,trim(trapar%parname(i,ll)), parfile(j)%itable_ts, parfile(j)%ipar_ts, parfile(j)%npar_ts, 1, errmsg)
+                 if (errmsg /= ' ') then
+                     call write_error(errmsg, unit=lundia)
+                     error = .true.
+                     return
+                 endif
+                 parfile(j)%irec_ts   = 1 ! start with record 1
+                 parfile(j)%refjulday = julrefday ! store reference date
+                 parfile(j)%timhr     = -1.0e10_fp
+                 parfile(j)%par       = -999.0_fp
+                 
+             case default
+             end select
           endif
        enddo
     enddo
-end subroutine rdtrapartim
+end subroutine rdtraparfiles
+
+
+!> determine the type of the specified file
+function determine_source_type(filename) result (source)
+   use morphology_data_module, only: PARSOURCE_UNKNOWN, PARSOURCE_FIELD, PARSOURCE_TIME
+   use system_utils, only: split_filename
+   use string_module, only: str_lower
+   
+   character(len=*), intent(in) :: filename !< full name of the file
+   integer                      :: source   !< file type
+   
+   character(len=256) :: path  !< file path
+   character(len=256) :: file  !< file name
+   character(len=256) :: ext   !< file extension
+   
+   call split_filename(filename, path, file, ext)
+   call str_lower(ext)
+   select case (ext)
+   case ('.xyz','.dep')
+      source = PARSOURCE_FIELD
+   case ('.bct')
+      source = PARSOURCE_TIME
+   case default
+      source = PARSOURCE_UNKNOWN
+   end select
+end function determine_source_type
+
 
 subroutine setpardeflog(ipardef   ,rpardef   ,npardef   ,iform     , &
                       & ipar      ,val       )
-!!--description-----------------------------------------------------------------
-!
-!
-!
-!!--declarations----------------------------------------------------------------
     use precision
 !
 ! Arguments
@@ -1123,7 +1029,7 @@ subroutine echotrafrm(lundia    ,trapar      ,ifrac     )
 !
 !!--declarations----------------------------------------------------------------
     use precision
-    use morphology_data_module, only: trapar_type, PARSOURCE_CONST
+    use morphology_data_module, only: trapar_type
 !
 ! Arguments
 !
@@ -1154,10 +1060,10 @@ subroutine echotrafrm(lundia    ,trapar      ,ifrac     )
           endif
           !
           i10 = 10+i
-          if (trapar%parsource(i10,ifrac) == PARSOURCE_CONST) then
+          if (trapar%iparfile(i10,ifrac) == 0) then
              write (lundia, '(3a,e12.4)') '    ',trapar%parname(i,ifrac),' :',trapar%par(i10,ifrac)
           else
-             write (lundia, '(4a)') '    ',trapar%parname(i,ifrac),' : ',trim(trapar%parfil(i10,ifrac))
+             write (lundia, '(4a)') '    ',trapar%parname(i,ifrac),' : ',trim(trapar%parfilename(i10,ifrac))
           endif
        enddo
     endif

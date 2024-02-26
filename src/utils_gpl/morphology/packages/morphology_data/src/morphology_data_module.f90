@@ -50,7 +50,7 @@ public mornumericstype
 public bedbndtype
 public cmpbndtype
 public sedpar_type
-public partim_type
+public parfile_type
 public trapar_type
 public sedtra_type
 public fluffy_type
@@ -79,9 +79,9 @@ real(fp), parameter, public :: missing_value = 9.9692099683868690e+36_fp
 
 integer, parameter, public :: CHARLEN = 40
 
-integer, parameter, public :: PARSOURCE_CONST = 0
-integer, parameter, public :: PARSOURCE_FIELD = 1
-integer, parameter, public :: PARSOURCE_TIME  = 2
+integer, parameter, public :: PARSOURCE_UNKNOWN = 0
+integer, parameter, public :: PARSOURCE_FIELD   = 1
+integer, parameter, public :: PARSOURCE_TIME    = 2
 
 integer, parameter, public :: RP_TIME  =  1     ! time since reference date [s]
 integer, parameter, public :: RP_EFUMN =  2     ! U component of effective depth averaged velocity [m/s]
@@ -642,7 +642,9 @@ type sedpar_type
     character(256) :: flspmc     ! critical mud fraction for non-cohesive behaviour file
 end type sedpar_type
 
-type partim_type
+type parfile_type
+    integer                                   :: source     !< data source for the parameter: time-series or spatial field
+    !
     integer                                   :: ipar_ts    !< parameter number within the time series object
     integer                                   :: irec_ts    !< most recently used time series record
     integer                                   :: itable_ts  !< table nunber within the time series object
@@ -651,8 +653,9 @@ type partim_type
     real(fp)                                  :: timhr      !< time of previous value
     real(fp)                                  :: par        !< previous parameter value
     !
+    real(fp), allocatable                     :: parfld(:)  !< spatial field
     type(handletype)                          :: ts         !< time series object
-end type partim_type
+end type parfile_type
 
 type trapar_type
     !
@@ -670,8 +673,7 @@ type trapar_type
     integer                                    :: max_reals           !  Maximum number of reals which can be delivered to shared library
     integer                                    :: max_strings         !  Maximum number of character strings which can be delivered to shared library
     integer                                    :: npar                !  Maximum number of sediment transport formula parameters
-    integer                                    :: nparfld             !  Number of sediment transport formula parameters specified as 2D fields
-    integer                                    :: npartim             !  Number of sediment transport formula parameters specified as time-series
+    integer                                    :: nparfile            !  Number of sediment transport formula parameters specified by file
     integer                                    :: nouttot             !  Total number of output parameters (sum of noutpar)
     !
     ! pointers
@@ -704,12 +706,9 @@ type trapar_type
     character(256)   , dimension(:)  , pointer :: name                !< Sediment transport formula names
     real(fp)         , dimension(:,:), pointer :: par                 !< Sediment transport formula parameter values
     character(25)    , dimension(:,:), pointer :: parname             !< Sediment transport formula parameter names
-    character(256)   , dimension(:,:), pointer :: parfil              !< Sediment transport formula file names
-    integer          , dimension(:,:), pointer :: parsource           !< Source type of parameter (0 if constant, 1 if spatial file, 2 if time series)
-    integer          , dimension(:,:), pointer :: iparfld             !< Index of parameter in parfld array (0 if not PARSOURCE_FIELD)
-    integer          , dimension(:,:), pointer :: ipartim             !< Index of parameter in partim array (0 if not PARSOURCE_TIME)
-    real(fp)         , dimension(:,:), pointer :: parfld              !< Sediment transport parameter - 2D field
-    type(partim_type), dimension(:)  , pointer :: partim              !< Sediment transport parameter - time-varying data
+    character(256)   , dimension(:,:), pointer :: parfilename         !< Sediment transport formula file names
+    integer          , dimension(:,:), pointer :: iparfile            !< Index of parameter in parfile array (0 if parameter is a constant)
+    type(parfile_type), dimension(:)  , pointer :: parfile(:)         !< Sediment transport parameter read from file - time- or space-varying data
     ! 
     ! logicals
     !
@@ -1923,9 +1922,8 @@ subroutine nulltrapar(trapar  )
     !
     ! Note: 30 is hardcoded in sediment transport formulae
     !
-    trapar%npar    = 30
-    trapar%nparfld = 0
-    trapar%npartim = 0
+    trapar%npar     = 30
+    trapar%nparfile = 0
     !
     nullify(trapar%dll_function_settle)
     nullify(trapar%dll_name_settle)
@@ -1949,11 +1947,8 @@ subroutine nulltrapar(trapar  )
     nullify(trapar%name)
     nullify(trapar%par)
     nullify(trapar%parname)
-    nullify(trapar%parfil)
-    nullify(trapar%parsource)
-    nullify(trapar%iparfld)
-    nullify(trapar%parfld)
-    nullify(trapar%ipartim)
+    nullify(trapar%parfilename)
+    nullify(trapar%iparfile)
 end subroutine nulltrapar
 
 
@@ -2010,11 +2005,8 @@ subroutine clrtrapar(istat     ,trapar  )
     if (associated(trapar%name        )) deallocate(trapar%name        , STAT = istat)
     if (associated(trapar%par         )) deallocate(trapar%par         , STAT = istat)
     if (associated(trapar%parname     )) deallocate(trapar%parname     , STAT = istat)
-    if (associated(trapar%parfil      )) deallocate(trapar%parfil      , STAT = istat)
-    if (associated(trapar%parsource   )) deallocate(trapar%parsource   , STAT = istat)
-    if (associated(trapar%iparfld     )) deallocate(trapar%iparfld     , STAT = istat)
-    if (associated(trapar%parfld      )) deallocate(trapar%parfld      , STAT = istat)
-    if (associated(trapar%ipartim     )) deallocate(trapar%ipartim     , STAT = istat)
+    if (associated(trapar%parfilename )) deallocate(trapar%parfilename , STAT = istat)
+    if (associated(trapar%iparfile    )) deallocate(trapar%iparfile    , STAT = istat)
 end subroutine clrtrapar
 
 subroutine get_transport_parameters(trapar, l, nm, timhr, localpar)
@@ -2029,27 +2021,28 @@ subroutine get_transport_parameters(trapar, l, nm, timhr, localpar)
     real(fp)                   :: par          !< scalar to store the value
     real(fp)                   :: parvec(1)    !< array to receive the value
     character(256)             :: message      !< error message
-    type(partim_type), pointer :: partim       !< temporary to partim field
+    type(parfile_type), pointer :: parfile     !< temporary to one trapar%parfile field
     
     do i = 1, trapar%npar
-       select case (trapar%parsource(i,l))
-       case (PARSOURCE_CONST)
+       j = trapar%iparfile(i,l)
+       if (j == 0) then
            localpar(i) = trapar%par(i,l)
-       case (PARSOURCE_FIELD)
-           j = trapar%iparfld(i,l)
-           localpar(i) = trapar%parfld(nm,j)
-       case (PARSOURCE_TIME)
-           j = trapar%ipartim(i,l)
-           partim => trapar%partim(j)
-           if (timhr > partim%timhr) then
-               message = ' '
-               call gettabledata(partim%ts ,partim%itable_ts, partim%ipar_ts, partim%npar_ts, partim%irec_ts, parvec, timhr, partim%refjulday, message)
-               if (message /= ' ') return ! TODO
-               partim%par = parvec(1)
-               partim%timhr = timhr
-           end if
-           localpar(i) = partim%par
-       end select
+       else
+           select case (trapar%parfile(j)%source)
+           case (PARSOURCE_FIELD)
+               localpar(i) = trapar%parfile(j)%parfld(nm)
+           case (PARSOURCE_TIME)
+               parfile => trapar%parfile(j)
+               if (timhr > parfile%timhr) then
+                   message = ' '
+                   call gettabledata(parfile%ts ,parfile%itable_ts, parfile%ipar_ts, parfile%npar_ts, parfile%irec_ts, parvec, timhr, parfile%refjulday, message)
+                   if (message /= ' ') return ! TODO
+                   parfile%par = parvec(1)
+                   parfile%timhr = timhr
+               end if
+               localpar(i) = parfile%par
+           end select
+       end if
     end do
 end subroutine get_transport_parameters
 
