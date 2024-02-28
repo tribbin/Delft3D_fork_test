@@ -418,7 +418,7 @@ contains
             item%stat_output => item%source_input
          case (SO_AVERAGE)
             allocate(item%stat_output(input_size))
-            item%stat_input => item%source_input
+            item%stat_input = item%source_input
          case (SO_MIN, SO_MAX)
             allocate(item%stat_output(input_size),item%moving_average_sum(input_size), &
                item%samples(input_size,item%moving_average_window),item%timesteps(item%moving_average_window),item%stat_input(input_size))
