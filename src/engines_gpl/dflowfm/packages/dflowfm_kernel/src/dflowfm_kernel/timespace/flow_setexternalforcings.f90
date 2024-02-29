@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2023.
+!  Copyright (C)  Stichting Deltares, 2017-2024.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -63,6 +63,8 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    use m_nearfield,            only : nearfield_mode, NEARFIELD_UPDATED, addNearfieldData
    use m_airdensity,           only : get_airdensity
    use dfm_error
+   use m_fm_icecover, only: ja_icecover, ice_af, ice_h, ICECOVER_EXT
+   use m_lateral, only : numlatsg
 
    double precision, intent(in   ) :: time_in_seconds  !< Time in seconds
    logical,          intent(in   ) :: initialization   !< initialization phase
@@ -89,6 +91,11 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
 
    success = .true.
 
+   if (ja_icecover == ICECOVER_EXT) then
+       ice_af = 0.d0
+       ice_h  = 0.d0
+   endif
+
    if (allocated(patm)) then
       ! To prevent any pressure jumps at the boundary, set (initial) patm in interior to PavBnd.
       ! May of course be overridden later by spatially varying patm values.
@@ -98,7 +105,7 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    if (ja_airdensity > 0) then
       call get_timespace_value_by_item_array_consider_success_value(item_airdensity, airdensity)
    end if
-   if (ja_varying_airdensity==1) then 
+   if (ja_computed_airdensity==1) then 
       call get_timespace_value_by_item_array_consider_success_value(item_atmosphericpressure, patm)
       call get_timespace_value_by_item_array_consider_success_value(item_airtemperature, tair)
       call get_timespace_value_by_item_array_consider_success_value(item_humidity, rhum)
@@ -125,6 +132,7 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
 
    call set_wave_parameters()
 
+   call retrieve_icecover()
    call retrieve_rainfall()
 
    if (ncdamsg > 0) then
@@ -164,7 +172,9 @@ subroutine set_external_forcings(time_in_seconds, initialization, iresult)
    end if
 
    if (numsrc > 0) then
-      success = success .and. ec_gettimespacevalue(ecInstancePtr, item_discharge_salinity_temperature_sorsin, irefdate, tzone, tunit, time_in_seconds)
+      ! qstss must be an argument when calling ec_gettimespacevalue.
+      ! It might be reallocated after initialization (when coupled to Cosumo).
+      success = success .and. ec_gettimespacevalue(ecInstancePtr, item_discharge_salinity_temperature_sorsin, irefdate, tzone, tunit, time_in_seconds, qstss)
    end if
 
    if (jasubsupl > 0) then
@@ -495,9 +505,10 @@ end subroutine set_parameters_for_radiation_stress_driven_forces
 !> set wave parameters for jawave == 7 (offline wave coupling) and waveforcing == 2 (wave forces via averaged dissipation) 
 subroutine set_parameters_for_dissipation_driven_forces()
 
-    success = success .and. ecGetValues(ecInstancePtr, item_hrms, ecTime)
-    success = success .and. ecGetValues(ecInstancePtr, item_tp  , ecTime)
-    success = success .and. ecGetValues(ecInstancePtr, item_dir , ecTime)
+    success = success .and. ecGetValues(ecInstancePtr, item_hrms  , ecTime)
+    success = success .and. ecGetValues(ecInstancePtr, item_tp    , ecTime)
+    success = success .and. ecGetValues(ecInstancePtr, item_dir   , ecTime)
+    success = success .and. ecGetValues(ecInstancePtr, item_distot, ecTime)
     sxwav  (:) = 0d0
     sywav  (:) = 0d0
     mxwav  (:) = 0d0
@@ -543,6 +554,20 @@ elemental function convert_wave_direction_from_nautical_to_cartesian(nautical_wa
     cartesian_wave_direction = modulo(CONVERSION_PARAMETER_IN_DEGREES - nautical_wave_direction, MAX_RANGE_IN_DEGREES)
 
 end function convert_wave_direction_from_nautical_to_cartesian
+
+!> retrieve icecover
+subroutine retrieve_icecover()
+
+   if (ja_icecover == ICECOVER_EXT) then
+      if (item_sea_ice_area_fraction /= ec_undef_int) then
+         call get_timespace_value_by_item_and_consider_success_value(item_sea_ice_area_fraction)
+      endif
+      if (item_sea_ice_thickness /= ec_undef_int) then
+         call get_timespace_value_by_item_and_consider_success_value(item_sea_ice_thickness)
+      endif
+   endif
+
+end subroutine retrieve_icecover
 
 !> retrieve_rainfall
 subroutine retrieve_rainfall()
@@ -655,7 +680,7 @@ end subroutine print_error_message
 subroutine prepare_wind_model_data(time_in_seconds, iresult)
    use m_wind
    use m_flowparameters, only: jawave, flowWithoutWaves
-   use m_flow, only: windspeedfac
+   use m_flow, only: wind_speed_factor
    use m_meteo
    use m_flowgeom, only: ln, lnx, ndx
    use precision_basics
@@ -697,6 +722,9 @@ subroutine prepare_wind_model_data(time_in_seconds, iresult)
          else
             call get_timespace_value_by_name('airpressure_windx_windy')
          end if
+      ! Retrieve wind's charnock-component for ext-file quantity 'charnock'.
+      else if (ec_item_id == item_charnock) then
+         call get_timespace_value_by_item(item_charnock)
       ! Retrieve wind's x-component for ext-file quantity 'windx'.
       else if (ec_item_id == item_windx) then
          call get_timespace_value_by_item(item_windx)
@@ -737,12 +765,17 @@ subroutine prepare_wind_model_data(time_in_seconds, iresult)
          end do
       end if
    end if
+   if (allocated(ec_charnock)) then
+      do link  = 1, lnx
+         wcharnock(link) = wcharnock(link) + 0.5d0*( ec_charnock(ln(1,link)) + ec_charnock(ln(2,link)) )
+      end do
+   end if
 
-   if (jawindspeedfac > 0) then
+   if (ja_wind_speed_factor > 0) then
       do link = 1, lnx
-         if (windspeedfac(link) /= dmiss) then
-            wx(link) = wx(link) * windspeedfac(link)
-            wy(link) = wy(link) * windspeedfac(link)
+         if (wind_speed_factor(link) /= dmiss) then
+            wx(link) = wx(link) * wind_speed_factor(link)
+            wy(link) = wy(link) * wind_speed_factor(link)
          end if
       end do
    end if
@@ -903,6 +936,7 @@ end subroutine fill_open_boundary_cells_with_inner_values_all
 !> fill_open_boundary_cells_with_inner_values_fewer
 subroutine fill_open_boundary_cells_with_inner_values_fewer(number_of_links, link2cell)
     use m_waves
+    use m_flowparameters, only : jawave, waveforcing
 
     integer, intent(in) :: number_of_links      !< number of links
     integer, intent(in) :: link2cell(:,:)       !< indices of cells connected by links
@@ -911,6 +945,14 @@ subroutine fill_open_boundary_cells_with_inner_values_fewer(number_of_links, lin
     integer             :: kb   !< cell index of boundary cell
     integer             :: ki   !< cell index of internal cell
 
+    
+    if (jawave == 7 .and. waveforcing == 2 ) then
+        do link = 1,number_of_links
+            kb   = link2cell(1,link)
+            ki   = link2cell(2,link)
+            distot(kb) = distot(ki)
+        end do
+    endif
     do link = 1, number_of_links
         kb   = link2cell(1,link)
         ki   = link2cell(2,link)

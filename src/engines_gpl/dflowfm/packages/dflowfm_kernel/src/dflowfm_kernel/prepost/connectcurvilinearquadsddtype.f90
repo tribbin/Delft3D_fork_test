@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -32,7 +32,7 @@
 
   subroutine connectcurvilinearquadsDDtype()
   use m_netw
-  use sorting_algorithms, only: indexx
+  use stdlib_sorting, only: sort_index
   use geometry_module, only: dbdistance, cross
   use m_missing, only: dmiss
   use m_sferic,  only: jsferic, jasfer3D
@@ -213,7 +213,7 @@
               dist(i) = dbdistance(xkkn1,ykkn1,xk(kins(i)),yk(kins(i)), jsferic, jasfer3D, dmiss)
            end do
 !          get permutation array
-           call indexx(ins,dist,idx)
+           call sort_index(dist(1:ins), idx(1:ins))
 !          order on increasing distance
            kdum = kins
            do i=1,ins

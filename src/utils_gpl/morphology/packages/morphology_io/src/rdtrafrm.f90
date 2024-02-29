@@ -1,7 +1,7 @@
 module m_rdtrafrm
 !----- GPL ---------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2011-2023.                                
+!  Copyright (C)  Stichting Deltares, 2011-2024.                                
 !                                                                               
 !  This program is free software: you can redistribute it and/or modify         
 !  it under the terms of the GNU General Public License as published by         
@@ -1331,8 +1331,8 @@ subroutine traparams(iform     ,name      ,nparreq   ,nparopt   ,parkeyw   , &
        parkeyw(4) = 'CritCd'
        parkeyw(5) = '[dummy]' !don't remove: backward compatibility!
        pardef(5)  = 1.0_fp
-       parkeyw(6) = '[dummy]' !don't remove: backward compatibility!
-       pardef(6)  = 1.0_fp
+       parkeyw(6) = 'RouKs'
+       pardef(6)  = -999.0_fp
        parkeyw(7) = 'WSettle'
        pardef(7)  = -999.0_fp
        parkeyw(8) = 'Porosity'

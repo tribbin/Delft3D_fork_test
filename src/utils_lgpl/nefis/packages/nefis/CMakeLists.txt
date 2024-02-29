@@ -15,7 +15,7 @@ if (UNIX)
     #produce a config.h to be included
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake.in ${CMAKE_CURRENT_SOURCE_DIR}/include/config.h)  
     set(configFile "${CMAKE_CURRENT_SOURCE_DIR}/include/config.h")
-    add_definitions(-DHAVE_LSEEK64) # Define a preprocessor macro
+    add_definitions(-D_FILE_OFFSET_BITS=64)
 endif(UNIX)
 
 
@@ -37,7 +37,7 @@ target_include_directories(${library_name}  PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}
 
 # Set preprocessor definitions
 if (UNIX)
-    target_compile_definitions(${library_name} PRIVATE "PTR8;linux;LINUX64;HAVE_LSEEK64;_IA64_;_LIB;_CRT_SECURE_NO_WARNINGS")    
+    target_compile_definitions(${library_name} PRIVATE "PTR8;linux;LINUX64;_IA64_;_LIB;_CRT_SECURE_NO_WARNINGS")    
 endif(UNIX)
 if (WIN32)
     target_compile_definitions(${library_name} PRIVATE "W64;PTR8;WIN64;_WIN64;_IA64_;_WINDOWS;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS")
@@ -78,11 +78,7 @@ if ( ${configuration_type} STREQUAL "DELFT3D4" OR
         target_compile_definitions(${library_name} PRIVATE "NEFIS_DLL;W64;PTR8;WIN64;_WIN64;_IA64_;_WINDOWS;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS")
     endif(WIN32)
   
-    source_group(${visual_studio_source_group_name} FILES ${source})
-    source_group("${visual_studio_source_group_name}\\Header Files" FILES ${headers})
-    source_group("Version Files" FILES ${ini_version_file})
-  
-    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${headers} ${source})
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${headers} ${source} ${ini_version_file})
     set_target_properties (${library_name} PROPERTIES FOLDER utils_lgpl/nefis_dll)
   
     # Set post-build step

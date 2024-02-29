@@ -3,7 +3,7 @@ function qp_update_options(OH,UD,Ops)
 
 %----- LGPL --------------------------------------------------------------------
 %
-%   Copyright (C) 2011-2023 Stichting Deltares.
+%   Copyright (C) 2011-2024 Stichting Deltares.
 %
 %   This library is free software; you can redistribute it and/or
 %   modify it under the terms of the GNU Lesser General Public
@@ -285,8 +285,12 @@ end
 
 if isfield(Ops,'thresholds')
     set(findobj(OH,'tag','thresholds'),'enable','on')
-    c = Ops.thresholds;
-    set(findobj(OH,'tag','thresholds=?'),'enable','on','backgroundcolor',Active,'string',vec2str(c,'noones','nobrackets'),'userdata',c)
+    thresholds = Ops.thresholds;
+    if isnumeric(thresholds)
+        set(findobj(OH,'tag','thresholds=?'),'enable','on','backgroundcolor',Active,'string',vec2str(thresholds,'noones','nobrackets'),'userdata',thresholds)
+    elseif isstruct(thresholds)
+        set(findobj(OH,'tag','thresholds=?'),'enable','on','backgroundcolor',Active,'string',sprintf(':%g:',thresholds.step),'userdata',thresholds)
+    end
 end
 
 if isfield(Ops,'thresholddistribution')

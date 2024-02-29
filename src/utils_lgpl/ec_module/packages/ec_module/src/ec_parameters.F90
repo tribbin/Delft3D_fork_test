@@ -1,6 +1,6 @@
 !----- LGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2011-2023.                                
+!  Copyright (C)  Stichting Deltares, 2011-2024.                                
 !                                                                               
 !  This library is free software; you can redistribute it and/or                
 !  modify it under the terms of the GNU Lesser General Public                   
@@ -50,6 +50,8 @@ module m_ec_parameters
    integer,  parameter :: ec_undef_int = -987
    real(fp), parameter :: ec_undef_fp = -9.87e+05_fp
    real(hp), parameter :: ec_undef_hp = -9.87e+10_hp
+   real(fp), parameter :: ec_huge_fp  = 3.402823466e+38_fp
+   real(hp), parameter :: ec_huge_hp  = 1.7976931348623158e+308_hp
 
    integer, parameter :: ec_second = 1
    integer, parameter :: ec_minute = 2

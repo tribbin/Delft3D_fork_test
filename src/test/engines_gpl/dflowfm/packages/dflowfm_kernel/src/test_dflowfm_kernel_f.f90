@@ -1,4 +1,4 @@
-!!  Copyright (C)  Stichting Deltares, 2012-2023.
+!!  Copyright (C)  Stichting Deltares, 2012-2024.
 !!
 !!  This program is free software: you can redistribute it and/or modify
 !!  it under the terms of the GNU General Public License version 3,
@@ -46,7 +46,7 @@ program test_dflowfm_kernel
     call tests_MDU_fileversion
     call tests_1d_grid
     call tests_storageNodes
-    !call tests_iniField_1dField
+    call tests_iniField_1dField
     call tests_read_property
     call tests_compute_airdensity
     !
@@ -70,7 +70,6 @@ subroutine prepareTests
 end subroutine prepareTests
 
 !> Start the browser to show the result
-!!
 subroutine showResult
     !character(len=1) :: answer
     !

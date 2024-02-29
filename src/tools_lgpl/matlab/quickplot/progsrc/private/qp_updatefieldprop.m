@@ -3,7 +3,7 @@ function qp_updatefieldprop(UD)
 
 %----- LGPL --------------------------------------------------------------------
 %                                                                               
-%   Copyright (C) 2011-2023 Stichting Deltares.                                     
+%   Copyright (C) 2011-2024 Stichting Deltares.                                     
 %                                                                               
 %   This library is free software; you can redistribute it and/or                
 %   modify it under the terms of the GNU Lesser General Public                   
@@ -348,9 +348,10 @@ for m_ = 2:10 % limit to 10 supported dimensions
     % Get handles of relevant controls ...
     %
     if m_==3 || m_==4 % M or N
-        vis = {'visible','off'};
         if v==1
             vis = {'visible','on'};
+        else
+            vis = {'visible','off'};
         end
     else
         vis = {};

@@ -51,7 +51,7 @@ function [data,Slice] = vslice(data,v_slice,isel)
 
 %----- LGPL --------------------------------------------------------------------
 %
-%   Copyright (C) 2011-2023 Stichting Deltares.
+%   Copyright (C) 2011-2024 Stichting Deltares.
 %
 %   This library is free software; you can redistribute it and/or
 %   modify it under the terms of the GNU Lesser General Public
@@ -124,6 +124,13 @@ switch v_slice
                     case 'FACE'
                         iface = isel;
                         data.FaceNodeConnect = data.FaceNodeConnect(iface,:);
+                end
+                if isfield(data,'ZLocation')
+                    switch data.ZLocation
+                        case 'FACE'
+                            iface = isel;
+                            data.Z = data.Z(iface,:);
+                    end
                 end
             elseif isfield(data,'TRI')
                 data.X = data.XYZ(:,isel,:,1);
@@ -283,9 +290,14 @@ switch v_slice
             if isfield(data,'EdgeNodeConnect')
                 data=rmfield(data,'EdgeNodeConnect');
             end
+            if isfield(data,'EdgeFaceConnect')
+                data=rmfield(data,'EdgeFaceConnect');
+            end
         elseif isfield(data,'TRI')
             szV = size(data.XYZ);
-            if isfield(data,'Time') && length(data.Time)==szV(1)
+            reorderDims = false;
+            if length(szV) == 4 % isfield(data,'Time') && length(data.Time)==szV(1)
+                reorderDims = true;
                 dms = [2:max(length(szV),3) 1];
                 data.XYZ = permute(data.XYZ,dms);
             end
@@ -299,9 +311,9 @@ switch v_slice
             end
             data=rmfield(data,'TRI');
             data=rmfield(data,'XYZ');
-            if isfield(data,'Time') && length(data.Time)==szV(1)
+            if reorderDims
                 szV = size(data.X);
-                if length(data.Time)==1
+                if ~isfield(data,'Time') || length(data.Time)==1
                     dms = [length(szV)+1 1:length(szV)];
                 else
                     dms = [length(szV) 1:length(szV)-1];

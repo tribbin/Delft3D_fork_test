@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -301,6 +301,9 @@ function defaultFilename(filecat, timestamp, prefixWithDirectory, allowWildcard)
     case ('mbacsvmb')
         activeFile = ''
         suffix = '_mass_balances.csv'
+    case ('mbanetcdf')
+        activeFile = ''
+        suffix = '_mass_balances.nc'
         
     !---------------------------------------------------------!
     ! DELWAQ files
@@ -363,7 +366,7 @@ function defaultFilename(filecat, timestamp, prefixWithDirectory, allowWildcard)
     ! Output files are generally stored in a subfolder, so prefix them here with that.
     select case (trim(filecat))
     case ('his', 'map', 'clm', 'rstold', 'rst', 'bal', 'histek', 'inc_s1', 'tec', 'map.plt', 'net.plt', 'avgwavquant', &
-          'com','avgsedquant', 'mba', 'mbacsvm', 'mbacsvmb', 'wq_lsp', 'bloom', 'timers', 'timers_init','sedtrails')
+          'com','avgsedquant', 'mba', 'mbacsvm', 'mbacsvmb', 'mbanetcdf', 'wq_lsp', 'bloom', 'timers', 'timers_init','sedtrails')
         if (prefix_dir) then
             defaultFilename = trim(getoutputdir())//trim(defaultFilename)
         end if
@@ -502,23 +505,18 @@ end subroutine basename
 !! actual location. This routine selects whether the path
 !! needs to be resolved relative to a given basedir, or
 !! relative to the MDU current working dir.
-!! If inpath is absolute, then that path is returned unchanged.
-subroutine resolvePath(inpath, basedir, outpath)
+!! If path is absolute, then that path is returned unchanged.
+subroutine resolvePath(path, basedir)
 use system_utils, only: is_abs, cat_filename
 use unstruc_model, only: md_paths_relto_parent
-character(len=*), intent(in   ) :: inpath  !< Input path
+character(len=*), intent(inout) :: path    !< Path to be updated
 character(len=*), intent(in   ) :: basedir !< Basedir w.r.t. which the input path *might* be resolved, depending on PathsRelativeToParent setting.
-character(len=*), intent(  out) :: outpath !< Resolved path
 
-character(len=len_trim(inpath)+len_trim(basedir)+1) :: tmppath
+character(len=len_trim(path)+len_trim(basedir)+1) :: tmppath
 
-if (is_abs(inpath) .or. md_paths_relto_parent == 0) then
-   outpath = inpath
-else
-   if (md_paths_relto_parent > 0) then
-      tmppath = cat_filename(basedir, inpath)
-      outpath = tmppath
-   end if
+if (.not. is_abs(path) .and. md_paths_relto_parent > 0) then
+   tmppath = cat_filename(basedir, path)
+   path = tmppath
 end if
 end subroutine resolvePath
 

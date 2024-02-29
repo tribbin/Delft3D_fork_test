@@ -11,7 +11,7 @@ function filtertbl = qp_filefilters(filters)
 
 %----- LGPL --------------------------------------------------------------------
 %
-%   Copyright (C) 2011-2023 Stichting Deltares.
+%   Copyright (C) 2011-2024 Stichting Deltares.
 %
 %   This library is free software; you can redistribute it and/or
 %   modify it under the terms of the GNU Lesser General Public
@@ -118,9 +118,8 @@ switch filters
         if strcmp(filters,'selected+')
             lasttp  = qp_settings('LastFileType','nefis');
             ilasttp = find(strncmp(lasttp,filtertbl(:,3),length(lasttp)));
-            if ~isempty(ilasttp) && ~any(iFull==ilasttp)
-                iFull(end+1)=ilasttp;
-            end
+            ilasttp = ilasttp(~ismember(ilasttp,iFull));
+            iFull = [iFull;ilasttp(:)];
         end
         %
         filtertbl = filtertbl(iFull,:);

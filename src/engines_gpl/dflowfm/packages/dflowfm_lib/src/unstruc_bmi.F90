@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2023.
+!  Copyright (C)  Stichting Deltares, 2017-2024.
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
 !  Delft3D is free software: you can redistribute it and/or modify
@@ -841,6 +841,8 @@ subroutine get_var_rank(c_var_name, rank) bind(C, name="get_var_rank")
    !DEC$ ATTRIBUTES DLLEXPORT :: get_var_rank
 
    use iso_c_binding, only: c_int, c_char
+   use m_lateral, only : kclat, qplatCum, qLatRealCum, qLatRealCumPre, n1latsg, n2latsg, qplat, balat, qLatRealAve, nnlat, qLatReal, qplatAve
+
    character(kind=c_char), intent(in) :: c_var_name(*)
    integer(c_int), intent(out) :: rank
 
@@ -887,9 +889,10 @@ subroutine get_var_shape(c_var_name, shape) bind(C, name="get_var_shape")
    use network_data
    use m_observations, only: numobs, nummovobs, MAXNUMVALOBS2D, MAXNUMVALOBS3D, MAXNUMVALOBS3Dw
    use m_monitoring_crosssections, only: ncrs, maxnval
-   use m_wind
+   use m_lateral, only : numlatsg
    use unstruc_channel_flow, only: network
    use m_transport, only: NAMLEN, NUMCONST
+   use m_lateral, only : numlatsg, nlatnd
 	
    character(kind=c_char), intent(in) :: c_var_name(*)
    integer(c_int), intent(inout) :: shape(MAXDIMS)
@@ -1073,6 +1076,8 @@ subroutine get_var(c_var_name, x) bind(C, name="get_var")
    use m_cell_geometry ! TODO: UNST-1705: temp, replace by m_flowgeom
    use unstruc_model
    use unstruc_channel_flow, only: network
+   use m_lateral, only : numlatsg, kclat, qplatCum, qLatRealCum, qLatRealCumPre, n1latsg, n2latsg, qplat, balat, qLatRealAve, nnlat, qLatReal, qplatAve, qqlat
+   use m_lateral, only : qplatCumPre
 
    character(kind=c_char), intent(in) :: c_var_name(*) !< Variable name. May be slash separated string "name/item/field": then get_compound_field is called.
    type(c_ptr), intent(inout) :: x
@@ -1287,7 +1292,7 @@ subroutine get_var(c_var_name, x) bind(C, name="get_var")
       call str_token(tmp_var_name, item_name, DELIMS='/')
       if (len_trim(item_name) > 0) then
          ! A valid item name, now parse the field name...
-         call str_token(tmp_var_name, field_name, DELIMS='/')
+         field_name = tmp_var_name(2:)
 
          ! field_name is allowed to be empty, call the compound getter and return directly.
          call get_compound_field(string_to_char_array(varset_name), &
@@ -1336,6 +1341,8 @@ subroutine set_var(c_var_name, xptr) bind(C, name="set_var")
    use m_partitioninfo, only: jampi
    use MessageHandling
    use iso_c_binding, only: c_double, c_char, c_bool, c_loc, c_f_pointer
+   use m_lateral, only : numlatsg, qplat, qqlat, balat, qplatCum, qplatCumPre, qplatAve, qLatReal, qLatRealCum
+   use m_lateral, only : qLatRealCumPre, qLatRealAve, n1latsg, n2latsg, nnlat, kclat
 
    character(kind=c_char), intent(in) :: c_var_name(*)
    type(c_ptr), value, intent(in) :: xptr
@@ -1461,7 +1468,7 @@ subroutine set_var(c_var_name, xptr) bind(C, name="set_var")
                endif 
             endif
          else
-            call mess(LEVEL_ERROR, 'TcrEro can only be set for fractions governed by the Parteniades-Krone transport formula.')
+            call mess(LEVEL_WARN, 'TcrEro values ignored for fractions not governed by the Parteniades-Krone transport formula.')
          endif
       enddo
       return
@@ -1485,7 +1492,7 @@ subroutine set_var(c_var_name, xptr) bind(C, name="set_var")
                endif 
             endif
          else
-            call mess(LEVEL_ERROR, 'TcrSed can only be set for fractions governed by the Parteniades-Krone transport formula.')
+            call mess(LEVEL_WARN, 'TcrSed values ignored for fractions not governed by the Parteniades-Krone transport formula.')
          endif
       enddo
       return
@@ -1611,6 +1618,8 @@ subroutine set_var_slice(c_var_name, c_start, c_count, xptr) bind(C, name="set_v
    !DEC$ ATTRIBUTES DLLEXPORT :: set_var_slice
    ! Return a pointer to the variable
    use iso_c_binding, only: c_double, c_char, c_loc, c_f_pointer
+   use m_lateral, only : qplat, qqlat, balat, qplatCum, qplatCumPre, qplatAve, qLatReal, qLatRealCum
+   use m_lateral, only : qLatRealCumPre, qLatRealAve, n1latsg, n2latsg, nnlat, kclat
 
    integer(c_int), intent(in)         :: c_start(*)
    integer(c_int), intent(in)         :: c_count(*)
@@ -1901,7 +1910,8 @@ subroutine get_compound_field(c_var_name, c_item_name, c_field_name, x) bind(C, 
    use m_wind
    use unstruc_channel_flow, only: network
    use unstruc_messages
-   use m_transport, only: NUMCONST, constituents, const_names, ITRA1
+   use m_transport, only: NUMCONST, constituents, const_names, ISALT, ITEMP, ITRA1
+   use m_lateral, only : outgoing_lat_concentration, incoming_lat_concentration, kclat, qplat, nnlat, n1latsg
   
    character(kind=c_char), intent(in) :: c_var_name(*)   !< Name of the set variable, e.g., 'pumps'
    character(kind=c_char), intent(in) :: c_item_name(*)  !< Name of a single item's index/location, e.g., 'Pump01'
@@ -2136,13 +2146,19 @@ subroutine get_compound_field(c_var_name, c_item_name, c_field_name, x) bind(C, 
       endif
       select case(field_name)
       case("discharge")
-         x = c_loc(qstss((item_index-1)*3+1))
+         x = c_loc(qstss((item_index-1)*(NUMCONST+1)+1))
          return
       case("change_in_salinity")
-         x = c_loc(qstss((item_index-1)*3+2))
+         if (ISALT == 0) then
+             return
+         endif
+         x = c_loc(qstss((item_index-1)*(NUMCONST+1)+ISALT+1))
          return
       case("change_in_temperature")
-         x = c_loc(qstss((item_index-1)*3+3))
+         if (ITEMP == 0) then
+             return
+         endif
+         x = c_loc(qstss((item_index-1)*(NUMCONST+1)+ITEMP+1))
          return
       end select
    ! Dambreak
@@ -2268,6 +2284,20 @@ subroutine get_compound_field(c_var_name, c_item_name, c_field_name, x) bind(C, 
                x = c_null_ptr
             endif
             return
+         case("outgoing/water_salinity")
+            if (ISALT > 0) then
+               x = c_loc(outgoing_lat_concentration(:, ISALT, item_index))
+            else
+               x = c_null_ptr
+            endif
+            return
+         case("incoming/water_salinity")
+            if (ISALT > 0) then
+               x = c_loc(incoming_lat_concentration(:, ISALT, item_index))
+            else
+               x = c_null_ptr
+            endif
+            return
       end select
    ! GEOMETRY
    case("geometry")   
@@ -2332,6 +2362,8 @@ subroutine set_compound_field(c_var_name, c_item_name, c_field_name, xptr) bind(
    use m_wind
    use unstruc_channel_flow, only: network
    use m_General_Structure, only: update_widths
+   use m_transport, only: NUMCONST, ISALT, ITEMP
+   use m_lateral, only : qplat
 
    character(kind=c_char), intent(in) :: c_var_name(*)   !< Name of the set variable, e.g., 'pumps'
    character(kind=c_char), intent(in) :: c_item_name(*)  !< Name of a single item's index/location, e.g., 'Pump01'
@@ -2525,15 +2557,21 @@ subroutine set_compound_field(c_var_name, c_item_name, c_field_name, xptr) bind(
       select case(field_name)
       case("discharge")
          call c_f_pointer(xptr, x_0d_double_ptr)
-         qstss((item_index-1)*3+1) = x_0d_double_ptr
+         qstss((item_index-1)*(NUMCONST+1)+1) = x_0d_double_ptr
          return
       case("change_in_salinity")
+         if (ISALT == 0) then
+             return
+         endif
          call c_f_pointer(xptr, x_0d_double_ptr)
-         qstss((item_index-1)*3+2) = x_0d_double_ptr
+         qstss((item_index-1)*(NUMCONST+1)+ISALT+1) = x_0d_double_ptr
          return
       case("change_in_temperature")
+         if (ITEMP == 0) then
+             return
+         endif
          call c_f_pointer(xptr, x_0d_double_ptr)
-         qstss((item_index-1)*3+3) = x_0d_double_ptr
+         qstss((item_index-1)*(NUMCONST+1)+ITEMP+1) = x_0d_double_ptr
          return
       end select
 	 

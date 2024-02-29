@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -47,38 +47,6 @@ double precision, allocatable, target :: rain(:)     !< [mm/day] rain at xz,yz {
 double precision, allocatable, target :: evap(:)     !< [m/s] evaporation at xz,yz {"location": "face", "shape": ["ndx"]}
 integer :: id_first_wind, id_last_wind  !< counters to avoid looping over all ec_etims when only interessed in wind
 
-!!
-!! Laterals
-!!
-integer, parameter :: ILATTP_ALL = 0 !< Type code for laterals that apply to both 2D and 1D nodes.
-integer, parameter :: ILATTP_1D  = 1 !< Type code for laterals that only apply to 1D nodes.
-integer, parameter :: ILATTP_2D  = 2 !< Type code for laterals that only apply to 2D nodes.
-
-integer                      , target :: numlatsg          !< [-] nr of lateral discharge providers  {"rank": 0}
-double precision, allocatable, target :: qplat(:)          !< [m3/s] Lateral discharge of provider {"shape": ["numlatsg"]}
-double precision, allocatable, target :: qqlat(:)          !< [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["ndx"]}
-double precision, allocatable, target :: balat(:)          !< [m2] total area of all cells in provider numlatsg {"shape": ["numlatsg"]}
-character(len=128), allocatable       :: lat_ids(:)        !< id of laterals {"shape": ["numlatsg"]}
-double precision, allocatable, target :: qplatCum(:)       !< [m3/s] Cumulative lateral discharge of provider {"shape": ["numlatsg"]}
-double precision, allocatable, target :: qplatCumPre(:)    !< [m3/s] Cumulative lateral discharge of provider at previous history output time{"shape": ["numlatsg"]}
-double precision, allocatable, target :: qplatAve(:)       !< [m3/s] Average lateral discharge of provider during the past history output interal {"shape": ["numlatsg"]}
-double precision, allocatable, target :: qLatReal(:)       !< [m3/s] Realized lateral discharge {"shape": ["numlatsg"]}
-double precision, allocatable, target :: qLatRealCum(:)    !< [m3/s] Cumulative realized lateral discharge {"shape": ["numlatsg"]}
-double precision, allocatable, target :: qLatRealCumPre(:) !< [m3/s] Cumulative realized lateral discharge at previous history output time{"shape": ["numlatsg"]}
-double precision, allocatable, target :: qLatRealAve(:)    !< [m3/s] Average realized lateral discharge during the past history output interal{"shape": ["numlatsg"]}
-
-!! Lateral lookup tables: n1/n2latsg(ilat) = n1/n2, nnlat(n1:n2) = { flow node nrs affected by lateral ilat }
-integer                               :: nlatnd      !< lateral nodes dimension, counter of nnlat(:)
-integer,          allocatable, target :: n1latsg(:)  !< [-] first  nlatnd point in lateral signal numlatsg {"shape": ["numlatsg"]}
-integer,          allocatable, target :: n2latsg(:)  !< [-] second nlatnd point in lateral signal numlatsg {"shape": ["numlatsg"]}
-integer,          allocatable, target :: nnlat(:)    !< [-] for each lateral node, flow node number == pointer to qplat/balat {"shape": ["nlatnd"]}
-integer,          allocatable, target :: kclat(:)    !< [-] for each cell: 0 when not accepting lateral discharge (e.g. pipe) {"location": "face", "shape": ["ndx"]}
-
-!! Lateral geometry variables
-integer                               :: nNodesLat           !< [-] Total number of geom nodes for all laterals.
-integer,          allocatable, target :: nodeCountLat(:)     !< [-] Count of nodes per lateral.
-double precision, allocatable, target :: geomXLat(:)         !< [m] x coordinates of laterals.
-double precision, allocatable, target :: geomYLat(:)         !< [m] y coordinates of laterals.
 
 double precision, allocatable, target :: qext(:)         !< [m3/s] External discharge per cell {"location": "face", "shape": ["ndkx"]}
 double precision, allocatable, target :: qextreal(:)     !< [m3/s] Realized external discharge per cell {"location": "face", "shape": ["ndkx"]}
@@ -104,7 +72,7 @@ integer                           :: japatm              !< use patm yes or no
 integer                           :: jaspacevarcharn     !< use space and time varying Charnock coefficients yes or no
 integer                           :: jawindstressgiven   !< wind given as stress, no conversion needed
 integer                           :: jastresstowind      !< if jawindstressgiven==1, convert stress to wind yes/no 1/0 
-integer                           :: ja_varying_airdensity !< compute airdensity yes/no 1/0
+integer                           :: ja_computed_airdensity !< compute airdensity yes/no 1/0
 integer                           :: jarain              !< use rain yes or no
 integer                           :: jaevap              !< use evap yes or no
 integer                           :: jatair              !< use air temperature   yes or no
@@ -132,7 +100,7 @@ double precision                  :: patmfac         !< 100 if Mbar, 1 if Pascal
 
 double precision                  :: cdb(3)          !< breakpoints cd function cd coefficient
 double precision                  :: wdb(3)          !< breakpoints cd function windspeed
-integer                           :: ICdtyp          !< 1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955, 5=Hwang 2005, 6=Wuest 2005
+integer                           :: ICdtyp          !< 1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955; 5=Hwang 2005; 6=Wuest 2005; 7=Hersbach 2010 (2 pts), 8: 4+viscous), 9=Garratt 1977.
 double precision                  :: relativewind    !< factor for top layer speed in relative wind, 0=no, 1 =full top layer speed 
 integer                           :: jawindhuorzwsbased   !< 1 = finite volume , 0 = hu
 integer                           :: jawindpartialdry     !< Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0 = no, 1 = yes
@@ -174,7 +142,7 @@ use m_physcoef, only : rhomean
     jaQext  = 0         !< use Qin externally provided yes or no
     jawind  = 0         !< use wind yes or no
     jastresstowind    = 0  !< if jawindstressgiven==1, convert stress to wind yes/no 1/0 
-    ja_varying_airdensity = 0
+    ja_computed_airdensity = 0
     ! Remaining of variables is handled in reset_wind()
     call reset_wind()
    end subroutine default_wind
@@ -183,8 +151,6 @@ use m_physcoef, only : rhomean
    !! Upon loading of new model/MDU, call default_wind() instead.
    subroutine reset_wind()
       japatm   = 0           !< use patm yes or no
-      numlatsg = 0           !< [] nr of lateral discharge providers
-      nlatnd   = 0           !< lateral nodes dimension, counter of nnlat(:)
       jaspacevarcharn   = 0  !< use space varying Charnock coefficients
       jawindstressgiven = 0  !< wind stress given in meteo file
       jatair  = 0         

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -41,7 +41,7 @@
  use unstruc_channel_flow
  use m_structures
  use m_longculverts
- use unstruc_caching, only: cacheRetrieved, copyCachedLongCulverts
+ use unstruc_caching, only: cacheRetrieved
  !\ DEBUG
  use m_missing
 

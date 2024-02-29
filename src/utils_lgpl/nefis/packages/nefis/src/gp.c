@@ -1,6 +1,6 @@
 //---- LGPL --------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2023.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -71,13 +71,7 @@
 #define FILE_WRITE _write
 #elif defined(linux)
 #define FILE_READ read
-#if defined(HAVE_LSEEK64)
-#define FILE_SEEK lseek64
-#elif defined(HAVE_LSEEK)
 #define FILE_SEEK lseek
-#else
-#define FILE_SEEK FILE_SEEK_not_defined
-#endif
 #define FILE_WRITE write
 #else
 #define FILE_READ FILE_READ_not_defined

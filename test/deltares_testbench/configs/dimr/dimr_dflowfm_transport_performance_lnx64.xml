@@ -18,11 +18,11 @@
     <locations>
       <location name="dsctestbench-cases">
         <credential ref="commandline" />
-        <root>https://repos.deltares.nl/repos/DSCTestbench/trunk/cases</root>
+        <root>{server_base_url}/cases</root>
       </location>
       <location name="dsctestbench-references">
         <credential ref="commandline" />
-        <root>https://repos.deltares.nl/repos/DSCTestbench/trunk/references</root>
+        <root>{server_base_url}/references</root>
       </location>
       <location name="local">
         <root>./data/engines</root>
@@ -371,6 +371,7 @@
           </parameters>
         </file>
       </checks>
+      <processCount>3</processCount>
     </testCase>
 
     <testCase name="e02_f031_c102_westerschelde_3d_s_performance_3_domains" ref="dflowfm_default">
@@ -456,6 +457,7 @@
           </parameters>
         </file>
       </checks>
+      <processCount>3</processCount>
     </testCase>
 
     <testCase name="e02_f031_c103_westerschelde_3d_z_performance_3_domains" ref="dflowfm_default">
@@ -541,6 +543,7 @@
           </parameters>
         </file>
       </checks>
+      <processCount>3</processCount>
     </testCase>
 
   </testCases>

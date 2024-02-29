@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -5833,7 +5833,6 @@ contains
      use dfm_error
      use messageHandling
      use m_polygon
-     use sorting_algorithms, only: sort
      
      implicit none
      
@@ -6587,6 +6586,7 @@ module m_meteo
    use string_module
    use m_sediment, only: stm_included, stmpar
    use m_subsidence
+   use m_fm_icecover, only: ice_af, ice_h
    
    implicit none
    
@@ -6617,6 +6617,8 @@ module m_meteo
    integer, target :: item_charnock                                          !< Unique Item id of the ext-file's 'space var Charnock' quantity 'C'.
    integer, target :: item_waterlevelbnd                                     !< Unique Item id of the ext-file's 'waterlevelbnd' quantity's ...-component.
    integer, target :: item_atmosphericpressure                               !< Unique Item id of the ext-file's 'atmosphericpressure' quantity
+   integer, target :: item_sea_ice_area_fraction                             !< Unique Item id of the ext-file's 'sea_ice_area_fraction' quantity
+   integer, target :: item_sea_ice_thickness                                 !< Unique Item id of the ext-file's 'sea_ice_thickness' quantity
    integer, target :: item_velocitybnd                                       !< Unique Item id of the ext-file's 'velocitybnd' quantity
    integer, target :: item_dischargebnd                                      !< Unique Item id of the ext-file's 'discharge' quantity
    integer, target :: item_salinitybnd                                       !< Unique Item id of the ext-file's 'salinitybnd' quantity
@@ -6686,6 +6688,7 @@ module m_meteo
    integer, target :: item_my                                                !< Unique Item id of the ext-file's 'item_my' quantity
    integer, target :: item_dissurf                                           !< Unique Item id of the ext-file's 'item_dissurf' quantity
    integer, target :: item_diswcap                                           !< Unique Item id of the ext-file's 'item_diswcap' quantity
+   integer, target :: item_distot                                            !< Unique Item id of the ext-file's 'item_distot'  quantity
    integer, target :: item_ubot                                              !< Unique Item id of the ext-file's 'item_ubot' quantity
 
    integer, target :: item_nudge_tem                                         !< 3D temperature for nudging
@@ -6693,6 +6696,7 @@ module m_meteo
    integer, target :: item_dambreakLevelsAndWidthsFromTable                  !< Dambreak heights and widths
    
    integer, target :: item_subsiduplift
+   integer, target :: item_ice_cover                                         !< Unique Item id of the ext-file's 'airpressure_windx_windy' quantity 'p'.
 
    integer, allocatable, dimension(:) :: countbndpoints(:) 
    !
@@ -6735,6 +6739,8 @@ module m_meteo
       item_charnock                              = ec_undef_int
       item_waterlevelbnd                         = ec_undef_int
       item_atmosphericpressure                   = ec_undef_int
+      item_sea_ice_area_fraction                 = ec_undef_int
+      item_sea_ice_thickness                     = ec_undef_int
       item_velocitybnd                           = ec_undef_int
       item_dischargebnd                          = ec_undef_int
       item_salinitybnd                           = ec_undef_int
@@ -6799,6 +6805,7 @@ module m_meteo
       item_my                                    = ec_undef_int
       item_dissurf                               = ec_undef_int
       item_diswcap                               = ec_undef_int
+      item_distot                                = ec_undef_int
       item_ubot                                  = ec_undef_int
       item_dambreakLevelsAndWidthsFromTable      = ec_undef_int 
       item_subsiduplift                          = ec_undef_int
@@ -7006,6 +7013,12 @@ module m_meteo
             dataPtr1 => wx
             itemPtr2 => item_windxy_y
             dataPtr2 => wy
+         case ('sea_ice_area_fraction')
+            itemPtr1 => item_sea_ice_area_fraction
+            dataPtr1 => ice_af
+         case ('sea_ice_thickness')
+            itemPtr1 => item_sea_ice_thickness
+            dataPtr1 => ice_h
          case ('stressx')
             itemPtr1 => item_stressx
             dataPtr1 => wdsu_x
@@ -7194,7 +7207,10 @@ module m_meteo
             dataPtr1 => nudge_tem
          case ('discharge_salinity_temperature_sorsin')
             itemPtr1 => item_discharge_salinity_temperature_sorsin
-            dataPtr1 => qstss
+            ! Do not point to array qstss here.
+            ! qstss might be reallocated after initialization (when coupled to Cosumo) 
+            ! and must be an argument when calling ec_gettimespacevalue.
+            nullify(dataPtr1)
          case ('hrms', 'wavesignificantheight')
             itemPtr1 => item_hrms
             dataPtr1 => hwavcom
@@ -7239,6 +7255,10 @@ module m_meteo
             itemPtr1 => item_diswcap
             dataPtr1 => dwcap
             jamapwav_dwcap = 1
+         case ('totalwaveenergydissipation')
+            itemPtr1 => item_distot
+            dataPtr1 => distot
+            jamapwav_distot = 1
          case ('ubot')
             itemPtr1 => item_ubot
             dataPtr1 => uorbwav            
@@ -8429,15 +8449,17 @@ module m_meteo
             if (ec_filetype == provFile_netcdf) then
                sourceItemName = name(14:)
             end if
-         case ('bedrock_surface_elevation')
+         case ('bedrock_surface_elevation','sea_ice_area_fraction','sea_ice_thickness')
             if (ec_filetype == provFile_arcinfo) then
-               sourceItemName = 'bedrock_surface_elevation'
+               sourceItemName = name
             else if (ec_filetype == provFile_curvi) then
                sourceItemName = 'curvi_source_item_1'
+            else if (ec_filetype == provFile_netcdf) then
+               sourceItemName = name
             else if (ec_filetype == provFile_uniform) then
                sourceItemName = 'uniform_item'
             else 
-               call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity bedrock_surface_elevation.')
+               call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(name)//'.')
                return
             end if   
          case default
@@ -8464,6 +8486,12 @@ module m_meteo
                         if (success) success = ecAddItemConnection(ecInstancePtr, targetItemPtr4, connectionId)
                      endif
                   endif
+               endif
+               if (success) then
+                  ! all statements executed successfully ... this must be good
+                  ec_addtimespacerelation = .true.
+               else
+                  call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Error while default processing of ext-file (connect source and target) for : '//trim(target_name)//'.')
                endif
             else
                call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported quantity specified in ext-file (connect source and target): '//trim(target_name)//'.')

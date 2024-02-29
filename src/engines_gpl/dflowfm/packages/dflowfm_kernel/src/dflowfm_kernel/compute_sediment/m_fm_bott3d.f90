@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -119,10 +119,6 @@ public :: fm_bott3d
    !! Execute
    !!
    call timstrt('Bott3d_call   ', handle_extra(89))
-   if (.not. allocated(bl_ave0)) then
-      allocate(bl_ave0(1:ndx),stat=ierror)
-      bl_ave0(:) = 0d0
-   endif
 
    dtmor   = dts*morfac
    error = .false.
@@ -270,11 +266,6 @@ public :: fm_bott3d
    
    call fm_update_bed_level(dtmor)
 
-   !
-   ! Deallocate
-   !
-   
-   deallocate(bl_ave0)
    !
    call timstop(handle_extra(89))
    
@@ -1634,7 +1625,7 @@ public :: fm_bott3d
 
    use m_flowgeom, only: lnx, wu_mor
    use m_fm_erosed, only: e_ssn, lsed, e_scrn
-   use m_transport, only: fluxhortot
+   use m_transport, only: fluxhortot, ISED1
    
    implicit none
    
@@ -1647,7 +1638,7 @@ public :: fm_bott3d
    !!
    !! Execute
    !!
-
+   lstart = ISED1 - 1
    do ll = 1, lsed
       j = lstart + ll   ! constituent index
       do L=1,lnx
@@ -1781,7 +1772,7 @@ public :: fm_bott3d
    
    use Messagehandling
    use message_module, only: writemessages, write_error
-   use m_flowgeom, only: ndx, bl_ave, bl
+   use m_flowgeom, only: ndx, bl_ave, bl, bl_ave0
    use m_fm_erosed, only: bedupd, blchg, stmpar
    use m_dad, only: dad_included
    use m_fm_update_crosssections, only: fm_update_crosssections
@@ -1806,8 +1797,6 @@ public :: fm_bott3d
    integer                                     :: nm, jb, ib
    integer                                     :: icond
       
-   double precision, dimension(:), allocatable :: bl_ave0
-   
    type (bedbndtype)     , dimension(:) , pointer :: morbnd
    
    !!

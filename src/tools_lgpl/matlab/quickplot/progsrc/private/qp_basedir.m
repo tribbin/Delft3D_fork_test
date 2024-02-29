@@ -9,7 +9,7 @@ function p=qp_basedir(t)
 
 %----- LGPL --------------------------------------------------------------------
 %                                                                               
-%   Copyright (C) 2011-2023 Stichting Deltares.                                     
+%   Copyright (C) 2011-2024 Stichting Deltares.                                     
 %                                                                               
 %   This library is free software; you can redistribute it and/or                
 %   modify it under the terms of the GNU Lesser General Public                   
@@ -90,16 +90,18 @@ end
 
 
 %=======================
-function dd = exeroot
+function folder = exeroot
 c = computer;
 if strcmp(c(1:2),'PC')
    [status, result] = system('set PATH');
    eql = strfind(result,'=');
    col = strfind(result,';');
-   dd = strtrim(result(eql(1)+1:col(1)-1));
+   folder = strtrim(result(eql(1)+1:col(1)-1));
+   filename = check_path([folder filesep 'd3d_qp.version']);
+   folder = fileparts(filename);
 else % Unix
    % call a mex file
-   dd = fileparts(exepath);
+   folder = fileparts(exepath);
 end
 
 %=======================

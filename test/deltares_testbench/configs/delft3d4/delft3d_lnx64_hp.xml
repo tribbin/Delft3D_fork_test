@@ -28,15 +28,15 @@
 			</location>
 			<location name="dsctestbench-cases">
 				<credential ref="commandline"/>
-				<root>https://repos.deltares.nl/repos/DSCTestbench/trunk/cases</root>
+				<root>{server_base_url}/cases</root>
 			</location>
 			<location name="dsctestbench-references_bin">
 				<credential ref="commandline"/>
-				<root>https://repos.deltares.nl/repos/DSCTestbench/trunk/references/bin</root>
+				<root>{server_base_url}/references/bin</root>
 			</location>
 			<location name="dsctestbench-references_data">
 				<credential ref="commandline"/>
-				<root>https://repos.deltares.nl/repos/DSCTestbench/trunk/references</root>
+				<root>{server_base_url}/references</root>
 			</location>
 			<location name="network-references">
 				<root>/p/delft3d/test_data/d3d-flow/flow/versions/6.01.10.4289</root>
@@ -187,7 +187,7 @@
 			<location ref="local" type="check">
 				<from>teamcity_artifacts/lnx64</from>
 			</location>
-			<path>bin/mormerge</path>
+			<path>bin/run_mormerge.sh</path>
 		</program>
 		<program name="RTC" logOutputToFile="true" ignoreStandardError="true" ignoreReturnValue="true" addSearchPaths="true" excludeSearchPathsContaining="share/delft3d/esmf">
 			<location ref="dsctestbench-references_bin" type="reference">
@@ -289,5 +289,5 @@
 	<!--
 	testCases
 	-->
-	<xi:include href="../include/delft3d4_cases.xml"/>
+	<xi:include href="../include/delft3d4_hp_cases_lnx64.xml"/>
 </deltaresTestbench_v3>

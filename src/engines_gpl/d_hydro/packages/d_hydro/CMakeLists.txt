@@ -114,12 +114,3 @@ post_build_target( ${executable_name}
                    ${executable_name}  )
 
 install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
-if (UNIX)
-#    install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/d_hydro/scripts/generic/lnx64/run_d_hydro.sh             DESTINATION bin)
-#    install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/d_hydro/scripts/generic/lnx64/submit_d_hydro.sh          DESTINATION bin)
-endif(UNIX)
-
-if (WIN32)
-    install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/d_hydro/scripts/generic/win64/run_d_hydro.bat            DESTINATION bin)
-    install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/d_hydro/scripts/generic/win64/run_d_hydro_parallel.bat   DESTINATION bin)
-endif(WIN32)

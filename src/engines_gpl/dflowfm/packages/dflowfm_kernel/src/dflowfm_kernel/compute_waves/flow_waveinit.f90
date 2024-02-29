@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -109,6 +109,10 @@
           call aerr('dsurf(ndx)', ierr, ndx)
           call realloc(dwcap, ndx, stat=ierr, keepExisting = .false., fill = 0d0)
           call aerr('dwcap(ndx)', ierr, ndx)
+      endif
+      if(jawave == 7 .and. waveforcing == 2) then
+          call realloc(distot, ndx, stat=ierr, keepExisting = .false., fill = 0d0)
+          call aerr('distot(ndx)', ierr, ndx)
       endif
    endif
    !

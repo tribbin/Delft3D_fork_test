@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -56,13 +56,14 @@
  use string_module
  use m_plotdots
  use geometry_module, only: getdx, getdy, dbdistance, normalin, normalout, half, duitpl, dlinedis
- use sorting_algorithms, only: indexx
+ use stdlib_sorting, only: sort_index
  use m_flowtimes, only: ti_waq
  use gridoperations
  use m_flow, only : numlimdt, numlimdt_baorg
  use m_oned_functions
  use unstruc_channel_flow, only : network
  use m_sediment, only: stm_included
+ use m_dad, only: dad_included
  use m_flowtimes, only: handle_extra
  use Timers
  use m_structures
@@ -114,14 +115,17 @@
  double precision        :: xh, yh
 
  integer                 :: jaidomain, jaiglobal_s, ierror
+ integer                 :: numl2D
 
  double precision, external    :: cosphiu
  integer :: ndraw
  COMMON /DRAWTHIS/ ndraw(50)
 
- if (numk <= 2 .or. numl <= 1 ) then
-    call mess(LEVEL_WARN,'A valid network requires at least 3 computational grid points (net nodes) and at least 2 netlinks for 1D or 3 netlinks for 2D.')
-    return               ! only do this for sufficient network
+ numl2D = numl - numl1D
+
+ if (numk < 2 .or. (numl1D == 0 .and. numl2D < 3) .or. (numl2D > 0 .and. numl2D < 3)) then
+    call mess(LEVEL_WARN, 'A valid network requires at least 2 computational grid points (net nodes) and at least 1 netlink for 1D or 3 netlinks for 2D.')
+    return ! only continue for sufficient network
  endif
 
  noncrossinglink = .false.
@@ -302,11 +306,11 @@
 
  end if
 
- if (stm_included) then
-     call realloc(bl_ave, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
-     call aerr('bl_ave(ndx)', ierr, ndx)
- end if
-
+ if (stm_included .and. ndx2d>ndxi) then
+    call realloc(bl_ave, ndx, keepExisting = .false., fill = dmiss, stat = ierr)
+    call aerr('bl_ave(ndx)', ierr, ndx)
+ endif
+  
  if ( allocated (kfs) ) deallocate(kfs)
  allocate(kfs(ndx))   ;  kfs   = 0
 
@@ -1089,7 +1093,7 @@
     nonLin   = inonLin(3)
  end if
 
- if (japure1D > 0) then
+ if (japure1D == 1 .or. japure1D == 2) then 
     call setisnbnodisnblin() ! set signarray isnbnod for left and rightneighbouring uc1d.
  endif
 
@@ -1413,7 +1417,7 @@
      enddo
    enddo
 
-   CALL INDEXX(mxban,rr,nr)
+   call sort_index(rr, nr)
    do k = 1, mxban
       ka = nr(k)
       nban(1,k) = nbanh(1,ka)

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -70,22 +70,27 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    use unstruc_inifields, only: initInitialFields, set_friction_type_values
    use Timers
    use m_subsidence
+ use m_fm_icecover, only: ja_ice_area_fraction_read, ja_ice_thickness_read, fm_ice_activate_by_ext_forces
+   use mass_balance_areas_routines, only : get_mbainputname
+   use m_lateral, only : numlatsg, ILATTP_1D, ILATTP_2D, ILATTP_ALL, kclat, nlatnd, nnlat, n1latsg, n2latsg, balat, qplat, lat_ids
+   use m_lateral, only : alloc_lateraldata, apply_transport
 
- implicit none
- character(len=256)            :: filename, sourcemask
- integer                       :: L, Lf, mout, kb, LL, Lb, Lt, ierr, k, k1, k2, ja, method, n1, n2, kbi, Le, n, j, mx, n4, kk, kt, ktmax, layer, lenqidnam
- character (len=256)           :: fnam, rec, filename0
- character (len=64)            :: varname
- character (len=NAMTRACLEN)    :: tracnam, qidnam
- character (len=NAMWAQLEN)     :: wqbotnam
- character (len=NAMSFLEN)      :: sfnam, qidsfnam
- integer                       :: minp0, npli, inside, filetype0, iad
- integer, allocatable          :: ihu(:)             ! temp
- double precision, allocatable :: viuh(:)            ! temp
- double precision, allocatable :: tt(:)
- logical :: exist
- integer                       :: numz, numu, numq, numg, numd, numgen, npum, numklep, numvalv, nlat, jaifrcutp
- integer                       :: numnos, numnot, numnon ! < Nr. of unassociated flow links (not opened due to missing z- or u-boundary)
+   implicit none
+   character(len=256)            :: filename, sourcemask
+   integer                       :: L, Lf, mout, kb, LL, Lb, Lt, ierr, k, k1, k2, ja, method, n1, n2, kbi, Le, n, j, mx, n4, kk, kt, ktmax, layer, lenqidnam
+   character (len=256)           :: fnam, rec, filename0
+   character (len=64)            :: varname
+   character (len=NAMTRACLEN)    :: tracnam, qidnam
+   character (len=NAMWAQLEN)     :: wqbotnam
+   character (len=NAMSFLEN)      :: sfnam, qidsfnam
+   integer                       :: minp0, npli, inside, filetype0, iad
+   integer, allocatable          :: ihu(:)             ! temp
+   double precision, allocatable :: viuh(:)            ! temp
+   double precision, allocatable :: tt(:)
+   logical                       :: exist
+   logical                       :: patm_available, tair_available, dewpoint_available
+   integer                       :: numz, numu, numq, numg, numd, numgen, npum, numklep, numvalv, nlat, jaifrcutp
+   integer                       :: numnos, numnot, numnon ! < Nr. of unassociated flow links (not opened due to missing z- or u-boundary)
 
    double precision, allocatable :: xdum(:), ydum(:), xy2dum(:,:)
    integer, allocatable          :: kdum(:)
@@ -125,7 +130,10 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    iresult = DFM_NOERR
 
    success = .true.    ! default if no valid providers are present in *.ext file (m_flowexternalforcings::success)
-
+   patm_available = .false.
+   tair_available = .false.
+   dewpoint_available = .false.
+   
    if ( .not. allocated(const_names) ) then
       allocate( const_names(0) )
    endif
@@ -179,6 +187,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
       if (exist) then
          iresult = initInitialFields(md_inifieldfile)
          if (iresult /= DFM_NOERR) then
+            call timstop(handle_extra(49)) ! initInitialFields
             goto 888
          end if
       else
@@ -186,6 +195,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          write(msgbuf, '(a,a,a)') 'Initial fields and parameters file ''', trim(md_inifieldfile), ''' not found.'
          call warn_flush()
          iresult = DFM_EXTFORCERROR
+         call timstop(handle_extra(49)) ! initInitialFields
          goto 888
       endif
       call timstop(handle_extra(49)) ! initInitialFields
@@ -798,7 +808,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          maxSearchRadius = -1
          call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname,sourcemask,maxSearchRadius)
          if (ja == 1) then
-            call resolvePath(filename, md_extfile_dir, filename)
+            call resolvePath(filename, md_extfile_dir)
 
             call mess(LEVEL_INFO, 'External Forcing or Initialising '''//trim(qid)//''' from file '''//trim(filename)//'''.')
             ! Initialize success to be .false.
@@ -907,15 +917,27 @@ integer function flow_initexternalforcings() result(iresult)              ! This
 
             else if (qid == 'windspeedfactor') then
 
-               if (jawindspeedfac == 0) then
-                  if (allocated (Windspeedfac) ) deallocate(Windspeedfac)
-                  allocate ( Windspeedfac(lnx) , stat=ierr )
-                  call aerr('Windspeedfac(lnx)', ierr, lnx )
-                  Windspeedfac = dmiss
+               if (ja_wind_speed_factor == 0) then
+                  if (allocated (wind_speed_factor) ) deallocate(wind_speed_factor)
+                  allocate ( wind_speed_factor(lnx) , stat=ierr )
+                  call aerr('wind_speed_factor(lnx)', ierr, lnx )
+                  wind_speed_factor(:) = dmiss
                endif
 
-               jawindspeedfac = 1
-               success = timespaceinitialfield(xu, yu, Windspeedfac, lnx, filename, filetype, method,  operand, transformcoef, 1) ! zie meteo module
+               ja_wind_speed_factor = 1
+               success = timespaceinitialfield(xu, yu, wind_speed_factor, lnx, filename, filetype, method,  operand, transformcoef, 1) ! zie meteo module
+
+            else if (qid == 'solarradiationfactor') then
+
+               if (ja_solar_radiation_factor == 0) then
+                  if (allocated (solar_radiation_factor) ) deallocate(solar_radiation_factor)
+                  allocate ( solar_radiation_factor(ndx) , stat=ierr )
+                  call aerr('solar_radiation_factor(ndx)', ierr, lnx )
+                  solar_radiation_factor(:) = dmiss
+               endif
+
+               ja_solar_radiation_factor = 1
+               success = timespaceinitialfield(xz, yz, solar_radiation_factor, ndx, filename, filetype, method, operand, transformcoef, 1)
 
             else if (qid == 'secchidepth') then
 
@@ -1469,6 +1491,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                if (success) then
                   jawind = 1
                   japatm = 1
+                  patm_available = .true.
                endif
 
             else if (qid == 'charnock') then
@@ -1506,6 +1529,10 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                kcw = 1
 
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), kcw, kx, filename, filetype, method, operand, varname=varname) ! vectormax = 3
+               if (success) then
+                  dewpoint_available = .true.
+                  tair_available = .true.
+               endif
 
             else if (qid == 'humidity_airtemperature_cloudiness_solarradiation') then
 
@@ -1516,6 +1543,9 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                kcw = 1
 
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), kcw, kx, filename, filetype, method, operand, varname=varname) ! vectormax = 4
+               if (success) then
+                  tair_available = .true.
+               endif
 
             else if (qid == 'dewpoint_airtemperature_cloudiness_solarradiation') then
 
@@ -1526,6 +1556,10 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                kcw = 1
 
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), kcw, kx, filename, filetype, method, operand, varname=varname) ! vectormax = 4
+               if (success) then
+                  dewpoint_available = .true.
+                  tair_available = .true.
+               endif
 
             else if (qid == 'nudge_salinity_temperature') then
                kx = 2
@@ -1561,6 +1595,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
                   japatm = 1
+                  patm_available = .true.
                endif
 
             else if (qid == 'air_temperature') then
@@ -1576,7 +1611,9 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                endif
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  jatair = 1 ; btempforcingtypA = .true.
+                  jatair = 1
+                  btempforcingtypA = .true.
+                  tair_available = .true.
                endif
 
             else if (qid == 'airdensity') then
@@ -1615,8 +1652,27 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                itempforcingtyp = 5
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  jarhum = 1  ;
+                  jarhum = 1
+                  dewpoint_available = .true.
                endif
+
+        else if (qid == 'sea_ice_area_fraction' .or. qid == 'sea_ice_thickness') then
+
+           ! if ice properties not yet read before, initialize ...
+           if (.not. (ja_ice_area_fraction_read .or. ja_ice_thickness_read)) then
+               call fm_ice_activate_by_ext_forces(ndx)
+           endif
+           ! add the EC link
+           if (len_trim(sourcemask)>0)  then
+              success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, srcmaskfile=sourcemask, varname=varname)
+           else
+              success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
+           endif
+           ! update the administration
+           if (success) then
+               if (qid == 'sea_ice_area_fraction') ja_ice_area_fraction_read = 1
+               if (qid == 'sea_ice_thickness') ja_ice_thickness_read = 1
+           endif
 
             else if (qid == 'cloudiness') then
 
@@ -1974,6 +2030,14 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   call qnerror('Reading *.ext forcings file '''//trim(md_extfile)//''', ', 'QUANTITY "'''//trim(qid)//'''" found but "Wavemodelnr" is not 7', trim(qid))
                   success = .false.
                endif
+           else if (trim(qid) == "totalwaveenergydissipation") then
+               if (jawave == 7 .and. waveforcing == 2) then
+                  success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
+               else
+                  call mess(LEVEL_WARN, 'Reading *.ext forcings file '''//trim(md_extfile)//''', QUANTITY "'''//trim(qid)//'''" found but "Wavemodelnr" is not 7')
+                  call qnerror('Reading *.ext forcings file '''//trim(md_extfile)//''', ', 'QUANTITY "'''//trim(qid)//'''" found but "Wavemodelnr" is not 7', trim(qid))
+                  success = .false.
+               endif    
            else
               call mess(LEVEL_WARN, 'Reading *.ext forcings file '''//trim(md_extfile)//''', getting unknown QUANTITY '//trim(qid) )
               call qnerror('Reading *.ext forcings file '''//trim(md_extfile)//''', ', 'getting unknown QUANTITY ', trim(qid) )
@@ -1988,6 +2052,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                   ! We do a direct goto 888 end, so qnerror for GUI is allowed here.
                   call qnerror('flow_initexternalforcings: Error while initializing quantity: ', qid, '. Check preceding log lines for details.')
                   iresult = DFM_EXTFORCERROR
+                  call timstop(handle_extra(50)) ! extforcefile old
                   goto 888
             endif
 
@@ -2050,7 +2115,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for gates again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'gateloweredgelevel') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                ngatesg = ngatesg + 1
                ! Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1
@@ -2105,7 +2170,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cdams again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'damlevel') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                ncdamsg = ncdamsg + 1
                ! Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1
@@ -2130,7 +2195,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cdams again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid(1:7) == 'valve1D') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                nvalv = nvalv + 1
 
                L = index(filename,'.', back=.true.) - 1
@@ -2165,7 +2230,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cdams again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid(1:16) == 'lateraldischarge') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                numlatsg = numlatsg + 1
 
                L = index(filename,'.', back=.true.) - 1
@@ -2235,7 +2300,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for cgens again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'generalstructure') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                ncgensg = ncgensg + 1
                ! Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1
@@ -2283,7 +2348,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          if (allocated (pumponoff)) deallocate( pumponoff)
          allocate ( xpump(npumpsg), ypump(npumpsg), qpump(npumpsg), xy2pump(2,npumpsg), kpump(3,npump), kdp(npumpsg) , stat=ierr     )
          call aerr('xpump(npumpsg), ypump(npumpsg), qpump(npumpsg), xy2pump(2,npumpsg), kpump(3,npump), kdp(npumpsg)',ierr, npump*10 )
-         kpump = 0d0; qpump = 0d0; kdp = 1
+         kpump = 0; qpump = 0d0; kdp = 1
 
          if ( allocated( pump_ids ) ) deallocate( pump_ids )
          allocate( pump_ids(npumpsg) ) ! TODO: names are not stored here yet (they are in init_structure_control, but not for old ext file)
@@ -2317,7 +2382,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja .eq. 1)                             ! for pumps again postponed read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. ( qid == 'pump1D' .or. qid == 'pump') ) then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                qid = 'pump'
                npumpsg = npumpsg + 1
                success = ec_addtimespacerelation(qid, xpump, ypump, kdp, kx, filename, filetype, method, operand, xy2pump, targetIndex=npumpsg)
@@ -2339,7 +2404,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
          do while (ja == 1)                                 ! for sorsin again read *.ext file
             call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja,varname)
             if (ja == 1 .and. qid == 'discharge_salinity_temperature_sorsin') then
-               call resolvePath(filename, md_extfile_dir, filename)
+               call resolvePath(filename, md_extfile_dir)
                numsrc = numsrc + 1
                ! 2. Prepare time series relation, if the .pli file has an associated .tim file.
                L = index(filename,'.', back=.true.) - 1
@@ -2451,12 +2516,14 @@ integer function flow_initexternalforcings() result(iresult)              ! This
       endif
    endif
 
-   if (ja_varying_airdensity == 1) then
-      if (japatm == 0 .or. jatair == 0 .or. jarhum ==0) then
-         call mess(LEVEL_ERROR, 'Quantities airpressure and airtemperature and dewpoint in ext-file expected in combination keyword computedAirdensity in MDU ')
+   if (ja_computed_airdensity == 1) then
+      if (.not. (patm_available .and. tair_available .and. dewpoint_available)) then
+         call mess(LEVEL_ERROR, 'Quantities airpressure, airtemperature and dewpoint are expected in ext-file in combination with keyword computedAirdensity in mdu-file.')
       else
          if (ja_airdensity == 1) then
-            call mess(LEVEL_ERROR, 'Quantity airdensity in ext-file is unexpected in combination with keyword computedAirdensity in MDU ')
+            call mess(LEVEL_ERROR, 'Quantity airdensity in ext-file is unexpected in combination with keyword computedAirdensity = 1 in mdu-file.')
+         elseif (jaroro > 1) then
+            call mess(LEVEL_ERROR, 'Keyword RhoairRhowater > 1 is not allowed in combination with keyword computedAirdensity = 1 in mdu-file.')            
          else
             allocate ( airdensity(ndx) , stat=ierr)
             call aerr('airdensity(ndx)', ierr, ndx)
@@ -2670,10 +2737,10 @@ integer function flow_initexternalforcings() result(iresult)              ! This
       if (nstor > 0) then
          stors => network%stors%stor
          do i = 1, nstor
-            k1 = stors(i)%gridPoint
+            k1 = stors(i)%grid_point
             if (k1 > 0) then
                ! Add storage area to BARE by using a water depth of 1000 m
-               bare(k1)   = bare(k1)   + getSurface(stors(i), bl(k1) + 1d3) 
+               bare(k1)   = bare(k1)   + get_surface(stors(i), bl(k1) + 1d3) 
             endif
          enddo
       endif
@@ -2741,6 +2808,8 @@ integer function flow_initexternalforcings() result(iresult)              ! This
 
    ! Copy NUMCONST to NUMCONST_MDU, before the user (optionally) adds tracers interactively
    NUMCONST_MDU = NUMCONST
+   
+   call alloc_lateraldata(numconst)
 
 end function flow_initexternalforcings
 

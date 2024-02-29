@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -45,9 +45,8 @@ implicit none
    integer                                       :: i
 
    if (timprev < 0d0) then
-      call realloc (qsrcavg,     numsrc, keepExisting = .false., fill=0d0)
-      call realloc (vsrccum,     numsrc, keepExisting = .false., fill=0d0)
-      call realloc (vsrccum_pre, numsrc, keepExisting = .false., fill=0d0)
+      ! This realloc should not be needed
+      call reallocsrc(numsrc)
    else
       timstep = tim1 - timprev
       ! cumulative volume from Tstart

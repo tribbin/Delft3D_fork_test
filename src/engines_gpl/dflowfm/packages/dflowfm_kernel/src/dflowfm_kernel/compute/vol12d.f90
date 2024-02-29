@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -76,10 +76,10 @@
    if (japerim == 0 .and. nstor > 0 .and. .not. useVolumeTables) then
       stors => network%stors%stor
       do i = 1, nstor
-         k1 = stors(i)%gridPoint
+         k1 = stors(i)%grid_point
          if (k1 > 0) then
-            vol1(k1) = vol1(k1) + getVolume(stors(i), s1(k1))
-            a1(k1)   = a1(k1)   + getSurface(stors(i), s1(k1))
+            vol1(k1) = vol1(k1) + get_volume(stors(i), s1(k1))
+            a1(k1)   = a1(k1)   + get_surface(stors(i), s1(k1))
          end if
       enddo
    endif

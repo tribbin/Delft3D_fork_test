@@ -3,7 +3,7 @@ function fig=qp_interface(showUI)
 
 %----- LGPL --------------------------------------------------------------------
 %                                                                               
-%   Copyright (C) 2011-2023 Stichting Deltares.                                     
+%   Copyright (C) 2011-2024 Stichting Deltares.                                     
 %                                                                               
 %   This library is free software; you can redistribute it and/or                
 %   modify it under the terms of the GNU Lesser General Public                   
@@ -93,6 +93,7 @@ m1=qp_uimenu(mfig,'&File', ...
     {'openfile','&Open File...',1,1,0
     'openurl','&Open URL...',1,1,0
     'difffiles','&Diff Files...',1,1,0
+    'analytical','&Analytical Solution...',1,1,0
     'fileinfo','File &Info',1,0,0
     'closefile','&Close File',1,0,0
     'closeallfiles','Close &All Files',1,0,0

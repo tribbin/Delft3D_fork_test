@@ -157,7 +157,7 @@ rem =============================================================
     set fullPath=%~1
     set prefix=%~2
     set dest=%~3
-    
+
     rem Extract the filename and the path
     for %%F in ("%fullPath%") do (
         set "filePath=%%~dpF"
@@ -429,11 +429,11 @@ rem =============================================================
     set destination_csv=%~2
     set destination_sub="!destination!\subFiles"
 
-    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\bloom.spe"                                             !destination!
-    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\proc_def.dat"                                          !destination!
-    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\proc_def.def"                                          !destination!
-    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\csvFiles\*"                                            !destination_csv!
-    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\subFiles\*"                                            !destination_sub!
+    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\process_lib\bloom.spe"                                   !destination!
+    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\process_lib\proc_def.dat"                                !destination!
+    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\process_lib\proc_def.def"                                !destination!
+    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\process_lib\csvFiles\*"                                  !destination_csv!
+    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\process_lib\subFiles\*"                                  !destination_sub!
 
 goto :endproc
 
@@ -503,7 +503,7 @@ rem =============================================================
 
     rem copy intel dlls
     call :copyCompilerRedist noPetsc
-    
+
 
 goto :endproc
 
@@ -1095,7 +1095,7 @@ rem ===================================
 
     rem copy binaries and dll
     call :copyFile "!build_dir!\waq_plugin_wasteload\!configuration!\waq_plugin_wasteload.*"                               !dest_bin!
-    
+
     rem profiling information
     call :copyFileWithPrefix "!build_dir!\waq_plugin_wasteload\PGOPTI.*" waq_plugin_wasteload      !dest_bin!
 goto :endproc
@@ -1133,9 +1133,9 @@ rem ==========================
         rem copy waq process files
         call :copyWaqProcessFiles !dest_default! !dest_csvFiles!
         call :copyWaqProcessFiles !dest_default_backup! !dest_csvFiles_backup!
-        
+
         rem profiling information
-        call :copyFileWithPrefix "!build_dir!\delwaq_lib\PGOPTI.*" delwaq_lib      !dest_bin!    
+        call :copyFileWithPrefix "!build_dir!\delwaq_lib\PGOPTI.*" delwaq_lib      !dest_bin!
     )
 goto :endproc
 
@@ -1159,11 +1159,11 @@ rem ==========================
     call :copyFile "!build_dir!\waq_plugin_wasteload\!configuration!\waq_plugin_wasteload.*"      !dest_bin!
 
     if "%configuration%" == "Release" (
-        call :copyFile "!checkout_src_root!\engines_gpl\waq\scripts\run_delwaq.bat"               !dest_scripts!
+        call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\scripts\run_delwaq.bat"     !dest_scripts!
     )
-    
+
     rem profiling information
-    call :copyFileWithPrefix "!build_dir!\delwaq1\PGOPTI.*" delwaq1      !dest_bin!    
+    call :copyFileWithPrefix "!build_dir!\delwaq1\PGOPTI.*" delwaq1      !dest_bin!
 
 goto :endproc
 
@@ -1187,11 +1187,11 @@ rem ==========================
     call :copyFile "!build_dir!\waq_plugin_wasteload\!configuration!\waq_plugin_wasteload.*"        !dest_bin!
 
     if "%configuration%" == "Release" (
-        call :copyFile "!checkout_src_root!\engines_gpl\waq\scripts\run_delwaq.bat"                 !dest_scripts!
+        call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\scripts\run_delwaq.bat"       !dest_scripts!
     )
-    
+
     rem profiling information
-    call :copyFileWithPrefix "!build_dir!\delwaq2\PGOPTI.*" delwaq2      !dest_bin!    
+    call :copyFileWithPrefix "!build_dir!\delwaq2\PGOPTI.*" delwaq2      !dest_bin!
 goto :endproc
 
 
@@ -1212,11 +1212,11 @@ rem ==========================
     call :copyFile "!build_dir!\waqpb_export\!configuration!\waqpb_export.*"                        !dest_bin!
 
     rem copy run scripts
-    call :copyFile "!checkout_src_root!\tools_gpl\waqpb\scripts\run_waqpb_export.bat"               !dest_scripts!
-    call :copyFile "!checkout_src_root!\engines_gpl\waq\scripts\export_procdef_csvfiles.bat"        !dest_scripts!
+    call :copyFile "!checkout_src_root!\tools_gpl\waq_tools\waqpb\resources\scripts\run_waqpb_export.bat"               !dest_scripts!
+    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\scripts\export_procdef_csvfiles.bat"        !dest_scripts!
 
     rem profiling information
-    call :copyFileWithPrefix "!build_dir!\waqpb_export\PGOPTI.*" waqpb_export      !dest_bin!    
+    call :copyFileWithPrefix "!build_dir!\waqpb_export\PGOPTI.*" waqpb_export      !dest_bin!
 goto :endproc
 
 
@@ -1237,11 +1237,11 @@ rem ==========================
     call :copyFile "!build_dir!\waqpb_import\!configuration!\waqpb_import.*"              !dest_bin!
 
     rem copy run scripts
-    call :copyFile "!checkout_src_root!\tools_gpl\waqpb\scripts\run_waqpb_import.bat"        !dest_scripts!
-    call :copyFile "!checkout_src_root!\engines_gpl\waq\scripts\import_procesasc_changes.bat"            !dest_scripts!
+    call :copyFile "!checkout_src_root!\tools_gpl\waq_tools\waqpb\resources\scripts\run_waqpb_import.bat"        !dest_scripts!
+    call :copyFile "!checkout_src_root!\engines_gpl\waq\resources\scripts\import_procesasc_changes.bat"            !dest_scripts!
 
     rem profiling information
-    call :copyFileWithPrefix "!build_dir!\waqpb_import\PGOPTI.*" waqpb_import      !dest_bin!  
+    call :copyFileWithPrefix "!build_dir!\waqpb_import\PGOPTI.*" waqpb_import      !dest_bin!
 goto :endproc
 
 
@@ -1305,11 +1305,11 @@ rem ==========================
         call :copyDwaqDependentRuntimeLibraries                                                 !dest_share!
         call :copyFile "!build_dir!\delpar\!configuration!\delpar.exe"                          !dest_bin!
 
-        call :copyFile "!checkout_src_root!\engines_gpl\part\scripts\run_dpart.bat"             !dest_scripts!
+        call :copyFile "!checkout_src_root!\engines_gpl\part\resources\scripts\run_dpart.bat"    !dest_scripts!
     )
-    
+
     rem profiling information
-    call :copyFileWithPrefix "!build_dir!\delpar\PGOPTI.*" delpar      !dest_bin! 
+    call :copyFileWithPrefix "!build_dir!\delpar\PGOPTI.*" delpar      !dest_bin!
 
 goto :endproc
 
@@ -1331,7 +1331,7 @@ rem ==========================
     call :copyFile "!build_dir!\waqmerge\!configuration!\waqmerge.exe"                          !dest_bin!
 
     if "%configuration%" == "Release" (
-        call :copyFile "!checkout_src_root!\tools_gpl\waqmerge\scripts\run_waqmerge.bat"        !dest_scripts!
+        call :copyFile "!checkout_src_root!\tools_gpl\waq_tools\waqmerge\resources\scripts\run_waqmerge.bat"        !dest_scripts!
     )
 goto :endproc
 
@@ -1353,7 +1353,7 @@ rem ==========================
     call :copyFile "!build_dir!\ddcouple\!configuration!\ddcouple.exe"                            !dest_bin!
 
     if "%configuration%" == "Release" (
-        call :copyFile "!checkout_src_root!\tools_gpl\ddcouple\scripts\run_ddcouple.bat"          !dest_scripts!
+        call :copyFile "!checkout_src_root!\tools_gpl\waq_tools\ddcouple\resources\scripts\run_ddcouple.bat"          !dest_scripts!
     )
 goto :endproc
 
@@ -1375,8 +1375,8 @@ rem ==========================
     call :copyFile "!build_dir!\agrhyd\!configuration!\agrhyd.exe"                                !dest_bin!
 
     if "%configuration%" == "Release" (
-        call :copyFile "!checkout_src_root!\tools_gpl\agrhyd\default\agrhyd.ini"                  !dest_default!
-        call :copyFile "!checkout_src_root!\tools_gpl\agrhyd\scripts\run_agrhyd.bat"              !dest_scripts!
+        call :copyFile "!checkout_src_root!\tools_gpl\waq_tools\agrhyd\resources\default\agrhyd.ini"                  !dest_default!
+        call :copyFile "!checkout_src_root!\tools_gpl\waq_tools\agrhyd\resources\scripts\run_agrhyd.bat"              !dest_scripts!
     )
 
 goto :endproc
@@ -1399,7 +1399,7 @@ rem ==========================
     call :copyFile "!build_dir!\maptonetcdf\!configuration!\maptonetcdf.exe"                      !dest_bin!
 
     if "%configuration%" == "Release" (
-        call :copyFile "!checkout_src_root!\tools_gpl\maptonetcdf\scripts\run_maptonetcdf.bat"    !dest_scripts!
+        call :copyFile "!checkout_src_root!\tools_gpl\waq_tools\maptonetcdf\resources\scripts\run_maptonetcdf.bat"    !dest_scripts!
     )
 
 goto :endproc
@@ -2205,7 +2205,7 @@ rem ===========================
 
     call :makeDir !dest_bin!
 
-    call :copyFile "!build_dir!\gridgeom\!configuration!\gridgeom.dll"                                           !dest_bin!
+    xcopy "!build_dir!\gridgeom_dll\!configuration!\gridgeom_dll.dll" "!dest_bin!\gridgeom.dll"* /Y
 
     )
 
@@ -2216,8 +2216,7 @@ rem ===========================
     set dest_share="!install_dir!\x64\Release\share\bin"
 
     call :makeDir !dest_share!
-    call :copyFile "!build_dir!\gridgeom\!configuration!\gridgeom.dll"                                           !dest_share!
-
+    xcopy "!build_dir!\gridgeom_dll\!configuration!\gridgeom_dll.dll" "!dest_share!\gridgeom.dll"* /Y
     )
 
 goto :endproc
@@ -2253,6 +2252,42 @@ rem ==================================
 
     call :makeAllDirs
     call :copyFile "!build_dir!\test_dflowfm_kernel\!configuration!\dflowfm_kernel_test.*"                                !dest_bin!
+
+    )
+
+goto :endproc
+
+
+
+rem ==================================
+rem === POST_BUILD_TEST_IO_NETCDF
+rem ==================================
+:test_io_netcdf
+    echo "postbuild test_io_netcdf . . ."
+
+    if "%configuration%" == "Debug" (
+
+    echo "Debug postbuild"
+    set dest_bin="!install_dir!\x64\Debug"
+
+    call :makeDir !dest_bin!
+
+    call :copyFile "!build_dir!\test_io_netcdf\!configuration!\test_io_netcdf.*"                              !dest_bin!
+
+    )
+
+    if "%configuration%" == "Release" (
+
+    echo "Release postbuild"
+
+    set dest_bin="!install_dir!\x64\Release\tests\bin"
+    set dest_default="!install_dir!\x64\Release\tests\default"
+    set dest_scripts="!install_dir!\x64\Release\tests\scripts"
+    set dest_plugins="!install_dir!\x64\Release\plugins\bin"
+    set dest_share="!install_dir!\x64\Release\share\bin"
+
+    call :makeAllDirs
+    call :copyFile "!build_dir!\test_io_netcdf\!configuration!\test_io_netcdf.*"                                !dest_bin!
 
     )
 

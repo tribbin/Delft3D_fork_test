@@ -132,6 +132,8 @@ if (UNIX)
                             flow1d_core
                             flow1d_io
                             gridgeom
+                            ice_data
+                            ice_io
                             io_netcdf
                             io_netcdf_data
                             kdtree_wrapper
@@ -152,6 +154,7 @@ if (UNIX)
                             trachytopes_io
                             trachytopes_kernel
                             triangle_c
+                            waq_definition
                             wq_processes
                             waq_process
                             waq_hyd_data
@@ -176,6 +179,8 @@ set(oss_dependencies    deltares_common
                         flow1d_core
                         flow1d_io
                         gridgeom
+                        ice_data
+                        ice_io
                         io_netcdf
                         io_netcdf_data
                         kdtree_wrapper
@@ -197,6 +202,7 @@ set(oss_dependencies    deltares_common
                         trachytopes_io
                         trachytopes_kernel
                         triangle_c
+                        waq_definition
                         waq_process
                         waq_hyd_data
                         waq_utils_c

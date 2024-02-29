@@ -1,4 +1,4 @@
-!!  Copyright (C)  Stichting Deltares, 2012-2023.
+!!  Copyright (C)  Stichting Deltares, 2012-2024.
 !!
 !!  This program is free software: you can redistribute it and/or modify
 !!  it under the terms of the GNU General Public License version 3,
@@ -23,7 +23,6 @@
 
 program test_deltares_common
     use ftnunit
-    use test_sorting_algorithms
     use test_combinepaths
     use test_precision_basics
     use test_hash_search
@@ -44,7 +43,6 @@ program test_deltares_common
     !
     ! Tests for the various modules and standalone routines
     !
-    call tests_sorting
     call tests_combinepaths
     call tests_precision_basics
     call tests_hash_search

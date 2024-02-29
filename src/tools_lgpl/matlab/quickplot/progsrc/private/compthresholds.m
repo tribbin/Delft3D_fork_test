@@ -3,7 +3,7 @@ function Thresholds=compthresholds(Ops,lm,LocStartClass)
 
 %----- LGPL --------------------------------------------------------------------
 %                                                                               
-%   Copyright (C) 2011-2023 Stichting Deltares.                                     
+%   Copyright (C) 2011-2024 Stichting Deltares.                                     
 %                                                                               
 %   This library is free software; you can redistribute it and/or                
 %   modify it under the terms of the GNU Lesser General Public                   
@@ -45,7 +45,13 @@ end
 %
 if isstruct(Thresholds)
     step = Thresholds.step;
-    Thresholds=step*(floor(lm(1)/step):ceil(lm(2)/step));
+    Thresholds = step*(floor(lm(1)/step):ceil(lm(2)/step));
+    if length(Thresholds)>1 && Thresholds(1) < lm(1)
+        Thresholds(1) = -inf;
+    end
+    if length(Thresholds)>1 && Thresholds(end) > lm(2)
+        Thresholds(end) = [];
+    end
 elseif isequal(size(Thresholds),[1 1]) && ...
         isequal(Thresholds,round(Thresholds)) && ...
         Thresholds>0

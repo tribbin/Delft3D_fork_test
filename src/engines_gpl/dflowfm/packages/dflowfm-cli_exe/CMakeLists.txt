@@ -76,6 +76,7 @@ if(UNIX)
                             trachytopes_io
                             trachytopes_kernel
                             triangle_c
+                            waq_definition
                             wq_processes
                             waq_process
                             waq_hyd_data
@@ -121,6 +122,7 @@ if(WIN32)
                             trachytopes_io
                             trachytopes_kernel
                             triangle_c
+                            waq_definition
                             wq_processes
                             waq_process
                             waq_hyd_data
@@ -246,6 +248,7 @@ if (UNIX)
     install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/run_dfmoutput.sh         DESTINATION bin)
     install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/run_dfm_volume_tool.sh   DESTINATION bin)
     install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/parallel/generate_parallel_mdu.sh  DESTINATION bin)
+    install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/submit_dflowfm_h7.sh     DESTINATION bin)
 endif(UNIX)
 
 if (WIN32)

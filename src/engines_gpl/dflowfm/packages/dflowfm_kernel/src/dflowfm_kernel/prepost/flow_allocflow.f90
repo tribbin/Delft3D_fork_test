@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -601,10 +601,24 @@
 
  if (lnxi > 0 .and. kmx == 0) then
     call realloc(uc1D, ndx, keepExisting = .false., fill = 0d0, stat = ierr)
-    call aerr('uc1D(ndx)', ierr, ndx)
-    if (japure1D > 0) then 
-       call realloc(u1Du, lnx, keepExisting = .false., fill = 0d0, stat = ierr)
-       call aerr('u1Du(lnx)', ierr, lnx)
+    call aerr('uc1D(ndx)', ierr, ndx)    
+    call realloc(u1Du, lnx, keepExisting = .false., fill = 0d0, stat = ierr)
+    call aerr('u1Du(lnx)', ierr, lnx)
+    if (japure1D >= 3) then 
+       call realloc(alpha_mom_1D, ndx, keepExisting = .false., fill = 0d0, stat = ierr)
+       call aerr('alpha_mom_1D', ierr, ndx)
+       call realloc(alpha_ene_1D, ndx, keepExisting = .false., fill = 0d0, stat = ierr)
+       call aerr('alpha_ene_1D', ierr, ndx)
+       call realloc(q1D , (/ 2, lnx  /), keepExisting = .false., fill = 0d0, stat = ierr)
+       call aerr('q1D(2,lnx)', ierr, lnx)
+       call realloc(au1D , (/ 2, lnx  /), keepExisting = .false., fill = 0d0, stat = ierr)
+       call aerr('au1D(2,lnx)', ierr, lnx)
+       call realloc(wu1D , (/ 2, lnx  /), keepExisting = .false., fill = 0d0, stat = ierr)
+       call aerr('wu1D(2,lnx)', ierr, lnx)
+       call realloc(sar1D , (/ 2, lnx  /), keepExisting = .false., fill = 0d0, stat = ierr)
+       call aerr('sar1D(2,lnx)', ierr, lnx)
+       call realloc(volu1D , lnx, keepExisting = .false., fill = 0d0, stat = ierr)
+       call aerr('volu1D(lnx)', ierr, lnx)
     endif
  endif
 

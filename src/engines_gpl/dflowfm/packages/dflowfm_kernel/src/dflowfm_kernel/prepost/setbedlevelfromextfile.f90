@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -44,6 +44,7 @@ subroutine setbedlevelfromextfile()    ! setbedlevels()  ! check presence of old
  use unstruc_inifields, only: readIniFieldProvider, checkIniFieldFileVersion
  use dfm_error
  use unstruc_netcdf
+ use m_lateral, only : ILATTP_1D, ILATTP_2D, ILATTP_ALL
  
  implicit none
 
@@ -179,7 +180,7 @@ bft:do ibathyfiletype=1,2
 
        ! Initialize bedlevel based on the read provider info
        if (ja == 1) then
-          call resolvePath(filename, basedir, filename)
+          call resolvePath(filename, basedir)
           if (index(qid,'bedlevel') > 0 .and. ibathyfiletype == 1 .and. len_trim(md_inifieldfile) > 0) then
              ! Don't support bedlevel in *.ext file when there is ALSO a *.ini file.
              call mess(LEVEL_WARN, 'Bed level info should be defined in file '''//trim(md_inifieldfile)//'''. Quantity '//trim(qid)//' ignored in external forcing file '''//trim(md_extfile)//'''.')

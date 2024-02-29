@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -32,7 +32,7 @@
 
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2023.
+!  Copyright (C)  Stichting Deltares, 2017-2024.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -255,7 +255,7 @@ subroutine findexternalboundarypoints()             ! find external boundary poi
  do while (ja_ext_force .eq. 1)                      ! read *.ext file
 
     call readprovider(mext,qid,filename,filetype,method,operand,transformcoef,ja_ext_force,varname)
-    call resolvePath(filename, md_extfile_dir, filename)
+    call resolvePath(filename, md_extfile_dir)
 
     if (num_bc_ini_blocks > 0 .and. qid(len_trim(qid)-2:len_trim(qid)) == 'bnd') then
        write(msgbuf, '(a)') 'Boundaries in BOTH external forcing and bound.ext.force file is not allowed'
@@ -388,7 +388,7 @@ subroutine readlocationfilesfromboundaryblocks(filename, nx, kce, num_bc_ini_blo
        endif
 
        if (property_ok)  then
-          call resolvePath(locationfile, basedir, locationfile)
+          call resolvePath(locationfile, basedir)
        else
           call qnerror( 'Expected property' , 'locationFile', ' for boundary definition' )
        end if
@@ -397,7 +397,7 @@ subroutine readlocationfilesfromboundaryblocks(filename, nx, kce, num_bc_ini_blo
 
        call prop_get_string(node_ptr, '', 'forcingFile ', forcingfile , property_ok)
        if (property_ok)  then
-          call resolvePath(forcingfile, basedir, forcingfile)
+          call resolvePath(forcingfile, basedir)
        else
           call qnerror( 'Expected property' , 'forcingFile', ' for boundary definition' )
        end if
@@ -897,7 +897,7 @@ logical function initboundaryblocksforcings(filename)
  use m_flowexternalforcings
  use m_flowgeom
  use timespace_data, only: weightfactors, poly_tim, uniform, spaceandtime, getmeteoerror
- use m_wind ! for laterals
+ use m_lateral, only : balat, qplat, lat_ids, n1latsg, n2latsg, ILATTP_1D, ILATTP_2D, ILATTP_ALL, kclat, numlatsg, nnlat, nlatnd
  use m_alloc
  use m_meteo, only: ec_addtimespacerelation
  use timespace
@@ -908,6 +908,7 @@ logical function initboundaryblocksforcings(filename)
  use m_missing
  use m_ec_parameters, only: provFile_uniform
  use m_partitioninfo, only: jampi, reduce_sum, is_ghost_node
+ use m_lateral, only : apply_transport
 
  implicit none
 
@@ -1044,7 +1045,7 @@ logical function initboundaryblocksforcings(filename)
        endif
 
        if (retVal) then
-          call resolvePath(locationfile, basedir, locationfile)
+          call resolvePath(locationfile, basedir)
        else
           initboundaryblocksforcings = .false.
           write(msgbuf, '(5a)') 'Incomplete block in file ''', trim(filename), ''': [', trim(groupname), ']. Field ''locationfile'' is missing.'
@@ -1054,7 +1055,7 @@ logical function initboundaryblocksforcings(filename)
 
        call prop_get_string(node_ptr, '', 'forcingFile ', forcingfile , retVal)
        if (retVal) then
-          call resolvePath(forcingfile, basedir, forcingfile)
+          call resolvePath(forcingfile, basedir)
        else
           initboundaryblocksforcings = .false.
           write(msgbuf, '(5a)') 'Incomplete block in file ''', trim(filename), ''': [', trim(groupname), ']. Field ''forcingFile'' is missing.'
@@ -1081,10 +1082,10 @@ logical function initboundaryblocksforcings(filename)
                 quantity = property_value ! We already knew this
              else if (property_name == 'locationfile') then
                 locationfile = property_value ! We already knew this
-                call resolvePath(locationfile, basedir, locationfile)
+                call resolvePath(locationfile, basedir)
              else if (property_name == 'forcingfile') then
                 forcingfile = property_value
-                call resolvePath(forcingfile, basedir, forcingfile)
+                call resolvePath(forcingfile, basedir)
                 if ( oper /= 'O' .and. oper /= '+' ) then
 	               oper = 'O'
                    if (quantity_pli_combination_is_registered(quantity, locationfile)) then
@@ -1188,6 +1189,9 @@ logical function initboundaryblocksforcings(filename)
        case default
           ilattype = ILATTP_ALL
        end select
+       
+       call reserve_sufficient_space(apply_transport, numlatsg+1, 0)
+       call prop_get(node_ptr, '', 'applyTransport', apply_transport(numlatsg+1), success)
 
        ! [lateral]
        ! fileVersion >= 2: nodeId                  => location_specifier = LOCTP_NODEID
@@ -1238,7 +1242,7 @@ logical function initboundaryblocksforcings(filename)
              call warn_flush()
              cycle
           else
-             call resolvePath(locationfile, basedir, locationfile)
+             call resolvePath(locationfile, basedir)
           end if
        end if
        if (loc_spec_type == imiss) then
@@ -1273,7 +1277,7 @@ logical function initboundaryblocksforcings(filename)
           call prop_get(node_ptr, '', 'flow', rec, success)
        end if
        if (len_trim(rec) > 0) then
-          call resolvePath(rec, basedir, rec)
+          call resolvePath(rec, basedir)
        else
           write(msgbuf, '(a,a,a)') 'Required field ''discharge'' missing in lateral ''', trim(locid), '''.'
           call warn_flush()
@@ -1310,7 +1314,7 @@ logical function initboundaryblocksforcings(filename)
           call warn_flush()
           cycle
        else
-          call resolvePath(forcingfile, basedir, forcingfile)
+          call resolvePath(forcingfile, basedir)
        end if
        oper = 'O'
        call prop_get_string(node_ptr, '', 'operand', oper , retVal)
@@ -1457,7 +1461,7 @@ end function initboundaryblocksforcings
 
 !> Initializes memory for laterals on flow nodes.
 subroutine ini_alloc_laterals()
-   use m_wind
+   use m_lateral, only : qqlat, kclat, nnlat
    use m_flowgeom, only: ndx2d, ndxi, ndx
    use m_alloc
    integer :: ierr
@@ -1482,7 +1486,7 @@ end subroutine ini_alloc_laterals
 !> Prepare the 'kclat' mask array for a specific type of lateral.
 subroutine prepare_lateral_mask(kc, ilattype)
    use m_flowgeom
-   use m_wind
+   use m_lateral, only : ILATTP_1D, ILATTP_2D, ILATTP_ALL
    implicit none
 
    integer         , intent(inout) :: kc(:) !< (ndx) The mask array that is to be filled.

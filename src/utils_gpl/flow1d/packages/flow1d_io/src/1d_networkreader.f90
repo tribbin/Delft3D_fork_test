@@ -1,7 +1,7 @@
 module m_1d_networkreader
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This program is free software: you can redistribute it and/or modify              
 !  it under the terms of the GNU Affero General Public License as               
@@ -55,7 +55,6 @@ module m_1d_networkreader
    use gridgeom
    use meshdata
    use m_hash_search
-   use odugrid
    use precision_basics
    use m_alloc
 

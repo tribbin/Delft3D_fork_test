@@ -78,7 +78,6 @@ class TestSetRunner(ABC):
         self.__download_dependencies()
         log_sub_header("Running tests", self.__logger)
 
-        self.__settings.configs = self.__settings.configs
         results = (
             self.run_tests_in_parallel()
             if self.__settings.parallel
@@ -124,21 +123,30 @@ class TestSetRunner(ABC):
         """
         n_testcases = len(self.__settings.configs)
 
-        max_processes = min(len(self.__settings.configs), multiprocessing.cpu_count())
+        config_process_count = sum(config.process_count for config in self.__settings.configs)
+        max_processes = min(config_process_count, multiprocessing.cpu_count())
         self.__logger.info(f"Creating {max_processes} processes to run test cases on.")
+        process_manager = multiprocessing.Manager()
 
         with multiprocessing.Pool(processes=max_processes) as pool:
             self.finished_tests = 0
 
             result_futures: List[AsyncResult] = []
+            in_use = process_manager.Value('i', 0)
+            idle_process = process_manager.Condition()
 
             for i_testcase, config in enumerate(self.__settings.configs):
                 run_data = RunData(i_testcase + 1, n_testcases)
                 logger = self.__logger.create_test_case_logger(config.name)
 
+                with idle_process:
+                    while in_use.value + config.process_count > max_processes:
+                        idle_process.wait()
+                    in_use.value += config.process_count
+
                 config_result_future = pool.apply_async(
                     self.run_test_case,
-                    [config, run_data, logger],
+                    [config, run_data, logger, in_use, idle_process],
                     callback=self.__log_successful_test,
                     error_callback=self.__log_failed_test,
                 )
@@ -154,13 +162,15 @@ class TestSetRunner(ABC):
         return results
 
     def run_test_case(
-        self, config: TestCaseConfig, run_data: RunData, logger: ITestLogger
+        self, config: TestCaseConfig, run_data: RunData, logger: ITestLogger, in_use=None, idle_process=None
     ) -> TestCaseResult:
         """Runs one test configuration (in a separate process)
 
         Args:
             config (TestCaseConfig): configuration to run
             run_data (RunData): Data related to the test run
+            in_use (Integer): Amount of processes that are currently in use with testcases
+            idle_process (Condition): Sends a notification to evaluate available cores for new testcase
         """
         run_data.start_time = datetime.now()
         curr_process = multiprocessing.current_process()
@@ -233,6 +243,11 @@ class TestSetRunner(ABC):
                 logger.test_Result(TestResultType.Exception, str(exception))
 
         logger.test_finished()
+        if in_use is not None:
+            with idle_process:
+                in_use.value -= config.process_count
+                idle_process.notify_all()
+
         return test_result
 
     @abstractmethod
@@ -507,14 +522,11 @@ class TestSetRunner(ABC):
         """
         logger.info(f"Updating case: {config.name}")
 
-        if len(config.locations) == 0:
-            error_message: str = (
-                f"Could not update case {config.name}," + " no network paths given"
-            )
-            raise TestBenchError(error_message)
+        if not config.locations:
+            raise TestBenchError(f"Could not update case {config.name}, no network paths given")
 
         for location in config.locations:
-            if location.root == "" or location.from_path == "":
+            if not location.root or not location.from_path:
                 error_message: str = (
                     f"Could not update case {config.name}"
                     + f", invalid network input path part (root:{location.root},"
@@ -523,12 +535,7 @@ class TestSetRunner(ABC):
                 raise TestBenchError(error_message)
 
             # Build the path to download from: Root+From+testcasePath:
-            # Root: https://repos.deltares.nl/repos/DSCTestbench/cases
-            # From: trunk/win32_hp
-            # testcasePath: e01_d3dflow\f01_general\c03-f34
-            remote_path = Paths().mergeFullPath(
-                location.root, location.from_path, config.path
-            )
+            remote_path = Paths().mergeFullPath(location.root, location.from_path, config.path)
 
             if Paths().isPath(remote_path):
                 remote_path = os.path.abspath(remote_path)
@@ -538,8 +545,10 @@ class TestSetRunner(ABC):
             # When trying a second time it normally works. Safe side: try 3 times.
             success = False
             attempts = 0
+            
             while attempts < 3 and not success:
                 attempts += 1
+                
                 try:
                     destination_dir = None
                     input_description = ""
@@ -547,8 +556,7 @@ class TestSetRunner(ABC):
                     if location.type == PathType.INPUT:
                         destination_dir = self.__settings.local_paths.cases_path
                         input_description = "input of case"
-
-                    if location.type == PathType.REFERENCE:
+                    elif location.type == PathType.REFERENCE:
                         destination_dir = self.__settings.local_paths.reference_path
                         input_description = "reference result"
 
@@ -562,14 +570,17 @@ class TestSetRunner(ABC):
                                 #config.path,
                             )
                         )
-                        self.__download_file(
-                            location, remote_path, localPath, input_description, logger
-                        )
+
+                        handler_type = ResolveHandler.detect(remote_path, logger, location.credentials)
+
+                        if handler_type == HandlerType.MINIO:
+                            self.__SetupVersionForDownload(config, location)
+
+                        self.__download_file(location, remote_path, localPath, input_description, logger)
 
                         if location.type == PathType.INPUT:
                             config.absolute_test_case_path = localPath
-
-                        if location.type == PathType.REFERENCE:
+                        elif location.type == PathType.REFERENCE:
                             config.absolute_test_case_reference_path = localPath
 
                     success = True
@@ -584,6 +595,10 @@ class TestSetRunner(ABC):
                     else:
                         logger.error(error_message)
                         raise TestBenchError("Unable to download testcase " + str(e))
+
+    def __SetupVersionForDownload(self, config, location):
+        if location.version is None and config.version is not None:
+            location.version = config.version
 
     def __download_file(
         self,
@@ -626,7 +641,7 @@ class TestSetRunner(ABC):
             Paths().mergeFullPath(
                 destination_dir,
                 location.to_path,
-                config.dependency,
+                config.dependency.local_dir,
             )
         )
 
@@ -634,6 +649,6 @@ class TestSetRunner(ABC):
             return
 
         remote_path = Paths().mergeFullPath(
-            location.root, location.from_path, config.dependency
+            location.root, location.from_path, config.dependency.cases_path
         )
         self.__download_file(location, remote_path, localPath, "dependency", logger)

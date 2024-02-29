@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2023.
+!  Copyright (C)  Stichting Deltares, 2017-2024.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -162,7 +162,9 @@
 
  integer                           :: jaCdwusp          !< if 1 spatially varying windstress coefficient
 
- integer                           :: jaWindspeedfac    !< if 1 spatially varying windstress coefficient
+ integer                           :: ja_wind_speed_factor !< if 1 wind speed multiplication factor is used
+ 
+ integer                           :: ja_solar_radiation_factor !< if 1 solar radiation multiplication factor is used
  
  integer                           :: ja_friction_coefficient_time_dependent !< spatially and time dependent friction coefficient
 
@@ -307,11 +309,11 @@
  double precision                  :: sdropstep         !< Amount of water to be added with dropwater (m)
 
 
- double precision                  :: eps4              !< min au in poshchk
- double precision                  :: eps6              !<
- double precision                  :: eps8              !< implicit diffusion
- double precision                  :: eps10             !<
- double precision                  :: eps20             !< faxlac
+ double precision, parameter       :: eps4   = 1d-4     !< min au in poshchk
+ double precision, parameter       :: eps6   = 1d-6     !<
+ double precision, parameter       :: eps8   = 1d-8     !< implicit diffusion
+ double precision, parameter       :: eps10  = 1d-10    !<
+ double precision, parameter       :: eps20  = 1d-20    !< faxlac
  double precision                  :: epshsdif=1d-2     !< hs < epshsdif: no vertical diffusion if hs < epshsdif
  double precision                  :: s01max            !< water level threshold (m) between s0 and s1 in validation routine
  double precision                  :: u01max            !< velocity threshold (m/s) between u0 and u1 in validation routine
@@ -395,9 +397,9 @@ integer                            :: javau3onbnd = 0   !< vert. adv. u1 bnd Upw
 
  integer                           :: jaustarint              !< 1=integral bed layer velocity,  0=velocity at half bed layer
 
- integer                           :: jaPure1D                !< along 1D channels: 0 = vectorial approach, 1 = scalar approach using vol1_f, 2 = scalar approach using vol1
+ integer                           :: jaPure1D                !< along 1D channels: 0 = 2D mom Perot, 1 = 1D mom Perot using vol1_f, 2 = 1D mom Perot using vol1, 3,4,5,6,7 = 1D mom on links (2 + Iadvec1D of SOBEK)
 
- integer                           :: jaJunction1D            !< at 1D junctions: 0 = vectorial approach, 1 = same approach as along the 1D channels
+ integer                           :: jaJunction1D            !< at 1D junctions: 0 = 2D mom Perot, 1 = same as along the 1D channels
 
  double precision                  :: Eddyviscositybedfacmax  !< eddyviscosityatbed = min(eddyviscosityatbed, eddyviscosityatbedfacmax*eddyviscosityatbed+1 )
 
@@ -527,19 +529,21 @@ integer                            :: javau3onbnd = 0   !< vert. adv. u1 bnd Upw
  integer                           :: jamapselfal               !< self attraction and loading potential to map file, 0: no, 1: yes
  integer                           :: jamapIntTidesDiss         !< internal tides dissipation to map file, 0: no, 1: yes
  integer                           :: jamapNudge                !< output nudging to map file, 0: no, 1: yes
+ integer                           :: jamapPure1D_debug         !< additional Pure1D debugging output to map file, 0: no, 1: yes
  integer                           :: jamapwav                  !< output waves to map file, 0: no, 1: yes
- integer                           :: jamapwav_hwav             !< output waves to map file for variable hwav, 0: no, 1: yes
- integer                           :: jamapwav_twav             !< output waves to map file for variable twav, 0: no, 1: yes
+ integer                           :: jamapwav_hwav             !< output waves to map file for variable hwav,   0: no, 1: yes
+ integer                           :: jamapwav_twav             !< output waves to map file for variable twav,   0: no, 1: yes
  integer                           :: jamapwav_phiwav           !< output waves to map file for variable phiwav, 0: no, 1: yes
- integer                           :: jamapwav_sxwav            !< output waves to map file for variable sxwav, 0: no, 1: yes
- integer                           :: jamapwav_sywav            !< output waves to map file for variable sywav, 0: no, 1: yes
+ integer                           :: jamapwav_sxwav            !< output waves to map file for variable sxwav,  0: no, 1: yes
+ integer                           :: jamapwav_sywav            !< output waves to map file for variable sywav,  0: no, 1: yes
  integer                           :: jamapwav_sxbwav           !< output waves to map file for variable sxbwav, 0: no, 1: yes
  integer                           :: jamapwav_sybwav           !< output waves to map file for variable sybwav, 0: no, 1: yes
- integer                           :: jamapwav_mxwav            !< output waves to map file for variable mxwav, 0: no, 1: yes
- integer                           :: jamapwav_mywav            !< output waves to map file for variable mywav, 0: no, 1: yes
- integer                           :: jamapwav_dsurf            !< output waves to map file for variable dsurf, 0: no, 1: yes
- integer                           :: jamapwav_dwcap            !< output waves to map file for variable dwcap, 0: no, 1: yes
- integer                           :: jamapwav_uorb             !< output waves to map file for variable uorb, 0: no, 1: yes
+ integer                           :: jamapwav_mxwav            !< output waves to map file for variable mxwav,  0: no, 1: yes
+ integer                           :: jamapwav_mywav            !< output waves to map file for variable mywav,  0: no, 1: yes
+ integer                           :: jamapwav_dsurf            !< output waves to map file for variable dsurf,  0: no, 1: yes
+ integer                           :: jamapwav_dwcap            !< output waves to map file for variable dwcap,  0: no, 1: yes
+ integer                           :: jamapwav_distot           !< output waves to map file for variable distot, 0: no, 1: yes
+ integer                           :: jamapwav_uorb             !< output waves to map file for variable uorb,   0: no, 1: yes
 
  integer                           :: jamapdtcell               !< output time steps per cell based on CFL
  integer                           :: jamapTimeWetOnGround      !< output to map file the cumulative time when water is above ground level, 0: no, 1: yes
@@ -559,6 +563,7 @@ integer                            :: javau3onbnd = 0   !< vert. adv. u1 bnd Upw
  integer                           :: jaeverydt                 !< Write output to map file every dt, based on start and stop from MapInterval, 0=no (default), 1=yes
  integer                           :: jamapFlowAnalysis         !< Write flow analysis output to map file   
  integer                           :: jamapNearField            !< Nearfield related output
+ integer                           :: jamapice                  !< Ice cover related output
 
 ! read from restart
  integer                           :: jarstignorebl             !< Flag indicating if bed level on restart file should be ignored (0/1, default: 0)
@@ -582,7 +587,9 @@ integer                            :: javau3onbnd = 0   !< vert. adv. u1 bnd Upw
  integer                           :: jashp_genstruc            !< Write a shape file for general structures
  integer                           :: jashp_dambreak            !< Write a shape file for dam breaks
 
+ integer                           :: jambawritetxt             !< Option to write areas mass balance terms to a txt-file
  integer                           :: jambawritecsv             !< Option to write areas mass balance terms to a csv-file
+ integer                           :: jambawritenetcdf          !< Option to write areas mass balance terms to a netCDF-file
 
  integer                           :: jambalumpmba              !< Lump MBA from/to other areas mass balance terms
  integer                           :: jambalumpbnd              !< Lump MBA boundary mass balance terms
@@ -751,7 +758,9 @@ subroutine default_flowparameters()
 
     jaCdwusp = 0
 
-    jawindspeedfac = 0 !< use windspeedfac 1/0
+    ja_wind_speed_factor = 0 !< use wind speed multiplication factor 1/0
+
+    ja_solar_radiation_factor = 0 !< use solar radiation multiplication factor 1/0
 
     ihorvic  = 0      !< 0=no visc, 1=do visc
 
@@ -854,12 +863,6 @@ subroutine default_flowparameters()
 
     zbnd       = 2d0     ! for now only, uniform waterlevel on boundary
 
-    eps4       = 1d-4    ! min au in poshchk
-    eps6       = 1d-6    !
-    eps8       = 1d-8    ! implicit diffusion
-    eps10      = 1d-10   !
-    eps20      = 1d-20   ! facLax
-
     s01max     = 0d0     ! max. water level change: off
     u01max     = 0d0     ! max. velocity change: off
     umagmax    = 0d0     ! max. velocity: off
@@ -905,7 +908,7 @@ subroutine default_flowparameters()
     javatem    = 6       !< vert. adv. tem1 : 0=No, 1=UpwexpL, 2=Centralexpl, 3=UpwimpL, 4=CentraLimpL, 5=switched to 3 for neg stratif.
     javased    = 6       !< vert. adv. suspended sediment concentrations : 0=No, 1=UpwexpL, 2=Centralexpl, 3=UpwimpL, 4=CentraLimpL, 5=switched to 3 for neg stratif., 6=higher-order upwind/explicit
     jahazlayer = 0       !<
-    jaPure1D   = 0       !< 0 = org 1D advec, 1 = pure1D using vol1_f, 2 = pure1D using vol1
+    jaPure1D   = 0       !< 0 = org 1D advec, 1 = 1D mom Perot using vol1_f, 2 = 1D mom Perot using vol1, 3,4,5,6,7 = 1D mom on links (2 + Iadvec1D of SOBEK)
     jaJunction1D = 1     !< 0 = org 1D advec at junctions, 1 = junctions follow jaPure1D approach
     JaZlayercenterbedvel      = 1
     jastructurelayersactive   = 1
@@ -1010,6 +1013,7 @@ subroutine default_flowparameters()
     jamapselfal = 1
     jamapIntTidesDiss = 1
     jamapNudge = 1
+    jamapPure1D_debug = 0
     jamapwav = 1
     jamapdtcell = 0
     jamapTimeWetOnGround = 0
@@ -1021,6 +1025,7 @@ subroutine default_flowparameters()
     jamapS1Gradient = 0
     jamapFlowAnalysis = 0
     jamapNearField = 0
+    jamapice = 0
 
     jarstignorebl = 0
 
@@ -1043,7 +1048,9 @@ subroutine default_flowparameters()
     jashp_dry = 0
     jashp_genstruc = 0
     jashp_dambreak = 0
+    jambawritetxt = 1
     jambawritecsv = 0
+    jambawritenetcdf = 0
 
     jambalumpmba = 0
     jambalumpbnd = 0

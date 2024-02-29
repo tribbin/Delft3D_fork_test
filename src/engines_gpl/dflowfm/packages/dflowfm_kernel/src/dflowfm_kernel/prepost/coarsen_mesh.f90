@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2017-2023.                                
+!  Copyright (C)  Stichting Deltares, 2017-2024.                                
 !                                                                               
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).               
 !                                                                               
@@ -34,7 +34,7 @@
 subroutine coarsen_mesh()
    use m_netw
    use unstruc_colors, only: ncolhl
-   use sorting_algorithms, only: indexx
+   use stdlib_sorting, only: sort_index
    use m_sferic, only: jsferic, jasfer3D, dtol_pole
    use gridoperations
 
@@ -97,7 +97,7 @@ subroutine coarsen_mesh()
       end do
 
    !  determine order: smallest cells first
-      call indexx(nump, areas, perm)
+      call sort_index(areas, perm)
 
    !  set optimal area as the average area
       area_opt = sum(areas) / dble(nump)

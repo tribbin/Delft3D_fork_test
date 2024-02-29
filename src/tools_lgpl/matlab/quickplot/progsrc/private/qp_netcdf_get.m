@@ -9,7 +9,7 @@ function [Data, errmsg] = qp_netcdf_get(FI,var,varargin)
 
 %----- LGPL --------------------------------------------------------------------
 %
-%   Copyright (C) 2011-2023 Stichting Deltares.
+%   Copyright (C) 2011-2024 Stichting Deltares.
 %
 %   This library is free software; you can redistribute it and/or
 %   modify it under the terms of the GNU Lesser General Public
@@ -44,18 +44,16 @@ if isempty(var)
     error(errmsg)
 elseif ischar(var)
     varstr = var;
-    var = strmatch(varstr,{FI.Dataset.Name},'exact')-1;
-    if isempty(var)
+    varid = strmatch(varstr,{FI.Dataset.Name},'exact')-1;
+    if isempty(varid)
         error('Variable ''%s'' not found in file.',varstr)
     end
 elseif isstruct(var)
-    var = var.Varid;
+    varid = var.Varid;
+else
+    varid = var;
 end
-Info = FI.Dataset(var+1);
-varid = Info.Varid;
-if isempty(Info)
-    error('Variable ''%s'' not found in file.',Info.Name)
-end
+Info = FI.Dataset(varid+1);
 %
 RequestDims = {};
 RequestedSubset = {};
@@ -88,14 +86,16 @@ if isempty(RequestDims)
     RequestDims = Info.Dimension;
 end
 if isempty(RequestedSubset)
-    RequestedSubset = cell(1,length(RequestDims));
-    for i = 1:length(RequestDims)
-        idim = strcmp(RequestDims{i},Info.Dimension);
+    RequestedSubset = repmat({':'}, 1, length(RequestDims));
+end
+for i = length(RequestDims):-1:1
+    if isequal(RequestedSubset{i},0) || isequal(RequestedSubset{i},':')
+        idim = strcmp(RequestDims{i}, Info.Dimension);
         RequestedSubset{i} = 1:Info.Size(idim);
     end
 end
 %
-if iscell(Info.Mesh) && strcmp(Info.Mesh{1},'ugrid')
+if isfield(Info,'Mesh') && iscell(Info.Mesh) && strcmp(Info.Mesh{1},'ugrid')
     imesh = Info.Mesh{3};
     imdim = Info.Mesh{4};
     mInfo = FI.Dataset(imesh);
@@ -104,7 +104,8 @@ else
     mdim = '';
 end
 %
-rank=Info.Rank;
+rank = length(Info.Dimension);
+base_rank = rank;
 N=length(RequestDims);
 permuted=zeros(1,N);
 for d=1:N
@@ -146,7 +147,7 @@ for d=1:N
     end
 end
 %
-for d=1:Info.Rank
+for d=1:base_rank
     if all(permuted~=d)
         errmsg=sprintf('Dimension ''%s'' of ''%s'' could not be matched to any of the requested dimensions: ',Info.Dimension{d},Info.Name);
         errmsg=cat(2,errmsg,sprintf('''%s'', ',RequestDims{permuted~=0}));
@@ -155,7 +156,7 @@ for d=1:Info.Rank
     end
 end
 %
-if isempty(Info.Dimid) || nargin==3
+if nargin==3 || base_rank == 0
     Data = nc_vargetr(FI.Filename,FI.Dataset(varid+1).Name);
     if length(FI.Dataset(varid+1).Size)>1 && ~isequal(size(Data),FI.Dataset(varid+1).Size)
         Data = reshape(Data,FI.Dataset(varid+1).Size);
@@ -164,9 +165,9 @@ else
     %
     % Convert data subset in QP dimension order to NetCDF dimension order
     %
-    RS_netcdf=cell(1,Info.Rank);
-    start_coord=zeros(1,Info.Rank);
-    count_coord=zeros(1,Info.Rank);
+    RS_netcdf=cell(1,base_rank);
+    start_coord=zeros(1,base_rank);
+    count_coord=zeros(1,base_rank);
     %fprintf('%s: %d %d %d %d %d\n',FI.Dataset(varid+1).Name,permuted);
     %
     % The following block selection procedure is inefficient if a relatively
@@ -175,7 +176,7 @@ else
     %
     for d=1:N
         p=permuted(d);
-        if p>0 && p<=Info.Rank
+        if p>0 && p<=base_rank
             RS_netcdf(p)=RequestedSubset(d);
             start_coord(p)=min(RS_netcdf{p})-1;
             count_coord(p)=max(RS_netcdf{p})-start_coord(p);
