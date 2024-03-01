@@ -121,13 +121,15 @@ private
       use processes_input, only: num_wq_user_outputs => noout_user
       double precision, pointer, dimension(:), intent(inout) :: source_input   !< Pointer to source input array for water_quality_output_# item, unused
 
-      integer :: ntot, variable_index
+      integer :: ntot, variable_index, num_layers, start_index
       double precision, pointer, dimension(:, :) :: valobs_slice
       ntot = numobs + nummovobs
+      num_layers = max(1, kmx)
 
       do variable_index = 1, num_wq_user_outputs
-         valobs_slice => valobs(:, IPNT_HWQ1 + (variable_index - 1) * kmx : IPNT_HWQ1 + variable_index * kmx - 1)
-         water_quality_output_data(:, variable_index) = reshape(transpose(valobs_slice), [kmx * ntot])
+         start_index = IPNT_HWQ1 + (variable_index - 1) * num_layers
+         valobs_slice => valobs(:, start_index : start_index + num_layers - 1)
+         water_quality_output_data(:, variable_index) = reshape(transpose(valobs_slice), [num_layers * ntot])
       end do
    end subroutine transform_water_quality_inputs
 
@@ -143,17 +145,15 @@ private
       type(t_output_quantity_config_set), intent(inout) :: output_config   !< Output configuration for the HIS file.
       integer, allocatable, dimension(:), intent(  out) :: idx_his_hwq
 
-      integer               :: i, ntot
+      integer               :: i, ntot, num_layers
       character(len=255)    :: name, description
       type(ug_nc_attribute) :: atts(2)
 
-      if (num_wq_user_outputs == 0) then
-         return
-      end if
+      num_layers = max(1, kmx)
 
       if (.not. allocated(water_quality_output_data)) then
          ntot = numobs + nummovobs
-         allocate(water_quality_output_data(kmx * ntot, num_wq_user_outputs))
+         allocate(water_quality_output_data(num_layers * ntot, num_wq_user_outputs))
          allocate(idx_his_hwq(num_wq_user_outputs))
       else
          call err('Internal error, please report: water_quality_output_data was already allocated')
@@ -2394,18 +2394,13 @@ private
          end if
       endif
       ! Water quality variables
-      if(jawaqproc > 0) then
+      if(jawaqproc > 0 .and. num_wq_user_outputs > 0) then
          call add_station_water_quality_configs(out_quan_conf_his, idx_his_hwq)
 
-         ! Only provide function pointer to the first one, so that it transforms all data
-         function_pointer => transform_water_quality_inputs
-         do i = 1, num_wq_user_outputs
-            if (model_is_3D()) then
-               call add_stat_output_items(output_set, output_config%statout(idx_his_hwq(i)), water_quality_output_data(:,i), function_pointer)
-               function_pointer => null()
-            else
-               call add_stat_output_items(output_set, output_config%statout(idx_his_hwq(i)), valobs(:,IPNT_HWQ1 + i - 1))
-            end if
+         ! The first statistical output item is responsible for transforming all water_quality_stat data in valobs
+         call add_stat_output_items(output_set, output_config%statout(idx_his_hwq(1)), water_quality_output_data(:,1), transform_water_quality_inputs)
+         do i = 2, num_wq_user_outputs
+            call add_stat_output_items(output_set, output_config%statout(idx_his_hwq(i)), water_quality_output_data(:,i))
          end do
       end if
 
