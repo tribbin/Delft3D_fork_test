@@ -1,5 +1,5 @@
-subroutine asmita(zb, timhr, npar, par, &
-                & sbot, cesus, t_relax)
+!> This routine implements ASMITA equilibrium relation.
+subroutine asmita(zb, timhr, npar, par, sbot, cesus, t_relax)
 !----- GPL ---------------------------------------------------------------------
 !                                                                               
 !  Copyright (C)  Stichting Deltares, 2011-2023.                                
@@ -26,14 +26,7 @@ subroutine asmita(zb, timhr, npar, par, &
 !  Stichting Deltares. All rights reserved.                                     
 !                                                                               
 !-------------------------------------------------------------------------------
-!  $Id: asmita.f90 68781 2021-04-12 12:30:14Z jagers $
-!  $HeadURL: https://svn.oss.deltares.nl/repos/delft3d/branches/research/Deltares/20210223_Delft3D_ASMITA/src/utils_gpl/morphology/packages/morphology_kernel/src/asmita.f90 $
-!!--description-----------------------------------------------------------------
-!
-! this routine implements ASMITA equilibrium relation.
-!
-!!--pseudo code and references--------------------------------------------------
-! NONE
+
 !!--declarations----------------------------------------------------------------
     use precision
     implicit none

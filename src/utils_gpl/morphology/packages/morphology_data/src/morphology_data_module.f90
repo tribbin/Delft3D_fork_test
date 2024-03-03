@@ -77,7 +77,6 @@ public allocfluffy
 public initmoroutput
 public get_transport_parameters
 public get_one_transport_parameter
-public get_one_transport_parameter_all_nm
 
 ! define a missing value consistent with netCDF _fillvalue
 real(fp), parameter, public :: missing_value = 9.9692099683868690e+36_fp
@@ -2000,56 +1999,13 @@ subroutine get_transport_parameters(trapar, l, nm, timhr, localpar)
     integer                    :: i            !< parameter index
 
     do i = 1, trapar%npar
-       localpar(i) = get_one_transport_parameter(trapar, l, nm, i, timhr)
+       call get_one_transport_parameter(localpar(i:i), trapar, l, i, timhr, nm)
     end do
 end subroutine get_transport_parameters
 
-!> return a value for one transport formula parameter
-function get_one_transport_parameter(trapar, l, nm, i, timhr) result(val)
-    use table_handles, only: gettabledata
-    !
-    type(trapar_type)     , intent(in)  :: trapar       !< transport settings
-    integer               , intent(in)  :: l            !< sediment fraction
-    integer               , intent(in)  :: nm           !< cell index
-    integer               , intent(in)  :: i            !< parameter index
-    real(fp)    , optional, intent(in)  :: timhr        !< time since reference date [h]
-    
-    real(fp)                            :: val          !< the parameter value
-    
-    integer                     :: j           !< sediment parameter source file index
-    real(fp)                    :: par         !< scalar to store the value
-    real(fp)                    :: parvec(1)   !< array to receive the value
-    character(256)              :: message     !< error message
-    type(parfile_type), pointer :: parfile     !< temporary to one trapar%parfile field
-    
-    j = trapar%iparfile(i,l)
-    if (j == 0) then
-        val = trapar%par(i,l)
-        
-    else
-        select case (trapar%parfile(j)%source)
-        case (PARSOURCE_FIELD)
-            val = trapar%parfile(j)%parfld(nm)
-            
-        case (PARSOURCE_TIME)
-            parfile => trapar%parfile(j)
-            if (present(timhr)) then
-                if (timhr > parfile%timhr) then
-                    message = ' '
-                    call gettabledata(parfile%ts ,parfile%itable_ts, parfile%ipar_ts, parfile%npar_ts, parfile%irec_ts, parvec, timhr, parfile%refjulday, message)
-                    if (message /= ' ') return ! TODO
-                    parfile%par = parvec(1)
-                    parfile%timhr = timhr
-                end if
-            end if
-            val = parfile%par
-            
-        end select
-    end if
-end function get_one_transport_parameter
 
 !> return a value for one transport formula parameter
-subroutine get_one_transport_parameter_all_nm(val, trapar, l, i, timhr)
+subroutine get_one_transport_parameter(val, trapar, l, i, timhr, nm)
     use table_handles, only: gettabledata
     !
     real(fp)              , intent(inout) :: val(:)     !< the parameter value at all nm
@@ -2057,6 +2013,7 @@ subroutine get_one_transport_parameter_all_nm(val, trapar, l, i, timhr)
     integer               , intent(in)    :: l          !< sediment fraction
     integer               , intent(in)    :: i          !< parameter index
     real(fp)    , optional, intent(in)    :: timhr      !< time since reference date [h]
+    integer     , optional, intent(in)    :: nm         !< spatial index for which value is requested
     
     integer                     :: j           !< sediment parameter source file index
     real(fp)                    :: par         !< scalar to store the value
@@ -2071,7 +2028,11 @@ subroutine get_one_transport_parameter_all_nm(val, trapar, l, i, timhr)
     else
         select case (trapar%parfile(j)%source)
         case (PARSOURCE_FIELD)
-            val(:) = trapar%parfile(j)%parfld(:)
+            if (present(nm)) then
+                val(:) = trapar%parfile(j)%parfld(nm)
+            else
+                val(:) = trapar%parfile(j)%parfld(:)
+            endif
             
         case (PARSOURCE_TIME)
             parfile => trapar%parfile(j)
@@ -2088,6 +2049,6 @@ subroutine get_one_transport_parameter_all_nm(val, trapar, l, i, timhr)
             
         end select
     end if
-end subroutine get_one_transport_parameter_all_nm
+end subroutine get_one_transport_parameter
 
 end module morphology_data_module

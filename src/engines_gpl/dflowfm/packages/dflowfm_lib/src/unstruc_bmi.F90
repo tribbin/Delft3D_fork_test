@@ -1078,7 +1078,7 @@ subroutine get_var(c_var_name, x) bind(C, name="get_var")
    use unstruc_channel_flow, only: network
    use m_lateral, only : numlatsg, kclat, qplatCum, qLatRealCum, qLatRealCumPre, n1latsg, n2latsg, qplat, balat, qLatRealAve, nnlat, qLatReal, qplatAve, qqlat
    use m_lateral, only : qplatCumPre
-   use morphology_data_module, only : get_one_transport_parameter_all_nm
+   use morphology_data_module, only : get_one_transport_parameter
 
    character(kind=c_char), intent(in) :: c_var_name(*) !< Variable name. May be slash separated string "name/item/field": then get_compound_field is called.
    type(c_ptr), intent(inout) :: x
@@ -1243,7 +1243,7 @@ subroutine get_var(c_var_name, x) bind(C, name="get_var")
       endif
       do i = 1,k
          if (stmpar%trapar%iform(i) == -3) then ! if transport formula is Parteniades-Krone
-            call get_one_transport_parameter_all_nm(TcrEro(:,i), stmpar%trapar, i, 13)
+            call get_one_transport_parameter(TcrEro(:,i), stmpar%trapar, i, 13)
          else ! Other transport formula than Parteniades-Krone
             TcrEro(:,i) = -999
          endif
@@ -1257,7 +1257,7 @@ subroutine get_var(c_var_name, x) bind(C, name="get_var")
       endif
       do i = 1,k
          if (stmpar%trapar%iform(i) == -3) then ! if transport formula is Parteniades-Krone
-            call get_one_transport_parameter_all_nm(TcrSed(:,i), stmpar%trapar, i, 12)
+            call get_one_transport_parameter(TcrSed(:,i), stmpar%trapar, i, 12)
          else ! Other transport formula than Parteniades-Krone
             TcrSed(:,i) = -999
          endif

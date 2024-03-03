@@ -52,8 +52,8 @@ function get_alpha_fluff(iflufflyr, lsed, nm, mfluff, trapar, sedpar, timhr) res
 ! Local variables
 !
     integer                        :: l
-    real(fp)                       :: parfluff0
-    real(fp)                       :: parfluff1
+    real(fp)                       :: parfluff0(1)
+    real(fp)                       :: parfluff1(1)
     real(fp)                       :: fluff_cover_factor
 !
 !! executable statements -------------------------------------------------------
@@ -63,10 +63,10 @@ function get_alpha_fluff(iflufflyr, lsed, nm, mfluff, trapar, sedpar, timhr) res
        fluff_cover_factor = sedpar%sc_flcf
        do l = 1,lsed
           if (trapar%iform(l) == -3) then
-             parfluff0 = get_one_transport_parameter(trapar, l, nm, 15, timhr)
-             parfluff1 = get_one_transport_parameter(trapar, l, nm, 16, timhr)
+             call get_one_transport_parameter(parfluff0, trapar, l, 15, timhr, nm)
+             call get_one_transport_parameter(parfluff1, trapar, l, 16, timhr, nm)
              !
-             alpha_fluff = alpha_fluff + mfluff(l) * parfluff1 / parfluff0
+             alpha_fluff = alpha_fluff + mfluff(l) * parfluff1(1) / parfluff0(1)
           endif
        enddo
        alpha_fluff = min(alpha_fluff / fluff_cover_factor, 1.0_fp)
