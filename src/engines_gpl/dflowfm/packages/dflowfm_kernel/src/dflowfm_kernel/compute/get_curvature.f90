@@ -66,11 +66,7 @@ subroutine get_curvature         ! Find the curvature of the bend, to be used in
     double precision :: cofa, cofb, cofc, cofd, cofe, coff, cofg, cofw, cofx, cofy, cofu, cofv, cof0
     double precision :: dudx, dudy, dvdx, dvdy
 
-    do k = 1,ndx
-       spirucm(k) = 0d0
-       if( hs(k) < epshu ) cycle
-       spirucm(k) = sqrt( ucx(k) * ucx(k) + ucy(k) * ucy(k) )
-    enddo
+    call get_spirucm()
 
     do k = 1,ndxi
        if( spirucm(k) < 1.0d-3 .or. hs(k) < epshu ) then
