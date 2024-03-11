@@ -1151,9 +1151,9 @@ subroutine unc_write_his(tim)            ! wrihis
              do j = IVAL_HWQ1,IVAL_HWQN   ! enumerators of waq output in valobs array (not the pointer)
                i = j - IVAL_HWQ1 + 1
                if (i .le. noout_user + noout_statt) then
-                  !ierr = nf90_put_var(ihisfile, id_hwq(i), valobs(:,IPNT_HWQ1 + (i-1)*kmx+kk-1), start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1/))
+                  ierr = nf90_put_var(ihisfile, id_hwq(i), valobs(:,IPNT_HWQ1 + (i-1)*kmx+kk-1), start = (/ kk, 1, it_his /), count = (/ 1, ntot, 1/))
                else if (comparereal(tim, ti_hise, eps10) == 0) then
-                  !ierr = nf90_put_var(ihisfile, id_hwq(i), valobs(:,IPNT_HWQ1 + (i-1)*kmx+kk-1), start = (/ kk, 1 /), count = (/ 1, ntot, 1/))
+                  ierr = nf90_put_var(ihisfile, id_hwq(i), valobs(:,IPNT_HWQ1 + (i-1)*kmx+kk-1), start = (/ kk, 1 /), count = (/ 1, ntot, 1/))
                endif
                 enddo
           end if
@@ -2399,7 +2399,7 @@ contains
    end function unc_put_his_station_coord_vars_z
 
    !> Define variables for WAQ statistic outputs (not to be confused with the general statistical output framework).
-   !! Are not part of the statistical output framework, because it is useless to allow statistics about statistics,
+   !! They are not part of the statistical output framework, because it is useless to allow statistics about statistics,
    !! because writing output only in the final time step is currently not supported in statistical output,
    !! and because statistic outputs may be redundant in the future when the statistical output framework is feature complete.
    function unc_def_his_station_waq_statistic_outputs(waq_statistics_ids) result(nc_error)
@@ -2535,5 +2535,3 @@ integer function get_dimid_len(id)
 end function get_dimid_len
 
 end subroutine unc_write_his
-
-    
