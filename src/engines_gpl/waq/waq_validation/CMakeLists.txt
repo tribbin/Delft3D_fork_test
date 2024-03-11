@@ -4,7 +4,8 @@ create_target(${library_name} ${CMAKE_CURRENT_SOURCE_DIR} src_dir .)
 
 
 # Set dependencies
-set(oss_dependencies waq_utils_f
+set(oss_dependencies waq_data
+                     waq_utils_f
                      waq_hyd_data)
 
 target_link_libraries(${library_name} ${oss_dependencies})
