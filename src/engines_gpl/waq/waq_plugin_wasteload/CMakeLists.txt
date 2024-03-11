@@ -23,14 +23,4 @@ target_include_directories(${library_name} PRIVATE ${version_include_dir})
 # Define how the files should be structured within Visual Studio
 set_target_properties (${library_name} PROPERTIES FOLDER engines_gpl/waq)
 
-# Set post-build step
-set(install_dir ${CMAKE_BINARY_DIR})
-set(build_dir ${CMAKE_BINARY_DIR})
-
-post_build_target (${library_name}
-                   ${install_dir}
-                   ${build_dir}
-                   ${checkout_src_root}
-                   ${library_name})
-
-install(TARGETS ${library_name} DESTINATION lib)
+install(TARGETS ${library_name} RUNTIME DESTINATION lib)

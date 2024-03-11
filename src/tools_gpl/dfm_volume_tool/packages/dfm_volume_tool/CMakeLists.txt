@@ -119,6 +119,14 @@ if (WIN32)
     # Set linker options
     message(STATUS "Setting target_link_options in windows")
     target_link_options(${executable_name} PRIVATE ${nologo_flag})
+	set (userfilename "${CMAKE_BINARY_DIR}/template.vfproj.user")
+	if (CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.vfproj.$ENV{USERNAME}.user")
+		configure_file(
+		${userfilename}
+		"${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.vfproj.$ENV{USERNAME}.user"
+		@ONLY
+		)
+	endif()
 endif(WIN32)
 
 # Create the folder structure in vfproj
@@ -130,9 +138,3 @@ install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
 # Set post-build step
 set(install_dir ${CMAKE_BINARY_DIR})
 set(build_dir ${CMAKE_BINARY_DIR})
-
-post_build_target (${executable_name}
-                   ${install_dir}
-                   ${build_dir}
-                   ${checkout_src_root}
-                   ${executable_name})

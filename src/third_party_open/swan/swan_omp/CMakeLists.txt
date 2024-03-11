@@ -99,17 +99,20 @@ set_target_properties (${executable_name} PROPERTIES FOLDER third_party_open/swa
 
 if (WIN32)
     set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
+	set (userfilename "${CMAKE_BINARY_DIR}/template.vfproj.user")
+	if (CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.vfproj.$ENV{USERNAME}.user")
+		configure_file(
+		${userfilename}
+		"${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.vfproj.$ENV{USERNAME}.user"
+		@ONLY
+		)
+	endif()
 endif(WIN32)
 
 # Set post-build step
 set(install_dir ${CMAKE_BINARY_DIR})
 set(build_dir ${CMAKE_BINARY_DIR})
 
-post_build_target (${executable_name}
-                   ${install_dir}
-                   ${build_dir}
-                   ${checkout_src_root}
-                   ${executable_name})
 
 install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
 

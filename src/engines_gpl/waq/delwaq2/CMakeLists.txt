@@ -76,17 +76,10 @@ if (WIN32)
     set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
 endif(WIN32)
 
-# Set post-build step
-set(install_dir ${CMAKE_BINARY_DIR})
-set(build_dir ${CMAKE_BINARY_DIR})
-
-post_build_target (${executable_name}
-                   ${install_dir}
-                   ${build_dir}
-                   ${checkout_src_root}
-                   ${executable_name})
-
 install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
 if (UNIX)
     install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/../resources/scripts/run_delwaq.sh  DESTINATION bin)
 endif(UNIX)
+if (WIN32)
+    install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/../resources/scripts/run_delwaq.bat  DESTINATION bin)
+endif(WIN32)

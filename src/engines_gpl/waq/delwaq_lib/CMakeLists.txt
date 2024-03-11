@@ -73,21 +73,10 @@ set_target_properties(${library_name} PROPERTIES FOLDER engines_gpl/waq)
 # Change the name of the target library to delwaq.dll
 set_target_properties (${library_name} PROPERTIES OUTPUT_NAME delwaq)
 
-# Set post-build step
-set(install_dir ${CMAKE_BINARY_DIR})
-set(build_dir ${CMAKE_BINARY_DIR})
+install(TARGETS ${library_name} RUNTIME DESTINATION lib)
+install(FILES ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/bloom.spe          DESTINATION share/delft3d)
+install(FILES ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/proc_def.dat       DESTINATION share/delft3d)
+install(FILES ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/proc_def.def       DESTINATION share/delft3d)
+install(DIRECTORY  ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/csvFiles      DESTINATION share/delft3d)
+install(DIRECTORY  ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/subFiles      DESTINATION share/delft3d)
 
-post_build_target (${library_name}
-                   ${install_dir}
-                   ${build_dir}
-                   ${checkout_src_root}
-                   ${library_name})
-
-install(TARGETS ${library_name} DESTINATION lib)
-if (UNIX)
-    install(FILES ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/bloom.spe          DESTINATION share/delft3d)
-    install(FILES ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/proc_def.dat       DESTINATION share/delft3d)
-    install(FILES ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/proc_def.def       DESTINATION share/delft3d)
-    install(DIRECTORY  ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/csvFiles      DESTINATION share/delft3d)
-    install(DIRECTORY  ${CMAKE_SOURCE_DIR}/../engines_gpl/waq/resources/process_lib/subFiles      DESTINATION share/delft3d)
-endif(UNIX)
