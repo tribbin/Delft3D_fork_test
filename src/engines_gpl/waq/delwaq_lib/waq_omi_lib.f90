@@ -34,7 +34,7 @@ module waq_omi_utils
     use m_waq_precision
     use m_dmpare
     use m_dlwq0i
-    use m_dlwq0f
+    use m_matrix
     use inputs_block_9
     use m_delwaq2_main
     use m_dlwqp1
@@ -667,14 +667,13 @@ contains
 
     ! DefineWQSchematisation --
     !     Define the number of segments and the pointer table
-    !
     logical function DefineWQSchematisation(number_segments, pointer_table, number_exchanges)
         !DEC$ ATTRIBUTES DLLEXPORT::DefineWQSchematisation
         !DEC$ ATTRIBUTES DECORATE, ALIAS : 'DEFINEWQSCHEMATISATION' :: DefineWQSchematisation
 
         use delwaq2_global_data
         use m_sysn
-        use m_dlwq0f
+        use m_matrix, only : compute_matrix_size
 
         implicit none
 
@@ -721,7 +720,7 @@ contains
         ! the numerical solver may not have been set and at a later time we don't
         ! have access to the pointer_table anymore)
         !
-        call dlwq0f(noq1, noq2, noq3, noseg, pointer_table, nomat)
+        call compute_matrix_size(noq1, noq2, noq3, noseg, pointer_table, nomat)
 
         if (allocated(ipoint)) deallocate (ipoint)
         if (allocated(iknmrk)) deallocate (iknmrk)
