@@ -20,33 +20,89 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module m_varpoi
+module output_pointers
     use m_waq_precision
-    use m_string_utils
 
     implicit none
+
+    private
+    public :: get_output_pointers
 
 contains
 
 
-    subroutine varpoi (notot, nopa, nosfun, syname, nocons, &
-            nofun, coname, paname, funame, sfname, &
-            varnam, ivarip, lurep)
+    subroutine get_output_pointers(noutp, nrvar, nrvarm, dlwnam, iopoin, &
+            nmis, notot, syname, nocons, coname, &
+            nopa, paname, nofun, funame, nosfun, &
+            sfname, lurep)
 
-        !     Deltares Software Centre
-
-        !>\file
-        !>                sets pointers for output variables
-
-        !     Created:    December  1992 by Jan van Beek
-
-        !     Logical unitnumbers : lurep   - report file
+        !! Sets the pointers for all extra vars
 
         use timers       !   performance timers
 
-        implicit none
+        integer(kind = int_wp), intent(in) :: noutp                  !< Number of output files
+        integer(kind = int_wp), intent(in) :: nrvar (noutp)         !< No of output vars per file
+        integer(kind = int_wp), intent(in) :: nrvarm                 !< Maximum of output variables p.p.
+        integer(kind = int_wp), intent(out) :: nmis                   !< Number of missing input vars
+        character*(*), intent(in) :: dlwnam(nrvarm, noutp)  !< Name of input variables
+        integer(kind = int_wp), intent(out) :: iopoin(nrvarm, noutp)   !< Number of missing input vars
+        integer(kind = int_wp), intent(in) :: notot                  !< Total number of substances
+        integer(kind = int_wp), intent(in) :: nopa                   !< Number of parameters
+        integer(kind = int_wp), intent(in) :: nosfun                 !< Number of segment functions
+        character(20), intent(in) :: syname(notot)         !< Names of systems
+        integer(kind = int_wp), intent(in) :: nocons                 !< Number of constants used
+        integer(kind = int_wp), intent(in) :: nofun                  !< Number of functions ( user )
+        character(20), intent(in) :: coname(nocons)        !< Constant names
+        character(20), intent(in) :: paname(nopa)        !< Parameter names
+        character(20), intent(in) :: funame(nofun)        !< Function names
+        character(20), intent(in) :: sfname(nosfun)        !< Segment function names
+        integer(kind = int_wp), intent(in) :: lurep                  !< Unit nr. report file
 
-        !     kind           function         name                Descriptipon
+        character(20) varnam            ! Name of variable to be identified
+        integer(kind = int_wp) :: ivarip             ! Pointer in the SSA
+        integer(kind = int_wp) :: iout               ! loop variable of outputs
+        integer(kind = int_wp) :: inrv               ! loop variable output number
+        integer(kind = int_wp) :: ithndl = 0
+        if (timon) call timstrt("get_output_pointers", ithndl)
+
+        write(lurep, *)
+        write(lurep, *) ' Determining the place of the output variables'
+        write(lurep, *)
+
+        nmis = 0
+
+        do iout = 1, noutp
+            do inrv = 1, nrvar(iout)
+                varnam = dlwnam(inrv, iout)
+                if (varnam == ' ') then
+                    ivarip = 0
+                else
+                    call set_output_pointers (notot, nopa, nosfun, syname, nocons, &
+                            nofun, coname, paname, funame, sfname, &
+                            varnam, ivarip, lurep)
+                    if (ivarip == -1) then
+                        nmis = nmis + 1
+                        write(lurep, '(3a)') '   INFO:', varnam, &
+                                '; NOT FOUND, delwaq will detect variables from process library'
+                    endif
+                endif
+                iopoin(inrv, iout) = ivarip
+            end do
+        end do
+
+        if (timon) call timstop(ithndl)
+        return
+    end subroutine get_output_pointers
+
+    subroutine set_output_pointers(notot, nopa, nosfun, syname, nocons, &
+            nofun, coname, paname, funame, sfname, &
+            varnam, ivarip, lurep)
+
+        !! sets pointers for output variables
+        !!     Logical unitnumbers : lurep   - report file
+
+        use timers       !   performance timers
+        use m_string_utils
 
         integer(kind = int_wp), intent(in) :: notot              !< Total number of substances
         integer(kind = int_wp), intent(in) :: nopa               !< Number of parameters
@@ -68,7 +124,7 @@ contains
         integer(kind = int_wp) :: indx            !  index in array of names
         character(20) predef(3)
         integer(kind = int_wp) :: ithndl = 0
-        if (timon) call timstrt("varpoi", ithndl)
+        if (timon) call timstrt("set_output_pointers", ithndl)
 
         predef(1) = 'volume'
         predef(2) = 'itime'
@@ -146,6 +202,6 @@ contains
 
         if (timon) call timstop(ithndl)
         return
-    end
+    end subroutine set_output_pointers
 
-end module m_varpoi
+end module output_pointers
