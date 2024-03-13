@@ -28,7 +28,7 @@ module m_opt3
 
 contains
 
-    subroutine opt3 (lun, lchar, is, nitem, nvals, &
+    subroutine read_time_dependent_variables (lun, lchar, is, nitem, nvals, &
             nscal, ifact, dtflg, dtflg3, nrfunc, &
             nrharm, iwidth, ioutpt, ierr)
 
@@ -128,7 +128,7 @@ contains
         integer(kind = int_wp) :: nrec2              !  local nr of rec's
         integer(kind = int_wp) :: nvarar             !  number of items previous read
         integer(kind = int_wp) :: ithndl = 0
-        if (timon) call timstrt("opt3", ithndl)
+        if (timon) call timstrt("read_time_dependent_variables", ithndl)
 
 
         breaks => null()
@@ -322,6 +322,6 @@ contains
         2070 format (' ERROR, duplicate item:', I5)
         2080 format (' ERROR, non-initialised item:', I5)
 
-    end subroutine opt3
+    end subroutine read_time_dependent_variables
 
 end module m_opt3

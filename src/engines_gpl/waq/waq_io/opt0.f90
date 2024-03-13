@@ -235,7 +235,7 @@ contains
             ierr2 = 0
             if (bound) ierr2 = -1
             if (waste) ierr2 = -2
-            call opt3 (lun, lchar, is, ndim1, ndim2, &
+            call read_time_dependent_variables (lun, lchar, is, ndim1, ndim2, &
                     ndim3, ifact, dtflg1, dtflg3, nrftot, &
                     nrharm, iwidth, ioutpt, ierr2)
             if (ierr2 > 0) goto 50
