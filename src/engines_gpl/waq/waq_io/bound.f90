@@ -22,40 +22,24 @@
 !!  rights reserved.
 module m_bound
     use m_waq_precision
-    use m_pointb
+    use exchange_pointers, only : generate_bed_layer_pointers
 
     implicit none
 
 contains
 
-
-    subroutine bound  (lun, noseg, noq, noqt, intsrt, &
+    subroutine bound (lun, noseg, noq, noqt, intsrt, &
             ioutpt, GridPs, nobnd, jtrack, ipoint, &
             status)
 
-        !       Deltares Software Centre
-
-        !>\file
-        !>            Determines boundary pointers and number of codiagonals
-
-        !     Created            : May  1988  by M.E. Sileon / L. Postma
-
-        !     Modified           : May  2011  by Leo Postma : Fortran90 look and feel
-
-        !     Subroutines called : pointb to add pointers in the water bed
-
-        !     Logical units      : lun(29) = unit formatted output file
-        !                          lun( 2) = unit unformatted system file
+        !! Determines boundary pointers and number of codiagonals
+        !!     Subroutines called : generate_bed_layer_pointers to add pointers in the water bed
+        !!     Logical units      : lun(29) = unit formatted output file
+        !!                          lun( 2) = unit unformatted system file
 
         use dlwqgrid_mod        !   for the storage of contraction grids
         use timers       !   performance timers
         use m_error_status
-
-        implicit none
-
-        !     Parameters
-
-        !     kind           function         name             Descriptipon
 
         integer(kind = int_wp), intent(in) :: lun   (*)          !< array with unit numbers
         integer(kind = int_wp), intent(in) :: noseg              !< number of volumes
@@ -174,7 +158,7 @@ contains
 
         !     Additional pointers and boundaries bottom grid
 
-        call pointb (lun, ioutpt, gridps, ibnd, ipoint, &
+        call generate_bed_layer_pointers (lun, ioutpt, gridps, ibnd, ipoint, &
                 noqt, status)
 
         deallocate(ibnd)

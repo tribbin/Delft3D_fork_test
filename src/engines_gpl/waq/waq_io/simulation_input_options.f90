@@ -957,7 +957,7 @@ contains
         logical, intent(in) :: dtflg3        !< 'date'-format (F;ddmmhhss,T;yydddhh)
         integer(kind = int_wp), intent(in) :: ioutpt         !< how extensive is output ?
         integer(kind = int_wp), intent(inout) :: ierr           !< cumulative error count
-        logical, intent(in) :: dont_read     !< do not actually read tokens, if true, the information is already provided
+        logical, intent(in) :: dont_read  !< do not actually read tokens, if true, the information is already provided
 
         type(error_status), intent(inout) :: status !< current error status
 

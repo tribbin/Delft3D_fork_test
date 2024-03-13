@@ -24,7 +24,7 @@ module inputs_block_4
     use m_waq_precision
     use m_string_utils, only : string_equals
     use m_scale
-    use m_pointi
+    use exchange_pointers, only : read_exchange_pointers_irregular_grid
     use simulation_input_options, only : process_simulation_input_options, validate_simulation_time_steps, &
             read_constant_data, read_constants_time_variables
     use m_dmpare
@@ -81,7 +81,7 @@ contains
         use m_open_waq_files
         use dlwqgrid_mod        !   for the storage of contraction grids
         use rd_token     !   for the reading of tokens
-        use pointr_mod
+        use exchange_pointers, only : read_exchange_pointers_regular_grid
         use partmem
         use timers       !   performance timers
         use m_sysn          ! System characteristics
@@ -358,7 +358,7 @@ contains
                         .false.)
                 if (ierr2  > 0) goto 100
                 noqt = noq4
-                call pointr (lun, lchar, noseg, nmax, mmax, &
+                call read_exchange_pointers_regular_grid (lun, lchar, noseg, nmax, mmax, &
                         kmax, noq, noq1, noq2, noq3, &
                         noqt, nobnd, ipnt, intsrt, iopt1, &
                         jtrack, ioutpt, iwidth, GridPs, cellpnt, &
@@ -377,7 +377,7 @@ contains
                 goto 100
             endif
             ipnt = 0
-            call pointi (lun, lchar, noseg, noq, noq1, &
+            call read_exchange_pointers_irregular_grid (lun, lchar, noseg, noq, noq1, &
                     noq2, noq3, noqt, nobnd, ipnt, &
                     intsrt, iopt1, jtrack, filtype(44), ioutpt, &
                     GridPs, status)
