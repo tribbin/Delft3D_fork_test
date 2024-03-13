@@ -22,7 +22,7 @@
 !!  rights reserved.
 
 
-module m_waq_grid
+module grid_utils
 
     use m_waq_precision
     use m_error_status
@@ -1138,4 +1138,4 @@ contains
 
     end subroutine read_nobottomlay
 
-end module m_waq_grid
+end module grid_utils
