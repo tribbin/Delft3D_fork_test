@@ -187,14 +187,16 @@ subroutine unc_write_his(tim)            ! wrihis
        jawrizw = 1
     endif
     
-    if ( strcmpi(md_nc_his_precision, 'double') ) then
+    call str_lower(md_nc_his_precision)
+    select case (trim(md_nc_his_precision))
+    case ('double')
         nc_precision = nf90_double
-    elseif ( strcmpi(md_nc_his_precision, 'float') .or. strcmpi(md_nc_his_precision, 'single') ) then
+    case ('float', 'single')
         nc_precision = nf90_float
-    else
-        call mess(LEVEL_ERROR, 'Did not recognise NcHisDataPrecision value. It must be "double", "single" or "float".')
-    endif
-
+    case default
+        call mess(LEVEL_ERROR, 'Did not recognise NcHisDataPrecision value. It must be double, single or float.')
+    end select
+   
     if (timon) call timstrt ( "unc_write_his", handle_extra(54))
 
     ! Another time-partitioned file needs to start, reset iteration count (and file).
