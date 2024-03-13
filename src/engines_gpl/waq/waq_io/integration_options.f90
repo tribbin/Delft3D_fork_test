@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module m_dlwq0i
+module integration_options
     use m_waq_precision
     use m_string_utils
 
@@ -29,57 +29,41 @@ module m_dlwq0i
 contains
 
 
-    subroutine dlwq0i (keynam, intopt, lunut, ierr2)
+    subroutine check_integration_option(keynam, intopt, lunut, ierr2)
 
-        !     Deltares Software Centre
+        !! Checks for integration option keywords
+        !!
+        !!    Supported keywords are:
+        !!    \li NODISP-AT-NOFLOW      - Diffusion is not applied if Q equals zero (thin dams)
+        !!    \li NODISP-AT-BOUND       - Diffusion is not applied accross open boundaries
+        !!    \li LOWER-ORDER-AT-BOUND  - Use first order upwind scheme at open boundaries
+        !!    \li BALANCES-OLD-STYLE    - Balances information in its basic form only
+        !!    \li BALANCES-GPP-STYLE    - Basic balances including enhancements for GPP
+        !!    \li BALANCES-SOBEK-STYLE  - Basic balances including SOBEK and GPP enhancements
+        !!    \li FORESTER              - Apply Forester filter against overshoots in the vertical
+        !!    \li ANTICREEP             - Apply anticreep horizontal diffusion for integration options 19 & 20
+        !!    \li BAL_NOLUMPPROCESSES   - Do not lump all processes in one balance term but split
+        !!    \li BAL_NOLUMPLOADS       - Do not lump all loads in one balance term but split
+        !!    \li BAL_NOLUMPTRANSPORT   - Do not lump all transport terms in one balance term but split
+        !!    \li BAL_UNITAREA          - Make balances per m2 rather than per total volume
+        !!    \li BAL_UNITVOLUME        - Make balances per m3 rather than per total volume
+        !!    \li BAL_NOSUPPRESSSPACE   - ??? to be clarified
+        !!    \li BAL_NOSUPPRESSTIME    - ??? to be clarified
+        !!    \li ANTIDIFFUSION         - An option of integration methods 21 and 22
+        !!    \li PARTICLE_TRACKING     - The Delwaq simulation will also use particle tracking
+        !!
+        !!    Also the negation of the keywords are valid but they will invoke default behavior
 
-        !>\file
-        !>                        Checks for integration option keywords
-        !>    Supported keywords are:
-        !>    \li NODISP-AT-NOFLOW      - Diffusion is not applied if Q equals zero (thin dams)
-        !>    \li NODISP-AT-BOUND       - Diffusion is not applied accross open boundaries
-        !>    \li LOWER-ORDER-AT-BOUND  - Use first order upwind scheme at open boundaries
-        !>    \li BALANCES-OLD-STYLE    - Balances information in its basic form only
-        !>    \li BALANCES-GPP-STYLE    - Basic balances including enhancements for GPP
-        !>    \li BALANCES-SOBEK-STYLE  - Basic balances including SOBEK and GPP enhancements
-        !>    \li FORESTER              - Apply Forester filter against overshoots in the vertical
-        !>    \li ANTICREEP             - Apply anticreep horizontal diffusion for integration options 19 & 20
-        !>    \li BAL_NOLUMPPROCESSES   - Do not lump all processes in one balance term but split
-        !>    \li BAL_NOLUMPLOADS       - Do not lump all loads in one balance term but split
-        !>    \li BAL_NOLUMPTRANSPORT   - Do not lump all transport terms in one balance term but split
-        !>    \li BAL_UNITAREA          - Make balances per m2 rather than per total volume
-        !>    \li BAL_UNITVOLUME        - Make balances per m3 rather than per total volume
-        !>    \li BAL_NOSUPPRESSSPACE   - ??? to be clarified
-        !>    \li BAL_NOSUPPRESSTIME    - ??? to be clarified
-        !>    \li ANTIDIFFUSION         - An option of integration methods 21 and 22
-        !>    \li PARTICLE_TRACKING     - The Delwaq simulation will also use particle tracking
-        !>
-        !>    Also the negation of the keywords are valid but they will invoke default behavior
-
-        !     Created           : September 2002 by Leo Postma
-
-        !     Modified          : April     2011 by Leo Postma
-        !                                           Fortran 90 look and feel
         use timers       !   performance timers
 
-        implicit none
-
-        !     Subroutine called : zoek   :  to search in a list of keywords
-
-        !     Functions  called : none
 
         !     Logical units     : LUNUT  = report file
-
-        !     parameters
-
-        !     kind           function         name                Descriptipon
 
         character*(*), intent(in) :: keynam            !< string to test
         integer(kind = int_wp), intent(inout) :: intopt             !< integration option
         integer(kind = int_wp), intent(in) :: lunut              !< unit number report file
         integer(kind = int_wp), intent(out) :: ierr2              !< 0 if keyword found
 
-        !     local
 
         integer(kind = int_wp), parameter :: nokey = 19
         character*(40)  lockey
@@ -107,7 +91,7 @@ contains
                 'SCHEME24_VERTICAL_UPWIND  ' /
         integer(kind = int_wp) :: ikey                 ! number of the found key
         integer(kind = int_wp) :: ithndl = 0
-        if (timon) call timstrt("dlwq0i", ithndl)
+        if (timon) call timstrt("check_integration_option", ithndl)
 
         !     watch out BTEST, IBSET en IBCLR start counting at 0, so IKEY-1 should be used
 
@@ -143,6 +127,6 @@ contains
 
         1000 format (' Keyword (', i2, ') detected: ', a)
 
-    end
+    end subroutine check_integration_option
 
-end module m_dlwq0i
+end module integration_options
