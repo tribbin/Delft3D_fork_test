@@ -21,10 +21,9 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 
-!>\file
-!>                    m_delwaq1_data  - contains data needed for initialisation of delwaq1
 
 module m_delwaq1_data
+    !! m_delwaq1_data  - contains data needed for initialisation of delwaq1
 
     use m_delwaq1_const
     use dlwqgrid_mod        !   for the storage of contraction grids
@@ -49,7 +48,7 @@ module m_delwaq1_data
     character(len = lchmax) :: lchar(nlun)            !< file names input / output files
     integer :: iopt(noint)            !< integration option list
 
-    !     work arrays
+    ! work arrays
     integer :: imax                   !< dynamic size integer work array
     integer :: rmax                   !< dynamic size real work array
     integer :: cmax                   !< dynamic size character work array
@@ -59,9 +58,8 @@ module m_delwaq1_data
 
     type(waq_data_buffer) :: buffer
 
-    !
-    !     files, unit numbers, include file stack, input file settings
-    !
+
+    ! files, unit numbers, include file stack, input file settings
     integer :: filtype(nlun)
     character(len = lchmax) :: runid                  !< runid
     logical :: dtflg1                 !< first flag concerning time formats
@@ -70,9 +68,8 @@ module m_delwaq1_data
     logical :: has_hydfile            !< does the input file refer to a hyd file?
     integer, dimension(3) :: nexch                  !< number of exchanges in each direction from hyd file
     type(inputfilestack) :: inpfil                 !< input file strucure with include stack and flags
-    !
-    !     various input-output structures
-    !
+
+    ! various input-output structures
     integer :: nrftot(noitm)          !< number of function per item
     integer :: nrharm(noitm)          !< number of harmoncs per item
     integer :: ioutps(7, nooutp)      !< output file defintion structure
@@ -88,9 +85,8 @@ module m_delwaq1_data
     type(ProcesPropColl) :: StatProcesDef          !< the statistical proces definition
     type(ItemPropColl) :: AllItems               !< all items of the proces system
     type(t_dlwq_item) :: constants              !< delwaq constants list
-    !
-    !     help variables
-    !
+
+    ! help variables
     logical :: nolic                  !< No valid license?
     logical :: lfound                 !< help variable indicating if command line argument is found
     character(len = 20) :: rundat                 !< execution date-time string
@@ -118,9 +114,7 @@ module m_delwaq1_data
     integer :: ioerr
     integer(4), save :: ithndl = 0
 
-    !
-    !       initialisations
-    !
+    ! initialisations
     data lun/14, 15, 16, 17, 18, 19, 20, 21, 22, 23, &
             24, 25, 26, 27, 28, 29, 30, 31, 32, 33, &
             34, 35, 36, 37, 38, 39, 40, 41, 42, 43, &
