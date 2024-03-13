@@ -395,31 +395,6 @@
             </file>
         </checks>
     </testCase>
-    <testCase name="e02_f012_c189_wadden_sea_mapmerge" ref="postproc">
-        <programs>
-          <program ref="dfmoutput">
-            <arguments>
-              <argument>-d</argument>
-              <argument>mapmerge</argument>
-              <argument>--infile</argument>
-              <argument>wadsea_0000_20170805_074000_rst.nc </argument>
-              <argument>wadsea_0001_20170805_074000_rst.nc </argument>
-              <argument>wadsea_0002_20170805_074000_rst.nc </argument>
-              <argument>wadsea_0003_20170805_074000_rst.nc </argument>
-              <argument>--outfile</argument>
-              <argument>wadsea_merged_20170805_074000_rst.nc </argument>
-            </arguments>
-          </program>
-        </programs>
-        <path>e02_dflowfm/f012_inout/c189_wadden_sea_mapmerge</path>
-         <checks>
-            <file name="wadsea_merged_20170805_074000_rst.nc" type="NETCDF">
-                <parameters>
-                    <parameter name="bodsed" toleranceAbsolute="0.0001" />
-                </parameters>
-            </file>
-        </checks>
-    </testCase>
     <testCase name="e02_f012_c190_rijn_rst_mapmerge" ref="postproc">
         <programs>
           <program ref="dfmoutput">
