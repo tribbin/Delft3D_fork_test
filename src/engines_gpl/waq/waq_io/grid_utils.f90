@@ -132,7 +132,6 @@ contains
         isyst = 1
 
         ! Read number of multiple grids
-
         do
             if (gettoken(ctoken, itoken, itype, ierr2) > 0) goto 1000
 

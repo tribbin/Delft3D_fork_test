@@ -31,21 +31,10 @@ contains
     SUBROUTINE DLWQ5E (LUNUT, IAR, NOITM, ITMNR, NODIM, &
             IDMNR, IORDER, RAR, IOPT, RMAT, &
             NOCOL, NOBRK, AMISS, IARP, RMATU)
-        !
-        !
-        !     Deltares        SECTOR WATERRESOURCES AND ENVIRONMENT
-        !
-        !     CREATED            : May   '98 by L. Postma
-        !
-        !     MODIFIED           :
-        !
-        !     FUNCTION           : Assign matrix according to computational
-        !                          rules
-        !
-        !     SUBROUTINES CALLED : none
-        !
-        !     LOGICAL UNITS      : LUNUT - report file
-        !
+
+        !! Assign matrix according to computational rules
+        !!     LOGICAL UNITS      : LUNUT - report file
+        !!
         !     PARAMETERS    :
         !
         !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION

@@ -33,15 +33,7 @@ contains
             CCHAR, CHULP, NOTOT, NOTOTC, time_dependent, NOBRK, &
             IOPT, DTFLG1, DTFLG3, ITFACT, ITYPE, &
             IHULP, RHULP, IERR, ierr3)
-        !
-        !
-        !     Deltares        SECTOR WATERRESOURCES AND ENVIRONMENT
-        !
-        !     CREATED            : May '96  by L. Postma
-        !
-        !     MODIFIED           :
-        !
-        !     FUNCTION           : Boundary and waste data new style
+        !! Boundary and waste data new style
         !
         !     SUBROUTINES CALLED : CNVTIM - converting times of breakpoints
         !
