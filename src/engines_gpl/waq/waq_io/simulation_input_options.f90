@@ -459,7 +459,7 @@ contains
         !!                          LUN1  = unit intermediate file ( system )
         use timers       !   performance timers
         use rd_token
-        use m_scale
+        use matrix_utils, only : scale_array
 
         integer(kind = int_wp), intent(in) :: iopt2       !< input option
         real(kind = real_wp), intent(out) :: array(nvals, nitem)  !< array for the values
@@ -572,7 +572,7 @@ contains
                 factor(iscal) = factor(1)
             enddo
         endif
-        call scale (array, factor, nitem, nvals)
+        call scale_array (array, factor, nitem, nvals)
 
         !     Write if unit specified
 

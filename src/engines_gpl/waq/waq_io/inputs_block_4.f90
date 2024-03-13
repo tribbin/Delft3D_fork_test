@@ -23,7 +23,7 @@
 module inputs_block_4
     use m_waq_precision
     use m_string_utils, only : string_equals
-    use m_scale
+    use matrix_utils, only : scale_array
     use exchange_pointers, only : read_exchange_pointers_irregular_grid, create_boundary_pointers
     use simulation_input_options, only : process_simulation_input_options, validate_simulation_time_steps, &
             read_constant_data, read_constants_time_variables
@@ -572,7 +572,7 @@ contains
         endif
 
         factor(5) = factor(4)
-        call scale (rwork, factor, noq, 5)
+        call scale_array (rwork, factor, noq, 5)
 
         write (lun(2)) idummy, (adummy, k = 1, 3)
         write (lun(2)) idummy, (adummy, k = 1, 3)

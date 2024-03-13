@@ -26,9 +26,35 @@ module matrix_utils
     implicit none
 
     private
-    public :: dmatrix, compute_matrix_size, compute_matrix, print_matrix
+    public :: dmatrix, compute_matrix_size, compute_matrix, print_matrix, scale_array
 
 contains
+
+    subroutine scale_array(arrin, factor, nitem, nvals)
+        !! Scales an array
+        use timers       !   performance timers
+
+        integer(kind = int_wp), intent(in) :: nvals                      !< number of values
+        integer(kind = int_wp), intent(in) :: nitem                      !< number of items
+        real(kind = real_wp), intent(inout) :: arrin (nvals, nitem)        !< number of items
+        real(kind = real_wp), intent(in) :: factor(nvals)              !< scale factors
+
+
+        integer(kind = int_wp) :: i1, i2        ! loop counters
+        real(kind = real_wp) :: fact          ! factor
+        integer(kind = int_wp) :: ithndl = 0
+        if (timon) call timstrt("scale_array", ithndl)
+
+        do i1 = 1, nvals
+            fact = factor(i1)
+            do i2 = 1, nitem
+                arrin (i1, i2) = arrin (i1, i2) * fact
+            enddo
+        enddo
+
+        if (timon) call timstop(ithndl)
+
+    end subroutine scale_array
 
     subroutine dmatrix (ntot, nvals, nvarar, nvarnw, nobrk1, &
             nobrk2, ibrk, ibrknw, tab, tabnw, &

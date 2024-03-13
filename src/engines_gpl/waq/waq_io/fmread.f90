@@ -22,7 +22,7 @@
 !!  rights reserved.
 module m_fmread
     use m_waq_precision
-    use m_scale
+    use matrix_utils, only : scale_array
 
     implicit none
 
@@ -33,40 +33,24 @@ contains
             nobrk, ibrk, arrin, dtflg, dtflg3, &
             ifact, iwidth, ioutpt, ierr)
 
-        !       Deltares Software Centre
-
-        !>\file
-        !>                   Reads blocks of matrices of input values and scales them
-        !>
-        !>                   This routine reads:
-        !>                   - nobrk integer breakpoint values for time
-        !>                   - for each breakpoint nitem*nvals values
-        !>                   The values are scaled with nvals scale factors/n
-        !>                   If one scale factor exist, it is expanded to nvals factors
-
-        !     Created            : March '88  By M.E. Sileon / L. Postma
-
-        !     Modified           : April 1997 by R. Bruinsma: Tokenized input data file reading added
-        !                          May   2011    Leo Postma : Fortran 90 look and feel
-
-        !     Subroutines called : none
-
-        !     Functions   called : gettoken from rd_token to read the data
-        !                          convert_string_to_time_offset   to convert a time string to seconds
-        !                          cnvtim   to convert a time integer to seconds
-        !                          scale    to scale the matrix
-
-        !     Logical units      : lunut = unit formatted output file
+        !! Reads blocks of matrices of input values and scales them
+        !!
+        !! This routine reads:
+        !!      - nobrk integer breakpoint values for time
+        !!      - for each breakpoint nitem*nvals values
+        !!      The values are scaled with nvals scale factors/n
+        !!      If one scale factor exist, it is expanded to nvals factors
+        !!
+        !! Functions called : gettoken from rd_token to read the data
+        !!                    convert_string_to_time_offset   to convert a time string to seconds
+        !!                    cnvtim   to convert a time integer to seconds
+        !!                    scale    to scale the matrix
+        !!
+        !! Logical units : lunut = unit formatted output file
 
         use timers       !   performance timers
         use rd_token       ! for the reading of tokens
         use date_time_utils, only : convert_string_to_time_offset, convert_relative_time
-
-        implicit none
-
-        !     Parameters
-
-        !     kind           function         name                        Descriptipon
 
         integer(kind = int_wp), intent(in) :: nitem                      !< number of items
         integer(kind = int_wp), intent(in) :: item  (nitem)              !< item numbers
@@ -83,7 +67,6 @@ contains
         integer(kind = int_wp), intent(in) :: ioutpt                     !< how extensive is output ?
         integer(kind = int_wp), intent(inout) :: ierr                       !< cumulative error count
 
-        !     local decalations
 
         integer(kind = int_wp) :: ierr2         ! local error variable
         integer(kind = int_wp) :: i1, i2, i3    ! loop counters
@@ -138,26 +121,22 @@ contains
 
         enddo
 
-        !      Scale values
-
+        ! Scale values
         if (nfact == 1) then
             do i1 = 2, nvals
                 factor(i1) = factor (11)
             enddo
         endif
         do i1 = 1, nobrk
-            call scale  (arrin(1, 1, i1), factor, nitem, nvals)
+            call scale_array  (arrin(1, 1, i1), factor, nitem, nvals)
         enddo
         if (timon) call timstop(ithndl)
         return
 
-        !      An error occured during read
-
+        ! An error occured during read
         10 ierr = ierr + 1
         if (timon) call timstop(ithndl)
         return
-
-        !      Output formats
 
         2000 format (' Printed output only for option 4 or higher !')
         2010 format (' Breakpoint ', I7, ' :', A)
@@ -171,6 +150,6 @@ contains
         2070 format (' Item nr.   Values')
         2080 format (I10, 2X, 1P, 10E12.4)
 
-    end
+    end subroutine fmread
 
 end module m_fmread
