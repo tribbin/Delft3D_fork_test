@@ -52,7 +52,7 @@ private
    integer, parameter, public :: UNC_LOC_DUMP        = 40 !< Data location: his file dump data
    integer, parameter, public :: UNC_LOC_DRED_LINK   = 41 !< Data location: his file data on dredge links
    
-   !> indexes for output variables 
+   !> indices for output variables
    integer, public :: IDX_HIS_VOLTOT
    integer, public :: IDX_HIS_STOR
    integer, public :: IDX_HIS_VOLERR
