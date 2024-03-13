@@ -39,10 +39,6 @@ contains
         use rd_token
         use timers       !   performance timers
 
-        implicit none
-
-        !     Parameters
-
         character*(*), intent(inout) :: cdummy !< character that may contain block end
 
         integer(kind = int_wp), intent(in) :: iblock !< number of the input block
@@ -50,7 +46,6 @@ contains
         integer(kind = int_wp), intent(in) :: iwidth !< width of the output file
         type(error_status), intent(inout) :: status !< current error status
 
-        !     Local
         character(1) :: chulp ! to convert block number to character
 
         integer(kind = int_wp) :: idummy ! argument for token reading
@@ -62,8 +57,7 @@ contains
 
         if (timon) call timstrt("check", ithndl)
 
-        !        First round of dealing with ierr2
-
+        ! First round of dealing with ierr2
         select case (ierr2)
         case (0)               !   look for end of block
             ihulp = gettoken (cdummy, idummy, rdummy, itype, ierr2)
@@ -78,8 +72,7 @@ contains
             call srstop (1)
         end select
 
-        !        Second round of dealing with ierr2
-
+        ! Second round of dealing with ierr2
         select case (ierr2)
         case (0)               !   look for end of block
             call status%increase_error_count()
@@ -108,8 +101,7 @@ contains
             call srstop (1)
         endif
 
-        !        normal end (can be with error)
-
+        ! normal end (can be with error)
         if (iwidth == 5) then
             write (lunut, 2050) iblock
         else
@@ -118,8 +110,6 @@ contains
         ierr2 = 0
         if (timon) call timstop(ithndl)
         return
-
-        !        output formats
 
         2010 format (/' ERROR. Too many and/or invalid data in block', I4, ' !!', &
                 ' Check input file !!', /)
@@ -133,6 +123,6 @@ contains
         2050 format (/1X, 59('*'), ' B L O C K -', I2, ' ', 5('*')/)
         2060 format (/1X, 109('*'), ' B L O C K -', I2, ' ', 5('*')/)
 
-    end
+    end subroutine check
 
 end module m_check
