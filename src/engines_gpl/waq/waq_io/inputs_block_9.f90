@@ -24,7 +24,7 @@ module inputs_block_9
     use m_waq_precision
     use m_rdodef
     use simulation_input_options, only : process_simulation_input_options
-    use output_pointers, only : get_output_pointers, set_output_boot_variables
+    use output_utils, only : get_output_pointers, set_output_boot_variables
     use m_error_status
 
     implicit none
@@ -38,7 +38,7 @@ contains
             icmax, iimax, iwidth, &
             ioutpt, ioutps, outputs, status)
 
-        use output_pointers, only : set_default_output
+        use output_utils, only : set_default_output
         use m_check
         use m_read_working_file_4
         use m_open_waq_files
