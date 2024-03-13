@@ -26,7 +26,7 @@ module m_dlwq5a
     use waq_timers, only : read_time_delay
     use m_dlwqj3
     use m_dlwq5g
-    use assign_matrix, only : assign_matrix
+    use matrix_utils, only : assign_matrix
     use m_dlwq5d
     use m_dlwq5c
     use m_error_status
