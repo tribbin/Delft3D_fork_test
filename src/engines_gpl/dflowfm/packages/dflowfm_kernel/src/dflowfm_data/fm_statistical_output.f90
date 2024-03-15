@@ -49,17 +49,18 @@ private
    end subroutine allocate_and_associate
 
    !> Subroutine that divides sediment transport x,y variables by rho
-   subroutine assign_sediment_transport(X,Y,IPNT_X,IPNT_Y,ntot)
+   subroutine assign_sediment_transport(X,Y,IPNT_X,IPNT_Y)
    use m_sediment
    use m_observations
 
    double precision, dimension(:), intent(out) :: X,Y !< arrays to assign valobs values to
    integer, intent(in) :: IPNT_X, IPNT_Y              !< location specifier inside valobs array
-   integer, intent(in) :: ntot                        !< number of stations
 
-   integer :: l, k
+
+   integer :: l, k, ntot
    double precision :: rhol
-
+   
+   ntot = numobs + nummovobs
    do l = 1, stmpar%lsedtot
       select case(stmpar%morpar%moroutput%transptype)
       case (0)
@@ -70,8 +71,8 @@ private
          rhol = stmpar%sedpar%rhosol(l)
       end select
       k = ntot*(l-1)
-      X(k+1:k+ntot) = valobs(:,IPNT_X)/rhol
-      Y(k+1:k+ntot) = valobs(:,IPNT_Y)/rhol
+      X(k+1:k+ntot) = valobs(:,IPNT_X+l-1)/rhol
+      Y(k+1:k+ntot) = valobs(:,IPNT_Y+l-1)/rhol
    end do
    end subroutine assign_sediment_transport
    
@@ -91,44 +92,43 @@ private
    
    end subroutine calculate_dredge_time_fraction
    
+   integer function get_sediment_array_size()
+   use m_observations, only: numobs, nummovobs
+   use m_sediment, only: stmpar
+   
+   get_sediment_array_size = (numobs + nummovobs)*stmpar%lsedtot
+   end function
+   
    !> Wrapper function that will allocate and fill the sediment transport arrays
    subroutine calculate_sediment_SSW(source_input)
    use m_observations
    double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SSWX" item, to be assigned once on first call.
-   integer :: ntot
-   ntot = numobs + nummovobs
-   call allocate_and_associate(source_input,ntot,SSWX,SSWY)
-   call assign_sediment_transport(SSWX,SSWY,IPNT_SSWX1,IPNT_SSWY1,ntot)
+   call allocate_and_associate(source_input,get_sediment_array_size(),SSWX,SSWY)
+   call assign_sediment_transport(SSWX,SSWY,IPNT_SSWX1,IPNT_SSWY1)
    end subroutine calculate_sediment_SSW
 
    !> Wrapper function that will allocate and fill the sediment transport arrays
    subroutine calculate_sediment_SSC(source_input)
    use m_observations
    double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SSCX" item, to be assigned once on first call.
-   integer :: ntot
-   ntot = numobs + nummovobs
-   call allocate_and_associate(source_input,ntot,SSCX,SSCY)
-   call assign_sediment_transport(SSCX,SSCY,IPNT_SSCX1,IPNT_SSCY1,ntot)
+   call allocate_and_associate(source_input,get_sediment_array_size(),SSCX,SSCY)
+   call assign_sediment_transport(SSCX,SSCY,IPNT_SSCX1,IPNT_SSCY1)
    end subroutine calculate_sediment_SSC
 
    !> Wrapper function that will allocate and fill the sediment transport arrays
    subroutine calculate_sediment_SBW(source_input)
    use m_observations
    double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBWX" item, to be assigned once on first call.
-   integer :: ntot
-   ntot = numobs + nummovobs
-   call allocate_and_associate(source_input,ntot,SBWX,SBWY)
-   call assign_sediment_transport(SBWX,SBWY,IPNT_SBWX1,IPNT_SBWY1,ntot)
+   call allocate_and_associate(source_input,get_sediment_array_size(),SBWX,SBWY)
+   call assign_sediment_transport(SBWX,SBWY,IPNT_SBWX1,IPNT_SBWY1)
    end subroutine calculate_sediment_SBW
 
    !> Wrapper function that will allocate and fill the sediment transport arrays
    subroutine calculate_sediment_SBC(source_input)
    use m_observations
    double precision, pointer, dimension(:), intent(inout) :: source_input !< Pointer to source input array for the "SBCX" item, to be assigned once on first call.
-   integer :: ntot
-   ntot = numobs + nummovobs
-   call allocate_and_associate(source_input,ntot,SBCX,SBCY)
-   call assign_sediment_transport(SBCX,SBCY,IPNT_SBCX1,IPNT_SBCY1,ntot)
+   call allocate_and_associate(source_input,get_sediment_array_size(),SBCX,SBCY)
+   call assign_sediment_transport(SBCX,SBCY,IPNT_SBCX1,IPNT_SBCY1)
    end subroutine calculate_sediment_SBC
 
    !> Procedure called to transform the valobs data for writing to the water_quality_output NetCDF variables
