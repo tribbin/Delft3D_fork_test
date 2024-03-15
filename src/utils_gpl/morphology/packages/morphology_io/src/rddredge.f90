@@ -792,20 +792,7 @@ subroutine rddredge(dredgepar, dad_ptr, sedpar, lfbedfrm, morpar, lundia, julref
                 pdredge%use_dunes     = def_use_dunes
                 pdredge%alpha_dh      = def_alpha_dh
                 pdredge%plough_effic  = def_plough_effic
-                nullify(pdredge%nm)
-                nullify(pdredge%nmglob)
-                nullify(pdredge%inm)
-                nullify(pdredge%area)
-                nullify(pdredge%hdune)
-                nullify(pdredge%dz_dredge)
-                nullify(pdredge%reflevel)
-                nullify(pdredge%dunetoplevel)
-                nullify(pdredge%triggerlevel)
-                nullify(pdredge%bedlevel)
-                nullify(pdredge%troughlevel)
-                nullify(pdredge%sedimentdepth)
-                nullify(pdredge%sortvar)
-                nullify(pdredge%triggered)
+
                 !
                 ! Set dredge area name
                 !
@@ -1125,20 +1112,6 @@ subroutine rddredge(dredgepar, dad_ptr, sedpar, lfbedfrm, morpar, lundia, julref
                 pdredge%outletlink    = 0
                 pdredge%npnt          = 0
                 pdredge%ichkloc       = 0
-                nullify(pdredge%nm)
-                nullify(pdredge%nmglob)
-                nullify(pdredge%inm)
-                nullify(pdredge%area)
-                nullify(pdredge%hdune)
-                nullify(pdredge%dz_dredge)
-                nullify(pdredge%reflevel)
-                nullify(pdredge%dunetoplevel)
-                nullify(pdredge%triggerlevel)
-                nullify(pdredge%bedlevel)
-                nullify(pdredge%troughlevel)
-                nullify(pdredge%sedimentdepth)
-                nullify(pdredge%sortvar)
-                nullify(pdredge%triggered)
                 pdredge%maxvolrate   = def_maxvolrate
                 pdredge%totalvolsupl = -999.0_fp
                 !
@@ -1398,15 +1371,6 @@ subroutine rddredge(dredgepar, dad_ptr, sedpar, lfbedfrm, morpar, lundia, julref
        pdump%ichkloc      = def_chkloc
        pdump%use_dunes    = def_use_dunes
        pdump%npnt         = 0
-       nullify(pdump%nm)
-       nullify(pdump%nmglob)
-       nullify(pdump%inm)
-       nullify(pdump%reflevel)
-       nullify(pdump%area)
-       nullify(pdump%hdune)
-       nullify(pdump%bedlevel)
-       nullify(pdump%dz_dump)
-       nullify(pdump%sortvar)
     enddo
     !
     if ( associated(dad_ptr%child_nodes) ) then
@@ -1656,16 +1620,16 @@ subroutine rddredge(dredgepar, dad_ptr, sedpar, lfbedfrm, morpar, lundia, julref
     if (noutletlinks > 0) then
        !
        istat = 0
-       if (istat == 0) call reallocP(dredgepar%link_percentage, (/nalink+noutletlinks,lsedtot/), fill = 100.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%link_distance, nalink+noutletlinks, fill = 0.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%link_sum, (/nalink+noutletlinks,lsedtot/), fill = 0.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%voldump, (/nadump+1,lsedtot/), fill = 0.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%totvoldump, nadump+1, fill = 0.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%localareadump, nadump+1, fill = 0.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%globalareadump, nadump+1, fill = 0.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%globaldumpcap, nadump+1, fill = 0.0_fp, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%link_def, (/nalink+noutletlinks,2/), fill = 0, stat = istat)
-       if (istat == 0) call reallocP(dredgepar%dump_areas, nadump+1, fill = ' ', stat = istat)
+       if (istat == 0) call realloc(dredgepar%link_percentage, (/nalink+noutletlinks,lsedtot/), fill = 100.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%link_distance, nalink+noutletlinks, fill = 0.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%link_sum, (/nalink+noutletlinks,lsedtot/), fill = 0.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%voldump, (/nadump+1,lsedtot/), fill = 0.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%totvoldump, nadump+1, fill = 0.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%localareadump, nadump+1, fill = 0.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%globalareadump, nadump+1, fill = 0.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%globaldumpcap, nadump+1, fill = 0.0_fp, stat = istat)
+       if (istat == 0) call realloc(dredgepar%link_def, (/nalink+noutletlinks,2/), fill = 0, stat = istat)
+       if (istat == 0) call realloc(dredgepar%dump_areas, nadump+1, fill = ' ', stat = istat)
        if (istat == 0) then
           allocate(dredgepar%dump_prop(nadump+1), stat=istat)
           if (istat == 0) then
@@ -1725,13 +1689,7 @@ subroutine rddredge(dredgepar, dad_ptr, sedpar, lfbedfrm, morpar, lundia, julref
        pdump%use_dunes    = .false.
        pdump%depthdef     = DEPTHDEF_REFPLANE
        pdump%ichkloc      = CHKLOC_CENTRE
-       nullify(pdump%nm)
-       nullify(pdump%nmglob)
-       nullify(pdump%inm)
-       nullify(pdump%reflevel)
-       nullify(pdump%bedlevel)
-       nullify(pdump%dz_dump)
-       nullify(pdump%sortvar)
+
        !
     endif
     !
