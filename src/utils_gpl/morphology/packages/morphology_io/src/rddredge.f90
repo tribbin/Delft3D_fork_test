@@ -1631,11 +1631,7 @@ subroutine rddredge(dredgepar, dad_ptr, sedpar, lfbedfrm, morpar, lundia, julref
        if (istat == 0) call realloc(dredgepar%link_def, (/nalink+noutletlinks,2/), fill = 0, stat = istat)
        if (istat == 0) call realloc(dredgepar%dump_areas, nadump+1, fill = ' ', stat = istat)
        if (istat == 0) then
-          allocate(dredgepar%dump_prop(nadump+1), stat=istat)
-          if (istat == 0) then
-             dredgepar%dump_prop(1:nadump) = dump_prop(1:nadump)
-             deallocate(dump_prop, stat=istat)
-          endif
+          call realloc_dump_prop(dredgepar%dump_prop, nadump+1)
        endif
        !
        if (istat /= 0) then

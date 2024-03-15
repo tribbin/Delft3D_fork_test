@@ -38,6 +38,7 @@ implicit none
 
 public dredtype
 public dumptype
+public realloc_dump_prop
 
 !
 ! Definition of depth enumeration
@@ -250,6 +251,24 @@ type dredge_type
 end type dredge_type
 
 contains
+
+subroutine realloc_dump_prop(dump_prop, newsize)
+type (dumptype), dimension(:) , allocatable, intent(inout) :: dump_prop       ! (nadump) dump area properties
+integer, intent(in)  :: newsize
+
+type (dumptype), dimension(:) , allocatable :: dump_prop_new       ! (nadump) dump area properties
+integer :: i
+
+allocate(dump_prop_new(newsize))
+do i = 1, size(dump_prop)
+   dump_prop_new(i) = dump_prop(i)
+enddo
+if(allocated(dump_prop)) then
+   deallocate(dump_prop)
+endif
+dump_prop = dump_prop_new
+
+end subroutine realloc_dump_prop
 
 subroutine initdredge(dredgepar)
 !!--declarations----------------------------------------------------------------
