@@ -616,7 +616,7 @@ subroutine rddredge(dredgepar, dad_ptr, sedpar, lfbedfrm, morpar, lundia, julref
     !
     ! Allocate arrays used during computation
     !
-    dredgepar%dredge_dimension_length = nadump+nasupl
+    dredgepar%dredge_dimension_length = nadred+nasupl
                   allocate (dredgepar%link_def        (nalink               ,2        ), stat = istat)
     if (istat==0) allocate (dredgepar%tim_dredged     (dredgepar%dredge_dimension_length                  ), stat = istat)
     if (istat==0) allocate (dredgepar%tim_ploughed    (dredgepar%dredge_dimension_length                  ), stat = istat)
