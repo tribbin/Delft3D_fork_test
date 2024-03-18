@@ -437,10 +437,6 @@ private
       type(ug_nc_attribute) :: atts(5)
       integer :: tracer_index, constituent_index
 
-      if (.not. model_has_tracers()) then
-         return
-      end if
-
       num_tracers = ITRAN - ITRA1 + 1
 
       call realloc(idx_tracers_stations, num_tracers, keepExisting = .false., fill = 0)
@@ -476,10 +472,6 @@ private
    integer,                            intent(in   ) :: idx_tracers_stations(:) !< Indices of just-in-time added tracers in output_config_set array
 
    integer :: num_tracers, num_layers, ntot, variable_index
-
-   if (.not. model_has_tracers()) then
-      return
-   end if
 
    num_layers = max(1, kmx)
    ntot = numobs + nummovobs

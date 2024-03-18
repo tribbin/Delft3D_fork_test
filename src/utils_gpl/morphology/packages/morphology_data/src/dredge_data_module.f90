@@ -254,20 +254,17 @@ contains
 
 subroutine realloc_dump_prop(dump_prop, newsize)
 type (dumptype), dimension(:) , allocatable, intent(inout) :: dump_prop       ! (nadump) dump area properties
-integer, intent(in)  :: newsize
+integer, intent(in)  :: new_size
 
 type (dumptype), dimension(:) , allocatable :: dump_prop_new       ! (nadump) dump area properties
 integer :: i
 
-allocate(dump_prop_new(newsize))
-do i = 1, size(dump_prop)
-   dump_prop_new(i) = dump_prop(i)
-enddo
-if(allocated(dump_prop)) then
+if (new_size > 0 .and. new_size > size(dump_prop) .and. allocated(dump_prop)) then
+   allocate(dump_prop_new(new_size))
+   dump_prop_new(1:new_size) = dump_prop)
    deallocate(dump_prop)
+   dump_prop = dump_prop_new
 endif
-dump_prop = dump_prop_new
-
 end subroutine realloc_dump_prop
 
 subroutine initdredge(dredgepar)
@@ -321,7 +318,7 @@ subroutine clrdredge(istat, dredgepar)
 !
     if (allocated(dredgepar%link_percentage)) deallocate (dredgepar%link_percentage, STAT = istat)
     if (allocated(dredgepar%link_distance))   deallocate (dredgepar%link_distance  , STAT = istat)
-    if (allocated(dredgepar%link_sum))         deallocate (dredgepar%link_sum       , STAT = istat)
+    if (allocated(dredgepar%link_sum))        deallocate (dredgepar%link_sum       , STAT = istat)
     if (allocated(dredgepar%dzdred))          deallocate (dredgepar%dzdred         , STAT = istat)
     if (allocated(dredgepar%refplane))        deallocate (dredgepar%refplane       , STAT = istat)
     if (allocated(dredgepar%voldred))         deallocate (dredgepar%voldred        , STAT = istat)

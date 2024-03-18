@@ -573,7 +573,9 @@ subroutine unc_write_his(tim)            ! wrihis
         endif
 
         ! WAQ statistic outputs are kept outside of the statistical output framework
-        ierr = unc_def_his_station_waq_statistic_outputs(id_hwq)
+        if (jawaqproc <= 0) then
+          ierr = unc_def_his_station_waq_statistic_outputs(id_hwq)
+        endif
 
          do ivar = 1,out_variable_set_his%count
             config => out_variable_set_his%statout(ivar)%output_config
@@ -977,7 +979,7 @@ subroutine unc_write_his(tim)            ! wrihis
     endif
 
    ! WAQ statistic outputs are kept outside of the statistical output framework
-   if ((ITRA1 > 0)) then
+   if (ntot <= 0 .or. jawaqproc <= 0) then
       ierr = unc_put_his_station_waq_statistic_outputs(id_hwq)
    endif
      
@@ -2404,9 +2406,6 @@ contains
       integer, allocatable  :: nc_dimensions(:), specific_nc_dimensions(:)
 
       nc_error = IONC_NOERR
-      if (jawaqproc <= 0) then
-         return
-      end if
 
       allocate(waq_statistics_ids(noout_statt + noout_state))
 
@@ -2444,9 +2443,6 @@ contains
       integer :: start_index_valobs, statistics_index, num_layers
 
       nc_error = IONC_NOERR
-      if (ntot <= 0 .or. jawaqproc <= 0) then
-         return
-      end if
 
       ! Default start and count for stat-t variables
       if (model_is_3D()) then
