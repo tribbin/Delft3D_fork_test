@@ -1020,9 +1020,6 @@ contains
       x1 = XZ(node1d2d)
       y1 = YZ(node1d2d)
       z1 = zpl(jstart)
-      if (comparereal(xpl(jstart),xz(node1d2d),flow1d_eps10)==0 .and. comparereal(ypl(jstart),yz(node1d2d),flow1d_eps10)==0) then
-         x1 = x1 + .01
-      endif
       call setnewpoint(x1, y1, z1, k1)
       zk(k1) = z1
 
