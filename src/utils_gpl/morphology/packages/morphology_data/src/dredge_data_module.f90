@@ -258,12 +258,12 @@ integer, intent(in)  :: new_size
 
 type (dumptype), dimension(:) , allocatable :: dump_prop_new       ! (nadump) dump area properties
 integer :: i
-
-if (new_size > 0 .and. new_size > size(dump_prop) .and. allocated(dump_prop)) then
-   allocate(dump_prop_new(new_size))
-   dump_prop_new(1:new_size) = dump_prop
-   deallocate(dump_prop)
-   dump_prop = dump_prop_new
+if(allocated(dump_prop)) then
+   if (new_size > 0 .and. new_size > size(dump_prop)) then
+      allocate(dump_prop_new(new_size))
+      dump_prop_new(1:size(dump_prop)) = dump_prop
+      call move_alloc(dump_prop_new,dump_prop)
+   endif
 endif
 end subroutine realloc_dump_prop
 
