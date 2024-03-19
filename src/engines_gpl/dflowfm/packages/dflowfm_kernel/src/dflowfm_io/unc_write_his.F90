@@ -1824,20 +1824,6 @@ subroutine unc_write_his(tim)            ! wrihis
       end if
 
       if (jahisweir > 0 .and. nweirgen > 0) then
-         valobs(1:nweirgen, 1:NUMVALS_WEIRGEN) = transpose(valweirgen)
-         ierr = nf90_put_var(ihisfile, id_weirgen_dis   , valobs(1:nweirgen,IVAL_DIS),    (/ 1, it_his /))
-         ierr = nf90_put_var(ihisfile, id_weirgen_s1up  , valobs(1:nweirgen,IVAL_S1UP),   (/ 1, it_his /))
-         ierr = nf90_put_var(ihisfile, id_weirgen_s1dn  , valobs(1:nweirgen,IVAL_S1DN),   (/ 1, it_his /))
-         ierr = nf90_put_var(ihisfile, id_weirgen_crestl, valobs(1:nweirgen,IVAL_CRESTL), (/ 1, it_his /))
-         ierr = nf90_put_var(ihisfile, id_weirgen_crestw, valobs(1:nweirgen,IVAL_CRESTW), (/ 1, it_his /))
-         if (network%sts%numWeirs > 0) then ! write extra files for new weirs
-            ierr = nf90_put_var(ihisfile, id_weirgen_head  , valobs(1:nweirgen,IVAL_HEAD),     (/ 1, it_his /))
-            ierr = nf90_put_var(ihisfile, id_weirgen_au    , valobs(1:nweirgen,IVAL_AREA),     (/ 1, it_his /))
-            ierr = nf90_put_var(ihisfile, id_weirgen_vel   , valobs(1:nweirgen,IVAL_VEL),      (/ 1, it_his /))
-            ierr = nf90_put_var(ihisfile, id_weirgen_s1crest,valobs(1:nweirgen,IVAL_S1ONCREST),(/ 1, it_his /))
-            ierr = nf90_put_var(ihisfile, id_weir_stat, int(valobs(1:nweirgen,IVAL_STATE)),    (/ 1, it_his /))
-            ierr = nf90_put_var(ihisfile, id_weirgen_forcedif,valobs(1:nweirgen,IVAL_FORCEDIF),(/ 1, it_his /))
-         end if
          ! write geometry variables at the first time of history output
          if (it_his == 1) then
 
