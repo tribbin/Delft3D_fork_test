@@ -108,10 +108,5 @@ if ( ${configuration_type} STREQUAL "DFLOWFM" OR
     set(install_dir ${CMAKE_BINARY_DIR})
     set(build_dir ${CMAKE_BINARY_DIR})
 
-    post_build_target (${library_name}
-                       ${install_dir}
-                       ${build_dir}
-                       ${checkout_src_root}
-                       ${library_name})
-    install(PROGRAMS $<TARGET_FILE:${library_name}> RENAME ${library_renamed} DESTINATION lib)
+    install(PROGRAMS $<TARGET_FILE:${library_name}> RENAME io_netcdf.${library_suffix} DESTINATION lib)
 endif()
