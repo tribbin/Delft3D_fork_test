@@ -513,7 +513,7 @@ subroutine unc_write_his(tim)            ! wrihis
                                                  id_culvertdim, id_culvert_id, id_culvertgeom_node_count, id_culvertgeom_node_coordx, id_culvertgeom_node_coordy)
 
         ! Dambreak
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'dambreak', 'dambreak', jahisdambreak, ndambreaksg, 'none', 0, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, 'dambreak', 'dambreak', jahisdambreak, ndambreaksignals, 'none', 0, id_strlendim, &
                                                  id_dambreakdim, id_dambreak_id)
 
         ! Universal weir
@@ -933,7 +933,7 @@ subroutine unc_write_his(tim)            ! wrihis
         end if
 
         if (jahisdambreak > 0 .and. ndambreaklinks > 0) then
-            do i = 1,ndambreaksg
+            do i = 1,ndambreaksignals
                ierr = nf90_put_var(ihisfile, id_dambreak_id, trimexact(dambreak_ids(i), strlen_netcdf),(/ 1, i /))
             end do
         end if
