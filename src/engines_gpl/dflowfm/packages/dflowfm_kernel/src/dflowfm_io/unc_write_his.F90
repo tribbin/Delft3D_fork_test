@@ -1052,7 +1052,7 @@ subroutine unc_write_his(tim)            ! wrihis
          )
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, start = (/ 1, it_his /))
       case (UNC_LOC_STATION)
-         ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, count = build_nc_dimension_id_count_array(config%nc_dim_ids), start = build_nc_dimension_id_start_array(config%nc_dim_ids))
+         call write_station_netcdf_variable(ihisfile, out_variable_set_his%statout(ivar))
       case (UNC_LOC_DRED_LINK)
          ierr = nf90_put_var(ihisfile, id_var, out_variable_set_his%statout(ivar)%stat_output, start = (/ 1, 1, it_his /), count = (/ dadpar%nalink, stmpar%lsedtot, 1 /))
       case (UNC_LOC_GLOBAL)
@@ -2527,5 +2527,37 @@ integer function get_dimid_len(id)
 
    ierr = nf90_inquire_dimension(ihisfile, id, len = get_dimid_len)
 end function get_dimid_len
+
+subroutine write_station_netcdf_variable(i_his_file, output_variable_item)
+   use m_reshape, only: reshape_implicit
+   use MessageHandling, only: err
+   integer, intent(in) :: i_his_file
+   type(t_output_variable_item), intent(in) :: output_variable_item
+
+   type(t_output_quantity_config), pointer:: local_config
+   integer :: local_id_var, station_id_index
+   integer, allocatable :: counts(:), starts(:), positions(:)
+   double precision, allocatable :: transformed_data(:)
+
+   local_config => output_variable_item%output_config
+   local_id_var = output_variable_item%id_var
+
+   if (.not. local_config%nc_dim_ids%statdim) then
+      call err('Programming error, please report: Station NetCDF variable must have the station dimension')
+   end if
+
+   counts = build_nc_dimension_id_count_array(local_config%nc_dim_ids)
+   starts = build_nc_dimension_id_start_array(local_config%nc_dim_ids)
+
+   positions = [(i, integer :: i = 1, size(counts))]
+   station_id_index = findloc(build_nc_dimension_id_list(local_config%nc_dim_ids), value = id_statdim, dim = 1)
+   ! Bring the dimension corresponding to stations to the front, because it comes first in valobs
+   positions(1) = station_id_index
+   positions(station_id_index) = 1
+   ! Unflatten the array to its proper dimensions (counts), reorder the dimensions to place stations to the front, and flatten it back
+   transformed_data = reshape_implicit(output_variable_item%stat_output, counts, positions)
+
+   ierr = nf90_put_var(ihisfile, local_id_var, transformed_data, count = counts, start = starts)
+end subroutine write_station_netcdf_variable
 
 end subroutine unc_write_his

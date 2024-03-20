@@ -23,10 +23,8 @@ private
    type(t_nc_dim_ids), parameter :: nc_dims_3D_interface_center = t_nc_dim_ids(laydim_interface_center = .true., statdim = .true., timedim = .true.)
    type(t_nc_dim_ids), parameter :: nc_dims_3D_interface_edge = t_nc_dim_ids(laydim_interface_edge = .true., statdim = .true., timedim = .true.)
 
-   double precision, dimension(:, :), allocatable, target :: water_quality_output_data !< Water quality data to be written, each column contains one water_quality_output variable
    double precision, dimension(:,:), allocatable, target :: obscrs_data !< observation cross section constituent data on observation cross sections to be written
    double precision, dimension(:), allocatable, target :: time_dredged, time_ploughed
-   double precision, dimension(:,:), allocatable, target :: station_tracer_data !< (numstations, numtracers*numlayers) tracer data on observation stations to be written
    double precision, dimension(:),   allocatable, target :: SBCX, SBCY, SBWX, SBWY, SSWX, SSWY, SSCX, SSCY
 
    contains
@@ -132,26 +130,6 @@ private
    call assign_sediment_transport(SBCX,SBCY,IPNT_SBCX1,IPNT_SBCY1)
    end subroutine calculate_sediment_SBC
 
-   !> Procedure called to transform the valobs data for writing to the water_quality_output NetCDF variables
-   subroutine transform_water_quality_inputs(source_input)
-      use m_observations, only: numobs, nummovobs
-      use m_flow, only: kmx
-      use m_observations, only: valobs, IPNT_HWQ1
-      use processes_input, only: num_wq_user_outputs => noout_user
-      double precision, pointer, dimension(:), intent(inout) :: source_input   !< Pointer to source input array for water_quality_output_# item, unused
-
-      integer :: ntot, variable_index, num_layers, start_index
-      double precision, pointer, dimension(:, :) :: valobs_slice
-      ntot = numobs + nummovobs
-      num_layers = max(1, kmx)
-
-      do variable_index = 1, num_wq_user_outputs
-         start_index = IPNT_HWQ1 + (variable_index - 1) * num_layers
-         valobs_slice => valobs(:, start_index : start_index + num_layers - 1)
-         water_quality_output_data(:, variable_index) = reshape(transpose(valobs_slice), [num_layers * ntot])
-      end do
-   end subroutine transform_water_quality_inputs
-
    subroutine add_station_water_quality_configs(output_config_set, idx_his_hwq)
       use processes_input, only: num_wq_user_outputs => noout_user
       use results, only : OutputPointers
@@ -170,13 +148,8 @@ private
 
       num_layers = max(1, kmx)
 
-      if (.not. allocated(water_quality_output_data)) then
-         ntot = numobs + nummovobs
-         allocate(water_quality_output_data(num_layers * ntot, num_wq_user_outputs))
-         allocate(idx_his_hwq(num_wq_user_outputs))
-      else
-         call err('Internal error, please report: water_quality_output_data was already allocated')
-      endif
+      ntot = numobs + nummovobs
+      allocate(idx_his_hwq(num_wq_user_outputs))
 
       call ncu_set_att(atts(1), 'geometry', 'station_geom')
 
@@ -399,28 +372,6 @@ private
 
    end subroutine aggregate_obscrs_data
 
-!TODO: make generieke transpose routine
-   !> Transform the valobs data for writing to the station tracer NetCDF variables
-   subroutine transform_station_tracer_inputs(source_input)
-      use m_observations, only: numobs, nummovobs
-      use m_transportdata, only: ITRA1, ITRAN
-      use m_flow, only: kmx
-      use m_observations, only: valobs, IPNT_TRA1
-      double precision, pointer, dimension(:), intent(inout) :: source_input   !< Pointer to source input array for water_quality_output_# item, unused
-
-      integer :: ntot, variable_index, num_layers, num_tracers, i_start
-      double precision, pointer, dimension(:, :) :: valobs_slice
-
-      num_layers = max(1,kmx)
-      ntot = numobs + nummovobs !TODO: REFACTOR ntot
-      num_tracers = ITRAN - ITRA1 + 1
-      do variable_index = 1, num_tracers
-         i_start = IPNT_TRA1 + (variable_index - 1) * num_layers
-         valobs_slice => valobs(:, i_start : i_start + num_layers - 1)
-         station_tracer_data(:, variable_index) = reshape(transpose(valobs_slice), [num_layers * ntot])
-      end do
-   end subroutine transform_station_tracer_inputs
-
    !> Adds output configs for every tracer on observation stations just in time,
    !! because the tracers are only known during model initialization.
    !! Returns config indices for these variables such that they can be added to the output items for the same tracers
@@ -467,22 +418,22 @@ private
    subroutine add_station_tracer_output_items(output_set, output_config_set, idx_tracers_stations)
    use m_transportdata, only: ITRA1, ITRAN
    use m_flow, only: kmx
-   use m_observations, only: numobs, nummovobs
+   use m_observations, only: numobs, nummovobs, valobs, IPNT_TRA1
    type(t_output_variable_set),        intent(inout) :: output_set              !< Output set that item will be added to
    type(t_output_quantity_config_set), intent(in   ) :: output_config_set       !< Read config items out of config set
    integer,                            intent(in   ) :: idx_tracers_stations(:) !< Indices of just-in-time added tracers in output_config_set array
 
-   integer :: num_tracers, num_layers, ntot, variable_index
+   integer :: num_tracers, num_layers, ntot, variable_index, i_start
+   double precision, pointer :: flattened_valobs_slice(:)
 
    num_layers = max(1, kmx)
    ntot = numobs + nummovobs
    num_tracers = ITRAN - ITRA1 + 1
 
-   allocate(station_tracer_data(num_layers * ntot, num_tracers))
-
-   call add_stat_output_items(output_set, output_config_set%statout(idx_tracers_stations(1)), station_tracer_data(:, 1), transform_station_tracer_inputs)
-   do variable_index = 2, num_tracers
-      call add_stat_output_items(output_set, output_config_set%statout(idx_tracers_stations(variable_index)), station_tracer_data(:, variable_index))
+   do variable_index = 1, num_tracers
+      i_start = IPNT_TRA1 + (variable_index - 1) * num_layers
+      flattened_valobs_slice(1 : ntot * num_layers) => valobs(:, i_start : i_start + num_layers - 1)
+      call add_stat_output_items(output_set, output_config_set%statout(idx_tracers_stations(variable_index)), flattened_valobs_slice)
    end do
 
    end subroutine add_station_tracer_output_items
@@ -2008,7 +1959,7 @@ private
 
       procedure(process_data_double_interface), pointer :: function_pointer => NULL()
 
-      integer :: i, ntot, num_const_items, nlyrs
+      integer :: i, ntot, num_const_items, nlyrs, variable_index, start_index, num_layers
       integer, allocatable, dimension(:) :: id_hwq
       integer, allocatable, dimension(:) :: idx_his_hwq
       integer, allocatable, dimension(:) :: idx_constituents_crs, idx_tracers_stations
@@ -2537,10 +2488,11 @@ private
       if(jawaqproc > 0 .and. num_wq_user_outputs > 0) then
          call add_station_water_quality_configs(out_quan_conf_his, idx_his_hwq)
 
-         ! The first statistical output item is responsible for transforming all water_quality_stat data in valobs
-         call add_stat_output_items(output_set, output_config_set%statout(idx_his_hwq(1)), water_quality_output_data(:,1), transform_water_quality_inputs)
-         do i = 2, num_wq_user_outputs
-            call add_stat_output_items(output_set, output_config_set%statout(idx_his_hwq(i)), water_quality_output_data(:,i))
+         num_layers = max(1, kmx)
+         do variable_index = 1, num_wq_user_outputs
+            start_index = IPNT_HWQ1 + (variable_index - 1) * num_layers
+            temp_pointer(1 : num_layers * ntot) => valobs(:, start_index : start_index + num_layers - 1)
+            call add_stat_output_items(output_set, output_config_set%statout(idx_his_hwq(variable_index)), temp_pointer)
          end do
       end if
 
