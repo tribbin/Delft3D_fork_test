@@ -482,7 +482,7 @@ contains
         integer(kind = int_wp), intent(in) :: ilun
 
         if (file_locked(ilun)) then
-            call sleepqq(1)
+            call sleep(1)
         endif
 
     end subroutine sleep_a_while

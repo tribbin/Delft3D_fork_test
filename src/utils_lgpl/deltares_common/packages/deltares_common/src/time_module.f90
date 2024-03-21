@@ -797,7 +797,8 @@ module time_module
                    endif
                 endif
             end select
-            datetimestr = datetime2string(iyear, imonth, iday, ihour, imin, isec, ioffsethour=ioffsethour, ioffsetmin=ioffsetmin, ierr=ierr_)
+            datetimestr = datetime2string(iyear, imonth, iday, ihour, imin, isec, &
+                        ioffsethour=ioffsethour, ioffsetmin=ioffsetmin, ierr=ierr_)
          else
             ierr_ = -1
             datetimestr = ' '
