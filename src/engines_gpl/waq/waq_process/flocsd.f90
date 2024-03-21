@@ -84,7 +84,6 @@ contains
         real(kind = real_wp) :: dflocim1    ! f  flocculation or break-up flux im1                  (g/m3/d)
         real(kind = real_wp) :: dflocim2    ! f  flocculation or break-up flux im2                  (g/m3/d)
         logical active      !    active segment
-      real(kind=real_wp)  ::macro       !    concentration macro flocs                            (g/m3)
         real(kind = real_wp) :: macro       !    concentration macro flocs                            (g/m3)
         real(kind = real_wp) :: micro       !    concentration micro flocs                            (g/m3)
         real(kind = real_wp) :: tim         !    total concentration flocs                            (g/m3)
@@ -117,11 +116,8 @@ contains
 
             ! only for active water segments
 
-         if ( active ) then
             active = btest(iknmrk(iseg), 0)
-            call evaluate_waq_attribute(1, iknmrk(iseg), ikmrk1)
-            bottom = ikmrk1==3
-            if (active .and. .not. bottom) then
+            if (active) then
                 tke = tau / param_soulsby ! Very coarse estimate!
                 call flocculate_dwq(swfloform, cmacro, cmicro, tpm, tke, tau, total_depth, local_depth, viscosity, rho_water, &
                         spmratioem, ws_macro, ws_micro)
@@ -188,16 +184,20 @@ contains
         enddo
 
         do iq = noq1 + noq2 + 1, noq
-
-         if ( ivan > 0 ) then
-            ip15 = ipoint(15) + (ivan-1) * in15
-            ip16 = ipoint(16) + (ivan-1) * in16
-            pmsa(ipwmac) = pmsa( ip15 )
-            pmsa(ipwmic) = pmsa( ip16 )
-         endif
-
-         ipwmac = ipwmac + inwmac
-         ipwmic = ipwmic + inwmic
+ 
+            ivan = iexpnt(1,iq)
+!           
+!           sedimentation velocity from segment to exchange-area
+!           
+            if ( ivan > 0 ) then
+                ip15 = ipoint(15) + (ivan-1) * in15
+                ip16 = ipoint(16) + (ivan-1) * in16
+                pmsa(ipwmac) = pmsa( ip15 )
+                pmsa(ipwmic) = pmsa( ip16 )
+            endif
+            
+            ipwmac = ipwmac + inwmac
+            ipwmic = ipwmic + inwmic
 
         enddo
 
