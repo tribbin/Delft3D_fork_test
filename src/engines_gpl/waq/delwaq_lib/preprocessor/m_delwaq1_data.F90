@@ -53,8 +53,8 @@ module m_delwaq1_data
     integer :: rmax                   !< dynamic size real work array
     integer :: cmax                   !< dynamic size character work array
     integer, allocatable :: iar(:)                 !< integer work array
-    real, allocatable :: rar(:)                 !< real work array
-    character(len = 20), allocatable :: car(:)                 !< character work array
+    real, allocatable :: real_array(:)                 !< real work array
+    character(len = 20), allocatable :: char_arr(:)                 !< character work array
 
     type(waq_data_buffer) :: buffer
 

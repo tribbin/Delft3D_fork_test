@@ -77,7 +77,7 @@ contains
         if (associated(psynam)) deallocate (psynam)
         if (associated(multp)) deallocate (multp)
         deltim = otime
-        car(1) = ' '
+        char_arr(1) = ' '
         k = 2
         icmak = cmax - 1
 
@@ -115,8 +115,8 @@ contains
         if (associated(ioptraai)) deallocate (ioptraai)
 
         deltim = otime
-        call read_block_5_boundary_conditions(lun, lchar, filtype, car, iar, &
-                rar, nrftot, nrharm, nobnd, nosys, &
+        call read_block_5_boundary_conditions(lun, lchar, filtype, char_arr, iar, &
+                real_array, nrftot, nrharm, nobnd, nosys, &
                 notot, nobtyp, rmax, imax, is_date_format, &
                 iwidth, intsrt, is_yyddhh_format, syname, &
                 icmak, output_verbose_level, status)
@@ -124,8 +124,8 @@ contains
         deltim = otime
 
         nosss = noseg + nseg2     ! increase with bottom segments
-        call read_block_6_waste_loads_withdrawals(lun, lchar, filtype, icmak, car(k), &
-                imax, iar, rmax, rar, notot, &
+        call read_block_6_waste_loads_withdrawals(lun, lchar, filtype, icmak, char_arr(k), &
+                imax, iar, rmax, real_array, notot, &
                 nosss, syname, nowst, nowtyp, nrftot, &
                 nrharm, is_date_format, is_yyddhh_format, iwidth, &
                 output_verbose_level, chkpar, status)
@@ -151,8 +151,8 @@ contains
                 syname, iwidth, output_verbose_level, inpfil, &
                 gridps, status)
 
-        call read_block_9(lun, lchar, filtype, car, iar, &
-                icmak, iimax, iwidth, &
+        call read_block_9(lun, lchar, filtype, char_arr, iar, &
+                icmak, max_int_size, iwidth, &
                 output_verbose_level, ioutps, outputs, status)
 
         call setup_statistical(lunrep, npos, cchar, &
