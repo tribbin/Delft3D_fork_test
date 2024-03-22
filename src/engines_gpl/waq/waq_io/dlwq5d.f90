@@ -31,7 +31,7 @@ contains
     SUBROUTINE DLWQ5D (LUNUT, IAR, RAR, IIMAX, IRMAX, &
             IPOSR, NPOS, ILUN, LCH, LSTACK, &
             CCHAR, CHULP, NOTOT, NOTOTC, time_dependent, NOBRK, &
-            IOPT, DTFLG1, DTFLG3, ITFACT, ITYPE, &
+            time_function_type, DTFLG1, DTFLG3, ITFACT, ITYPE, &
             IHULP, RHULP, IERR, ierr3)
         !! Boundary and waste data new style
         !
@@ -62,7 +62,7 @@ contains
         !     NOTOT   INTEGER    1         INPUT   size of the matrix to be read
         !     ITTIM   INTEGER    1         INPUT   0 if steady, 1 if time function
         !     NOBRK   INTEGER    1         OUTPUT  number of records read
-        !     IOPT    INTEGER    1         INPUT   3 is harmonics, 4 is fourier
+        !     time_function_type    INTEGER    1         INPUT   3 is harmonics, 4 is fourier
         !     DTFLG1  LOGICAL    1         INPUT   True if time in 'date' format
         !     DTFLG3  LOGICAL    1         INPUT   True if YYetc instead of DDetc
         !     ITFACT  INTEGER    1         INPUT   factor between clocks
@@ -85,7 +85,7 @@ contains
         integer(kind = int_wp) :: ithndl = 0
         integer(kind = int_wp) :: nobrk, itel, itel2, ierr3, itype
         integer(kind = int_wp) :: lunut, ilun, iposr, npos, ierr, itfact
-        integer(kind = int_wp) :: iar, notot, nototc, lstack, iopt
+        integer(kind = int_wp) :: iar, notot, nototc, lstack, time_function_type
         real :: rar(:), rhulp
 
         if (timon) call timstrt("dlwq5d", ithndl)
