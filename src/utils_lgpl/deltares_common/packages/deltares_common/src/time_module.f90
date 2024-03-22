@@ -650,10 +650,10 @@ module time_module
          secs = seconds_remaining - mins*60d0
          if (days > 31) then
             ! No support > 1 month yet, so fall back to basic format, which allows unlimited days: P[n]Y[n]M[n]DT[n]H[n]M[n]S
-            write (duration_string, '("P", i0,"DT", i0, "H", i0, "M", i0, "S")'), days, hours, mins, secs
+            write (duration_string, '("P", i0,"DT", i0, "H", i0, "M", i0, "S")') days, hours, mins, secs
          else
             ! Preferred extended format: P[YYYY]-[MM]-[DD]T[hh]:[mm]:[ss]
-            write (duration_string, '("P", i4.4,"-",i2.2,"-",i2.2,"T", i2.2, ":", i2.2, ":", i2.2)'), 0, 0, days, hours, mins, secs
+            write (duration_string, '("P", i4.4,"-",i2.2,"-",i2.2,"T", i2.2, ":", i2.2, ":", i2.2)') 0, 0, days, hours, mins, secs
          end if
       end function duration_to_string
 
