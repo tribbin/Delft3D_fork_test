@@ -3,7 +3,7 @@ enable_language (Fortran)
 set(src_root_dir ${CMAKE_SOURCE_DIR}/..)
 
 if (WIN32)
-    message( FATAL_ERROR "GNU compilers on Windows are currently not supported. CMake will exit." )
+    message( FATAL_ERROR "GNU compilers on Windows are not supported. CMake will exit." )
 endif(WIN32)
 
 if (UNIX)
@@ -26,5 +26,4 @@ if (UNIX)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif(UNIX)
 
-#set(qauto_threaded_flags ${automatic_local_variable_storage_flag})
 set(waq_default_flags ${file_preprocessor_flag} ${traceback_flag})

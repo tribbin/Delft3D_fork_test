@@ -89,7 +89,7 @@ if ( ${configuration_type} STREQUAL "DFLOWFM" OR
     set(library_name io_netcdf_dll)
     set(library_renamed libio_netcdf.so)
     # Add dynamic io_netcdf library
-    add_library(${library_name} SHARED ${src_path}/io_netcdf_api.F90 ${rc_version_file})
+    add_library(${library_name} SHARED ${src_path}/../../io_netcdf_api/io_netcdf_api.F90 ${rc_version_file})
     include_directories(${version_include_dir})
 
     set(oss_dependencies io_netcdf)
