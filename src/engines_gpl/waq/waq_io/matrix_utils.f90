@@ -57,7 +57,7 @@ contains
     end subroutine scale_array
 
     subroutine assign_matrix(lunut, iar, noitm, itmnr, nodim, &
-            idmnr, iorder, rar, iopt, rmat, &
+            idmnr, iorder, real_array, iopt, rmat, &
             nocol, nobrk, amiss, iarp, rmatu)
 
         !! Assign matrix according to computational rules
@@ -74,7 +74,7 @@ contains
         !     NODIM   INTEGER    1         IN/OUT  number of conc. for comput.
         !     IDMNR   INTEGER    1         IN/OUT  number of conc. for output
         !     IORDER  INTEGER    1         INPUT   =1 items first: =2 concen first
-        !     RAR     REAL       *         INPUT   real constants in formulae
+        !     real_array     REAL       *         INPUT   real constants in formulae
         !     IOPT    LOGICAL    *         INPUT   3 & 4 is Fourier or harmonics
         !     RMAT    REAL       *         INPUT   real matrix of read values
         !     NOBRK   INTEGER    1         OUTPUT  number of records read
@@ -92,7 +92,7 @@ contains
         integer(kind = int_wp) :: ip, ip2, lunut, iloco, nocol, nobrk, ioff2
         integer :: iar(:), i, iarp(:)
         real :: accum, rmatu(:), amaxv, amiss, aminv
-        real :: rar(:), rmat(:)
+        real :: real_array(:), rmat(:)
 
         if (timon) call timstrt("assign_matrix", ithndl)
 
@@ -166,7 +166,7 @@ contains
             if (ip > 0) then
                 accum = rmat(ip2 + ioff)
             else
-                accum = rar(-ip)
+                accum = real_array(-ip)
             endif
             itel = itel + 1
             rmatu(itel) = 0
@@ -189,7 +189,7 @@ contains
             if (ip == 0) then
                 amaxv = rmat(ip2 + ioff)
             endif
-            if (ip < 0) amaxv = rar(-ip)
+            if (ip < 0) amaxv = real_array(-ip)
             if (ip > 0) amaxv = rmatu(itels + ip)
         endif
         ! a minimum value need to be applied
@@ -205,7 +205,7 @@ contains
             if (ip == 0) then
                 aminv = rmat(ip2 + ioff)
             endif
-            if (ip < 0) aminv = rar(-ip)
+            if (ip < 0) aminv = real_array(-ip)
             if (ip > 0) aminv = rmatu(itels + ip)
         endif
 
@@ -220,7 +220,7 @@ contains
             if (ip == 0) then
                 accum = -rmat(ip2 + ioff)
             endif
-            if (ip < 0) accum = -rar(-ip)
+            if (ip < 0) accum = -real_array(-ip)
             if (ip > 0) accum = -rmatu(itels + ip)
             if (accum == -amiss) accum = amiss
         endif
@@ -236,7 +236,7 @@ contains
             if (ip == 0) then
                 accum = rmat(ip2 + ioff)
             endif
-            if (ip < 0) accum = rar(-ip)
+            if (ip < 0) accum = real_array(-ip)
             if (ip > 0) accum = rmatu(itels + ip)
         endif
 
@@ -251,8 +251,8 @@ contains
                 endif
             endif
             if (ip < 0) then
-                if (rar(-ip) /= amiss .and. accum /= amiss) then
-                    accum = accum / rar(-ip)
+                if (real_array(-ip) /= amiss .and. accum /= amiss) then
+                    accum = accum / real_array(-ip)
                 else
                     accum = amiss
                 endif
@@ -277,8 +277,8 @@ contains
                 endif
             endif
             if (ip < 0) then
-                if (rar(-ip) /= amiss .and. accum /= amiss) then
-                    accum = accum * rar(-ip)
+                if (real_array(-ip) /= amiss .and. accum /= amiss) then
+                    accum = accum * real_array(-ip)
                 else
                     accum = amiss
                 endif

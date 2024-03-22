@@ -128,7 +128,7 @@ contains
     end subroutine compact_usefor
 
     subroutine compact_usefor_list(lunut, iar, itmnr, noitm, idmnr, &
-            nodim, iorder, car, ioffi, ioffc, &
+            nodim, iorder, char_arr, ioffi, ioffc, &
             iods, ioffd, idx_missing, count_missing, ierr, status)
 
         !! Compacts USEFOR lists if unresolved externals
@@ -142,13 +142,13 @@ contains
         !     Name    Kind     Length     Funct.  Description
         !     ---------------------------------------------------------
         !     lunut   integer    1         input   unit number for ascii output
-        !     iar     integer  iimax       in/out  integer   workspace
+        !     iar     integer  max_int_size       in/out  integer   workspace
         !     itmnr   integer    1         in/out  nr of items for assignment
         !     noitm   integer    1         in      nr of items in computational rule
         !     idmnr   integer    1         in/out  nr of subst for assignment
         !     nodim   integer    1         in      nr of subst in computational rule
         !     iorder  integer    1         in      1 = items first, 2 is subst first
-        !     car     char*(*)  nitm       input   items to check for presence
+        !     char_arr     char*(*)  nitm       input   items to check for presence
         !     ioffi   integer    1         in/out  offset in input array
         !     ioffc   integer    1         in/out  offset in character array
         !     ioffd   integer    1         in/out  base offset in both arrays
@@ -160,7 +160,7 @@ contains
         use m_waq_precision
         use m_error_status
 
-        character*(*) car(:)
+        character*(*) char_arr(:)
         integer(kind = int_wp), intent(inout) :: iar(:)
         character*20  chulp, message_type
         integer(kind = int_wp) :: ithndl = 0
@@ -200,8 +200,8 @@ contains
                 if (i5 > -100000 .and. i5 <= 0)  i4 = i4 + 1
                 if (i5 > 0)                      i4 = iar(ioffc + i3)
             end do
-            chulp = car(ioffd + i4)
-            if (car(ioffc + idx_missing) /= chulp) then ! log not resolved
+            chulp = char_arr(ioffd + i4)
+            if (char_arr(ioffc + idx_missing) /= chulp) then ! log not resolved
                 if (iorder == 2) then
                     write (lunut, 1030) i4, chulp
                 else
@@ -210,14 +210,14 @@ contains
             end if
         else if (i2 > 0 .and. i2 <  100000) then
             i4 = i2
-            chulp = car(ioffd + i2)
-            if (car(ioffc + idx_missing) == chulp) then !warning
+            chulp = char_arr(ioffd + i2)
+            if (char_arr(ioffc + idx_missing) == chulp) then !warning
                 call status%increase_warning_count()
                 message_type = "WARNING"
-                write (lunut, 1010) message_type, idx_missing + count_missing, car(ioffc + idx_missing)
+                write (lunut, 1010) message_type, idx_missing + count_missing, char_arr(ioffc + idx_missing)
             else ! pseudo-error
                 message_type = "ERROR"
-                write (lunut, 1010) message_type, idx_missing + count_missing, car(ioffc + idx_missing)
+                write (lunut, 1010) message_type, idx_missing + count_missing, char_arr(ioffc + idx_missing)
                 ierr = 1
                 if (iorder == 2) then
                     write (lunut, 1030)  message_type, i2, chulp
@@ -244,7 +244,7 @@ contains
         ! shift the second array heap
         do i4 = i1, nitm * 2 + iods
             iar(ioffc + i4) = iar(ioffc + i4 + ishft)
-            car(ioffc + i4) = car(ioffc + i4 + ishft)
+            char_arr(ioffc + i4) = char_arr(ioffc + i4 + ishft)
         end do
         nitm = nitm - ishft
         ioffi = ioffi - ishft
@@ -255,7 +255,7 @@ contains
         ! shift the base array heap
         do i5 = ioffd + i2, ioffd + ntt + nitm * 2 + iods
             iar(i5) = iar(i5 + 1)
-            car(i5) = car(i5 + 1)
+            char_arr(i5) = char_arr(i5 + 1)
         end do
 
         ! renumber the second array heap

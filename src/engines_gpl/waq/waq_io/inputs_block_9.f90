@@ -34,8 +34,8 @@ module inputs_block_9
 
 contains
 
-    subroutine read_block_9 (lun, lchar, filtype, car, iar, &
-            icmax, iimax, iwidth, &
+    subroutine read_block_9 (lun, lchar, filtype, char_arr, iar, &
+            max_char_size, max_int_size, iwidth, &
             output_verbose_level, ioutps, outputs, status)
 
         use output_utils, only : set_default_output
@@ -51,10 +51,10 @@ contains
         integer(kind = int_wp), intent(inout) :: lun   (*)          !< array with unit numbers
         character(*), intent(inout) :: lchar (*)         !< array with file names of the files
         integer(kind = int_wp), intent(inout) :: filtype(*)         !< type of binary file
-        integer(kind = int_wp), intent(in) :: icmax              !< size of the character workspace
-        character(20), intent(inout) :: car   (icmax)     !< character workspace
+        integer(kind = int_wp), intent(in) :: max_char_size              !< size of the character workspace
+        character(20), intent(inout) :: char_arr   (max_char_size)     !< character workspace
         integer(kind = int_wp), intent(inout) :: iar   (*)          !< integer workspace ( dump locations at entrance )
-        integer(kind = int_wp), intent(in) :: iimax              !< size of the integer workspace
+        integer(kind = int_wp), intent(in) :: max_int_size              !< size of the integer workspace
         integer(kind = int_wp), intent(in) :: iwidth             !< width of the output file
         integer(kind = int_wp), intent(in) :: output_verbose_level             !< flag for more or less output
         integer(kind = int_wp), intent(out) :: ioutps(7, noutp)    !< output administration array
@@ -133,7 +133,7 @@ contains
 
         !     Determine local maximum
 
-        nrvarm = min(iimax, icmax) / noutp
+        nrvarm = min(max_int_size, max_char_size) / noutp
         allocate (sysid (notot), coname(nocons), paname(nopa))
         allocate (funame(nofun), sfname(nosfun), diname(nodisp))
         allocate (vename(novelo))
@@ -169,7 +169,7 @@ contains
 
         !        Read output definition block
 
-        call read_ascii_definition_file(noutp, nrvar, nrvarm, isrtou, car, &
+        call read_ascii_definition_file(noutp, nrvar, nrvarm, isrtou, char_arr, &
                 infile, nx, ny, nodump, ibflag, &
                 lmoutp, ldoutp, lhoutp, lncout, status, &
                 igrdou, ndmpar)
@@ -203,7 +203,7 @@ contains
 
                 !           Get output pointers
 
-                call get_output_pointers(noutp, nrvar, nrvarm, car, iar, &
+                call get_output_pointers(noutp, nrvar, nrvarm, char_arr, iar, &
                         nmis, notot, sysid, nocons, coname, &
                         nopa, paname, nofun, funame, nosfun, &
                         sfname, lunut)
@@ -241,8 +241,8 @@ contains
                 ivar = ivar + 1
                 ip = (i - 1) * nrvarm + iv
                 Outputs%pointers(ivar) = iar(ip)
-                Outputs%names   (ivar) = car(ip)
-                Outputs%std_var_name(ivar) = car(ip)
+                Outputs%names   (ivar) = char_arr(ip)
+                Outputs%std_var_name(ivar) = char_arr(ip)
                 Outputs%units   (ivar) = ' '
                 Outputs%description  (ivar) = ' '
             enddo

@@ -46,7 +46,7 @@ contains
         integer(kind = int_wp), intent(out) :: output_verbose_level            !< Output option
 
         ! Local
-        character*(npos) car                              !  read buffer
+        character*(npos) char_arr                              !  read buffer
         character*1      ctrlz, ch_cr                    !  special characters
         integer(kind = int_wp) :: i, i2                            !  loop counter
         integer(kind = int_wp) :: status                           !  iostatus
@@ -58,22 +58,22 @@ contains
         output_verbose_level = -1
         status = 0
         do while (status == 0)
-            read (lunin, '(a)', iostat = status) car
+            read (lunin, '(a)', iostat = status) char_arr
 
             ! search the tokens, read the numbers
 
             do i = 1, npos - 19
-                if (car(i:i + 14) == 'DELWAQ_VERSION_') then
+                if (char_arr(i:i + 14) == 'DELWAQ_VERSION_') then
                     do i2 = i + 15, i + 19
-                        if (car(i2:i2) == ctrlz .or. &
-                                car(i2:i2) == ch_cr) car(i2:i2) = ' '
+                        if (char_arr(i2:i2) == ctrlz .or. &
+                                char_arr(i2:i2) == ch_cr) char_arr(i2:i2) = ' '
                     enddo
-                    read  (car(i + 15:i + 19), '(f5.0)') input_version_number
+                    read  (char_arr(i + 15:i + 19), '(f5.0)') input_version_number
                     write (lunut, '(a,a,f6.3)') '       ---------->', &
                             ' Version number of the input file is: ', input_version_number
                 endif
-                if (car(i:i + 19) == 'PRINT_OUTPUT_OPTION_') then
-                    read (car(i + 20:i + 20), '(i1)') output_verbose_level
+                if (char_arr(i:i + 19) == 'PRINT_OUTPUT_OPTION_') then
+                    read (char_arr(i + 20:i + 20), '(i1)') output_verbose_level
                     write (lunut, '(a,a,i1)') '       ---------->', &
                             ' Output level of the listfile is: ', output_verbose_level
                 endif
@@ -82,7 +82,7 @@ contains
 
         if (status < 0) then    !        end of file encountered
             rewind lunin
-            read (lunin, '(a)') car
+            read (lunin, '(a)') char_arr
             return
         else                         !        errors during read
             write (lunut, 2000) lunin, lfile

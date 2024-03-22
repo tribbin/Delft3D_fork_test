@@ -29,7 +29,7 @@ contains
 
 
     SUBROUTINE DLWQTB (LUNUT, IOFF, A, J, IIPNT, &
-            IRPNT, IIMAX, ITIME, KTYPE, AVAL, &
+            IRPNT, max_int_size, ITIME, KTYPE, AVAL, &
             IVAL, IERR)
         !
         !     Deltares     SECTOR WATERRESOURCES AND ENVIRONMENT
@@ -54,7 +54,7 @@ contains
         !     J       INTEGER    ?        INPUT   Integer boundary workspace
         !     IIPNT   INTEGER    1        IN/OUT  Offset in integer array space
         !     IRPNT   INTEGER    1        IN/OUT  Offset in real array space
-        !     IIMAX   INTEGER    1        INPUT   Maximum integer array size
+        !     max_int_size   INTEGER    1        INPUT   Maximum integer array size
         !     ITIME   INTEGER    1        INPUT   Time in units of the system clock
         !     KTYPE   INTEGER   NOITM     INPUT   Type of items
         !     AVAL    REAL    NOTOT,NOITM OUTPUT  Values of the bounds/wastes
@@ -68,7 +68,7 @@ contains
         real(kind = real_wp), PARAMETER :: TWOPI = 6.28319
         integer(kind = int_wp) :: J(*), KTYPE(*), IVAL(*)
         real(kind = real_wp) :: A(*), AVAL(*)
-        integer(kind = int_wp) :: IERR, LUNUT, IRPNT, IIMAX, ITIME, IOFF, IIPNT
+        integer(kind = int_wp) :: IERR, LUNUT, IRPNT, max_int_size, ITIME, IOFF, IIPNT
 
         !     local
         real(kind = real_wp) :: amiss, aa, ab, aphase, func
@@ -363,8 +363,8 @@ contains
         !
         !       Return until finished
         !
-        150 IF (IJ < IIMAX) GOTO 10
-        IF (IJ == IIMAX) THEN
+        150 IF (IJ < max_int_size) GOTO 10
+        IF (IJ == max_int_size) THEN
             IIPNT = IIPNT + IJ
             IRPNT = IRPNT + IA
             goto 9999    !   RETURN

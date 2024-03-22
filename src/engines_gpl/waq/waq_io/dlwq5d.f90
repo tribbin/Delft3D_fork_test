@@ -28,7 +28,7 @@ module m_dlwq5d
 contains
 
 
-    SUBROUTINE DLWQ5D (LUNUT, IAR, RAR, IIMAX, IRMAX, &
+    SUBROUTINE DLWQ5D (LUNUT, IAR, real_array, max_int_size, IRMAX, &
             IPOSR, NPOS, ILUN, LCH, LSTACK, &
             CCHAR, CHULP, NOTOT, NOTOTC, time_dependent, NOBRK, &
             time_function_type, is_date_format, is_yyddhh_format, ITFACT, ITYPE, &
@@ -48,9 +48,9 @@ contains
         !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
         !     ---------------------------------------------------------
         !     LUNUT   INTEGER    1         INPUT   unit number for ASCII output
-        !     IAR     INTEGER  IIMAX       IN/OUT  integer   workspace
-        !     RAR     REAL     IRMAX       IN/OUT  real      workspace
-        !     IIMAX   INTEGER    1         INPUT   max. int. workspace dimension
+        !     IAR     INTEGER  max_int_size       IN/OUT  integer   workspace
+        !     real_array     REAL     IRMAX       IN/OUT  real      workspace
+        !     max_int_size   INTEGER    1         INPUT   max. int. workspace dimension
         !     IRMAX   INTEGER    1         INPUT   max. real workspace dimension
         !     IPOSR   INTEGER    1         IN/OUT  Start position on input line
         !     NPOS    INTEGER    1         INPUT   nr of significant characters
@@ -76,7 +76,7 @@ contains
 
         logical, intent(in) :: time_dependent !< True if the BC or Waste load definition is time dependent (linear, harmonic or Fourier), and false if it is constant.
 
-        INTEGER(kind = int_wp) :: IIMAX, IRMAX, I
+        INTEGER(kind = int_wp) :: max_int_size, IRMAX, I
         CHARACTER*(*) LCH(LSTACK), CHULP
         CHARACTER*1   CCHAR
         DIMENSION     IAR(*), ILUN(LSTACK)
@@ -86,7 +86,7 @@ contains
         integer(kind = int_wp) :: nobrk, itel, itel2, ierr3, itype
         integer(kind = int_wp) :: lunut, ilun, iposr, npos, ierr, itfact
         integer(kind = int_wp) :: iar, notot, nototc, lstack, time_function_type
-        real :: rar(:), rhulp
+        real :: real_array(:), rhulp
 
         if (timon) call timstrt("dlwq5d", ithndl)
         !
@@ -143,7 +143,7 @@ contains
             ELSE                                                      ! a new breakpoint found
                 IGNORE = .FALSE.
                 NOBRK = NOBRK + 1
-                IF (NOBRK <= IIMAX) THEN
+                IF (NOBRK <= max_int_size) THEN
                     IAR(NOBRK) = IHULP
                     if (nobrk > 1) then
                         if (ihulp <= iar(nobrk - 1)) then ! times not strinctly ascending
@@ -152,7 +152,7 @@ contains
                         endif
                     endif
                 ELSE
-                    WRITE (LUNUT, 1000) IIMAX
+                    WRITE (LUNUT, 1000) max_int_size
                     IERR = 100
                     goto 9999
                 ENDIF
@@ -163,7 +163,7 @@ contains
         !
         IF (.NOT. IGNORE) THEN
             DO I = 1, NOTOT / NOTOTC
-                RAR(ITEL + (I - 1) * NOTOTC) = RHULP
+                real_array(ITEL + (I - 1) * NOTOTC) = RHULP
             END DO
         ENDIF
         !        are we to expect a new record ?

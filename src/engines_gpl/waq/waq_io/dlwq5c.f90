@@ -30,8 +30,8 @@ module m_dlwq5c
 contains
 
 
-    subroutine dlwq5c (fname, lunut, car, iar, rar, &
-            icmax, iimax, irmax, drar, noitm, &
+    subroutine dlwq5c (fname, lunut, char_arr, iar, real_array, &
+            max_char_size, max_int_size, irmax, drar, noitm, &
             nodim, iorder, scale, itmnr, idmnr, &
             amiss, nobrk, ierr, status)
 
@@ -46,11 +46,11 @@ contains
         !     Name    Kind     Length     Funct.  Description
         !     ---------------------------------------------------------
         !     fname   char*(*)   1         input   filename of the ods file
-        !     car     character  *         local   character workspace
-        !     iar     integer  iimax       local   integer   workspace
-        !     rar     real     irmax       local   real      workspace
-        !     icmax   integer    1         input   max. char workspace dimension
-        !     iimax   integer    1         input   max. int. workspace dimension
+        !     char_arr     character  *         local   character workspace
+        !     iar     integer  max_int_size       local   integer   workspace
+        !     real_array     real     irmax       local   real      workspace
+        !     max_char_size   integer    1         input   max. char workspace dimension
+        !     max_int_size   integer    1         input   max. int. workspace dimension
         !     irmax   integer    1         input   max. real workspace dimension
         !     drar    real*8     1         in/out  double precision workspace
         !     noitm   integer    1         input   number of bounds/wastes
@@ -110,10 +110,10 @@ contains
         use m_sysi          ! Timer characteristics
         use time_module
 
-        integer(kind = int_wp) :: icmax, iimax, irmax
-        character*(*) car(:), fname
+        integer(kind = int_wp) :: max_char_size, max_int_size, irmax
+        character*(*) char_arr(:), fname
         integer(kind = int_wp) :: iar(:)
-        real(kind = real_wp) :: rar(:)
+        real(kind = real_wp) :: real_array(:)
         logical       scale
         real(kind = dp) :: drar(*)
         character     cfile(3)*256
@@ -175,7 +175,7 @@ contains
         k2 = k1 + nlocs
         !
         !     see if storage is available
-        k3 = min ((iimax - k2), (icmax - j3))
+        k3 = min ((max_int_size - k2), (max_char_size - j3))
         if (k3 < nlocs) then
             write (lunut, 1010) k3, nlocs
             ierr = 1
@@ -184,37 +184,37 @@ contains
         end if
         !
         !    get the available locations
-        car(j1) = '*'
-        call getloc (cfile, 0, car(j1), 1, 0, &
-                0, k3, car(j2), iar(k1:k1), iar(k2:k2), &
+        char_arr(j1) = '*'
+        call getloc (cfile, 0, char_arr(j1), 1, 0, &
+                0, k3, char_arr(j2), iar(k1:k1), iar(k2:k2), &
                 noloc, ierror, cfile(3))
         !
         !    fill an array with wanted locations
         noit2 = 0
         noitv = 0
         do j = 1, noitm
-            if (car(ioffa + j) == '&$&$SYSTEM_NAME&$&$!') then
+            if (char_arr(ioffa + j) == '&$&$SYSTEM_NAME&$&$!') then
                 noit2 = noit2 + 1
                 noitv = noitv + 1
-                car(ioffa + noit2) = car(ioffa + j)
-                car(ioffc + noit2) = car(ioffc + j)
+                char_arr(ioffa + noit2) = char_arr(ioffa + j)
+                char_arr(ioffc + noit2) = char_arr(ioffc + j)
                 iar(ioffa + noit2) = iar(ioffa + j)
                 iar(ioffc + noit2) = iar(ioffc + j)
                 iar(nottt + noit2) = -1
-                if (scale .and. iorder == 2) rar(noit2) = rar(j)
+                if (scale .and. iorder == 2) real_array(noit2) = real_array(j)
                 cycle
             end if
-            i = index_in_array(car(ioffa + j)(:20), car(j1 + 1:noloc))
+            i = index_in_array(char_arr(ioffa + j)(:20), char_arr(j1 + 1:noloc))
             if (i >= 1) then
                 noit2 = noit2 + 1
-                car(ioffa + noit2) = car(ioffa + j)
-                car(ioffc + noit2) = car(ioffc + j)
+                char_arr(ioffa + noit2) = char_arr(ioffa + j)
+                char_arr(ioffc + noit2) = char_arr(ioffc + j)
                 iar(ioffa + noit2) = iar(ioffa + j)
                 iar(ioffc + noit2) = iar(ioffc + j)
                 iar(nottt + noit2) = i
                 cycle
             end if
-            write (lunut, 1070) iar(ioffa + j), car(ioffa + j)
+            write (lunut, 1070) iar(ioffa + j), char_arr(ioffa + j)
             call status%increase_warning_count()
             if (iar(ioffa + j) < 0 .or. (iar(ioffa + j + 1) < 0 .and. j /= noitm)) then
                 write (lunut, 1080)
@@ -232,11 +232,11 @@ contains
             ltot = 0
         end if
         do i = ioffa + noit2 + 1, ioffa + noit2 + ltot + noit2
-            car(i) = car(i + ishft)
+            char_arr(i) = char_arr(i + ishft)
             iar(i) = iar(i + ishft)
         end do
         do i = ioffc + noit2 + 1, ioffc + noit2 + ltot + noit2 * 2
-            car(i) = car(i + ishft)
+            char_arr(i) = char_arr(i + ishft)
             iar(i) = iar(i + ishft)
         end do
         nottt = nottt - ishft * 2
@@ -258,7 +258,7 @@ contains
         k2 = k1 + nsubs
         !
         !     see if storage is available
-        k3 = min ((iimax - k2), (icmax - j3))
+        k3 = min ((max_int_size - k2), (max_char_size - j3))
         if (k3 < nsubs) then
             write (lunut, 1010) k3, nsubs
             ierr = 1
@@ -267,8 +267,8 @@ contains
         end if
         !
         !    get the available substances
-        call getpar (cfile, 0, car(j1), 1, 0, &
-                0, k3, 0, car(j2), car(j3), &
+        call getpar (cfile, 0, char_arr(j1), 1, 0, &
+                0, k3, 0, char_arr(j2), char_arr(j3), &
                 iar(k1:k1), iar(k2:k2), nopar, ierror, cfile(3))
         !
         !     fill an array with wanted substances
@@ -278,14 +278,14 @@ contains
         do j = 1, nitm
             k = j - icnt
             iar(k5 + k) = 0
-            if (car(ioffb + j) == '&$&$SYSTEM_NAME&$&$!') cycle
-            i = index_in_array(car(ioffb + k)(1:20), car(j1 + 1:nopar))
+            if (char_arr(ioffb + j) == '&$&$SYSTEM_NAME&$&$!') cycle
+            i = index_in_array(char_arr(ioffb + k)(1:20), char_arr(j1 + 1:nopar))
             if (i >= 1) then
                 iar(k5 + k) = i
                 cycle
             end if
             call compact_usefor_list(lunut, iar, itmnr, noitm, idmnr, &
-                    nodim, iorder, car, k5, ioffb, &
+                    nodim, iorder, char_arr, k5, ioffb, &
                     nshft, ioffd, k, icnt, ierr, status)
             if (timon) call timstop(ithndl)
             return
@@ -293,7 +293,7 @@ contains
         k1 = k1 + nodim
         !
         !     get the time values
-        k3 = iimax - k1
+        k3 = max_int_size - k1
         !     first nodim real*4 can be scale values
         k2 = 1
         if (scale) k2 = nscle / 2 + 2
@@ -409,7 +409,7 @@ contains
                     loc(1) = kl
                     loc(2) = kl
                     call getmat (cfile, 0, kp, loc, drar(is2), &
-                            amiss, maxd, rar(is:is), ierror, &
+                            amiss, maxd, real_array(is:is), ierror, &
                             cfile(3))
                 end if
                 ig2 = ig
@@ -420,7 +420,7 @@ contains
                     ig = ig + 1
                 end if
                 do k = 0, nobrk - 1
-                    rar(ig2) = rar(is + k)
+                    real_array(ig2) = real_array(is + k)
                     !              skip a full matrix further, because this is this substance for all
                     !              breakpoints
                     ig2 = ig2 + nt1
