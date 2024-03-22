@@ -48,7 +48,7 @@ if(UNIX)
                               "${dimr_lib_path}/include"
                               "${expat_include_path}")
 
-    target_link_libraries(${executable_name} ${oss_dependencies}) 
+    target_link_libraries(${executable_name} ${oss_dependencies} ${CMAKE_DL_LIBS}) 
     target_link_directories(${executable_name} PRIVATE ${NETCDF_LIBRARY_DIRS})
     
     set(THREADS_PREFER_PTHREAD_FLAG ON)

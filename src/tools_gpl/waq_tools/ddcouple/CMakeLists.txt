@@ -27,11 +27,11 @@ target_link_libraries(${executable_name} ${oss_dependencies})
 set_target_properties (${executable_name} PROPERTIES FOLDER tools_gpl/ddcouple)
 
 target_compile_options(${executable_name} PRIVATE "${waq_default_flags}")
+if (WIN32)
+    configure_visual_studio_user_file(${executable_name})
+endif(WIN32)
+
 
 install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
-if (UNIX)
-    install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/scripts/run_ddcouple.sh  DESTINATION bin)
-endif(UNIX)
-if (WIN32)
-    install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/scripts/run_ddcouple.bat  DESTINATION bin)
-endif(WIN32)
+install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/resources/scripts/run_ddcouple.${platform_extension}  DESTINATION bin)
+

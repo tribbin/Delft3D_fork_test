@@ -99,14 +99,7 @@ set_target_properties (${executable_name} PROPERTIES FOLDER third_party_open/swa
 
 if (WIN32)
     set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
-	set (userfilename "${CMAKE_BINARY_DIR}/template.vfproj.user")
-	if (CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.vfproj.$ENV{USERNAME}.user")
-		configure_file(
-		${userfilename}
-		"${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.vfproj.$ENV{USERNAME}.user"
-		@ONLY
-		)
-	endif()
+    configure_visual_studio_user_file(${executable_name})
 endif(WIN32)
 
 # Set post-build step
@@ -115,11 +108,5 @@ set(build_dir ${CMAKE_BINARY_DIR})
 
 
 install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
+install(PROGRAMS ../scripts/swan.${platform_extension}  DESTINATION bin)
 
-if (UNIX)
-    install(PROGRAMS ../scripts/swan.sh  DESTINATION bin)
-endif(UNIX)
-
-if (WIN32)
-    install(PROGRAMS ../scripts/swan.bat DESTINATION bin)
-endif(WIN32)

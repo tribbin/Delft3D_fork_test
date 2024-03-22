@@ -53,10 +53,9 @@
       use m_sysn          ! System characteristics
       use m_sysi          ! Timer characteristics
       use m_sysa          ! Pointers in real array workspace
+      use omp_lib
 
       implicit none
-
-      include "omp_lib.h"
 
 !     Parameters          :
 

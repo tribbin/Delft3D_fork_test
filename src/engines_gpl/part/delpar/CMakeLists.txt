@@ -48,13 +48,9 @@ set_target_properties(${executable_name} PROPERTIES FOLDER engines_gpl/part)
 
 if(WIN32)
     set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
+    configure_visual_studio_user_file(${executable_name})
 endif(WIN32)
 
 install(TARGETS ${executable_name} RUNTIME DESTINATION bin)
+install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/../resources/scripts/run_dpart.${platform_extension} DESTINATION bin)
 
-if(UNIX)
-    install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/../resources/scripts/run_dpart.sh DESTINATION bin)
-endif(UNIX)
-if(WIN32)
-    install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/../resources/scripts/run_dpart.bat DESTINATION bin)
-endif(WIN32)

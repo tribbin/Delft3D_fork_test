@@ -82,9 +82,10 @@ contains
         ! test_dlwq13_recognise_nans --
         !     Unit test for recognising NaNs (interference from optimiser?)
 
-        real :: x
+        real :: x, y
 
-        x = log10(-1.0)
+        y = -1.0
+        x = log10(y)
 
         call assert_true(x /= x, 'X recognised as NaN')
 
@@ -142,11 +143,13 @@ contains
         integer, dimension(30) :: lun
         character(len = 200) :: dataPath
         character(len = 255), dimension(30) :: lchar
-        character(len = 40), dimension(4) :: mname
-        character(len = 20), dimension(10) :: sname
+        character(len = 40), dimension(4)   :: mname
+        character(len = 20), dimension(10)  :: sname
+        real                                :: x
 
         conc = 1.0
-        conc(1, 1) = log10(-1.0)
+        x = -1.0
+        conc(1, 1) = log10(x)
 
         ! Get the DATA_PATH environment variable
         call get_environment_variable("DATA_PATH", dataPath)

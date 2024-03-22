@@ -186,11 +186,8 @@ subroutine unc_write_his(tim)            ! wrihis
        jawrizc = 1
        jawrizw = 1
     endif
-    
-    nc_precision = nf90_double
-    if ( md_nc_his_precision == SINGLE_PRECISION ) then
-       nc_precision = nf90_float
-    endif
+
+    nc_precision = netcdf_data_type(md_nc_his_precision)
 
     if (timon) call timstrt ( "unc_write_his", handle_extra(54))
 

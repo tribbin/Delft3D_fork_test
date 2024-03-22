@@ -21,7 +21,7 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 
-#INCLUDE "waq_version.h"
+#include "waq_version.h"
 
 module waq_static_version_info
     implicit none
