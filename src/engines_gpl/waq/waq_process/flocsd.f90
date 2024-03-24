@@ -71,7 +71,6 @@ contains
         real(kind = real_wp) :: cmicro      ! i  inorganic matter (im2; micro flocs)                (gdm/m3)
         real(kind = real_wp) :: tpm         ! i  total particulate matter (including algae)         (gdw/m3)
         real(kind = real_wp) :: tau         ! i  bottom shear stress                                (Pa)
-        real(kind = real_wp) :: tke         ! i  turbulent kinetic energy                           (J)
         integer(kind = int_wp) :: swfloform   ! i  1=Manning/Dyer, 2=Chassagne/Safar, 3=NA            (-)
         real(kind = real_wp) :: rcfloc      ! i  flocculation rate                                  (1/d)
         real(kind = real_wp) :: rcbreakup   ! i  floc break-up rate                                 (1/d)
@@ -118,8 +117,7 @@ contains
 
             active = btest(iknmrk(iseg), 0)
             if (active) then
-                tke = tau / param_soulsby ! Very coarse estimate!
-                call flocculate_dwq(swfloform, cmacro, cmicro, tpm, tke, tau, total_depth, local_depth, viscosity, rho_water, &
+                call flocculate_dwq(swfloform, cmacro, cmicro, tpm, tau, total_depth, local_depth, viscosity, rho_water, &
                         spmratioem, ws_macro, ws_micro)
 
 

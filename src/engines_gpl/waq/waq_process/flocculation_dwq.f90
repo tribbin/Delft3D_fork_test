@@ -467,7 +467,7 @@ subroutine floc_chassagne( spm, tau, totaldepth, localdepth, grav, viscosity, rh
 end subroutine floc_chassagne
 
 
-subroutine flocculate_dwq( swfloform, cmacro, cmicro, tpm, tke, tau, total_depth, local_depth, viscosity, rho_water, &
+subroutine flocculate_dwq( swfloform, cmacro, cmicro, tpm, tau, total_depth, local_depth, viscosity, rho_water, &
                            spmratioem, ws_macro, ws_micro )
 
 
@@ -483,7 +483,6 @@ subroutine flocculate_dwq( swfloform, cmacro, cmicro, tpm, tke, tau, total_depth
     real(kind=real_wp), intent(in) ::  cmacro       !< Macro floc concentration
     real(kind=real_wp), intent(in) ::  cmicro       !< Micro floc concentration
     real(kind=real_wp), intent(in) ::  tpm          !< Total sediment concentration (includes organic material)
-    real(kind=real_wp), intent(in) ::  tke          !< Turbulent kinectic energy
     real(kind=real_wp), intent(in) ::  tau          !< Bottom shear stress
     real(kind=real_wp), intent(in) ::  total_depth  !< Total depth (distance bottom to surface)
     real(kind=real_wp), intent(in) ::  local_depth  !< Total depth (distance segment to surface)
@@ -498,7 +497,9 @@ subroutine flocculate_dwq( swfloform, cmacro, cmicro, tpm, tke, tau, total_depth
 !
     real(kind=real_wp) ::  settling_flux
     real, parameter     :: grav = 9.81    ! Small variations only, so make it a fixed value
+    real(kind=real_wp) ::  tke          !< Turbulent kinectic energy
 
+    tke = tau / param_soulsby ! Very coarse estimate!
     select case (swfloform)
     case (FLOC_MANNING_DYER)
        call floc_manning( tpm, tke, settling_flux, spmratioem, ws_macro, ws_micro )
