@@ -50,8 +50,10 @@ contains
         !     nodim   integer    1         input   number of concentrations
         !     iorder  integer    1         input   order of the input
         !     scale   logical    1         input   true if scale values are stored
-        !     ioffc   integer    1         input   offset of the concentrations    ioffi   integer    1         input   offset in the integer array
-        !     ioffi   integer    1         input   offset of the items             ioffi   integer    1         input   offset in the integer array
+        !     ioffc   integer    1         input   offset of the concentrations
+        !     ioffi   integer    1         input   offset in the integer array
+        !     ioffi   integer    1         input   offset of the items
+        !     ioffi   integer    1         input   offset in the integer array
         !     amiss   real       1         input   missing value indicator
         !     num_records   integer    1         output  number of time steps found
         !     ierr    integer    1         output  error flag
@@ -94,7 +96,7 @@ contains
         !     Then the matrix of values to be read in eg in this routine
         !
         use m_usefor, only : compact_usefor_list
-        use m_ods, only : gettme, getpar, getmat, getloc, getdim
+        use history_file_utils, only : get_time, get_parameter, get_matrix_1, get_loc, get_dimension
         use timers       !   performance timers
         use m_sysi          ! Timer characteristics
         use time_module
@@ -150,7 +152,7 @@ contains
         cfile(1) = fname
         cfile(3) = ' '
         k1 = nottt + 1
-        call getdim (cfile, 0, cdummy, 0, 0, &
+        call get_dimension (cfile, 0, cdummy, 0, 0, &
                 0, int_array(k1:k1), ierror, cfile(3))
         nsubs = int_array(k1)
         nlocs = int_array(k1 + 1)
@@ -174,7 +176,7 @@ contains
 
         ! get the available locations
         char_arr(j1) = '*'
-        call getloc (cfile, 0, char_arr(j1), 1, 0, &
+        call get_loc (cfile, 0, char_arr(j1), 1, 0, &
                 0, k3, char_arr(j2), int_array(k1:k1), int_array(k2:k2), &
                 noloc, ierror, cfile(3))
 
@@ -256,11 +258,11 @@ contains
         end if
         !
         !    get the available substances
-        call getpar (cfile, 0, char_arr(j1), 1, 0, &
+        call get_parameter (cfile, 0, char_arr(j1), 1, 0, &
                 0, k3, 0, char_arr(j2), char_arr(j3), &
                 int_array(k1:k1), int_array(k2:k2), nopar, ierror, cfile(3))
-        !
-        !     fill an array with wanted substances
+
+        ! fill an array with wanted substances
         icnt = 0
         k5 = nottt + noitm
         nitm = nodim
@@ -303,7 +305,7 @@ contains
         !
         !     get the available time values
         drar(k2) = 0
-        call gettme (cfile, 0, drar(k2), 1, 0, &
+        call get_time(cfile, 0, drar(k2), 1, 0, &
                 0, k4, drar(k5), int_array(k1:k1), num_records, &
                 ierror, cfile(3))
         !
@@ -397,7 +399,7 @@ contains
                 if (kl > 0) then
                     loc(1) = kl
                     loc(2) = kl
-                    call getmat (cfile, 0, kp, loc, drar(is2), &
+                    call get_matrix_1 (cfile, 0, kp, loc, drar(is2), &
                             amiss, maxd, real_array(is:is), ierror, &
                             cfile(3))
                 end if

@@ -20,22 +20,23 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module m_ods
+module history_file_utils
     use m_waq_precision
     use m_open_waq_files
     use m_file_path_utils, only : extract_file_extension
+    use m_string_manipulation, only : upper_case
 
     implicit none
 
     private
-    public :: getloc, gettme, getpar, getmat, getmat2, getdim
+    public :: get_loc, get_time, get_parameter, get_matrix_1, get_matrix_2, get_dimension
 
 contains
 
-    subroutine getloc(file_name, itype, locdef, maxdef, iprdep, &
+    subroutine get_loc(file_name, itype, locdef, maxdef, iprdep, &
             itmdep, maxlst, loclst, loctyp, locnr, &
             nrlst, ierror, option)
-        ! GETLOC routine for DELWAQ HIS-files
+        ! get_loc routine for DELWAQ HIS-files
         !
         !     file_name   CHAR*256   3        IN/LOC  Complete file name
         !     ITYPE   INTEGER    1        INPUT   File type
@@ -50,8 +51,6 @@ contains
         !     NRLST   INTEGER    1        OUTPUT  Nr of parameters found
         !     IERROR  INTEGER    1        OUTPUT  Error code
         !     OPTION  CHAR*256   1        IN/OUT  For future use
-
-        use m_string_manipulation, only : upper_case
 
         character*256 file_name(3), option
         character*20  locdef(maxdef), loclst(maxlst)
@@ -134,12 +133,12 @@ contains
 
         200 close (lun)
 
-    end subroutine getloc
+    end subroutine get_loc
 
-    subroutine gettme(fname, itype, timdef, maxdef, iprdep, &
+    subroutine get_time(fname, itype, timdef, maxdef, iprdep, &
             locdep, maxlst, timlst, itmtyp, nrlst, &
             ierror, option)
-        ! GETTME routine for DELWAQ HIS-files
+        ! get_time routine for DELWAQ HIS-files
         !
         !     FNAME   CHAR*256   3        IN/LOC  Complete file name
         !     ITYPE   INTEGER    1        INPUT   File type
@@ -155,7 +154,6 @@ contains
         !     OPTION  CHAR*256   1        IN/OUT  For future use
 
         use time_module
-        use m_string_manipulation, only : upper_case
 
         character*256    fname (3), option
         integer(kind = int_wp) :: itmtyp(*)
@@ -253,12 +251,12 @@ contains
         if (allocated(rdata)) deallocate(rdata)
         return
 
-    end subroutine gettme
+    end subroutine get_time
 
-    subroutine getpar(fname, itype, pardef, maxdef, itmdep, &
+    subroutine get_parameter(fname, itype, pardef, maxdef, itmdep, &
             locdep, maxlst, lang, parlst, paruni, &
             iprtyp, iprcod, nrlst, ierror, option)
-        !! ods getpar routine for delwaq his-files
+        !! ods get_parameter routine for delwaq his-files
         !
         !     fname   char*256   3        in/loc  complete file name
         !     itype   integer    1        input   file type
@@ -333,12 +331,12 @@ contains
 
         200 close (lun)
 
-    end subroutine getpar
+    end subroutine get_parameter
 
-    subroutine getmat(fname, itype, iprcod, loc, tim, &
+    subroutine get_matrix_1(fname, itype, iprcod, loc, tim, &
             amiss, maxdim, data, ierror, &
             option)
-        !! ods getmat routine for delwaq his-files
+        !! ods get_matrix_1 routine for delwaq his-files
         !!
         !     fname   char*256   3        in/loc  complete file name
         !     itype   integer    1        input   file type
@@ -351,7 +349,6 @@ contains
         !     ierror  integer    1        in/out  error code
         !     option  char*256   1        in/out  for future use
         use time_module
-        use m_string_manipulation, only : upper_case
 
         character*256 fname (3), option
         real(kind = real_wp) :: data(*)
@@ -440,15 +437,14 @@ contains
 
         200 close (lun)
 
-    end subroutine getmat
+    end subroutine get_matrix_1
 
-    subroutine getmat2(fname, itype, iprcod, loc, tim, &
+    subroutine get_matrix_2(fname, itype, iprcod, loc, tim, &
             amiss, maxdim, data, ierror, &
             option)
-        !! ods getmat routine for delwaq his-files
+        !! ods get_matrix_1 routine for delwaq his-files
 
         use time_module
-        use m_string_manipulation, only : upper_case
 
         !     fname   char*256   3        in/loc  complete file name
         !     itype   integer    1        input   file type
@@ -541,11 +537,11 @@ contains
 
         200 close (lun)
 
-    end subroutine getmat2
+    end subroutine get_matrix_2
 
-    subroutine getdim(fname, itype, dim, iprdep, itmdep, &
+    subroutine get_dimension(fname, itype, dim, iprdep, itmdep, &
             locdep, ndim, ierror, option)
-        !! ods getdim routine for delwaq his-files
+        !! ods get_dimension routine for delwaq his-files
         !!
         !     fname   char*256   3        in/loc  complete file name
         !     itype   integer    1        input   file type
@@ -562,8 +558,6 @@ contains
         !            ndim(1) = nr of substances in the file
         !            ndim(2) = nr of locations  in the file
         !            ndim(3) = nr of time steps in the file
-
-        use m_string_manipulation, only : upper_case
 
         character*256 fname(3), option
         character*3   dim
@@ -628,6 +622,6 @@ contains
 
         200 close (lun)
 
-    end subroutine getdim
+    end subroutine get_dimension
 
-end module m_ods
+end module history_file_utils

@@ -36,7 +36,7 @@ contains
 
         !! read a block of data from ODS file
 
-        use m_ods, only : gettme, getpar, getmat2, getmat, getdim, getloc
+        use history_file_utils, only : get_time, get_parameter, get_matrix_2, get_matrix_1, get_dimension, get_loc
         use dlwq_hyd_data   ! for definition and storage of data
         use timers          !   performance timers
         use m_sysi          ! Timer characteristics
@@ -106,7 +106,7 @@ contains
 
         cfile(1) = fname
         cfile(3) = ' '
-        call getdim (cfile, 0, cdummy, 0, 0, &
+        call get_dimension (cfile, 0, cdummy, 0, 0, &
                 0, loc, ierror, cfile(3))
         nsubs = loc(1)
         nlocs = loc(2)
@@ -117,7 +117,7 @@ contains
         allocate(locnam(nlocs), loctyp(nlocs), locnr(nlocs))
         allocate(iloc_ods(data_loc%no_item))
         locdef(1) = '*'
-        call getloc (cfile, 0, locdef, 1, 0, &
+        call get_loc (cfile, 0, locdef, 1, 0, &
                 0, nlocs, locnam, loctyp, locnr, &
                 noloc, ierror, cfile(3))
 
@@ -157,7 +157,7 @@ contains
         allocate(parnam(nsubs), parunit(nsubs), partyp(nsubs), parnr(nsubs))
         allocate(ipar_ods(data_param%no_item))
         pardef(1) = '*'
-        call getpar (cfile, 0, pardef, 1, 0, &
+        call get_parameter (cfile, 0, pardef, 1, 0, &
                 0, nsubs, 0, parnam, parunit, &
                 partyp, parnr, nopar, ierror, cfile(3))
 
@@ -184,7 +184,7 @@ contains
 
         allocate(times(ntims), timetyp(ntims))
         timdef(1) = 0.0d0
-        call gettme (cfile, 0, timdef, 1, 0, &
+        call get_time (cfile, 0, timdef, 1, 0, &
                 0, ntims, times, timetyp, num_records, &
                 ierror, cfile(3))
 
@@ -257,7 +257,7 @@ contains
         allocate(buffer2(nsubs, nlocs, num_records), stat = ierr_alloc)
         if (ierr_alloc == 0) then
             maxdim = nsubs * nlocs * num_records
-            call getmat2(cfile, 0, ipar_ods, loc, timdef, &
+            call get_matrix_2(cfile, 0, ipar_ods, loc, timdef, &
                     amiss, maxdim, buffer2, ierror, &
                     cfile(3))
             do ipar = 1, data_param%no_item
@@ -284,7 +284,7 @@ contains
                         if (iloc_ods(iloc) > 0) then
                             loc(1) = iloc_ods(iloc)
                             loc(2) = iloc_ods(iloc)
-                            call getmat (cfile, 0, ipar_ods(ipar), loc, timdef, &
+                            call get_matrix_1 (cfile, 0, ipar_ods(ipar), loc, timdef, &
                                     amiss, num_records, buffer, ierror, &
                                     cfile(3))
                             do ibrk = 1, num_records
