@@ -788,7 +788,7 @@ contains
                 do iscal = 1, nscal
                     if (gettoken(factor(iscal), ierr2) > 0) goto 100
                 enddo
-                call fmread (nvarnw, itemId(ntotal), nval1, nscal, factor, &
+                call read_scale_block (nvarnw, itemId(ntotal), nval1, nscal, factor, &
                         nobrk2, break2, value2, dtflg, is_yyddhh_format, &
                         ifact, iwidth, output_verbose_level, ierr)
 
@@ -1306,5 +1306,124 @@ contains
         2070 format(' Printed output for output option 4 and higher !')
 
     end subroutine read_fourier_harmoic_func_values
+
+    subroutine read_scale_block(num_items, item, nvals, num_factors, factor, &
+            num_records, ibrk, arrin, is_date_format, is_yyddhh_format, &
+            ifact, iwidth, output_verbose_level, ierr)
+
+        !! Reads blocks of matrices of input values and scales them
+        !!
+        !! This routine reads:
+        !!      - num_records integer breakpoint values for time
+        !!      - for each breakpoint num_items*nvals values
+        !!      The values are scaled with nvals scale factors/n
+        !!      If one scale factor exist, it is expanded to nvals factors
+        !!
+        !! Logical units : lunut = unit formatted output file
+
+        use timers       !   performance timers
+        use rd_token       ! for the reading of tokens
+        use date_time_utils, only : convert_string_to_time_offset, convert_relative_time
+        use matrix_utils, only : scale_array
+
+        integer(kind = int_wp), intent(in) :: num_items                      !< number of items
+        integer(kind = int_wp), intent(in) :: item  (num_items)              !< item numbers
+        integer(kind = int_wp), intent(in) :: nvals                      !< number of values per item
+        integer(kind = int_wp), intent(in) :: num_factors                      !< number of scale factors
+        real(kind = real_wp), intent(inout) :: factor(nvals)              !< scale factors
+        integer(kind = int_wp), intent(in) :: num_records                      !< number of breakpoints
+        integer(kind = int_wp), intent(out) :: ibrk  (num_records)              !< breakpoints read
+        real(kind = real_wp), intent(out) :: arrin (nvals, num_items, num_records)  !< breakpoints read
+        logical  (4), intent(in) :: is_date_format                     !< 'date'-format time scale
+        logical  (4), intent(in) :: is_yyddhh_format                    !< (F;ddmmhhss,T;yydddhh)
+        integer(kind = int_wp), intent(in) :: ifact                      !< factor between timings
+        integer(kind = int_wp), intent(in) :: iwidth                     !< width of the output file
+        integer(kind = int_wp), intent(in) :: output_verbose_level                     !< how extensive is output ?
+        integer(kind = int_wp), intent(inout) :: ierr                       !< cumulative error count
+
+
+        integer(kind = int_wp) :: ierr2         ! local error variable
+        integer(kind = int_wp) :: i1, i2, i3    ! loop counters
+        integer(kind = int_wp) :: k             ! loop counter
+        integer(kind = int_wp) :: ie1, ie2      ! endpoint help variables
+        character(255) ctoken       ! to read a time string
+        integer(kind = int_wp) :: itype         ! to indicate what was read
+        integer(kind = int_wp) :: ithndl = 0
+        if (timon) call timstrt("read_scale_block", ithndl)
+
+        if (output_verbose_level < 4) write (lunut, 2000)
+
+        do i1 = 1, num_records
+
+            if (gettoken(ctoken, ibrk(i1), itype, ierr2) > 0) goto 10
+            if (itype == 1) then                                    !  a time string
+                if (output_verbose_level >= 4) write (lunut, 2010) i1, ctoken
+                call convert_string_to_time_offset (ctoken, ibrk(i1), .false., .false., ierr2)
+                if (ibrk(i1) == -999) then
+                    write (lunut, 2020) trim(ctoken)
+                    goto 10
+                endif
+                if (ierr2 > 0) then
+                    write (lunut, 2030) trim(ctoken)
+                    goto 10
+                endif
+            else                                                        !  an integer for stop time
+                if (output_verbose_level >= 4) write (lunut, 2040) i1, ibrk(i1)
+                call convert_relative_time(ibrk(i1), ifact, is_date_format, is_yyddhh_format)
+            endif
+
+            do i3 = 1, num_items
+                do i2 = 1, nvals
+                    if (gettoken(arrin(i2, i3, i1), ierr2) > 0) goto 10
+                enddo
+            enddo
+
+            if (output_verbose_level >= 4) then
+
+                do i2 = 1, nvals, iwidth
+                    ie1 = min(i2 + iwidth - 1, num_factors)
+                    ie2 = min(i2 + iwidth - 1, nvals)
+                    write (lunut, 2050)        (k, k = i2, ie2)
+                    write (lunut, 2060) (factor(k), k = i2, ie1)
+                    write (lunut, 2070)
+                    do i3 = 1, num_items
+                        write (lunut, 2080)  abs(item(i3)), (arrin(k, i3, i1), k = i2, ie2)
+                    enddo
+                enddo
+
+            endif
+
+        enddo
+
+        ! Scale values
+        if (num_factors == 1) then
+            do i1 = 2, nvals
+                factor(i1) = factor (11)
+            enddo
+        endif
+        do i1 = 1, num_records
+            call scale_array  (arrin(1, 1, i1), factor, num_items, nvals)
+        enddo
+        if (timon) call timstop(ithndl)
+        return
+
+        ! An error occured during read
+        10 ierr = ierr + 1
+        if (timon) call timstop(ithndl)
+        return
+
+        2000 format (' Printed output only for option 4 or higher !')
+        2010 format (' Breakpoint ', I7, ' :', A)
+        2020 format (/' ERROR: Absolute timer does not fit in timer format :', A, / &
+                ' Is your T0 setting in block #1 correct?'/, &
+                ' Allowed difference with T0 is usually ca. 68 years.')
+        2030 format (/' ERROR: String is not a valid absolute timer :', A)
+        2040 format (' Breakpoint ', I7, ' :', I10)
+        2050 format (' Scale factors:', /, 6X, 10I12)
+        2060 format (12X, 1P, 10E12.4)
+        2070 format (' Item nr.   Values')
+        2080 format (I10, 2X, 1P, 10E12.4)
+
+    end subroutine read_scale_block
 
 end module simulation_input_options
