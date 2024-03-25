@@ -761,7 +761,7 @@ contains
             is_yyddhh_format, ierr, status)
 
         ! Checks if column header exists
-        use usefor, only : compact_usefor
+        use m_usefor, only : compact_usefor
         use dlwq_hyd_data ! for definition and storage of data
         use rd_token
         use timers       !   performance timers

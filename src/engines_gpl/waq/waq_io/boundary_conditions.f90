@@ -1025,7 +1025,7 @@ contains
         !! Logical Units : LUN(27) = unit stripped DELWAQ input file
         !!                 LUN(29) = unit formatted output file
 
-        use usefor, only : compact_usefor_list
+        use m_usefor, only : compact_usefor_list
         use date_time_utils, only : convert_string_to_time_offset, convert_relative_time
 
         integer(kind = int_wp), intent(in) :: ascii_output_file_unit

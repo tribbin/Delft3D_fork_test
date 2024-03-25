@@ -100,7 +100,7 @@ contains
         !     IF (SCALE) First NODIM entries the scale factors
         !     Then the matrix of values to be read in eg in this routine
         !
-        use usefor, only : compact_usefor_list
+        use m_usefor, only : compact_usefor_list
         use m_gettme
         use m_getpar
         use m_getmat
