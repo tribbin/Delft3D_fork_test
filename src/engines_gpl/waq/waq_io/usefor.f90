@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module usefor
+module m_usefor
     use m_waq_precision
 
     implicit none
@@ -211,7 +211,7 @@ contains
         else if (i2 > 0 .and. i2 <  100000) then
             i4 = i2
             chulp = char_arr(ioffd + i2)
-            if (char_arr(ioffc + idx_missing) == chulp) then !warning
+            if (char_arr(ioffc + idx_missing) == chulp) then
                 call status%increase_warning_count()
                 message_type = "WARNING"
                 write (lunut, 1010) message_type, idx_missing + count_missing, char_arr(ioffc + idx_missing)
@@ -283,4 +283,4 @@ contains
 
     end subroutine compact_usefor_list
 
-end module usefor
+end module m_usefor
