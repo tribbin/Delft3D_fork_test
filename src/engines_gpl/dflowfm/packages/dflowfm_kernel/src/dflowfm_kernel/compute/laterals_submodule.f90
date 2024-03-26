@@ -44,24 +44,17 @@ implicit none
    end subroutine reset_lateral
 
    !> allocate the arrays for laterals on 3d/BMI
-   module subroutine initialize_lateraldata(numconst)
-   
+   module subroutine initialize_lateraldata(numconst, ierr)
       use m_alloc
    
-      integer, intent(in) :: numconst        !< number of constitiuents
-      
+      integer, intent(in)    :: numconst        !< number of constitiuents
+      integer, intent(inout) :: ierr            !< error flag
       integer :: i
 
       apply_transport_is_used = .false.
-      do i = 1, numlatsg
-         if (apply_transport(i)==1) then
-            apply_transport_is_used = .true.
-            ! No need to look further
-            exit
-         end if
-      end do
-      call realloc(incoming_lat_concentration, (/1, numconst, numlatsg/))
-      call realloc(outgoing_lat_concentration, (/1, numconst, numlatsg/))
+      call realloc(apply_transport, numlatsg, stat=ierr)
+      call realloc(incoming_lat_concentration, (/1, numconst, numlatsg/), stat=ierr)
+      call realloc(outgoing_lat_concentration, (/1, numconst, numlatsg/), stat=ierr)
 
    end subroutine initialize_lateraldata
 
@@ -109,6 +102,12 @@ implicit none
       enddo
 
    end subroutine average_concentrations_for_laterals
+   
+   !> computations of lateral loads
+   module subroutine get_lateral_loads(ierr)
+      integer, intent(out) :: ierr
+      ierr = 1
+   end subroutine get_lateral_loads
 
    !> At the start of the update, the out_going_lat_concentration must be set to 0 (reset_outgoing_lat_concentration).
    !> In  average_concentrations_for_laterals in out_going_lat_concentration the concentrations*timestep are aggregated.

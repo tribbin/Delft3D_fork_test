@@ -2810,7 +2810,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    ! Copy NUMCONST to NUMCONST_MDU, before the user (optionally) adds tracers interactively
    NUMCONST_MDU = NUMCONST
    
-   call initialize_lateraldata(numconst)
+   call initialize_lateraldata(numconst, ierr)
 
 end function flow_initexternalforcings
 

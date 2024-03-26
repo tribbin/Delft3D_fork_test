@@ -35,6 +35,7 @@ module m_lateral
       public initialize_lateraldata
       public dealloc_lateraldata
       public average_concentrations_for_laterals
+      public get_lateral_loads
       public reset_outgoing_lat_concentration 
       public finish_outgoing_lat_concentration
    !!
@@ -89,8 +90,9 @@ module m_lateral
    
       !> allocate the arrays for laterals on 3d/BMI
       interface initialize_lateraldata
-         module subroutine initialize_lateraldata(numconst)
-            integer, intent(in) :: numconst        !< number of constitiuents
+         module subroutine initialize_lateraldata(numconst, ierr)
+            integer, intent(in)    :: numconst        !< number of constitiuents
+            integer, intent(inout) :: ierr            !< error flag
          end subroutine initialize_lateraldata
       end interface initialize_lateraldata
    
@@ -130,6 +132,15 @@ module m_lateral
             double precision, intent(in   )  :: time_interval
          end subroutine finish_outgoing_lat_concentration
       end interface finish_outgoing_lat_concentration
-      
+
+      !> computations of lateral loads
+      interface get_lateral_loads
+         module subroutine get_lateral_loads(ierr)
+            integer, intent(out) :: ierr
+         end subroutine get_lateral_loads
+      end interface get_lateral_loads
+
    end module m_lateral
    
+
+

@@ -43,11 +43,19 @@ end subroutine tests_lateral_loads
 !> tests computation of sinks and sources due to laterals
 subroutine test_get_lateral_loads
 
+   integer :: numconst                 !< number of constituents
    integer :: ierr                     !< error flag
 
    ierr = 0
+   numlatsg = 1
+   numconst = 2
+   call initialize_lateraldata(numconst, ierr)
+
+   call get_lateral_loads(ierr)
    call assert_equal(ierr, DFM_NOERR, 'Something wrong in call get_lateral_loads().')
 
-   end subroutine test_get_lateral_loads
+   call dealloc_lateraldata()
+
+end subroutine test_get_lateral_loads
 !
-   end module test_lateral
+end module test_lateral
