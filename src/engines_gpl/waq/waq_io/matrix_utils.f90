@@ -22,6 +22,7 @@
 !!  rights reserved.
 module matrix_utils
     use m_waq_precision
+    use timers, only : timstrt, timstop, timon
 
     implicit none
 
@@ -30,23 +31,22 @@ module matrix_utils
 
 contains
 
-    subroutine scale_array(arrin, factor)
-        !! Scales an array
-        use timers       !   performance timers
-
-        real(kind = real_wp), intent(inout) :: arrin(:, :)        !< number of items
-        real(kind = real_wp), intent(in) :: factor(size(arrin, 1))              !< scale factors
+    subroutine scale_array(array_2d, factor)
+        !! Scales an array by multiplying each row with a factor
 
 
-        integer(kind = int_wp) :: i1, i2        ! loop counters
+        real(kind = real_wp), intent(inout) :: array_2d(:, :)        !< number of items
+        real(kind = real_wp), intent(in) :: factor(size(array_2d, 1))              !< scale factors
+
+        integer(kind = int_wp) :: row, col        ! loop counters
         real(kind = real_wp) :: fact          ! factor
         integer(kind = int_wp) :: ithndl = 0
         if (timon) call timstrt("scale_array", ithndl)
 
-        do i1 = 1, size(arrin, 1)
-            fact = factor(i1)
-            do i2 = 1, size(arrin, 2)
-                arrin (i1, i2) = arrin (i1, i2) * fact
+        do row = 1, size(array_2d, 1)
+            fact = factor(row)
+            do col = 1, size(array_2d, 2)
+                array_2d (row, col) = array_2d (row, col) * fact
             enddo
         enddo
 
@@ -56,13 +56,9 @@ contains
 
     subroutine assign_matrix(lunut, int_array, noitm, itmnr, nodim, &
             idmnr, iorder, real_array, iopt, rmat, &
-            nocol, num_records, amiss, iarp, rmatu)
+            nocol, num_records, missing_value, iarp, rmatu)
 
         !! Assign matrix according to computational rules
-        !!     LOGICAL UNITS      : LUNUT - report file
-        !!
-
-        !     PARAMETERS    :
         !
         !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
         !     ---------------------------------------------------------
@@ -76,12 +72,9 @@ contains
         !     IOPT    LOGICAL    *         INPUT   3 & 4 is Fourier or harmonics
         !     RMAT    REAL       *         INPUT   real matrix of read values
         !     num_records   INTEGER    1         OUTPUT  number of records read
-        !     AMISS   REAL       1         INPUT   this is a missing value
+        !     missing_value   REAL       1         INPUT   this is a missing value
         !     IARP    INTEGER    *         INPUT   array with item pointers in RMAT
         !     RMATU   REAL       *         OUTPUT  real matrix of evaluated values
-        !
-        !
-        use timers       !   performance timers
 
         LOGICAL       MINIEM, MAXIEM
         integer(kind = int_wp) :: ithndl = 0
@@ -89,7 +82,7 @@ contains
         integer(kind = int_wp) :: locbas, iloc, itel, itels, ifrst, ibrk, ioff, iopt
         integer(kind = int_wp) :: ip, ip2, lunut, iloco, nocol, num_records, ioff2
         integer :: int_array(:), i, iarp(:)
-        real :: accum, rmatu(:), amaxv, amiss, aminv
+        real :: accum, rmatu(:), amaxv, missing_value, aminv
         real :: real_array(:), rmat(:)
 
         if (timon) call timstrt("assign_matrix", ithndl)
@@ -137,14 +130,14 @@ contains
         if (ip > -900000) then
             ! close pending arrithmatic in the previous itel
             if (itel /= 0) then
-                if (rmatu(itel) /= amiss .and. accum /= amiss) then
+                if (rmatu(itel) /= missing_value .and. accum /= missing_value) then
                     rmatu(itel) = rmatu(itel) + accum
                 else
-                    rmatu(itel) = amiss
+                    rmatu(itel) = missing_value
                 endif
                 if (maxiem) then
                     if (rmatu(itel) > amaxv .and. &
-                            rmatu(itel) /= amiss) then
+                            rmatu(itel) /= missing_value) then
                         write (lunut, 1000) ibrk, iloco, ifrst + 1
                         write (lunut, 1010) rmatu(itel), amaxv
                         rmatu(itel) = amaxv
@@ -152,7 +145,7 @@ contains
                 endif
                 if (miniem) then
                     if (rmatu(itel) < aminv .and. &
-                            rmatu(itel) /= amiss) then
+                            rmatu(itel) /= missing_value) then
                         write (lunut, 1000) ibrk, iloco, ifrst + 1
                         write (lunut, 1020) rmatu(itel), aminv
                         rmatu(itel) = aminv
@@ -177,10 +170,10 @@ contains
         ! a maximum value need to be applied
         if (ip <= -1190000000) then
             ip = ip + 1200000000
-            if (rmatu(itel) /= amiss .and. accum /= amiss) then
+            if (rmatu(itel) /= missing_value .and. accum /= missing_value) then
                 rmatu(itel) = rmatu(itel) + accum
             else
-                rmatu(itel) = amiss
+                rmatu(itel) = missing_value
             endif
             accum = 0.0
             maxiem = .true.
@@ -193,10 +186,10 @@ contains
         ! a minimum value need to be applied
         if (ip <= -1090000000) then
             ip = ip + 1100000000
-            if (rmatu(itel) /= amiss .and. accum /= amiss) then
+            if (rmatu(itel) /= missing_value .and. accum /= missing_value) then
                 rmatu(itel) = rmatu(itel) + accum
             else
-                rmatu(itel) = amiss
+                rmatu(itel) = missing_value
             endif
             accum = 0.0
             miniem = .true.
@@ -210,26 +203,26 @@ contains
         ! a minus sign need to be applied
         if (ip <= -900000000) then
             ip = ip + 1000000000
-            if (rmatu(itel) /= amiss .and. accum /= amiss) then
+            if (rmatu(itel) /= missing_value .and. accum /= missing_value) then
                 rmatu(itel) = rmatu(itel) + accum
             else
-                rmatu(itel) = amiss
+                rmatu(itel) = missing_value
             endif
             if (ip == 0) then
                 accum = -rmat(ip2 + ioff)
             endif
             if (ip < 0) accum = -real_array(-ip)
             if (ip > 0) accum = -rmatu(itels + ip)
-            if (accum == -amiss) accum = amiss
+            if (accum == -missing_value) accum = missing_value
         endif
 
         ! a plus sign need to be applied
         if (ip <= -90000000) then
             ip = ip + 100000000
-            if (rmatu(itel) /= amiss .and. accum /= amiss) then
+            if (rmatu(itel) /= missing_value .and. accum /= missing_value) then
                 rmatu(itel) = rmatu(itel) + accum
             else
-                rmatu(itel) = amiss
+                rmatu(itel) = missing_value
             endif
             if (ip == 0) then
                 accum = rmat(ip2 + ioff)
@@ -242,24 +235,24 @@ contains
         if (ip <= -9000000) then
             ip = ip + 10000000
             if (ip == 0) then
-                if (rmat(ip2 + ioff) /= amiss .and. accum /= amiss) then
+                if (rmat(ip2 + ioff) /= missing_value .and. accum /= missing_value) then
                     accum = accum / rmat(ip2 + ioff)
                 else
-                    accum = amiss
+                    accum = missing_value
                 endif
             endif
             if (ip < 0) then
-                if (real_array(-ip) /= amiss .and. accum /= amiss) then
+                if (real_array(-ip) /= missing_value .and. accum /= missing_value) then
                     accum = accum / real_array(-ip)
                 else
-                    accum = amiss
+                    accum = missing_value
                 endif
             endif
             if (ip > 0) then
-                if (rmat(itels + ip) /= amiss .and. accum /= amiss) then
+                if (rmat(itels + ip) /= missing_value .and. accum /= missing_value) then
                     accum = accum / rmatu(itels + ip)
                 else
-                    accum = amiss
+                    accum = missing_value
                 endif
             endif
         endif
@@ -268,36 +261,36 @@ contains
         if (ip <= -900000) then
             ip = ip + 1000000
             if (ip == 0) then
-                if (rmat(ip2 + ioff) /= amiss .and. accum /= amiss) then
+                if (rmat(ip2 + ioff) /= missing_value .and. accum /= missing_value) then
                     accum = accum * rmat(ip2 + ioff)
                 else
-                    accum = amiss
+                    accum = missing_value
                 endif
             endif
             if (ip < 0) then
-                if (real_array(-ip) /= amiss .and. accum /= amiss) then
+                if (real_array(-ip) /= missing_value .and. accum /= missing_value) then
                     accum = accum * real_array(-ip)
                 else
-                    accum = amiss
+                    accum = missing_value
                 endif
             endif
             if (ip > 0) then
-                if (rmat(itels + ip) /= amiss .and. accum /= amiss) then
+                if (rmat(itels + ip) /= missing_value .and. accum /= missing_value) then
                     accum = accum * rmatu(itels + ip)
                 else
-                    accum = amiss
+                    accum = missing_value
                 endif
             endif
         endif
         if (iloc == locbas) then
-            if (rmatu(itel) /= amiss .and. accum /= amiss) then
+            if (rmatu(itel) /= missing_value .and. accum /= missing_value) then
                 rmatu(itel) = rmatu(itel) + accum
             else
-                rmatu(itel) = amiss
+                rmatu(itel) = missing_value
             endif
             if (maxiem) then
                 if (rmatu(itel) > amaxv .and. &
-                        rmatu(itel) /= amiss) then
+                        rmatu(itel) /= missing_value) then
                     write (lunut, 1000) ibrk, iloco, ifrst + 1
                     write (lunut, 1010) rmatu(itel), amaxv
                     rmatu(itel) = amaxv
@@ -305,7 +298,7 @@ contains
             endif
             if (miniem) then
                 if (rmatu(itel) < aminv .and. &
-                        rmatu(itel) /= amiss) then
+                        rmatu(itel) /= missing_value) then
                     write (lunut, 1000) ibrk, iloco, ifrst + 1
                     write (lunut, 1020) rmatu(itel), aminv
                     rmatu(itel) = aminv
@@ -398,7 +391,6 @@ contains
         !!        35 substance concentrations gives all 36 values per hour). That
         !!        is why the new input processing stores the individual tables.
 
-        use timers       !   performance timers
         use m_char1
 
         integer(kind = int_wp), intent(in) :: ntot                         !< first dimension of tab and tabnw
@@ -512,8 +504,6 @@ contains
         !!      - if positive, linear interpolation
         !! Note that iftyp may differ per variable in the matrix
 
-        use timers       !   performance timers
-
         integer(kind = int_wp), intent(in) :: nvar                  !! number of variables
         integer(kind = int_wp), intent(in) :: ndim2                 !! data per variable
         integer(kind = int_wp), intent(in) :: tset                  !! interpolation time
@@ -553,8 +543,6 @@ contains
         !!    KHT      off-diagonal elements. This is correct for the moment but needs/n
         !!    KHT      to be changed (in future) for (advanced) domain decomposition purposes/n
 
-        use timers       !   performance timers
-
         integer(kind = int_wp), intent(in) :: noq1               !< nr of exchanges first direction
         integer(kind = int_wp), intent(in) :: noq2               !< nr of exchanges second direction
         integer(kind = int_wp), intent(in) :: noq3               !< nr of exchanges third direction
@@ -585,18 +573,17 @@ contains
     end subroutine compute_matrix_size
 
     subroutine compute_matrix(lunut, data_param, data_loc, waq_param, waq_loc, &
-            amiss, fdata, wdata)
+            missing_value, fdata, wdata)
         !! assign matrix according to computational rules
 
         use dlwq_hyd_data  ! for definition and storage of data
-        use timers         ! performance timers
 
         integer(kind = int_wp), intent(in) :: lunut         ! report file
         type(t_dlwq_item), intent(in) :: data_param   ! list of param items in the data
         type(t_dlwq_item), intent(in) :: data_loc     ! list of loc items in the data
         type(t_dlwq_item), intent(in) :: waq_param    ! list of waq param items to be set
         type(t_dlwq_item), intent(in) :: waq_loc      ! list of waq loc items to be set
-        real(kind = real_wp), intent(in) :: amiss         ! missing value
+        real(kind = real_wp), intent(in) :: missing_value         ! missing value
         type(t_dlwqdata), intent(in) :: fdata        ! data block input
         type(t_dlwqdata), intent(out) :: wdata        ! data block output
 
@@ -670,10 +657,10 @@ contains
                     ! a maximum value need to be applied
                     if (ip <= -1190000000) then
                         ip = ip + 1200000000
-                        if (wdata%values(ipar_out, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                        if (wdata%values(ipar_out, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                             wdata%values(ipar_out, iloc, ibrk) = wdata%values(ipar_out, iloc, ibrk) + accum
                         else
-                            wdata%values(ipar_out, iloc, ibrk) = amiss
+                            wdata%values(ipar_out, iloc, ibrk) = missing_value
                         endif
                         accum = 0.0
                         maxiem = .true.
@@ -687,10 +674,10 @@ contains
                     ! a minimum value need to be applied
                     if (ip <= -1090000000) then
                         ip = ip + 1100000000
-                        if (wdata%values(ipar_out, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                        if (wdata%values(ipar_out, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                             wdata%values(ipar_out, iloc, ibrk) = wdata%values(ipar_out, iloc, ibrk) + accum
                         else
-                            wdata%values(ipar_out, iloc, ibrk) = amiss
+                            wdata%values(ipar_out, iloc, ibrk) = missing_value
                         endif
                         accum = 0.0
                         miniem = .true.
@@ -704,26 +691,26 @@ contains
                     ! a minus sign need to be applied
                     if (ip <= -900000000) then
                         ip = ip + 1000000000
-                        if (wdata%values(ipar_out, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                        if (wdata%values(ipar_out, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                             wdata%values(ipar_out, iloc, ibrk) = wdata%values(ipar_out, iloc, ibrk) + accum
                         else
-                            wdata%values(ipar_out, iloc, ibrk) = amiss
+                            wdata%values(ipar_out, iloc, ibrk) = missing_value
                         endif
                         if (ip == 0) then
                             accum = -fdata%values(ip2, iloc, ibrk)
                         endif
                         if (ip < 0) accum = -data_param%constant(ipar)
                         if (ip > 0) accum = -wdata%values(ip, iloc, ibrk)
-                        if (accum == -amiss) accum = amiss
+                        if (accum == -missing_value) accum = missing_value
                     endif
 
                     ! a plus sign need to be applied
                     if (ip <= -90000000) then
                         ip = ip + 100000000
-                        if (wdata%values(ipar_out, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                        if (wdata%values(ipar_out, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                             wdata%values(ipar_out, iloc, ibrk) = wdata%values(ipar_out, iloc, ibrk) + accum
                         else
-                            wdata%values(ipar_out, iloc, ibrk) = amiss
+                            wdata%values(ipar_out, iloc, ibrk) = missing_value
                         endif
                         if (ip == 0) then
                             accum = fdata%values(ip2, iloc, ibrk)
@@ -736,24 +723,24 @@ contains
                     if (ip <= -9000000) then
                         ip = ip + 10000000
                         if (ip == 0) then
-                            if (fdata%values(ipar, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                            if (fdata%values(ipar, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                                 accum = accum / fdata%values(ip2, iloc, ibrk)
                             else
-                                accum = amiss
+                                accum = missing_value
                             endif
                         endif
                         if (ip < 0) then
-                            if (data_param%constant(ipar) /= amiss .and. accum /= amiss) then
+                            if (data_param%constant(ipar) /= missing_value .and. accum /= missing_value) then
                                 accum = accum / data_param%constant(ipar)
                             else
-                                accum = amiss
+                                accum = missing_value
                             endif
                         endif
                         if (ip > 0) then
-                            if (wdata%values(ip, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                            if (wdata%values(ip, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                                 accum = accum / wdata%values(ip, iloc, ibrk)
                             else
-                                accum = amiss
+                                accum = missing_value
                             endif
                         endif
                     endif
@@ -762,24 +749,24 @@ contains
                     if (ip <= -900000) then
                         ip = ip + 1000000
                         if (ip == 0) then
-                            if (fdata%values(ipar, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                            if (fdata%values(ipar, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                                 accum = accum * fdata%values(ip2, iloc, ibrk)
                             else
-                                accum = amiss
+                                accum = missing_value
                             endif
                         endif
                         if (ip < 0) then
-                            if (data_param%constant(ipar) /= amiss .and. accum /= amiss) then
+                            if (data_param%constant(ipar) /= missing_value .and. accum /= missing_value) then
                                 accum = accum * data_param%constant(ipar)
                             else
-                                accum = amiss
+                                accum = missing_value
                             endif
                         endif
                         if (ip > 0) then
-                            if (wdata%values(ip, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                            if (wdata%values(ip, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                                 accum = accum * wdata%values(ip, iloc, ibrk)
                             else
-                                accum = amiss
+                                accum = missing_value
                             endif
                         endif
                     endif
@@ -796,14 +783,14 @@ contains
                     endif
 
                     if (close_accum) then
-                        if (wdata%values(ipar_out, iloc, ibrk) /= amiss .and. accum /= amiss) then
+                        if (wdata%values(ipar_out, iloc, ibrk) /= missing_value .and. accum /= missing_value) then
                             wdata%values(ipar_out, iloc, ibrk) = wdata%values(ipar_out, iloc, ibrk) + accum
                         else
-                            wdata%values(ipar_out, iloc, ibrk) = amiss
+                            wdata%values(ipar_out, iloc, ibrk) = missing_value
                         endif
                         if (maxiem) then
                             if (wdata%values(ipar_out, iloc, ibrk) > amaxv .and. &
-                                    wdata%values(ipar_out, iloc, ibrk) /= amiss) then
+                                    wdata%values(ipar_out, iloc, ibrk) /= missing_value) then
                                 write (lunut, 1000) ibrk, iparo, iloc
                                 write (lunut, 1010) wdata%values(ipar_out, iloc, ibrk), amaxv
                                 wdata%values(ipar_out, iloc, ibrk) = amaxv
@@ -811,7 +798,7 @@ contains
                         endif
                         if (miniem) then
                             if (wdata%values(ipar_out, iloc, ibrk) < aminv .and. &
-                                    wdata%values(ipar_out, iloc, ibrk) /= amiss) then
+                                    wdata%values(ipar_out, iloc, ibrk) /= missing_value) then
                                 write (lunut, 1000) ibrk, iparo, iloc
                                 write (lunut, 1020) wdata%values(ipar_out, iloc, ibrk), aminv
                                 wdata%values(ipar_out, iloc, ibrk) = aminv
@@ -844,8 +831,6 @@ contains
             strng3, output_verbose_level)
 
         !! prints blocks of data, also scale and convert
-
-        use timers        !   performance timers
         use dlwq_hyd_data ! for definition and storage of data
 
         integer(kind = int_wp), intent(in) :: lunut         ! report file
