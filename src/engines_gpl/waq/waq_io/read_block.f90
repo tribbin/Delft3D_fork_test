@@ -23,7 +23,7 @@
 module m_read_block
     use m_waq_precision
     use waq_timers, only : read_time_delay
-    use m_read_data_ods
+    use open_data_structure, only : read_data_ods
     use m_time_validation
     use m_error_status
 
@@ -41,7 +41,7 @@ contains
             status)
         !! Reads a block of input items ( procesparameters, initial conditions )
 
-        use m_read_data
+        use open_data_structure, only : read_time_dependant_data_matrix
         use simulation_input_options, only : process_simulation_input_options
         use matrix_utils, only : compute_matrix, print_matrix
         use m_cli_utils, only : retrieve_command_argument
@@ -559,7 +559,7 @@ contains
                     data_buffer%iorder = data_block%iorder
                     data_buffer%functype = data_block%functype
 
-                    call read_data(data_buffer, itfact, is_date_format, is_yyddhh_format, ierr2)
+                    call read_time_dependant_data_matrix(data_buffer, itfact, is_date_format, is_yyddhh_format, ierr2)
                     if (ierr2 /= 0) goto 100
 
                     call validate_time_series_strictly_increasing(lunut, data_buffer, ierr2)

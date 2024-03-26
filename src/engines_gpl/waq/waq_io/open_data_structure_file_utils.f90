@@ -29,7 +29,8 @@ module open_data_structure
     implicit none
 
     private
-    public :: get_loc, get_time, get_parameter, get_matrix_1, get_matrix_2, get_dimension
+    public :: get_loc, get_time, get_parameter, get_matrix_1, get_matrix_2, get_dimension, read_data_ods, &
+            read_time_dependant_data_matrix
 
 contains
 
@@ -623,5 +624,487 @@ contains
         200 close (lun)
 
     end subroutine get_dimension
+
+    subroutine read_data_ods(lunut, file_name, data_param, data_loc, missing_value, data_block, ierr)
+        !! read a block of data from ODS file
+
+        use dlwq_hyd_data   ! for definition and storage of data
+        use timers          !   performance timers
+        use m_sysi          ! Timer characteristics
+        use time_module
+        use m_string_utils
+
+        integer(kind = int_wp), intent(in) :: lunut         ! report file
+        character(len = *), intent(in) :: file_name        ! filename ODS file
+        type(t_dlwq_item), intent(inout) :: data_param   ! list of param items in the data
+        type(t_dlwq_item), intent(inout) :: data_loc     ! list of loc items in the data
+        real(kind = real_wp), intent(in) :: missing_value         ! missing value
+        type(t_dlwqdata), intent(inout) :: data_block   ! data block
+        integer(kind = int_wp), intent(inout) :: ierr          ! cummulative error count
+
+        integer(kind = int_wp) :: iorder        ! order of the parameters and locations in the data array
+        integer(kind = int_wp) :: loc(3)        ! to pass the locations to ODS
+        character(len = 256) :: cfile(3)     ! to pass the filename to ODS
+        character(len = 3) :: cdummy       ! dummy not used
+        real(kind = dp) :: afact         ! scale factor for times
+        real(kind = dp) :: a1            ! time
+        real(kind = dp) :: a2            ! time
+        character(len = 20) :: locdef(1)    ! to strore wanted locations
+        character(len = 20), allocatable :: locnam(:)    ! locations in file
+        integer(kind = int_wp), allocatable :: loctyp(:)     ! locations type in file
+        integer(kind = int_wp), allocatable :: locnr(:)      ! locations numbers in file
+        integer(kind = int_wp), allocatable :: iloc_ods(:)   ! locations index in file of the wanted locations
+        character(len = 20) :: pardef(1)    ! to strore wanted parameters
+        character(len = 20), allocatable :: parnam(:)    ! parameters in file
+        character(len = 20), allocatable :: parunit(:)   ! parameters unit in file
+        integer(kind = int_wp), allocatable :: partyp(:)     ! parameters type in file
+        integer(kind = int_wp), allocatable :: parnr(:)      ! parameters numbers in file
+        integer(kind = int_wp), allocatable :: ipar_ods(:)   ! parameter index in file of the wanted parameters
+        real(kind = dp) :: timdef(2)     ! to store wanted times
+        real(kind = dp), allocatable :: times(:)      ! times
+        integer(kind = int_wp), allocatable :: timetyp(:)    ! time types ?
+        real(kind = real_wp), allocatable :: buffer(:)     ! data buffer for read
+        real(kind = real_wp), allocatable :: buffer2(:, :, :) ! data buffer for read
+        integer(kind = int_wp) :: nsubs         ! number of parameters in file
+        integer(kind = int_wp) :: nlocs         ! number of locations in file
+        integer(kind = int_wp) :: ntims         ! number of times in file
+        integer(kind = int_wp) :: nopar         ! number of parameters in file
+        integer(kind = int_wp) :: noloc         ! number of locations in file
+        integer(kind = int_wp) :: ndim1          ! first dimension
+        integer(kind = int_wp) :: ndim2          ! second dimension
+        integer(kind = int_wp) :: num_records         ! number of times in file
+        integer(kind = int_wp) :: iloc          ! location index / loop counter
+        integer(kind = int_wp) :: ipar          ! parameter index / loop counter
+        integer(kind = int_wp) :: ibrk          ! time index / loop counter
+        integer(kind = int_wp) :: iloc_found    ! location index in file
+        integer(kind = int_wp) :: ipar_found    ! parameter index in file
+        integer(kind = int_wp) :: ierror        ! ierror
+        logical :: calculation  ! indicates that item is part of calculation
+        integer(kind = int_wp) :: i, i1, i2
+        integer(kind = int_wp) :: iy1, im1, id1, ih1, in1, is1
+        integer(kind = int_wp) :: iy2, im2, id2, ih2, in2, is2
+        real(kind = dp) :: dummy         ! second in double precision (not used)
+        integer(kind = int_wp) :: maxdim
+        integer(kind = int_wp) :: ierr_alloc
+
+        integer(kind = int_wp) :: ithndl = 0
+        if (timon) call timstrt("read_data_ods", ithndl)
+
+        ! write the ods file name
+
+        write (lunut, 1000) file_name
+
+        ! get the dimensions of the ods file
+
+        cfile(1) = file_name
+        cfile(3) = ' '
+        call get_dimension (cfile, 0, cdummy, 0, 0, &
+                0, loc, ierror, cfile(3))
+        nsubs = loc(1)
+        nlocs = loc(2)
+        ntims = loc(3)
+
+        ! get the available locations
+
+        allocate(locnam(nlocs), loctyp(nlocs), locnr(nlocs))
+        allocate(iloc_ods(data_loc%no_item))
+        locdef(1) = '*'
+        call get_loc (cfile, 0, locdef, 1, 0, &
+                0, nlocs, locnam, loctyp, locnr, &
+                noloc, ierror, cfile(3))
+
+        ! Fill an array with wanted locations
+
+        do iloc = 1, data_loc%no_item
+            if (data_loc%name(iloc) == '&$&$SYSTEM_NAME&$&$!') then
+                iloc_ods(iloc) = -1
+            else
+                iloc_found = index_in_array(data_loc%name(iloc), locnam(:noloc))
+                if (iloc_found >= 1) then
+                    iloc_ods(iloc) = iloc_found
+                else
+
+                    ! location not found, warning
+
+                    iloc_ods(iloc) = 0
+                    write (lunut, 1070) data_loc%ipnt(iloc), data_loc%name(iloc)
+
+                    ! check if location in calculation, then error, but is this check sufficient
+
+                    calculation = data_loc%ipnt(iloc) < 0
+                    if (iloc /= data_loc%no_item) calculation = calculation .or. data_loc%ipnt(iloc + 1) < 0
+                    if (calculation) then
+                        write (lunut, 1080)
+                        ierr = 2
+                        goto 510
+                    endif
+
+                endif
+            endif
+        enddo
+        deallocate(locnam, loctyp, locnr)
+
+        ! get the available parameters
+
+        allocate(parnam(nsubs), parunit(nsubs), partyp(nsubs), parnr(nsubs))
+        allocate(ipar_ods(data_param%no_item))
+        pardef(1) = '*'
+        call get_parameter (cfile, 0, pardef, 1, 0, &
+                0, nsubs, 0, parnam, parunit, &
+                partyp, parnr, nopar, ierror, cfile(3))
+
+        ! fill an array with wanted parameters
+        do ipar = 1, data_param%no_item
+            if (data_param%name(ipar) == '&$&$SYSTEM_NAME&$&$!') then
+                ipar_ods(ipar) = 0
+            else
+                ipar_found = index_in_array(data_param%name(ipar), parnam(:nopar))
+                if (ipar_found > 0) then
+                    ipar_ods(ipar) = ipar_found
+                else
+
+                    ! no compacting pointers for the moment, but how to deal with computation?
+
+                    ipar_ods(ipar) = 0
+
+                endif
+            endif
+        enddo
+        deallocate(parnam, parunit, partyp, parnr)
+
+        ! get the available time values
+
+        allocate(times(ntims), timetyp(ntims))
+        timdef(1) = 0.0d0
+        call get_time (cfile, 0, timdef, 1, 0, &
+                0, ntims, times, timetyp, num_records, &
+                ierror, cfile(3))
+
+        ! see if the found time values are within the range
+
+        afact = isfact / 864.0d+02
+        if (isfact < 0) afact = -1.0d+00 / isfact / 864.0d+02
+        if (num_records >= 1) then
+            write (lunut, 1020)
+            a1 = deltim + itstrt * afact
+            a2 = deltim + itstop * afact
+            i1 = 1
+            i2 = 1
+            do ibrk = 1, num_records
+                if (times(ibrk) <= a1) i1 = ibrk
+                if (times(ibrk) < a2) i2 = ibrk
+            enddo
+            if (i2 /= num_records) i2 = i2 + 1
+            if (times(num_records) < a1) i2 = 1
+
+            ! errors and warnings
+
+            if (times(1) > a1) then
+                call gregor (times(1), iy1, im1, id1, ih1, in1, is1, dummy)
+                call gregor (a1, iy2, im2, id2, ih2, in2, is2, dummy)
+                write (lunut, 1030)  iy1, im1, id1, ih1, in1, is1, &
+                        iy2, im2, id2, ih2, in2, is2
+            endif
+            if (times(num_records) < a2) then
+                call gregor (times(num_records), iy1, im1, id1, ih1, in1, is1, dummy)
+                call gregor (a2, iy2, im2, id2, ih2, in2, is2, dummy)
+                write (lunut, 1040)  iy1, im1, id1, ih1, in1, is1, &
+                        iy2, im2, id2, ih2, in2, is2
+            endif
+            num_records = i2 - i1 + 1
+        endif
+        write (lunut, 1050) num_records
+        if (num_records == 1)    write (lunut, 1060)
+
+        ! times are converted to delwaq times
+        data_block%no_brk = num_records
+        allocate(data_block%times(num_records))
+        do ibrk = i1, i2
+            a2 = times(ibrk) - a1
+            data_block%times(ibrk - i1 + 1) = a2 / afact + 0.5
+        enddo
+
+        iorder = ORDER_PARAM_LOC
+        data_block%iorder = iorder
+        if (iorder == ORDER_PARAM_LOC) then
+            ndim1 = data_param%no_item
+            ndim2 = data_loc%no_item
+        else
+            ndim1 = data_loc%no_item
+            ndim2 = data_param%no_item
+        endif
+        data_block%no_param = data_param%no_item
+        data_block%no_loc = data_loc%no_item
+
+        allocate(data_block%values(ndim1, ndim2, num_records), buffer(num_records))
+        data_block%values = missing_value
+
+        ! set the time margins for retrieval
+        timdef(1) = times(1) - afact / 2.0
+        timdef(2) = times(num_records) + afact / 2.0
+        deallocate(times, timetyp)
+
+        ! get the data themselves
+        ! try the read the data in one time
+        allocate(buffer2(nsubs, nlocs, num_records), stat = ierr_alloc)
+        if (ierr_alloc == 0) then
+            maxdim = nsubs * nlocs * num_records
+            call get_matrix_2(cfile, 0, ipar_ods, loc, timdef, &
+                    missing_value, maxdim, buffer2, ierror, &
+                    cfile(3))
+            do ipar = 1, data_param%no_item
+                if (ipar_ods(ipar) > 0) then
+                    do iloc = 1, data_loc%no_item
+                        if (iloc_ods(iloc) > 0) then
+                            do ibrk = 1, num_records
+                                if (iorder == ORDER_PARAM_LOC) then
+                                    data_block%values(ipar, iloc, ibrk) = buffer2(ipar_ods(ipar), iloc_ods(iloc), ibrk)
+                                else
+                                    data_block%values(iloc, ipar, ibrk) = buffer2(ipar_ods(ipar), iloc_ods(iloc), ibrk)
+                                endif
+                            enddo
+                        endif
+                    enddo
+                endif
+            enddo
+            deallocate(buffer2)
+        else
+            loc(3) = 1
+            do ipar = 1, data_param%no_item
+                if (ipar_ods(ipar) > 0) then
+                    do iloc = 1, data_loc%no_item
+                        if (iloc_ods(iloc) > 0) then
+                            loc(1) = iloc_ods(iloc)
+                            loc(2) = iloc_ods(iloc)
+                            call get_matrix_1 (cfile, 0, ipar_ods(ipar), loc, timdef, &
+                                    missing_value, num_records, buffer, ierror, &
+                                    cfile(3))
+                            do ibrk = 1, num_records
+                                if (iorder == ORDER_PARAM_LOC) then
+                                    data_block%values(ipar, iloc, ibrk) = buffer(ibrk)
+                                else
+                                    data_block%values(iloc, ipar, ibrk) = buffer(ibrk)
+                                endif
+                            enddo
+                        endif
+                    enddo
+                endif
+            enddo
+        endif
+        deallocate(buffer, ipar_ods, iloc_ods)
+
+        ! the sequence is the same as we read it, maybe always set both par and loc??
+
+        if (iorder == ORDER_PARAM_LOC) then
+            do i = 1, data_param%no_item
+                data_param%sequence(i) = i
+            enddo
+        else
+            do i = 1, data_loc%no_item
+                data_loc%sequence(i) = i
+            enddo
+        endif
+
+        510 continue
+        if (timon) call timstop(ithndl)
+        return
+
+        1000 FORMAT (' DATA will be retrieved from ODS-file: ', A)
+        1020 FORMAT (' This block consists of a time function.')
+        1030 FORMAT (' WARNING: file start time   : ', &
+                I4, '.', I2, '.', I2, ' ', I2, ':', I2, ':', I2, / &
+                ' after simulation start time: ', &
+                I4, '.', I2, '.', I2, ' ', I2, ':', I2, ':', I2, ' !')
+        1040 FORMAT (' WARNING: file stop  time   : ', &
+                I4, '.', I2, '.', I2, ' ', I2, ':', I2, ':', I2, / &
+                ' before simulation stop time: ', &
+                I4, '.', I2, '.', I2, ' ', I2, ':', I2, ':', I2, ' !')
+        1050 FORMAT (' Number of valid time steps found: ', I6)
+        1060 FORMAT (' This block consists of constant data.')
+        1070 FORMAT (' WARNING: location : ', I8, ' not found. Name is: ', A)
+        1080 FORMAT (' ERROR  : location is used in a computation', &
+                ' that will become corrupted !')
+    END SUBROUTINE read_data_ods
+
+    subroutine read_time_dependant_data_matrix(data_block, itfact, is_date_format, is_yyddhh_format, ierr)
+
+        !! read a (time dependent) data matrix from input
+        use dlwq_hyd_data
+        use rd_token
+        use timers       !   performance timers
+        use date_time_utils, only : convert_string_to_time_offset, convert_relative_time
+
+        type(t_dlwqdata), intent(inout) :: data_block   ! data block
+        integer(kind = int_wp), intent(in) :: itfact        ! factor between clocks
+        logical, intent(in) :: is_date_format       ! true if time in 'date' format
+        logical, intent(in) :: is_yyddhh_format       ! true if yyetc instead of ddetc
+        integer(kind = int_wp), intent(inout) :: ierr          ! cummulative error count
+
+        ! local declarations
+        integer(kind = int_wp) :: ftype          ! function type (constant,block,linear,harmonic,fourier)
+        integer(kind = int_wp) :: mxbrk          ! allocate dimension of third dimension
+        integer(kind = int_wp) :: ndim1          ! first dimension
+        integer(kind = int_wp) :: ndim2          ! second dimension
+        integer(kind = int_wp) :: num_records          ! third dimension
+        integer(kind = int_wp), pointer :: times2(:)      ! used to resize
+        real(kind = real_wp), pointer :: phase2(:)      ! used to resize
+        real(kind = real_wp), pointer :: values2(:, :, :) ! used to resize
+        integer(kind = int_wp) :: t_asked        ! type of token asked
+        integer(kind = int_wp) :: t_token        ! type of token
+        character(len = 256) :: ctoken        ! character token
+        integer(kind = int_wp) :: itoken         ! integer token
+        real(kind = real_wp) :: rtoken         ! real token
+        character :: cdummy        ! dummy
+        integer(kind = int_wp) :: idummy         ! dummy
+        real(kind = real_wp) :: rdummy         ! dummy
+        integer(kind = int_wp) :: i1, i2, i3       ! indexes
+        integer(kind = int_wp) :: ibrk           ! indexe
+        integer(kind = int_wp) :: ierr_alloc     ! error status
+        integer(kind = int_wp) :: ithndl = 0
+        if (timon) call timstrt("read_time_dependant_data_matrix", ithndl)
+
+        ! dimension according to order
+
+        if (data_block%iorder == ORDER_PARAM_LOC) then
+            ndim1 = data_block%no_param
+            ndim2 = data_block%no_loc
+        else
+            ndim1 = data_block%no_loc
+            ndim2 = data_block%no_param
+        endif
+
+        ! read dependent on type of function
+
+        ftype = data_block%functype
+        if (ftype == FUNCTYPE_CONSTANT) then
+
+            ! read only one "time"
+
+            num_records = 1
+            allocate(data_block%values(ndim1, ndim2, num_records), stat = ierr_alloc)
+            data_block%values = 0.0
+            allocate(data_block%times(num_records), stat = ierr_alloc)
+            data_block%times(1) = 0
+            do i2 = 1, ndim2
+                do i1 = 1, ndim1
+                    if (gettoken(rtoken, ierr) /= 0) goto 9999
+                    data_block%values(i1, i2, num_records) = rtoken
+                enddo
+            enddo
+        else
+
+            ! read breakpoints in loop till next token is no longer a valid time
+            mxbrk = 10
+            allocate(data_block%times(mxbrk), data_block%values(ndim1, ndim2, mxbrk))
+            if (ftype == FUNCTYPE_HARMONIC .or. ftype == FUNCTYPE_FOURIER) then
+                allocate(data_block%phase(mxbrk))
+            endif
+
+            num_records = 0
+            breakpoints : do
+
+                ! get next time
+
+                if (gettoken(ctoken, itoken, rtoken, t_token, ierr) /= 0) then
+                    ierr = 0
+                    push = .true.
+                    exit breakpoints
+                endif
+
+                ! check if character is a time string and convert
+                if (t_token == TYPE_CHAR) then
+                    call convert_string_to_time_offset (ctoken, itoken, .false., .false., ierr)
+                    if (ierr /= 0) then
+                        ierr = 0
+                        push = .true.
+                        exit breakpoints
+                    endif
+                else
+                    call convert_relative_time (itoken, itfact, is_date_format, is_yyddhh_format)
+                endif
+
+                num_records = num_records + 1
+                if (num_records > mxbrk) then ! resize
+                    mxbrk = mxbrk * 2
+                    allocate(times2(mxbrk), values2(ndim1, ndim2, mxbrk))
+                    do ibrk = 1, num_records - 1
+                        times2(ibrk) = data_block%times(ibrk)
+                    end do
+                    do ibrk = 1, num_records - 1
+                        do i2 = 1, ndim2
+                            do i1 = 1, ndim1
+                                values2(i1, i2, ibrk) = data_block%values(i1, i2, ibrk)
+                            enddo
+                        enddo
+                    enddo
+                    deallocate(data_block%times, data_block%values)
+                    data_block%times => times2
+                    data_block%values => values2
+                    nullify(times2)
+                    nullify(values2)
+                    if (ftype == FUNCTYPE_HARMONIC .or. ftype == FUNCTYPE_FOURIER) then
+                        allocate(phase2(mxbrk))
+                        do ibrk = 1, num_records - 1
+                            phase2(ibrk) = data_block%phase(ibrk)
+                        end do
+                        deallocate(data_block%phase)
+                        data_block%phase => phase2
+                        nullify(phase2)
+                    endif
+                endif
+                data_block%times(num_records) = itoken
+
+                ! for harmonics and fourier get phase
+                if (ftype == FUNCTYPE_HARMONIC .or. ftype == FUNCTYPE_FOURIER) then
+                    if (gettoken(rtoken, ierr) /= 0) exit
+                    data_block%phase(num_records) = rtoken
+                endif
+
+                ! get the data_block%values for this time
+                do i2 = 1, ndim2
+                    do i1 = 1, ndim1
+                        if (gettoken(rtoken, ierr) /= 0) goto 9999
+                        data_block%values(i1, i2, num_records) = rtoken
+                    enddo
+                enddo
+
+            enddo breakpoints
+
+            ! input ready, resize back the arrays
+            if (num_records /= mxbrk) then
+                allocate(times2(num_records), values2(ndim1, ndim2, num_records))
+                do ibrk = 1, num_records
+                    times2(ibrk) = data_block%times(ibrk)
+                end do
+                do ibrk = 1, num_records
+                    do i2 = 1, ndim2
+                        do i1 = 1, ndim1
+                            values2(i1, i2, ibrk) = data_block%values(i1, i2, ibrk)
+                        enddo
+                    enddo
+                enddo
+                deallocate(data_block%times, data_block%values)
+                data_block%times => times2
+                data_block%values => values2
+                nullify(times2)
+                nullify(values2)
+                if (ftype == FUNCTYPE_HARMONIC .or. ftype == FUNCTYPE_FOURIER) then
+                    allocate(phase2(mxbrk))
+                    do ibrk = 1, num_records
+                        phase2(ibrk) = data_block%phase(ibrk)
+                    end do
+                    deallocate(data_block%phase)
+                    data_block%phase => phase2
+                    nullify(phase2)
+                endif
+            endif
+
+        endif
+
+        data_block%no_brk = num_records
+
+        9999 if (timon) call timstop(ithndl)
+
+    end subroutine read_time_dependant_data_matrix
 
 end module open_data_structure
