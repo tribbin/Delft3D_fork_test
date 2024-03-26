@@ -30,16 +30,14 @@ module boundary_condition_utils
     implicit none
 
     private
-    public :: parse_boundary_condition_data, read_boundary_conditions_from_ods_file
+    public :: parse_boundary_condition_data, read_boundary_conditions_from_ods_file, read_time_series_table
 
 contains
 
-    subroutine parse_boundary_condition_data(lunut, input_file_start_position, num_significant_char, cchar, char_arr, &
-            int_array, max_char_size, max_int_size, all_names, all_types, &
-            num_bc_waste, num_bc_waste_types, parsed_items_count, noits, chkflg, &
-            caller, ilun, lch, lstack, itype, &
-            real_array, nconst, itmnr, parsed_str, output_verbose_level, &
-            error_ind, status)
+    subroutine parse_boundary_condition_data(lunut, input_file_start_position, num_significant_char, &
+            comment_charachter, char_arr, int_array, max_char_size, max_int_size, all_names, all_types, &
+            num_bc_waste, num_bc_waste_types, parsed_items_count, noits, chkflg, caller, ilun, file_name_list, &
+            lstack, itype, real_array, nconst, itmnr, parsed_str, output_verbose_level, error_ind, status)
 
         use m_string_utils, only : index_in_array, join_strings, string_equals
 
@@ -63,12 +61,12 @@ contains
 
         real(kind = real_wp), intent(out) :: real_array(:)       !< Array with real values
 
-        character(1), intent(in) :: cchar        !< Comment character
+        character(1), intent(in) :: comment_charachter        !< Comment character
         character(*), intent(out) :: char_arr(:)       !< Character workspace
         character(*), intent(inout) :: all_names(:)     !< Id's of the boundaries/wastes
         character(*), intent(in) :: all_types(:)     !< Types of the boundaries/wastes
         character(10), intent(in) :: caller       !< Calling subject
-        character(*), intent(inout) :: lch(lstack)  !< File name stack, 4 deep
+        character(*), intent(inout) :: file_name_list(lstack)  !< File name stack, 4 deep
         character(*), intent(out) :: parsed_str   !< Input string at end of routine
 
         type(error_status), intent(inout) :: status !< current error status
@@ -127,7 +125,7 @@ contains
         read_and_process : do
             itype = -3
             if (operator_on .or. (usefor_on .and. substitution_on)) itype = 0
-            call rdtok1(lunut, ilun, lch, lstack, cchar, &
+            call rdtok1(lunut, ilun, file_name_list, lstack, comment_charachter, &
                     input_file_start_position, num_significant_char, parsed_str, parsed_int, parsed_real, &
                     itype, error_ind)
             if (error_ind /= 0) then
@@ -974,5 +972,161 @@ contains
         1080 format(' ERROR  : location is used in a computation', ' that will become corrupted !')
 
     end subroutine read_boundary_conditions_from_ods_file
+
+    subroutine read_time_series_table(file_unit, int_array, real_array, max_int_size, max_real_size, &
+            input_file_start_position, num_significant_char, ilun, file_name_list, lstack, &
+            comment_charachter, charachter_output, notot, nototc, time_dependent, num_records, &
+            time_function_type, is_date_format, is_yyddhh_format, itfact, itype, &
+            int_output, real_output, ierr, ierr3)
+        !! Boundary and waste data new style
+
+        ! LOGICAL UNITS: LUN(27) = unit stripped DELWAQ input file
+        !                LUN(29) = unit formatted output file
+        !                LUN( 2) = unit intermediate file (system)
+        !                LUN(14) = unit intermediate file (boundaries)
+        !                LUN(15) = unit intermediate file (wastes)
+        !
+        !     ILUN    INTEGER   LSTACK     INPUT   unitnumb include stack
+        !     LSTACK  INTEGER    1         INPUT   include file stack size
+        !     charachter_output   CHAR*(*)   1         OUTPUT  space for limiting token
+        !     NOTOT   INTEGER    1         INPUT   size of the matrix to be read
+        !     ITTIM   INTEGER    1         INPUT   0 if steady, 1 if time function
+        !     ITFACT  INTEGER    1         INPUT   factor between clocks
+        !     ITYPE   INTEGER    1         OUTPUT  type of info at end
+        !     IERR    INTEGER    1         OUTPUT  return code
+        !     IERR3   INTEGER    1         OUTPUT  actual error indicator
+
+        use timers       !   performance timers
+        use date_time_utils, only : convert_string_to_time_offset, convert_relative_time
+
+        !< true if the bc or waste load definition is time dependent (linear, harmonic or fourier), and false if it
+        !! is constant.
+        logical, intent(in) :: time_dependent
+        integer(kind = int_wp), intent(in) :: max_int_size, max_real_size, file_unit
+        character(len = *), intent(in) :: file_name_list(lstack), charachter_output     !! file name stack, 4 deep
+        character(len = 1), intent(in) :: comment_charachter
+        dimension     ilun(lstack)
+        logical :: newrec, ignore
+        logical, intent(in) :: is_date_format                     !! True if time in 'date' format
+        logical, intent(in) :: is_yyddhh_format                   !! True if YYetc instead of DDetc
+        integer(kind = int_wp) :: int_output
+        integer(kind = int_wp), intent(out) :: num_records        !! number of records read
+        integer(kind = int_wp), intent(inout) :: input_file_start_position  !!      Start position on input line
+        integer(kind = int_wp), intent(in) :: num_significant_char                      !! nr of significant characters
+        integer(kind = int_wp) :: ilun, ierr, itfact
+        integer(kind = int_wp), intent(inout) :: int_array(*)
+        real(kind = real_wp), intent(inout) :: real_array(:)
+        integer(kind = int_wp), intent(in) :: notot
+        integer(kind = int_wp) :: nototc
+        integer(kind = int_wp) :: lstack
+        integer(kind = int_wp), intent(in) :: time_function_type        !! 3 is harmonics, 4 is fourier
+
+        real :: real_output
+        integer(kind = int_wp) :: ithndl = 0, i, itel, itel2, ierr3, itype
+        if (timon) call timstrt("read_time_series_table", ithndl)
+
+        ignore = .false.
+        newrec = .false.
+        if (time_dependent) newrec = .true.                    ! it is a time function
+        num_records = 0
+        itel = 1
+        itel2 = 1
+        ierr3 = 0
+        if (itype /= 0) goto 20                                ! it was called with an argument
+
+        ! read loop
+        10 if (newrec) then
+            itype = 0                                          ! everything is valid
+        else
+            itype = 3                                          ! a real value schould follow
+        endif
+        call rdtok1 (file_unit, ilun, file_name_list, lstack, comment_charachter, &
+                input_file_start_position, num_significant_char, charachter_output, int_output, real_output, &
+                itype, ierr)
+        ! a read error
+        if (ierr  /= 0) goto 9999
+        ! a token has arrived
+        if (itype == 1) then                                   ! that must be an absolute timer string
+            !  2^31 =  2147483648
+            call convert_string_to_time_offset (charachter_output, int_output, .false., .false., ierr)
+            ! yyyydddhhmmss so 64 bits integer
+            if (int_output == -999) then
+                ierr = 1
+                write (file_unit, 1020) trim(charachter_output)
+                goto 9999
+            endif
+            if (ierr /= 0) then                                ! the found entry is not a new time value
+                if (num_records <= 1) then
+                    write (file_unit, 1040) num_records
+                    !ierr3 = ierr3 + 1
+                endif
+                ierr = 0
+                goto 9999
+            endif
+            int_output = itfact * int_output
+        elseif (itype == 2) then
+            call convert_relative_time (int_output, 1, is_date_format, is_yyddhh_format)
+        else
+            int_output = 0
+        endif
+        ! getting the data of this block (no strings any more)
+        20 if (time_dependent .and. newrec) then
+            !          it was a non-real and characters has been caught
+            if (int_output == -999) then
+                ignore = .true.
+            else                                                      ! a new breakpoint found
+                ignore = .false.
+                num_records = num_records + 1
+                if (num_records <= max_int_size) then
+                    int_array(num_records) = int_output
+                    if (num_records > 1) then
+                        if (int_output <= int_array(num_records - 1)) then ! times not strinctly ascending
+                            write (file_unit, 1030) int_output, int_array(num_records - 1)
+                            ierr3 = ierr3 + 1
+                        endif
+                    endif
+                else
+                    write (file_unit, 1000) max_int_size
+                    ierr = 100
+                    goto 9999
+                endif
+            endif
+            newrec = .false.
+            goto 10
+        endif
+
+        if (.not. ignore) then
+            do i = 1, notot / nototc
+                real_array(itel + (i - 1) * nototc) = real_output
+            end do
+        endif
+        ! are we to expect a new record ?
+        if (mod(itel2, nototc) == 0) then
+            newrec = .true.
+            itel = itel + notot - nototc
+        end if
+        !        it was a constant, so we can now return.
+        if (newrec .and. (.not. time_dependent)) then
+            num_records = 1
+            int_array(1) = 0
+            goto 9999
+        endif
+        !        increase the counter for the next real and go to input
+        if (.not. ignore) itel = itel + 1
+        itel2 = itel2 + 1
+        goto 10
+        9999 if (timon) call timstop(ithndl)
+        return
+
+        1000 FORMAT (' ERROR ! Number of breakpoints exceeds system', &
+                ' maximum of: ', I10)
+        1020 FORMAT (' ERROR ! Absolute timer does not fit in timer ', &
+                'format: ', A, / &
+                ' Is your T0 setting in block #1 correct?'/, &
+                ' Allowed difference with T0 is usually ca. 68 years.')
+        1030 FORMAT (/' ERROR ! Time value ', I10, ' not larger than previous time value ', I10)
+        1040 FORMAT (/' WARNING ! There are only ', I2, ' breakpoints found for this time series')
+
+    end subroutine read_time_series_table
 
 end module boundary_condition_utils

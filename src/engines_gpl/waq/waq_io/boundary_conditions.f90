@@ -26,7 +26,7 @@ module boundary_conditions
     use m_string_utils
     use waq_timers, only : read_time_delay
     use matrix_utils, only : assign_matrix
-    use m_dlwq5d, only : read_time_series_table
+    use boundary_condition_utils, only : read_time_series_table
     use m_error_status
 
     implicit none
@@ -115,13 +115,13 @@ contains
                 chkflg, ident, nottc, lunwr2, &
                 file_size_1, file_size_2, ipro, itfacw, time_function_type, &
                 num_records, itel, ioerr, iblock, k, &
-                i, ihulp, ioff, icm, iim, &
+                i, int_output, ioff, icm, iim, &
                 noits, nconst, itmnr, idx_item_in_use_rule, nocol, &
                 idmnr, nodis, nitm, nti, nti2, &
                 ntr, irm, nottt, ierr3, nr2, &
                 nts, ntc, ntd
-        real(kind = real_wp) :: missing_value, rhulp
-        character     chulp*255
+        real(kind = real_wp) :: missing_value, real_output
+        character     charachter_output*255
         logical       newrec, scale, ods, binfil, tdelay
         logical :: time_dependent !< Is the BC / Waste load definition time dependent (true)? Or constant (false)?
         integer(kind = int_wp) :: ithndl = 0
@@ -212,7 +212,7 @@ contains
         endif
         if (iflag == 4) itype = 3
         20 call rdtok1 (lunut, ilun, lch, lstack, cchar, &
-                iposr, npos, chulp, ihulp, rhulp, &
+                iposr, npos, charachter_output, int_output, real_output, &
                 itype, ierr2)
 
         ! End of block detected
@@ -225,7 +225,7 @@ contains
         if (ierr2 /= 0) goto 510 !close ( lunwr2 )
 
         ! All the following has the old file structure
-        if (iabs(itype) == 1 .and. chulp == 'OLD-FILE-STRUCTURE') then
+        if (iabs(itype) == 1 .and. charachter_output == 'OLD-FILE-STRUCTURE') then
             write (lunut, 1000)
             call status%increase_warning_count()
             ierr2 = -1
@@ -233,32 +233,32 @@ contains
         endif
 
         ! A local redirection of the name of an item or substance is not valid here
-        if (iabs(itype) == 1 .and. chulp == 'USEFOR') then
+        if (iabs(itype) == 1 .and. charachter_output == 'USEFOR') then
             write (lunut, 1010)
             ierr2 = 1
             goto 510
         endif
 
         ! Time delay for ODS files
-        30 if (iabs(itype) == 1 .and. chulp(1:10) == 'TIME_DELAY') then
+        30 if (iabs(itype) == 1 .and. charachter_output(1:10) == 'TIME_DELAY') then
             call read_time_delay (ierr2)
             if (ierr2 /= 0) goto 510
             goto 10
         endif
 
         ! Time interpolation instead of block function
-        if (iabs(itype) == 1 .and. chulp(1:6) == 'LINEAR') then
+        if (iabs(itype) == 1 .and. charachter_output(1:6) == 'LINEAR') then
             if (output_verbose_level >= 3) write (lunut, 1005)
             time_function_type = 2
             goto 10
         endif
-        if (iabs(itype) == 1 .and. chulp(1:5) == 'BLOCK') then
+        if (iabs(itype) == 1 .and. charachter_output(1:5) == 'BLOCK') then
             time_function_type = 1
             goto 10
         endif
 
         ! Usedata_item
-        if (iabs(itype) == 1 .and. (chulp == 'USEDATA_ITEM')) then
+        if (iabs(itype) == 1 .and. (charachter_output == 'USEDATA_ITEM')) then
             if (iorder == 1 .or. iorder == 2) then
                 write (lunut, 1011)
                 ierr2 = 1
@@ -267,21 +267,21 @@ contains
 
             ! Next token must be a name
             call rdtok1 (lunut, ilun, lch, lstack, cchar, &
-                    iposr, npos, chulp, ihulp, rhulp, &
+                    iposr, npos, charachter_output, int_output, real_output, &
                     itype, ierr2)
-            if (chulp == ' ') then
+            if (charachter_output == ' ') then
                 write (lunut, 1012)
                 ierr2 = 1
                 goto 510
             endif
-            data_item_name = chulp
+            data_item_name = charachter_output
             if (output_verbose_level >= 3) write (lunut, 1015) data_item_name
             ! Next token must be 'FORITEM'
             call rdtok1 (lunut, ilun, lch, lstack, cchar, &
-                    iposr, npos, chulp, ihulp, rhulp, &
+                    iposr, npos, charachter_output, int_output, real_output, &
                     itype, ierr2)
 
-            if (chulp /= 'FORITEM') then
+            if (charachter_output /= 'FORITEM') then
                 write (lunut, 1012)
                 ierr2 = 1
                 goto 510
@@ -295,7 +295,7 @@ contains
                     int_workspace(ioff:), icm, iim, bc_waste_ids, bc_waste_types, &
                     num_bc_waste, num_bc_waste_types, count_items_in_use_rule, noits, chkflg, &
                     calit, ilun, lch, lstack, &
-                    itype, real_workspace, nconst, itmnr, chulp, &
+                    itype, real_workspace, nconst, itmnr, charachter_output, &
                     output_verbose_level, ierr2, status)
             ! Check if data_item already exists
 
@@ -340,15 +340,15 @@ contains
         endif
 
         ! Items
-        if (iabs(itype) == 1 .and. (chulp == 'ITEM' .or. chulp == 'IDENTICALITEM' .or. &
-                chulp == 'DATA_ITEM')) then
+        if (iabs(itype) == 1 .and. (charachter_output == 'ITEM' .or. charachter_output == 'IDENTICALITEM' .or. &
+                charachter_output == 'DATA_ITEM')) then
             if (iorder == 0) then !Items
                 iorder = 1 !concentr.
                 ioff = 1
-                if (chulp == 'IDENTICALITEM') then
+                if (charachter_output == 'IDENTICALITEM') then
                     if (output_verbose_level >= 3) write (lunut, 1021)
                     ident = 1
-                else if (chulp == 'DATA_ITEM') then
+                else if (charachter_output == 'DATA_ITEM') then
                     if (output_verbose_level >= 3) write (lunut, 1022)
                     ident = 2 ! DATA_ITEM
                 else
@@ -372,7 +372,7 @@ contains
                         int_workspace(ioff:), icm, iim, bc_waste_ids, bc_waste_types, &
                         num_bc_waste, num_bc_waste_types, count_items_in_use_rule, noits, chkflg, &
                         calit, ilun, lch, lstack, itype, &
-                        real_workspace, nconst, itmnr, chulp, output_verbose_level, &
+                        real_workspace, nconst, itmnr, charachter_output, output_verbose_level, &
                         ierr2, status)
             else ! DATA_ITEM
                 call parse_boundary_condition_data (lunut, iposr, npos, cchar, char_arr(ioff:), &
@@ -380,7 +380,7 @@ contains
                         dlwq_data_items%name(1:ndata_items), &
                         ndata_items, ndata_items, count_items_in_use_rule, noits, chkflg, &
                         caldit, ilun, lch, lstack, itype, &
-                        real_workspace, nconst, itmnr, chulp, output_verbose_level, &
+                        real_workspace, nconst, itmnr, charachter_output, output_verbose_level, &
                         ierr2, status)
                 if (count_items_in_use_rule/=1) then
                     write (lunut, 1045)
@@ -444,7 +444,7 @@ contains
         endif
 
         ! Concentrations
-        if (iabs(itype) == 1 .and. chulp(1:6) == 'CONCEN') then
+        if (iabs(itype) == 1 .and. charachter_output(1:6) == 'CONCEN') then
             if (iorder == 0) then
                 if (output_verbose_level >= 3) write (lunut, 1050)
                 iorder = 2
@@ -464,7 +464,7 @@ contains
                     int_workspace(ioff:), icm, iim, substances_names, bc_waste_types, &
                     substances_count, 0, nodim, nodis, chkflg, &
                     'CONCENTR. ', ilun, lch, lstack, &
-                    itype, real_workspace, nconst, idmnr, chulp, &
+                    itype, real_workspace, nconst, idmnr, charachter_output, &
                     output_verbose_level, ierr2, status)
             nocol = nodis
             if (ierr2 /= 0) goto 510
@@ -472,7 +472,7 @@ contains
         endif
 
         ! Data
-        if (iabs(itype) == 1 .and. chulp(1:6) == 'DATA') then
+        if (iabs(itype) == 1 .and. charachter_output(1:6) == 'DATA') then
             if (count_items_in_use_rule * nodim == 0) then ! nodim = count_subs
                 write (lunut, 1080) count_items_in_use_rule, nodim
                 ierr2 = 1
@@ -482,8 +482,8 @@ contains
             call validate_column_headers(lunut, int_workspace, itmnr, count_items_in_use_rule, idmnr, &
                     nodim, iorder, char_arr, iposr, &   ! max_int_size,
                     npos, ilun, lch, lstack, cchar, &
-                    chulp, nocol, is_date_format, is_yyddhh_format, itfacw, &
-                    itype, ihulp, rhulp, ierr2, status)
+                    charachter_output, nocol, is_date_format, is_yyddhh_format, itfacw, &
+                    itype, int_output, real_output, ierr2, status)
             if (ierr2 > 1) goto 510
             ! Reads blocks of data
             if (iorder == 2) then
@@ -514,9 +514,9 @@ contains
             ! read time series table
             call read_time_series_table (lunut, int_workspace(nti2:), real_workspace(ntr:), iim, irm, &
                     iposr, npos, ilun, lch, lstack, &
-                    cchar, chulp, nottt, nottc, time_dependent, num_records, &
+                    cchar, charachter_output, nottt, nottc, time_dependent, num_records, &
                     time_function_type, is_date_format, is_yyddhh_format, itfacw, itype, &
-                    ihulp, rhulp, ierr2, ierr3)
+                    int_output, real_output, ierr2, ierr3)
 
             call status%increase_error_count_with(ierr3)
 
@@ -564,7 +564,7 @@ contains
         endif
 
         ! ODS-file option selected
-        if (iabs(itype) == 1 .and. chulp(1:8) == 'ODS_FILE') then
+        if (iabs(itype) == 1 .and. charachter_output(1:8) == 'ODS_FILE') then
             if (count_items_in_use_rule * nodim == 0) then
                 write (lunut, 1080) count_items_in_use_rule, nodim
                 ierr2 = 1
@@ -583,7 +583,7 @@ contains
             nts = nconst + 1
             iim = max_int_size - nti
             irm = max_real_size - ntr
-            call read_boundary_conditions_from_ods_file (chulp, lunut, char_arr, int_workspace, real_workspace(ntr:), &
+            call read_boundary_conditions_from_ods_file (charachter_output, lunut, char_arr, int_workspace, real_workspace(ntr:), &
                     max_char_size, max_int_size, max_real_size, dp_workspace, count_items_in_use_rule, &
                     nodim, iorder, scale, itmnr, idmnr, &
                     missing_value, num_records, ierr2, status)
@@ -619,20 +619,20 @@ contains
         endif
 
         ! Absolute or relative timers
-        if (iabs(itype) == 1 .and. chulp(1:8) == 'ABSOLUTE') then
+        if (iabs(itype) == 1 .and. charachter_output(1:8) == 'ABSOLUTE') then
             write (lunut, 1135)
-            chulp = 'TIME'
+            charachter_output = 'TIME'
         endif
 
         ! Say it is a time function
-        if (iabs(itype) == 1 .and. chulp(1:4) == 'TIME') then
+        if (iabs(itype) == 1 .and. charachter_output(1:4) == 'TIME') then
             time_dependent = .true.
             time_function_type = 1
             goto 10
         endif
 
         ! Scale factors begin
-        if (iabs(itype) == 1 .and. chulp == 'SCALE') then
+        if (iabs(itype) == 1 .and. charachter_output == 'SCALE') then
             if (nodim == 0) then
                 write (lunut, 1180)
                 ierr2 = 1
@@ -651,12 +651,12 @@ contains
         ! Getting the scale factors
         if (iflag == 4) then
             itel = itel + 1
-            real_workspace(itel + nconst) = rhulp
+            real_workspace(itel + nconst) = real_output
             if (itel == idmnr) iflag = 0
             goto 10
         endif
 
-        write (lunut, 1320) chulp
+        write (lunut, 1320) charachter_output
         write (lunut, '(A)') ' Expected character string should be a valid level 2 keyword'
         ierr2 = 1
         510 close (lunwr2)
@@ -669,7 +669,7 @@ contains
         end do
         530 newrsp = newrsp + file_size_2
         newisp = newisp + file_size_1
-        call check_error(chulp, iwidth, iblock, ierr2, status)
+        call check_error(charachter_output, iwidth, iblock, ierr2, status)
         540 if (timon) call timstop(ithndl)
         return
 
@@ -746,7 +746,7 @@ contains
     !        be resolved and this number was used as dimension for SCALE
     !     NOITM contains the second and third series dimension in int_workspace and char_arr
     !     NCONST is the number of constants that was put in real_workspace
-    !     ITYPE and CHULP are the type and content of the token at exit
+    !     ITYPE and charachter_output are the type and content of the token at exit
     !
     !     After CONCENTRATION the same happens. Depending on who is first,
     !        the arrays are first filled with Items (IORDER = 1) or with
@@ -1017,8 +1017,8 @@ contains
     subroutine validate_column_headers(ascii_output_file_unit, int_array, count_items_assign, count_items_comp_rule, &
             count_subs_assign, count_subs_comp_rule, index_first, names_to_check, start_in_line, & !max_int_size,
             num_significant_char, ilun, lch, lstack, cchar, &
-            chulp, nocol, is_date_format, is_yyddhh_format, itfact, &
-            itype, ihulp, rhulp, error_idx, status)
+            charachter_output, nocol, is_date_format, is_yyddhh_format, itfact, &
+            itype, int_output, real_output, error_idx, status)
 
         !! Checks if column header exists
         !! Logical Units : LUN(27) = unit stripped DELWAQ input file
@@ -1037,7 +1037,7 @@ contains
 
         character(len = *), intent(in) :: names_to_check(:) !! names of items to check for presence
         character(len = *), intent(in) :: lch(lstack)       !! file name stack, 4 deep
-        character(len = *), intent(out) :: chulp            !! space for limiting token
+        character(len = *), intent(out) :: charachter_output            !! space for limiting token
         character, intent(in) :: cchar*1                    !! comment character
         logical, intent(in) :: is_date_format               !! true if time in 'date' format
         logical, intent(in) :: is_yyddhh_format             !! true if yyetc instead of ddetc
@@ -1046,14 +1046,14 @@ contains
         integer(kind = int_wp), intent(in) :: index_first               !! 1 = items first, 2 = substances first
         integer(kind = int_wp), intent(out) :: itype                    !! type of info at end
         integer(kind = int_wp), intent(in) :: ilun(lstack)                      !! unitnumb include stack
-        integer(kind = int_wp), intent(out) :: ihulp                 !! parameter read to be transferred
+        integer(kind = int_wp), intent(out) :: int_output                 !! parameter read to be transferred
         integer(kind = int_wp), intent(out) :: error_idx         !! error index within current subroutine
         integer(kind = int_wp), intent(out) :: nocol     !! number of collums in matrix
         integer(kind = int_wp), intent(in) :: itfact            !! factor between clocks
 
         integer(kind = int_wp), intent(in) :: num_significant_char                  !! number of significant characters
         integer(kind = int_wp), intent(in) :: lstack            !! include file stack size
-        real(kind = real_wp), intent(out) :: rhulp               !!parameter read to be transferred
+        real(kind = real_wp), intent(out) :: real_output               !!parameter read to be transferred
 
         !! names_to_check
         character :: strng*8
@@ -1088,7 +1088,7 @@ contains
         do while (must_read_more)
             itype = 0
             call rdtok1 (ascii_output_file_unit, ilun, lch, lstack, cchar, &
-                    start_in_line, num_significant_char, chulp, ihulp, rhulp, &
+                    start_in_line, num_significant_char, charachter_output, int_output, real_output, &
                     itype, error_idx)
 
             if (error_idx  /= 0) then ! error occurred when reading
@@ -1098,7 +1098,7 @@ contains
 
             ! no error
             if (itype == 1) then ! a string has arrived
-                call convert_string_to_time_offset (chulp, ihulp, .false., .false., error_idx)
+                call convert_string_to_time_offset (charachter_output, int_output, .false., .false., error_idx)
                 if (error_idx == 0) then
                     error_idx = -2
                     if (first) then
@@ -1119,15 +1119,15 @@ contains
                 nocol = nocol + 1
                 strng = 'NOT used'
                 do i = 1, count_names
-                    if (string_equals(chulp(:20), names_to_check(offset_names + i))) then
+                    if (string_equals(charachter_output(:20), names_to_check(offset_names + i))) then
                         strng = 'used'
                         int_array(i + offset_i_array) = nocol
                     endif
                 end do
-                write (ascii_output_file_unit, 1000) nocol, chulp, strng
+                write (ascii_output_file_unit, 1000) nocol, charachter_output, strng
             else
                 if (itype == 2) then ! an integer has arrived
-                    call convert_relative_time (ihulp, itfact, is_date_format, is_yyddhh_format)
+                    call convert_relative_time (int_output, itfact, is_date_format, is_yyddhh_format)
                 endif
                 error_idx = -1
                 must_read_more = .false.
