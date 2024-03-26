@@ -43,7 +43,7 @@ subroutine flow_finalize_usertimestep(iresult)
    use dfm_error
    use precision_basics, only : comparereal
    use unstruc_model, only: md_fou_step
-   use m_partitioninfo, only: jampi
+   use m_partitioninfo, only: jampi, reduce_statistical_output
    use unstruc_channel_flow, only : network
    use m_oned_functions, only: updateFreeboard, updateDepthOnGround, updateVolOnGround
    use m_update_fourier, only : update_fourier
@@ -133,6 +133,12 @@ subroutine flow_finalize_usertimestep(iresult)
       call update_source_data(out_variable_set_his)
       call update_source_data(out_variable_set_map)
       call update_source_data(out_variable_set_clm)
+      
+      if (ti_his > 0 .and. &
+          comparereal(time1, time_his, eps10) >= 0 .and. &
+          jampi == 1) then
+         call reduce_statistical_output(out_variable_set_his)
+      end if
 
       call timstrt('call flow_externaloutput', handle_extra(79))
       call flow_externaloutput(time1)

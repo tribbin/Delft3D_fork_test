@@ -3820,6 +3820,40 @@ end subroutine partition_make_globalnumbers
       return
    end subroutine reduce_valobs
    
+   !> Reduce the statistical output before writing
+   subroutine reduce_statistical_output(output_set)
+      use m_statistical_output, only: t_output_variable_set
+      use m_observations, only: kobs
+#ifdef HAVE_MPI
+      use mpi
+#endif
+
+      type(t_output_variable_set),    intent(inout)   :: output_set           !> output set that we wish to update
+      double precision, parameter                     :: dsmall = -huge(1d0)
+      integer                                         :: vari,loci
+      double precision, pointer, dimension(:)         :: stat_output          !< Array that is to be written to the Netcdf file. In case the current values are
+                                                                              !< required this variable points to the basic variable (e.g. s1).
+                                                                              !< Otherwise during the simulation the intermediate results are stored.
+      integer                                         :: ierror
+      
+#ifdef HAVE_MPI
+      ! Set values for locations outside this partition to minus infinity for all statistical output variables
+      do vari = 1,output_set%count
+         stat_output => output_set%statout(vari)%stat_output
+         do loci = 1,size(stat_output)
+            if (kobs(loci) == 0) then
+               ! Location lies outside partition
+               stat_output(loci) = dsmall
+            end if
+         end do
+      end do
+      
+      ! Reduce stat_output
+      call MPI_allreduce(MPI_in_place, stat_output, size(stat_output), mpi_double_precision, mpi_max, DFM_COMM_DFMWORLD, ierror)
+#endif
+
+   end subroutine reduce_statistical_output
+   
    
 !> reduce source-sinks
 !>   it is assumed that the source-sinks are unique
