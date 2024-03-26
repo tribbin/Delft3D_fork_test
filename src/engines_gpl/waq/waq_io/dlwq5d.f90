@@ -28,18 +28,18 @@ module m_dlwq5d
 contains
 
 
-    SUBROUTINE DLWQ5D(file_unit, int_array, real_array, max_int_size, max_real_size, &
-            IPOSR, num_significant_char, ILUN, LCH, LSTACK, &
-            CCHAR, CHULP, NOTOT, NOTOTC, time_dependent, num_records, &
-            time_function_type, is_date_format, is_yyddhh_format, ITFACT, ITYPE, &
-            IHULP, RHULP, IERR, ierr3)
+    subroutine read_time_series_table(file_unit, int_array, real_array, max_int_size, max_real_size, &
+            input_file_start_position, num_significant_char, ilun, lch, lstack, &
+            cchar, chulp, notot, nototc, time_dependent, num_records, &
+            time_function_type, is_date_format, is_yyddhh_format, itfact, itype, &
+            ihulp, rhulp, ierr, ierr3)
         !! Boundary and waste data new style
 
-        !     LOGICAL UNITS      : LUN(27) = unit stripped DELWAQ input file
-        !                          LUN(29) = unit formatted output file
-        !                          LUN( 2) = unit intermediate file (system)
-        !                          LUN(14) = unit intermediate file (boundaries)
-        !                          LUN(15) = unit intermediate file (wastes)
+        ! LOGICAL UNITS: LUN(27) = unit stripped DELWAQ input file
+        !                LUN(29) = unit formatted output file
+        !                LUN( 2) = unit intermediate file (system)
+        !                LUN(14) = unit intermediate file (boundaries)
+        !                LUN(15) = unit intermediate file (wastes)
         !
 
         !     file_unit   INTEGER    1         INPUT   unit number for ASCII output
@@ -47,7 +47,7 @@ contains
         !     real_array     REAL     max_real_size       IN/OUT  real      workspace
         !     max_int_size   INTEGER    1         INPUT   max. int. workspace dimension
         !     max_real_size   INTEGER    1         INPUT   max. real workspace dimension
-        !     IPOSR   INTEGER    1         IN/OUT  Start position on input line
+        !     input_file_start_position   INTEGER    1         IN/OUT  Start position on input line
         !     num_significant_char    INTEGER    1         INPUT   nr of significant characters
         !     ILUN    INTEGER   LSTACK     INPUT   unitnumb include stack
         !     LCH     CHAR*(*)  LSTACK     INPUT   file name stack, 4 deep
@@ -80,41 +80,41 @@ contains
         integer(kind = int_wp) :: ihulp
         integer(kind = int_wp) :: ithndl = 0
         integer(kind = int_wp) :: num_records, itel, itel2, ierr3, itype
-        integer(kind = int_wp) :: file_unit, ilun, iposr, num_significant_char, ierr, itfact
+        integer(kind = int_wp) :: file_unit, ilun, input_file_start_position, num_significant_char, ierr, itfact
         integer(kind = int_wp) :: int_array, notot, nototc, lstack, time_function_type
         real :: real_array(:), rhulp
 
-        if (timon) call timstrt("dlwq5d", ithndl)
+        if (timon) call timstrt("read_time_series_table", ithndl)
 
         ignore = .false.
         newrec = .false.
-        if (time_dependent) newrec = .true.                          ! it is a time function
+        if (time_dependent) newrec = .true.                    ! it is a time function
         num_records = 0
         itel = 1
         itel2 = 1
         ierr3 = 0
-        if (itype /= 0) goto 20                                  ! it was called with an argument
+        if (itype /= 0) goto 20                                ! it was called with an argument
 
         ! read loop
         10 if (newrec) then
-            itype = 0                                                 ! everything is valid
+            itype = 0                                          ! everything is valid
         else
-            itype = 3                                                 ! a real value schould follow
+            itype = 3                                          ! a real value schould follow
         endif
         call rdtok1 (file_unit, ilun, lch, lstack, cchar, &
-                iposr, num_significant_char, chulp, ihulp, rhulp, &
+                input_file_start_position, num_significant_char, chulp, ihulp, rhulp, &
                 itype, ierr)
         ! a read error
         if (ierr  /= 0) goto 9999
         ! a token has arrived
-        if (itype == 1) then                                     ! that must be an absolute timer string
+        if (itype == 1) then                                   ! that must be an absolute timer string
             call convert_string_to_time_offset (chulp, ihulp, .false., .false., ierr)    !  2^31 =  2147483648
-            if (ihulp == -999) then                              ! yyyydddhhmmss so 64 bits integer
+            if (ihulp == -999) then                            ! yyyydddhhmmss so 64 bits integer
                 ierr = 1
                 write (file_unit, 1020) trim(chulp)
                 goto 9999
             endif
-            if (ierr /= 0) then                              ! the found entry is not a new time value
+            if (ierr /= 0) then                                ! the found entry is not a new time value
                 if (num_records <= 1) then
                     write (file_unit, 1040) num_records
                     !ierr3 = ierr3 + 1
@@ -153,13 +153,13 @@ contains
             newrec = .false.
             goto 10
         endif
-        !
+
         if (.not. ignore) then
             do i = 1, notot / nototc
                 real_array(itel + (i - 1) * nototc) = rhulp
             end do
         endif
-        !        are we to expect a new record ?
+        ! are we to expect a new record ?
         if (mod(itel2, nototc) == 0) then
             newrec = .true.
             itel = itel + notot - nototc
@@ -186,6 +186,6 @@ contains
         1030 FORMAT (/' ERROR ! Time value ', I10, ' not larger than previous time value ', I10)
         1040 FORMAT (/' WARNING ! There are only ', I2, ' breakpoints found for this time series')
 
-    END SUBROUTINE DLWQ5D
+    end subroutine read_time_series_table
 
 end module m_dlwq5d

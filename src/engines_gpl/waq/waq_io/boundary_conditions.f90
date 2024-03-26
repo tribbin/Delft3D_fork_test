@@ -26,8 +26,7 @@ module boundary_conditions
     use m_string_utils
     use waq_timers, only : read_time_delay
     use matrix_utils, only : assign_matrix
-    use m_dlwq5d
-    use m_dlwq5c
+    use m_dlwq5d, only : read_time_series_table
     use m_error_status
 
     implicit none
@@ -73,7 +72,7 @@ contains
         ! logical_unit(14) = unit intermediate file (boundaries)
         ! logical_unit(15) = unit intermediate file (wastes)
 
-        use boundary_condition_validation, only : parse_boundary_condition_data
+        use boundary_condition_utils, only : parse_boundary_condition_data, read_boundary_conditions_from_ods_file
         use error_handling, only : check_error
         use m_open_waq_files
         use rd_token
@@ -121,7 +120,7 @@ contains
                 idmnr, nodis, nitm, nti, nti2, &
                 ntr, irm, nottt, ierr3, nr2, &
                 nts, ntc, ntd
-        real(kind = real_wp) :: amiss, rhulp
+        real(kind = real_wp) :: missing_value, rhulp
         character     chulp*255
         logical       newrec, scale, ods, binfil, tdelay
         logical :: time_dependent !< Is the BC / Waste load definition time dependent (true)? Or constant (false)?
@@ -146,7 +145,7 @@ contains
         ipro = 0
         itfacw = 1
         deltim = otime
-        amiss = -999.0
+        missing_value = -999.0
         ierr2 = dlwq_init_data_items(dlwq_data_items)
         ierr2 = dlwq_init_item(dlwq_foritem)
         !
@@ -513,7 +512,7 @@ contains
             ! harmonics or fourier
             if (time_function_type == 3 .or. time_function_type == 4) nottt = nottt + 1
             ! read time series table
-            call dlwq5d (lunut, int_workspace(nti2:), real_workspace(ntr:), iim, irm, &
+            call read_time_series_table (lunut, int_workspace(nti2:), real_workspace(ntr:), iim, irm, &
                     iposr, npos, ilun, lch, lstack, &
                     cchar, chulp, nottt, nottc, time_dependent, num_records, &
                     time_function_type, is_date_format, is_yyddhh_format, itfacw, itype, &
@@ -535,7 +534,7 @@ contains
                 ! process parsed values in table  (process operations if any) and store results in real_workspace(nr2:)
                 call assign_matrix (lunut, int_workspace, count_items_in_use_rule, itmnr, nodim, &
                         idmnr, iorder, real_workspace, time_function_type, real_workspace(ntr:), &
-                        nocol, num_records, amiss, int_workspace(nti:), real_workspace(nr2:))
+                        nocol, num_records, missing_value, int_workspace(nti:), real_workspace(nr2:))
                 strng3 = 'breakpoint'
                 ! Writes to the binary intermediate file
                 nts = nconst + 1
@@ -552,7 +551,7 @@ contains
             iorder = 0
             iflag = 0
             time_function_type = 1
-            amiss = -999.0
+            missing_value = -999.0
             num_records = 0
             itel = 0
             scale = .false.
@@ -584,15 +583,15 @@ contains
             nts = nconst + 1
             iim = max_int_size - nti
             irm = max_real_size - ntr
-            call dlwq5c (chulp, lunut, char_arr, int_workspace, real_workspace(ntr:), &
+            call read_boundary_conditions_from_ods_file (chulp, lunut, char_arr, int_workspace, real_workspace(ntr:), &
                     max_char_size, max_int_size, max_real_size, dp_workspace, count_items_in_use_rule, &
                     nodim, iorder, scale, itmnr, idmnr, &
-                    amiss, num_records, ierr2, status)
+                    missing_value, num_records, ierr2, status)
             if (ierr2 /= 0) goto 510
             nr2 = ntr + count_items_in_use_rule * nodim * num_records
             call assign_matrix (lunut, int_workspace, count_items_in_use_rule, itmnr, nodim, &
                     idmnr, iorder, real_workspace, time_function_type, real_workspace(ntr:), &
-                    nodim, num_records, amiss, int_workspace(nti:), real_workspace(nr2:))
+                    nodim, num_records, missing_value, int_workspace(nti:), real_workspace(nr2:))
             strng3 = 'breakpoint'
             call write_data_blocks (lunwr2, lunut, iwidth, num_records, int_workspace, &
                     real_workspace(nts:), real_workspace(nr2:), itmnr, idmnr, iorder, &
@@ -608,7 +607,7 @@ contains
             iflag = 0
             ioff = 0
             time_function_type = 1
-            amiss = -999.0
+            missing_value = -999.0
             num_records = 0
             itel = 0
             scale = .false.
