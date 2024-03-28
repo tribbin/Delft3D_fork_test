@@ -51,7 +51,7 @@ integer, parameter, public :: ICE_WINDDRAG_CUBIC   = 1 !< Based on ADCIRC (Chapm
 integer, parameter, public :: ICE_WINDDRAG_LB05    = 2 !< Lupkes and Birnbaum (2005)
 integer, parameter, public :: ICE_WINDDRAG_AN10    = 3 !< Andreas et al (2010)
 integer, parameter, public :: ICE_WINDDRAG_LINEAR  = 4 !< no wind drag below ice
-integer, parameter, public :: ICE_WINDDRAG_RAYS    = 5 !< Based on ADCIRC (Chapman et al)
+integer, parameter, public :: ICE_WINDDRAG_RAYS    = 5 !< Based on ADCIRC (Chapman et al., 2005)
 
 !
 ! public routines
@@ -431,8 +431,8 @@ pure function ice_drag_effect(icecover, ice_af, cdw) result (cdeff)
 
         ! Jensen & Ebersole (2012) ERDC/CHL TR-12-26
         ! Modeling of Lake Michigan Storm Waves and Water Levels
-        ! refer to Chapman et al (2005, 2009) for
-        ! cdeff = 0.001_fp * (0.125_fp + 0.5_fp * ice_af * (1.0_fp – ice_af))
+        ! refer to Chapman et al. (2005, 2009) for
+        ! cdeff = 0.001_fp * (0.125_fp + 0.5_fp * ice_af * (1.0_fp  ice_af))
 
         c0 =  0.00125_fp
         c1 =  0.00500_fp
@@ -448,7 +448,7 @@ pure function ice_drag_effect(icecover, ice_af, cdw) result (cdeff)
         
         cdeff = wat_af * cdw + ice_af * cdi + cdf
         
-    case (ICE_WINDDRAG_AN10) ! Andreas et al (2010)
+    case (ICE_WINDDRAG_AN10) ! Andreas et al. (2010)
         
         c0 = 1.5e-3_fp
         c1 = 2.233e-3_fp
