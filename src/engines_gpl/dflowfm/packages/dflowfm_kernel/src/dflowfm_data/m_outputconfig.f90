@@ -292,6 +292,9 @@ private
    integer, public :: IDX_HIS_DPSED
 
    integer, public :: IDX_HIS_HWQ_ABSTRACT
+   integer, public :: IDX_HIS_WQBOT_ABSTRACT
+   integer, public :: IDX_HIS_WQBOT3D_ABSTRACT
+   
    integer, public :: IDX_HIS_TRACERS_ABSTRACT
 
    integer, public :: IDX_HIS_OBSCRS_DISCHARGE
@@ -304,8 +307,7 @@ private
    integer, public :: IDX_HIS_OBSCRS_SED_BTRANSPORT
    integer, public :: IDX_HIS_OBSCRS_SED_STRANSPORT
    integer, public :: IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT
-   integer, public :: IDX_HIS_OBSCRS_SED_BTRANSPORT_1
-   integer, public :: IDX_HIS_OBSCRS_SED_BTRANSPORT_N
+   integer, public :: IDX_HIS_OBSCRS_SED_STRANSPORT_PERFRAC_ABSTRACT
 
    integer, public :: IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_INSTANTANEOUS
    integer, public :: IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_AVERAGE

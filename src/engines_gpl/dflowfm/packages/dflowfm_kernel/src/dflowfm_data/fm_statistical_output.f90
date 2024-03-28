@@ -203,16 +203,20 @@ private
 
    call ncu_set_att(atts(1), 'geometry', 'cross_section_geom')
 
-   if (jased == 4 .and. stmpar%lsedtot > 0) then
-      num_const_items = 2 + stmpar%lsedtot
-   else
-      num_const_items = 0
+   num_const_items = 2*NUMCONST_MDU
+   if (jased == 4) then
+      num_const_items = num_const_items + 2
+      if (stmpar%lsedtot > 0) then
+         num_const_items = num_const_items + stmpar%lsedtot
+      end if
+      if (stmpar%lsedsus > 0) then
+         num_const_items = num_const_items + stmpar%lsedsus
+      end if
    end if
-   num_const_items = num_const_items + 2*NUMCONST_MDU
 
    if (.not. allocated(obscrs_data)) then
       allocate(obscrs_data(ncrs, 5 + num_const_items)) ! First 5 are for IPNT_Q1C:IPNT_HUA
-      allocate(idx_const(num_const_items))
+      allocate(idx_const(num_const_items), source = 0)
    else
       call err('Internal error, please report: obscrs_data was already allocated')
    endif
@@ -267,26 +271,37 @@ private
    !
    ! Sediment transport
    !
-   if (jased == 4 .and. stmpar%lsedtot > 0) then
-      ! Just to get the complete list of indexes in idx_const
-      idx_const(NUMCONST_MDU*2 + 1) = IDX_HIS_OBSCRS_SED_BTRANSPORT
+   if (jased == 4) then
+      if (stmpar%lsedtot > 0) then
+         ! Just to get the complete list of indexes in idx_const
+         idx_const(NUMCONST_MDU*2 + 1) = IDX_HIS_OBSCRS_SED_BTRANSPORT
 
-      if( stmpar%lsedsus > 0 ) then
-         idx_const(NUMCONST_MDU*2 + 2) = IDX_HIS_OBSCRS_SED_STRANSPORT
-      else
-         idx_const(NUMCONST_MDU*2 + 2) = 0
-      endif
+         do lsed = 1,stmpar%lsedtot    ! Making bedload on crosssections per fraction
+            ! Just-in-time add *config* item for this fraction's bed load sediment transport
+            call addoutval(output_config, idx_const(NUMCONST_MDU*2 + 1 + lsed),                                       &
+                  'Wrihis_constituents', 'cross_section_bedload_sediment_transport_'//trim(stmpar%sedpar%namsed(lsed)), &
+                  'Cumulative bed load sediment transport for fraction '//trim(stmpar%sedpar%namsed(lsed)), &
+                  '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            output_config%statout(idx_const(NUMCONST_MDU*2 + 1 + lsed))%input_value =     &
+                  output_config%statout(IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT)%input_value
+         end do
+      end if
+   
+      if (stmpar%lsedsus > 0) then
+         ! Just to get the complete list of indexes in idx_const
+         idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1) = IDX_HIS_OBSCRS_SED_STRANSPORT
 
-      do lsed = 1,stmpar%lsedtot    ! Making bedload on crosssections per fraction
-         ! Just-in-time add *config* item for this fraction's bed load sediment transport
-         call addoutval(output_config_set, idx_const(NUMCONST_MDU*2 + 2 + lsed),                                       &
-               'Wrihis_constituents', 'cross_section_bedload_sediment_transport_'//trim(stmpar%sedpar%namsed(lsed)), &
-               'Cumulative bed load sediment transport for fraction '//trim(stmpar%sedpar%namsed(lsed)), &
-               '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
-         output_config_set%statout(idx_const(NUMCONST_MDU*2 + 2 + lsed))%input_value =     &
-               output_config_set%statout(IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT)%input_value
-      enddo
-   endif
+         do lsed = 1,stmpar%lsedsus    ! Making suspended load on crosssections per fraction
+            ! Just-in-time add *config* item for this fraction's suspended load sediment transport
+            call addoutval(output_config, idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1 + lsed), &
+                  'Wrihis_constituents', 'cross_section_suspended_sediment_transport_'//trim(stmpar%sedpar%namsed(lsed)), &
+                  'Cumulative suspended load sediment transport for fraction '//trim(stmpar%sedpar%namsed(lsed)), &
+                  '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            output_config%statout(idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1 + lsed))%input_value =     &
+                  output_config%statout(IDX_HIS_OBSCRS_SED_STRANSPORT_PERFRAC_ABSTRACT)%input_value
+         end do
+      end if
+   end if
 
    end subroutine init_obscrs_data_and_config
 
@@ -346,28 +361,40 @@ private
       end do
    enddo
 
-   if (jased == 4 .and. stmpar%lsedtot > 0) then
-      IP = IPNT_HUA + NUMCONST_MDU + 1
-      ! Bed load
-      do i=1,ncrs
-         obscrs_data(i, 5 + 2*NUMCONST_MDU + 1) = crs(i)%sumvalcum(IP)
-      end do
+   if (jased == 4) then
+      
+      if (stmpar%lsedtot > 0) then
+         ! Bed load (cumulative)
+         IP = IPNT_HUA + NUMCONST_MDU + 1
+         do i=1,ncrs
+            obscrs_data(i, 5 + 2*NUMCONST_MDU + 1) = crs(i)%sumvalcum(IP)
+         end do
 
-      ! Suspended load
-      if( stmpar%lsedsus > 0 ) then
+         ! Bed load (per fraction)
+         do lsed = 1,stmpar%lsedtot
+            IP = IP + 1
+            do i=1,ncrs
+               obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + lsed) = crs(i)%sumvalcum(IP)
+            end do
+         end do
+      end if
+      
+      if (stmpar%lsedsus > 0) then
+         ! Suspended load (cumulative)
          IP = IP + 1
          do i=1,ncrs
-            obscrs_data(i, 5 + 2*NUMCONST_MDU + 2) = crs(i)%sumvalcum(IP)
+            obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + stmpar%lsedtot + 1) = crs(i)%sumvalcum(IP)
          end do
-      endif
 
-      ! Bed load per fraction
-      do lsed = 1,stmpar%lsedtot
-         IP = IP + 1
-         do i=1,ncrs
-            obscrs_data(i, 5 + 2*NUMCONST_MDU + 2 + lsed) = crs(i)%sumvalcum(IP)
+         ! Suspended load (per fraction)
+         do lsed = 1,stmpar%lsedsus
+            IP = IP + 1
+            do i=1,ncrs
+               obscrs_data(i, 5 + 2*NUMCONST_MDU + 1 + stmpar%lsedtot + 1 + lsed) = crs(i)%sumvalcum(IP)
+            end do
          end do
-      enddo
+      end if
+      
    end if
 
    end subroutine aggregate_obscrs_data
@@ -376,7 +403,6 @@ private
    !! because the tracers are only known during model initialization.
    !! Returns config indices for these variables such that they can be added to the output items for the same tracers
    subroutine add_station_tracer_configs(output_config_set, idx_tracers_stations)
-      use m_alloc, only: realloc
       use netcdf_utils, only: ncu_sanitize_name
       use m_ug_nc_attribute, only: ug_nc_attribute
       use m_transportdata, only: const_names, const_units, ITRA1, ITRAN
@@ -391,7 +417,7 @@ private
 
       num_tracers = ITRAN - ITRA1 + 1
 
-      call realloc(idx_tracers_stations, num_tracers, keepExisting = .false., fill = 0)
+      allocate(idx_tracers_stations(num_tracers), source = 0)
 
       do tracer_index = 1, num_tracers
          constituent_index = tracer_index + ITRA1 - 1
@@ -437,6 +463,129 @@ private
    end do
 
    end subroutine add_station_tracer_output_items
+   
+   !> Add output configs for the waq bottom substances on observation stations just in time,
+   !! because these substances are only known during model initialization.
+   !! Return config indices for these variables such that they can be added to the output items for the same substances
+   !! NOTE (TB): apparently, these are the 'inactive' substances defined in the waq substance file
+   subroutine add_station_wqbot_configs(output_config_set, idx_wqbot_stations)
+   
+      use m_fm_wq_processes, only: numwqbots, wqbotnames, wqbotunits
+      use netcdf_utils,      only: ncu_sanitize_name
+      use m_ug_nc_attribute, only: ug_nc_attribute
+      use netcdf_utils,      only: ncu_set_att
+      
+      implicit none
+      
+      type(t_output_quantity_config_set), intent(inout) :: output_config_set         !< Output configuration set for the HIS file.
+      integer, allocatable,               intent(  out) :: idx_wqbot_stations(:)     !< Indices of just-in-time added waq bottom substances in output_config_set array
+      
+      character(len=idlen)                              :: waqb_sub_name
+      character(len=idlen)                              :: unit_string
+      type(ug_nc_attribute)                             :: atts(1)
+      integer                                           :: i
+
+      allocate(idx_wqbot_stations(numwqbots), source = 0)
+      
+      call ncu_set_att(atts(1), 'geometry', 'station_geom')
+
+      do i = 1, numwqbots
+         waqb_sub_name = wqbotnames(i)
+         call ncu_sanitize_name(waqb_sub_name)
+
+         unit_string = wqbotunits(i)
+         if (unit_string == ' ') then
+            unit_string = '-'
+         endif
+
+         ! add output config item
+         call addoutval(output_config_set, idx_wqbot_stations(i), 'Wrihis_wqbot', waqb_sub_name, &
+                        trim(wqbotnames(i)), '', unit_string, UNC_LOC_STATION, nc_dim_ids = nc_dims_2D, nc_atts = atts)
+
+         output_config_set%statout(idx_wqbot_stations(i))%input_value = &
+            output_config_set%statout(IDX_HIS_WQBOT_ABSTRACT)%input_value
+      end do
+   
+   end subroutine add_station_wqbot_configs
+   
+   !> Add output configs for the 3D waq bottom substances on observation stations just in time,
+   !! because these substances are only known during model initialization.
+   !! Return config indices for these variables such that they can be added to the output items for the same substances
+   subroutine add_station_wqbot3D_configs(output_config_set, idx_wqbot3D_stations)
+   
+      use m_fm_wq_processes, only: wqbot3D_output, numwqbots, wqbotnames, wqbotunits
+      use netcdf_utils,      only: ncu_sanitize_name
+      use m_ug_nc_attribute, only: ug_nc_attribute
+      use netcdf_utils,      only: ncu_set_att
+      
+      implicit none
+      
+      type(t_output_quantity_config_set), intent(inout) :: output_config_set           !< Output configuration for the HIS file.
+      integer, allocatable,               intent(  out) :: idx_wqbot3D_stations(:)     !< Indices of just-in-time added waq bottom    substances in output_config_set array
+      
+      character(len=idlen)                              :: waqb_sub_name
+      character(len=idlen)                              :: unit_string
+      type(ug_nc_attribute)                             :: atts(1)
+      integer                                           :: i
+
+      allocate(idx_wqbot3D_stations(numwqbots), source = 0)
+      
+      call ncu_set_att(atts(1), 'geometry', 'station_geom')
+
+      do i = 1, numwqbots
+         waqb_sub_name = wqbotnames(i)
+         call ncu_sanitize_name(waqb_sub_name)
+
+         unit_string = wqbotunits(i)
+         if (unit_string == ' ') then
+            unit_string = '-'
+         endif
+
+         ! add output config item
+         call addoutval(output_config_set, idx_wqbot3D_stations(i), 'Wrihis_wqbot3d', waqb_sub_name, &
+                        trim(wqbotnames(i))//' (3D)', '', unit_string, UNC_LOC_STATION, nc_dim_ids = nc_dims_3D_center, nc_atts = atts)
+
+         output_config_set%statout(idx_wqbot3D_stations(i))%input_value = &
+            output_config_set%statout(IDX_HIS_WQBOT_ABSTRACT)%input_value
+      end do
+   
+   end subroutine add_station_wqbot3D_configs
+
+   !> Add output items for all waq bottom substances on stations to output set.
+   subroutine add_station_wqbot_output_items(output_set, output_config_set, idx_wqbot_stations)
+   
+      use m_fm_wq_processes, only: numwqbots
+      use m_observations, only: valobs, IPNT_WQB1
+      
+      type(t_output_variable_set),        intent(inout) :: output_set                !< Output set that item will be added to
+      type(t_output_quantity_config_set), intent(in   ) :: output_config_set         !< Read config items out of config set
+      integer,                            intent(in   ) :: idx_wqbot_stations(:)     !< Indices of just-in-time added waq bottom substances in output_config_set array
+
+      integer :: i
+
+      do i = 1, numwqbots
+         call add_stat_output_items(output_set, output_config_set%statout(idx_wqbot_stations(i)), valobs(:,IPNT_WQB1 + i-1))
+      end do
+
+   end subroutine add_station_wqbot_output_items
+
+   !> Add output items for all 3D waq bottom substances on stations to output set.
+   subroutine add_station_wqbot3D_output_items(output_set, output_config_set, idx_wqbot3D_stations)
+   
+      use m_fm_wq_processes, only: numwqbots, wqbot3D_output
+      use m_observations, only: valobs, IPNT_WQB3D1
+      
+      type(t_output_variable_set),        intent(inout) :: output_set                  !< Output set that item will be added to
+      type(t_output_quantity_config_set), intent(in   ) :: output_config_set           !< Read config items out of config set
+      integer,                            intent(in   ) :: idx_wqbot3D_stations(:)     !< Indices of just-in-time added waq bottom substances in output_config_set array
+
+      integer :: i
+
+      do i = 1, numwqbots
+         call add_stat_output_items(output_set, output_config_set%statout(idx_wqbot3D_stations(i)), valobs(:,IPNT_WQB3D1 + i-1))
+      end do
+
+   end subroutine add_station_wqbot3D_output_items
 
    !> Set all possible statistical quantity items in the quantity configuration sets.
    subroutine default_fm_statistical_output()
@@ -1076,23 +1225,23 @@ private
       call addoutval(out_quan_conf_his, IDX_HIS_TKE,                                                                   &
                      'Wrihis_turbulence', 'tke', 'turbulent kinetic energy', '',                                       &
                      'm2 s-2', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write k, eps and vicww to his file', &
-                     nc_dim_ids = nc_dims_3D_interface_edge)
+                     nc_dim_ids = nc_dims_3D_interface_center)
       call addoutval(out_quan_conf_his, IDX_HIS_VICWW,                                       &
                      'Wrihis_turbulence', 'vicww' , 'turbulent vertical eddy viscosity', '', &
                      'm2 s-1''', UNC_LOC_STATION, nc_atts = atts(1:1),                       &
-                     nc_dim_ids = nc_dims_3D_interface_edge)
+                     nc_dim_ids = nc_dims_3D_interface_center)
       call addoutval(out_quan_conf_his, IDX_HIS_EPS,                                 &
                      'Wrihis_turbulence', 'eps', 'turbulent energy dissipation', '', &
                      'm2 s-3', UNC_LOC_STATION, nc_atts = atts(1:1),                 &
-                     nc_dim_ids = nc_dims_3D_interface_edge)
+                     nc_dim_ids = nc_dims_3D_interface_center)
       call addoutval(out_quan_conf_his, IDX_HIS_TAU,                         &
                      'Wrihis_turbulence', 'tau', 'turbulent time scale', '', &
                      's-1', UNC_LOC_STATION, nc_atts = atts(1:1),            &
-                     nc_dim_ids = nc_dims_3D_interface_edge)
+                     nc_dim_ids = nc_dims_3D_interface_center)
       call addoutval(out_quan_conf_his, IDX_HIS_RICH,               &
                      'Richardsononoutput', 'rich', 'Richardson Nr', &
                      '', '-', UNC_LOC_STATION, nc_atts = atts(1:1), &
-                     nc_dim_ids = nc_dims_3D_interface_edge)
+                     nc_dim_ids = nc_dims_3D_interface_center)
 
       ! Gravity + buoyancy
       call addoutval(out_quan_conf_his, IDX_HIS_SALINITY,                                                    &
@@ -1356,6 +1505,14 @@ private
                      'Wrihis_tracers', 'station_tracer_abstract', '', &
                      '', '-', UNC_LOC_STATION, description = 'Write tracers to his file')
 
+      call addoutval(out_quan_conf_his, IDX_HIS_WQBOT_ABSTRACT, &
+                     'Wrihis_wqbot', 'station_wqb_abstract', '', &
+                     '', '-', UNC_LOC_STATION, description = 'Write waq bottom substances to his file')
+
+      call addoutval(out_quan_conf_his, IDX_HIS_WQBOT3D_ABSTRACT, &
+                     'Wriwaqbot3Doutput', 'station_wqb3d_abstract', '', &
+                     '', '-', UNC_LOC_STATION, description = 'Write waq bottom 3D substances to his file')
+
       ! HIS: Variables on observation cross sections
       !
       call ncu_set_att(atts(1), 'geometry', 'cross_section_geom')
@@ -1395,11 +1552,14 @@ private
             'Cumulative suspended load sediment transport', &
             '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
 
-      ! The following output value is an abstract entry representing all bedload sediment fractions.
-      ! The fractions that are actually available depend on the model initialization
+      ! The following two output values are abstract entries representing all bedload and suspended
+      ! sediment fractions. The fractions that are actually available depend on the model initialization
       ! and will only be added later, during init_fm_statistical_output_his().
       call addoutval(out_quan_conf_his, IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT,                                       &
             'Wrihis_crs_sediment', 'cross_section_bedload_sediment_transport_abstract', '', &
+            '', '-', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+      call addoutval(out_quan_conf_his, IDX_HIS_OBSCRS_SED_STRANSPORT_PERFRAC_ABSTRACT,                                       &
+            'Wrihis_crs_sediment', 'cross_section_suspended_sediment_transport_abstract', '', &
             '', '-', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
 
       !
@@ -1952,7 +2112,7 @@ private
       use m_longculverts, only: nlongculverts
       use m_monitoring_crosssections, only: ncrs
       use m_monitoring_runupgauges, only: nrug, rug
-      use m_fm_wq_processes, only: jawaqproc
+      use m_fm_wq_processes, only: jawaqproc, numwqbots
       use processes_input, only: num_wq_user_outputs => noout_user
       use m_dad, only: dad_included, dadpar
       use m_lateral, only : numlatsg, qplat, qplatAve, qLatRealAve, qLatReal
@@ -1969,6 +2129,7 @@ private
       integer, allocatable, dimension(:) :: id_hwq
       integer, allocatable, dimension(:) :: idx_his_hwq
       integer, allocatable, dimension(:) :: idx_constituents_crs, idx_tracers_stations
+      integer, allocatable, dimension(:) :: idx_wqbot_stations, idx_wqbot3D_stations
 
       ntot = numobs + nummovobs
       !
@@ -2264,24 +2425,24 @@ private
       ! Turbulence model
       if (model_is_3D()) then
          if (iturbulencemodel >= 3 .and. jahistur > 0) then
-            temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_TKIN:IPNT_TKIN+kmx)
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_TKE      ),temp_pointer                            )
+            temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_TKIN:IPNT_TKIN+kmx)
+            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_TKE),temp_pointer)
          endif
          if (iturbulencemodel == 3 .and. jahistur >0) then
-            temp_pointer(1:kmx*ntot) => valobs(1:ntot,IDX_HIS_EPS:IDX_HIS_EPS+kmx)
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_EPS      ),temp_pointer                     )
+            temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_TEPS:IPNT_TEPS+kmx)
+            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_EPS),temp_pointer)
          endif
          if (iturbulencemodel > 1) then
-            temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_VICWW:IPNT_VICWW+kmx)
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_VICWW    ),temp_pointer                         )
+            temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_VICWW:IPNT_VICWW+kmx)
+            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_VICWW),temp_pointer)
          endif
          if (iturbulencemodel == 4 .and. jahistur > 0) then
-            temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_TEPS:IPNT_TEPS+kmx)
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_TAU     ),temp_pointer                      )
+            temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_TEPS:IPNT_TEPS+kmx)
+            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_TAU),temp_pointer)
          endif
       endif
       if (idensform > 0 .and. jaRichardsononoutput > 0 .and. model_is_3D()) then
-         temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_RICH:IPNT_RICH+kmx)
+         temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_RICH:IPNT_RICH+kmx)
          call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_RICH),temp_pointer)
       endif
 
@@ -2309,14 +2470,14 @@ private
             temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_RHOP:IPNT_RHOP+kmx)
             call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_POTENTIAL_DENSITY), temp_pointer)
 
-            temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_BRUV:IPNT_BRUV+kmx)
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_BRUNT_VAISALA_N2),temp_pointer                              )
+            temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_BRUV:IPNT_BRUV+kmx)
+            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_BRUNT_VAISALA_N2),temp_pointer)
             if (idensform > 10) then
                temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_RHO:IPNT_RHO+kmx)
-               call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_DENSITY),temp_pointer                                )
+               call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_DENSITY),temp_pointer)
             endif
          else
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_POTENTIAL_DENSITY),valobs(:,IPNT_RHOP)                              )
+            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_POTENTIAL_DENSITY),valobs(:,IPNT_RHOP))
          endif
       endif
 
@@ -2504,6 +2665,16 @@ private
             temp_pointer(1 : num_layers * ntot) => valobs(:, start_index : start_index + num_layers - 1)
             call add_stat_output_items(output_set, output_config_set%statout(idx_his_hwq(variable_index)), temp_pointer)
          end do
+      end if
+      
+      ! Water quality bottom substances
+      if (numwqbots > 0) then
+         call add_station_wqbot_configs(output_config_set, idx_wqbot_stations)
+         call add_station_wqbot_output_items(output_set, output_config_set, idx_wqbot_stations)
+         if (model_is_3D()) then
+            call add_station_wqbot3D_configs(output_config_set, idx_wqbot3D_stations)
+            call add_station_wqbot3D_output_items(output_set, output_config_set, idx_wqbot3D_stations)
+         end if
       end if
 
       ! Transported constituents
