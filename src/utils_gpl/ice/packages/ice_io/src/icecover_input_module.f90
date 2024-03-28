@@ -235,11 +235,11 @@ function echo_icecover(icecover, lundia) result (error)
     case (ICE_WINDDRAG_CUBIC)
         txtput2 = 'Cubic (Chapman & Massey)'
     case (ICE_WINDDRAG_RAYS)
-        txtput2 = 'RaysIce (Chapman et al)'
+        txtput2 = 'RaysIce (Chapman et al.)'
     case (ICE_WINDDRAG_LB05)
         txtput2 = 'Lupes & Birnbaum (2005)'
     case (ICE_WINDDRAG_AN10)
-        txtput2 = 'Andreas et al (2010)'
+        txtput2 = 'Andreas et al. (2010)'
     case (ICE_WINDDRAG_LINEAR)
         txtput2 = 'No drag below ice'
     end select
