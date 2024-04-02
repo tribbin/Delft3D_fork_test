@@ -694,11 +694,11 @@ subroutine prop_xmlfile_pointer(lu, tree, error)
           exit
        endif
        if ( xml_error(xmlinfo) ) then
-          error = .true.
+          error = 1
           exit
        endif
        if (xmlinfo%level >= ubound(xmllevel, DIM=1)) then
-          error = .true.
+          error = 1
           exit
        endif
        !
@@ -1475,7 +1475,8 @@ recursive subroutine prop_write_xmlfile(mout, tree, level, error)
                    if (associated(data_ptr)) then
                       call tree_get_data_string( tree%child_nodes(i)%node_ptr, string, success )
                    endif
-                   write(buffer,'(6a)') trim(buffer), " ", trim(tree_get_name(tree%child_nodes(i)%node_ptr)), "=""", trim(string), """"
+                   write(buffer,'(6a)') trim(buffer), " ", trim(tree_get_name(tree%child_nodes(i)%node_ptr)), &
+                     "=""", trim(string), """"
                 endif
              enddo
              string = ' '

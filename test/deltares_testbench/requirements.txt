@@ -11,3 +11,5 @@ pathlib
 tk
 minio
 pytest
+pytest-mock
+pyfakefs

@@ -32,12 +32,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set compiler flags
 enable_language(Fortran C CXX)
-if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
-    # To be implemented later on
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
+if(${CMAKE_Fortran_COMPILER_ID} MATCHES "GNU")
+    include(compiler_options/gnu.cmake)
+elseif(${CMAKE_Fortran_COMPILER_ID} MATCHES "Intel")
     include(compiler_options/intel.cmake)
-elseif(CMAKE_Fortran_COMPILER_ID MATCHES "PGI")
-    # To be implemented later on
 else()
     echo (CMAKE_FORTRAN_COMPILER_ID = ${CMAKE_Fortran_COMPILER_ID} does not match known compilers, configuring for Intel)
     include(compiler_options/intel.cmake)
@@ -61,8 +59,15 @@ if (WIN32)
 
     # Set mpi_include_path
     if ("${OSS_MPI}" STREQUAL "IntelMPI")
-        set(mpi_include_path $ENV{I_MPI_ONEAPI_ROOT}/include)
-        set(mpi_library_path $ENV{I_MPI_ONEAPI_ROOT}/lib/$<CONFIG>;$ENV{I_MPI_ONEAPI_ROOT}/lib)
+        if("$ENV{I_MPI_ONEAPI_ROOT}" STREQUAL "")
+            message(STATUS "I_MPI_ONEAPI_ROOT is not set or empty. Using Intel 2024 folder structure.")
+            set(mpi_include_path $ENV{ONEAPI_ROOT}/mpi/latest/include)
+            set(mpi_library_path $ENV{ONEAPI_ROOT}/mpi/latest/lib/mpi/$<CONFIG>;$ENV{ONEAPI_ROOT}/mpi/latest/lib)    
+        else()
+            message(STATUS "I_MPI_ONEAPI_ROOT is set to: $ENV{I_MPI_ONEAPI_ROOT}. Using Intel 2023 folder structure.")
+            set(mpi_include_path $ENV{I_MPI_ONEAPI_ROOT}/include)
+            set(mpi_library_path $ENV{I_MPI_ONEAPI_ROOT}/lib/$<CONFIG>;$ENV{I_MPI_ONEAPI_ROOT}/lib)
+        endif()   
         set(mpi_fortran_library "impi.lib")
         set(mpi_c_library "impi.lib;impicxx.lib")
     else()

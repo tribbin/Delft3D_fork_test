@@ -119,7 +119,7 @@ contains
         use data_processing, only : close_files
         use dlwqgrid_mod
         use timers
-        use memory_mangement                         ! Global memory with allocatable GMRES arrays
+        use variable_declaration                         ! Global memory with allocatable GMRES arrays
         use delwaq2_data
         use m_waq_openda_exchange_items, only : get_openda_buffer
         use m_actions

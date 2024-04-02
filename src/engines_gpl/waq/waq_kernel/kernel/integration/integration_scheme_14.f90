@@ -108,7 +108,7 @@ contains
         use timers
         use delwaq2_data
         use m_waq_openda_exchange_items, only : get_openda_buffer
-        use memory_mangement          ! module with the more recently added arrays
+        use variable_declaration          ! module with the more recently added arrays
         use m_actions
         use m_sysn          ! System characteristics
         use m_sysi          ! Timer characteristics
