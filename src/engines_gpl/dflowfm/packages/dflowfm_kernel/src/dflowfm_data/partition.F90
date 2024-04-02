@@ -5292,6 +5292,36 @@ endif
  
 end function  get_list_size
 
+!> Check if a set of flowlinks is contained entirely within a single partition
+function is_flowlink_set_in_single_partition(flowlinks) result(res)
+   use m_flowgeom, only: ln
+
+   integer, dimension(:), intent(in) :: flowlinks !< List of indices of flowlinks
+   logical                           :: res       !< Whether or not these flowlinks are contained entirely within a single partition
+
+   integer :: i, flowlink, link_domain_nr, is_ghost_link, ierr
+   logical :: has_ghost_links_local
+
+   if (jampi == 1) then
+      res = .true.
+      return
+   end if
+
+   has_ghost_links_local = .false.
+   do i = 1, size(flowlinks)
+      flowlink = flowlinks(i)
+      call link_ghostdata(my_rank, idomain(ln(1,flowlink)), idomain(ln(2,flowlink)), is_ghost_link, link_domain_nr)
+      if (is_ghost_link == 1) then
+         has_ghost_links_local = .true. ! TODO: all links in ghost on other partition
+         exit
+      end if
+   end do
+   call mpi_allreduce(has_ghost_links_local, res, 1, mpi_logical, mpi_lor, DFM_COMM_DFMWORLD, ierr)
+   if (ierr /= MPI_SUCCESS) then
+      ! TODO: handle errors
+   end if
+end function is_flowlink_set_in_single_partition
+
 end module m_partitioninfo
    
    
