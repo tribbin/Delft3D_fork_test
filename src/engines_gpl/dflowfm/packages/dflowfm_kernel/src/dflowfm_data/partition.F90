@@ -5293,8 +5293,7 @@ endif
 end function  get_list_size
 
 !> Check if a set of flowlinks is contained entirely within a single partition
-function is_flowlink_set_in_single_partition(flowlinks) result(res)
-   use m_flowgeom, only: ln
+function are_flowlinks_in_single_partition(flowlinks) result(res)
    use mpi
    use MessageHandling, only: mess, LEVEL_ERROR
 
@@ -5331,7 +5330,7 @@ function is_flowlink_set_in_single_partition(flowlinks) result(res)
       res = .false.
    end if
    
-end function is_flowlink_set_in_single_partition
+end function are_flowlinks_in_single_partition
 
 end module m_partitioninfo
    
