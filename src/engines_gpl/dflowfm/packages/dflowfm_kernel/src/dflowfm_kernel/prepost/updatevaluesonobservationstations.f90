@@ -41,7 +41,7 @@ subroutine updateValuesOnObservationStations()
 
    if ( jampi.eq.1 ) then
       if ( jatimer.eq.1 ) call starttimer(IOUTPUTMPI)
-      call reduce_valobs(IPNT_NUM,numobs+nummovobs,valobs,valobs_all)
+      call reduce_valobs(IPNT_NUM,numobs+nummovobs,valobs)
       if ( jatimer.eq.1 ) call stoptimer(IOUTPUTMPI)
    end if
 

@@ -3769,7 +3769,9 @@ end subroutine partition_make_globalnumbers
    end subroutine reduce_kobs
    
 !> reduce outputted values at observation stations
-   subroutine reduce_valobs(numvals, numobs, valobs, valobs_all)
+!! NOTE: It seems that, now that we reduce the statistical output before writing, this routine is
+!!       only needed to maintain functionality in unstruc_bmi/get_compound_field
+   subroutine reduce_valobs(numvals, numobs, valobs)
       use m_missing
 #ifdef HAVE_MPI
       use mpi
@@ -3779,16 +3781,10 @@ end subroutine partition_make_globalnumbers
       
       integer,                                     intent(in)    :: numvals      !< number of values
       integer,                                     intent(in)    :: numobs       !< number of observation stations
-      double precision, dimension(numobs,numvals), intent(inout) :: valobs       !< values at obervations stations to be outputted
-      double precision, dimension(numobs,numvals), intent(inout) :: valobs_all   !< work array
-      
-      
-!      double precision, dimension(:,:), allocatable              :: valobs_all
+      double precision, dimension(numobs,numvals), intent(inout) :: valobs       !< values at obervations stations to be output.
       
       double precision, parameter                                :: dsmall = -huge(1d0)
-      
       integer                                                    :: iobs, ival
-      
       integer                                                    :: ierror
       
 #ifdef HAVE_MPI
@@ -3803,8 +3799,7 @@ end subroutine partition_make_globalnumbers
          end do
       end do
       
-      call MPI_allreduce(valobs,valobs_all,numobs*numvals,mpi_double_precision,mpi_max,DFM_COMM_DFMWORLD,ierror)
-      valobs = valobs_all
+      call MPI_allreduce(MPI_in_place,valobs,numobs*numvals,mpi_double_precision,mpi_max,DFM_COMM_DFMWORLD,ierror)
       
 !     set values of observation stations that were not found in any subdomain
       do iobs=1,numobs
@@ -3819,6 +3814,49 @@ end subroutine partition_make_globalnumbers
 #endif
       return
    end subroutine reduce_valobs
+   
+   !> Reduce the statistical output values to MPI root process #0.
+   subroutine reduce_statistical_output(output_set)
+      use m_statistical_output, only: t_output_variable_set
+      use m_missing
+#ifdef HAVE_MPI
+      use mpi
+#endif
+
+      type(t_output_variable_set), intent(inout) :: output_set !< Output set that we wish to update.
+
+      double precision, parameter :: dsmall = -huge(1d0)
+      integer                     :: i_stat, i_loc
+      double precision, pointer   :: stat_output(:)          !< Array that is to be written to the Netcdf file. In case the current values are
+                                                             !< required this variable points to the basic variable (e.g. s1).
+                                                             !< Otherwise during the simulation the intermediate results are stored.
+      integer                     :: ierror
+      
+#ifdef HAVE_MPI
+      do i_stat = 1,output_set%count
+         
+         ! Set values for locations outside this partition to -huge so mpi_max will work
+         stat_output => output_set%statout(i_stat)%stat_output
+         do i_loc = 1,size(stat_output)
+            if (stat_output(i_loc) == dmiss) then
+               stat_output(i_loc) = dsmall
+            end if
+         end do
+      
+         ! Reduce stat_output
+         call MPI_reduce(MPI_in_place, stat_output, size(stat_output), mpi_double_precision, mpi_max, 0, DFM_COMM_DFMWORLD, ierror)
+         
+         ! Set values for locations outside this partition back to DMISS
+         do i_loc = 1,size(stat_output)
+            if (stat_output(i_loc) == dsmall) then
+               stat_output(i_loc) = DMISS
+            end if
+         end do
+         
+      end do
+#endif
+
+   end subroutine reduce_statistical_output
    
    
 !> reduce source-sinks

@@ -97,8 +97,7 @@ implicit none
     integer                           :: jafahrenheit=0 !< Output in Celsius, otherwise Fahrenheit
 
     double precision, dimension(:,:), allocatable, target :: valobs     !< work array with 2d and 3d values stored at observation stations, dim(numobs+nummovobs, MAXNUMVALOBS2D+MAXNUMVALOBS3D*max(kmx,1)+MAXNUMVALOBS3Dw*(max(kmx,1)+1))
-    double precision, dimension(:,:), allocatable         :: valobs_all !< work array with 2d and 3d values stored at observation stations, dim(numobs+nummovobs, MAXNUMVALOBS2D+MAXNUMVALOBS3D*max(kmx,1)+MAXNUMVALOBS3Dw*(max(kmx,1)+1))
-
+    
     integer                           :: MAXNUMVALOBS2D   ! maximum number of outputted values at observation stations
     integer                           :: MAXNUMVALOBS3D   ! maximum number of outputted values at observation stations, 3D layer centers
     integer                           :: MAXNUMVALOBS3Dw  ! maximum number of outputted values at observation stations, 3D layer interfaces (e.g. zws)
@@ -345,13 +344,6 @@ subroutine alloc_valobs()
    if ( IPNT_NUM.gt.0 ) then
       allocate(valobs(numobs+nummovobs,IPNT_NUM))
       valobs = 0d0   ! should not be DMISS, since DMISS is used for global reduction in parallel computations
-   end if
-
-   if ( jampi.eq.1 ) then
-      if ( allocated(valobs_all) ) then
-         deallocate(valobs_all)
-      end if
-      allocate(valobs_all(numobs+nummovobs,IPNT_NUM))
    end if
 
    return
