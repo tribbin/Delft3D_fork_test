@@ -3838,7 +3838,7 @@ end subroutine partition_make_globalnumbers
          ! Set values for locations outside this partition to -huge so mpi_max will work
          stat_output => output_set%statout(i_stat)%stat_output
          do i_loc = 1,size(stat_output)
-            if (stat_output(i_loc) == DMISS) then
+            if (stat_output(i_loc) == dmiss) then
                stat_output(i_loc) = dsmall
             end if
          end do
