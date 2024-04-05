@@ -34,7 +34,6 @@ if (WIN32)
     target_include_directories(${executable_name} PRIVATE ${waq_data_path} ${version_include_dir} ${mpi_include_path})
 
     # Set linker properties
-    message(STATUS "Setting linker properties in windows")
     target_link_directories(${executable_name}
             PRIVATE
             "${mpi_library_path}"
@@ -55,10 +54,9 @@ if (WIN32)
             "pthreadVC2.lib")
 
     # Set linker options
-    message(STATUS "Setting target_link_options in windows")
     target_link_options(${executable_name} PRIVATE ${nologo_flag})
     set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
-    
+
     configure_visual_studio_user_file(${executable_name})
 endif(WIN32)
 

@@ -4,7 +4,6 @@ set(library_name waq_kernel)
 set(waq_kernel_include_path ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
 include_directories(${waq_kernel_include_path})
 
-
 create_target(${library_name} ${CMAKE_CURRENT_SOURCE_DIR} src_dir . recursive)
 
 # Set dependencies
