@@ -598,7 +598,7 @@ private
       use m_output_config, only: id_nc_byte, id_nc_char, id_nc_short, id_nc_int, id_nc_float, id_nc_double
 
       type(ug_nc_attribute) :: atts(5)
-     character(len=25)      :: transpunit
+      character(len=25)     :: transpunit
 
       out_quan_conf_his%count = 0
       out_quan_conf_map%count = 0
@@ -2106,6 +2106,7 @@ private
       use m_flowexternalforcings
       use m_structures
       use m_observations
+      use m_physcoef, only: density_is_pressure_dependent
       use m_statistical_callback
       use m_transport, only: NUMCONST, itemp, isalt, ised1
       use m_sediment, only: stm_included, stmpar
@@ -2467,15 +2468,16 @@ private
 
       if( (jasal > 0 .or. jatem > 0 .or. jased > 0 )  .and. jahisrho > 0) then
          if (model_is_3D()) then
-            temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_RHOP:IPNT_RHOP+kmx)
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_POTENTIAL_DENSITY), temp_pointer)
-
-            temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_BRUV:IPNT_BRUV+kmx)
-            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_BRUNT_VAISALA_N2),temp_pointer)
-            if (idensform > 10) then
+            if ( density_is_pressure_dependent() ) then
                temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_RHO:IPNT_RHO+kmx)
                call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_DENSITY),temp_pointer)
+            else
+               temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_RHOP:IPNT_RHOP+kmx)
+               call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_POTENTIAL_DENSITY), temp_pointer)
             endif
+            
+            temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_BRUV:IPNT_BRUV+kmx)
+            call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_BRUNT_VAISALA_N2),temp_pointer)
          else
             call add_stat_output_items(output_set, output_config_set%statout(IDX_HIS_POTENTIAL_DENSITY),valobs(:,IPNT_RHOP))
          endif
