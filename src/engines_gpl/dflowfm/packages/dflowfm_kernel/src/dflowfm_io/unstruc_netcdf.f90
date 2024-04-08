@@ -264,8 +264,8 @@ type t_unc_mapids
    integer :: id_viu(MAX_ID_VAR)      = -1 !< Variable ID for horizontal eddy viscosity
    integer :: id_diu(MAX_ID_VAR)      = -1 !< Variable ID for horizontal eddy diffusivity
    integer :: id_ww1(MAX_ID_VAR)      = -1 !< Variable ID for
-   integer :: id_rho(MAX_ID_VAR)      = -1 !< Variable ID for density
-   integer :: id_rhop(MAX_ID_VAR)     = -1 !< Variable ID for potential density
+   integer :: id_rho(MAX_ID_VAR)      = -1 !< Variable ID for density of water
+   integer :: id_rhop(MAX_ID_VAR)     = -1 !< Variable ID for potential density of water
    integer :: id_sa1(MAX_ID_VAR)      = -1 !< Variable ID for
    integer :: id_tem1(MAX_ID_VAR)     = -1 !< Variable ID for
    integer :: id_nrfld(MAX_ID_VAR)    = -1 !< Variable ID for
