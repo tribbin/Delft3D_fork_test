@@ -280,7 +280,6 @@ contains
       
       type(t_output_variable_item)                       :: item ! new item to be added
       character(len=len_trim(output_config%input_value)) :: valuestring
-      character(len=256)                                 :: operation_string
       integer                                            :: ierr
       
       valuestring = output_config%input_value
@@ -292,25 +291,12 @@ contains
          else if (item%operation_type == SO_NONE) then
             cycle
          else
-            
-            select case (item%operation_type)
-            case default
-               operation_string = ''
-            case (SO_CURRENT)
-               operation_string = 'current'
-            case (SO_MIN)
-               operation_string = 'min'
-            case (SO_MAX)
-               operation_string = 'max'
-            case (SO_AVERAGE)
-               operation_string = 'average'
-            end select
       
             ! Disable statistical output items on cross-sections if any cross-sections lie across multiple partitions
             if (output_config%location_specifier == UNC_LOC_OBSCRS .and. &
                 any_crosssections_lie_across_multiple_partitions(crs) .and. &
                 (item%operation_type == SO_MIN .or. item%operation_type == SO_MAX .or. item%operation_type == SO_AVERAGE)) then
-               call mess(LEVEL_WARN,'Disabling output item "' // trim(output_config%name) // '(' // trim(operation_string) // ')"' // &
+               call mess(LEVEL_WARN,'Disabling output item "' // trim(output_config%name) // '(' // trim(operation_type2string(item%operation_type)) // ')"' // &
                                     ' as at least one observation cross-section lies across multiple partitions, which could produce invalid output')
                cycle
             end if
@@ -464,5 +450,24 @@ contains
       enddo
 
    end subroutine initialize_statistical_output
+   
+   !> Obtain a character string describing the statistics operation (for writing to screen)
+   function operation_type2string(operation_type) result(operation_string)
+      integer, intent(in) :: operation_type        !< Integer representing the operation type
+      character(len=256)  :: operation_string      !> Character string describing the operation type
+            
+      select case (operation_type)
+      case default
+         operation_string = 'UNKNOWN'
+      case (SO_CURRENT)
+         operation_string = 'current'
+      case (SO_MIN)
+         operation_string = 'min'
+      case (SO_MAX)
+         operation_string = 'max'
+      case (SO_AVERAGE)
+         operation_string = 'average'
+      end select
+   end function operation_type2string
 
 end module

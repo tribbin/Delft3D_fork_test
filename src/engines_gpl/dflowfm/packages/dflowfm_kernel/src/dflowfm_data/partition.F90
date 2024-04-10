@@ -5380,7 +5380,7 @@ subroutine fill_geometry_arrays_crs()
    integer,          allocatable :: maskBnd(:), maskBndAll(:), maskBndGat(:), indBndMPI(:), jaCoincide(:)  ! Arrays for boundary nodes, only used in parallel run
 
    ! Allocate and construct geometry variable arrays (on one subdomain)
-   call realloc(nodeCountCrs, ncrs, keepExisting = .false., fill = 0  )
+   call realloc(nodeCountCrs, ncrs, keepExisting = .false., fill = 0)
 
    do i = 1, ncrs
       nlinks = crs(i)%path%lnx
