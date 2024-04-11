@@ -422,7 +422,7 @@ subroutine unc_write_his(tim)            ! wrihis
         end if
         ierr = unc_def_his_structure_static_vars(ihisfile, 'pump', 'pump', jahispump, npumpsg, 'line', nNodeTot, id_strlendim, &
                                                  id_pumpdim, id_pump_id, id_pumpgeom_node_count, id_pumpgeom_node_coordx, id_pumpgeom_node_coordy)
-        ! TODO: UNST-6904: check x/ymid:
+        ! TODO: UNST-7880 x/ymid:
             !ierr = nf90_def_var(ihisfile, 'pump_xmid', nf90_double, (/ id_pumpdim /), id_pump_xmid)
             !ierr = nf90_def_var(ihisfile, 'pump_ymid', nf90_double, (/ id_pumpdim /), id_pump_ymid)
             !ierr = unc_addcoordatts(ihisfile, id_pump_xmid, id_pump_ymid, jsferic)
@@ -828,51 +828,6 @@ subroutine unc_write_his(tim)            ! wrihis
            ierr = nf90_put_var(ihisfile, id_latgeom_node_count,  nodeCountLat)
         end if
 
-        if (jahispump > 0 .and. npumpsg > 0) then
-            do i=1,npumpsg
-               ierr = nf90_put_var(ihisfile, id_pump_id,  trimexact(pump_ids(i), strlen_netcdf),      (/ 1, i /))
-
-               ! NOTE: the code below is now only active for pumps (DELFT3D-36341). Should be
-               ! generalized for all structure locations that are polyline based.
-               !
-               ! Store one single representative x/y point for each pump in the time series file,
-               ! because CF conventions require that for variables on discrete geometries.
-               ! Computed at half the total length of the snapped flow links
-               ! (so, it lies on an edge, not per se on the input pump pli)).
-               pumplensum = 0d0
-               do k = L1pumpsg(i), L2pumpsg(i)
-                  Lf = abs(kpump(3,k))
-                  pumplensum = pumplensum + wu(Lf)
-               end do
-               pumplenmid = pumplensum / 2
-
-               ! Find the mid point on the snapped flow link path
-               pumplensum = 0d0
-               do k = L1pumpsg(i), L2pumpsg(i)
-                  Lf = abs(kpump(3,k))
-                  if (pumplensum + wu(Lf) >= pumplenmid) then
-                     if (kcu(Lf) == 2) then ! 2D
-                        if (kpump(3,k) > 0) then
-                           k3 = lncn(1,Lf)
-                           k4 = lncn(2,Lf)
-                        else
-                           k3 = lncn(2,Lf)
-                           k4 = lncn(1,Lf)
-                        end if
-                        w1 = (pumplenmid-pumplensum)/wu(Lf)
-                        pumpxmid = w1*xk(k3) + (1d0-w1)*xk(k4)
-                        pumpymid = w1*yk(k3) + (1d0-w1)*yk(k4)
-                     else                   ! 1D
-                        pumpxmid = xu(Lf)
-                        pumpymid = yu(Lf)
-                     end if
-                     exit ! mid point was found
-                  else
-                     pumplensum = pumplensum + wu(Lf)
-                  end if
-               end do
-            end do
-        end if
         if (jahisgate > 0 .and. ngatesg > 0) then
             do i=1,ngatesg
                ierr = nf90_put_var(ihisfile, id_gate_id,  trimexact(gate_ids(i), strlen_netcdf),      (/ 1, i /))
