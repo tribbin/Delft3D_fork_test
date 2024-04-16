@@ -3835,8 +3835,15 @@ end subroutine partition_make_globalnumbers
 #ifdef HAVE_MPI
       do i_stat = 1,output_set%count
          
-         ! Set values for locations outside this partition to -huge so mpi_max will work
          stat_output => output_set%statout(i_stat)%stat_output
+         
+         ! 'Global' variables (e.g. water balance, which are integrated values over all the partitions)
+         ! don't need to be reduced, as this is already done separately
+         if (stat_output%location_specifier == UNC_LOC_GLOBAL)
+            cycle
+         end if
+         
+         ! Set values for locations outside this partition to -huge so mpi_max will work
          send_buffer = stat_output ! initial copy of local output data into the send buffer
          do i_loc = 1,size(stat_output)
             if (stat_output(i_loc) == dmiss) then
