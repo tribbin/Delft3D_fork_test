@@ -1615,9 +1615,6 @@ private
                      'Wrihis_dred', 'plough_time_frac',              &
                      'Time fraction spent ploughing',             &
                      '', '', UNC_LOC_DREDGE, nc_atts = atts(1:1))
-      
-      !TEST: all his output default on true
-      out_quan_conf_his%statout(:)%input_value = 'current'
       !
       ! MAP:
       !
