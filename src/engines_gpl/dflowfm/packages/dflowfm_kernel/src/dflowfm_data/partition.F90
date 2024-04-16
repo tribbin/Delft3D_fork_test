@@ -3820,6 +3820,7 @@ end subroutine partition_make_globalnumbers
       use m_statistical_output_types, only: t_output_variable_set
       use m_missing
       use m_alloc, only: realloc
+      use m_output_config, only: UNC_LOC_GLOBAL
 #ifdef HAVE_MPI
       use mpi
 #endif
@@ -3830,18 +3831,18 @@ end subroutine partition_make_globalnumbers
       integer                        :: i_stat, i_loc
       double precision, pointer      :: stat_output(:)          !< pointer to statistical output data array that is to be written to the Netcdf file after reduction across partitions.
       double precision, allocatable  :: send_buffer(:)          !< send buffer for mpi reduction because MPI_IN_PLACE does not work for unknown reasons.
-      integer                     :: ierror
+      integer                        :: ierr
       
 #ifdef HAVE_MPI
       do i_stat = 1,output_set%count
          
-         stat_output => output_set%statout(i_stat)%stat_output
-         
          ! 'Global' variables (e.g. water balance, which are integrated values over all the partitions)
          ! don't need to be reduced, as this is already done separately
-         if (stat_output%location_specifier == UNC_LOC_GLOBAL)
+         if (output_set%statout(i_stat)%output_config%location_specifier == UNC_LOC_GLOBAL) then
             cycle
          end if
+         
+         stat_output => output_set%statout(i_stat)%stat_output
          
          ! Set values for locations outside this partition to -huge so mpi_max will work
          send_buffer = stat_output ! initial copy of local output data into the send buffer
@@ -3852,12 +3853,12 @@ end subroutine partition_make_globalnumbers
          end do
       
          ! reduce with stat_output as receive buffer
-         call MPI_reduce(send_buffer, stat_output,  size(stat_output), mpi_double_precision, mpi_max, 0, DFM_COMM_DFMWORLD, ierror)
+         call MPI_reduce(send_buffer, stat_output,  size(stat_output), mpi_double_precision, mpi_max, 0, DFM_COMM_DFMWORLD, ierr)
          
          ! Set values for locations outside this partition back to DMISS
          do i_loc = 1,size(stat_output)
             if (stat_output(i_loc) == dsmall) then
-               stat_output(i_loc) = DMISS
+               stat_output(i_loc) = dmiss
             end if
          end do
          
