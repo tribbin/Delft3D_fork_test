@@ -5396,7 +5396,7 @@ function flowlinks_are_across_multiple_partitions(flowlinks) result(res)
    
 end function flowlinks_are_across_multiple_partitions
 
-!> Fills in the geometry arrays of cross sections for history output
+!> Fill in the geometry arrays of cross sections for history output
 !! Two special situations are also treated:
 !! 1. The flowlinks of one cross section are not successive on one subdomain, which can happen in both sequential and parallel simulations.
 !! 2. In parallel simulations, a cross section lies on multiple subdomains.
@@ -5406,16 +5406,17 @@ subroutine fill_geometry_arrays_crs()
    use m_flowparameters, only: eps6
    use precision_basics
    use m_monitoring_crosssections, only: nodecountcrs, ncrs, crs, nnodescrs, geomxcrs, geomycrs
+   use stdlib_kinds, only: dp
    implicit none
 
-   double precision, allocatable :: xGat(:), yGat(:)    ! Coordinates that are gathered data from all subdomains
+   real(dp),         allocatable :: xGat(:), yGat(:)    ! Coordinates that are gathered data from all subdomains
    integer,          allocatable :: nodeCountCrsMPI(:)  ! Count of nodes per cross section after mpi communication.
-   double precision, allocatable :: geomXCrsMPI(:)      ! [m] x coordinates of cross sections after mpi communication.
-   double precision, allocatable :: geomYCrsMPI(:)      ! [m] y coordinates of cross sections after mpi communication.
+   real(dp),         allocatable :: geomXCrsMPI(:)      ! [m] x coordinates of cross sections after mpi communication.
+   real(dp),         allocatable :: geomYCrsMPI(:)      ! [m] y coordinates of cross sections after mpi communication.
    integer,          allocatable :: nodeCountCrsGat(:), nNodesCrsGat(:), displs(:)
-   double precision, allocatable :: geomX(:), geomY(:)
+   real(dp),         allocatable :: geomX(:), geomY(:)
    integer                       :: nlinks, i, j, j1, k, k1, ierror, is, ie, n, ii, nNodes, nNodesCrsMPI, L, L0, ks, ke, nPar, nNodesAdd, nn, jaexist, nb, nbLast, kk
-   double precision              :: xNew, yNew, xOld, yOld
+   real(dp)                      :: xNew, yNew, xOld, yOld
    integer,          allocatable :: maskBnd(:), maskBndAll(:), maskBndGat(:), indBndMPI(:), jaCoincide(:)  ! Arrays for boundary nodes, only used in parallel run
 
    ! Allocate and construct geometry variable arrays (on one subdomain)
@@ -5493,7 +5494,7 @@ subroutine fill_geometry_arrays_crs()
                   nNodesAdd = nNodesAdd + 1
                end if
 
-               ! We take the 2nd node of link L, because the orientation of all links hxBndas been
+               ! We take the 2nd node of link L, because the orientation of all links has been
                ! guaranteed in subroutine crspath_on_singlelink.
                geomX(k) = crs(i)%path%xk(2,L)
                geomY(k) = crs(i)%path%yk(2,L)
