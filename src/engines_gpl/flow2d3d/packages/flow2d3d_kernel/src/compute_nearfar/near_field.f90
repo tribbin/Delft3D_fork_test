@@ -60,6 +60,7 @@ subroutine near_field(u0     ,v0     ,rho      ,thick  , &
     use precision
     !
     use globaldata
+    use system_utils, only: FILESEP, directory_exists
     use dfparall
     use dffunctionals, only: dfgather
     !
@@ -226,7 +227,6 @@ subroutine near_field(u0     ,v0     ,rho      ,thick  , &
     logical                                             :: error_reading
     logical                                             :: inside
     logical                                             :: waitlog       ! Write the names of the files to wait for to screen, only the first time that subroutine wait_until_finished is visited
-    character(1)                                        :: slash
     character(3)                                        :: c_inode
     character(3)                                        :: c_idis
     character(14)                                       :: cctime
@@ -285,11 +285,6 @@ subroutine near_field(u0     ,v0     ,rho      ,thick  , &
     nf_src_mom     => gdp%gdnfl%nf_src_mom
     skipuniqueid   => gdp%gdnfl%skipuniqueid
 
-    if (gdp%arch=='win32' .or. gdp%arch=='win64') then
-       slash = '\'
-    else
-       slash = '/'
-    endif
     filename = ' '
     !    
     write(c_inode,'(i3.3)') inode
@@ -525,8 +520,13 @@ subroutine near_field(u0     ,v0     ,rho      ,thick  , &
                       enddo
                    endif
                    !
+                   if (.not.directory_exists(trim(gdp%gdnfl%base_path(idis)))) then
+                       write(lundia,'(3a)') "ERROR: folder '", trim(gdp%gdnfl%base_path(idis)), "' does not exist."
+                       call d3stop(1,gdp)
+                   endif
+                   !
                    filename(1) = trim(gdp%gdnfl%base_path(idis))//'FF2NF_'//trim(gdp%uniqueid)//'_'//trim(gdp%runid)//'_'//c_inode//'_SubMod'//c_idis//'_'//trim(adjustl(cctime))//'.xml'
-                   filename(2) = trim(basecase(idis,1))//'COSUMO'//slash//'NF2FF'//slash//'NF2FF_'//trim(gdp%uniqueid)//'_'//trim(gdp%runid)//'_'//c_inode//'_SubMod'//c_idis//'_'//trim(adjustl(cctime))//'.xml'
+                   filename(2) = trim(basecase(idis,1))//'COSUMO'//FILESEP//'NF2FF'//FILESEP//'NF2FF_'//trim(gdp%uniqueid)//'_'//trim(gdp%runid)//'_'//c_inode//'_SubMod'//c_idis//'_'//trim(adjustl(cctime))//'.xml'
                    filename(3) = trim(basecase(idis,1))
                    waitfiles(idis) = filename(2)
                    !
