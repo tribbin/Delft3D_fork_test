@@ -60,7 +60,7 @@ subroutine near_field(u0     ,v0     ,rho      ,thick  , &
     use precision
     !
     use globaldata
-    use system_utils, only: FILESEP, directory_exists
+    use system_utils, only: FILESEP, directory_exists, makedir
     use dfparall
     use dffunctionals, only: dfgather
     !
@@ -522,28 +522,29 @@ subroutine near_field(u0     ,v0     ,rho      ,thick  , &
                       enddo
                    endif
                    !
+                   call makedir(trim(gdp%gdnfl%base_path(idis)))
                    if (.not.directory_exists(trim(gdp%gdnfl%base_path(idis)))) then
-                       write(lundia,'(3a)') "ERROR: folder '", trim(gdp%gdnfl%base_path(idis)), "' does not exist."
-                       ifatal = 1
-                       exit
+                      ifatal = 1
+                      exit
                    endif
                    !
-                   if (ifatal == 0) then
-                       filename(1) = trim(gdp%gdnfl%base_path(idis))//'FF2NF_'//trim(gdp%uniqueid)//'_'//trim(gdp%runid)//'_'//c_inode//'_SubMod'//c_idis//'_'//trim(adjustl(cctime))//'.xml'
-                       filename(2) = trim(basecase(idis,1))//'COSUMO'//FILESEP//'NF2FF'//FILESEP//'NF2FF_'//trim(gdp%uniqueid)//'_'//trim(gdp%runid)//'_'//c_inode//'_SubMod'//c_idis//'_'//trim(adjustl(cctime))//'.xml'
-                       filename(3) = trim(basecase(idis,1))
-                       waitfiles(idis) = filename(2)
-                       !
-                       ! You should get the filenames (the dirs) from the COSUMOsettings.xml
-                       !
-                       call wri_FF2NF(nlb       ,nub       ,mlb      ,mub      ,kmax   , &
-                                    & lstsci    ,lsal      ,ltem     ,idensform,idis   , &
-                                    & time      ,saleqs   ,temeqs   ,thick  , &
-                                    & sig       ,zk        ,kfu_ptr  ,kfv_ptr  , &
-                                    & alfas_ptr ,s0_ptr    ,s1_ptr   ,u0_ptr   ,v0_ptr , &
-                                    & r0_ptr    ,rho_ptr   ,dps_ptr  ,xz_ptr   ,yz_ptr , &
-                                    & kfsmn0_ptr,kfsmx0_ptr,dzs0_ptr ,filename ,namcon , &
-                                    & ifatal, gdp    )
+                   filename(1) = trim(gdp%gdnfl%base_path(idis))//'FF2NF_'//trim(gdp%uniqueid)//'_'//trim(gdp%runid)//'_'//c_inode//'_SubMod'//c_idis//'_'//trim(adjustl(cctime))//'.xml'
+                   filename(2) = trim(basecase(idis,1))//'COSUMO'//FILESEP//'NF2FF'//FILESEP//'NF2FF_'//trim(gdp%uniqueid)//'_'//trim(gdp%runid)//'_'//c_inode//'_SubMod'//c_idis//'_'//trim(adjustl(cctime))//'.xml'
+                   filename(3) = trim(basecase(idis,1))
+                   waitfiles(idis) = filename(2)
+                   !
+                   ! You should get the filenames (the dirs) from the COSUMOsettings.xml
+                   !
+                   call wri_FF2NF(nlb       ,nub       ,mlb      ,mub      ,kmax   , &
+                                & lstsci    ,lsal      ,ltem     ,idensform,idis   , &
+                                & time      ,saleqs   ,temeqs   ,thick  , &
+                                & sig       ,zk        ,kfu_ptr  ,kfv_ptr  , &
+                                & alfas_ptr ,s0_ptr    ,s1_ptr   ,u0_ptr   ,v0_ptr , &
+                                & r0_ptr    ,rho_ptr   ,dps_ptr  ,xz_ptr   ,yz_ptr , &
+                                & kfsmn0_ptr,kfsmx0_ptr,dzs0_ptr ,filename ,namcon , &
+                                & ifatal, gdp    )
+                   if (ifatal /= 0) then
+                      exit
                    endif
                 enddo
              endif
