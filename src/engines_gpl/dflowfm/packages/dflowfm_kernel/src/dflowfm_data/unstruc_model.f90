@@ -2054,7 +2054,7 @@ subroutine readMDUFile(filename, istat)
         ice_mapout = .true.
     endif     
 
-    call prop_get_integer(md_ptr, 'output', 'Wrihis_Richardsononoutput', jaRichardsononoutput, success)
+    call prop_get_set_integer(md_ptr, 'output', 'Wrihis_Richardsononoutput', jaRichardsononoutput, success)
 
     call prop_get_integer(md_ptr, 'output', 'Wrishp_crs', jashp_crs, success)
     call prop_get_integer(md_ptr, 'output', 'Wrishp_obs', jashp_obs, success)
