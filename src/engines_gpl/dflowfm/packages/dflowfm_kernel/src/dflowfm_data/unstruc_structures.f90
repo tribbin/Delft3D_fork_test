@@ -34,7 +34,8 @@ module m_structures
 use properties
 use unstruc_channel_flow, only: network
 use MessageHandling
-use m_flowparameters
+use m_flowparameters, only: jahiscgen, jahispump, jahisgate, jahiscdam, jahisweir, jahisdambreak, jahisorif, jahisculv, jahisuniweir, jahiscmpstru, jahislongculv, jahisbridge
+
 implicit none
 
 type(tree_data), pointer, public :: strs_ptr !< A property list with all input structure specifications of the current model. Not the actual structure set.
