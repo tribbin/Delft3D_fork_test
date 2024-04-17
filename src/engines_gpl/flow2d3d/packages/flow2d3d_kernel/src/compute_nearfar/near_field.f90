@@ -610,7 +610,7 @@ subroutine near_field(u0     ,v0     ,rho      ,thick  , &
                    endif
                 enddo
              endif
-             if (ifatal /= 0) then
+             if (ifatal == 0) then
                 if (nflrwmode==NFLWRITE .or. nflrwmode==NFLWRITEREADOLD) then
                    !
                    ! Store the new waitfiles, to be used later on
