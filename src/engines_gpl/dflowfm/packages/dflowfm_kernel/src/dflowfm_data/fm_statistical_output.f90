@@ -2633,7 +2633,7 @@ private
          end select
          !
          if (stmpar%morpar%moroutput%frac) then
-            temp_pointer(1:ntot*(IPNT_FRACN-IPNT_FRAC1)) => valobs(:,IPNT_FRAC1:IPNT_FRACN)
+            temp_pointer(1:ntot*(IPNT_FRACN-IPNT_FRAC1+1)) => valobs(:,IPNT_FRAC1:IPNT_FRACN)
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_FRAC),temp_pointer)
          endif
          if (stmpar%morpar%moroutput%mudfrac) then
@@ -2643,15 +2643,15 @@ private
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SANDFRAC),valobs(:,IPNT_SANDFRAC))
          endif
          if (stmpar%morpar%moroutput%fixfac) then
-            temp_pointer(1:ntot*(IVAL_FIXFACN-IVAL_FIXFAC1)) => valobs(:,IVAL_FIXFAC1:IVAL_FIXFACN)
+            temp_pointer(1:ntot*(IVAL_FIXFACN-IVAL_FIXFAC1+1)) => valobs(:,IVAL_FIXFAC1:IVAL_FIXFACN)
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_FIXFRAC),temp_pointer)
          endif
          if (stmpar%morpar%moroutput%hidexp) then
-            temp_pointer(1:ntot*(IVAL_HIDEXPN-IVAL_HIDEXP1)) => valobs(:,IVAL_HIDEXP1:IVAL_HIDEXPN)
+            temp_pointer(1:ntot*(IVAL_HIDEXPN-IVAL_HIDEXP1+1)) => valobs(:,IVAL_HIDEXP1:IVAL_HIDEXPN)
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_HIDEXP),temp_pointer)
          endif
          if (stmpar%morpar%flufflyr%iflufflyr>0 .and. stmpar%lsedsus>0) then
-            temp_pointer(1:ntot*(IVAL_MFLUFFN-IVAL_MFLUFF1)) => valobs(:,IVAL_MFLUFF1:IVAL_MFLUFFN)
+            temp_pointer(1:ntot*(IVAL_MFLUFFN-IVAL_MFLUFF1+1)) => valobs(:,IVAL_MFLUFF1:IVAL_MFLUFFN)
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_MFLUFF),temp_pointer)
          end if
       endif
