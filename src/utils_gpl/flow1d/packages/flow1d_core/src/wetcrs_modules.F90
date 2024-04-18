@@ -149,7 +149,7 @@ subroutine generateConvtab(convtab, levelscount_csdef, crosssection_id, &
    double precision      , intent(in   )     :: frictionValue(:)                 !< Friction value for segment.
    
    integer                       :: levelscount_convtab, ierr, lcnv_max, lcnv_current
-   integer                       :: yzCount_max_default = 400
+   integer                       :: yzcount_max_default = 400
    ! Variables for calculating extrapolation coefficients:
    integer              :: i1 ! one but last index
    integer              :: i2 ! last index
@@ -168,7 +168,7 @@ subroutine generateConvtab(convtab, levelscount_csdef, crosssection_id, &
       lcnv_current = 0
    end if
 
-   lcnv_max = max(yzCount_max_default, levelscount_csdef * 4)
+   lcnv_max = max(yzcount_max_default, levelscount_csdef * 4)
    if (.not. associated(convtab_help) .or. lcnv_max > lcnv_current) then
       allocate(convtab_help)
       call reallocConvtab(convtab_help, lcnv_max)
