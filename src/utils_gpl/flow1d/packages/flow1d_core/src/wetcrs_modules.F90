@@ -170,7 +170,9 @@ subroutine generateConvtab(convtab, levelscount_csdef, crosssection_id, &
 
    lcnv_max = max(yzcount_max_default, levelscount_csdef * 4)
    if (.not. associated(convtab_help) .or. lcnv_max > lcnv_current) then
-      allocate(convtab_help)
+      if (.not. associated(convtab_help)) then
+         allocate(convtab_help)
+      end if
       call reallocConvtab(convtab_help, lcnv_max)
 
       call realloc(friction_value_per_segment, lcnv_max, stat=ierr)
