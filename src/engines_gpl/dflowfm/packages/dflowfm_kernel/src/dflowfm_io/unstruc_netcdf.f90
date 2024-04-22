@@ -13345,8 +13345,10 @@ subroutine unc_read_map_or_rst(filename, ierr)
     endif
 
     ! Read rhowat (flow elem), optional: only from rst file and when sediment and `idens` is true, so no error check
-    ierr = get_var_and_shift(imapfile, 'rhowat', rhowat, tmpvar1, tmp_loc, kmx, kstart, um%ndxi_own, 1, um%jamergedmap, &
-                             um%inode_own, um%inode_merge)
+    if (stm_included) then
+       ierr = get_var_and_shift(imapfile, 'rhowat', rhowat, tmpvar1, tmp_loc, kmx, kstart, um%ndxi_own, 1, um%jamergedmap, &
+                                um%inode_own, um%inode_merge)
+    endif
 
     !Read Coriolis Adams-Bashford (flow link)
     if (Corioadamsbashfordfac > 0d0) then
@@ -13439,7 +13441,9 @@ subroutine unc_read_map_or_rst(filename, ierr)
                 ucxq(kk) = tmp_ucxq(i)
                 ucyq(kk) = tmp_ucyq(i)
                 rho(kk)  = tmp_rho(i)
-                rhowat(kk)  = tmp_rhowat(i)
+                if (stm_included) then
+                   rhowat(kk)  = tmp_rhowat(i)
+                endif
              enddo
           else
              do i = 1, um%nbnd_read ! u and z bnd
@@ -13455,7 +13459,9 @@ subroutine unc_read_map_or_rst(filename, ierr)
                 ucxq(kk) = tmp_ucxq(i)
                 ucyq(kk) = tmp_ucyq(i)
                 rho(kk)  = tmp_rho(i)
-                rhowat(kk)  = tmp_rhowat(i)
+                if (stm_included) then
+                   rhowat(kk)  = tmp_rhowat(i)
+                endif   
              enddo
           endif
        endif
