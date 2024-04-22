@@ -3941,18 +3941,26 @@ endif
        call prop_set(prop_ptr, 'output', 'GenerateUUID', unc_uuidgen, 'Generate UUID as unique dataset identifier and include in output NetCDF files.')
     end if
     
+    call set_properties(prop_ptr, 'Output', out_quan_conf_his)
+    
     if (writeall .or. jahiszcor /= 1) then
        call prop_set(prop_ptr, 'output', 'Wrihis_zcor', jahiszcor, 'Write vertical coordinates to his file (1: yes, 0: no)' )
     endif
-    
-    call set_properties(prop_ptr, 'Output', out_quan_conf_his)
+
     call set_properties(prop_ptr, 'Output', out_quan_conf_map)
-    call set_properties(prop_ptr, 'Output', out_quan_conf_clm)
-
-    if(writeall .or. jatekcd /= 0) then
-       call prop_set(prop_ptr, 'output', 'Writek_CdWind', jatekcd, 'Write wind friction coeffs to tek file (1: yes, 0: no)')
+    
+    if (jamapbnd > 0 .or. writeall) then
+       call prop_set(prop_ptr, 'output', 'Wrimap_bnd', jamapbnd, 'Write boundary points to map file (1: yes, 0: no)')
     endif
-
+    if (jamapqin > 0 .or. writeall) then
+      call prop_set(prop_ptr, 'output', 'Wrimap_Qin', jamapqin, 'Write sum of all influxes to map file (1: yes, 0: no)')
+    endif
+    if (jaeverydt > 0 .or. writeall) then
+      call prop_set(prop_ptr, 'output', 'Wrimap_every_dt', jaeverydt, 'Write output to map file every dt, based on start and stop from MapInterval, 0=no (default), 1=yes')
+    endif
+    if (jamapice > 0 .or. writeall) then
+      call prop_set(prop_ptr, 'output', 'Wrimap_ice', jamapice, 'Write output to map file for ice cover, 0=no (default), 1=yes')
+    endif
     if (writeall .or. epswetout /= 0.1d0) then
       call prop_set(prop_ptr, 'output', 'Wrimap_wet_waterdepth_threshold', epswetout, 'Waterdepth threshold above which a grid point counts as ''wet''. Used for Wrimap_time_water_on_ground.')
     end if
@@ -4008,19 +4016,10 @@ endif
     call prop_set(prop_ptr, 'output', 'FullGridOutput', jafullgridoutput, 'Full grid output mode for layer positions (0: compact, 1: full time-varying grid layer data)')
     call prop_set(prop_ptr, 'output', 'EulerVelocities', jaeulervel, 'Euler velocities output (0: GLM, 1: Euler velocities)')
     call prop_set(prop_ptr, 'output', 'Wrirst_bnd', jarstbnd, 'Write waterlevel, bedlevel and coordinates of boundaries to restart files')
-    if (jamapbnd > 0 .or. writeall) then
-       call prop_set(prop_ptr, 'output', 'Wrimap_bnd', jamapbnd, 'Write boundary points to map file (1: yes, 0: no)')
+    if(writeall .or. jatekcd /= 0) then
+       call prop_set(prop_ptr, 'output', 'Writek_CdWind', jatekcd, 'Write wind friction coeffs to tek file (1: yes, 0: no)')
     endif
-    if (jamapqin > 0 .or. writeall) then
-      call prop_set(prop_ptr, 'output', 'Wrimap_Qin', jamapqin, 'Write sum of all influxes to map file (1: yes, 0: no)')
-    endif
-    if (jaeverydt > 0 .or. writeall) then
-      call prop_set(prop_ptr, 'output', 'Wrimap_every_dt', jaeverydt, 'Write output to map file every dt, based on start and stop from MapInterval, 0=no (default), 1=yes')
-    endif
-    if (jamapice > 0 .or. writeall) then
-      call prop_set(prop_ptr, 'output', 'Wrimap_ice', jamapice, 'Write output to map file for ice cover, 0=no (default), 1=yes')
-    endif
-
+    call set_properties(prop_ptr, 'Output', out_quan_conf_clm)
 
 
 !  processes (WAQ)
