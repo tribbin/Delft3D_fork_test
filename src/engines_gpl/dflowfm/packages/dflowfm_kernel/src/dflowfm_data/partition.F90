@@ -5337,7 +5337,9 @@ end function  get_list_size
 !! would in this case produce incorrect results (as integrated values on structures
 !! are only reduced every user time step, so min/max in time would not be valid)
 function any_structures_lie_across_multiple_partitions(node_count_per_structure) result(res)
+#ifdef HAVE_MPI
    use mpi
+#endif
    use MessageHandling, only: mess, LEVEL_ERROR, LEVEL_WARN
   
    integer,    intent(in) :: node_count_per_structure(:)    !< Total number of nodes for each instance of a type of structure
@@ -5348,6 +5350,7 @@ function any_structures_lie_across_multiple_partitions(node_count_per_structure)
    
    res  = .false.
    
+#ifdef HAVE_MPI
    number_of_structures = size(node_count_per_structure)
    
    loop_over_structures: do i_struc = 1, number_of_structures
@@ -5379,6 +5382,7 @@ function any_structures_lie_across_multiple_partitions(node_count_per_structure)
       end if
    
    end do loop_over_structures
+#endif
   
 end function any_structures_lie_across_multiple_partitions
 
