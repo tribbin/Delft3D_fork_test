@@ -300,9 +300,13 @@ subroutine unc_write_his(tim)            ! wrihis
 
             nNodeTot = numobs+nummovobs
             ierr = unc_def_his_structure_static_vars(ihisfile, 'station', 'observation station', 1, numobs+nummovobs, 'point', nNodeTot, id_strlendim, &
-                                                     id_statdim, id_stat_id, id_statgeom_node_count, id_statgeom_node_coordx, id_statgeom_node_coordy, &
+                                                     id_statdim, id_statname, id_statgeom_node_count, id_statgeom_node_coordx, id_statgeom_node_coordy, &
                                                      add_latlon, id_statgeom_node_lon, id_statgeom_node_lat)
-
+            
+            ! Special definition of station_id for backwards compatibility reasons..
+            ierr = nf90_def_var(ihisfile, 'station_id',         nf90_char,   (/ id_strlendim, id_statdim /), id_stat_id
+            ierr = nf90_put_att(ihisfile, id_strid,  'cf_role',   'timeseries_id')
+            ierr = nf90_put_att(ihisfile, id_strid,  'long_name', 'id of station')
             ! Define the x/y, lat/lon, and z coordinate variables for the station type.
             ierr = unc_def_his_station_coord_vars(ihisfile, id_laydim, id_laydimw, id_statdim, id_timedim, &
                                                   add_latlon, jawrizc, jawrizw, &
