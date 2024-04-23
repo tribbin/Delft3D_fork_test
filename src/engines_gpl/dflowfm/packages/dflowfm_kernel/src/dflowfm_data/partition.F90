@@ -5366,10 +5366,9 @@ function any_structures_lie_across_multiple_partitions(nodeCountStru) result(res
       end if
       
       ! If more than one process lists >0 geometry nodes for a structure, then that structure lies across multiple partitions.
+      structure_lies_across_partitions = .false.
       if (n_partitions_with_nodes == 0) then
          call mess(LEVEL_WARN,'Programming error, please report: any_structures_lie_across_multiple_partitions found no partitions with nodes!')
-      elseif (n_partitions_with_nodes == 1) then
-         structure_lies_across_partitions = .false.
       elseif (n_partitions_with_nodes > 1) then
          structure_lies_across_partitions = .true.
       end if
