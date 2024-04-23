@@ -218,7 +218,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    if (nbndz > 0) then                                 ! now you know the elementsets for the waterlevel bnds
       allocate ( xbndz(nbndz), ybndz(nbndz), xy2bndz(2,nbndz), zbndz(nbndz), kbndz(n4,nbndz), zbndz0(nbndz), kdz(nbndz) , stat=ierr     )
       call aerr('xbndz(nbndz), ybndz(nbndz), xy2bndz(2,nbndz), zbndz(nbndz), kbndz(n4,nbndz), zbndz0(nbndz), kdz(nbndz)', ierr, nbndz*10 )
-      if (jased > 1 .and. jaceneqtr == 2 .and. .not. stm_included) then
+      if (jased > 0 .and. jaceneqtr == 2 .and. .not. stm_included) then
          if (allocated(zkbndz) ) deallocate (zkbndz, kbanz)
          allocate ( zkbndz(2,nbndz) ,stat= ierr    )
          call aerr('zkbndz(2,nbndz)',ierr, 2*nbndz )
@@ -305,7 +305,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    tmp_nbndu = max(nbndu,1)
    allocate ( xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(n4,tmp_nbndu), kdu(tmp_nbndu) , stat=ierr)
    call aerr('xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(n4,tmp_nbndu), kdu(tmp_nbndu)', ierr, tmp_nbndu*(n4+5) )
-   if (jased ==1 .or. jased == 2 .and. jaceneqtr == 2) then
+   if (jased > 0 .and. jaceneqtr == 2 .and. .not. stm_included) then
        if (allocated (zkbndu) ) deallocate(zkbndu, kbanu)
        allocate ( zkbndu(2,tmp_nbndu) , stat= ierr    )
        call aerr('zkbndu(2,tmp_nbndu)', ierr, 2*tmp_nbndu )

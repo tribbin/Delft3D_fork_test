@@ -178,17 +178,22 @@ module m_sediment
  subroutine allocgrains() ! for all fractions:
  use MessageHandling
  use m_physcoef
+ use m_turbulence, only: sigsed
  implicit none
  integer :: m
  double precision :: Taucre
  if (allocated (D50) ) then
     deallocate (D50, rhosed, erosionpar, Ustcre2, Ws, sedini, Uniformerodablethickness,  &
-                D50ca, D50cb, D50wa, D50wb, D50wc, Bwcr  )
+                D50ca, D50cb, D50wa, D50wb, D50wc, Bwcr, sigsed  )
+ endif
+ if (allocated (sigsed) ) then
+    deallocate (sigsed)
  endif
  if (mxgr == 0) return
  m = mxgr
  allocate (D50(m), rhosed(m), erosionpar(m), Ustcre2(m), Ws(m), sedini(m), Uniformerodablethickness(m),  &
            D50ca(m), D50cb(m), D50wa(m), D50wb(m), D50wc(m), Bwcr(m)  )
+ allocate (sigsed(m))
  D50           = 0.2d-3   ! 1d-3
  rhosed        = 2650.0
  erosionpar    = 1d-4                  ! krone
@@ -203,6 +208,7 @@ module m_sediment
  D50wb         = 0.66d0
  D50wc         = 0.33d0
  Bwcr          = 0.33d0
+ sigsed        = 1.0d0
 
  end subroutine allocgrains
 
