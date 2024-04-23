@@ -732,14 +732,16 @@ subroutine set_properties(tree, paragraph, quantity_config_set)
 end subroutine set_properties
 
 !> Convert a location specifier to a human-readable string
-pure function location_specifier_to_string(location_specifier) result(string)
+function location_specifier_to_string(location_specifier) result(string)
+   use MessageHandling, only: mess, LEVEL_ERROR
+   
    integer, intent(in) :: location_specifier !< The location specifier (UNC_LOC_XXX)
    
    character(:), allocatable :: string
    
    select case (location_specifier)
    case default
-      string = ''
+      call mess(LEVEL_ERROR,'Programming error, please report: unrecognised location_specifier in m_output_config/location_specifier_to_string')
    case (UNC_LOC_CN          ) 
       string = 'corner point'
    case (UNC_LOC_S           ) 
