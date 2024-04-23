@@ -55,6 +55,7 @@ public :: ncu_att_to_dimid
 public :: ncu_apply_to_att
 public :: ncu_set_att
 public :: ncu_sanitize_name
+public :: netcdf_handle_error
 
 interface realloc
    module procedure realloc_nc_att_set
@@ -960,5 +961,21 @@ subroutine ncu_sanitize_name(name_string)
    call replace_char(name_string, 32, 95) ! ' ' -> '_'
    call replace_char(name_string, 47, 95) ! '/' -> '_'
 end subroutine ncu_sanitize_name
+
+!> Check the error code returned by the NetCDF API and print the error message if any.
+subroutine netcdf_handle_error( nerr, ierr)
+   use MessageHandling, only: mess, LEVEL_WARN
+   
+   integer, intent(in   )           :: nerr !< NetCDF error code
+   integer, intent(inout), optional :: ierr !< D-Flow FM error code
+   
+   if (nerr /= nf90_noerr) then
+      call mess(LEVEL_WARN, trim(nf90_strerror(nerr)))
+      if (present(ierr)) then
+         ierr = nerr ! Only do this in case of error, to prevent overwriting earlier error codes with NF90_NOERR
+      end if
+   end if
+   
+end subroutine netcdf_handle_error
 
 end module netcdf_utils
