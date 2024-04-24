@@ -1410,7 +1410,7 @@ subroutine readMDUFile(filename, istat)
     call prop_get_string (md_ptr, 'sediment', 'SedFile',              md_sedfile,    success)
     call prop_get_string (md_ptr, 'sediment', 'MorFile',              md_morfile,    success)
     
-    stm_included = (len_trim(md_sedfile) /= 0 .and. len_trim(md_morfile) /= 0 .and. jased .eq. 4)
+    stm_included = (len_trim(md_sedfile) /= 0 .and. len_trim(md_morfile) /= 0 .and. jased == 4)
     if (jased == 4 .and. .not. stm_included) then
        call mess(LEVEL_ERROR, 'unstruc_model::readMDUFile: Sedimentmodelnr=4, but no *.sed or no *.mor file specified.')
     endif
