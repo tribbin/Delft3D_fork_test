@@ -76,7 +76,6 @@ subroutine unc_write_his(tim)            ! wrihis
     use fm_statistical_output
     use m_output_config
     use MessageHandling, only: err
-    use io_netcdf, only: IONC_NOERR
 
     implicit none
 
@@ -1417,7 +1416,7 @@ contains
                           trim(wq_user_outputs%units(statistics_index)), trim(station_coordinate_string), 'station_geom', fillVal = dmiss)
          description = trim(wq_user_outputs%names(statistics_index))//' - '//trim(wq_user_outputs%description(statistics_index))//' in flow element'
          call replace_multiple_spaces_by_single_spaces(description)
-         call netcdf_error_handler(nf90_put_att(ihisfile, waq_statistics_ids(statistics_index), 'description', description), ierr)
+         call netcdf_handle_error(nf90_put_att(ihisfile, waq_statistics_ids(statistics_index), 'description', description), ierr)
       enddo
    end function unc_def_his_station_waq_statistic_outputs
 
@@ -1459,7 +1458,7 @@ contains
          num_layers = max(kmx, 1)
 
          start_index_valobs = IPNT_HWQ1 - 1 + (noout_user + statistics_index - 1) * num_layers + 1
-         call netcdf_error_handler(nf90_put_var(ihisfile, waq_statistics_ids(statistics_index), &
+         call netcdf_handle_error(nf90_put_var(ihisfile, waq_statistics_ids(statistics_index), &
                                                 transpose(valobs(:, start_index_valobs : start_index_valobs + num_layers - 1)), &
                                                 start = nc_start, count = nc_count), ierr)
       end do
