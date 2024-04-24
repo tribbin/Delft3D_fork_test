@@ -2625,10 +2625,10 @@ private
          case (2)
             nlyrs = stmpar%morlyr%settings%nlyr
 
-            temp_pointer(1:(IVAL_MSEDN-IVAL_MSED1+1)*ntot*nlyrs) => valobs(:,IVAL_MSED1:IVAL_MSED1+(IVAL_MSEDN-IVAL_MSED1+1)*nlyrs)
+            temp_pointer(1:(IVAL_MSEDN-IVAL_MSED1+1)*ntot*nlyrs) => valobs(:,IPNT_MSED1:IPNT_MSED1-1+(IVAL_MSEDN-IVAL_MSED1+1)*(nlyrs))
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_MSED),temp_pointer)
 
-            temp_pointer(1:(IVAL_LYRFRACN-IVAL_LYRFRAC1+1)*ntot*nlyrs) => valobs(:,IVAL_LYRFRAC1:IVAL_LYRFRAC1+(IVAL_LYRFRACN-IVAL_LYRFRAC1+1)*nlyrs)
+            temp_pointer(1:(IVAL_LYRFRACN-IVAL_LYRFRAC1+1)*ntot*nlyrs) => valobs(:,IPNT_LYRFRAC1:IPNT_LYRFRAC1-1+(IVAL_LYRFRACN-IVAL_LYRFRAC1+1)*(nlyrs))
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_LYRFRAC),temp_pointer)
 
             temp_pointer(1:ntot*nlyrs) => valobs(:,IPNT_THLYR:IPNT_THLYR+(nlyrs-1))
