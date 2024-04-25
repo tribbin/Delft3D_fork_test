@@ -1485,7 +1485,7 @@ contains
    postfix = ''
    if (ised == 0) then
       call add_name(balance, labelstt, labelstn)
-   else if (ised < lsed) then
+   else if (ised <= lsed) then
       call add_name(balance, labelstt, labelsus)
       postfix = postfix_sus
    else
@@ -1597,7 +1597,7 @@ contains
       ! change in bed shortage mass
       call add_name(balance, labelstt, labelbsh)
 
-      if (ised < lsed .and. iflufflyr > 0) then
+      if (ised <= lsed .and. iflufflyr > 0) then
          ! fluff layer
          call add_name(balance, labelstt, labelflf)
       end if
@@ -1767,7 +1767,7 @@ contains
       ! change in bed shortage mass
       call add_value_change(fluxes, imbf, p_mbabedshortmassbegin(ised, imba), mbabedshortmassend(ised, imba) )
 
-      if (ised < lsed .and. iflufflyr > 0) then
+      if (ised <= lsed .and. iflufflyr > 0) then
          ! fluff layer
          call add_value_change(fluxes, imbf, p_mbafluffmassbegin(ised, imba), mbafluffmassend(ised, imba) )
       end if
@@ -1807,7 +1807,7 @@ contains
    postfix = ''
    if (ised == 0) then
       call add_name(balance, labelstt, labelstn)
-   else if (ised < lsed) then
+   else if (ised <= lsed) then
       call add_name(balance, labelstt, labelsus)
       postfix = postfix_sus
    else
@@ -1886,7 +1886,7 @@ contains
       ! change in bed shortage mass
       call add_name(balance, labelstt, labelbsh)
 
-      if (ised < lsed .and. iflufflyr > 0) then
+      if (ised <= lsed .and. iflufflyr > 0) then
          ! fluff layer
          call add_name(balance, labelstt, labelflf)
       end if
@@ -2039,7 +2039,7 @@ contains
       ! change in bed shortage mass
       call add_value_change(fluxes, imbf, sum(mbabedshortmassbegin(ised, :)), sum(mbabedshortmassend(ised, :)) )
 
-      if (ised < lsed .and. iflufflyr > 0) then
+      if (ised <= lsed .and. iflufflyr > 0) then
          ! fluff layer
          call add_value_change(fluxes, imbf, sum(mbafluffmassbegin(ised, :)), sum(mbafluffmassend(ised, :)) )
       end if
