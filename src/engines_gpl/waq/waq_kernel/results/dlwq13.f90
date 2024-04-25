@@ -28,52 +28,31 @@ module m_dlwq13
 contains
 
 
-    SUBROUTINE DLWQ13 (LUN, LCHAR, CONC, ITIME, MNAME, &
-            SNAME, NOTOT, NOSEG)
-        !
-        !
-        !     Deltares        SECTOR WATERRESOURCES AND ENVIRONMENT
-        !
-        !     CREATED            : june 1988  BY L. Postma
-        !
-        !     FUNCTION           : gives a complete system dump
-        !
-        !     LOGICAL UNITS      : IOUT = number of dump file
-        !
-        !     SUBROUTINES CALLED : none
-        !
-        !     PARAMETERS         :
-        !
-        !     NAME    KIND     LENGTH      FUNCT.  DESCRIPTION
-        !     ---------------------------------------------------------
-        !     LUN     INTEGER  *           INPUT   unit numbers output files
-        !     LCHAR   CHAR*(*) *           INPUT   names of output files
-        !     CONC    REAL     NOTOT*?     INPUT   concentration values
-        !     ITIME   INTEGER  1           INPUT   present time in clock units
-        !     MNAME   CHAR*40  4           INPUT   model identhification
-        !     SNAME   CHAR*20  NOTOT       INPUT   names of substances
-        !     NOTOT   INTEGER  1           INPUT   total number of systems
-        !     NOSEG   INTEGER  1           INPUT   total number of segments
-        !
-        !
+    !> gives a complete system dump
+    subroutine dlwq13 (lun, lchar, conc, itime, mname, &
+            sname, notot, noseg)
+
         use m_open_waq_files
         use timers
 
-        real(kind = real_wp) :: CONC  (NOTOT, NOSEG)
-        character(len=20)  SNAME (*)
-        character(len=40)  MNAME (*)
-        character(len=*) LCHAR (*)
-        character(len=255) LCHARMAP
-        integer(kind = int_wp) :: lun(*)
+        integer(kind = int_wp), intent(in) :: lun(*)             !< logical unit numbers of output files
+        character(len=*), intent(in)       :: lchar (*)          !< names of output files
+        real(kind = real_wp),intent(in)    :: conc(notot, noseg) !< concentration values
+        integer(kind=int_wp), intent(in)   :: itime              !< present time in clock units
+        character(len=40), intent(in)      :: mname (*)          !< model identification
+        character(len=20), intent(in)      :: sname (*)          !< names of substances
+        integer(kind=int_wp), intent(in)   :: notot              !< total number of systems
+        integer(kind=int_wp), intent(in)   :: noseg              !< total number of segments or cells
 
-        integer(kind = int_wp) :: i, j, k, itime
-        integer(kind = int_wp) :: noseg, notot, nonan, ierr
+
+        character(len=255) lcharmap
+        integer(kind = int_wp) :: i, j, k
+        integer(kind = int_wp) :: nonan, ierr
         integer(kind = int_wp) :: ithandl = 0
 
         if (timon) call timstrt ("dlwq13", ithandl)
         !
         !      check for NaNs
-        !
         nonan = 0
         do j = 1, noseg
             do i = 1, notot
@@ -93,30 +72,29 @@ contains
 
         !
         !     write restart file in .map format
-        !
-        LCHARMAP = ' '
-        LCHARMAP(1:248) = LCHAR(23)(1:248)
-        DO I = 248, 1, -1
-            IF (LCHARMAP(I:I) == '.') THEN
-                LCHARMAP(I:I + 7) = "_res.map"
-                GOTO 20
-            ENDIF
+        lcharmap = ' '
+        lcharmap(1:248) = lchar(23)(1:248)
+        do i = 248, 1, -1
+            if (lcharmap(i:i) == '.') then
+                lcharmap(i:i + 7) = "_res.map"
+                goto 20
+            endif
         end do
-        WRITE (*, *) ' Invalid name of restart MAP file !'
+        write (*, *) ' Invalid name of restart MAP file !'
         write (*, *) ' Restart file written to restart_temporary.map !'
-        WRITE (LUN(19), *) ' Invalid name of restart MAP file !'
+        write (lun(19), *) ' Invalid name of restart MAP file !'
         write (lun(19), *) ' Restart file written to restart_temporary.map !'
         lcharmap = 'restart_temporary.map'
 
-        20 CALL open_waq_files (LUN(23), LCHARMAP, 23, 1, IERR)
-        WRITE (LUN(23)) (MNAME(K), K = 1, 4)
-        WRITE (LUN(23))   NOTOT, NOSEG
-        WRITE (LUN(23)) (SNAME(K), K = 1, NOTOT)
-        WRITE (LUN(23)) ITIME, CONC
-        CLOSE (LUN(23))
+        20 call open_waq_files (lun(23), lcharmap, 23, 1, ierr)
+        write (lun(23)) (mname(k), k = 1, 4)
+        write (lun(23))   notot, noseg
+        write (lun(23)) (sname(k), k = 1, notot)
+        write (lun(23)) itime, conc
+        close (lun(23))
         !
         if (timon) call timstop (ithandl)
-        RETURN
-    END
+        return
+    end
 
 end module m_dlwq13

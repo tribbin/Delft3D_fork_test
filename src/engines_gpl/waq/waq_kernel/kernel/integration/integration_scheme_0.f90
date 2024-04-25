@@ -35,15 +35,10 @@ module m_integration_scheme_0
 contains
 
 
+    !> No tranport scheme (0)
+    !! Performs only calculation of new concentrations due processes
     subroutine integration_scheme_0 (buffer, lun, lchar, &
             action, dlwqd, gridps)
-
-        !       Deltares Software Centre
-
-        !>\file
-        !>                         No tranport scheme (0)
-        !>
-        !>                         Performs only calculation of new concentrations due processes
 
         use m_dlwq18
         use m_dlwq14
@@ -66,20 +61,17 @@ contains
 
         implicit none
 
-        !     Parameters         :
-
-        !     kind           function         name                Descriptipon
-        type(waq_data_buffer), target :: buffer           !< System total array space
-        integer(kind = int_wp), intent(in) :: lun  (*)          !< array with unit numbers
-        character(len=*), intent(in) :: lchar(*)          !< array with file names
-        integer(kind = int_wp), intent(in) :: action            !< type of action to perform
-        type(delwaq_data), target :: dlwqd             !< delwaq data structure
-        type(GridPointerColl) :: gridps            !< collection of all grid definitions
+        type(waq_data_buffer),  target     :: buffer            !< System total array space
+        integer(kind = int_wp), intent(in) :: lun  (*)          !< array with logocal unit numbers
+        character(len=*),       intent(in) :: lchar(*)          !< array with file names
+        integer(kind = int_wp), intent(in) :: action            !< type of action (run_span: initialise, time_step, finalise, whole_computation) to perform
+        type(delwaq_data),      target     :: dlwqd             !< delwaq data structure
+        type(GridPointerColl)              :: gridps            !< collection of all grid definitions
 
         !     Local declarations
-        LOGICAL         IMFLAG, IDFLAG, IHFLAG
-        LOGICAL         LREWIN
-        REAL(kind = real_wp) :: RDUMMY(1)
+        LOGICAL                :: IMFLAG, IDFLAG, IHFLAG
+        LOGICAL                :: LREWIN
+        REAL(kind = real_wp)   :: RDUMMY(1)
         INTEGER(kind = int_wp) :: NSTEP
         INTEGER(kind = int_wp) :: IBND
         INTEGER(kind = int_wp) :: ISYS
@@ -177,14 +169,13 @@ contains
             !        Determine the volumes and areas that ran dry,
             !        They cannot have explicit processes during this time step
 
-            call hsurf  (noseg, nopa, c(ipnam), a(iparm:), nosfun, &
+            call hsurf(noseg, nopa, c(ipnam), a(iparm:), nosfun, &
                     c(isfna), a(isfun:), surface, lun(19))
-            call dryfld (noseg, nosss, nolay, a(ivol:), noq1 + noq2, &
+            call dryfld(noseg, nosss, nolay, a(ivol:), noq1 + noq2, &
                     a(iarea:), nocons, c(icnam), a(icons:), surface, &
                     j(iknmr:), iknmkv)
 
             !        user transport processes
-
             call dlwqtr (notot, nosys, nosss, noq, noq1, &
                     noq2, noq3, nopa, nosfun, nodisp, &
                     novelo, j(ixpnt:), a(ivol:), a(iarea:), a(iflow:), &
@@ -194,7 +185,6 @@ contains
                     c(ipnam), c(ifnam), c(isfna), ldummy, ilflag)
 
             !jvb     Temporary ? set the variables grid-setting for the DELWAQ variables
-
             call setset (lun(19), nocons, nopa, nofun, nosfun, &
                     nosys, notot, nodisp, novelo, nodef, &
                     noloc, ndspx, nvelx, nlocx, nflux, &
@@ -202,7 +192,6 @@ contains
 
             !        return conc and take-over from previous step or initial condition,
             !        and do particle tracking of this step (will be back-coupled next call)
-
             call delpar01(itime, noseg, nolay, noq, nosys, &
                     notot, a(ivol:), surface, a(iflow:), c(isnam:), &
                     nosfun, c(isfna:), a(isfun:), a(imass:), a(iconc:), &
