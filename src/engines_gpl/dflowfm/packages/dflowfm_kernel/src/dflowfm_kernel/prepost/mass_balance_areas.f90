@@ -82,7 +82,7 @@ contains
    use m_flowgeom, only : Lnxi, ln, lne2ln
    use unstruc_model, only : md_ident, md_ident_sequential
    use m_flowexternalforcings
-   use m_sediment, only : jased
+   use m_sediment, only : stm_included
    use m_fm_erosed, only : lsedtot, lsed, stmpar, iflufflyr
    use unstruc_files
 
@@ -106,7 +106,7 @@ contains
 
 !  Allocate the mass names, balance flux and derivative arrays
    nombs = numconst + numwqbots
-   if (jased == 4) then
+   if (stm_included) then
        nombs = nombs + (lsedtot - lsed)
        call realloc(ised2mbs, lsedtot, keepExisting=.false., fill=0)
    end if
@@ -129,7 +129,7 @@ contains
       mbsname(imbs) = wqbotnames(iwqbot)
       imbs2sys(imbs) = nosys + iwqbot
    end do
-   if (jased == 4) then
+   if (stm_included) then
       do ised = lsed + 1, lsedtot
          imbs = numconst + numwqbots + ised - lsed
          mbsname(imbs) = stmpar%sedpar%namsed(ised)
@@ -159,7 +159,7 @@ contains
    call realloc(mbamassbegintot, [nombs, nomba], keepExisting=.false., fill=0d0)
    call realloc(mbamassend     , [nombs, nomba], keepExisting=.false., fill=0d0)
 
-   if (jased == 4) then
+   if (stm_included) then
        call realloc(mbabedmassbegin        , [lsedtot, nomba], keepExisting=.false., fill=0d0)
        call realloc(mbabedmassbegintot     , [lsedtot, nomba], keepExisting=.false., fill=0d0)
        call realloc(mbabedmassend          , [lsedtot, nomba], keepExisting=.false., fill=0d0)
@@ -315,7 +315,7 @@ contains
       end do
    end if
    
-   if (jased == 4) then
+   if (stm_included) then
       call mba_sum_morphology(lsedtot, nomba, mbadefdomain, mbamorfacend, mbabedmassend, mbabedshortmassend, mbafluffmassend, mbamassreduce)
          
       mbamorfacbegin               = mbamorfacend
@@ -332,7 +332,7 @@ contains
    mbavolumebegintot(:) = mbavolumebegin(:)
    mbamassbegintot(:,:) = mbamassbegin(:,:)
       
-   if (jased == 4) then
+   if (stm_included) then
       mbamorfacbegintot            = mbamorfacbegin
       mbabedmassbegintot(:,:)      = mbabedmassbegin(:,:)
       mbabedshortmassbegintot(:,:) = mbabedshortmassbegin(:,:)
@@ -412,7 +412,7 @@ contains
    use m_flowparameters, only : jambawritetxt, jambawritecsv, jambawritenetcdf, jambawritecsv, jambawritetxt
    use m_flowtimes, only : refdate_mjd
    use m_transport, only : numconst
-   use m_sediment, only : jased
+   use m_sediment, only : stm_included
    use m_fm_erosed, only : lsedtot, iflufflyr
    use time_module, only : mjd2date
 
@@ -468,7 +468,7 @@ contains
       end if
    end if
    
-   if (jased == 4) then
+   if (stm_included) then
       call mba_sum_morphology(lsedtot, nomba, mbadefdomain, mbamorfacend, mbabedmassend, mbabedshortmassend, mbafluffmassend, mbamassreduce)
       if ( jampi == 1 ) then
          call reduce_double_sum(2 * lsedtot * nombabnd * nombabnd, mbasedflux, mbasedfluxreduce)
@@ -487,7 +487,7 @@ contains
    if (nflux > 0) then
       flxdmptot(:,:,:) = flxdmptot(:,:,:) + flxdmp(:,:,:)
    end if
-   if (jased == 4) then
+   if (stm_included) then
       mbasedfluxtot(:,:,:,:) = mbasedfluxtot(:,:,:,:) + mbasedflux(:,:,:,:)
    end if
 
@@ -510,7 +510,7 @@ contains
    timembastart = timembaend
    mbavolumebegin(:) = mbavolumeend(:)
    mbamassbegin(:,:) = mbamassend(:,:)
-   if (jased == 4) then
+   if (stm_included) then
       mbabedmassbegin(:,:)      = mbabedmassend(:,:)
       mbabedshortmassbegin(:,:) = mbabedshortmassend(:,:)
       if (iflufflyr > 0) then
@@ -528,7 +528,7 @@ contains
    mbafluxheat = 0.0d0
    flxdmp = 0.0
    
-   if (jased == 4) then
+   if (stm_included) then
       mbasedflux(:,:,:,:) = 0.0d0
    end if
 
@@ -841,7 +841,7 @@ contains
 
    use dflowfm_version_module, only : getfullversionstring_dflowfm
    use dflowfm_version_module, only : getbranch_dflowfm
-   use m_sediment, only : jased
+   use m_sediment, only : stm_included
    use m_fm_erosed, only : lsed, lsedtot, stmpar
    use m_transport, only : ised1, isedn
 
@@ -905,7 +905,7 @@ contains
       write (lunbal, '( "Total number of WQ substances                   :",I8)') notot
       write (lunbal, '( "Number of active (transported) substances       :",I8)') nosys
       write (lunbal, '( "Number of inactive (not transported) substances :",I8)') notot - nosys
-      if (jased == 4) then
+      if (stm_included) then
          write (lunbal, '( "Total number of suspended sediment fractions    :",I8)') lsed
          write (lunbal, '( "Total number of bedload sediment fractions      :",I8)') lsedtot-lsed
       end if
@@ -931,7 +931,7 @@ contains
       end do
    end if
 
-   if (jased == 4) then
+   if (stm_included) then
       if (lsed < lsedtot) then
          write (lunbal, '(/"List of bedload sediment fractions")')
          write (lunbal, '(/" FM number   WQ number   Sed fract  Name")')
@@ -1613,6 +1613,7 @@ contains
    use processes_pointers, only : nfluxsys, fluxsys, ipfluxsys, stochi
    use m_fm_wq_processes, only : flxdmp, flxdmptot, imbs2sys
    use m_fm_erosed, only : lsed, iflufflyr
+   use m_sediment, only : stm_included
    
    integer         , intent(in) :: imba                        !< index mass balance area
    integer         , intent(in) :: imbs                        !< index mass balance substance/quantity
@@ -1647,12 +1648,14 @@ contains
        p_mbafluxsorsin  => mbafluxsorsintot
        p_mbafluxheat    => mbafluxheattot
        p_flxdmp         => flxdmptot
-       p_mbasedflux     => mbasedfluxtot
-       p_mbamorfacbegin => mbamorfacbegin
-       p_mbabedmassbegin => mbabedmassbegintot
-       p_mbabedshortmassbegin => mbabedshortmassbegintot
-       if (iflufflyr > 0) then
-          p_mbafluffmassbegin => mbafluffmassbegintot
+       if (stm_included) then
+          p_mbasedflux     => mbasedfluxtot
+          p_mbamorfacbegin => mbamorfacbegin
+          p_mbabedmassbegin => mbabedmassbegintot
+          p_mbabedshortmassbegin => mbabedshortmassbegintot
+          if (iflufflyr > 0) then
+             p_mbafluffmassbegin => mbafluffmassbegintot
+          end if
        end if
    else
        p_mbamassbegin   => mbamassbegin
@@ -1660,12 +1663,14 @@ contains
        p_mbafluxsorsin  => mbafluxsorsin
        p_mbafluxheat    => mbafluxheat
        p_flxdmp         => flxdmp
-       p_mbasedflux     => mbasedflux
-       p_mbamorfacbegin => mbamorfacbegin
-       p_mbabedmassbegin => mbabedmassbegin
-       p_mbabedshortmassbegin => mbabedshortmassbegin
-       if (iflufflyr > 0) then
-          p_mbafluffmassbegin => mbafluffmassbegin
+       if (stm_included) then
+          p_mbasedflux     => mbasedflux
+          p_mbamorfacbegin => mbamorfacbegin
+          p_mbabedmassbegin => mbabedmassbegin
+          p_mbabedshortmassbegin => mbabedshortmassbegin
+          if (iflufflyr > 0) then
+             p_mbafluffmassbegin => mbafluffmassbegin
+          end if
        end if
    end if
       
@@ -1897,6 +1902,7 @@ contains
    use processes_pointers, only : nfluxsys, fluxsys, ipfluxsys, stochi
    use m_fm_wq_processes, only : flxdmp, flxdmptot, imbs2sys
    use m_fm_erosed, only : lsed, iflufflyr
+   use m_sediment, only : stm_included
    
    integer         , intent(in) :: imbs                        !< index mass balance substance/quantity
    logical         , intent(in) :: overall_balance             !< balance period: use the total begin arrays, or just the last period
@@ -1930,12 +1936,14 @@ contains
        p_mbafluxsorsin  => mbafluxsorsintot
        p_mbafluxheat    => mbafluxheattot
        p_flxdmp         => flxdmptot
-       p_mbasedflux     => mbasedfluxtot
-       p_mbamorfacbegin => mbamorfacbegintot
-       p_mbabedmassbegin => mbabedmassbegintot
-       p_mbabedshortmassbegin => mbabedshortmassbegintot
-       if (iflufflyr > 0) then
-          p_mbafluffmassbegin => mbafluffmassbegintot
+       if (stm_included) then       
+          p_mbasedflux     => mbasedfluxtot
+          p_mbamorfacbegin => mbamorfacbegintot
+          p_mbabedmassbegin => mbabedmassbegintot
+          p_mbabedshortmassbegin => mbabedshortmassbegintot
+          if (iflufflyr > 0) then
+             p_mbafluffmassbegin => mbafluffmassbegintot
+          end if
        end if
    else
        p_mbamassbegin   => mbamassbegin
@@ -1943,12 +1951,14 @@ contains
        p_mbafluxsorsin  => mbafluxsorsin
        p_mbafluxheat    => mbafluxheat
        p_flxdmp         => flxdmp
-       p_mbasedflux     => mbasedflux
-       p_mbamorfacbegin => mbamorfacbegin
-       p_mbabedmassbegin => mbabedmassbegin
-       p_mbabedshortmassbegin => mbabedshortmassbegin
-       if (iflufflyr > 0) then
-          p_mbafluffmassbegin => mbafluffmassbegin
+       if (stm_included) then
+          p_mbasedflux     => mbasedflux
+          p_mbamorfacbegin => mbamorfacbegin
+          p_mbabedmassbegin => mbabedmassbegin
+          p_mbabedshortmassbegin => mbabedshortmassbegin
+          if (iflufflyr > 0) then
+             p_mbafluffmassbegin => mbafluffmassbegin
+          end if
        end if
    end if
       
