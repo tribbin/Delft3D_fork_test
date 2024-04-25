@@ -94,115 +94,99 @@ module m_dlwqtr
         LOGICAL    FIRST ,  LINIT , LEXI
         DATA       FIRST / .TRUE. /
         DATA       LINIT / .FALSE. /
-!
-!          check usage w.r.t. parallel computing
-!
-!          AM:
-!          I removed this check, as all the computations set up using
-!          the Delft3D user-interface have the SURF parameter.
-!          Even if not, then the file should be available on all
-!          nodes, as they share the directory.
-!
-!          check number of parameters
-!
-!     Initialisation set index pointers, read surface areas
-!
-      IF ( FIRST ) THEN
-         FIRST = .FALSE.
-         IER   = 0
-         CALL GETMLU(LUNREP)
-         WRITE(LUNREP,*)
-         WRITE(LUNREP,2000)
-!
-!        Set pointers in param array
-!
-         ISURF = index_in_array( 'SURF      ', PANAME (:NOPA))
-!
-!          read surface areas
-!
-         IF ( ISURF > 0 ) THEN
-            IF ( ILFLAG == 1 .AND. NOQ3 > 0 ) THEN
-               LINIT = .TRUE.
-               WRITE(LUNREP,2040)
-            ENDIF
-            INQUIRE  ( FILE='areachar.dat', EXIST = LEXI )
-            IF ( .NOT. LEXI ) THEN
-!
-!
-!              It is assumed the SURF parameter has been set in the input
-!
-            ELSE
-               OPEN ( NEWUNIT = LCCCO, FILE='areachar.dat', FORM  ='UNFORMATTED', & 
-                                      STATUS='OLD'       , IOSTAT=IER2         )
-               IF ( IER2 /= 0 ) THEN
-                  WRITE (LUNREP,2010)
-                  WRITE ( *    ,2010)
-                  IER = IER + 1
-               ELSE
-                  WRITE(LUNREP,2030)
-                  READ ( LCCCO ) NMAXA, MMAXA, NMA, NMA, NMA, IDUMMY
-                  LAYT = NOSEG/NMA
-                  NMT = NMA*LAYT
-                  IF ( NMT /= NOSEG ) THEN
-                     WRITE (LUNREP,2050) NMA,LAYT,NMT,NOSEG
-                     WRITE (  *   ,2050) NMA,LAYT,NMT,NOSEG
-                     IER = IER + 1
-                  ENDIF
-                  IF ( IER == 0 ) THEN
-                     READ ( LCCCO ) (PARAM(ISURF,K),K=1,NMA)
-                     DO ILAY = 2, LAYT
-                        DO ISEG = 1, NMA
-                           IPOS = (ILAY-1)*NMA + ISEG
-                           PARAM(ISURF,IPOS) = PARAM(ISURF,ISEG)
-                         end do
-                     end do
-                  ENDIF
-                  CLOSE ( LCCCO )
-               ENDIF
-            ENDIF
-!
-            IF ( IER /= 0 ) THEN
-               CALL SRSTOP(1)
-            ENDIF
-         ENDIF
-!
-         WRITE(LUNREP,2070)
-!
-      ENDIF
-!
-!     adapt the length for the third direction
-!
-      IF ( LINIT ) THEN
-         DO IQ = NOQ1 + NOQ2 + 1, NOQ
-              IFROM = IPOINT(1,IQ)
-              ITO   = IPOINT(2,IQ)
-              IF ( IFROM > 0 ) THEN
-                 IF ( PARAM(ISURF,IFROM) > 1.0E-15 ) THEN
-                      ALENG(1,IQ) = VOLUME(IFROM)/PARAM(ISURF,IFROM)/2.
-                 ENDIF
-              ENDIF
-              IF ( ITO   > 0 ) THEN
-                 IF ( PARAM(ISURF,IFROM) > 1.0E-15 ) THEN
-                      ALENG(2,IQ) = VOLUME(ITO)/PARAM(ISURF,IFROM)/2.
-                 ENDIF
-              ENDIF
-          end do
-      ENDIF
-!
-!     end of the subroutine
-!
-      RETURN
-!
-!     Output formats
-!
- 2000 FORMAT (' Extra functionality DLWQTR')
- 2010 FORMAT (' ERROR: opening file <areachar.dat> !')
- 2030 FORMAT (' Surface area''s will be read from file <areachar.dat>')
- 2040 FORMAT (' Dispersion length in third dir. will be calculated')
- 2050 FORMAT (' ERROR: File areachar.dat does not match.', & 
-             ' NMA = ',I8,' LAYT= ',I8,' NMT = ',I8,' NOSEG=',I8)
- 2070 FORMAT (' End extra functionality DLWQTR')
-!
-      END
+        !
+        !          check usage w.r.t. parallel computing
+        !
+        !          AM:
+        !          I removed this check, as all the computations set up using
+        !          the Delft3D user-interface have the SURF parameter.
+        !          Even if not, then the file should be available on all
+        !          nodes, as they share the directory.
+        !
+        !          check number of parameters
 
-      end module m_dlwqtr
+        !
+!     Initialisation set index pointers, read surface areas
+        if ( first ) then
+            first = .false.
+            ier   = 0
+            call getmlu(lunrep)
+            write(lunrep,*)
+            write(lunrep,2000)
+            ! Set pointers in param array
+            isurf = index_in_array( 'SURF      ', paname (:NOPA))
+            ! read surface areas
+            if ( isurf > 0 ) then
+                if ( ilflag == 1 .and. noq3 > 0 ) then
+                    linit = .true.
+                    write(lunrep,2040)
+                end if
+                inquire  ( file='areachar.dat', exist = lexi )
+                if ( .not. lexi ) then
+                    ! it is assumed the surf parameter has been set in the input
+                else
+                    open ( newunit = lccco, file='areachar.dat', form  ='UNFORMATTED', & 
+                                      status='OLD'       , iostat=IER2         )
+                    if ( ier2 /= 0 ) then
+                        write (lunrep,2010)
+                        write ( *    ,2010)
+                        ier = ier + 1
+                    else
+                        write(lunrep,2030)
+                        read ( lccco ) nmaxa, mmaxa, nma, nma, nma, idummy
+                        layt = noseg/nma
+                        nmt = nma*layt
+                        if ( nmt /= noseg ) then
+                            write (lunrep,2050) nma,layt,nmt,noseg
+                            write (  *   ,2050) nma,layt,nmt,noseg
+                            ier = ier + 1
+                        end if
+                        if ( ier == 0 ) then
+                            read ( lccco ) (param(isurf,k),k=1,nma)
+                            do ilay = 2, layt
+                                do iseg = 1, nma
+                                    ipos = (ilay-1)*nma + iseg
+                                    param(isurf,ipos) = param(isurf,iseg)
+                                end do
+                            end do
+                        end if
+                        close ( lccco )
+                    end if
+                end if
+                if ( ier /= 0 ) then
+                    call srstop(1)
+                end if
+            end if
+            write(lunrep,2070)
+        end if
+
+        ! adapt the length for the third direction
+        if ( linit ) then
+            do iq = noq1 + noq2 + 1, noq
+                ifrom = ipoint(1,iq)
+                ito   = ipoint(2,iq)
+                if ( ifrom > 0 ) then
+                    if ( param(isurf,ifrom) > 1.0e-15 ) then
+                        aleng(1,iq) = volume(ifrom)/param(isurf,ifrom)/2.
+                    end if
+                end if
+                if ( ito   > 0 ) then
+                    if ( param(isurf,ifrom) > 1.0e-15 ) then
+                        aleng(2,iq) = volume(ito)/param(isurf,ifrom)/2.
+                    end if
+                end if
+            end do
+        end if
+    return
+    ! Output formats
+2000 format (' Extra functionality DLWQTR')
+2010 format (' ERROR: opening file <areachar.dat> !')
+2030 format (' Surface area''s will be read from file <areachar.dat>')
+2040 format (' Dispersion length in third dir. will be calculated')
+2050 format (' ERROR: File areachar.dat does not match.', & 
+             ' NMA = ',I8,' LAYT= ',I8,' NMT = ',I8,' NOSEG=',I8)
+2070 format (' End extra functionality DLWQTR')
+
+    end subroutine
+
+end module m_dlwqtr
