@@ -3880,34 +3880,8 @@ end subroutine partition_make_globalnumbers
       integer                                                    :: ierror
       
 #ifdef HAVE_MPI
-
-      if ( my_rank.eq.0 ) then
-         continue
-      end if
-      
-      if ( my_rank.eq.1 ) then
-         continue
-      end if
-      
-      if ( my_rank.eq.2 ) then
-         continue
-      end if
-      
       call MPI_allreduce(srsn,srsn_all,numsrc*NUMVALS,mpi_double_precision,mpi_sum,DFM_COMM_DFMWORLD,ierror)
       srsn = srsn_all
-      
-      if ( my_rank.eq.0 ) then
-         continue
-      end if
-      
-      if ( my_rank.eq.1 ) then
-         continue
-      end if
-      
-      if ( my_rank.eq.2 ) then
-         continue
-      end if
-      
 #endif
       return
    end subroutine reduce_srsn

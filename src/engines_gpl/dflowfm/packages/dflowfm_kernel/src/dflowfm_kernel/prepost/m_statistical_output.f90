@@ -291,6 +291,7 @@ contains
                               model_has_pumps_across_partitions, &
                               model_has_bridges_across_partitions, &
                               model_has_long_culverts_across_partitions
+      use m_dad, only:        model_has_dredge_links_across_partitions
       use m_partitioninfo, only: any_crosssections_lie_across_multiple_partitions
       use m_monitoring_crosssections, only: crs
       integer, intent(in) :: location_specifier    !< The location specifier indicating the type of structure (UNC_LOC_XXX)
@@ -319,6 +320,8 @@ contains
          res = model_has_bridges_across_partitions
       case (UNC_LOC_LONGCULVERT) ! Long culverts
          res = model_has_long_culverts_across_partitions
+      case (UNC_LOC_DRED_LINK) ! Dredge links
+         res = model_has_dredge_links_across_partitions
       end select
       
    end function model_has_structures_across_partitions
