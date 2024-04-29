@@ -348,7 +348,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
     
     do iconst = 1,numconst
         if (i1 == i2) then ! on outflow side
-            flux = qsrck * ccsrc(iconst,k)
+            flux = qsrck * ccsrc(iconst,n)
         else ! on inflow side
             flux = qsrck * constituents(iconst,k)
         endif
