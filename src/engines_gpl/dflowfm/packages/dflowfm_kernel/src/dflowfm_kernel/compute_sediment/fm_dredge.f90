@@ -150,9 +150,9 @@ contains
              if (.not. dadpar%dredge_prop(nst)%in1domain) then
                model_has_dredge_links_across_partitions = .true.
                exit
-             endif
-          enddo
-       endif
+             end if
+          end do
+       end if
        !
        ! Update sediment administration for dumping only
        ! dbodsd is filled (kg/m^2 sediment added to a cell)
