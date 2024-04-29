@@ -210,7 +210,7 @@ subroutine load_runup_gauges(file_name, append)
       end if
    else
        call mess(LEVEL_ERROR, "Runup gauge file '"//trim(file_name)//"' not found!")
-   endif
+   end if
 end subroutine load_runup_gauges
 
 !> Reads rugs from an *.pli file.
@@ -271,7 +271,7 @@ subroutine clear_runup_gauges()
       rug(i)%max_rug_height = -huge(0d0)
       rug(i)%max_x   = 0d0
       rug(i)%max_y   = 0d0
-   enddo
+   end do
 end subroutine
 
 end module
