@@ -66,7 +66,7 @@ subroutine increaseRunupGauges(n)
     call allocRunupGauges(crst, maxrug)
 
     if (n > maxrug) then
-        maxrug    = max(maxrug, int(1.2*n))
+        maxrug    = max(maxrug, int(2*n))
     end if
 
     if (allocated(rug)) then
@@ -78,6 +78,26 @@ subroutine increaseRunupGauges(n)
     call deallocRunupGauges(crst)
 
 end subroutine increaseRunupGauges
+
+!> set maxrug to nrug, after all necessary runupgauges have been added
+subroutine decreaseRunupGauges()
+
+    type(trug), allocatable :: crst(:) ! Temp storage
+
+    if (nrug == maxrug .or. .not. allocated(rug)) then
+        return
+    end if
+    
+    call allocRunupGauges(crst, nrug)
+    call copyRunupGauges(rug(1:nrug), crst)
+    call deallocRunupGauges(rug)
+    call allocRunupGauges(rug, nrug)
+    call copyRunupGauges(crst, rug)
+    call deallocRunupGauges(crst)
+    maxrug = nrug
+      
+end subroutine decreaseRunupGauges
+
 
 !> Allocates an array of runup gauges, deallocating any existing memory.
 subroutine allocRunupGauges(cs, n)
@@ -173,6 +193,9 @@ subroutine pol_to_runupgauges(xpl, ypl, npl, names)
             i2 = i ! Advance end point by one.
         end if
     end do
+    
+    call decreaseRunupGauges()
+    
 end subroutine pol_to_runupgauges
 
 
