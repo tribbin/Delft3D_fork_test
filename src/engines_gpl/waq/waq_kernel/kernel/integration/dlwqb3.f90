@@ -27,7 +27,7 @@ module m_dlwqb3
     contains
 
     subroutine dlwqb3(area, flow, velo, ipoint, notot, &
-            noq, novelo, ivpnt, volume, iopt, &
+            noq, novelo, ivpnt, volume, integration_id, &
             amass2, idt, iaflag, nosys, dmpq, &
             ndmpq, iqdmp)
         !

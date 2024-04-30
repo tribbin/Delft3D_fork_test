@@ -29,13 +29,13 @@ contains
 
 
     !> gives a complete system dump
-    subroutine dlwq13 (lun, lchar, conc, itime, mname, &
+    subroutine dlwq13 (file_unit_list, lchar, conc, itime, mname, &
             sname, notot, noseg)
 
         use m_open_waq_files
         use timers
 
-        integer(kind = int_wp), intent(inout) :: lun(*)             !< logical unit numbers of output files
+        integer(kind = int_wp), intent(inout) :: file_unit_list(*)             !< logical unit numbers of output files
         character(len=*), intent(in)       :: lchar (*)          !< names of output files
         real(kind = real_wp),intent(inout)    :: conc(notot, noseg) !< concentration values
         integer(kind=int_wp), intent(in)   :: itime              !< present time in clock units

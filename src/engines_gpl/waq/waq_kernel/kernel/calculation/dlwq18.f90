@@ -53,7 +53,7 @@ subroutine update_concs_explicit_time_step(nosys, notot, nototp, noseg, volume, 
         real(kind = real_wp), intent(inout) :: deriv  (notot, noseg)  !< derivatives per substance per volume
         integer(kind = int_wp), intent(in) :: idt                     !< integration time step size
         integer(kind = int_wp), intent(in) :: ivflag                  !< if 1 computational volumes
-        integer(kind = int_wp), intent(in) :: file_unit_list                     !< unit number of the monitoring file
+        integer(kind = int_wp), intent(in) :: file_unit_list          !< unit number of the monitoring file
 
         !     local variables
 
@@ -80,10 +80,10 @@ subroutine update_concs_explicit_time_step(nosys, notot, nototp, noseg, volume, 
             if (abs(vol) < 1.0e-25) then
                 if (volume_messages_count < 25) then
                     volume_messages_count = volume_messages_count + 1
-                    write (lun, 1000) iseg, vol
+                    write (file_unit_list, 1000) iseg, vol
                 elseif (volume_messages_count == 25) then
                     volume_messages_count = volume_messages_count + 1
-                    write (lun, 1001)
+                    write (file_unit_list, 1001)
                 endif
                 volume (iseg) = 1.0
                 vol = 1.0

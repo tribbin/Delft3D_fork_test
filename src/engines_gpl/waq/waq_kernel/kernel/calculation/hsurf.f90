@@ -49,7 +49,7 @@ contains
         character(20),          intent(in   ) :: sfname(nosfun)        !< names of the segment functions
         real(kind = real_wp),   intent(in   ) :: segfun(noseg, nosfun) !< segment function values
         real(kind = real_wp),   intent(inout) :: surface(noseg)        !< horizontal surface
-        integer(kind = int_wp), intent(in   ) :: lun                   !< logical unit number monitoring file
+        integer(kind = int_wp), intent(in   ) :: file_unit_list        !< logical unit number monitoring file
 
 
         !     local variables

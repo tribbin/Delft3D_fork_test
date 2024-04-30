@@ -36,7 +36,7 @@ contains
 
     !> No tranport scheme (0)
     !! Performs only calculation of new concentrations due processes
-    subroutine integration_scheme_0(buffer, lun, lchar, &
+    subroutine integration_scheme_0(buffer, file_unit_list, lchar, &
                                     action, dlwqd, gridps)
 
         use m_dlwq18
@@ -61,7 +61,7 @@ contains
         implicit none
 
         type(waq_data_buffer), target :: buffer            !< System total array space
-        integer(kind=int_wp), intent(inout) :: lun(*)          !< array with logocal unit numbers
+        integer(kind=int_wp), intent(inout) :: file_unit_list(*)          !< array with logocal unit numbers
         character(len=*), intent(in) :: lchar(*)          !< array with file names
         integer(kind=int_wp), intent(in) :: action            !< type of action (run_span: initialise, time_step, finalise, whole_computation) to perform
         type(delwaq_data), target :: dlwqd             !< delwaq data structure
@@ -164,7 +164,7 @@ contains
             ! Determine the volumes and areas that ran dry,
             ! They cannot have explicit processes during this time step
             call hsurf(noseg, nopa, c(ipnam), a(iparm:), nosfun, &
-                       c(isfna), a(isfun:), surface, lun(19))
+                       c(isfna), a(isfun:), surface, file_unit_list(19))
             call dryfld(noseg, nosss, nolay, a(ivol:), noq1 + noq2, &
                         a(iarea:), nocons, c(icnam), a(icons:), surface, &
                         j(iknmr:), iknmkv)
@@ -219,7 +219,7 @@ contains
                         c(imnam:), c(isnam:), c(idnam:), j(idump:), nodump, &
                         a(iconc:), a(icons:), a(iparm:), a(ifunc:), a(isfun:), &
                         a(ivol:), nocons, nofun, idt, noutp, &
-                        lchar, lun, j(iiout:), j(iiopo:), a(iriob:), &
+                        lchar, file_unit_list, j(iiout:), j(iiopo:), a(iriob:), &
                         c(iosnm:), c(iouni:), c(iodsc:), c(issnm:), c(isuni:), c(isdsc:), &
                         c(ionam:), nx, ny, j(igrid:), c(iedit:), &
                         nosys, a(iboun:), j(ilp:), a(imass:), a(imas2:), &
@@ -262,7 +262,7 @@ contains
             ! set a time step
             call update_concs_explicit_time_step(nosys, notot, nototp, nosss, a(ivol2:), &
                         surface, a(imass:), a(iconc:), a(iderv:), idtold, &
-                        ivflag, lun(19))
+                        ivflag, file_unit_list(19))
 
             ! integrate the fluxes at dump segments fill ASMASS with mass
             if (ibflag > 0) then
@@ -277,10 +277,10 @@ contains
                 ACTION == ACTION_FULLCOMPUTATION) then
                 ! close files, except monitor file
                 call close_hydro_files(dlwqd%collcoll)
-                call close_files(lun)
+                call close_files(file_unit_list)
 
                 ! write restart file
-                call DLWQ13(LUN, LCHAR, A(ICONC:), ITIME, C(IMNAM:), &
+                call DLWQ13(file_unit_list, LCHAR, A(ICONC:), ITIME, C(IMNAM:), &
                             C(ISNAM:), NOTOT, NOSSS)
             end if
 
