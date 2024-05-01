@@ -45,12 +45,13 @@ implicit none
 
    !> allocate the arrays for laterals on 3d/BMI
    module subroutine initialize_lateraldata(numconst)
-   
+      use m_flow, only: kmx
       use m_alloc
    
       integer, intent(in) :: numconst        !< number of constitiuents
       
       integer :: i
+      integer :: num_layers !< Number of layers
 
       apply_transport_is_used = .false.
       if (allocated(apply_transport)) then
@@ -62,8 +63,10 @@ implicit none
             end if
          end do
       end if
-      call realloc(incoming_lat_concentration, (/1, numconst, numlatsg/))
-      call realloc(outgoing_lat_concentration, (/1, numconst, numlatsg/))
+
+      num_layers = max(1, kmx)
+      call realloc(incoming_lat_concentration, (/num_layers, numconst, numlatsg/))
+      call realloc(outgoing_lat_concentration, (/num_layers, numconst, numlatsg/))
 
    end subroutine initialize_lateraldata
 

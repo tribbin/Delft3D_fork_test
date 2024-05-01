@@ -3583,10 +3583,10 @@ subroutine unc_write_his(tim)            ! wrihis
          end if
 
       if (jahislateral > 0 .and. numlatsg > 0) then
-         ierr = nf90_put_var(ihisfile, id_lat_predis_inst,  qplat,       start = (/1,it_his/), count = (/numlatsg,1/))
-         ierr = nf90_put_var(ihisfile, id_lat_predis_ave,   qplatAve,    start = (/1,it_his/), count = (/numlatsg,1/))
-         ierr = nf90_put_var(ihisfile, id_lat_realdis_inst, qLatReal,    start = (/1,it_his/), count = (/numlatsg,1/))
-         ierr = nf90_put_var(ihisfile, id_lat_realdis_ave,  qLatRealAve, start = (/1,it_his/), count = (/numlatsg,1/))
+         ierr = nf90_put_var(ihisfile, id_lat_predis_inst,  sum(qplat,dim=1),start = (/1,it_his/), count = (/numlatsg,1/))
+         ierr = nf90_put_var(ihisfile, id_lat_predis_ave,   qplatAve,        start = (/1,it_his/), count = (/numlatsg,1/))
+         ierr = nf90_put_var(ihisfile, id_lat_realdis_inst, qLatReal,        start = (/1,it_his/), count = (/numlatsg,1/))
+         ierr = nf90_put_var(ihisfile, id_lat_realdis_ave,  qLatRealAve,     start = (/1,it_his/), count = (/numlatsg,1/))
          ! write geometry variables at the first time of history output
          if (it_his == 1) then
             ierr = nf90_put_var(ihisfile, id_latgeom_node_coordx, geomXLat(1:nNodesLat), start = (/ 1 /), count = (/ nlatnd /))

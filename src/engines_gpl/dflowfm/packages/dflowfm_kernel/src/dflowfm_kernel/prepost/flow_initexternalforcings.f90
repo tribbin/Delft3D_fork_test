@@ -125,6 +125,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    integer                       :: tmp_nbndu
    integer                       :: tmp_nbndn
    integer                       :: tmp_nbndt
+   integer                       :: num_layers
 
 
    iresult = DFM_NOERR
@@ -2208,7 +2209,8 @@ integer function flow_initexternalforcings() result(iresult)              ! This
       ! Allow laterals from old ext, even when new structures file is present (but only when *no* [Lateral]s were in new extforce file).
       if (num_lat_ini_blocks == 0 .and. numlatsg > 0) then 
          call realloc(balat, numlatsg, keepExisting = .false., fill = 0d0)
-         call realloc(qplat, numlatsg, keepExisting = .false., fill = 0d0)
+         num_layers = max(1, kmx)
+         call realloc(qplat, (/num_layers, numlatsg/), keepExisting = .false., fill = 0d0)
          call realloc(lat_ids, numlatsg, keepExisting = .false., fill = '')
 
          do n = 1,numlatsg
@@ -2235,7 +2237,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                numlatsg = numlatsg + 1
 
                L = index(filename,'.', back=.true.) - 1
-               success = adduniformtimerelation_objects('lateral_discharge', filename, 'lateral', filename(1:L), 'discharge', '', numlatsg, kx, qplat)
+               success = adduniformtimerelation_objects('lateral_discharge', filename, 'lateral', filename(1:L), 'discharge', '', numlatsg, kx, qplat(1,:))
                if (success) then
                   ! assign id derived from pol file
                   lat_ids(numlatsg) = filename(1:L)

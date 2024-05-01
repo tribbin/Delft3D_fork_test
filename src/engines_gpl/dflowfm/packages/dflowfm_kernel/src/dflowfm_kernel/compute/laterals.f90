@@ -45,8 +45,8 @@ module m_lateral
       integer, parameter, public :: ILATTP_2D  = 2 !< Type code for laterals that only apply to 2D nodes.
 
       integer,                         target, public :: numlatsg          !< [-] nr of lateral discharge providers  {"rank": 0}
-      real(kind=dp),      allocatable, target, public :: qplat(:)          !< [m3/s] Lateral discharge of provider {"shape": ["numlatsg"]}
-      real(kind=dp),      allocatable, target, public :: qqlat(:)          !< [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["ndx"]}
+      real(kind=dp),      allocatable, target, public :: qplat(:,:)        !< [m3/s] Lateral discharge of provider {"shape": ["num_layers","numlatsg"]}
+      real(kind=dp),      allocatable, target, public :: qqlat(:,:)        !< [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["num_layers","ndx"]}
       real(kind=dp),      allocatable, target, public :: balat(:)          !< [m2] total area of all cells in provider numlatsg {"shape": ["numlatsg"]}
       character(len=128), allocatable,         public :: lat_ids(:)        !< id of laterals {"shape": ["numlatsg"]}
       real(kind=dp),      allocatable, target, public :: qplatCum(:)       !< [m3/s] Cumulative lateral discharge of provider {"shape": ["numlatsg"]}

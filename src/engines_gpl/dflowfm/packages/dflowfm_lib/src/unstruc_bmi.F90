@@ -2338,7 +2338,7 @@ subroutine get_compound_field(c_var_name, c_item_name, c_field_name, x) bind(C, 
 
       select case(field_name)
          case("water_discharge")
-            get_lateral_pointer = c_loc(qplat(item_index))
+            get_lateral_pointer = c_loc(qplat(:,item_index))
             return
          case("water_level")
             ! NOTE: Return the "point-value", not an area-averaged water level (in case of lateral polygons).
@@ -2620,7 +2620,7 @@ subroutine set_compound_field(c_var_name, c_item_name, c_field_name, xptr) bind(
       select case(field_name)
       case("water_discharge")
          call c_f_pointer(xptr, x_0d_double_ptr)
-         qplat(item_index) = x_0d_double_ptr
+         qplat(:,item_index) = x_0d_double_ptr
          return
       end select
 	 
