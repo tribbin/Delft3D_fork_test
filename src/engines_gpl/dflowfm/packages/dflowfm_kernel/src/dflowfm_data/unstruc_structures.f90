@@ -1617,4 +1617,153 @@ endif
 
 end subroutine get_input_coordinates_of_structure
 
+!> Determine the combined number of geometry nodes for all pumps
+!! (used to determine the size of geometry variables in the his-file)
+integer function number_of_pump_nodes
+   use m_flowparameters, only: jahispump
+   use m_flowexternalforcings, only: npumpsg, L1pumpsg, L2pumpsg
+   use unstruc_channel_flow, only: network
+   
+   integer :: n, nlinks, nNodes
+   
+   number_of_pump_nodes = 0
+   
+   if (jahispump > 0 .and. npumpsg > 0) then
+      if (network%sts%numPumps > 0) then ! newpump
+         number_of_pump_nodes = nNodesPump
+      else ! old pump
+         do n = 1, npumpsg
+            nlinks = L2pumpsg(n) - L1pumpsg(n) + 1
+            if (nlinks > 0) then
+               nNodes = nlinks + 1
+            else if (nlinks == 0) then
+               nNodes = 0
+            end if
+            number_of_pump_nodes = number_of_pump_nodes + nNodes
+         end do
+      end if
+   end if
+   
+end function number_of_pump_nodes
+
+!> Retrieve the set of snapped flowlinks for a polyline-based structure
+subroutine retrieve_set_of_flowlinks_for_polyline_structure(struct_type, i_struc, links)
+   use MessageHandling, only: mess, LEVEL_ERROR
+   
+   character(len=*),                   intent(in   ) :: struct_type !< Name of this structure type, e.g., 'uniweir'
+   integer,                            intent(in   ) :: i_struc     !< Index of the structure of this type
+   integer, dimension(:), allocatable, intent(  out) :: links       !< The set of flowlinks that this structure has been snapped to
+   
+   select case (struct_type)
+   case default
+      call mess(LEVEL_ERROR, 'Programming error, please report: retrieve_set_of_flowlinks_for_polyline_structure does not recognise struct_type "'//trim(struct_type)//'"')
+   case ('pump')
+      call retrieve_set_of_flowlinks_pump(i_struc, links)
+   case ('cross_section', &
+      'source_sink', &
+      'general_structure', &
+      'gategen', &
+      'weirgen', &
+      'orifice', &
+      'bridge', &
+      'culvert', &
+      'uniweir', &
+      'longculvert')
+      ! TODO: implement these! (UNST-7919)
+      allocate(links(0))
+      return
+   end select
+   
+end subroutine retrieve_set_of_flowlinks_for_polyline_structure
+
+!> Retrieve the set of snapped flowlinks for a pump
+subroutine retrieve_set_of_flowlinks_pump(i_pump, links)
+   use m_flowexternalforcings, only: L1pumpsg, L2pumpsg, kpump
+   
+   integer,                            intent(in   ) :: i_pump      !< Index of the pump
+   integer, dimension(:), allocatable, intent(  out) :: links       !< The set of flowlinks that this pump has been snapped to
+   
+   integer :: n_links !< Total number of flowlinks in the set
+   integer :: k,i
+   
+   n_links = L2pumpsg(i_pump) + 1 - L1pumpsg(i_pump)
+   allocate(links(n_links), source = -999)
+   
+   i = 0
+   do k = L1pumpsg(i_pump), L2pumpsg(i_pump)
+      i = i+1
+      links(i) = kpump(3,k)
+   end do
+   
+end subroutine retrieve_set_of_flowlinks_pump
+
+!> Calculate the x,y-coordinates of the midpoint of a set of flowlinks
+!! (presumably those that a polyline has been snapped to)
+subroutine calc_midpoint_coords_of_set_of_flowlinks(links, xmid, ymid)
+   use stdlib_kinds, only: dp
+   use m_missing, only: dmiss
+   use MessageHandling, only: mess, LEVEL_ERROR
+   use m_flowgeom, only: kcu, wu, lncn, xu, yu
+   use network_data, only: xk, yk
+   use precision_basics, only: comparereal
+   
+   integer, dimension(:), intent(in   ) :: links !< The set of flowlinks
+   real(dp),              intent(  out) :: xmid  !< x-coordinate of the midpoint
+   real(dp),              intent(  out) :: ymid  !< y-coordinate of the midpoint
+   
+   integer  :: number_of_flowlinks, i, Lf, k1, k2, k3, k4
+   real(dp) :: total_length_of_flowlink_set, distance_along_flowlink_set, w1
+   
+   xmid = dmiss
+   ymid = dmiss
+   
+   ! Safety in case no flowlinks were provided
+   number_of_flowlinks = size(links)
+   if (number_of_flowlinks == 0) then
+      return
+   end if
+
+   total_length_of_flowlink_set = 0.0_dp
+   do i = 1, number_of_flowlinks
+      Lf = abs(links(i))
+      total_length_of_flowlink_set = total_length_of_flowlink_set + wu(Lf)
+   end do
+
+   ! Find the mid point on the snapped flow link path
+   distance_along_flowlink_set = 0.0_dp
+   do i = 1, number_of_flowlinks
+      Lf = abs(links(i))
+      if (distance_along_flowlink_set + wu(Lf) >= total_length_of_flowlink_set / 2.0_dp) then
+         ! The midpoint must lie on this flowlink; calculate exactly where
+         if (kcu(Lf) == 2) then
+            ! 2D flowlink
+            if (links(i) > 0) then
+               k3 = lncn(1,Lf)
+               k4 = lncn(2,Lf)
+            else
+               k3 = lncn(2,Lf)
+               k4 = lncn(1,Lf)
+            end if
+            w1 = (total_length_of_flowlink_set / 2.0_dp - distance_along_flowlink_set) / wu(Lf)
+            xmid = w1 *xk(k3) + (1.0_dp - w1)*xk(k4)
+            ymid = w1 *yk(k3) + (1.0_dp - w1)*yk(k4)
+         else
+            ! 1D flowlink
+            xmid = xu(Lf)
+            ymid = yu(Lf)
+         end if
+         exit ! midpoint was found
+      else
+         ! The midpoint must lie beyond this flowlink; add its entire length
+         distance_along_flowlink_set = distance_along_flowlink_set + wu(Lf)
+      end if
+   end do
+   
+   ! Safety
+   if (comparereal(xmid, dmiss) == 0 .and. comparereal(ymid, dmiss) == 0) then
+      call mess(LEVEL_ERROR, 'Programming error, please report: calc_midpoint_coords_of_set_of_flowlinks failed')
+   end if
+               
+end subroutine calc_midpoint_coords_of_set_of_flowlinks
+
 end module m_structures
