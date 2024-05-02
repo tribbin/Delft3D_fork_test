@@ -163,14 +163,14 @@
     if (numlatsg > 0) then
 
        ! First accumulate all lateral discharges per grid cell
-       QQLat(:,1:ndx) = 0d0
        num_layers = max(1,kmx)
+       QQLat(1:num_layers,1:ndx) = 0d0
        do n = 1,numlatsg
              do k1=n1latsg(n),n2latsg(n)
                 k = nnlat(k1)
                 if (k > 0) then
                    do nlayer = 1, num_layers
-                      QQLat(nlayer, k) = QQLat(nlayer,k) + QPlat(nlayer,n)*ba(k)/baLat(n)
+                      QQLat(nlayer,k) = QQLat(nlayer,k) + QPlat(nlayer,n)*ba(k)/baLat(n)
                    end do
                 end if
              end do
@@ -189,7 +189,7 @@
           !DIR$ FORCEINLINE
           isGhost = is_ghost_node(k)
           do nlayer = 1, num_layers
-             if (QQLat(nlayer, k) > 0) then
+             if (QQLat(nlayer,k) > 0) then
                 if (.not. isGhost) then ! Do not count ghosts in mass balances
                    qinlat(idim) = qinlat(idim) + QQLat(nlayer,k)                        ! Qlat can be pos or neg
                 end if
