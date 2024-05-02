@@ -95,7 +95,7 @@ rem =================================
         goto :endproc
     )
     if "%1" == "--help" (
-        goto usage
+        goto :usage
     )
     rem First argument is the config
     set "config=%1"
@@ -105,6 +105,7 @@ rem =================================
     set "modified=!configs:%config%=!"
     if !modified!==%configs% (
         echo ERROR: Configuration !config! not recognized
+        goto :argument_error
     )
 
     rem Read other arguments
@@ -116,6 +117,7 @@ rem =================================
       set "test=!options:*%~1:=! "
       if "!test!"=="!options! " (
           echo Error: Invalid option %~1
+          goto :argument_error
       ) else if "!test:~0,1!"==" " (
           set "%~1=1"
       ) else (
@@ -133,8 +135,13 @@ rem =================================
     )
     goto :endproc
 
-
-
+rem =======================
+rem === ERROR IN ARG  =====
+rem =======================
+:argument_error
+    echo.
+    echo Error in command line arguments.
+    goto :usage
 
 rem =================================
 rem === Get environment variables ===
@@ -493,8 +500,6 @@ rem =======================
         del /f/q del.log
     )
     goto :endproc
-
-
 
 rem =======================
 rem === USAGE        ======
