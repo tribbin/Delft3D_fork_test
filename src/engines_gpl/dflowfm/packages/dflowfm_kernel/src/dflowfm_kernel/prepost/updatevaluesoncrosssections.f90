@@ -35,87 +35,87 @@
 !! for parallel/MPI models: stored in sumvalcur_local, and needs later mpi_allreduce:
 !! @see updateValuesOnCrossSections_mpi
 subroutine updateValuesOnCrossSections(tim1)
-use m_monitoring_crosssections
-use m_missing
-use m_transport , only: NUMCONST_MDU
-use m_partitioninfo, only: jampi
-use m_sediment, only: jased, stmpar
+   use m_monitoring_crosssections
+   use m_missing
+   use m_transport , only: NUMCONST_MDU
+   use m_partitioninfo, only: jampi
+   use m_sediment, only: jased, stmpar
 
-implicit none
-    double precision, intent(in) :: tim1 !< Current (new) time
+   implicit none
+   double precision, intent(in) :: tim1 !< Current (new) time
 
-    double precision,                 save        :: timprev = -1d0
-    double precision,                 save        :: timstart
-    double precision                              :: timstep, timtot
-    integer                                       :: iv, icrs
+   double precision, save :: timprev = -1d0
+   double precision, save :: timstart
+   double precision       :: timstep, timtot
+   integer                :: iv, icrs
 
-    ! This routine can now be called any time, but will only do the update
-    ! of sumval* when necessary:
-    if (tlastupd_sumval == tim1) then
-       return
-    end if
+   ! This routine can now be called any time, but will only do the update
+   ! of sumval* when necessary:
+   if (tlastupd_sumval == tim1) then
+      return
+   end if
 
-    if(nval == 0) then
-        nval  = 5 + NUMCONST_MDU 
-        if( jased == 4 .and. stmpar%lsedtot > 0 ) then
-           nval = nval + stmpar%lsedtot + 1      
-           if( stmpar%lsedsus > 0 ) then
-              nval = nval + stmpar%lsedsus + 1
-           endif
-        endif
-    endif
+   if (nval == 0) then
+      nval  = 5 + NUMCONST_MDU 
+      if (jased == 4 .and. stmpar%lsedtot > 0) then
+         nval = nval + stmpar%lsedtot + 1      
+         if (stmpar%lsedsus > 0) then
+            nval = nval + stmpar%lsedsus + 1
+         end if
+      end if
+   end if
 
-    if (.not. allocated(sumvalcum_timescale)) then
-       allocate(sumvalcum_timescale(nval))
-       sumvalcum_timescale = 1d0
-    endif
+   if (.not. allocated(sumvalcum_timescale)) then
+      allocate(sumvalcum_timescale(nval))
+      sumvalcum_timescale = 1d0
+   endif
 
-    if (.not. allocated(sumvalcur_local)) then
-       allocate(sumvalcur_local(nval,ncrs))
-       sumvalcur_local = 0d0
-    endif
-    
+   if (.not. allocated(sumvalcur_local)) then
+      allocate(sumvalcur_local(nval,ncrs))
+      sumvalcur_local = 0d0
+   endif
+   
 
-    if (timprev == -1d0) then
-        timstep  = 0d0
-        timstart = tim1 ! Generally tstart_user
-        timtot   = 0d0
-    else
-        timstep = tim1 - timprev
-        timtot  = tim1 - timstart
-    end if
+   if (timprev == -1d0) then
+      timstep  = 0d0
+      timstart = tim1 ! Generally tstart_user
+      timtot   = 0d0
+   else
+      timstep = tim1 - timprev
+       timtot  = tim1 - timstart
+   end if
 
-!   compute cross-section data for all cross-sections
-    call sumvalueOnCrossSections(sumvalcur_local, nval)
+   ! compute cross-section data for all cross-sections
+   call sumvalueOnCrossSections(sumvalcur_local, nval)
 
-    if (jampi == 0) then
+   !if (jampi == 0) then
       tlastupd_sumval = tim1
       ! NOTE: when jampi==1, the cross section sumvals on GUI screen are *not* correct, except at each ti_his interval.
-      do icrs=1,ncrs
+      do icrs = 1, ncrs
          do iv = 1, nval ! Nu nog "5+ Numconst" standaard grootheden, in buitenlus
             crs(icrs)%sumvalcur(iv) = sumvalcur_local(iv,icrs)
             crs(icrs)%sumvalcum(iv) = crs(icrs)%sumvalcum(iv) + max(sumvalcum_timescale(iv),1d0)*timstep*sumvalcur_local(iv,icrs)
             if (timtot > 0d0) then
-                crs(icrs)%sumvalavg(iv) = crs(icrs)%sumvalcum(iv)/timtot/max(sumvalcum_timescale(iv),1d0)
+               crs(icrs)%sumvalavg(iv) = crs(icrs)%sumvalcum(iv)/timtot/max(sumvalcum_timescale(iv),1d0)
             else
-                crs(icrs)%sumvalavg(iv) = crs(icrs)%sumvalcur(iv)
+               crs(icrs)%sumvalavg(iv) = crs(icrs)%sumvalcur(iv)
             end if
           end do
       end do
-    else
-        
-    if (.not. allocated(sumvalcum_local)) then
-       allocate(sumvalcum_local(nval,ncrs))
-       sumvalcum_local = 0d0      
-    endif
-    
-        do icrs=1,ncrs
-         do iv = 1, nval 
-           ! if jampi = 1 we only update crs(icrs)%sumvalcur and crs(icrs)%sumvalcum every user timestep  
-           sumvalcum_local(iv,icrs) = sumvalcum_local(iv,icrs) +   max(sumvalcum_timescale(iv),1d0)*timstep*sumvalcur_local(iv,icrs)
-         enddo
-        enddo
-    endif
+   !else
+   !    
+   !   if (.not. allocated(sumvalcum_local)) then
+   !      allocate(sumvalcum_local(nval,ncrs))
+   !      sumvalcum_local = 0d0      
+   !   endif
+   !
+   !   do icrs = 1, ncrs
+   !      do iv = 1, nval 
+   !         ! if jampi = 1 we only update crs(icrs)%sumvalcur and crs(icrs)%sumvalcum every user timestep  
+   !         sumvalcum_local(iv,icrs) = sumvalcum_local(iv,icrs) +   max(sumvalcum_timescale(iv),1d0)*timstep*sumvalcur_local(iv,icrs)
+   !      end do
+   !   end do
+   !end if
 
-    timprev = tim1
+   timprev = tim1
 end subroutine updateValuesOnCrossSections
