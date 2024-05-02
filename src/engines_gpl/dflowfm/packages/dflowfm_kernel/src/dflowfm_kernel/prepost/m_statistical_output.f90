@@ -28,6 +28,8 @@ module m_statistical_output
    use m_output_config
    use m_statistical_callback
    use m_statistical_output_types, only: t_output_variable_item, t_output_variable_set
+   use m_temporal_statistics
+   use stdlib_kinds, only: dp
    
    implicit none
    
@@ -35,7 +37,9 @@ private
 
    public realloc
    public dealloc
-   public update_statistical_output, update_source_data, add_stat_output_items, initialize_statistical_output, reset_statistical_output, finalize_so_average
+   public update_statistical_output, update_source_data, add_stat_output_items, &
+      initialize_statistical_output, reset_statistical_output, finalize_average, &
+      parse_next_stat_type_from_valuestring
 
    !> Realloc memory cross-section definition or cross-sections
    interface realloc
@@ -61,7 +65,7 @@ private
 
 contains
 
-   subroutine realloc_stat_output(statoutput,size)
+   subroutine realloc_stat_output(statoutput, size)
       ! Modules
       use m_alloc
 
@@ -78,29 +82,29 @@ contains
    
       if (statoutput%size > 0) then
          oldstats=>statoutput%statout
-      endif
+      end if
    
       if (statoutput%growsBy <=0) then
          statoutput%growsBy = 200
-      endif
+      end if
       
       if (present(size) .and. size >= statoutput%count) then
-         allocate(statoutput%statout(size),stat=ierr)
-         call aerr('statoutput%configs(size)',ierr,size)
-         
+         allocate(statoutput%statout(size), stat=ierr)
+         call aerr('statoutput%statout(size)', ierr, size)
+
          statoutput%statout(1:size) = oldstats(1:size)
          deallocate(oldstats)
          statoutput%size = size
       else
-         allocate(statoutput%statout(statoutput%size+statoutput%growsBy),stat=ierr)
-         call aerr('statoutput%configs(statoutput%size+statoutput%growsBy)',ierr,statoutput%size+statoutput%growsBy)
+         allocate(statoutput%statout(statoutput%size+statoutput%growsBy), stat=ierr)
+         call aerr('statoutput%statout(statoutput%size+statoutput%growsBy)', ierr, statoutput%size+statoutput%growsBy)
    
          if (statoutput%size > 0) then
             statoutput%statout(1:statoutput%size) = oldstats(1:statoutput%size)
             deallocate(oldstats)
-         endif
+         end if
          statoutput%size = statoutput%size+statoutput%growsBy
-      endif
+      end if
    end subroutine realloc_stat_output
 
    subroutine dealloc_stat_output(statoutput)
@@ -108,98 +112,62 @@ contains
       ! Input/output parameters
       type(t_output_variable_set), intent(inout)   :: statoutput !< Current cross-section definition
 
-      if (statoutput%size> 0) then
+      if (associated(statoutput%statout)) then
          deallocate(statoutput%statout)
-      endif
+      end if
    end subroutine dealloc_stat_output
-
-   !> updates the moving average of a stat_out_item by removing the oldest and adding the newest value
-   elemental subroutine update_moving_average(item)
-
-      type(t_output_variable_item), intent(inout) :: item !< statistical output item to update
-      
-      integer :: jnew, jold !< Index to newest and oldest timestep in samples array
-      
-      jnew = item%current_step
-      
-      if (item%moving_average_window > 1) then ! No need to average with a sample window of 1
-         !when timestep < windowsize, no samples need to be removed. The timesteps array and samples array will be initialized to 0 so that we can keep the same expression.
-         jold = MOD(item%current_step,item%moving_average_window)+1
-         item%moving_average_sum = item%moving_average_sum - item%samples(:,jold)*item%timesteps(jold) + item%samples(:,jnew)*item%timesteps(jnew)
-         item%timestep_sum = item%timestep_sum - item%timesteps(jold) + item%timesteps(jnew)
-         item%stat_input = item%moving_average_sum/item%timestep_sum
-      else
-         item%stat_input = item%samples(:,item%current_step)
-      endif
-         
-   end subroutine update_moving_average
-
-   !> adds a new sample, and its timestep to the samples array. Only needed for moving average calculation.
-   elemental subroutine add_statistical_output_sample(item,timestep)
-
-      type(t_output_variable_item), intent(inout) :: item      !< statistical output item to update
-      double precision, intent(in)                :: timestep  !< this is usually dts
-
-      item%timesteps(item%current_step) = timestep
-      item%samples(:,item%current_step) = item%source_input
-
-   end subroutine add_statistical_output_sample
 
    !> Update the variables that need a separate subroutine call to update their source_input array
    subroutine update_source_data(output_set)
-   type(t_output_variable_set),    intent(inout)   :: output_set    !> output set that we wish to update
-   type(t_output_variable_item), pointer  :: item
-   
-   integer :: j
-   
-   do j = 1, output_set%count
-      item => output_set%statout(j)
-      if (associated(item%source_input_function_pointer)) then
-         call item%source_input_function_pointer(item%source_input)
-      endif
-   enddo
-   
+      type(t_output_variable_set), intent(inout) :: output_set !< output set that we wish to update
+
+      type(t_output_variable_item), pointer      :: item
+
+      integer :: j
+
+      do j = 1, output_set%count
+         item => output_set%statout(j)
+         if (associated(item%source_input_function_pointer)) then
+            call item%source_input_function_pointer(item%source_input)
+         end if
+      end do
    end subroutine update_source_data
-   
-   !> Updates the stat_output of an item using the stat_input array, depending on the operation_type.
-   !! stat_input is filled elsewhere and can be a moving average or a pointer to an input variable.
+
+   !> Update the stat_output of an item, depending on the operation_type.
    elemental subroutine update_statistical_output(item, dts)
       type(t_output_variable_item), intent(inout) :: item   !< statistical output item to update
       double precision,             intent(in)    :: dts    !< current timestep
-   
+
       if (item%operation_type == SO_MIN .or. item%operation_type == SO_MAX) then ! max/min of moving average requested
-         call add_statistical_output_sample(item,dts)
-         call update_moving_average(item)
-         item%current_step = mod(item%current_step,item%moving_average_window)+1 ! shift current step by 1
-      endif
+         call update_moving_average_data(item%moving_average_data, item%source_input, dts)
+      end if
 
       select case (item%operation_type)
       case (SO_CURRENT)
-         continue
+         return
       case (SO_AVERAGE) 
-         item%stat_output = item%stat_output + item%stat_input * dts
-         item%timestep_sum = item%timestep_sum + dts
+         item%stat_output = item%stat_output + item%source_input * dts
+         item%time_step_sum = item%time_step_sum + dts
       case (SO_MAX) 
-         item%stat_output = max(item%stat_output,item%stat_input)
+         item%stat_output = max(item%stat_output, calculate_moving_average(item%moving_average_data))
       case (SO_MIN) 
-         item%stat_output = min(item%stat_output,item%stat_input)
+         item%stat_output = min(item%stat_output, calculate_moving_average(item%moving_average_data))
       case default
          return
       end select
-
    end subroutine update_statistical_output
 
    !> Perform the final time interval averaging on an item,
    !! after all values haven been summed up in %stat_output.
-   elemental subroutine finalize_SO_AVERAGE(item) 
+   elemental subroutine finalize_average(item)
 
       type(t_output_variable_item), intent(inout) :: item !< The item to be processed. Will be double-checked on its operation type.
 
-      if (item%operation_type == SO_AVERAGE) then 
-         item%stat_output = item%stat_output/item%timestep_sum
-      endif
+      if (item%operation_type == SO_AVERAGE) then
+         item%stat_output = item%stat_output/item%time_step_sum
+      end if
 
-   end subroutine finalize_SO_AVERAGE
+   end subroutine finalize_average
 
    !> Reset an item's stat_output array, to be called after every output interval.
    elemental subroutine reset_statistical_output(item)
@@ -207,18 +175,19 @@ contains
 
       select case (item%operation_type)
       case (SO_CURRENT)
-         continue
+         return
       case (SO_AVERAGE)
          item%stat_output = 0 
-         item%timestep_sum = 0 !new sum every output interval
+         item%time_step_sum = 0 !new sum every output interval
       case (SO_MAX)
-         item%stat_output = -huge(1d0)
+         item%stat_output = -huge(1.0_dp)
+         item%moving_average_data = create_moving_average_data(size(item%source_input), item%moving_average_window)
       case (SO_MIN)
-         item%stat_output = huge(1d0)
-      case default 
-         !call mess(LEVEL_ERROR, 'update_statistical_output: invalid operation_type')
+         item%stat_output = huge(1.0_dp)
+         item%moving_average_data = create_moving_average_data(size(item%source_input), item%moving_average_window)
+      case default
+         return
       end select
-
    end subroutine reset_statistical_output
    
    !> Create a new output item and add it to the output set according to output quantity config
@@ -256,7 +225,7 @@ contains
             output_set%count = output_set%count + 1
             if (output_set%count > output_set%size) then
                call realloc_stat_output(output_set)
-            endif
+            end if
 
             item%output_config => output_config
             item%source_input => data_pointer
@@ -271,7 +240,7 @@ contains
             output_set%statout(output_set%count) = item
          end if
 
-      enddo
+      end do
       
       return ! No error
       
@@ -345,7 +314,7 @@ contains
       ierr = SO_NOERR
 
       call str_token(valuestring, operation_string, DELIMS=', ')
-      
+
       len_token = len_trim(operation_string)
 
       if (len_token == 0) then
@@ -378,9 +347,7 @@ contains
       end if
 
    end function parse_next_stat_type_from_valuestring
-         
-            
-            
+
    !> Determine integer operation_type given a string value.
    function get_operation_type(valuestring) result(operation_type)
    use string_module, only: strcmpi
@@ -390,7 +357,7 @@ contains
 
       operation_type = SO_UNKNOWN
       
-      if      (strcmpi(valuestring, 'current') .or. strcmpi(valuestring, '1')) then
+      if (strcmpi(valuestring, 'current') .or. strcmpi(valuestring, '1')) then
          operation_type = SO_CURRENT
       else if (strcmpi(valuestring, 'average')) then
          operation_type = SO_AVERAGE
@@ -400,52 +367,34 @@ contains
          operation_type = SO_MIN
       else if (strcmpi(valuestring, 'none') .or. strcmpi(valuestring, '0')) then
          operation_type = SO_NONE
-      endif
-
+      else
+         write (msgbuf,'(a,i0,a,a,a)') 'invalid operation_type ', operation_type, '. Cannot parse input ', valuestring, '.'
+         call err_flush()
+      end if
    end function get_operation_type
       
    !> For every item in output_set, allocate arrays depending on its operation_type.
-   subroutine initialize_statistical_output(output_set)
-   
-      type(t_output_variable_set), intent(inout) :: output_set !> output set that needs to be initialized
+   elemental subroutine initialize_statistical_output(item)
+      type(t_output_variable_item), intent(inout) :: item !> output variable item that needs to be initialized
 
-      type(t_output_variable_item), pointer  :: item 
-      integer :: j, input_size
-      logical :: success
-      
-      if (output_set%count > 0) then
-         call realloc_stat_output(output_set,output_set%count) ! set size to count
-      endif
-      
-      do j = 1, output_set%count
-         item => output_set%statout(j)
-         input_size = size(item%source_input)
+      integer :: input_size
 
-         select case (item%operation_type)
-         case (SO_CURRENT)
-            item%stat_output => item%source_input
-         case (SO_AVERAGE)
-            allocate(item%stat_output(input_size))
-            item%stat_input => item%source_input
-         case (SO_MIN, SO_MAX)
-            allocate(item%stat_output(input_size),item%moving_average_sum(input_size), &
-               item%samples(input_size,item%moving_average_window),item%timesteps(item%moving_average_window),item%stat_input(input_size))
+      input_size = size(item%source_input)
 
-            item%moving_average_sum = 0
-            item%samples = 0
-            item%timesteps = 0
-            item%timestep_sum = 0
-            item%current_step = 1
-         case (SO_NONE)
-            continue
-         case default
-            write (msgbuf,'(a,i0,a,a,a,a)') 'initialize_statistical_output: invalid operation_type ', item%operation_type, '. Original input for item was: ', trim(item%output_config%key), ' = ', trim(item%output_config%input_value)
-            call err_flush()
-         end select
+      select case (item%operation_type)
+      case (SO_CURRENT)
+         item%stat_output => item%source_input
+      case (SO_AVERAGE)
+         allocate(item%stat_output(input_size))
+      case (SO_MIN, SO_MAX)
+         allocate(item%stat_output(input_size))
+      case (SO_NONE)
+         continue
+      case default
+         return
+      end select
 
-         call reset_statistical_output(item)
-      enddo
-
+      call reset_statistical_output(item)
    end subroutine initialize_statistical_output
    
    !> Obtain a character string describing the statistics operation (for writing to screen)

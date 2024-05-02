@@ -36,33 +36,26 @@ module m_statistical_callback
 end module m_statistical_callback
    
 module m_statistical_output_types
-
+   use stdlib_kinds, only: dp
    use m_output_config, only: t_output_quantity_config
    use m_statistical_callback, only: process_data_double_interface
-   
-   !> Derived type for the statistical output items. 
+   use m_temporal_statistics, only: t_moving_average_data
+
+   private
+
+   !> Derived type for the statistical output items.
    type, public :: t_output_variable_item
-      type(t_output_quantity_config), pointer   :: output_config        !< Pointer to output configuration item.
-      integer                                   :: operation_type       !< Specifies the kind of operation to perform on the output variable.
-      integer                                   :: current_step         !< Latest entry in the work array. MOD(current_step+1,moving_average_window) is the next 
-      integer                                   :: moving_average_window    !< Number of steps inside the moving average
-      !< item to remove.   
-      integer                                   :: id_var               !< NetCDF variable ID, to be set and used by actual writing functions.
-      double precision, pointer, dimension(:)   :: stat_output          !< Array that is to be written to the Netcdf file. In case the current values are
-                                                                        !< required this variable points to the basic variable (e.g. s1).
-                                                                        !< Otherwise during the simulation the intermediate results are stored.
-      double precision, pointer, dimension(:)   :: stat_input           !< In case a statistical operation is requested. This pointer points to the
-                                                                        !< source_input.
-      double precision, pointer    , dimension(:)   :: source_input         !< pointer to the basic variable
-      double precision, allocatable, dimension(:,:) :: samples              !< In case a moving average is requested. This pointer points to the
-                                                                        !< work array, where the different samples are stored.
-      double precision, allocatable, dimension(:)   :: moving_average_sum !< In case a moving average is requested. This pointer points to the
-                                                                        !< actual average values.
-      double precision                          :: timestep_sum         !< sum of timesteps (for moving average/ average calculation)
-      
-      double precision, allocatable, dimension(:)   :: timesteps            !< array of timesteps belonging to samples in samples array
-      procedure(process_data_double_interface), nopass, pointer      :: source_input_function_pointer => null()          !< function pointer for operation that needs to be performed to produce source_input 
-      
+      type(t_output_quantity_config), pointer                   :: output_config         !< Pointer to output configuration item.
+      integer                                                   :: operation_type        !< Specifies the kind of operation to perform on the output variable.
+      integer                                                   :: id_var                !< NetCDF variable ID, to be set and used by actual writing functions.
+      real(dp), pointer, dimension(:)                           :: stat_output           !< Array that is to be written to the Netcdf file. In case the current values are
+                                                                                         !! required this variable points to the basic variable (e.g. s1).
+                                                                                         !! Otherwise during the simulation the intermediate results are stored.
+      real(dp), pointer, dimension(:)                           :: source_input          !< The (possibly transformed) data over which statistics are gathered
+      procedure(process_data_double_interface), nopass, pointer :: source_input_function_pointer => null() !< Function pointer for operation that needs to be performed to produce source_input
+      real(dp)                                                  :: time_step_sum         !< Sum of time steps since the last output interval, used for average calculation
+      type(t_moving_average_data), allocatable                  :: moving_average_data   !< Data stored for keeping track of a moving average
+      integer                                                   :: moving_average_window !< Number of time steps over which a moving average is calculated
    end type t_output_variable_item
    
    !> Derived type to store the cross-section set

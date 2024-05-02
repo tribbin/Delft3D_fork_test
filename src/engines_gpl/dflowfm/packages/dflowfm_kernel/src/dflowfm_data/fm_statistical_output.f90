@@ -2896,7 +2896,8 @@ private
       !call add_stat_output_items(output_set, output_config_set%configs(IDX_CLS_UCDIR_EULER                                               )
       !
       call process_output_quantity_configs(output_config_set)
-      call initialize_statistical_output(output_set)
+      call realloc(output_set, output_set%count) ! set size to count
+      call initialize_statistical_output(output_set%statout)
 
    end subroutine flow_init_statistical_output_his
 

@@ -54,7 +54,7 @@
  use Timers
  use system_utils, only: makedir
  use fm_statistical_output, only: out_variable_set_his
- use m_statistical_output, only: reset_statistical_output, finalize_SO_average
+ use m_statistical_output, only: reset_statistical_output, finalize_average
  
 #ifdef _OPENMP
  use omp_lib
@@ -75,7 +75,7 @@
    if (ti_his > 0) then
       if (comparereal(tim, time_his, eps10)>= 0) then
          if (out_variable_set_his%count > 0) then
-            call finalize_SO_AVERAGE(out_variable_set_his%statout)
+            call finalize_average(out_variable_set_his%statout)
          endif
          
          if ( jampi.eq.0 .or. ( jampi.eq.1 .and. my_rank.eq.0 ) ) then
