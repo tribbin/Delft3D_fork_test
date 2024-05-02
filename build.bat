@@ -68,20 +68,9 @@ echo.
 echo Finished
 goto :end
 
-
-
-
-
-
-
-
-
-
 rem ===
 rem === PROCEDURES
 rem ===
-
-
 
 rem =================================
 rem === Command line arguments    ===
@@ -92,7 +81,7 @@ rem =================================
 
     if [%1] EQU [] (
         rem No arguments: continue with defaults
-        goto :endproc
+        goto :eof
     )
     if "%1" == "--help" (
         goto :usage
@@ -133,7 +122,7 @@ rem =================================
     if !-prepareonly! == 1 (
     set prepareonly=1
     )
-    goto :endproc
+    goto :eof
 
 rem =======================
 rem === ERROR IN ARG  =====
@@ -149,78 +138,46 @@ rem =================================
 :GetEnvironmentVars
     echo.
     echo "Get environment variables ..."
-    rem # Check combinations!
-    rem # VISUAL STUDIO: First try the official version (2017), then newer (2019) then older (2015), stop on success
-    rem # IFORT: Order (overwriting when already found) in VS17: IFORT21, IFORT19, IFORT18(=official combination)
-    rem #                                               in VS19: IFORT21, IFORT19
-    rem #                                               in VS15: IFORT21, IFORT19, IFORT18, IFORT16(=previous official combination)
-    rem # On TeamCity VS2019 is installed without IFORT
+    rem # Try to find the latest versions of Visual Studio and ifort
 
-
-
-    if NOT "%VS2022INSTALLDIR%" == "" (
-        set vs=2022
-        echo Found: VisualStudio 17 2022
-        if NOT "%IFORT_COMPILER21%" == "" (
-            set ifort=23
-            echo Found: Intel Fortran 2023
-        )
-        goto :endfun
+    if NOT "%IFORT_COMPILER16%" == "" (
+        set ifort=16
+        echo Found: Intel Fortran 2016
+    )
+    if NOT "%IFORT_COMPILER18%" == "" (
+        set ifort=18
+        echo Found: Intel Fortran 2018
+    )
+    if NOT "%IFORT_COMPILER19%" == "" (
+        set ifort=19
+        echo Found: Intel Fortran 2019
+    )
+    if NOT "%IFORT_COMPILER21%" == "" (
+        set ifort=21
+        echo Found: Intel Fortran 2021
+    )
+    if NOT "%IFORT_COMPILER23%" == "" (
+        set ifort=23
+        echo Found: Intel Fortran 2023
+    )
+    if NOT "%IFORT_COMPILER24%" == "" (
+        set ifort=24
+        echo Found: Intel Fortran 2024
     )
 
-
-    if NOT "%VS2017INSTALLDIR%" == "" (
+    if "%VisualStudioVersion%" == "15.0" (
         set vs=2017
         echo Found: VisualStudio 15 2017
-        if NOT "%IFORT_COMPILER21%" == "" (
-            set ifort=21
-            echo Found: Intel Fortran 2021
-        )
-        if NOT "%IFORT_COMPILER19%" == "" (
-            set ifort=19
-            echo Found: Intel Fortran 2019
-        )
-        if NOT "%IFORT_COMPILER18%" == "" (
-            set ifort=18
-            echo Found: Intel Fortran 2018
-        )
-        goto :endfun
     )
-    if NOT "%VS2019INSTALLDIR%" == "" (
+    if "%VisualStudioVersion%" == "16.0" (
         set vs=2019
         echo Found: VisualStudio 16 2019
-        if NOT "%IFORT_COMPILER21%" == "" (
-            set ifort=21
-            echo Found: Intel Fortran 2021
-        )
-        if NOT "%IFORT_COMPILER19%" == "" (
-            set ifort=19
-            echo Found: Intel Fortran 2019
-        )
-        goto :endfun
     )
-    if NOT "%VS2015INSTALLDIR%" == "" (
-        set vs=2015
-        echo Found: VisualStudio 14 2015
-        if NOT "%IFORT_COMPILER21%" == "" (
-            set ifort=21
-            echo Found: Intel Fortran 2021
-        )
-        if NOT "%IFORT_COMPILER19%" == "" (
-            set ifort=19
-            echo Found: Intel Fortran 2019
-        )
-        if NOT "%IFORT_COMPILER18%" == "" (
-            set ifort=18
-            echo Found: Intel Fortran 2018
-        )
-        if NOT "%IFORT_COMPILER16%" == "" (
-            set ifort=16
-            echo Found: Intel Fortran 2016
-        )
-        goto :endfun
+    if "%VisualStudioVersion%" == "17.0" (
+        set vs=2022
+        echo Found: VisualStudio 17 2022
     )
-    :endfun
+
     if NOT !-vs! == 0 (
         set vs=!-vs!
         echo overriding vs with !-vs!
@@ -230,8 +187,7 @@ rem =================================
         set ifort=!-ifort!
         echo overriding ifort with !-ifort!
     )
-    goto :endproc
-
+    goto :eof
 
 rem ================================
 rem === Check CMake installation ===
@@ -271,17 +227,12 @@ rem ================================
 
 
     )
-    goto :endproc
-
-
+    goto :eof
 
 rem =======================
 rem === SetGenerator   ====
 rem =======================
 :SetGenerator
-    if "!vs!" == "2015" (
-        set generator="Visual Studio 14 2015"
-    )
     if "!vs!" == "2017" (
         set generator="Visual Studio 15 2017"
     )
@@ -291,9 +242,7 @@ rem =======================
     if "!vs!" == "2022" (
         set generator="Visual Studio 17 2022"
     )
-    goto :endproc
-
-
+    goto :eof
 
 rem =======================
 rem === Checks         ====
@@ -312,55 +261,47 @@ rem =======================
         set ERRORLEVEL=1
         goto :end
     )
-    goto :endproc
-
-
+    goto :eof
 
 rem =================
 rem === vcvarsall ===
 rem =================
 :vcvarsall
     rem # Execute vcvarsall.bat in case of compilation
-    if %prepareonly% EQU 1 goto :endproc
-    if !ERRORLEVEL! NEQ 0 goto :endproc
+    if %prepareonly% EQU 1 goto :eof
+    if !ERRORLEVEL! NEQ 0 goto :eof
 
     echo.
-    if !generator! == "Visual Studio 14 2015" (
-        echo "Calling vcvarsall.bat for VisualStudio 2015 ..."
-        call "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat" amd64
-    )
     if !generator! == "Visual Studio 15 2017" (
         echo "Calling vcvarsall.bat for VisualStudio 2017 ..."
-        call "%VS2017INSTALLDIR%\VC\Auxiliary\Build\vcvarsall.bat" amd64
+        call "%VCINSTALLDIR%\Auxiliary\Build\vcvarsall.bat" amd64
     )
     if !generator! == "Visual Studio 16 2019" (
         echo "Calling vcvarsall.bat for VisualStudio 2019 ..."
-        call "%VS2019INSTALLDIR%\VC\Auxiliary\Build\vcvarsall.bat" amd64
+        call "%VCINSTALLDIR%\Auxiliary\Build\vcvarsall.bat" amd64
     )
     if !generator! == "Visual Studio 17 2022" (
         echo "Calling vcvarsall.bat for VisualStudio 2022 ..."
-        call "%VS2022INSTALLDIR%\VC\Auxiliary\Build\vcvarsall.bat" amd64
+        call "%VCINSTALLDIR%\Auxiliary\Build\vcvarsall.bat" amd64
     )
 
     rem # Execution of vcvarsall results in a jump to the C-drive. Jump back to the script directory
     cd /d "%root%\"
     if !ERRORLEVEL! NEQ 0 call :errorMessage
-    goto :endproc
-
-
+    goto :eof
 
 rem =======================
 rem === DoCMake        ====
 rem =======================
 :DoCMake
-    if !ERRORLEVEL! NEQ 0 goto :endproc
+    if !ERRORLEVEL! NEQ 0 goto :eof
     echo.
     call :createCMakeDir build_%~1
     echo "Running CMake for %~1 ..."
     cd /d "%root%\build_%~1\"
     !cmake! ..\src\cmake -G %generator% -A x64 -B "." -D CONFIGURATION_TYPE="%~1" 1>cmake_%~1.log 2>&1
     if !ERRORLEVEL! NEQ 0 call :errorMessage
-    goto :endproc
+    goto :eof
 
 
 
@@ -373,7 +314,7 @@ rem =========================================
     del "%root%\build_dflowfm_interacter\dflowfm_cli_exe\dflowfm-cli.vfproj"  > del.log 2>&1
     del /f/q del.log
     rename %root%\build_dflowfm_interacter\dflowfm_cli_exe\dflowfm-cli_new.vfproj dflowfm-cli.vfproj
-    goto :endproc
+    goto :eof
 
 
 
@@ -390,14 +331,14 @@ rem =======================
 rem === Build          ====
 rem =======================
 :Build
-    if %prepareonly% EQU 1 goto :endproc
-    if !ERRORLEVEL! NEQ 0 goto :endproc
+    if %prepareonly% EQU 1 goto :eof
+    if !ERRORLEVEL! NEQ 0 goto :eof
     echo.
     echo "Building %~1 ..."
     cd /d "%root%\build_%~1\"
     call :VSbuild %~1
     cd /d "%root%\"
-    goto :endproc
+    goto :eof
 
 
 
@@ -411,7 +352,7 @@ rem =======================
     if exist "%root%\%~1\" rmdir /s/q "%root%\%~1\" > del.log 2>&1
     mkdir    "%root%\%~1\"                          > del.log 2>&1
     del /f/q del.log
-    goto :endproc
+    goto :eof
 
 
 
@@ -427,16 +368,14 @@ rem =======================
 
     rem # In build.log, replace "error" by TeamCity messages
     %root%\src\third_party_open\commandline\bin\win32\sed.exe -e "/[Ee]rror[\:\ ]/s/^/\#\#teamcity\[buildStatus status\=\'FAILURE\' text\=\' /g;/buildStatus/s/$/\'\]/g" %currentWorkDir%\build_%~1.log
-    goto :endproc
-
-
+    goto :eof
 
 rem =======================
 rem === InstallAll     ====
 rem =======================
 :installall
-    if %prepareonly% EQU 1                goto :endproc
-    if !ERRORLEVEL! NEQ 0                 goto :endproc
+    if %prepareonly% EQU 1                goto :eof
+    if !ERRORLEVEL! NEQ 0                 goto :eof
 
     if "!config!" == "all" (
         echo.
@@ -499,7 +438,7 @@ rem =======================
         rmdir /s /q %root%\build_delft3d4\x64\Release > del.log 2>&1
         del /f/q del.log
     )
-    goto :endproc
+    goto :eof
 
 rem =======================
 rem === USAGE        ======
@@ -558,11 +497,11 @@ rem =======================
     echo ERROR: Check log files in build_* directories
     echo        Is the correct Fortran compiler installed, available and selected?
     echo        Common problem: NetExtender needs to be switched on to reach the license server.
-    goto :endproc
+    goto :eof
 
 
 rem =======================
-rem === END TAG      ======
+rem === END TAG ===========
 rem =======================
 :end
     rem # To prevent the DOS box from disappearing immediately: remove the rem on the following line
@@ -574,8 +513,6 @@ rem =======================
     )
 
 rem =======================
-rem === ENDPROC TAG  ======
+rem === EOF TAG ===========
 rem =======================
-:endproc
-   rem # No exit  here, otherwise the script exits directly at the first missing artefact
-   rem # No pause here, otherwise a pause will appear after each procedure execution
+:eof
