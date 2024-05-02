@@ -35,14 +35,13 @@ module m_lateral
       public initialize_lateraldata
       public dealloc_lateraldata
       public average_concentrations_for_laterals
-      public add_lateral_load
-      public add_lateral_sink
+      public add_lateral_load_and_sink
       public get_lateral_discharge
       public reset_outgoing_lat_concentration 
       public finish_outgoing_lat_concentration
-   !!
-   !! Laterals
-   !!
+      !!
+      !! Laterals
+      !!
       integer, parameter, public :: ILATTP_ALL = 0 !< Type code for laterals that apply to both 2D and 1D nodes.
       integer, parameter, public :: ILATTP_1D  = 1 !< Type code for laterals that only apply to 1D nodes.
       integer, parameter, public :: ILATTP_2D  = 2 !< Type code for laterals that only apply to 2D nodes.
@@ -73,11 +72,12 @@ module m_lateral
       real(kind=dp), allocatable, target, public :: geomXLat(:)     !< [m] x coordinates of laterals.
       real(kind=dp), allocatable, target, public :: geomYLat(:)     !< [m] y coordinates of laterals.
 
-      private
       real(kind=dp), allocatable, target, dimension(:,:,:), public :: outgoing_lat_concentration !< Average concentration per lateral discharge location.
       real(kind=dp), allocatable, target, dimension(:,:,:), public :: incoming_lat_concentration !< Concentration of the inflowing water at the lateral discharge location.
       integer,       allocatable, target, dimension(:),     public :: apply_transport            !< Flag to apply transport for laterals (0 means only water and no substances are transported).
       logical, public :: apply_transport_is_used
+      private
+      
       !> Reset the defaults for laterals
       interface default_lateral
          module subroutine default_lateral()
@@ -103,7 +103,6 @@ module m_lateral
          module subroutine dealloc_lateraldata()
          end subroutine dealloc_lateraldata
       end interface dealloc_lateraldata
-   
    
       !> At the start of the update, the out_going_lat_concentration must be set to 0 (reset_outgoing_lat_concentration).
       !> In  average_concentrations_for_laterals in out_going_lat_concentration the concentrations*timestep are aggregated.
@@ -136,28 +135,22 @@ module m_lateral
       end interface finish_outgoing_lat_concentration
 
       !> Add lateral input contribution to the load being transported
-      interface add_lateral_load
-         module subroutine add_lateral_load(transport_load,lateral_discharge_in, vol1, dtol)
-            double precision, dimension(:,:), intent(in   )     :: lateral_discharge_in !< Lateral discharge going into the model (source)
-            double precision, dimension(:,:), intent(inout)     :: transport_load       !< Load being transported
-            double precision, dimension(:),   intent(in)        :: vol1                  !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
-            double precision, intent(in)                        :: dtol
-         end subroutine add_lateral_load
-      end interface add_lateral_load
-
-      !> Add lateral sink contribution
-      interface add_lateral_sink
-         module subroutine add_lateral_sink(transport_sink,lateral_discharge_out)
-            double precision, dimension(:,:), intent(inout)     :: transport_sink                  !< 
-            double precision, dimension(:,:), intent(in   )     :: lateral_discharge_out !< Lateral discharge going out (sink)
-         end subroutine add_lateral_sink
-      end interface add_lateral_sink
+      interface add_lateral_load_and_sink
+         module subroutine add_lateral_load_and_sink(transport_load,transport_sink,discharge_in,discharge_out,vol1,dtol)
+            real(kind=dp), dimension(:,:), intent(inout)     :: transport_load        !< Load being transported into domain
+            real(kind=dp), dimension(:,:), intent(inout)     :: transport_sink        !< Load being transported out
+            real(kind=dp), dimension(:,:), intent(in   )     :: discharge_in          !< Lateral discharge going into domain (source)
+            real(kind=dp), dimension(:,:), intent(in   )     :: discharge_out         !< Lateral discharge going out (sink)
+            real(kind=dp), dimension(:),   intent(in)        :: vol1                  !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
+            real(kind=dp), intent(in)                        :: dtol                  !< cut off value for vol1, to prevent division by zero
+         end subroutine add_lateral_load_and_sink
+      end interface add_lateral_load_and_sink
 
       !> Calculate lateral discharges at each of the active grid cells, both source (lateral_discharge_in) and sink (lateral_discharge_out). 
       interface get_lateral_discharge
          module subroutine get_lateral_discharge(lateral_discharge_in,lateral_discharge_out)
-            double precision, dimension(:,:), intent(inout)     :: lateral_discharge_in  !< Lateral discharge flowing into the model (source)
-            double precision, dimension(:,:), intent(inout)     :: lateral_discharge_out !< Lateral discharge extracted out of the model (sink)
+            real(kind=dp), dimension(:,:), intent(inout)     :: lateral_discharge_in  !< Lateral discharge flowing into the model (source)
+            real(kind=dp), dimension(:,:), intent(inout)     :: lateral_discharge_out !< Lateral discharge extracted out of the model (sink)
          end subroutine get_lateral_discharge
       end interface get_lateral_discharge
   

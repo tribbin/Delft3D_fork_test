@@ -22,13 +22,13 @@
 !!  rights reserved.
 module test_lateral
    use ftnunit
-   use precision, only: hp
+   use stdlib_kinds, only: dp
    use dfm_error, only: DFM_NOERR, DFM_GENERICERROR
    use m_lateral
 
    implicit none
 
-   real(hp), parameter :: tolerance = 1.0e-10_hp
+   real(dp), parameter :: tolerance = 1.0e-10_dp
 
    contains
 !
@@ -49,13 +49,15 @@ subroutine test_get_lateral_load_and_discharge
    use m_cell_geometry, only: ba
    use m_flowgeom, only: ndxi
    
-   double precision, allocatable, dimension(:,:)   :: lateral_discharge_in                !< Lateral discharge going into the model (source)
-   double precision, allocatable, dimension(:,:)   :: lateral_discharge_out               !< Lateral discharge extracted out of the model (sink)
-   double precision, allocatable, dimension(:,:)   :: reference_lateral_discharge_in      !< Reference lateral discharge going into the model (source)
-   double precision, allocatable, dimension(:,:)   :: reference_lateral_discharge_out     !< Reference lateral discharge extracted out of the model (sink)
-   double precision, allocatable, dimension(:,:)   :: transport_load                      !< Load being transported
-   integer :: ierr                     !< error flag
-   integer :: i_cell, i_const, i_lateral, k1
+   real(kind=dp), allocatable, dimension(:,:)   :: lateral_discharge_in                !< Lateral discharge going into the model (source)
+   real(kind=dp), allocatable, dimension(:,:)   :: lateral_discharge_out               !< Lateral discharge extracted out of the model (sink)
+   real(kind=dp), allocatable, dimension(:,:)   :: reference_lateral_discharge_in      !< Reference lateral discharge going into the model (source)
+   real(kind=dp), allocatable, dimension(:,:)   :: reference_lateral_discharge_out     !< Reference lateral discharge extracted out of the model (sink)
+   real(kind=dp), allocatable, dimension(:,:)   :: transport_load                      !< Load being transported into domain
+   real(kind=dp), allocatable, dimension(:,:)   :: transport_sink                      !< Load being transported out 
+   
+   integer :: ierr                            ! error flag
+   integer :: i_cell, i_const, i_lateral, k1  ! loop counters
 
    ierr = 0
    numlatsg = 2
@@ -77,6 +79,7 @@ subroutine test_get_lateral_load_and_discharge
    allocate(hs(ndxi),stat=ierr)
    allocate(vol1(ndxi),stat=ierr)
    allocate(transport_load(numconst,ndxi),stat=ierr)
+   allocate(transport_sink(numconst,ndxi),stat=ierr)
       
    n1latsg(1) = 1
    n2latsg(1) = 3
@@ -93,7 +96,7 @@ subroutine test_get_lateral_load_and_discharge
    enddo
    qplat = (/9d0,-10d0/)
    hs = 2d0
-   vol1 = 10d0
+   vol1 = 1d0
    dts = 1d0
    
    reference_lateral_discharge_in = 0d0
@@ -101,8 +104,8 @@ subroutine test_get_lateral_load_and_discharge
    reference_lateral_discharge_in(1,nnlat(2)) = 3d0
    reference_lateral_discharge_in(1,nnlat(3)) = 3d0
    reference_lateral_discharge_out = 0d0
-   reference_lateral_discharge_out(2,nnlat(4)) = 5d0
-   reference_lateral_discharge_out(2,nnlat(5)) = 5d0
+   reference_lateral_discharge_out(2,nnlat(4)) = 0.5d0
+   reference_lateral_discharge_out(2,nnlat(5)) = 0.5d0
    
    call get_lateral_discharge(lateral_discharge_in,lateral_discharge_out)
    
@@ -113,11 +116,12 @@ subroutine test_get_lateral_load_and_discharge
       enddo
    enddo
    
-   transport_load = 0d0
+   transport_load(:,:) = 0d0
+   transport_sink(:,:) = 0d0
    incoming_lat_concentration(1,:,1) = (/31d0,20d0,0.23d0/)
    incoming_lat_concentration(1,:,2) = 25d0
    
-   call add_lateral_load(transport_load,lateral_discharge_in, (/1d0/), 1d0)
+   call add_lateral_load_and_sink(transport_load,transport_sink,lateral_discharge_in,lateral_discharge_out,vol1,tolerance)
    
    i_lateral = 1 ! only the first lateral is a source
    do i_const = 1,numconst

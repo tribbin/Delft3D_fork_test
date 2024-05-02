@@ -46,7 +46,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    use m_sferic,               only: jsferic, fcorio
    use m_flowtimes ,           only : dts, time1, tstart_user, tfac
    use m_flowparameters,       only: janudge, jasecflow, jatem, jaequili, epshu, epshs, testdryflood, icorio
-   use m_lateral,              only: numlatsg, balat, get_lateral_discharge, add_lateral_load, add_lateral_sink
+   use m_lateral,              only: numlatsg, balat, get_lateral_discharge, add_lateral_load_and_sink, apply_transport_is_used
    use m_missing,              only: dmiss
    use timers,                 only: timon, timstrt, timstop
 
@@ -154,13 +154,18 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 
    ! TODO AJV only when necessary, ie numlatsg > 0, apply_transport > 0)
    ! add lateral in- and outflow of constituents as souces and sinks
-   allocate(qin_over_laterals(numlatsg,ndxi),stat=ierr)
-   allocate(qout_over_laterals(numlatsg,ndxi),stat=ierr)
+   if (apply_transport_is_used) then 
+      allocate(qin_over_laterals(numlatsg,ndxi),stat=ierr)
+      allocate(qout_over_laterals(numlatsg,ndxi),stat=ierr)
 
-   call get_lateral_discharge(qin_over_laterals,qout_over_laterals)
-   call add_lateral_load(const_sour, qin_over_laterals, vol1, dtol)
-   call add_lateral_sink(const_sink, qout_over_laterals)
+      call get_lateral_discharge(qin_over_laterals,qout_over_laterals)
+      call add_lateral_loads_and_sinks(const_sour, const_sink, qin_over_laterals, qout_over_laterals, vol1, dtol)
 
+      deallocate(qin_over_laterals,stat=ierr)
+      deallocate(qout_over_laterals,stat=ierr)
+      
+   endif
+   
 !  sources
    do kk=1,Ndx
 
