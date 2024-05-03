@@ -195,7 +195,7 @@ contains
       valuestring = output_config%input_value
 
       do while (len_trim(valuestring) > 0)
-         ierr = parse_next_stat_type_from_valuestring(valuestring, item%operation_type, item%moving_average_window)
+         ierr = parse_next_stat_type_from_value_string(valuestring, item%operation_type, item%moving_average_window)
          if (ierr /= SO_NOERR) then
             goto 999
          else if (item%operation_type == SO_NONE) then

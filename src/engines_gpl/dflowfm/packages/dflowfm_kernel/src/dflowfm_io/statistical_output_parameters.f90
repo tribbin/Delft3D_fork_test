@@ -38,7 +38,8 @@ module m_statistical_output_parameters
    integer, parameter, public :: SO_INVALID_CONFIG = -1 !< Wrong value string provided in the MDU output configuration
    integer, parameter, public :: SO_EOR            = -2 !< end-of-record reached while reading a value string provided in the MDU output configuration (= no error)
 
-   public parse_next_stat_type_from_valuestring
+   public parse_next_stat_type_from_value_string
+   public output_requested_in_value_string
    contains
 
    !> Parse the a statistical operation type from the start of a value string.
@@ -46,20 +47,22 @@ module m_statistical_output_parameters
    !! The value string may contain multiple comma-separated operations: only the
    !! first one is read, and removed from the front of the input string, such that
    !! this function can be called in a loop until SO_EOR is reached.
-   function parse_next_stat_type_from_valuestring(valuestring, operation_type, moving_average_window) result(ierr)
+   function parse_next_stat_type_from_value_string(value_string, operation_type, moving_average_window) result(ierr)
       use string_module, only: str_token
 
-      character(len=*), intent(inout) :: valuestring       !< Valuestring in which to read the first entry. After reading, that piece will be removed from the front of the string, to enable repeated calls.
+      character(len=*), intent(inout) :: value_string      !< value_string in which to read the first entry. After reading, that piece will be removed from the front of the string, to enable repeated calls.
       integer,          intent(  out) :: operation_type    !< The parsed operation_type (one of SO_CURRENT/AVERAGE/MAX/MIN/ALL)
       integer,          intent(  out) :: moving_average_window !< Optional value for number of timesteps in moving average (only for max and min), 0 when unspecified in input.
-      integer                         :: ierr              !< Result status: SO_NOERR on successful read, SO_INVALID_CONFIG for invalid valuestring, SO_EOR if no further entries in string.
+      integer                         :: ierr              !< Result status: SO_NOERR on successful read, SO_INVALID_CONFIG for invalid value_string, SO_EOR if no further entries in string.
 
       character(len=16) :: operation_string
       integer :: len_token, iostat, i1, i2
 
       ierr = SO_NOERR
+      operation_type = SO_UNKNOWN
+      moving_average_window = 1
 
-      call str_token(valuestring, operation_string, DELIMS=', ')
+      call str_token(value_string, operation_string, DELIMS=', ')
 
       len_token = len_trim(operation_string)
 
@@ -81,7 +84,6 @@ module m_statistical_output_parameters
                return
             end if
          else
-            moving_average_window = 1 ! Needs minimum size one to allocate samples array etc.
             i1 = len_token+1
          end if
 
@@ -91,31 +93,50 @@ module m_statistical_output_parameters
             return
          end if
       end if
-   end function parse_next_stat_type_from_valuestring
+   end function parse_next_stat_type_from_value_string
 
    !> Determine integer operation_type given a string value.
-   function get_operation_type(valuestring) result(operation_type)
+   function get_operation_type(value_string) result(operation_type)
    use string_module, only: strcmpi
    use MessageHandling, only: msgbuf, err_flush
 
-      character(len=*) :: valuestring !<The input value string, typically stored in an output_config item
+      character(len=*) :: value_string !<The input value string, typically stored in an output_config item
       integer          :: operation_type !< Corresponding operation type (one of: SO_CURRENT/AVERAGE/MAX/MIN/NONE/UNKNOWN).
 
       operation_type = SO_UNKNOWN
 
-      if (strcmpi(valuestring, 'current') .or. strcmpi(valuestring, '1')) then
+      if (strcmpi(value_string, 'current') .or. strcmpi(value_string, '1')) then
          operation_type = SO_CURRENT
-      else if (strcmpi(valuestring, 'average')) then
+      else if (strcmpi(value_string, 'average')) then
          operation_type = SO_AVERAGE
-      else if (strcmpi(valuestring, 'max')) then
+      else if (strcmpi(value_string, 'max')) then
          operation_type = SO_MAX
-      else if (strcmpi(valuestring, 'min')) then
+      else if (strcmpi(value_string, 'min')) then
          operation_type = SO_MIN
-      else if (strcmpi(valuestring, 'none') .or. strcmpi(valuestring, '0')) then
+      else if (strcmpi(value_string, 'none') .or. strcmpi(value_string, '0')) then
          operation_type = SO_NONE
       else
-         write (msgbuf,'(a,i0,a,a,a)') 'invalid operation_type ', operation_type, '. Cannot parse input ', valuestring, '.'
+         write (msgbuf,'(a,i0,a,a,a)') 'invalid operation_type ', operation_type, '. Cannot parse input ', value_string, '.'
          call err_flush()
       end if
    end function get_operation_type
+
+   !> Test if any output is requested in the value string
+   function output_requested_in_value_string(value_string) result(res)
+      character(*), value :: value_string !< The string provided as a value in the MDU file
+      logical             :: res
+
+      integer :: ierr, operation_type, moving_average_window
+      res = .false.
+      do
+         ierr = parse_next_stat_type_from_value_string(value_string, operation_type, moving_average_window)
+         if (ierr /= SO_NOERR) then
+            ! Either an error or the end of the record. Other parts are responsible to catch these errors
+            exit
+         end if
+         if (operation_type /= SO_NONE .and. operation_type /= SO_UNKNOWN) then
+            res = .true.
+         end if
+      end do
+   end function output_requested_in_value_string
 end module m_statistical_output_parameters

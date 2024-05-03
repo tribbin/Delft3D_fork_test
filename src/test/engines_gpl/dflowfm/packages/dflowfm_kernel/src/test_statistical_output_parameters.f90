@@ -42,6 +42,9 @@ subroutine tests_statistical_output_parameters
     call test(test_parse_max, 'Tests parsing of mdu max string setting for statistical output')
     call test(test_parse_min, 'Tests parsing of mdu min string setting for statistical output')
     call test(test_parse_max_window, 'Tests parsing of mdu max(5) + current string setting for statistical output')
+    call test(test_parse_empty_string, 'Tests parsing of mdu empty string setting for statistical output')
+    call test(test_output_requested, 'Tests that data collection is  turned on when some output is requested')
+    call test(test_no_output_requested, 'Tests that data collection is not turned on when no output is requested')
 end subroutine tests_statistical_output_parameters
 
 subroutine test_parse_current()
@@ -49,8 +52,8 @@ subroutine test_parse_current()
    integer :: operation_type, moving_average_window, ierr
 
    input = 'current'
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, '', '')
    call assert_equal(operation_type, SO_CURRENT, '')
    call assert_equal(moving_average_window, 1, '')
@@ -61,8 +64,8 @@ subroutine test_parse_one()
    integer :: operation_type, moving_average_window, ierr
 
    input = '1'
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, '', '')
    call assert_equal(operation_type, SO_CURRENT, '')
    call assert_equal(moving_average_window, 1, '')
@@ -74,8 +77,8 @@ subroutine test_parse_none()
    integer :: operation_type, moving_average_window, ierr
 
    input = ', ,,none'
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, '', '')
    call assert_equal(operation_type, SO_NONE, '')
    call assert_equal(moving_average_window, 1, '')
@@ -87,8 +90,8 @@ subroutine test_parse_zero()
    integer :: operation_type, moving_average_window, ierr
 
    input = '  0'
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, '', '')
    call assert_equal(operation_type, SO_NONE, '')
    call assert_equal(moving_average_window, 1, '')
@@ -99,8 +102,8 @@ subroutine test_parse_max()
    integer :: operation_type, moving_average_window, ierr
 
    input = 'max'
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, '', '')
    call assert_equal(operation_type, SO_MAX, '')
    call assert_equal(moving_average_window, 1, '')
@@ -112,8 +115,8 @@ subroutine test_parse_min()
    integer :: operation_type, moving_average_window, ierr
 
    input = '  , min'
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, '', '')
    call assert_equal(operation_type, SO_MIN, '')
    call assert_equal(moving_average_window, 1, '')
@@ -125,15 +128,33 @@ subroutine test_parse_max_window()
    integer :: operation_type, moving_average_window, ierr
 
    input = 'max(5), current, min'
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, ', current, min', '')
    call assert_equal(operation_type, SO_MAX, '')
    call assert_equal(moving_average_window, 5, '')
-   ierr = parse_next_stat_type_from_valuestring(input, operation_type, moving_average_window)
-   call assert_equal(ierr, 0, '')
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_NOERR, '')
    call assert_equal(input, ', min', '')
    call assert_equal(operation_type, SO_CURRENT, '')
    call assert_equal(moving_average_window, 1, '')
 end subroutine test_parse_max_window
+
+subroutine test_parse_empty_string()
+   character(:), allocatable :: input
+   integer :: operation_type, moving_average_window, ierr
+   input = ''
+   ierr = parse_next_stat_type_from_value_string(input, operation_type, moving_average_window)
+   call assert_equal(ierr, SO_EOR, '')
+   call assert_equal(input, '', '')
+   call assert_equal(operation_type, SO_UNKNOWN, '')
+end subroutine
+
+subroutine test_output_requested()
+   call assert_equal(output_requested_in_value_string('none, max'), .true., '')
+end subroutine test_output_requested
+
+subroutine test_no_output_requested()
+   call assert_equal(output_requested_in_value_string('none, none'), .false., '')
+end subroutine test_no_output_requested
 end module test_statistical_output_parameters
