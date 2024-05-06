@@ -316,21 +316,6 @@ rem =======================
     if !ERRORLEVEL! NEQ 0 call :errorMessage
     goto :eof
 
-
-
-rem =========================================
-rem === set_dflowfm_interacter_link_flag ====
-rem =========================================
-:set_dflowfm_interacter_link_flag
-    rem # Ugly workaround to change "LinkLibraryDependencies=false" into "LinkLibraryDependencies=true"
-    %root%\src\third_party_open\commandline\bin\win32\sed.exe -e "s/LinkLibraryDependencies=\"false\"/LinkLibraryDependencies=\"true\"/g" "%root%\build_dflowfm_interacter\dflowfm_cli_exe\dflowfm-cli.vfproj" >"%root%\build_dflowfm_interacter\dflowfm_cli_exe\dflowfm-cli_new.vfproj"
-    del "%root%\build_dflowfm_interacter\dflowfm_cli_exe\dflowfm-cli.vfproj"  > del.log 2>&1
-    del /f/q del.log
-    rename %root%\build_dflowfm_interacter\dflowfm_cli_exe\dflowfm-cli_new.vfproj dflowfm-cli.vfproj
-    goto :eof
-
-
-
 rem =======================
 rem === insertCoverage ====
 rem =======================
@@ -377,9 +362,6 @@ rem =======================
     set currentWorkDir=%CD%
     devenv.com %~1.sln /Rebuild "Release|x64" 1>%currentWorkDir%\build_%~1.log 2>&1
     if !ERRORLEVEL! NEQ 0 call :errorMessage
-
-    rem # In build.log, replace "error" by TeamCity messages
-    %root%\src\third_party_open\commandline\bin\win32\sed.exe -e "/[Ee]rror[\:\ ]/s/^/\#\#teamcity\[buildStatus status\=\'FAILURE\' text\=\' /g;/buildStatus/s/$/\'\]/g" %currentWorkDir%\build_%~1.log
     goto :eof
 
 rem =======================
