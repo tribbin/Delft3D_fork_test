@@ -21,20 +21,20 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 
-module test_statistical_output_parameters
+module test_read_statistical_output
    use ftnunit
    use stdlib_kinds, only: dp
-   use m_statistical_output_parameters
+   use m_read_statistical_output
    implicit none
    private
 
    real(dp), parameter :: test_tolerance = 1e-3_dp
 
-   public :: tests_statistical_output_parameters
+   public :: tests_read_statistical_output
 
 contains
 
-subroutine tests_statistical_output_parameters
+subroutine tests_read_statistical_output
     call test(test_parse_current, 'Tests parsing of mdu current string setting for statistical output')
     call test(test_parse_one, 'Tests parsing of mdu one string setting as current for statistical output')
     call test(test_parse_none, 'Tests parsing of mdu none string setting for statistical output')
@@ -45,7 +45,7 @@ subroutine tests_statistical_output_parameters
     call test(test_parse_empty_string, 'Tests parsing of mdu empty string setting for statistical output')
     call test(test_output_requested, 'Tests that data collection is  turned on when some output is requested')
     call test(test_no_output_requested, 'Tests that data collection is not turned on when no output is requested')
-end subroutine tests_statistical_output_parameters
+end subroutine tests_read_statistical_output
 
 subroutine test_parse_current()
    character(:), allocatable :: input
@@ -157,4 +157,4 @@ end subroutine test_output_requested
 subroutine test_no_output_requested()
    call assert_equal(output_requested_in_value_string('none, none'), .false., '')
 end subroutine test_no_output_requested
-end module test_statistical_output_parameters
+end module test_read_statistical_output

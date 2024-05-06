@@ -22,7 +22,7 @@
 !!  rights reserved.
 
 !> Methods for reading the MDU keywords related to statistical output.
-module m_statistical_output_parameters
+module m_read_statistical_output
    implicit none
    private
 
@@ -139,4 +139,4 @@ module m_statistical_output_parameters
          end if
       end do
    end function output_requested_in_value_string
-end module m_statistical_output_parameters
+end module m_read_statistical_output

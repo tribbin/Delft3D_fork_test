@@ -28,7 +28,7 @@ module m_statistical_output
    use m_output_config
    use m_statistical_callback
    use m_statistical_output_types, only: t_output_variable_item, t_output_variable_set
-   use m_statistical_output_parameters
+   use m_read_statistical_output
    use m_temporal_statistics
    use stdlib_kinds, only: dp
 
