@@ -7427,9 +7427,9 @@ if (jamapsed > 0 .and. jased > 0 .and. stm_included) then
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_bl , UNC_LOC_S, bl, jabndnd=jabndnd_)
       else
          do j = 1,mxgr
-            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ero(:,j), UNC_LOC_CN, grainlay(j,:), jabndnd=jabndnd_)
+            ierr = unc_put_var_map_nodes(mapids%ncid, mapids%id_tsp, mapids%id_ero(:,j), grainlay(j,:), jabndnd_)
          enddo
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_bl , UNC_LOC_CN, zk, jabndnd=jabndnd_)
+         ierr = unc_put_var_map_nodes(mapids%ncid, mapids%id_tsp, mapids%id_zk , zk, jabndnd_)
       endif
 
       ! TODO: AvD: size(grainlay,2) is always correct (mxn), but we have a problem if jaceneqtr==2 and mxn/=numk,
@@ -8006,7 +8006,36 @@ if (jamapsed > 0 .and. jased > 0 .and. stm_included) then
    if (timon) call timstop (handle_extra(70))
 
 end subroutine unc_write_map_filepointer_ugrid
+!> Adds variable at nodes to map-file. 
+function unc_put_var_map_nodes(ncid, id_tsp, id_var, values, jabndnd_) result(ierr)
+   use network_data, only: kc, numk
+   use m_missing, only: dmiss
+   
+   integer, intent(in)                     :: ncid
+   type(t_unc_timespace_id),   intent(in)  :: id_tsp        !< Map file and other NetCDF ids.
+   integer,                    intent(in)  :: id_var(:)     !< Ids of variable to write values into, one for each submesh (1d/2d/3d if applicable).
+   double precision,           intent(in)  :: values(:)     !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
+   integer,                    intent(in)  :: jabndnd_
+   
+   integer                                 :: ierr
 
+   integer                                 :: nn
+   integer                                 :: numl2d
+   integer                                 :: numk2d
+   double precision, allocatable           :: array_on_file(:)
+   
+   allocate(array_on_file(numk))
+   array_on_file = dmiss
+
+   ! re-mapping by edge nodes is needed, use kc as table
+   do nn = 1,numk
+      if (kc(nn) > 0) then
+         array_on_file(kc(nn)) = values(nn)
+      endif
+   enddo
+   
+   ierr = unc_put_var_map(ncid, id_tsp, id_var , UNC_LOC_CN, array_on_file, jabndnd=jabndnd_)
+end function unc_put_var_map_nodes
 
 !> Writes map/flow data to an already opened netCDF dataset.
 !! The netnode and -links have been written already.
