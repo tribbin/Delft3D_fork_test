@@ -164,7 +164,7 @@ private
 
          call add_output_config(output_config_set, idx_his_hwq(i), 'Wrihis_water_quality_output', trim(name), &
                         trim(wq_user_outputs%names(i)), '', trim(wq_user_outputs%units(i)), UNC_LOC_STATION, &
-                        nc_atts = atts, nc_dim_ids = output_config_set%configs(IDX_HIS_HWQ_ABSTRACT)%nc_dim_ids)
+                        nc_attributes = atts, nc_dim_ids = output_config_set%configs(IDX_HIS_HWQ_ABSTRACT)%nc_dim_ids)
 
          output_config_set%configs(idx_his_hwq(i))%input_value = output_config_set%configs(IDX_HIS_HWQ_ABSTRACT)%input_value
       end do
@@ -249,7 +249,7 @@ private
       call add_output_config(output_config_set, idx_const(2*num-1),                                       &
             'Wrihis_crs_constituents', 'cross_section_'//trim(conststr), &
             'Flux (based on upwind flow cell) for '//trim(conststr), &
-            '', trim(unitstr), UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            '', trim(unitstr), UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
 
       output_config_set%configs(idx_const(2*num-1))%input_value =     &
             output_config_set%configs(IDX_HIS_OBSCRS_CONST_ABSTRACT)%input_value
@@ -264,7 +264,7 @@ private
       call add_output_config(output_config_set, idx_const(2*num),                                       &
             'Wrihis_crs_constituents', 'cross_section_cumulative_'//trim(conststr), &
             'Cumulative flux (based on upwind flow cell) for '//trim(conststr), &
-            '', trim(unitstr), UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            '', trim(unitstr), UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
 
       output_config_set%configs(idx_const(2*num))%input_value =     &
             output_config_set%configs(IDX_HIS_OBSCRS_CONST_ABSTRACT)%input_value
@@ -283,7 +283,7 @@ private
             call add_output_config(output_config_set, idx_const(NUMCONST_MDU*2 + 1 + lsed),                                       &
                   'Wrihis_constituents', 'cross_section_bedload_sediment_transport_'//trim(stmpar%sedpar%namsed(lsed)), &
                   'Cumulative bed load sediment transport for fraction '//trim(stmpar%sedpar%namsed(lsed)), &
-                  '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+                  '', 'kg', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
             output_config_set%configs(idx_const(NUMCONST_MDU*2 + 1 + lsed))%input_value =     &
                   output_config_set%configs(IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT)%input_value
          end do
@@ -298,7 +298,7 @@ private
             call add_output_config(output_config_set, idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1 + lsed), &
                   'Wrihis_constituents', 'cross_section_suspended_sediment_transport_'//trim(stmpar%sedpar%namsed(lsed)), &
                   'Cumulative suspended load sediment transport for fraction '//trim(stmpar%sedpar%namsed(lsed)), &
-                  '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+                  '', 'kg', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
             output_config_set%configs(idx_const(NUMCONST_MDU*2 + 1 + stmpar%lsedtot + 1 + lsed))%input_value =     &
                   output_config_set%configs(IDX_HIS_OBSCRS_SED_STRANSPORT_PERFRAC_ABSTRACT)%input_value
          end do
@@ -502,7 +502,7 @@ private
 
          ! add output config item
          call add_output_config(output_config_set, idx_wqbot_stations(i), 'Wrihis_wqbot', waqb_sub_name, &
-                        trim(wqbotnames(i)), '', unit_string, UNC_LOC_STATION, nc_dim_ids = nc_dims_2D, nc_atts = atts)
+                        trim(wqbotnames(i)), '', unit_string, UNC_LOC_STATION, nc_dim_ids = nc_dims_2D, nc_attributes = atts)
 
          output_config_set%configs(idx_wqbot_stations(i))%input_value = &
             output_config_set%configs(IDX_HIS_WQBOT_ABSTRACT)%input_value
@@ -545,7 +545,7 @@ private
 
          ! add output config item
          call add_output_config(output_config_set, idx_wqbot3D_stations(i), 'Wrihis_wqbot3d', waqb_sub_name, &
-                        trim(wqbotnames(i))//' (3D)', '', unit_string, UNC_LOC_STATION, nc_dim_ids = nc_dims_3D_center, nc_atts = atts)
+                        trim(wqbotnames(i))//' (3D)', '', unit_string, UNC_LOC_STATION, nc_dim_ids = nc_dims_3D_center, nc_attributes = atts)
 
          output_config_set%configs(idx_wqbot3D_stations(i))%input_value = &
             output_config_set%configs(IDX_HIS_WQBOT_ABSTRACT)%input_value
@@ -697,22 +697,22 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_SOURCE_SINK_PRESCRIBED_DISCHARGE,                   &
                      'Wrihis_sourcesink', 'source_sink_prescribed_discharge', '', '',                     &
-                     'm3 s-1', UNC_LOC_SOSI, nc_atts = atts(1:1), description='Write source-sink parameters to his file')
+                     'm3 s-1', UNC_LOC_SOSI, nc_attributes = atts(1:1), description='Write source-sink parameters to his file')
       call add_output_config(out_quan_conf_his, IDX_HIS_SOURCE_SINK_PRESCRIBED_SALINITY_INCREMENT,          &
                      'Wrihis_sourcesink', 'source_sink_prescribed_salinity_increment', '', '',                     &
-                     '1e-3', UNC_LOC_SOSI, nc_atts = atts(1:1)   )
+                     '1e-3', UNC_LOC_SOSI, nc_attributes = atts(1:1)   )
       call add_output_config(out_quan_conf_his, IDX_HIS_SOURCE_SINK_PRESCRIBED_TEMPERATURE_INCREMENT,       &
                      'Wrihis_sourcesink', 'source_sink_prescribed_temperature_increment', '', '',                     &
-                     'degC', UNC_LOC_SOSI, nc_atts = atts(1:1)   )
+                     'degC', UNC_LOC_SOSI, nc_attributes = atts(1:1)   )
       call add_output_config(out_quan_conf_his, IDX_HIS_SOURCE_SINK_CURRENT_DISCHARGE,                      &
                      'Wrihis_sourcesink', 'source_sink_current_discharge', '', '',                     &
-                     'm3 s-1', UNC_LOC_SOSI, nc_atts = atts(1:1)   )
+                     'm3 s-1', UNC_LOC_SOSI, nc_attributes = atts(1:1)   )
       call add_output_config(out_quan_conf_his, IDX_HIS_SOURCE_SINK_CUMULATIVE_VOLUME,                      &
                      'Wrihis_sourcesink', 'source_sink_cumulative_volume', 'Cumulative volume from the start time until current time at each source/sink', '',                     &
-                     'm3', UNC_LOC_SOSI, nc_atts = atts(1:1)   )
+                     'm3', UNC_LOC_SOSI, nc_attributes = atts(1:1)   )
       call add_output_config(out_quan_conf_his, IDX_HIS_SOURCE_SINK_DISCHARGE_AVERAGE ,                     &
                      'Wrihis_sourcesink', 'source_sink_discharge_average' , 'Average discharge in the past his-file output-interval at each source/sink', '',                     &
-                     'm3 s-1', UNC_LOC_SOSI, nc_atts = atts(1:1)   )
+                     'm3 s-1', UNC_LOC_SOSI, nc_attributes = atts(1:1)   )
 
       !
       ! HIS: run-up gauges
@@ -736,67 +736,67 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_DISCHARGE,                        &
                      'Wrihis_structure_gen', 'general_structure_discharge', 'Total discharge through general structure', '',                     &
-                     'm3 s-1', UNC_LOC_GENSTRU, nc_atts=atts(1:1), description='Write general structure parameters to his-file')
+                     'm3 s-1', UNC_LOC_GENSTRU, nc_attributes=atts(1:1), description='Write general structure parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_CREST_LEVEL,                      &
                      'Wrihis_structure_gen', 'general_structure_crest_level', 'Crest level of general structure', '',                     &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_GATE_LOWER_EDGE_LEVEL,            &
                      'Wrihis_structure_gen', 'general_structure_gate_lower_edge_level', 'Gate lower edge level of general structure', '',                     &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_GATE_OPENING_WIDTH,               &
                      'Wrihis_structure_gen', 'general_structure_gate_opening_width', 'Gate opening width of general structure', '',                     &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_S1UP,                             &
                      'Wrihis_structure_gen', 'general_structure_s1up', 'Water level upstream of general structure', 'sea_surface_height',   &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_S1DN,                             &
                      'Wrihis_structure_gen', 'general_structure_s1dn', 'Water level downstream of general structure', 'sea_surface_height',   &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_HEAD,                             &
                      'Wrihis_structure_gen', 'general_structure_head', 'Head difference across general structure', '',                     &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_FLOW_AREA,                        &
                      'Wrihis_structure_gen', 'general_structure_flow_area', 'Flow area at general structure', '',                     &
-                     'm2', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_VELOCITY,                         &
                      'Wrihis_structure_gen', 'general_structure_velocity', 'Velocity through general structure', '',                     &
-                     'm s-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_CREST_WIDTH,                      &
                      'Wrihis_structure_gen', 'general_structure_crest_width', 'Crest width of general structure', '',                     &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_DISCHARGE_THROUGH_GATE_OPENING,   &
                      'Wrihis_structure_gen', 'general_structure_discharge_through_gate_opening', 'Discharge through gate opening of general structure', '',                     &
-                     'm3 s-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm3 s-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_DISCHARGE_OVER_GATE,              &
                      'Wrihis_structure_gen', 'general_structure_discharge_over_gate', 'Discharge over gate of general structure', '',                     &
-                     'm3 s-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm3 s-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_DISCHARGE_UNDER_GATE,             &
                      'Wrihis_structure_gen', 'general_structure_discharge_under_gate', 'Discharge under gate of general structure', '',                     &
-                     'm3 s-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm3 s-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_GATE_OPENING_HEIGHT,              &
                      'Wrihis_structure_gen', 'general_structure_gate_opening_height', 'Gate opening height of general structure', '',                     &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_GATE_UPPER_EDGE_LEVEL,            &
                      'Wrihis_structure_gen', 'general_structure_gate_upper_edge_level', 'Gate upper edge level of general structure', '',                     &
-                     'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_VELOCITY_THROUGH_GATE_OPENING,    &
                      'Wrihis_structure_gen', 'general_structure_velocity_through_gate_opening', 'Velocity through gate opening of general structure', '',                     &
-                     'm s-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_VELOCITY_OVER_GATE,               &
                      'Wrihis_structure_gen', 'general_structure_velocity_over_gate', 'Velocity over gate of general structure', '',                     &
-                     'm s-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_VELOCITY_UNDER_GATE,              &
                      'Wrihis_structure_gen', 'general_structure_velocity_under_gate', 'Flow area in gate opening of general structure', '',                     &
-                     'm s-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_FLOW_AREA_IN_GATE_OPENING,        &
                      'Wrihis_structure_gen', 'general_structure_flow_area_in_gate_opening', 'Flow area in gate opening of general structure', '',                     &
-                     'm2', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_FLOW_AREA_OVER_GATE,              &
                      'Wrihis_structure_gen', 'general_structure_flow_area_over_gate', 'Flow area over gate of general structure', '',                     &
-                     'm2', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_FLOW_AREA_UNDER_GATE,             &
                      'Wrihis_structure_gen', 'general_structure_flow_area_under_gate', 'Flow area under gate of general structure', '',                     &
-                     'm2', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
 
       call ncu_set_att(atts(2), 'flag_values', (/ 0, 1, 2, 3, 4 /))
       call ncu_set_att(atts(3), 'flag_meanings', 'no_flow weir_free weir_submerged gate_free gate_submerged')
@@ -804,13 +804,13 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_STATE,                            &
                      'Wrihis_structure_gen', 'general_structure_state', 'Flow state at general structure', '',                     &
-                     '', UNC_LOC_GENSTRU, id_nc_type = id_nc_int, nc_atts = atts(1:5))
+                     '', UNC_LOC_GENSTRU, id_nc_type = id_nc_int, nc_attributes = atts(1:5))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_S1_ON_CREST,                      &
                      'Wrihis_structure_gen', 'general_structure_s1_on_crest', 'Water level on crest of general structure',          &
-                     '', 'm', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_FORCE_DIFFERENCE,                 &
                      'Wrihis_structure_gen', 'general_structure_force_difference', 'Force difference per unit at general structure',     &
-                     '', 'N m-1', UNC_LOC_GENSTRU, nc_atts = atts(1:1))
+                     '', 'N m-1', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
 
       !! Controllable dam (old .ext file)
       call add_output_config(out_quan_conf_his, IDX_HIS_CDAM_DISCHARGE,                                     &
@@ -831,37 +831,37 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_STRUCTURE_DISCHARGE,                           &
                      'Wrihis_structure_pump', 'pump_structure_discharge', 'Discharge through pump',                             &
-                     '', 'm3 s-1', UNC_LOC_PUMP, nc_atts = atts(1:1), description='Write pump parameters to his-file')
+                     '', 'm3 s-1', UNC_LOC_PUMP, nc_attributes = atts(1:1), description='Write pump parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_CAPACITY,                                      &
                      'Wrihis_structure_pump', 'pump_capacity', 'Capacity of pump',                                   &
-                     '', 'm3 s-1', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     '', 'm3 s-1', UNC_LOC_PUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_DISCHARGE_DIR,                                 &
                      'Wrihis_structure_pump', 'pump_discharge_dir', 'Discharge of pump w.r.t. pump orientation',          &
-                     '', 'm3 s-1', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     '', 'm3 s-1', UNC_LOC_PUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_S1UP,                                          &
                      'Wrihis_structure_pump', 'pump_s1up', 'Water level upstream of pump',                       &
-                     'sea_surface_height', 'm', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     'sea_surface_height', 'm', UNC_LOC_PUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_S1DN,                                          &
                      'Wrihis_structure_pump', 'pump_s1dn', 'Water level downstream of pump',                     &
-                     'sea_surface_height', 'm', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     'sea_surface_height', 'm', UNC_LOC_PUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_STRUCTURE_HEAD,                                &
                      'Wrihis_structure_pump', 'pump_structure_head', 'Head difference across pump structure',              &
-                     '', 'm', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_PUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_ACTUAL_STAGE,                                  &
                      'Wrihis_structure_pump', 'pump_actual_stage', 'Actual stage of pump',                               &
-                     '', '', UNC_LOC_PUMP, nc_atts = atts(1:1), id_nc_type = id_nc_int)
+                     '', '', UNC_LOC_PUMP, nc_attributes = atts(1:1), id_nc_type = id_nc_int)
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_HEAD,                                          &
                      'Wrihis_structure_pump', 'pump_head', 'Head difference in pumping direction',               &
-                     '', 'm', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_PUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_REDUCTION_FACTOR,                              &
                      'Wrihis_structure_pump', 'pump_reduction_factor', 'Reduction factor of pump',                           &
-                     '', '1', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     '', '1', UNC_LOC_PUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_S1_DELIVERY_SIDE,                              &
                      'Wrihis_structure_pump', 'pump_s1_delivery_side', 'Water level at delivery side of pump',               &
                      'sea_surface_height', 'm', UNC_LOC_PUMP)
       call add_output_config(out_quan_conf_his, IDX_HIS_PUMP_S1_SUCTION_SIDE,                               &
                      'Wrihis_structure_pump', 'pump_s1_suction_side', 'Water level at suction side of pump',                &
-                     'sea_surface_height', 'm', UNC_LOC_PUMP, nc_atts = atts(1:1))
+                     'sea_surface_height', 'm', UNC_LOC_PUMP, nc_attributes = atts(1:1))
 
       !! Gate (old .ext file)
       call add_output_config(out_quan_conf_his, IDX_HIS_GATE_DISCHARGE,                                     &
@@ -882,28 +882,28 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_DISCHARGE,                                  &
                      'Wrihis_structure_gate', 'gategen_discharge', 'gate discharge (via general structure)',             &
-                     '', 'm3 s-1', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     '', 'm3 s-1', UNC_LOC_GATE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_CREST_LEVEL,                                &
                      'Wrihis_structure_gate', 'gategen_crest_level', 'gate crest level (via general structure)',           &
-                     '', 'm', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_GATE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_CREST_WIDTH,                                &
                      'Wrihis_structure_gate', 'gategen_crest_width', 'gate crest width (via general structure)',           &
-                     '', 'm', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_GATE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_GATE_LOWER_EDGE_LEVEL,                      &
                      'Wrihis_structure_gate', 'gategen_gate_lower_edge_level', 'gate lower edge level (via general structure)',      &
-                     '', 'm', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_GATE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_FLOW_THROUGH_HEIGHT,                        &
                      'Wrihis_structure_gate', 'gategen_flow_through_height', 'gate flow through height (via general structure)',   &
-                     '', 'm', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_GATE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_GATE_OPENING_WIDTH,                         &
                      'Wrihis_structure_gate', 'gategen_gate_opening_width', 'gate opening width (via general structure)',         &
-                     '', 'm', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_GATE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_S1UP,                                       &
                      'Wrihis_structure_gate', 'gategen_s1up', 'gate water level up (via general structure)',        &
-                     'sea_surface_height', 'm', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     'sea_surface_height', 'm', UNC_LOC_GATE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_GATEGEN_S1DN,                                       &
                      'Wrihis_structure_gate', 'gategen_s1dn', 'gate water level down (via general structure)',      &
-                     'sea_surface_height', 'm', UNC_LOC_GATE, nc_atts = atts(1:1))
+                     'sea_surface_height', 'm', UNC_LOC_GATE, nc_attributes = atts(1:1))
 
 
       !! Weir (via general_structure)
@@ -911,28 +911,28 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_DISCHARGE,                                  &
                      'Wrihis_structure_weir', 'weirgen_discharge', 'Discharge through weir',                             &
-                     '', 'm3 s-1', UNC_LOC_WEIRGEN, nc_atts = atts(1:1), description='Write weir parameters to his-file')
+                     '', 'm3 s-1', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1), description='Write weir parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_CREST_LEVEL,                                &
                      'Wrihis_structure_weir', 'weirgen_crest_level', 'Crest level of weir',                                &
-                     '', 'm', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_CREST_WIDTH,                                &
                      'Wrihis_structure_weir', 'weirgen_crest_width', 'Crest width of weir',                                &
-                     '', 'm', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_S1UP,                                       &
                      'Wrihis_structure_weir', 'weirgen_s1up', 'Water level upstream of weir',                       &
-                     'sea_surface_height', 'm', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     'sea_surface_height', 'm', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_S1DN,                                       &
                      'Wrihis_structure_weir', 'weirgen_s1dn', 'Water level downstream of weir',                     &
-                     'sea_surface_height', 'm', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     'sea_surface_height', 'm', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_STRUCTURE_HEAD,                             &
                      'Wrihis_structure_weir', 'weirgen_structure_head', 'Head difference across weir',                        &
-                     '', 'm', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     '', 'm', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_VELOCITY,                                   &
                      'Wrihis_structure_weir', 'weirgen_velocity', 'Velocity through weir',                              &
-                     '', 'm s-1', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     '', 'm s-1', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_FLOW_AREA,                                  &
                      'Wrihis_structure_weir', 'weirgen_flow_area', 'Flow area at weir',                                  &
-                     '', 'm2', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     '', 'm2', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
 
       call ncu_set_att(atts(2), 'flag_values', (/ 0, 1, 2 /))
       call ncu_set_att(atts(3), 'flag_meanings', 'no_flow weir_free weir_submerged')
@@ -940,45 +940,45 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_STATE,                                      &
                      'Wrihis_structure_weir', 'weirgen_state', 'Flow state at weir',                                 &
-                     '', '', UNC_LOC_WEIRGEN, nc_atts = atts(1:5), id_nc_type = id_nc_int)
+                     '', '', UNC_LOC_WEIRGEN, nc_attributes = atts(1:5), id_nc_type = id_nc_int)
 
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_FORCE_DIFFERENCE,                           &
                      'Wrihis_structure_weir', 'weirgen_force_difference', 'Force difference per unit width at weir', '',                      &
-                     'N m-1', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     'N m-1', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_WEIRGEN_S1_ON_CREST,                                &
                      'Wrihis_structure_weir', 'weirgen_s1_on_crest', 'Water level on crest of weir', '',                      &
-                     'm', UNC_LOC_WEIRGEN, nc_atts = atts(1:1))
+                     'm', UNC_LOC_WEIRGEN, nc_attributes = atts(1:1))
 
       !! Orifice
       call ncu_set_att(atts(1), 'geometry', 'orifice_geom')
 
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_DISCHARGE,                                  &
                      'Wrihis_structure_orifice', 'orifice_discharge', 'Discharge through orifice', '',                      &
-                     'm3 s-1', UNC_LOC_ORIFICE, nc_atts = atts(1:1), description='Write orifice parameters to his-file')
+                     'm3 s-1', UNC_LOC_ORIFICE, nc_attributes = atts(1:1), description='Write orifice parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_CREST_LEVEL,                                &
                      'Wrihis_structure_orifice', 'orifice_crest_level', 'Crest level of orifice', '',                      &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_CREST_WIDTH,                                &
                      'Wrihis_structure_orifice', 'orifice_crest_width', 'Crest width of orifice', '',                      &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_GATE_LOWER_EDGE_LEVEL,                      &
                      'Wrihis_structure_orifice', 'orifice_gate_lower_edge_level', 'Gate lower edge level of orifice', '',                      &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_S1UP,                                       &
                      'Wrihis_structure_orifice', 'orifice_s1up', 'Water level upstream of orifice', 'sea_surface_height',    &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_S1DN,                                       &
                      'Wrihis_structure_orifice', 'orifice_s1dn', 'Water level downstream of orifice', 'sea_surface_height',    &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_GATE_OPENING_HEIGHT,                        &
                      'Wrihis_structure_orifice', 'orifice_gate_opening_height', 'Gate opening height of orifice', '',                      &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_HEAD,                                       &
                      'Wrihis_structure_orifice', 'orifice_head', 'Head difference across orifice', '',                      &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_FLOW_AREA,                                  &
                      'Wrihis_structure_orifice', 'orifice_flow_area', 'Flow area at orifice', '',                      &
-                     'm2', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
 
       call ncu_set_att(atts(2), 'flag_values', (/ 0, 1, 2, 3, 4/))
       call ncu_set_att(atts(3), 'flag_meanings', 'no_flow weir_free weir_submerged gate_free gate_submerged')
@@ -986,17 +986,17 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_STATE,                                      &
                      'Wrihis_structure_orifice', 'orifice_state', 'Flow state at orifice', '',                      &
-                     '', UNC_LOC_ORIFICE, nc_atts = atts(1:5), id_nc_type = id_nc_int)
+                     '', UNC_LOC_ORIFICE, nc_attributes = atts(1:5), id_nc_type = id_nc_int)
 
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_S1_ON_CREST,                                &
                      'Wrihis_structure_orifice', 'orifice_s1_on_crest', 'Water level on crest of orifice', '',                     &
-                     'm', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_VELOCITY,                                   &
                      'Wrihis_structure_orifice', 'orifice_velocity', 'Velocity through orifice', '',                     &
-                     'm s-1', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_ORIFICE_FORCE_DIFFERENCE,                           &
                      'Wrihis_structure_orifice', 'orifice_force_difference', 'Force difference per unit width at orifice', '',                     &
-                     'N m-1', UNC_LOC_ORIFICE, nc_atts = atts(1:1))
+                     'N m-1', UNC_LOC_ORIFICE, nc_attributes = atts(1:1))
 
       !! Bridge
       call ncu_set_att(atts(1), 'geometry', 'bridge_geom')
@@ -1006,59 +1006,59 @@ private
                      'm3 s-1', UNC_LOC_BRIDGE, description='Write bridge parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_S1UP,                                        &
                      'Wrihis_structure_bridge', 'bridge_s1up', 'Water level upstream of bridge', 'sea_surface_height',   &
-                     'm', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_S1DN,                                        &
                      'Wrihis_structure_bridge', 'bridge_s1dn', 'Water level downstream of bridge', 'sea_surface_height',   &
-                     'm', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_HEAD,                                        &
                      'Wrihis_structure_bridge', 'bridge_head', 'Head difference across bridge', '',                     &
-                     'm', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_FLOW_AREA,                                   &
                      'Wrihis_structure_bridge', 'bridge_flow_area', 'Flow area at bridge', '',                     &
-                     'm2', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_VELOCITY,                                    &
                      'Wrihis_structure_bridge', 'bridge_velocity', 'Velocity through bridge', '',                     &
-                     'm s-1', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_BLUP,                                        &
                      'Wrihis_structure_bridge', 'bridge_blup', 'Bed level at upstream of bridge', 'altitude',             &
-                     'm', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_BLDN,                                        &
                      'Wrihis_structure_bridge', 'bridge_bldn', 'Bed level at downstream of bridge', 'altitude',             &
-                     'm', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_BRIDGE_BL_ACTUAL,                                   &
                      'Wrihis_structure_bridge', 'bridge_bl_actual', 'Actual bed level of bridge (crest)', 'altitude',             &
-                     'm', UNC_LOC_BRIDGE, nc_atts = atts(1:1))
+                     'm', UNC_LOC_BRIDGE, nc_attributes = atts(1:1))
 
       !! Culvert
       call ncu_set_att(atts(1), 'geometry', 'culvert_geom')
 
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_DISCHARGE,                                  &
                      'Wrihis_structure_culvert', 'culvert_discharge', 'Discharge through culvert', '',                     &
-                     'm3 s-1', UNC_LOC_CULVERT, nc_atts = atts(1:1), description='Write culvert parameters to his-file')
+                     'm3 s-1', UNC_LOC_CULVERT, nc_attributes = atts(1:1), description='Write culvert parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_CREST_LEVEL,                                &
                      'Wrihis_structure_culvert', 'culvert_crest_level', 'Crest level of culvert', '',                     &
-                     'm', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_GATE_LOWER_EDGE_LEVEL,                      &
                      'Wrihis_structure_culvert', 'culvert_gate_lower_edge_level', 'Gate lower edge level of culvert', '',                     &
-                     'm', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_S1UP,                                       &
                      'Wrihis_structure_culvert', 'culvert_s1up', 'Water level upstream of culvert', 'sea_surface_height',   &
-                     'm', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_S1DN,                                       &
                      'Wrihis_structure_culvert', 'culvert_s1dn', 'Water level downstream of culvert', 'sea_surface_height',   &
-                     'm', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_GATE_OPENING_HEIGHT,                        &
                      'Wrihis_structure_culvert', 'culvert_gate_opening_height', 'Gate opening height of culvert', '',                     &
-                     'm', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_HEAD,                                       &
                      'Wrihis_structure_culvert', 'culvert_head', 'Head difference across culvert', '',                     &
-                     'm', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_FLOW_AREA,                                  &
                      'Wrihis_structure_culvert', 'culvert_flow_area', 'Flow area at culvert', '',                     &
-                     'm2', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_VELOCITY,                                   &
                      'Wrihis_structure_culvert', 'culvert_velocity', 'Velocity through culvert', '',                     &
-                     'm s-1', UNC_LOC_CULVERT, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_CULVERT, nc_attributes = atts(1:1))
 
       call ncu_set_att(atts(2), 'flag_values', (/ 0, 1, 2/))
       call ncu_set_att(atts(3), 'flag_meanings', 'no_flow culvert_free culvert_submerged')
@@ -1066,7 +1066,7 @@ private
       call ncu_set_att(atts(5), '_FillValue', int(dmiss))
       call add_output_config(out_quan_conf_his, IDX_HIS_CULVERT_STATE,                                      &
                      'Wrihis_structure_culvert', 'culvert_state', 'Flow state at culvert', '',                     &
-                     '', UNC_LOC_CULVERT, nc_atts = atts(1:5), id_nc_type = id_nc_int)
+                     '', UNC_LOC_CULVERT, nc_attributes = atts(1:5), id_nc_type = id_nc_int)
 
       !! Dambreak
       call add_output_config(out_quan_conf_his, IDX_HIS_DAMBREAK_S1UP,                                      &
@@ -1108,25 +1108,25 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_UNIWEIR_DISCHARGE,                                  &
                      'Wrihis_structure_uniWeir', 'uniweir_discharge', 'Discharge through uniweir', '',                     &
-                     'm3 s-1', UNC_LOC_UNIWEIR, nc_atts = atts(1:1), description='Write universal weir parameters to his-file')
+                     'm3 s-1', UNC_LOC_UNIWEIR, nc_attributes = atts(1:1), description='Write universal weir parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_UNIWEIR_CREST_LEVEL,                                &
                      'Wrihis_structure_uniWeir', 'uniweir_crest_level', 'Crest level of uniweir', '',                     &
-                     'm', UNC_LOC_UNIWEIR, nc_atts = atts(1:1))
+                     'm', UNC_LOC_UNIWEIR, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_UNIWEIR_S1UP,                                       &
                      'Wrihis_structure_uniWeir', 'uniweir_s1up', 'Water level upstream of uniweir', 'sea_surface_height',   &
-                     'm', UNC_LOC_UNIWEIR, nc_atts = atts(1:1))
+                     'm', UNC_LOC_UNIWEIR, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_UNIWEIR_S1DN,                                       &
                      'Wrihis_structure_uniWeir', 'uniweir_s1dn', 'Water level downstream of uniweir', 'sea_surface_height',   &
-                     'm', UNC_LOC_UNIWEIR, nc_atts = atts(1:1))
+                     'm', UNC_LOC_UNIWEIR, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_UNIWEIR_HEAD,                                       &
                      'Wrihis_structure_uniWeir', 'uniweir_head', 'Head difference across uniweir', '',                     &
-                     'm', UNC_LOC_UNIWEIR, nc_atts = atts(1:1))
+                     'm', UNC_LOC_UNIWEIR, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_UNIWEIR_FLOW_AREA,                                  &
                      'Wrihis_structure_uniWeir', 'uniweir_flow_area', 'Flow area at uniweir', '',                     &
-                     'm2', UNC_LOC_UNIWEIR, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_UNIWEIR, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_UNIWEIR_VELOCITY,                                   &
                      'Wrihis_structure_uniWeir', 'uniweir_velocity', 'Velocity through uniweir', '',                     &
-                     'm s-1', UNC_LOC_UNIWEIR, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_UNIWEIR, nc_attributes = atts(1:1))
 
       !! Compound structure
       call add_output_config(out_quan_conf_his, IDX_HIS_CMPSTRU_DISCHARGE,                                  &
@@ -1153,25 +1153,25 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_LONGCULVERT_DISCHARGE,                              &
                      'Wrihis_structure_longculvert', 'longculvert_discharge', 'Discharge through longculvert', '',                     &
-                     'm3 s-1', UNC_LOC_LONGCULVERT, nc_atts = atts(1:1), description='Write long culvert parameters to his-file')
+                     'm3 s-1', UNC_LOC_LONGCULVERT, nc_attributes = atts(1:1), description='Write long culvert parameters to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_LONGCULVERT_S1UP,                                   &
                      'Wrihis_structure_longculvert', 'longculvert_s1up', 'Water level upstream of longculvert', 'sea_surface_height',   &
-                     'm', UNC_LOC_LONGCULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_LONGCULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_LONGCULVERT_S1DN,                                   &
                      'Wrihis_structure_longculvert', 'longculvert_s1dn', 'Water level downstream of longculvert', 'sea_surface_height',   &
-                     'm', UNC_LOC_LONGCULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_LONGCULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_LONGCULVERT_HEAD,                                   &
                      'Wrihis_structure_longculvert', 'longculvert_head', 'Head difference across longculvert', '',                     &
-                     'm', UNC_LOC_LONGCULVERT, nc_atts = atts(1:1))
+                     'm', UNC_LOC_LONGCULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_LONGCULVERT_FLOW_AREA,                              &
                      'Wrihis_structure_longculvert', 'longculvert_flow_area', 'Flow area at longculvert', '',                     &
-                     'm2', UNC_LOC_LONGCULVERT, nc_atts = atts(1:1))
+                     'm2', UNC_LOC_LONGCULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_LONGCULVERT_VELOCITY,                               &
                      'Wrihis_structure_longculvert', 'longculvert_velocity', 'Velocity through longculvert', '',                     &
-                     'm s-1', UNC_LOC_LONGCULVERT, nc_atts = atts(1:1))
+                     'm s-1', UNC_LOC_LONGCULVERT, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_LONGCULVERT_VALVE_RELATIVE_OPENING,                         &
                      'Wrihis_structure_longculvert', 'longculvert_valve_relative_opening', 'Valve relative opening in long culvert', '',                     &
-                     '1', UNC_LOC_LONGCULVERT, nc_atts = atts(1:1))
+                     '1', UNC_LOC_LONGCULVERT, nc_attributes = atts(1:1))
 
       !
       ! HIS: Output on observation stations
@@ -1183,330 +1183,330 @@ private
       ! and turn off options in flow_init_statistical_output_his
       call add_output_config(out_quan_conf_his, IDX_HIS_WATERLEVEL,                                                  &
                      'Wrihis_waterlevel_s1', 'waterlevel', 'water level', 'sea_surface_height',              &
-                     'm', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write water level to his-file', &
+                     'm', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write water level to his-file', &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_BEDLEVEL,                                                    &
                      'Wrihis_bedlevel', 'bedlevel', 'bottom level', '',                                      &
-                     'm', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write bed level to his-file',   &
+                     'm', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write bed level to his-file',   &
                       nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_WATERDEPTH,                                                  &
                      'Wrihis_waterdepth', 'waterdepth', 'water depth', '',                                   &
-                     'm', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write water depth to his-file', &
+                     'm', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write water depth to his-file', &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_X_VELOCITY,                                                                                   &
                      'Wrihis_velocity_vector', 'x_velocity', 'flow element center velocity vector, x-component',                            &
-                     'sea_water_x_velocity', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write velocity vectors to his-file', &
+                     'sea_water_x_velocity', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write velocity vectors to his-file', &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_Y_VELOCITY,                                                        &
                      'Wrihis_velocity_vector', 'y_velocity', 'flow element center velocity vector, y-component', &
-                     'sea_water_y_velocity', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),                        &
+                     'sea_water_y_velocity', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                        &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_Z_VELOCITY,                                                                      &
                      'Wrihis_velocity_vector', 'z_velocity', 'vertical/upward component of flow element center velocity vector', &
-                     'upward_sea_water_velocity', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),                                 &
+                     'upward_sea_water_velocity', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                                 &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_DEPTH_AVERAGED_X_VELOCITY,                                                                     &
                      'Wrihis_velocity_vector', 'depth-averaged_x_velocity', 'flow element center depth-averaged velocity vector, x-component', &
-                     'sea_water_depth-averaged_x_velocity', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),                                     &
+                     'sea_water_depth-averaged_x_velocity', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                                     &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_DEPTH_AVERAGED_Y_VELOCITY,                                                                     &
                      'Wrihis_velocity_vector', 'depth-averaged_y_velocity', 'flow element center depth-averaged velocity vector, y-component', &
-                     'sea_water_depth-averaged_y_velocity', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),                                     &
+                     'sea_water_depth-averaged_y_velocity', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                                     &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_VELOCITY_MAGNITUDE,                                                                        &
                      'Wrihis_velocity', 'velocity_magnitude',                                                                              &
                      'velocity magnitude',                                                                                                 &
-                     'sea_water_speed', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write velocity magnitude to his-file', &
+                     'sea_water_speed', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write velocity magnitude to his-file', &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_VELOCITY_MAGNITUDE_EULERIAN,                    &
                      'Wrihis_velocity', 'velocity_magnitude',                                   &
                      'Eulerian velocity magnitude',                                             &
-                     'sea_water_eulerian_speed', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_water_eulerian_speed', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_DISCHARGE_MAGNITUDE,                                            &
                      'Wrihis_discharge', 'discharge_magnitude',                                                 &
                      'average discharge magnitude',                                                             &
-                     'water_volume_transport_in_river_channel', 'm3 s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'water_volume_transport_in_river_channel', 'm3 s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      description='Write discharge magnitude to his-file', nc_dim_ids = nc_dims_3D_center)
 
       ! Turbulence model
       call add_output_config(out_quan_conf_his, IDX_HIS_TKE,                                                                   &
                      'Wrihis_turbulence', 'tke', 'turbulent kinetic energy', '',                                       &
-                     'm2 s-2', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write k, eps and vicww to his-file', &
+                     'm2 s-2', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write k, eps and vicww to his-file', &
                      nc_dim_ids = nc_dims_3D_interface_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_VICWW,                                       &
                      'Wrihis_turbulence', 'vicww' , 'turbulent vertical eddy viscosity', '', &
-                     'm2 s-1''', UNC_LOC_STATION, nc_atts = atts(1:1),                       &
+                     'm2 s-1''', UNC_LOC_STATION, nc_attributes = atts(1:1),                       &
                      nc_dim_ids = nc_dims_3D_interface_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_EPS,                                 &
                      'Wrihis_turbulence', 'eps', 'turbulent energy dissipation', '', &
-                     'm2 s-3', UNC_LOC_STATION, nc_atts = atts(1:1),                 &
+                     'm2 s-3', UNC_LOC_STATION, nc_attributes = atts(1:1),                 &
                      nc_dim_ids = nc_dims_3D_interface_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_TAU,                         &
                      'Wrihis_turbulence', 'tau', 'turbulent time scale', '', &
-                     's-1', UNC_LOC_STATION, nc_atts = atts(1:1),            &
+                     's-1', UNC_LOC_STATION, nc_attributes = atts(1:1),            &
                      nc_dim_ids = nc_dims_3D_interface_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_RICH,               &
                      'Richardsononoutput', 'rich', 'Richardson Nr', &
-                     '', '-', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     '', '-', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_3D_interface_center)
 
       ! Gravity + buoyancy
       call add_output_config(out_quan_conf_his, IDX_HIS_SALINITY,                                                    &
                      'Wrihis_salinity', 'salinity', '', 'sea_water_salinity',                                &
-                     '1e-3', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write salinity to his-file', &
+                     '1e-3', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write salinity to his-file', &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_TEMPERATURE,                                        &
                      'Wrihis_temperature', 'temperature', '', 'sea_water_temperature',&
-                     'degC', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write temperature to his-file', &
+                     'degC', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write temperature to his-file', &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_POTENTIAL_DENSITY,                                  &
                      'Wrihis_density', 'potential_density', 'potential_density', '',                     &
-                     'kg m-3', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write density to his-file', &
+                     'kg m-3', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write density to his-file', &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_DENSITY,             &
                      'Wrihis_density', 'density', 'density', '',     &
-                     'kg m-3', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'kg m-3', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_BRUNT_VAISALA_N2,                  &
                      'Wrihis_density', 'Brunt_Vaisala_N2', 'Brunt_Vaisala_N2', '', &
-                     '1/s2', UNC_LOC_STATION, nc_atts = atts(1:1),                 &
+                     '1/s2', UNC_LOC_STATION, nc_attributes = atts(1:1),                 &
                      nc_dim_ids = nc_dims_3D_interface_center)
 
       ! Wave model
       call add_output_config(out_quan_conf_his, IDX_HIS_HWAV,                                                       &
                      'Wrihis_waves', 'hwav', 'Significant wave height',                                     &
-                     'sea_surface_wave_significant_wave_height', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_surface_wave_significant_wave_height', 'm', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      description='Write wave data to his-file', nc_dim_ids = nc_dims_2D)
       ! TODO: hwav sig vs. rms
       call add_output_config(out_quan_conf_his, IDX_HIS_TWAV,                                      &
                      'Wrihis_waves', 'twav', 'Wave period',                                &
-                     'sea_surface_wave_period', 's', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_surface_wave_period', 's', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_PHIWAV,                                                     &
                      'Wrihis_waves', 'phiwav', 'Wave from direction',                                       &
-                     'sea_surface_wave_from_direction', 'deg from N', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_surface_wave_from_direction', 'deg from N', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_RLABDA,                                    &
                      'Wrihis_waves', 'rlabda', 'Wave length',                              &
-                     'sea_surface_wave_length', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_surface_wave_length', 'm', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_R,                                                       &
                      'Wrihis_waves', 'R', 'Roller energy per square meter',                              &
-                     'sea_surface_bulk_roller_energy', 'J m-2', UNC_LOC_STATION, nc_atts = atts(1:1),    &
+                     'sea_surface_bulk_roller_energy', 'J m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),    &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_UORB,                                                    &
                      'Wrihis_waves', 'uorb', 'Orbital velocity',                                         &
-                     'sea_surface_wave_orbital_velocity', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_surface_wave_orbital_velocity', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_USTOKES,                                               &
                      'Wrihis_waves', 'ustokes', 'Stokes drift, x-component',                           &
-                     'sea_surface_wave_stokes_drift_x', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_surface_wave_stokes_drift_x', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_VSTOKES,                                               &
                      'Wrihis_waves', 'vstokes', 'Stokes drift, y-component',                           &
-                     'sea_surface_wave_stokes_drift_y', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'sea_surface_wave_stokes_drift_y', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_3D_center)
       call add_output_config(out_quan_conf_his, IDX_HIS_TAUSX,                                                           &
                      'Wrihis_taucurrent', 'tausx',                                                               &
                      'Mean bottom shear stress vector, x-component',                                             &
-                     'mean_bottom_shear_stress vector, x-component', 'Pa', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'mean_bottom_shear_stress vector, x-component', 'Pa', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      description='Write mean bed shear stress to his-file', nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_TAUSY,                                                           &
                      'Wrihis_taucurrent', 'tausy',                                                               &
                      'Mean bottom shear stress vector, y-component',                                             &
-                     'mean_bottom_shear_stress vector, y-component', 'Pa', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'mean_bottom_shear_stress vector, y-component', 'Pa', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
 
       ! Meteo
 
       call add_output_config(out_quan_conf_his, IDX_HIS_PATM, 'Wrihis_wind', 'patm', 'atmospheric pressure', '', &
-                     'N m-2', UNC_LOC_STATION, nc_atts = atts(1:1), description = 'Write wind velocities to his-file', &
+                     'N m-2', UNC_LOC_STATION, nc_attributes = atts(1:1), description = 'Write wind velocities to his-file', &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_WINDX,                                                               &
                      'Wrihis_wind', 'windx', 'velocity of air on flow element center, x-component', 'eastward_wind', &
-                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), &
+                     'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_WINDX_SFERIC,                                                 &
                      'Wrihis_wind', 'windx', 'velocity of air on flow element center, x-component', 'x_wind', &
-                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),                                           &
+                     'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                                           &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_WINDY,                                                                &
                      'Wrihis_wind', 'windy', 'velocity of air on flow element center, y-component', 'northward_wind', &
-                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),                                                   &
+                     'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                                                   &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_WINDY_SFERIC,                                                 &
                      'Wrihis_wind', 'windy', 'velocity of air on flow element center, y-component', 'y_wind', &
-                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),                                           &
+                     'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                                           &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_RAIN,                                                                 &
                      'Wrihis_rain', 'rain', 'precipitation depth per time unit', 'lwe_precipitation_rate',            &
-                     'mm day-1', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write precipitation to his-file', &
+                     'mm day-1', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write precipitation to his-file', &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_INFILTRATION_CAP,                                                   &
                      'Wrihis_infiltration', 'infiltration_cap', 'Infiltration capacity', '',                        &
-                     'mm hr-1', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write infiltration to his-file', &
+                     'mm hr-1', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write infiltration to his-file', &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_INFILTRATION_INFILTRATION_ACTUAL,                  &
                      'Wrihis_infiltration', 'infiltration_actual', 'Actual infiltration rate', '', &
-                     'mm hr-1', UNC_LOC_STATION, nc_atts = atts(1:1),                              &
+                     'mm hr-1', UNC_LOC_STATION, nc_attributes = atts(1:1),                              &
                      nc_dim_ids = nc_dims_2D)
       
       ! Variable (computed) air density
       call add_output_config(out_quan_conf_his, IDX_HIS_AIR_DENSITY,                  &
                      'Wrihis_airdensity', 'rhoair', 'air density', '', &
-                     'kg m-3', UNC_LOC_STATION, nc_atts = atts(1:1),                              &
+                     'kg m-3', UNC_LOC_STATION, nc_attributes = atts(1:1),                              &
                      nc_dim_ids = nc_dims_2D)
 
       ! Heat flux model
       call add_output_config(out_quan_conf_his, IDX_HIS_WIND,                                                            &
                      'Wrihis_heat_fluxes', 'wind'  , 'windspeed', '',                                            &
-                     'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write heat fluxes to his-file', &
+                     'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write heat fluxes to his-file', &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_TAIR,                       &
                      'Wrihis_heat_fluxes', 'Tair'  , 'air temperature', '', &
-                     'degC', UNC_LOC_STATION, nc_atts = atts(1:1),          &
+                     'degC', UNC_LOC_STATION, nc_attributes = atts(1:1),          &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_RHUM,                         &
                      'Wrihis_heat_fluxes', 'rhum'  , 'relative humidity', '', &
-                     '', UNC_LOC_STATION, nc_atts = atts(1:1),                &
+                     '', UNC_LOC_STATION, nc_attributes = atts(1:1),                &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_CLOU,                  &
                      'Wrihis_heat_fluxes', 'clou'  , 'cloudiness', '', &
-                     ' ', UNC_LOC_STATION, nc_atts = atts(1:1),        &
+                     ' ', UNC_LOC_STATION, nc_attributes = atts(1:1),        &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_QSUN,                    &
                      'Wrihis_heat_fluxes', 'Qsun'  , 'solar influx', '', &
-                     'W m-2', UNC_LOC_STATION, nc_atts = atts(1:1),      &
+                     'W m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),      &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_QEVA,                             &
                      'Wrihis_heat_fluxes', 'Qeva'  , 'evaporative heat flux', '', &
-                     'W m-2', UNC_LOC_STATION, nc_atts = atts(1:1),               &
+                     'W m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),               &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_QCON,                          &
                      'Wrihis_heat_fluxes', 'Qcon'  , 'sensible heat flux', '', &
-                     'W m-2', UNC_LOC_STATION, nc_atts = atts(1:1),            &
+                     'W m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),            &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_QLONG,                               &
                      'Wrihis_heat_fluxes', 'Qlong' , 'long wave back radiation', '', &
-                     'W m-2', UNC_LOC_STATION, nc_atts = atts(1:1),                  &
+                     'W m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),                  &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_QFREVA,                                           &
                      'Wrihis_heat_fluxes', 'Qfreva', 'free convection evaporative heat flux', '', &
-                     'W m-2', UNC_LOC_STATION, nc_atts = atts(1:1),                               &
+                     'W m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),                               &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_QFRCON,                                        &
                      'Wrihis_heat_fluxes', 'Qfrcon', 'free convection sensible heat flux', '', &
-                     'W m-2', UNC_LOC_STATION, nc_atts = atts(1:1),                            &
+                     'W m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),                            &
                      nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_QTOT,                       &
                      'Wrihis_heat_fluxes', 'Qtot'  , 'total heat flux', '', &
-                     'W m-2', UNC_LOC_STATION, nc_atts = atts(1:1),         &
+                     'W m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),         &
                      nc_dim_ids = nc_dims_2D)
 
       ! Sediment model
       call add_output_config(out_quan_conf_his, IDX_HIS_SED,                                                                         &
                      'Wrihis_sediment', 'sed', 'Sediment concentration',                                                     &
-                     '', 'kg m-3', UNC_LOC_STATION, nc_atts = atts(1:1), description='Write sediment transport to his-file', &
+                     '', 'kg m-3', UNC_LOC_STATION, nc_attributes = atts(1:1), description='Write sediment transport to his-file', &
                      nc_dim_ids = t_nc_dim_ids(laydim = .true., statdim = .true., sedsusdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_WS,                         &
                      'Wrihis_sediment', 'ws', 'Sediment settling velocity', &
-                     '', 'm s-1', UNC_LOC_STATION, nc_atts = atts(1:1),     &
+                     '', 'm s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),     &
                      nc_dim_ids = t_nc_dim_ids(laydim_interface_center = .true., statdim = .true., sedsusdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_SEDDIF,                          &
                      'Wrihis_sediment', 'seddif', 'Sediment vertical diffusion', &
-                     '', 'm2 s-1', UNC_LOC_STATION, nc_atts = atts(1:1),         &
+                     '', 'm2 s-1', UNC_LOC_STATION, nc_attributes = atts(1:1),         &
                      nc_dim_ids = t_nc_dim_ids(laydim_interface_center = .true., statdim = .true., sedsusdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_BODSED,                                                &
                      'Wrihis_sediment', 'bodsed', 'Available sediment mass in the bed',                   &
-                     '', 'kg m-2', UNC_LOC_STATION, nc_atts = atts(1:1),nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true., timedim = .true.))
+                     '', 'kg m-2', UNC_LOC_STATION, nc_attributes = atts(1:1),nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_DPSED,                                                 &
                      'Wrihis_sediment', 'dpsed', 'Sediment thickness in the bed',                         &
-                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = nc_dims_2D)
+                     '', 'm', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = nc_dims_2D)
        call add_output_config(out_quan_conf_his, IDX_HIS_TAUB,                 &
                      'wrihis_sediment', 'taub',              &
                      'Bed shear stress for morphology',             &
-                     '', 'Pa', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = nc_dims_2D)
+                     '', 'Pa', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = nc_dims_2D)
        call add_output_config(out_quan_conf_his, IDX_HIS_SBCX,                 &
                      'wrihis_sediment', 'sbcx',              &
                      'Current related bedload transport, x-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
        call add_output_config(out_quan_conf_his, IDX_HIS_SBCY,                 &
                      'wrihis_sediment', 'sbcy',              &
                      'Current related bedload transport, y-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_SBWX,                 &
                      'wrihis_sediment', 'sbwx',              &
                      'Wave related bedload transport, x-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
        call add_output_config(out_quan_conf_his, IDX_HIS_SBWY,                 &
                      'wrihis_sediment', 'sbwy',              &
                      'Wave related bedload transport, y-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_SSWX,                 &
                      'wrihis_sediment', 'sswx',              &
                      'Wave related suspended transport, x-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
        call add_output_config(out_quan_conf_his, IDX_HIS_SSWY,                 &
                      'wrihis_sediment', 'sswy',              &
                      'Wave related suspended transport, y-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_SSCX,                 &
                      'wrihis_sediment', 'sscx',              &
                      'Current related suspended transport, x-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
        call add_output_config(out_quan_conf_his, IDX_HIS_SSCY,                 &
                      'wrihis_sediment', 'sscy',              &
                      'Current related suspended transport, y-component',             &
-                     '', transpunit, UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', transpunit, UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true.,sedtotdim = .true., timedim = .true.))
 
        ! Bed composition variables
        call add_output_config(out_quan_conf_his, IDX_HIS_MSED,                 &
                      'wrihis_sediment', 'msed',              &
                      'Available sediment mass in a layer of the bed',             &
-                     '', 'kg m-2', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true.,sedtotdim = .true., timedim = .true.))
+                     '', 'kg m-2', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true.,sedtotdim = .true., timedim = .true.))
        call add_output_config(out_quan_conf_his, IDX_HIS_THLYR,                 &
                      'wrihis_sediment', 'thlyr',              &
                      'Thickness of a layer of the bed',             &
-                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., timedim = .true.))
+                     '', 'm', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., timedim = .true.))
        call add_output_config(out_quan_conf_his, IDX_HIS_POROS,                 &
                      'wrihis_sediment', 'poros',              &
                      'Porosity of a layer of the bed',             &
-                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., timedim = .true.))
+                     '', '', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., timedim = .true.))
        call add_output_config(out_quan_conf_his, IDX_HIS_LYRFRAC,                 &
                      'wrihis_sediment', 'lyrfrac',              &
                      'Volume fraction in a layer of the bed',             &
-                     '', 'm', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., sedtotdim = .true., timedim = .true.))
+                     '', 'm', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(nlyrdim=.true.,  statdim = .true., sedtotdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_FRAC,                 &
                      'wrihis_sediment', 'frac',              &
                      'Availability fraction in top layer',             &
-                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true., timedim = .true.))
+                     '', '', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true., timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_MUDFRAC,                 &
                      'wrihis_sediment', 'mudfrac',              &
                      'Mud fraction in top layer',             &
-                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = nc_dims_2D)
+                     '', '', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_SANDFRAC,                 &
                      'wrihis_sediment', 'sandfrac',              &
                      'Sand fraction in top layer',             &
-                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = nc_dims_2D)
+                     '', '', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = nc_dims_2D)
       call add_output_config(out_quan_conf_his, IDX_HIS_FIXFRAC,                 &
                      'wrihis_sediment', 'fixfac',              &
                      'Reduction factor due to limited sediment thickness',             &
-                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true. , timedim = .true.))
+                     '', '', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true. , timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_HIDEXP,                 &
                      'wrihis_sediment', 'hidexp',              &
                      'Hiding and exposure factor',             &
-                     '', '', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true. , timedim = .true.))
+                     '', '', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedtotdim = .true. , timedim = .true.))
       call add_output_config(out_quan_conf_his, IDX_HIS_MFLUFF,                 &
                      'wrihis_sediment', 'mfluff',              &
                      'Sediment mass in fluff layer',             &
-                     '', 'kg', UNC_LOC_STATION, nc_atts = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedsusdim = .true. , timedim = .true.))
+                     '', 'kg', UNC_LOC_STATION, nc_attributes = atts(1:1), nc_dim_ids = t_nc_dim_ids(statdim = .true., sedsusdim = .true. , timedim = .true.))
 
       ! The following output value is an abstract entry representing all water quality outputs.
       ! The actual output variables will only be added later, during init_fm_statistical_output_his().
       ! This is necessary for reading the key from the MDU file and providing the input value.
       call add_output_config(out_quan_conf_his, IDX_HIS_HWQ_ABSTRACT, 'Wrihis_water_quality_output', 'water_quality_output_abstract', &
-                     '', '', '-', UNC_LOC_STATION, nc_atts = atts(1:1), description = 'Write all water quality outputs to his-file', &
+                     '', '', '-', UNC_LOC_STATION, nc_attributes = atts(1:1), description = 'Write all water quality outputs to his-file', &
                      nc_dim_ids = nc_dims_3D_center)
 
       call add_output_config(out_quan_conf_his, IDX_HIS_TRACERS_ABSTRACT, &
@@ -1527,16 +1527,16 @@ private
 
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_DISCHARGE,                                       &
                      'Wrihis_crs_flow', 'cross_section_discharge', 'Discharge through observation cross section',    &
-                     '', 'm3 s-1', UNC_LOC_OBSCRS, nc_atts = atts(1:1), description='Write data on observation cross sections to his-file')
+                     '', 'm3 s-1', UNC_LOC_OBSCRS, nc_attributes = atts(1:1), description='Write data on observation cross sections to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_DISCHARGE_CUMUL,                                       &
                      'Wrihis_crs_flow', 'cross_section_cumulative_discharge', 'Cumulative volume transport through observation cross section',    &
-                     '', 'm3', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+                     '', 'm3', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_AREA,                                       &
                      'Wrihis_crs_flow', 'cross_section_area', 'Wet area of observation cross section',    &
-                     '', 'm2', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+                     '', 'm2', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_VELOCITY,                                       &
                      'Wrihis_crs_flow', 'cross_section_velocity', 'Space-averaged velocity through observation cross section',    &
-                     '', 'm s-1', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+                     '', 'm s-1', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
       ! Disable writing cross_section_velocity_avg (see UNST-1148), because in a parallel run, it is impossible to compute
       ! summation of area (denominator) at each computational time step in a cheap way, i.e. without communication between
       ! partitions. @see subroutines: sumvalueOnCrossSections, updateValuesOnCrossSections
@@ -1546,28 +1546,28 @@ private
       ! and will only be added later, during init_fm_statistical_output_his().
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_CONST_ABSTRACT,                                       &
                      'Wrihis_crs_constituents', 'cross_section_const_abstract', '',                                                                 &
-                     '', '-', UNC_LOC_OBSCRS, nc_atts = atts(1:1), description='Write all transported constituents to his-file')
+                     '', '-', UNC_LOC_OBSCRS, nc_attributes = atts(1:1), description='Write all transported constituents to his-file')
 
       ! Sediment model nr. 4
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_SED_BTRANSPORT,                                       &
             'Wrihis_crs_sediment', 'cross_section_bedload_sediment_transport', &
             'Cumulative bed load sediment transport', &
-            '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            '', 'kg', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
 
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_SED_STRANSPORT,                                       &
             'Wrihis_crs_sediment', 'cross_section_suspended_sediment_transport', &
             'Cumulative suspended load sediment transport', &
-            '', 'kg', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            '', 'kg', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
 
       ! The following two output values are abstract entries representing all bedload and suspended
       ! sediment fractions. The fractions that are actually available depend on the model initialization
       ! and will only be added later, during init_fm_statistical_output_his().
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_SED_BTRANSPORT_PERFRAC_ABSTRACT,                                       &
             'Wrihis_crs_sediment', 'cross_section_bedload_sediment_transport_abstract', '', &
-            '', '-', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            '', '-', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_OBSCRS_SED_STRANSPORT_PERFRAC_ABSTRACT,                                       &
             'Wrihis_crs_sediment', 'cross_section_suspended_sediment_transport_abstract', '', &
-            '', '-', UNC_LOC_OBSCRS, nc_atts = atts(1:1))
+            '', '-', UNC_LOC_OBSCRS, nc_attributes = atts(1:1))
 
       !
       ! HIS: Lateral discharges
@@ -1577,49 +1577,49 @@ private
       call add_output_config(out_quan_conf_his, IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_INSTANTANEOUS,         &
                      'Wrihis_lateral', 'lateral_prescribed_discharge_instantaneous',      &
                      'Prescribed discharge through lateral at current time step (instantaneous)',                   &
-                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_atts = atts(1:1), description='Write lateral data to his-file')
+                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_attributes = atts(1:1), description='Write lateral data to his-file')
       call add_output_config(out_quan_conf_his, IDX_HIS_LATERAL_PRESCRIBED_DISCHARGE_AVERAGE,               &
                      'Wrihis_lateral', 'lateral_prescribed_discharge_average',            &
                      'Prescribed discharge through lateral, average over the last history time interval',           &
-                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_atts = atts(1:1))
+                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_LATERAL_REALIZED_DISCHARGE_INSTANTANEOUS,           &
                      'Wrihis_lateral', 'lateral_realized_discharge_instantaneous',        &
                      'Realized discharge through lateral at current time step (instantaneous)',                     &
-                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_atts = atts(1:1))
+                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_LATERAL_REALIZED_DISCHARGE_AVERAGE,                 &
                      'Wrihis_lateral', 'lateral_realized_discharge_average',              &
                      'Realized discharge through lateral, average over the last history time interval',             &
-                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_atts = atts(1:1))
+                     '', 'm3 s-1', UNC_LOC_LATERAL, nc_attributes = atts(1:1))
       
       ! HIS: Dredge & Dump variables
       !call add_output_config(out_quan_conf_his, IDX_HIS_DRED_AREA_NAME,                 &
       !               'Wrihis_dred', 'dredge_area_name',              &
       !               'dredge area identifier',             &
-      !               '', '', UNC_LOC_DREDGE, nc_atts = atts(1:1))
+      !               '', '', UNC_LOC_DREDGE, nc_attributes = atts(1:1))
       !call add_output_config(out_quan_conf_his, IDX_HIS_DUMP_AREA_NAME,                 &
       !               'Wrihis_dred', 'dump_area_name',              &
       !               'dump area identifier',             &
-      !               '', '', UNC_LOC_DUMP, nc_atts = atts(1:1))
+      !               '', '', UNC_LOC_DUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_DRED_LINK_DISCHARGE,                 &
                      'Wrihis_dred', 'dred_link_discharge',              &
                      'Cumulative dredged material transported via links per fraction',             &
-                     '', 'm3', UNC_LOC_DRED_LINK, nc_atts = atts(1:1))
+                     '', 'm3', UNC_LOC_DRED_LINK, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_DRED_DISCHARGE,                 &
                      'Wrihis_dred', 'dred_discharge',              &
                      'Cumulative dredged material for dredge areas',             &
-                     '', 'm3', UNC_LOC_DREDGE, nc_atts = atts(1:1))
+                     '', 'm3', UNC_LOC_DREDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_DUMP_DISCHARGE,                 &
                      'Wrihis_dred', 'dump_discharge',              &
                      'Cumulative dredged material for dump areas',             &
-                     '', 'm3', UNC_LOC_DUMP, nc_atts = atts(1:1))
+                     '', 'm3', UNC_LOC_DUMP, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_DRED_TIME_FRAC,                 &
                      'Wrihis_dred', 'dred_time_frac',              &
                      'Time fraction spent dredging',             &
-                     '', '', UNC_LOC_DREDGE, nc_atts = atts(1:1))
+                     '', '', UNC_LOC_DREDGE, nc_attributes = atts(1:1))
       call add_output_config(out_quan_conf_his, IDX_HIS_PLOUGH_TIME_FRAC,                 &
                      'Wrihis_dred', 'plough_time_frac',              &
                      'Time fraction spent ploughing',             &
-                     '', '', UNC_LOC_DREDGE, nc_atts = atts(1:1))
+                     '', '', UNC_LOC_DREDGE, nc_attributes = atts(1:1))
       !
       ! MAP:
       !
@@ -1675,11 +1675,11 @@ private
       call ncu_set_att(atts(1), 'comment', 'Positive direction is from first to second neighbouring face (flow element).')
       call add_output_config(out_quan_conf_map, IDX_MAP_U1,                                                 &
                      'Wrimap_velocity_component_u1', 'u1', 'Velocity at velocity point, n-component',                                                     &
-                     '', 'm s-1', UNC_LOC_U, nc_atts = atts(1:1), description='Write velocity component to map file')
+                     '', 'm s-1', UNC_LOC_U, nc_attributes = atts(1:1), description='Write velocity component to map file')
 
       call ncu_set_att(atts(1), 'comment', 'Positive direction is from first to second neighbouring face (flow element).')
       call add_output_config(out_quan_conf_map, IDX_MAP_U0, 'Wrimap_velocity_component_u0', &
-                     'u0', 'Velocity at velocity pointat previous time step, n-component ', '', 'm s-1', UNC_LOC_U, nc_atts = atts(1:1), &
+                     'u0', 'Velocity at velocity pointat previous time step, n-component ', '', 'm s-1', UNC_LOC_U, nc_attributes = atts(1:1), &
                      description='Write velocity component for previous time step to map file')
 
       call add_output_config(out_quan_conf_map, IDX_MAP_UCXQ_EULERIAN,                                      &
@@ -1722,12 +1722,12 @@ private
       call ncu_set_att(atts(1), 'comment', 'Positive direction is from first to second neighbouring face (flow element).')
       call add_output_config(out_quan_conf_map, IDX_MAP_Q1,                                                 &
                      'Wrimap_flow_flux_q1', 'q1', 'Discharge through flow link at current time',                                   &
-                     'discharge', 'm3 s-1', UNC_LOC_U, nc_atts = atts(1:1), description='Write flow flux to map file')
+                     'discharge', 'm3 s-1', UNC_LOC_U, nc_attributes = atts(1:1), description='Write flow flux to map file')
 
       call ncu_set_att(atts(1), 'comment', 'Positive direction is from first to second neighbouring face (flow element).')
       call add_output_config(out_quan_conf_map, IDX_MAP_Q1_MAIN,                                            &
                      'Wrimap_flow_flux_q1_main', 'q1_main', 'Main channel discharge through flow link at current time',                      &
-                     '', 'm3 s-1', UNC_LOC_U, nc_atts = atts(1:1), description='Write flow flux in main channel to map file')
+                     '', 'm3 s-1', UNC_LOC_U, nc_attributes = atts(1:1), description='Write flow flux in main channel to map file')
 
       call add_output_config(out_quan_conf_map, IDX_MAP_FIXED_WEIR_ENERGY_LOSS,                             &
                      'Wrimap_fixed_weir_energy_loss', 'fixed weir energy loss', 'Fixed weir energy loss',                                                        &
@@ -1802,12 +1802,12 @@ private
       call ncu_set_att(atts(1), 'non_si_units', 'm0.5 s-1')
       call add_output_config(out_quan_conf_map, IDX_MAP_CFRT_0,                                             &
                      'Wrimap_trachytopes', 'cfrt', 'Chezy roughness from trachytopes',                                              &
-                     '', '', UNC_LOC_L, nc_atts = atts(1:1))
+                     '', '', UNC_LOC_L, nc_attributes = atts(1:1))
 
       call ncu_set_att(atts(1), 'non_si_units', 's m-0.333')
       call add_output_config(out_quan_conf_map, IDX_MAP_CFRT_1,                                             &
                      'Wrimap_trachytopes', 'cfrt', 'Manning roughness from trachytopes',                                            &
-                     '', '', UNC_LOC_L, nc_atts = atts(1:1), description='Write trachytope roughnesses to map file')
+                     '', '', UNC_LOC_L, nc_attributes = atts(1:1), description='Write trachytope roughnesses to map file')
 
       call add_output_config(out_quan_conf_map, IDX_MAP_CFRT_2,                                             &
                      'Wrimap_trachytopes', 'cfrt', 'White-Colebrook roughness from trachytopes',                                    &
@@ -1816,12 +1816,12 @@ private
       call ncu_set_att(atts(1), 'non_si_units', '')
       call add_output_config(out_quan_conf_map, IDX_MAP_CFRT,                                               &
                      'Wrimap_trachytopes', 'cfrt', 'Roughness from trachytopes',                                                    &
-                     '', '', UNC_LOC_L, nc_atts = atts(1:1))
+                     '', '', UNC_LOC_L, nc_attributes = atts(1:1))
 
       call ncu_set_att(atts(1), 'non_si_units', 'm0.5 s-1')
       call add_output_config(out_quan_conf_map, IDX_MAP_CFCL,                                               &
                      'Wrimap_calibration', 'cfcl', 'Calibration factor for roughness',                                              &
-                     '', '1', UNC_LOC_L, nc_atts = atts(1:1), description='Write roughness calibration factors to map file')
+                     '', '1', UNC_LOC_L, nc_attributes = atts(1:1), description='Write roughness calibration factors to map file')
 
       call add_output_config(out_quan_conf_map, IDX_MAP_RAINFALL_RATE,                       &
                      'Wrimap_rain', 'rainfall_rate', 'Rainfall rate',                                                            &
