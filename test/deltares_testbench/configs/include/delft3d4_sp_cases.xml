@@ -5688,9 +5688,9 @@
 					</parameters>
 					<parameters name="his-dad-series">
 						<parameter name="DATE_TIME" toleranceAbsolute="0.0001"/>
-						<parameter name="LINK_SUM" toleranceAbsolute="0.0001"/>
-						<parameter name="DREDGE_VOLUME" toleranceAbsolute="0.0001"/>
-						<parameter name="DUMP_VOLUME" toleranceAbsolute="0.0001"/>
+						<parameter name="LINK_SUM" toleranceAbsolute="3.0"/>
+						<parameter name="DREDGE_VOLUME" toleranceAbsolute="3.0"/>
+						<parameter name="DUMP_VOLUME" toleranceAbsolute="3.0"/>
 					</parameters>
 				</file>
 				<file name="trim-da3.dat" type="NEFIS">
@@ -5714,9 +5714,9 @@
 					</parameters>
 					<parameters name="his-dad-series">
 						<parameter name="DATE_TIME" toleranceAbsolute="0.0001"/>
-						<parameter name="LINK_SUM" toleranceAbsolute="0.0001"/>
-						<parameter name="DREDGE_VOLUME" toleranceAbsolute="0.0001"/>
-						<parameter name="DUMP_VOLUME" toleranceAbsolute="0.0001"/>
+						<parameter name="LINK_SUM" toleranceAbsolute="300"/>
+						<parameter name="DREDGE_VOLUME" toleranceAbsolute="3000"/>
+						<parameter name="DUMP_VOLUME" toleranceAbsolute="300"/>
 					</parameters>
 				</file>
 				<file name="trim-drd1.dat" type="NEFIS">

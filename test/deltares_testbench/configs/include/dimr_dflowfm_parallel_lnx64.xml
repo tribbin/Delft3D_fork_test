@@ -239,7 +239,7 @@
       </programs>
       <maxRunTime>120.0</maxRunTime>
       <checks>
-        <file name="dflowfmoutput/t01_0000_his.nc" type="netCDF">
+        <file name="DFM_OUTPUT_test/test_0000_his.nc" type="netCDF">
            <parameters>
                <parameter name="dred_discharge" toleranceAbsolute="0.001" />
                <parameter name="dump_discharge" toleranceAbsolute="0.001" />
