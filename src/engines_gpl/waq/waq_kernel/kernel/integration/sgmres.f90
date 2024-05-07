@@ -54,7 +54,7 @@ contains
 
         use m_psolve
         use m_matvec
-        use m_srstop
+        use m_logger, only : terminate_execution
 
         integer(kind = int_wp), intent(in) :: ntrace                      !< Dimension of the matrix
         real(kind = dp), intent(in) :: rhs    (ntrace)             !< right-hand side (1 substance)
@@ -144,7 +144,7 @@ contains
         do iloop = 1, ntrace
             if (isnan(rhs(iloop))) then
                 write (lurep, '(''ERROR: NaN in RHS of segment:'', i10)') iloop
-                call srstop(1)
+                call terminate_execution(1)
             endif
         enddo
         bnrm2 = sqrt(sum(rhs * rhs))
@@ -353,7 +353,7 @@ contains
             WRITE (LUrep, *) '                        decrease timestep'
             WRITE (LUrep, *) '                        increase MAXITER'
             WRITE (lurep, *) ' 4. other: exact cause will be difficult to identify, cell nr. may help'
-            CALL SRSTOP(1)
+            CALL terminate_execution(1)
         ELSEIF (IERR < 0) THEN
             WRITE (*, *) 'ERROR in GMRES', IERR
             WRITE (LUrep, *) ' ERROR in GMRES 1', IERR

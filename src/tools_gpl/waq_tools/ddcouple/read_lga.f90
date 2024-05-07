@@ -26,10 +26,7 @@
 
       ! function : read a lga file and check dimensions
 
-      ! global declarations
-
-      use m_srstop
-      use m_monsys
+      use m_logger, only : terminate_execution, get_log_unit_number
       use m_waq_file                   ! module contains everything for the files
       implicit none
 
@@ -54,24 +51,24 @@
       integer                                :: n                      ! loop counter
       integer                                :: lunrep                 ! unit number report file
 
-      call getmlu(lunrep)
+      call get_log_unit_number(lunrep)
 
       call file_lga%open()
       read(file_lga%unit,iostat=ioerr) nmaxd, mmaxd, nosegl, nolay, noq1, noq2, noq3
       if ( ioerr .ne. 0 ) then
          write(lunrep,*) ' error reading lga file'
-         call srstop(1)
+         call terminate_execution(1)
       endif
 
       if ( nmaxd.ne.nmax .or. mmaxd.ne.mmax ) then
          write(lunrep,*) ' dimensions lga file differ from input hydrodynamics'
-         call srstop(1)
+         call terminate_execution(1)
       endif
 
       read(file_lga%unit,iostat=ioerr) ((lgrid(n,m),n=1,nmax),m=1,mmax)
       if ( ioerr .ne. 0 ) then
          write(lunrep,*) ' error reading lga file'
-         call srstop(1)
+         call terminate_execution(1)
       endif
 
       close(file_lga%unit)

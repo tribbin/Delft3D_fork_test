@@ -36,8 +36,7 @@
                          FUNC   , SEGFUN , DISPER , VELO   , ITIME  , & 
                          IDT    , SYNAME , NOCONS , NOFUN  , CONAME , & 
                          PANAME , FUNAME , SFNAME , UPDATR , ILFLAG )
-      use m_srstop
-      use m_monsys
+      use m_logger, only : terminate_execution, get_log_unit_number
 
 !
 !     Deltares     SECTOR WATERRESOURCES AND ENVIRONMENT
@@ -142,7 +141,7 @@
       IF ( FIRST ) THEN
          FIRST = .FALSE.
          IER   = 0
-         CALL GETMLU(LUNREP)
+         CALL get_log_unit_number(LUNREP)
          WRITE(LUNREP,*)
          WRITE(LUNREP,2000)
 !
@@ -194,7 +193,7 @@
             ENDIF
 !
             IF ( IER /= 0 ) THEN
-               CALL SRSTOP(1)
+               CALL terminate_execution(1)
             ENDIF
          ENDIF
 !

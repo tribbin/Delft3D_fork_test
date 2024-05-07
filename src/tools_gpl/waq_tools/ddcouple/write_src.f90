@@ -22,13 +22,9 @@
 !!  rights reserved.
 
       subroutine write_src(hyd)
+      ! write a src file
 
-      ! function : write a src file
-
-      ! global declarations
-
-      use m_srstop
-      use m_monsys
+      use m_logger, only : terminate_execution, get_log_unit_number
       use m_hydmod                   ! module contains everything for the hydrodynamics
       implicit none
 
@@ -54,7 +50,7 @@
       integer                                :: iwaste                ! wasteload index
       integer                                :: ibrk                  ! breakpoint index
 
-      call getmlu(lunrep)
+      call get_log_unit_number(lunrep)
 
       nowast = hyd%wasteload_coll%current_size
       nolay  = hyd%nolay
@@ -64,7 +60,7 @@
          write(lunrep,*) 'error, number of wasteloads in hyd file does not equal the data files'
          write(lunrep,*) 'number from hyd file: ',nowast
          write(lunrep,*) 'number from data    :',hyd%wasteload_data%num_locations
-         call srstop(1)
+         call terminate_execution(1)
       endif
 
       if ( nolay .gt. 1 ) then

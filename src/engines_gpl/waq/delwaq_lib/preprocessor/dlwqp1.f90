@@ -69,9 +69,8 @@ contains
         use m_algrep
         use m_actrep
         use m_startup_screen
-        use m_srstop
+        use m_logger, only : terminate_execution
         use m_working_files, only : read_working_file_4
-        use m_monsys
         use m_cli_utils, only : retrieve_command_argument
         use m_open_waq_files
         use timers
@@ -287,10 +286,10 @@ contains
         call open_waq_files(file_unit_list(35), file_name_list(35), 35, 1, ierr2)
         lurep = file_unit_list(35)
         line = ' '
-        call setmlu(lurep)
+        call set_log_unit_number(lurep)
         call startup_screen(lurep)
-        call monsys(line, 11)
-        call monsys(line, 1)
+        call write_log_message(line, 11)
+        call write_log_message(line, 1)
 
         ! command line settingen , commands
 
@@ -299,9 +298,9 @@ contains
         call retrieve_command_argument('-m', 1, lfound, mlevel, rdummy, cdummy, ierr2)
         if (lfound) then
             if (ierr2 == 0) then
-                call setmmo(mlevel)
+                call set_verbosity_level(mlevel)
             else
-                call setmmo(10)
+                call set_verbosity_level(10)
             end if
         end if
 
@@ -310,9 +309,9 @@ contains
         call retrieve_command_argument('-a', 1, lfound, idummy, rdummy, cdummy, ierr2)
         if (lfound) then
             write (line, '(a)') ' found -a command line switch'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             write (line, '(a)') ' only activated processes are switched on'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             laswi = .true.
         else
             laswi = .false.
@@ -324,9 +323,9 @@ contains
         if (lfound) then
             swi_nopro = .true.
             write (line, '(a)') ' found -np command line switch'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             write (line, '(a)') ' no processes from the process definition file are switched on'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             versio = versip
         else
             swi_nopro = .false.
@@ -346,7 +345,7 @@ contains
             if (pdffil /= ' ') then
                 file_name_list(34) = pdffil
                 write (line, '(a)') ' found -p command line switch'
-                call monsys(line, 1)
+                call write_log_message(line, 1)
             else
                 pdffil = file_name_list(34)
             end if
@@ -364,7 +363,7 @@ contains
                 write (*, *) '        Check if the filename after -p is correct, and exists.'
                 write (*, *) '        Use -np if you want to run without processes.'
                 write (*, *) ' '
-                call srstop(1)
+                call terminate_execution(1)
             else
                 write (lurep, *)
                 write (lurep, 2001) trim(file_name_list(34))
@@ -384,15 +383,15 @@ contains
             call retrieve_command_argument('-target_serial', 1, lfound, target_serial, rdummy, cdummy, ierr2)
             if (lfound) then
                 write (line, '(a)') ' found -target_serial command line switch'
-                call monsys(line, 1)
+                call write_log_message(line, 1)
                 if (ierr2 /= 0) then
                     old_items%target_serial = target_serial
                     write (line, '(a)') ' no serial number given, using current'
-                    call monsys(line, 1)
+                    call write_log_message(line, 1)
                     old_items%target_serial = serial
                 else
                     write (line, '(a,i13)') ' using target serial number: ', target_serial
-                    call monsys(line, 1)
+                    call write_log_message(line, 1)
                     old_items%target_serial = target_serial
                 end if
             else
@@ -405,14 +404,14 @@ contains
         call retrieve_command_argument('-conf', 3, lfound, idummy, rdummy, config, ierr2)
         if (lfound) then
             write (line, '(a)') ' found -conf command line switch'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             if (ierr2 /= 0) then
                 write (line, '(a)') ' no configuration id given, using default'
-                call monsys(line, 1)
+                call write_log_message(line, 1)
                 config = ' '
             else
                 write (line, '(a25,a10)') ' using configuration id: ', config
-                call monsys(line, 1)
+                call write_log_message(line, 1)
             end if
         else
             config = ' '
@@ -424,16 +423,16 @@ contains
         if (lfound) then
             l_eco = .true.
             line = ' '
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             write (line, '(a)') ' found -eco command line switch'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             if (ierr2 /= 0) then
                 blmfil = 'bloom.spe'
                 write (line, '(a30,a50)') ' using default eco input file:', blmfil
-                call monsys(line, 1)
+                call write_log_message(line, 1)
             else
                 write (line, '(a22,a58)') ' using eco input file:', blmfil
-                call monsys(line, 1)
+                call write_log_message(line, 1)
             end if
         else
             blmnam = 'ACTIVE_BLOOM_P'
@@ -441,12 +440,12 @@ contains
             if (blm_act > 0 .and. .not. swi_nopro) then
                 l_eco = .true.
                 line = ' '
-                call monsys(line, 1)
+                call write_log_message(line, 1)
                 write (line, '(a)') ' found constant ACTIVE_BLOOM_P without -eco command line switch'
-                call monsys(line, 1)
+                call write_log_message(line, 1)
                 blmfil = 'bloom.spe'
                 write (line, '(a39,a41)') ' will try using default eco input file:', blmfil
-                call monsys(line, 1)
+                call write_log_message(line, 1)
             else
                 l_eco = .false.
                 noprot = 0
@@ -460,7 +459,7 @@ contains
             if (ierr2 /= 0) then
                 call status%increase_error_count()
                 write (line, '(3a)') ' eco input file - ', trim(blmfil), ' not found! Exiting'
-                call monsys(line, 1)
+                call write_log_message(line, 1)
                 return
             end if
 
@@ -542,7 +541,7 @@ contains
             ! when no algae were found, turn of eco mode
             if (noalg == 0) then
                 write (line, '(a)') ' no BLOOM algae were found, switching off eco mode.'
-                call monsys(line, 1)
+                call write_log_message(line, 1)
                 l_eco = .false.
             else
                 ! set algal group list
@@ -569,9 +568,9 @@ contains
         ix_act = constants%find(swinam)
         if (ix_act > 0) then
             write (line, '(a)') ' found only_active constant'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             write (line, '(a)') ' only activated processes are switched on'
-            call monsys(line, 1)
+            call write_log_message(line, 1)
             laswi = .true.
         end if
 
@@ -592,7 +591,7 @@ contains
                     config = 'waq'
                 end if
                 write (line, '(a,a10)') ' using default configuration: ', config
-                call monsys(line, 1)
+                call write_log_message(line, 1)
             end if
         end if
 
@@ -729,7 +728,7 @@ contains
             locnam(1) = parnam
             outputs%pointers(parindx) = nopred + nocons + nopa + nofun + nosfun + notot + 1
             write (line, '(3a)') ' output [', parnam, '] will be generated by numerical scheme'
-            call monsys(line, 4)
+            call write_log_message(line, 4)
         end if
 
         call getinv(procesdef, notot, syname, nocons, constants, &
@@ -765,7 +764,7 @@ contains
             write (lurep, *) ' not all input available.'
             write (lurep, *) ' number off missing variables :', nmis
             write (lurep, *) ' simulation impossible.'
-            call srstop(1)
+            call terminate_execution(1)
         end if
 
         ! set new pointer for dispersion and velocity

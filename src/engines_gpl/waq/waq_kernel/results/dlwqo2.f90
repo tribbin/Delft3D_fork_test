@@ -167,7 +167,7 @@ contains
         use m_baldmp
         use m_actloc
         use m_array_manipulation, only : initialize_real_array
-        use m_srstop
+        use m_logger, only : terminate_execution
         use m_cli_utils, only : retrieve_command_argument
         use timers
         use results
@@ -297,7 +297,7 @@ contains
                 write(lunout, '(/A/)') '  INFO  : If you don''t want NAN checks, use -nonancheck at command line.'
                 write(*, '(/A/)') '  INFO  : If you don''t want NAN checks, use -nonancheck at command line.'
                 call dlwq13 (file_unit_list, file_name_list, conc, itime, moname, syname, notot, noseg)
-                call srstop(1)
+                call terminate_execution(1)
             endif
         endif
         !

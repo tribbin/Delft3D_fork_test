@@ -37,6 +37,7 @@ module m_lateral
       public average_concentrations_for_laterals
       public add_lateral_load_and_sink
       public get_lateral_discharge
+      public get_lateral_volume_per_layer
       public reset_outgoing_lat_concentration 
       public finish_outgoing_lat_concentration
       !!
@@ -47,8 +48,8 @@ module m_lateral
       integer, parameter, public :: ILATTP_2D  = 2 !< Type code for laterals that only apply to 2D nodes.
 
       integer,                         target, public :: numlatsg          !< [-] nr of lateral discharge providers  {"rank": 0}
-      real(kind=dp),      allocatable, target, public :: qplat(:)          !< [m3/s] Lateral discharge of provider {"shape": ["numlatsg"]}
-      real(kind=dp),      allocatable, target, public :: qqlat(:)          !< [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["ndx"]}
+      real(kind=dp),      allocatable, target, public :: qplat(:,:)        !< [m3/s] Lateral discharge of provider {"shape": ["num_layers","numlatsg"]}
+      real(kind=dp),      allocatable, target, public :: qqlat(:,:)        !< [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["num_layers","ndx"]}
       real(kind=dp),      allocatable, target, public :: balat(:)          !< [m2] total area of all cells in provider numlatsg {"shape": ["numlatsg"]}
       character(len=128), allocatable,         public :: lat_ids(:)        !< id of laterals {"shape": ["numlatsg"]}
       real(kind=dp),      allocatable, target, public :: qplatCum(:)       !< [m3/s] Cumulative lateral discharge of provider {"shape": ["numlatsg"]}
@@ -74,6 +75,7 @@ module m_lateral
 
       real(kind=dp), allocatable, target, dimension(:,:,:), public :: outgoing_lat_concentration !< Average concentration per lateral discharge location.
       real(kind=dp), allocatable, target, dimension(:,:,:), public :: incoming_lat_concentration !< Concentration of the inflowing water at the lateral discharge location.
+      real(kind=dp), allocatable, target, dimension(:,:),   public :: lateral_volume_per_layer   !< Total water volume per layer, for each lateral (kmx,numlatsg).
       integer,       allocatable, target, dimension(:),     public :: apply_transport            !< Flag to apply transport for laterals (0 means only water and no substances are transported).
       logical, public :: apply_transport_is_used
       private
@@ -134,6 +136,7 @@ module m_lateral
          end subroutine finish_outgoing_lat_concentration
       end interface finish_outgoing_lat_concentration
 
+
       !> Add lateral input contribution to the load being transported
       interface add_lateral_load_and_sink
          module subroutine add_lateral_load_and_sink(transport_load,transport_sink,discharge_in,discharge_out,vol1,dtol)
@@ -154,6 +157,14 @@ module m_lateral
          end subroutine get_lateral_discharge
       end interface get_lateral_discharge
   
+
+      !> Compute water volume per layer in each lateral
+      interface get_lateral_volume_per_layer
+         module subroutine get_lateral_volume_per_layer(lateral_volume_per_layer)
+             real(kind=dp), dimension(:,:), intent(out)   :: lateral_volume_per_layer                !< Water volume per layer in laterals, dimension = (number_of_layer,number_of_lateral) = (kmx,numlatsg)
+         end subroutine get_lateral_volume_per_layer
+      end interface get_lateral_volume_per_layer
+      
    end module m_lateral
    
 

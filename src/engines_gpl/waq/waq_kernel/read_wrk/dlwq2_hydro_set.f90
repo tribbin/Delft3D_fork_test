@@ -23,7 +23,7 @@
 
 module HydroSet
     use m_waq_precision
-    use m_srstop
+    use m_logger, only : terminate_execution
 
     !
     !          module contains everything for composition of hydrodynamics from multiple files
@@ -199,7 +199,7 @@ contains
             write(*, *) 'Error: times in two consecutive records are equal!'
             write(*, *) 'File in question: ', trim(aPropPnt%name)
             write(*, *) 'Stopping the program'
-            call srstop(1)
+            call terminate_execution(1)
         endif
 
         return
