@@ -803,7 +803,7 @@ private
       call ncu_set_att(atts(4), 'valid_range', (/ 0, 4 /))
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_STATE,                            &
                      'Wrihis_structure_gen', 'general_structure_state', 'Flow state at general structure', '',                     &
-                     '', UNC_LOC_GENSTRU, id_nc_type = id_nc_int, nc_atts = atts)
+                     '', UNC_LOC_GENSTRU, id_nc_type = id_nc_int, nc_attributes = atts)
       call add_output_config(out_quan_conf_his, IDX_HIS_GENERAL_STRUCTURE_S1_ON_CREST,                      &
                      'Wrihis_structure_gen', 'general_structure_s1_on_crest', 'Water level on crest of general structure',          &
                      '', 'm', UNC_LOC_GENSTRU, nc_attributes = atts(1:1))
