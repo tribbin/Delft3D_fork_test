@@ -29,16 +29,16 @@ module m_statistical_callback
       !! NOTE: these callback subroutine are also called once during init_statistical_output();
       !!       if %source_input must point to newly allocated memory, that is the time to do it once,
       !!       and should never be reallocated after that.
-      subroutine process_data_double_interface(datapointer)
-         double precision, pointer, dimension(:), intent(inout) :: datapointer !< pointer to function in-output data
-      end subroutine process_data_double_interface
+      subroutine process_data_interface_double(data_pointer)
+         double precision, pointer, dimension(:), intent(inout) :: data_pointer !< pointer to function in-output data
+      end subroutine process_data_interface_double
    end interface
 end module m_statistical_callback
    
 module m_statistical_output_types
    use stdlib_kinds, only: dp
    use m_output_config, only: t_output_quantity_config
-   use m_statistical_callback, only: process_data_double_interface
+   use m_statistical_callback, only: process_data_interface_double
    use m_temporal_statistics, only: t_moving_average_data
 
    private
@@ -52,7 +52,7 @@ module m_statistical_output_types
                                                                                          !! required this variable points to the basic variable (e.g. s1).
                                                                                          !! Otherwise during the simulation the intermediate results are stored.
       real(dp), pointer, dimension(:)                           :: source_input          !< The (possibly transformed) data over which statistics are gathered
-      procedure(process_data_double_interface), nopass, pointer :: source_input_function_pointer => null() !< Function pointer for operation that needs to be performed to produce source_input
+      procedure(process_data_interface_double), nopass, pointer :: source_input_function_pointer => null() !< Function pointer for operation that needs to be performed to produce source_input
       real(dp)                                                  :: time_step_sum         !< Sum of time steps since the last output interval, used for average calculation
       type(t_moving_average_data), allocatable                  :: moving_average_data   !< Data stored for keeping track of a moving average
       integer                                                   :: moving_average_window !< Number of time steps over which a moving average is calculated

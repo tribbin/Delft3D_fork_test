@@ -2128,7 +2128,7 @@ private
 
       double precision, pointer, dimension(:) :: temp_pointer
 
-      procedure(process_data_double_interface), pointer :: function_pointer => NULL()
+      procedure(process_data_interface_double), pointer :: function_pointer => NULL()
 
       integer :: i, ntot, num_const_items, nlyrs, variable_index, start_index, num_layers
       integer, allocatable, dimension(:) :: id_hwq
