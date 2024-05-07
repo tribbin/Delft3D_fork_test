@@ -17,7 +17,7 @@ private
    public location_specifier_to_string
 
    interface realloc
-      module procedure realloc_config_output
+      module procedure realloc_config_set
    end interface
    interface dealloc
       module procedure dealloc_config_output
@@ -526,7 +526,7 @@ private
    type, public :: t_output_quantity_config_set
       integer                                                :: growsby = 200             !< Increment for config set
       integer                                                :: count = 0                 !< Number of configs in config set 
-      integer                                                :: size  = 0                 !< Allocated size of config set (size = count + # of empty configs)
+      integer                                                :: capacity  = 0                 !< Allocated size of config set (size = count + # of empty configs)
       type(t_output_quantity_config), pointer, dimension(:)  :: configs                   !< array of output quantity configs in config set
    end type t_output_quantity_config_set
 
@@ -545,46 +545,46 @@ private
 contains
 
 !> Reallocate config set.
-subroutine realloc_config_output(confoutput)
+subroutine realloc_config_set(config_set)
    ! Modules
    use m_alloc
 
    implicit none
    ! Input/output parameters
-   type(t_output_quantity_config_set), intent(inout)   :: confoutput !< Output configuration set.
+   type(t_output_quantity_config_set), intent(inout)   :: config_set !< Output configuration set.
 
 
    ! Local variables
    integer                   :: ierr
-   type(t_output_quantity_config), pointer, dimension(:)    :: oldstats
+   type(t_output_quantity_config), pointer, dimension(:)    :: old_configs
 
    ! Program code
 
-   if (confoutput%size > 0) then
-      oldstats=>confoutput%configs
+   if (config_set%capacity > 0) then
+      old_configs=>config_set%configs
    endif
 
-   if (confoutput%growsBy <=0) then
-      confoutput%growsBy = 200
+   if (config_set%growsBy <=0) then
+      config_set%growsBy = 200
    endif
-   allocate(confoutput%configs(confoutput%size+confoutput%growsBy),stat=ierr)
-   call aerr('statoutput%configs(statoutput%size+statoutput%growsBy)',ierr,confoutput%size+confoutput%growsBy)
+   allocate(config_set%configs(config_set%capacity+config_set%growsBy),stat=ierr)
+   call aerr('statoutput%configs(statoutput%size+statoutput%growsBy)',ierr,config_set%capacity+config_set%growsBy)
 
-   if (confoutput%size > 0) then
-      confoutput%configs(1:confoutput%size) = oldstats(1:confoutput%size)
-      deallocate(oldstats)
+   if (config_set%capacity > 0) then
+      config_set%configs(1:config_set%capacity) = old_configs(1:config_set%capacity)
+      deallocate(old_configs)
    endif
-   confoutput%size = confoutput%size+confoutput%growsBy
-end subroutine realloc_config_output
+   config_set%capacity = config_set%capacity+config_set%growsBy
+end subroutine realloc_config_set
 
 !> Deallocate config set.
-subroutine dealloc_config_output(confoutput)
+subroutine dealloc_config_output(config_set)
    implicit none
    ! Input/output parameters
-   type(t_output_quantity_config_set), intent(inout)   :: confoutput !< Output configuration set.
+   type(t_output_quantity_config_set), intent(inout)   :: config_set !< Output configuration set.
 
-   if (confoutput%size> 0) then
-      deallocate(confoutput%configs)
+   if (config_set%capacity> 0) then
+      deallocate(config_set%configs)
    endif
 end subroutine dealloc_config_output
 
@@ -627,7 +627,7 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
    end if
 
    config_set%count = config_set%count+1
-   if (config_set%count > config_set%size) then
+   if (config_set%count > config_set%capacity) then
       call realloc(config_set)
    endif
    numentries = config_set%count
