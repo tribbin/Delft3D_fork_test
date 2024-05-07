@@ -265,7 +265,7 @@ contains
                               model_has_gates_across_partitions, &
                               model_has_compound_structures_across_partitions
       use m_dad, only:        model_has_dredge_links_across_partitions
-      use m_partitioninfo, only: any_crosssections_lie_across_multiple_partitions
+      use m_partitioninfo, only: model_has_crosssections_across_partitions
       use m_lateral, only: model_has_laterals_across_partitions
       use m_monitoring_crosssections, only: crs
       integer, intent(in) :: location_specifier    !< The location specifier indicating the type of structure (UNC_LOC_XXX)
@@ -277,7 +277,7 @@ contains
       case default
          return
       case (UNC_LOC_OBSCRS)      ! Cross-sections
-         res = any_crosssections_lie_across_multiple_partitions(crs)
+         res = model_has_crosssections_across_partitions(crs)
       case (UNC_LOC_WEIRGEN)     ! Weirs
          res = model_has_weirs_across_partitions
       case (UNC_LOC_GENSTRU)     ! General structures
