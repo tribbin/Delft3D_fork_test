@@ -10,17 +10,17 @@ private
 
    public scan_input_tree
    public set_properties
-   public addoutval
+   public add_output_config
    public realloc
    public dealloc
    public id_nc_type2nc_type_his
    public location_specifier_to_string
 
    interface realloc
-      module procedure realloc_config_set
+      module procedure reallocate_config_set
    end interface
    interface dealloc
-      module procedure dealloc_config_output
+      module procedure deallocate_config_set
    end interface
 
    integer, parameter, public :: UNC_LOC_CN  = 1  !< Data location: corner point.
@@ -524,9 +524,9 @@ private
    end type t_output_quantity_config
 
    type, public :: t_output_quantity_config_set
-      integer                                                           :: count = 0                 !< Number of configs in config set 
-      integer                                                           :: capacity  = 0                 !< Allocated size of config set (size = count + # of empty configs)
-      type(t_output_quantity_config), allocatable,       dimension(:) :: configs                   !< array of output quantity configs in config set
+      integer                                                   :: count = 0      !< Number of configs in config set 
+      integer                                                   :: capacity  = 0  !< Allocated size of config set (size = count + # of empty configs)
+      type(t_output_quantity_config), allocatable, dimension(:) :: configs        !< array of output quantity configs in config set
    end type t_output_quantity_config_set
 
    !> Derived type that stores flags to include/exclude netcdf dimensions NetCDF variables for which does not follow default for its UNC_LOC.
@@ -544,10 +544,10 @@ private
 contains
 
 !> Reallocate config set.
-subroutine realloc_config_set(config_set)
+subroutine reallocate_config_set(config_set)
    use m_alloc
 
-   type(t_output_quantity_config_set), intent(inout)   :: config_set !< Output configuration set.
+   type(t_output_quantity_config_set), intent(inout) :: config_set !< Output configuration set.
 
    type(t_output_quantity_config), dimension(:), allocatable :: new_configs
 
@@ -556,43 +556,41 @@ if(allocated(config_set%configs) .and. config_set%capacity > 0) then
    new_configs(1:config_set%capacity) = config_set%configs
    call move_alloc(new_configs,config_set%configs)
 else
-   allocate(config_set%configs(200))
+   allocate(config_set%configs(200)) ! hardcoded default start size of 200
 end if
    config_set%capacity = size(config_set%configs)
    
-end subroutine realloc_config_set
+end subroutine reallocate_config_set
 
 !> Deallocate config set.
-subroutine dealloc_config_output(config_set)
-   implicit none
+subroutine deallocate_config_set(config_set)
    ! Input/output parameters
-   type(t_output_quantity_config_set), intent(inout)   :: config_set !< Output configuration set.
+   type(t_output_quantity_config_set), intent(inout) :: config_set !< Output configuration set.
 
-   if (config_set%capacity> 0) then
+   if (config_set%capacity > 0) then
       deallocate(config_set%configs)
    endif
-end subroutine dealloc_config_output
+end subroutine deallocate_config_set
 
 !> Define an output configuration quantity. And set the IDX variable to the current entry
-subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit, location_specifier, nc_dim_ids, id_nc_type, nc_atts, description)
+subroutine add_output_config(config_set, idx, key, name, long_name, standard_name, unit, location_specifier, nc_dim_ids, id_nc_type, nc_atts, description)
    use m_map_his_precision, only: md_nc_his_precision
    use netcdf, only: nf90_double, nf90_float
-   type(t_output_quantity_config_set),  intent(inout) :: config_set      !< Array containing all output quantity configs.
-   integer,                         intent(inout) :: idx                 !< Index for the current variable.
-   character(len=*),                intent(in   ) :: key                 !< Key in the MDU file.
-   character(len=*),                intent(in   ) :: name                !< Name of the variable on the NETCDF file.
-   character(len=*),                intent(in   ) :: long_name           !< Long name of the variable on the NETCDF file.
-   character(len=*),                intent(in   ) :: standard_name       !< Standard name of the variable on the NETCDF file.
-   character(len=*),                intent(in   ) :: unit                !< Unit of the variable on the NETCDF file.
-   integer,                         intent(in   ) :: location_specifier  !< Location specifier of the variable.
-   type(t_nc_dim_ids), optional,    intent(in   ) :: nc_dim_ids          !< Included NetCDF dimensions
-   integer,          optional,      intent(in   ) :: id_nc_type          !< ID indicating NetCDF variable type, one of: id_nc_double, id_nc_int, etc. Default: id_nc_undefined.
-   type(nc_attribute), optional,    intent(in   ) :: nc_atts(:)          !< (optional) list of additional NetCDF attributes to be stored for this output variable.
-   character(len=*), optional,      intent(in   ) :: description         !< Description of the MDU key, used when printing an MDU or .dia file.
+   
+   type(t_output_quantity_config_set), intent(inout) :: config_set          !< Array containing all output quantity configs.
+   integer,                            intent(inout) :: idx                 !< Index for the current variable.
+   character(len=*),                   intent(in   ) :: key                 !< Key in the MDU file.
+   character(len=*),                   intent(in   ) :: name                !< Name of the variable on the NETCDF file.
+   character(len=*),                   intent(in   ) :: long_name           !< Long name of the variable on the NETCDF file.
+   character(len=*),                   intent(in   ) :: standard_name       !< Standard name of the variable on the NETCDF file.
+   character(len=*),                   intent(in   ) :: unit                !< Unit of the variable on the NETCDF file.
+   integer,                            intent(in   ) :: location_specifier  !< Location specifier of the variable.
+   type(t_nc_dim_ids), optional,       intent(in   ) :: nc_dim_ids          !< Included NetCDF dimensions
+   integer,            optional,       intent(in   ) :: id_nc_type          !< ID indicating NetCDF variable type, one of: id_nc_double, id_nc_int, etc. Default: id_nc_undefined.
+   type(nc_attribute), optional,       intent(in   ) :: nc_atts(:)          !< (optional) list of additional NetCDF attributes to be stored for this output variable.
+   character(len=*),   optional,       intent(in   ) :: description         !< Description of the MDU key, used when printing an MDU or .dia file.
 
-   integer :: numentries
-   integer :: id_nc_type_
-   integer :: numatt
+   integer :: numentries, id_nc_type_, numatt
 
    if (present(id_nc_type)) then
       ! Safety
@@ -603,7 +601,7 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
                  id_nc_type == id_nc_int .or. &
                  id_nc_type == id_nc_float .or. &
                  id_nc_type == id_nc_double)) then
-         call mess(LEVEL_ERROR,'addoutval - Internal error: id_nc_type must be one of the id_nc_[type]s!')
+         call mess(LEVEL_ERROR,'add_output_config - Internal error: id_nc_type must be one of the id_nc_[type]s!')
       end if
       id_nc_type_ = id_nc_type
    else
@@ -643,8 +641,7 @@ subroutine addoutval(config_set, idx, key, name, long_name, standard_name, unit,
       config_set%configs(numentries)%description = ''
    endif
 
-end subroutine addoutval
-
+end subroutine add_output_config
 
 !> convert id_nc_type to actual nc_type for his file variables
 function id_nc_type2nc_type_his( id_nc_type) result( nc_type)
