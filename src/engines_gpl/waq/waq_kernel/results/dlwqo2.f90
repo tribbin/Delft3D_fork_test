@@ -34,7 +34,7 @@ module m_dlwqo2
     use m_write_netcdf_output
     use m_write_history_output
     use m_outdmp
-    use m_outbal
+    use m_write_balance_output
     use m_flxbal
     use m_fioutv
     use m_fiosub
@@ -676,7 +676,7 @@ contains
 
             elseif (isrtou == ibal) then
 
-                call outbal (lunout, lchout, itime, moname, notot, noflux, syname, ndmpar, danam, asmass, &
+                call write_balance_output (lunout, lchout, itime, moname, notot, noflux, syname, ndmpar, danam, asmass, &
                         flxint, nrvar2, riobuf, iniout)
 
             elseif (isrtou == iba2) then

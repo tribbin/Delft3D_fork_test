@@ -33,20 +33,8 @@ contains
             IP, ISFLAG, ASMASS, IBFLAG, NOTOT2, &
             SYNAM2, CONC2, ITSTRT, ITSTOP, NDMPAR, &
             DANAM)
-        !
-        !     Deltares     SECTOR WATERRESOURCES AND ENVIRONMENT
-        !
-        !     CREATED: april 4, 1988 by L.Postma
-        !
-        !     FUNCTION            : Writes monitoring results to IOUT in
-        !                                          blocks of 10 systems.
-        !
-        !     LOGICAL UNITNUMBERS : IOUT = number of monitoring output file
-        !
-        !     SUBROUTINES CALLED  : OUTMO1, print routine
-        !                           OUTMO2, print routine
-        !                           report_time, writes time in specific formats
-        !
+        ! Writes monitoring results to IOUT in blocks of 10 systems.
+
         !     PARAMETERS          :
         !
         !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
@@ -75,7 +63,7 @@ contains
         !
         use m_outmo2
         use m_outmo1
-        use date_time_utils, only : report_time
+        use date_time_utils, only: report_time
         use timers
 
         INTEGER(kind = int_wp) :: IOUT, ITIME, NODUMP, NOTOT, ISFLAG, &
@@ -83,26 +71,24 @@ contains
         INTEGER(kind = int_wp) :: IDUMP(*), IP(4)
         REAL(kind = real_wp) :: CONC(NOTOT, *), AMASS2(NOTOT, 5), &
                 ASMASS(NOTOT, NDMPAR, *), CONC2(*)
-        character(len=20) DNAME(*), SNAME(*), SYNAM2(*), DANAM(*)
-        character(len=40) MNAME(*)
+        character(len = 20) DNAME(*), SNAME(*), SYNAM2(*), DANAM(*)
+        character(len = 40) MNAME(*)
         !
         !     Local declaration
         !
-        character(len=40) VNAME
+        character(len = 40) VNAME
         integer(kind = int_wp) :: k, id, nend
         real(kind = real_wp) :: percit
         integer(kind = int_wp) :: ithandl = 0
         if (timon) call timstrt ("outmon", ithandl)
-        !
-        !         initialise the paging, accumulation arrays and acumul flag
-        !
+
+        ! initialise the paging, accumulation arrays and acumul flag
         IF (IP(3) == 0) THEN
             IP(3) = MAX(1, IP(1) / (7 + (NODUMP + 7) * ((NOTOT + IP(2) - 1) / IP(2))))
             IP(4) = 0
         ENDIF
-        !
-        !         start printing
-        !
+
+        ! start printing
         IF (MOD(IP(4), IP(3)) == 0) THEN
             WRITE (IOUT, '('' '')')
             WRITE (IOUT, 2100) (MNAME(K), K = 1, 4)
@@ -152,9 +138,8 @@ contains
             !
             WRITE (IOUT, '('' '')')
         end do
-        !
+
         !     extra vars
-        !
         DO ID = 1, NOTOT2, IP(2)
             NEND = MIN (NOTOT2, ID + IP(2) - 1)
             WRITE (IOUT, 2020) (SYNAM2(K)(1:10), K = ID, NEND)
@@ -180,6 +165,6 @@ contains
         2080 FORMAT (' ', F6.2, '% Completed')
         2100 FORMAT (45X, A40)
         !
-    END
+    END SUBROUTINE OUTMON
 
 end module m_outmon
