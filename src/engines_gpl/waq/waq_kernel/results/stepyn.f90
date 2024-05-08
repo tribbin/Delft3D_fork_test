@@ -28,23 +28,9 @@ module m_stepyn
 contains
 
 
-    SUBROUTINE STEPYN (ITIME, IDT, ISTRT, ISTOP, ISTEP, &
-            LFLAG, LFIRST)
-        !
-        !     Deltares     SECTOR WATERRESOURCES AND ENVIRONMENT
-        !
-        !     CREATED:            : march 1993 by Jan van Beek
-        !
-        !     FUNCTION            : Evaluates if action is necessary
-        !                           according to timers
-        !
-        !     SUBROUTINES CALLED  : -
-        !
-        !     FILES               : -
-        !
-        !     COMMON BLOCKS       : -
-        !
-        !     PARAMETERS          : 6
+    SUBROUTINE evaluate_timers (ITIME, IDT, ISTRT, ISTOP, ISTEP, LFLAG, LFIRST)
+        !  Evaluates if action is necessary according to timers
+
         !
         !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
         !     ----    -----    ------     ------- -----------
@@ -55,29 +41,26 @@ contains
         !     IMSTEP  INTEGER       1     INPUT   time step of timer
         !     LFLAG   LOGICAL       1     OUTPUT  If .T. then action else not
         !     LFIRST  LOGICAL       1     OUTPUT  If .T. then first step
-        !
-        !     Declaration of arguments
-        !
+
         use timers
 
         INTEGER(kind = int_wp) :: ITIME, IDT, ISTRT, ISTOP, ISTEP
-        LOGICAL       LFLAG, LFIRST
+        LOGICAL :: LFLAG, LFIRST
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("stepyn", ithandl)
-        !
-        !     Evaluate timer
-        !
+        if (timon) call timstrt ("evaluate_timers", ithandl)
+
+        ! Evaluate timer
         LFLAG = .TRUE.
         LFIRST = .FALSE.
-        IF (ISTEP <= 0  .AND.  ISTRT /= ISTOP) THEN
+        IF (ISTEP <= 0 .AND. ISTRT /= ISTOP) THEN
             LFLAG = .FALSE.
             GOTO 100
         ENDIF
-        IF (ISTRT                  > ITIME) THEN
+        IF (ISTRT > ITIME) THEN
             LFLAG = .FALSE.
             GOTO 100
         ENDIF
-        IF (ISTOP                  <= ITIME - IDT) THEN
+        IF (ISTOP <= ITIME - IDT) THEN
             LFLAG = .FALSE.
             GOTO 100
         ENDIF
@@ -85,12 +68,11 @@ contains
         IF (LFLAG) THEN
             IF (ITIME - ISTRT < ISTEP) LFIRST = .TRUE.
         ENDIF
-        !
+
         100 CONTINUE
-        !
+
         if (timon) call timstop (ithandl)
-        RETURN
-        !
-    END
+
+    END SUBROUTINE evaluate_timers
 
 end module m_stepyn

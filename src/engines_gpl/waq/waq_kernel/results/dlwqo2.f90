@@ -300,9 +300,9 @@ contains
         !
         !     Evaluate standard DELWAQ output timers
         !
-        call stepyn (itime, idt, imstrt, imstop, imstep, imflag, lmfirs)
-        call stepyn (itime, idt, idstrt, idstop, idstep, idflag, ldfirs)
-        call stepyn (itime, idt, ihstrt, ihstop, ihstep, ihflag, lhfirs)
+        call evaluate_timers (itime, idt, imstrt, imstop, imstep, imflag, lmfirs)
+        call evaluate_timers (itime, idt, idstrt, idstop, idstep, idflag, ldfirs)
+        call evaluate_timers (itime, idt, ihstrt, ihstop, ihstep, ihflag, lhfirs)
         !
         !     Fill mass in AMASS2 array by summing AMASS over all segments
         !
@@ -357,7 +357,7 @@ contains
             !
             !        Output required ?
             !
-            call stepyn (itime, idt, iostrt, iostop, iostep, &
+            call evaluate_timers (itime, idt, iostrt, iostop, iostep, &
                     loflag, ldummy)
             !
             if (.not. loflag) goto 100
