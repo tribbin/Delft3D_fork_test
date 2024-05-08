@@ -89,7 +89,7 @@ contains
         !     WSTDMP  REAL     NOTOT,NOWST,2  I   accumulated wasteloads 1/2 in and out
         !     ==================================================================
         !
-        use m_outhis
+        use m_write_history_output
         use m_logger, only: terminate_execution, get_log_unit_number
         use data_processing, only: extract_value_from_group
         use m_cli_utils, only: retrieve_command_argument

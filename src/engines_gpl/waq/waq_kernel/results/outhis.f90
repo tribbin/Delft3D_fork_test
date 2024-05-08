@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module m_outhis
+module m_write_history_output
     use m_waq_precision
 
     implicit none
@@ -82,4 +82,4 @@ contains
 
     END SUBROUTINE write_history_output
 
-end module m_outhis
+end module m_write_history_output

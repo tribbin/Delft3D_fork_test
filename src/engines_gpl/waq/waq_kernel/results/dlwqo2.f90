@@ -32,7 +32,7 @@ module m_dlwqo2
     use m_outmap
     use m_outhnf
     use m_write_netcdf_output
-    use m_outhis
+    use m_write_history_output
     use m_outdmp
     use m_outbal
     use m_flxbal
