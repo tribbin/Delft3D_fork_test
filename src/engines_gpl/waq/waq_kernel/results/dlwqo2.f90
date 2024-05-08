@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module m_dlwqo2
+module m_write_output
     use m_waq_precision
     use m_values
     use m_sobbal
@@ -40,12 +40,12 @@ module m_dlwqo2
     implicit none
 
     private
-    public :: dlwqo2
+    public :: write_output
 
 contains
 
 
-    subroutine dlwqo2 (notot, noseg, nopa, nosfun, itime, &
+    subroutine write_output (notot, noseg, nopa, nosfun, itime, &
             moname, syname, duname, idump, nodump, &
             conc, cons, param, func, segfun, &
             volume, nocons, nofun, idt, noutp, &
@@ -271,7 +271,7 @@ contains
         real(kind = dp) :: damass2(notot, 5)
 
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("dlwqo2", ithandl)
+        if (timon) call timstrt ("write_output", ithandl)
 
         if (first) then
             allocate(mncwqid1(notot, 3), mncwqid2(novar, 3))
@@ -717,7 +717,7 @@ contains
         end do
 
         if (timon) call timstop (ithandl)
-    end subroutine dlwqo2
+    end subroutine write_output
 
     SUBROUTINE fill_sub_areas_balances (NOTOT, NOSYS, NOFLUX, NDMPAR, NDMPQ, &
             NDMPS, NTDMPQ, IQDMP, ISDMP, IPDMP, &
@@ -1204,4 +1204,4 @@ contains
 
     END SUBROUTINE FLXBAL
 
-end module m_dlwqo2
+end module m_write_output

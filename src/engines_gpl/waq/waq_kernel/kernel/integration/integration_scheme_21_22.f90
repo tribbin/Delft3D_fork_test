@@ -32,7 +32,7 @@ module m_integration_scheme_21_22
     use m_dlwq_output_theta
     use m_dlwqtr
     use time_dependent_variables, only : initialize_time_dependent_variables
-    use m_dlwqo2
+    use m_write_output
 
     implicit none
 
@@ -59,7 +59,7 @@ contains
         !
         !     subroutines called : dlwqtr, user transport routine
         !                          proces, delwaq proces system
-        !                          dlwqo2, delwaq output system
+        !                          write_output, delwaq output system
         !                          write_restart_map_file, system postpro-dump routine
         !                          dlwq14, scales waterquality
         !                          dlwq15, wasteload routine
@@ -357,7 +357,7 @@ contains
             endif
 
             !     call output system
-            call dlwqo2 (notot, nosss, nopa, nosfun, itime, &
+            call write_output (notot, nosss, nopa, nosfun, itime, &
                     c(imnam:), c(isnam:), c(idnam:), j(idump:), nodump, &
                     a(iconc:), a(icons:), a(iparm:), a(ifunc:), a(isfun:), &
                     a(ivol:), nocons, nofun, idt, noutp, &

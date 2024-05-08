@@ -24,7 +24,7 @@ module m_integration_scheme_7
     use m_waq_precision
     use m_hsurf
     use m_dlwqtr
-    use m_dlwqo2
+    use m_write_output
 
     implicit none
 
@@ -245,7 +245,7 @@ contains
             !
             !     Call OUTPUT system
             !
-            CALL DLWQO2 (NOTOT, NOSEG, NOPA, NOSFUN, ITSTRT, &
+            CALL write_output (NOTOT, NOSEG, NOPA, NOSFUN, ITSTRT, &
                     C(IMNAM:), C(ISNAM:), C(IDNAM:), J(IDUMP:), NODUMP, &
                     A(ICONC:), A(ICONS:), A(IPARM:), A(IFUNC:), A(ISFUN:), &
                     A(IVOL:), NOCONS, NOFUN, 1, NOUTP, &

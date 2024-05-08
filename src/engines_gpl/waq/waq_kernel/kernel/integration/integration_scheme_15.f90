@@ -31,7 +31,7 @@ module m_integration_scheme_15
     use m_hsurf
     use m_dlwqtr
     use time_dependent_variables, only : initialize_time_dependent_variables
-    use m_dlwqo2
+    use m_write_output
 
     implicit none
 
@@ -73,7 +73,7 @@ contains
         !      |                   setset: not so clear what this does, probably process related
         !      |                   hsurf : set the surface array from the proces parameters
         !      |                   proces: DELWAQ water quality process system
-        !      |                   dlwqo2: DELWAQ output system, provides all output to files
+        !      |                   write_output: DELWAQ output system, provides all output to files
         !    time  ===> jump out   zercum: zero's the cummulative array's of balances and monitoring areas
         !    loop        point     dlwqb8: restores conc array (in case other routines did distroy ?!?)
         !      |                   dlwq14: scales waterquality derivative according to right time step size
@@ -372,7 +372,7 @@ contains
             endif
 
             !     call output system
-            call dlwqo2 (notot, noseg, nopa, nosfun, itime, &
+            call write_output (notot, noseg, nopa, nosfun, itime, &
                     c(imnam:), c(isnam:), c(idnam:), j(idump:), nodump, &
                     a(iconc:), a(icons:), a(iparm:), a(ifunc:), a(isfun:), &
                     a(ivol:), nocons, nofun, idt, noutp, &

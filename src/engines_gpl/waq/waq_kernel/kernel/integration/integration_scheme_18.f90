@@ -27,7 +27,7 @@ module m_integration_scheme_18
     use m_proces
     use m_hsurf
     use m_dlwqtr
-    use m_dlwqo2
+    use m_write_output
 
     implicit none
 
@@ -54,7 +54,7 @@ contains
         !                          file_unit_list(23) , output, unformatted restart file
         !
         !     SUBROUTINES CALLED : DLWQTR, user transport routine
-        !                          DLWQO2, DELWAQ4 output routine
+        !                          write_output, DELWAQ4 output routine
         !                          write_restart_map_file, system postpro-dump routine
         !                          DLWQ15, wasteload routine
         !                          DLWQ60, scales water quality
@@ -344,7 +344,7 @@ contains
             !
             !     Call OUTPUT system ( note that mass is in A(IDERV:) )
             !
-            CALL DLWQO2 (NOTOT, NOSEG, NOPA, NOSFUN, ITSTRT, &
+            CALL write_output (NOTOT, NOSEG, NOPA, NOSFUN, ITSTRT, &
                     C(IMNAM:), C(ISNAM:), C(IDNAM:), J(IDUMP:), NODUMP, &
                     A(ICONC:), A(ICONS:), A(IPARM:), A(IFUNC:), A(ISFUN:), &
                     A(IVOL:), NOCONS, NOFUN, 1, NOUTP, &

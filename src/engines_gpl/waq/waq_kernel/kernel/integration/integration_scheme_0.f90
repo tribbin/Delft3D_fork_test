@@ -28,7 +28,7 @@ module m_integration_scheme_0
     use m_proces
     use m_hsurf
     use m_dlwqtr
-    use m_dlwqo2
+    use m_write_output
 
     implicit none
 
@@ -210,7 +210,7 @@ contains
                     surface, file_unit_list(19))
 
             !     Call OUTPUT system
-            CALL DLWQO2 (NOTOT, NOSSS, NOPA, NOSFUN, ITIME, &
+            CALL write_output (NOTOT, NOSSS, NOPA, NOSFUN, ITIME, &
                     C(IMNAM:), C(ISNAM:), C(IDNAM:), J(IDUMP:), NODUMP, &
                     A(ICONC:), A(ICONS:), A(IPARM:), A(IFUNC:), A(ISFUN:), &
                     A(IVOL:), NOCONS, NOFUN, IDT, NOUTP, &

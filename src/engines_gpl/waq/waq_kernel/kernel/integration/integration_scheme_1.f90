@@ -29,7 +29,7 @@ module m_integration_scheme_1
     use m_hsurf
     use m_dlwqtr
     use time_dependent_variables, only : initialize_time_dependent_variables
-    use m_dlwqo2
+    use m_write_output
 
     implicit none
 
@@ -57,7 +57,7 @@ contains
 
         !     SUBROUTINES CALLED : DLWQTR          , user transport routine
         !                          PROCES          , DELWAQ proces system
-        !                          DLWQO2          , DELWAQ output system
+        !                          write_output          , DELWAQ output system
         !                          initialize_time_dependent_variables          , sets time functions
         !                          write_restart_map_file          , system postpro-dump routine
         !                          DLWQ14          , scales waterquality
@@ -292,7 +292,7 @@ contains
 
             !     Call OUTPUT system
 
-            CALL DLWQO2 (NOTOT, NOSSS, NOPA, NOSFUN, ITIME, &
+            CALL write_output (NOTOT, NOSSS, NOPA, NOSFUN, ITIME, &
                     C(IMNAM:), C(ISNAM:), C(IDNAM:), J(IDUMP:), NODUMP, &
                     A(ICONC:), A(ICONS:), A(IPARM:), A(IFUNC:), A(ISFUN:), &
                     A(IVOL:), NOCONS, NOFUN, IDT, NOUTP, &

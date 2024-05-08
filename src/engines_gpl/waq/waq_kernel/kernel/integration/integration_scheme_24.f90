@@ -44,7 +44,7 @@ contains
         !>                         Method has the option to treat additional velocities, like
         !>                         settling of suspended matter, upwind to avoid wiggles.\n
 
-        use m_dlwqo2
+        use m_write_output
         use m_dlwqf8
         use m_dlwqce
         use m_dlwqb3
@@ -259,7 +259,7 @@ contains
             !
             !          Call OUTPUT system
             !
-            CALL DLWQO2 (NOTOT, nosss, NOPA, NOSFUN, ITIME, &
+            CALL write_output (NOTOT, nosss, NOPA, NOSFUN, ITIME, &
                     C(IMNAM:), C(ISNAM:), C(IDNAM:), J(IDUMP:), NODUMP, &
                     A(ICONC:), A(ICONS:), A(IPARM:), A(IFUNC:), A(ISFUN:), &
                     A(IVOL:), NOCONS, NOFUN, IDT, NOUTP, &
