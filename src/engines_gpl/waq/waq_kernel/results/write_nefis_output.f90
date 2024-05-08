@@ -20,7 +20,7 @@
 !!  All indications and logos of, and references to registered trademarks
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
-module m_outmnf
+module m_write_nefis_output
     use m_waq_precision
 
     implicit none
@@ -336,4 +336,4 @@ contains
 
     end subroutine write_map_to_nefis_file
 
-end module m_outmnf
+end module m_write_nefis_output

@@ -28,7 +28,7 @@ module m_dlwqo2
     use m_raatra
     use m_outmon
     use m_outmo3
-    use m_outmnf
+    use m_write_nefis_output
     use m_outmap
     use m_outhnf
     use m_write_netcdf_output
