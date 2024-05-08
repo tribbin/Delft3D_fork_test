@@ -32,22 +32,12 @@ contains
             NY, LGRID, CGRID, NOTOT, NOSYS, &
             SNAME, CONC, BOUND, NOTOT2, SYNAM2, &
             CONC2, IP, ISFLAG, INIOUT)
-        !
-        !
-        !     Deltares        SECTOR WATERRESOURCES AND ENVIRONMENT
-        !
-        !     CREATED            : may  1993  BY Jan van Beek
-        !                          from DLWQ11 : june 1988  BY M.E.Sileon
-        !
-        !     FUNCTION           : Writes concentrations in grid-layout and
-        !                          writes the result in IOUT .
+
+        ! Writes concentrations in grid-layout and
+        ! writes the result in IOUT .
         !
         !     LOGICAL UNITS      : IOUT = number of dump file
-        !
-        !     SUBROUTINES CALLED : none
-        !
-        !     PARAMETERS         : 19
-        !
+
         !     NAME    KIND     LENGTH      FUNCT.  DESCRIPTION
         !     ---------------------------------------------------------
         !     IOUT    INTEGER  1           INPUT   unit number output file
@@ -228,6 +218,6 @@ contains
         2030 FORMAT (6X, 20A6)
         2040 FORMAT (45X, A40)
         !
-    END
+    END SUBROUTINE OUTDMP
 
 end module m_outdmp

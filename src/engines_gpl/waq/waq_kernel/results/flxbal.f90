@@ -30,18 +30,8 @@ contains
 
     SUBROUTINE FLXBAL (NOTOT, NOFLUX, NDMPAR, NOBALT, STOCHI, &
             FLXINT, ASMASS, BALINT)
-        !
-        !     Deltares
-        !
-        !     CREATED:            : march 1998 by Jan van Beek
-        !
-        !     FUNCTION            : Makes BALINT from FLXINT and STOCHI
-        !
-        !     SUBROUTINES CALLED  : -
-        !
-        !     FILES               : -
-        !
-        !     COMMON BLOCKS       : -
+
+        ! Makes BALINT from FLXINT and STOCHI
         !
         !     PARAMETERS          : 8
         !
@@ -55,9 +45,7 @@ contains
         !     FLXINT  REAL  NOFLUX*NDMPAR INPUT   Accumulated fluxes
         !     ASMASS  REAL NOTOT*NDMPAR*6 INPUT   Mass balance terms
         !     BALINT  REAL  NOBALT*NDMPAR OUTPUT  Balance terms
-        !
-        !     Declaration of arguments
-        !
+
         use m_logger, only : terminate_execution, get_log_unit_number
         use timers
 
@@ -65,7 +53,7 @@ contains
         REAL(kind = real_wp) :: STOCHI(NOTOT, NOFLUX), FLXINT(NOFLUX, NDMPAR), &
                 ASMASS(NOTOT, NDMPAR, 6), BALINT(NOBALT, NDMPAR)
 
-        !     local
+        ! local
         integer(kind = int_wp) :: ibalt, isys, i, idmp, iflx, lurep
         real(kind = real_wp) :: st
         integer(kind = int_wp) :: ithandl = 0
@@ -107,6 +95,6 @@ contains
         if (timon) call timstop (ithandl)
         RETURN
         !
-    END
+    END SUBROUTINE FLXBAL
 
 end module m_flxbal

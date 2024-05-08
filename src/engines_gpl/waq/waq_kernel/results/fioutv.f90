@@ -34,18 +34,8 @@ contains
             VOLUME, NOSEG, NOSYS, NODUMP, IDUMP, &
             NX, NY, LGRID, IGRID, BOUND, &
             NOLOC, PROLOC, NODEF, DEFAUL)
-        !
-        !     Deltares     SECTOR WATERRESOURCES AND ENVIRONMENT
-        !
-        !     CREATED:            : may 1993 by Jan van Beek
-        !
-        !     FUNCTION            : Fills output buffer OUTVAL.
-        !
-        !     SUBROUTINES CALLED  : -
-        !
-        !     FILES               : -
-        !
-        !     PARAMETERS          : 29
+
+        ! Fills output buffer OUTVAL.
         !
         !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
         !     ----    -----    ------     ------- -----------
@@ -78,9 +68,7 @@ contains
         !     PARAM   REAL   NOLOC,NOSEG  INPUT   Parameters local in PROCES system
         !     NODEF   INTEGER       1     INPUT   Number of used defaults
         !     DEFAUL  REAL          *     INPUT   Default proces parameters
-        !
-        !     Declaration of arguments
-        !
+
         use timers
 
         INTEGER(kind = int_wp) :: NRVAR, NOCONS, NOPA, NOFUN, NOSFUN, &
@@ -186,6 +174,6 @@ contains
         !
         if (timon) call timstop (ithandl)
         RETURN
-    END
+    END SUBROUTINE FIOUTV
 
 end module m_fioutv
