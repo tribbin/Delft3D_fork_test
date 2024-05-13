@@ -39,7 +39,7 @@ module m_dlwqf5
     !!    * Generate iteration report: true or false
     subroutine initialize_gmres(lunrep, nocons, coname, cons, preconditioner, &
             &                   max_iterations, rel_tolerance, row_scaling, report_iterations, noseg, &
-            &                   noq3, noq, nobnd, novec, matrix_size, &
+            &                   noq3, noq, novec, matrix_size, &
             &                   nolay, integration_type, integration_option)
 
         use timers                         ! WAQ performance timers
@@ -62,7 +62,6 @@ module m_dlwqf5
         integer(kind = int_wp), intent(in)  :: noseg              ! Number of cells or computational volumes
         integer(kind = int_wp), intent(in)  :: noq3               ! Number of exchange surfaces in 3rd direction
         integer(kind = int_wp), intent(in)  :: noq                ! total number of exchange surfaces
-        integer(kind = int_wp), intent(in)  :: nobnd              ! Number of open boundaries
         integer(kind = int_wp), intent(in)  :: novec              ! vector_count
         integer(kind = int_wp), intent(in)  :: matrix_size        ! size of matrix with off-diagonals
         integer(kind = int_wp), intent(out) :: nolay              ! number of layers

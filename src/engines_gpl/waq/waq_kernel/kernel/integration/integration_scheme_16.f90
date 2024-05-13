@@ -228,8 +228,7 @@ contains
                 !        layers in preconditioner [1,KMAX]
                 !
                 call initialize_gmres (file_unit_list(19), nocons, c(icnam:), a(icons:), ioptpc, &
-                        iter, tol, iscale, litrep, noseg, &
-                        noq3, noq, nobnd, novec, nomat, &
+                        iter, tol, iscale, litrep, noseg, noq3, noq, novec, nomat, &
                         nolay, intsrt, intopt)
 
                 ithandl = 0
