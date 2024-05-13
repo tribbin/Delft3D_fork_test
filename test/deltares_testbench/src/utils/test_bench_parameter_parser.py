@@ -34,48 +34,48 @@ class TestBenchParameterParser:
         parser = cls.__create_argument_parser()
         args: Namespace = parser.parse_args()
 
-        new_settings = TestBenchSettings()
+        settings = TestBenchSettings()
 
         # Store path of Testbench.py into os environment
         script_path, script_name = os.path.split(os.path.abspath(__file__))
 
-        new_settings.test_bench_root = script_path
-        new_settings.test_bench_script_name = script_name
-        new_settings.test_bench_startup_dir = os.getcwd()
+        settings.test_bench_root = script_path
+        settings.test_bench_script_name = script_name
+        settings.test_bench_startup_dir = os.getcwd()
 
-        new_settings.server_base_url = (
+        settings.server_base_url = (
             cls.__get_argument_value("server_base_url", args) or ""
         )
-        new_settings.override_paths = args.__dict__["or_paths"]
+        settings.override_paths = args.__dict__["or_paths"]
 
         # Loglevel from config.xml can be overruled by loglevel from arguments
         if args.__dict__["loglevel"] != "":
-            new_settings.log_level = get_log_level(args.__dict__["loglevel"])
+            settings.log_level = get_log_level(args.__dict__["loglevel"])
 
         # Do not run the model, only run the post-processing (comparison).
-        new_settings.only_post = cls.__get_argument_value("only_post", args) or False
+        settings.only_post = cls.__get_argument_value("only_post", args) or False
 
         # automatically commit reference run if succesfull
-        new_settings.autocommit = cls.__get_argument_value("autocommit", args) or False
+        settings.autocommit = cls.__get_argument_value("autocommit", args) or False
 
         # Enables running the tests in parallel (multi-process)
-        new_settings.parallel = cls.__get_argument_value("parallel", args) or False
+        settings.parallel = cls.__get_argument_value("parallel", args) or False
 
         # If option is used, all logging is decorated with TeamCity messages.
         # Additionally, extra TeamCity messages will be produced.
-        new_settings.teamcity = cls.__get_argument_value("teamcity", args) or False
+        settings.teamcity = cls.__get_argument_value("teamcity", args) or False
 
-        new_settings.filter = args.filter
+        settings.filter = args.filter
         # Determine type of run
-        new_settings.run_mode = (
+        settings.run_mode = (
             cls.__get_argument_value("run_mode", args) or ModeType.LIST
         )
-        new_settings.config_file = (
+        settings.config_file = (
             cls.__get_argument_value("config", args) or "config.xml"
         )
-        new_settings.credentials = cls.__get_credentials(args)
+        settings.credentials = cls.__get_credentials(args)
 
-        return new_settings
+        return settings
 
     @classmethod
     def __get_argument_value(
