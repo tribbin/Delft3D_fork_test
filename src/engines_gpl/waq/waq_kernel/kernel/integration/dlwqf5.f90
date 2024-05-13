@@ -38,9 +38,9 @@ module m_dlwqf5
     !!    * Row scaling: 0 = no, 1 = (default) yes
     !!    * Generate iteration report: true or false
     subroutine initialize_gmres(lunrep, nocons, coname, cons, preconditioner, &
-            &                   max_iterations, rel_tolerance, row_scaling, report_iterations, cell_count, &
-            &                   noq3, noq, boundary_count, vector_count, matrix_size, &
-            &                   layer_count, integration_type, integration_option)
+            &                   max_iterations, rel_tolerance, row_scaling, report_iterations, noseg, &
+            &                   noq3, noq, nobnd, novec, matrix_size, &
+            &                   nolay, integration_type, integration_option)
 
         use timers                         ! WAQ performance timers
 
@@ -59,13 +59,13 @@ module m_dlwqf5
         real(kind = dp),        intent(out) :: rel_tolerance      ! Relative tolerance
         integer(kind = int_wp), intent(out) :: row_scaling        ! Row scaling switch [0 = no, 1 =yes]
         logical,                intent(out) :: report_iterations  ! Switch on reporting iterarions
-        integer(kind = int_wp), intent(in)  :: cell_count         ! Number of cells or computational volumes
+        integer(kind = int_wp), intent(in)  :: noseg              ! Number of cells or computational volumes
         integer(kind = int_wp), intent(in)  :: noq3               ! Number of exchange surfaces in 3rd direction
         integer(kind = int_wp), intent(in)  :: noq                ! total number of exchange surfaces
-        integer(kind = int_wp), intent(in)  :: boundary_count     ! Number of open boundaries
-        integer(kind = int_wp), intent(in)  :: vector_count       ! vector_count
+        integer(kind = int_wp), intent(in)  :: nobnd              ! Number of open boundaries
+        integer(kind = int_wp), intent(in)  :: novec              ! vector_count
         integer(kind = int_wp), intent(in)  :: matrix_size        ! size of matrix with off-diagonals
-        integer(kind = int_wp), intent(out) :: layer_count        ! number of layers
+        integer(kind = int_wp), intent(out) :: nolay              ! number of layers
         integer(kind = int_wp), intent(in)  :: integration_type   ! integration type
         integer(kind = int_wp), intent(in)  :: integration_option ! integration option
 
@@ -86,7 +86,7 @@ module m_dlwqf5
 
         ! look for unstructured setting, this is misuse of nolay, fractim depends also on this
         if (btest(integration_option, 15)) then
-            layer_count = 1
+            nolay = 1
         end if
 
         ! Some initialisations
@@ -135,7 +135,7 @@ module m_dlwqf5
         end if
 
         ! Number of vectors
-        write (lunrep, 2260) vector_count
+        write (lunrep, 2260) novec
 
         ! Relative tolerance
         write (lunrep, *)
