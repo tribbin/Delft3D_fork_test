@@ -1,4 +1,4 @@
-indent = 4
+indent = 3
 line-length = 0 # fprettify will not format lines that exceed the limit, so do not enforce it here
 whitespace = 4
 whitespace-comma =
@@ -18,6 +18,8 @@ disable-whitespace = False
 enable-replacements = True
 c-relations = True
 case = [1, 1, 1, 1]
+exclude = [third_party, third_party_open]
 strip-comments = False
 disable-fypp = True
 disable-indent-mod = False
+recursive
