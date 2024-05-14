@@ -5,13 +5,11 @@ Copyright (C)  Stichting Deltares, 2023
 """
 
 import getpass
-import operator
 import os
 from argparse import ArgumentParser, Namespace
 from typing import Any, Optional
 
 from src.config.credentials import Credentials
-from src.config.test_case_config import TestCaseConfig
 from src.config.types.mode_type import ModeType
 from src.suite.test_bench_settings import TestBenchSettings
 from src.utils.common import get_log_level
