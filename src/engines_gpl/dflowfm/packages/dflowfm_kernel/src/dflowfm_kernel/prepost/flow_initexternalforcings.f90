@@ -1517,7 +1517,6 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                if (allocated (kcw) ) deallocate(kcw)
                allocate( kcw(ndx) )
                kcw = 1
-               jasol = 2 
 
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), kcw, kx, filename, filetype, method, operand, varname=varname) ! vectormax=3
 
@@ -1546,6 +1545,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), kcw, kx, filename, filetype, method, operand, varname=varname) ! vectormax = 4
                if (success) then
                   tair_available = .true.
+                  solrad_available = .true.
                endif
 
             else if (qid == 'dewpoint_airtemperature_cloudiness_solarradiation') then
@@ -1560,6 +1560,7 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                if (success) then
                   dewpoint_available = .true.
                   tair_available = .true.
+                  solrad_available = .true.
                endif
 
             else if (qid == 'nudge_salinity_temperature') then
@@ -1696,7 +1697,8 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                endif
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  jasol = 1 ;  btempforcingtypS = .true.
+                  btempforcingtypS = .true.
+                  solrad_available = .true.
                endif
 
             else if (qid == 'longwaveradiation') then
@@ -1707,7 +1709,8 @@ integer function flow_initexternalforcings() result(iresult)              ! This
                endif
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  jalongwave = 1 ;  btempforcingtypL = .true.
+                  btempforcingtypL = .true.
+                  longwave_available = .true.
                endif
 
             else if (qid(1:8) == 'rainfall' ) then
@@ -2486,10 +2489,6 @@ integer function flow_initexternalforcings() result(iresult)              ! This
    if (allocated (xy2pump) ) deallocate (xy2pump)
 
    if (allocated (xdum)    ) deallocate( xdum, ydum, kdum, xy2dum)
-
-   if (jasol == 2) then
-      if (allocated (qrad) ) deallocate (qrad)
-   endif
 
    if (mxgr > 0 .and. .not.stm_included) then
       do j = 1,mxgr

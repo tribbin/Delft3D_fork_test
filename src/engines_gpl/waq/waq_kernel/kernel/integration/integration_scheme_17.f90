@@ -172,9 +172,9 @@ contains
             ithandl = 0
             if (timon) call timstrt ("integration_scheme_17", ithandl)
 
-            call dlwqf5 (file_unit_list(19), nocons, c(icnam:), a(icons:), ioptpc, &
+            call initialize_gmres (file_unit_list(19), nocons, c(icnam:), a(icons:), ioptpc, &
                     iter, tol, iscale, litrep, noseg, &
-                    noq3, noq, nobnd, novec, nomat, &
+                    noq3, noq, novec, nomat, &
                     nolay, intsrt, intopt)
 
             itime = itstrt + idt
@@ -373,14 +373,13 @@ contains
             !
             !          close files, except monitor file
             !
-            call CloseHydroFiles(dlwqd%collcoll)
+            call close_hydro_files(dlwqd%collcoll)
             call close_files(file_unit_list)
-            !
-            !          write restart file
-            !
+
+            ! write restart file
             CALL write_restart_map_file (file_unit_list, file_name_list, A(ICONC:), ITSTRT, C(IMNAM:), &
                     C(ISNAM:), NOTOT, NOSEG)
-            !
+
         end associate
         if (timon) call timstop (ithandl)
         RETURN

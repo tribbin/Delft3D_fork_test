@@ -430,9 +430,8 @@ contains
                 endif
 
                 !           Scale fluxes and update "processes" accumulation arrays
-
-                call dlwq14 (deriv, notot, noseg, itfact, amass2, &
-                        idt, iaflag, dmps, intopt, isdmp)
+                call scale_processes_derivs_and_update_balances (deriv, notot, noseg, itfact, amass2, &
+                     idt, iaflag, dmps, intopt, isdmp)
 
                 !           Integration (derivs are zeroed)
 
@@ -610,8 +609,8 @@ contains
 
                 !           Scale fluxes and update "processes" accumulation arrays
 
-                call dlwq14 (deriv, notot, noseg, itfact, amass2, &
-                        idt, iaflag, dmps, intopt, isdmp)
+                call scale_processes_derivs_and_update_balances(deriv, notot, noseg, itfact, amass2, &
+                     idt, iaflag, dmps, intopt, isdmp)
 
                 !           Integration (derivs are zeroed)
 

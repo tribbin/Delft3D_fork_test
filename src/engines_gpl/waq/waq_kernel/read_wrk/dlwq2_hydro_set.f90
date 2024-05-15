@@ -540,7 +540,7 @@ contains
     !
     !          subroutine to close all open hydrodynamic files
     !
-    subroutine CloseHydroFiles(collection)
+    subroutine close_hydro_files(collection)
         type(FileUseDefCollColl) :: collection
 
         type(FileUseDefColl), pointer :: files
@@ -553,7 +553,6 @@ contains
                 close(files%FileUseDefs(j)%aFilePnt%pnt%ilun)
             enddo
         enddo
-
-    end subroutine CloseHydroFiles
+    end subroutine close_hydro_files
 
 end module HydroSet

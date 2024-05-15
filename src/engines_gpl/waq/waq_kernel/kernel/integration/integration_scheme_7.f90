@@ -272,16 +272,13 @@ contains
             !
             !          close files, except monitor file
             !
-            call CloseHydroFiles(dlwqd%collcoll)
+            call close_hydro_files(dlwqd%collcoll)
             call close_files(file_unit_list)
-            !
-            !          write restart file
-            !
+
+            ! write restart file
             CALL write_restart_map_file (file_unit_list, file_name_list, A(ICONC:), ITSTRT, C(IMNAM:), &
                     C(ISNAM:), NOTOT, NOSEG)
-            !
-            !          output formats
-            !
+            ! output formats
             1000 FORMAT ('No closure error corrections !')
             !
         end associate

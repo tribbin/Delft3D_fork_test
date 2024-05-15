@@ -638,7 +638,7 @@ subroutine fm_wq_processes_ini_proc()
 
     icon = index_in_array(cirradiation, coname_sub)
     isfradsurf = 0
-    if (jasol == 1 .and. jatem > 1) then
+    if (solrad_available .and. jatem > 1) then
         if (icon>0) then
             nosfun = nosfun + 1
             isfradsurf = nosfun

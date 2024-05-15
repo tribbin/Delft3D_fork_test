@@ -243,16 +243,14 @@ contains
 
         end select
 
-        IF (ACTION == ACTION_FINALISATION    .OR. &
-                ACTION == ACTION_FULLCOMPUTATION) THEN
-
+        if (action == action_finalisation    .or. &
+                action == action_fullcomputation) then
             ! print timer-results
             if (timon) then
                 call timstop (ithndl)
                 call timdump (TRIM(RUNID) // '-timers.out')
                 call timfinalize()
             endif
-
         endif
 
         return
