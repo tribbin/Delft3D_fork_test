@@ -26,13 +26,6 @@ module m_read_statistical_output
    implicit none
    private
 
-   integer, parameter, public :: SO_UNKNOWN = -1 !< Unknown operation type (e.g., input error)
-   integer, parameter, public :: SO_NONE    = 0  !< Dummy value for 'None', to switch off output
-   integer, parameter, public :: SO_CURRENT = 1
-   integer, parameter, public :: SO_AVERAGE = 2
-   integer, parameter, public :: SO_MAX     = 3
-   integer, parameter, public :: SO_MIN     = 4
-
    ! Error/result state constants for several utility functions:
    integer, parameter, public :: SO_NOERR          =  0 !< Function successful
    integer, parameter, public :: SO_INVALID_CONFIG = -1 !< Wrong value string provided in the MDU output configuration
@@ -51,6 +44,7 @@ module m_read_statistical_output
    !! this function can be called in a loop until SO_EOR is reached.
    function parse_next_stat_type_from_value_string(value_string, operation_type, moving_average_window) result(ierr)
       use string_module, only: str_token
+      use m_statistical_output_types, only: SO_UNKNOWN
 
       character(len=*), intent(inout) :: value_string      !< value_string in which to read the first entry. After reading, that piece will be removed from the front of the string, to enable repeated calls.
       integer,          intent(  out) :: operation_type    !< The parsed operation_type (one of SO_CURRENT/AVERAGE/MAX/MIN/ALL)
@@ -101,6 +95,7 @@ module m_read_statistical_output
    function get_operation_type(value_string) result(operation_type)
       use string_module, only: strcmpi
       use MessageHandling, only: msgbuf, err_flush
+      use m_statistical_output_types, only: SO_UNKNOWN, SO_NONE, SO_CURRENT, SO_AVERAGE, SO_MAX, SO_MIN
 
       character(len=*) :: value_string !<The input value string, typically stored in an output_config item
       integer          :: operation_type !< Corresponding operation type (one of: SO_CURRENT/AVERAGE/MAX/MIN/NONE/UNKNOWN).
@@ -125,6 +120,7 @@ module m_read_statistical_output
 
    !> Test if any output is requested in the value string
    function is_output_requested_in_value_string(value_string) result(res)
+      use m_statistical_output_types, only: SO_UNKNOWN, SO_NONE
       character(*), value :: value_string !< The string provided as a value in the MDU file
       logical             :: res
 

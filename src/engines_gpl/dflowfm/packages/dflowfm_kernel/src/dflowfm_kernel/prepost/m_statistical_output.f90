@@ -26,15 +26,14 @@ module m_statistical_output
 
    use MessageHandling
    use m_output_config
-   use m_statistical_callback
-   use m_statistical_output_types, only: t_output_variable_item, t_output_variable_set
+   use m_statistical_output_types, only: t_output_variable_item, t_output_variable_set, SO_NONE, SO_CURRENT, SO_AVERAGE, SO_MAX, SO_MIN
    use m_read_statistical_output
    use m_temporal_statistics
    use stdlib_kinds, only: dp
 
    implicit none
 
-private
+   private
 
    public realloc
    public dealloc
@@ -180,7 +179,7 @@ contains
 
    !> Create a new output item and add it to the output set according to output quantity config
    subroutine add_stat_output_items(output_set, output_config, data_pointer, source_input_function_pointer)
-      use m_statistical_callback
+      use m_statistical_callback, only: process_data_double_interface
       use MessageHandling, only: mess, LEVEL_WARN
 
       type(t_output_variable_set),                                 intent(inout) :: output_set    !< Output set that item will be added to

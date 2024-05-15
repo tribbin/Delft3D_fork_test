@@ -41,6 +41,13 @@ module m_statistical_output_types
    use m_statistical_callback, only: process_data_double_interface
    use m_temporal_statistics, only: t_moving_average_data
 
+   integer, parameter, public :: SO_UNKNOWN = -1 !< Unknown operation type (e.g., input error)
+   integer, parameter, public :: SO_NONE    = 0  !< Dummy value for 'None', to switch off output
+   integer, parameter, public :: SO_CURRENT = 1
+   integer, parameter, public :: SO_AVERAGE = 2
+   integer, parameter, public :: SO_MAX     = 3
+   integer, parameter, public :: SO_MIN     = 4
+
    private
 
    !> Derived type for the statistical output items.
