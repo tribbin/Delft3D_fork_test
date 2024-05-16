@@ -1,33 +1,33 @@
-      subroutine increm (mx1   ,ny1   ,mx2   ,ny2   ,incx  ,incy  ,
-     *                   maxinc,fout                              )
+subroutine increm (mx1   ,ny1   ,mx2   ,ny2   ,incx  ,incy  ,&
+&maxinc,fout                              )
 !----- GPL ---------------------------------------------------------------------
-!                                                                               
-!  Copyright (C)  Stichting Deltares, 2011-2024.                                
-!                                                                               
-!  This program is free software: you can redistribute it and/or modify         
-!  it under the terms of the GNU General Public License as published by         
-!  the Free Software Foundation version 3.                                      
-!                                                                               
-!  This program is distributed in the hope that it will be useful,              
-!  but WITHOUT ANY WARRANTY; without even the implied warranty of               
-!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                
-!  GNU General Public License for more details.                                 
-!                                                                               
-!  You should have received a copy of the GNU General Public License            
-!  along with this program.  If not, see <http://www.gnu.org/licenses/>.        
-!                                                                               
-!  contact: delft3d.support@deltares.nl                                         
-!  Stichting Deltares                                                           
-!  P.O. Box 177                                                                 
-!  2600 MH Delft, The Netherlands                                               
-!                                                                               
-!  All indications and logos of, and references to, "Delft3D" and "Deltares"    
-!  are registered trademarks of Stichting Deltares, and remain the property of  
-!  Stichting Deltares. All rights reserved.                                     
-!                                                                               
+!
+!  Copyright (C)  Stichting Deltares, 2011-2024.
+!
+!  This program is free software: you can redistribute it and/or modify
+!  it under the terms of the GNU General Public License as published by
+!  the Free Software Foundation version 3.
+!
+!  This program is distributed in the hope that it will be useful,
+!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!  GNU General Public License for more details.
+!
+!  You should have received a copy of the GNU General Public License
+!  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+!  contact: delft3d.support@deltares.nl
+!  Stichting Deltares
+!  P.O. Box 177
+!  2600 MH Delft, The Netherlands
+!
+!  All indications and logos of, and references to, "Delft3D" and "Deltares"
+!  are registered trademarks of Stichting Deltares, and remain the property of
+!  Stichting Deltares. All rights reserved.
+!
 !-------------------------------------------------------------------------------
-!  
-!  
+!
+!
 !-----------------------------------------------------------------------
 !             Module: SUBROUTINE INCREM
 !           Function: Computes increments (-1, 0 or 1) in the x- and y-
@@ -80,38 +80,38 @@
 !
 !  DECLARATIONS
 !
-      integer mx1   ,ny1   ,mx2   ,ny2   ,incx  ,incy  , maxinc
-      integer fout
-      integer incxa , incya
-      integer    KEOK, KEOPEN, KECLOSE, KEMEM, KEREAD, KEWRITE, KEEOF,
-     *           KEERR, KEEXTR, KEOVER, KEA45, KEEND
+   integer mx1   ,ny1   ,mx2   ,ny2   ,incx  ,incy  , maxinc
+   integer fout
+   integer incxa , incya
+   integer    KEOK, KEOPEN, KECLOSE, KEMEM, KEREAD, KEWRITE, KEEOF,&
+   &KEERR, KEEXTR, KEOVER, KEA45, KEEND
 
-      include 'params.inc'
+   include 'params.inc'
 !-----------------------------------------------------------------------
 !-----bereken afstanden in x en y as
 !-----------------------------------------------------------------------
-      incx   = mx2    - mx1
-      incy   = ny2    - ny1
-      incxa  = abs (incx  )
-      incya  = abs (incy  )
-      maxinc = max (incxa ,incya )
+   incx   = mx2    - mx1
+   incy   = ny2    - ny1
+   incxa  = abs (incx  )
+   incya  = abs (incy  )
+   maxinc = max (incxa ,incya )
 !-----------------------------------------------------------------------
 !-----test hoek veelvoud 45 graden
 !-----------------------------------------------------------------------
-      if (maxinc .ne. 0) then
-         if (incx   .eq. 0) then
-            incy   = incy   / maxinc
-         else if (incy   .eq. 0) then
-            incx   = incx   / maxinc
+   if (maxinc .ne. 0) then
+      if (incx   .eq. 0) then
+         incy   = incy   / maxinc
+      else if (incy   .eq. 0) then
+         incx   = incx   / maxinc
+      else
+         if (incxa  .ne. incya) then
+            fout   = KEERR
          else
-            if (incxa  .ne. incya) then
-               fout   = KEERR
-            else
-               incx   = incx   / maxinc
-               incy   = incy   / maxinc
-            endif
+            incx   = incx   / maxinc
+            incy   = incy   / maxinc
          endif
       endif
+   endif
 !-----------------------------------------------------------------------
-      return
-      end
+   return
+end

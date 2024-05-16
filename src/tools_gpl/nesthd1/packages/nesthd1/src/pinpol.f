@@ -1,33 +1,33 @@
 !pinpol
-      subroutine pinpol (x0    , y0    , n     , x     , y     , inside)
+subroutine pinpol (x0    , y0    , n     , x     , y     , inside)
 !----- GPL ---------------------------------------------------------------------
-!                                                                               
-!  Copyright (C)  Stichting Deltares, 2011-2024.                                
-!                                                                               
-!  This program is free software: you can redistribute it and/or modify         
-!  it under the terms of the GNU General Public License as published by         
-!  the Free Software Foundation version 3.                                      
-!                                                                               
-!  This program is distributed in the hope that it will be useful,              
-!  but WITHOUT ANY WARRANTY; without even the implied warranty of               
-!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                
-!  GNU General Public License for more details.                                 
-!                                                                               
-!  You should have received a copy of the GNU General Public License            
-!  along with this program.  If not, see <http://www.gnu.org/licenses/>.        
-!                                                                               
-!  contact: delft3d.support@deltares.nl                                         
-!  Stichting Deltares                                                           
-!  P.O. Box 177                                                                 
-!  2600 MH Delft, The Netherlands                                               
-!                                                                               
-!  All indications and logos of, and references to, "Delft3D" and "Deltares"    
-!  are registered trademarks of Stichting Deltares, and remain the property of  
-!  Stichting Deltares. All rights reserved.                                     
-!                                                                               
+!
+!  Copyright (C)  Stichting Deltares, 2011-2024.
+!
+!  This program is free software: you can redistribute it and/or modify
+!  it under the terms of the GNU General Public License as published by
+!  the Free Software Foundation version 3.
+!
+!  This program is distributed in the hope that it will be useful,
+!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!  GNU General Public License for more details.
+!
+!  You should have received a copy of the GNU General Public License
+!  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+!  contact: delft3d.support@deltares.nl
+!  Stichting Deltares
+!  P.O. Box 177
+!  2600 MH Delft, The Netherlands
+!
+!  All indications and logos of, and references to, "Delft3D" and "Deltares"
+!  are registered trademarks of Stichting Deltares, and remain the property of
+!  Stichting Deltares. All rights reserved.
+!
 !-------------------------------------------------------------------------------
-!  
-!  
+!
+!
 !***********************************************************************
 ! Deltares                         marine and coastal management
 !
@@ -78,109 +78,109 @@
 ! nqua     integer   1        added quatres
 !***********************************************************************
 !
-      parameter    (nmax  = 10    )
+   parameter    (nmax  = 10    )
 !
-      integer       lundia, nerror, i     , j     , nqua  , ncross,
-     *              n
+   integer       lundia, nerror, i     , j     , nqua  , ncross,&
+   &n
 !
-      real          x     ( n     ), y     ( n     ),
-     *              xt    ( nmax  ), yt    ( nmax  )
+   real          x     ( n     ), y     ( n     ),&
+   &xt    ( nmax  ), yt    ( nmax  )
 !
-      real          x0    , y0    , det
+   real          x0    , y0    , det
 !
-      integer       iquadr( nmax  )
+   integer       iquadr( nmax  )
 !
-      logical       inside
+   logical       inside
 !
 !-----------------------------------------------------------------------
 !---- initialisation
 !-----------------------------------------------------------------------
 !
-      if( n .gt. nmax )then
-         write (*,'(a, i5)')
-     *         '*** ERROR *** Increase NMAX in pinpol to ', n
-         stop
-      endif
+   if( n .gt. nmax )then
+      write (*,'(a, i5)')&
+      &'*** ERROR *** Increase NMAX in pinpol to ', n
+      stop
+   endif
 !
-      inside = .false.
-      ncross = 0
+   inside = .false.
+   ncross = 0
 !
 !-----------------------------------------------------------------------
 !---- translate all vertex coordinates, associate vertex with quatre
 !-----------------------------------------------------------------------
 !
-      do 100 i = 1, n
+   do 100 i = 1, n
 !
-         xt (i) = x (i) - x0
-         yt (i) = y (i) - y0
+      xt (i) = x (i) - x0
+      yt (i) = y (i) - y0
 !
-         if( xt(i) .gt. 0.0 )then
+      if( xt(i) .gt. 0.0 )then
 !
-            if( yt(i) .lt. 0.0 )then
-               iquadr (i) = 2
-            else
-               iquadr (i) = 1
-            endif
-!
-         else if( xt(i) .lt. 0.0 )then
-!
-            if( yt(i) .gt. 0.0 )then
-               iquadr (i) = 4
-            else
-               iquadr (i) = 5
-            endif
-!
+         if( yt(i) .lt. 0.0 )then
+            iquadr (i) = 2
          else
-!
-            if( yt(i) .gt. 0.0 )then
-               iquadr (i) = 1
-            else if( yt (i) .lt. 0.0 )then
-               iquadr (i) = 5
-            else
-               inside = .true.
-               goto 999
-            endif
-!
+            iquadr (i) = 1
          endif
 !
-  100 continue
+      else if( xt(i) .lt. 0.0 )then
+!
+         if( yt(i) .gt. 0.0 )then
+            iquadr (i) = 4
+         else
+            iquadr (i) = 5
+         endif
+!
+      else
+!
+         if( yt(i) .gt. 0.0 )then
+            iquadr (i) = 1
+         else if( yt (i) .lt. 0.0 )then
+            iquadr (i) = 5
+         else
+            inside = .true.
+            goto 999
+         endif
+!
+      endif
+!
+100 continue
 !
 !-----------------------------------------------------------------------
 !---- compute intersections with positive y-ax
 !-----------------------------------------------------------------------
 !
-      do 200 i = 1, n
+   do 200 i = 1, n
 !
-         j    = 1 + mod (i,n)
-         nqua = iquadr (i) + iquadr (j)
+      j    = 1 + mod (i,n)
+      nqua = iquadr (i) + iquadr (j)
 !
-         if( nqua .eq. 5 )then
+      if( nqua .eq. 5 )then
 !
-            ncross = ncross + 1
+         ncross = ncross + 1
 !
-         else if( nqua .eq. 6 )then
+      else if( nqua .eq. 6 )then
 !
-            det = xt (i) * yt (j) - xt (j) * yt (i)
-            if( det .gt. 0.0 )then
-               if( iquadr (i) .lt. iquadr (j) ) ncross = ncross + 1
-            else if( det .lt. 0.0 )then
-               if( iquadr (i) .gt. iquadr (j) ) ncross = ncross + 1
-            else
-               inside = .true.
-               goto 999
-            endif
-!
+         det = xt (i) * yt (j) - xt (j) * yt (i)
+         if( det .gt. 0.0 )then
+            if( iquadr (i) .lt. iquadr (j) ) ncross = ncross + 1
+         else if( det .lt. 0.0 )then
+            if( iquadr (i) .gt. iquadr (j) ) ncross = ncross + 1
+         else
+            inside = .true.
+            goto 999
          endif
 !
-  200 continue
+      endif
 !
-      if( mod (ncross,2) .ne. 0 ) inside = .true.
+200 continue
+!
+   if( mod (ncross,2) .ne. 0 ) inside = .true.
 !
 !-----------------------------------------------------------------------
 !---- return to calling module
 !-----------------------------------------------------------------------
 !
-  999 continue
+999 continue
 !
-      return
-      end
+   return
+end
