@@ -23,9 +23,8 @@
 
 ! waq_netcdf_utils --
 !     Module of utility routines for dealing with NetCDF output
-!
 module waq_netcdf_utils
-    use netcdf, only : nf90_max_dims, nf90_max_name, nf90_inquire, nf90_inquire_attribute, nf90_redef, nf90_noerr, &
+    use netcdf, only: nf90_max_dims, nf90_max_name, nf90_inquire, nf90_inquire_attribute, nf90_redef, nf90_noerr, &
             nf90_def_var, nf90_enameinuse, nf90_inquire_dimension, nf90_ebaddim, nf90_enotvar, nf90_enotatt, &
             nf90_eindefine, nf90_enddef, nf90_get_var, nf90_put_var, nf90_inq_varid, nf90_inq_attname, nf90_get_att, &
             nf90_copy_att, nf90_del_att, nf90_inq_dimid, nf90_float, nf90_def_dim, nf90_put_att, nf90_def_dim, &
@@ -34,8 +33,8 @@ module waq_netcdf_utils
             nf90_inq_libvers, nf90_nowrite, nf90_open, nf90_strerror, nf90_create, nf90_netcdf4, nf90_clobber, &
             nf90_format_classic, nf90_global, nf90_char, nf90_max_var_dims, nf90_sync, nf90_double
 
-    use results, only : ncopt
-    use ISO_FORTRAN_ENV, only : int64
+    use results, only: ncopt
+    use ISO_FORTRAN_ENV, only: int64
 
     implicit none
 
