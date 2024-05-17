@@ -296,7 +296,7 @@ subroutine unc_write_his(tim)            ! wrihis
             ierr = unc_addcoordmapping(ihisfile, jsferic)
 
             nNodeTot = numobs+nummovobs
-            ierr = unc_def_his_structure_static_vars(ihisfile, 'station', 'observation station', 1, numobs+nummovobs, 'point', nNodeTot, id_strlendim, &
+            ierr = unc_def_his_structure_static_vars(ihisfile, ST_OBS_STATION, 1, numobs+nummovobs, 'point', nNodeTot, id_strlendim, &
                                                      id_statdim, id_statname, id_statgeom_node_count, id_statgeom_node_coordx, id_statgeom_node_coordy, &
                                                      add_latlon, id_statgeom_node_lon, id_statgeom_node_lat)
             
@@ -312,13 +312,13 @@ subroutine unc_write_his(tim)            ! wrihis
 
         end if
 
-         ierr = unc_def_his_structure_static_vars(ihisfile, 'cross_section', 'observation cross section', 1, ncrs, 'line', nNodesCrs, id_strlendim, &
+         ierr = unc_def_his_structure_static_vars(ihisfile, ST_CROSS_SECTION, 1, ncrs, 'line', nNodesCrs, id_strlendim, &
                                                    id_crsdim, id_crs_id, id_crsgeom_node_count, id_crsgeom_node_coordx, id_crsgeom_node_coordy, &
                                                    id_poly_xmid = id_crs_xmid, id_poly_ymid = id_crs_ymid)
 
 
         ! Runup gauges
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'runup_gauge', 'runup gauge', 1, num_rugs, 'none', 0, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_RUNUP_GAUGE, 1, num_rugs, 'none', 0, id_strlendim, &
                                                  id_rugdim, id_rugid) ! No geometry
 
         ! Source-sinks
@@ -339,7 +339,7 @@ subroutine unc_write_his(tim)            ! wrihis
             end do
         end if
 
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'source_sink', 'source and sink', jahissourcesink, numsrc, 'line', nNodeTot, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_SOURCE_SINK, jahissourcesink, numsrc, 'line', nNodeTot, id_strlendim, &
                                                  id_srcdim, id_srcname, id_srcgeom_node_count, id_srcgeom_node_coordx, id_srcgeom_node_coordy, &
                                                  id_poly_xmid = id_src_xmid, id_poly_ymid = id_src_ymid)
         if (jahissourcesink > 0 .and. numsrc > 0) then
@@ -376,7 +376,7 @@ subroutine unc_write_his(tim)            ! wrihis
                end do
             end if
         end if
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'general_structure', 'general structure', jahiscgen, ngenstru_, 'line', nNodeTot, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_GENERAL_ST, jahiscgen, ngenstru_, 'line', nNodeTot, id_strlendim, &
                                                  id_genstrudim, id_genstru_id, id_genstrugeom_node_count, id_genstrugeom_node_coordx, id_genstrugeom_node_coordy, &
                                                  id_poly_xmid = id_genstru_xmid, id_poly_ymid = id_genstru_ymid)
 
@@ -387,12 +387,12 @@ subroutine unc_write_his(tim)            ! wrihis
             call check_netcdf_error( nf90_put_att(ihisfile, id_pump_id,  'cf_role',   'timeseries_id'))
             call check_netcdf_error( nf90_put_att(ihisfile, id_pump_id,  'long_name', 'Id of pump'    ))
         end if
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'pump', 'pump', jahispump, npumpsg, 'line', number_of_pump_nodes(), id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_PUMP, jahispump, npumpsg, 'line', number_of_pump_nodes(), id_strlendim, &
                                                  id_pumpdim, id_pump_id, id_pumpgeom_node_count, id_pumpgeom_node_coordx, id_pumpgeom_node_coordy, &
                                                  id_poly_xmid = id_pump_xmid, id_poly_ymid = id_pump_ymid)
 
         ! Gate (Old .ext file, QUANTITY='gateloweredgelevel')
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'gate', 'gate', jahisgate, ngatesg, 'none', 0, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_GATE, jahisgate, ngatesg, 'none', 0, id_strlendim, &
                                                  id_gatedim, id_gate_id)
 
         if(jahisgate > 0 .and. ngategen > 0 ) then
@@ -409,12 +409,12 @@ subroutine unc_write_his(tim)            ! wrihis
                nNodeTot = nNodeTot + nNodes
             end do
         end if
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'gategen', 'gate', jahisgate, ngategen, 'line', nNodeTot, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_GATEGEN, jahisgate, ngategen, 'line', nNodeTot, id_strlendim, &
                                                  id_gategendim, id_gategen_id, id_gategengeom_node_count, id_gategengeom_node_coordx, id_gategengeom_node_coordy, &
                                                  id_poly_xmid = id_gategen_xmid, id_poly_ymid = id_gategen_ymid)
 
         ! Controllable dam (Old .ext file QUANTITY='damlevel')
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'cdam', 'controllable dam', jahiscdam, ncdamsg, 'none', 0, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_DAM, jahiscdam, ncdamsg, 'none', 0, id_strlendim, &
                                                  id_cdamdim, id_cdam_id)
 
         ! Weir
@@ -436,46 +436,46 @@ subroutine unc_write_his(tim)            ! wrihis
                end do
             end if
         end if
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'weirgen', 'weir', jahisweir, nweirgen, 'line', nNodeTot, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_WEIR, jahisweir, nweirgen, 'line', nNodeTot, id_strlendim, &
                                                  id_weirgendim, id_weirgen_id, id_weirgengeom_node_count, id_weirgengeom_node_coordx, id_weirgengeom_node_coordy, &
                                                  id_poly_xmid = id_weirgen_xmid, id_poly_ymid = id_weirgen_ymid)
 
         ! Orifice
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'orifice', 'orifice', jahisorif, network%sts%numOrifices, 'line', nNodesOrif, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_ORIFICE, jahisorif, network%sts%numOrifices, 'line', nNodesOrif, id_strlendim, &
                                                  id_orifgendim, id_orifgen_id, id_orifgengeom_node_count, id_orifgengeom_node_coordx, id_orifgengeom_node_coordy, &
                                                  id_poly_xmid = id_weirgen_xmid, id_poly_ymid = id_weirgen_ymid)
 
         ! Bridge
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'bridge', 'bridge', jahisbridge, network%sts%numBridges, 'line', nNodesBridge, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_BRIDGE, jahisbridge, network%sts%numBridges, 'line', nNodesBridge, id_strlendim, &
                                                  id_bridgedim, id_bridge_id, id_bridgegeom_node_count, id_bridgegeom_node_coordx, id_bridgegeom_node_coordy, &
                                                  id_poly_xmid = id_bridge_xmid, id_poly_ymid = id_bridge_ymid)
 
         ! Culvert
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'culvert', 'culvert', jahisculv, network%sts%numculverts, 'line', nNodesCulv, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_CULVERT,  jahisculv, network%sts%numculverts, 'line', nNodesCulv, id_strlendim, &
                                                  id_culvertdim, id_culvert_id, id_culvertgeom_node_count, id_culvertgeom_node_coordx, id_culvertgeom_node_coordy, &
                                                  id_poly_xmid = id_culvert_xmid, id_poly_ymid = id_culvert_ymid)
 
         ! Dambreak
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'dambreak', 'dambreak', jahisdambreak, ndambreaksignals, 'none', 0, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_DAMBREAK, jahisdambreak, ndambreaksignals, 'none', 0, id_strlendim, &
                                                  id_dambreakdim, id_dambreak_id)
 
         ! Universal weir
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'uniweir', 'universal weir', jahisuniweir, network%sts%numuniweirs, 'line', nNodesUniweir, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_UNI_WEIR, jahisuniweir, network%sts%numuniweirs, 'line', nNodesUniweir, id_strlendim, &
                                                  id_uniweirdim, id_uniweir_id, id_uniweirgeom_node_count, id_uniweirgeom_node_coordx, id_uniweirgeom_node_coordy, &
                                                  id_poly_xmid = id_uniweir_xmid, id_poly_ymid = id_uniweir_ymid)
 
 
         ! compound structure
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'cmpstru', 'compound structure', jahiscmpstru, network%cmps%count, 'none', 0, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_COMPOUND, jahiscmpstru, network%cmps%count, 'none', 0, id_strlendim, &
                                                  id_cmpstrudim, id_cmpstru_id)
 
         ! Long culvert
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'longculvert', 'long culvert', jahislongculv, nlongculverts, 'line', nNodesLongCulv, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_LONGCULVERT, jahislongculv, nlongculverts, 'line', nNodesLongCulv, id_strlendim, &
                                                  id_longculvertdim, id_longculvert_id, id_longculvertgeom_node_count, id_longculvertgeom_node_coordx, id_longculvertgeom_node_coordy, &
                                                  id_poly_xmid = id_longculvert_xmid, id_poly_ymid = id_longculvert_ymid)
 
         ! Lateral
-        ierr = unc_def_his_structure_static_vars(ihisfile, 'lateral', 'lateral', jahislateral, numlatsg, 'point', nNodesLat, id_strlendim, &
+        ierr = unc_def_his_structure_static_vars(ihisfile, ST_LATERAL, jahislateral, numlatsg, 'point', nNodesLat, id_strlendim, &
                                                  id_latdim, id_lat_id, id_latgeom_node_count, id_latgeom_node_coordx, id_latgeom_node_coordy)
         ! TODO: UNST-7239: remove separate average IDX?
         if (timon) call timstop (handle_extra(60))
@@ -852,7 +852,7 @@ subroutine unc_write_his(tim)            ! wrihis
               end do
            end if
             ! Write time-independent geometry variables for different structure types
-           ierr = unc_put_his_structure_static_vars(ihisfile, 'pump', 'pump', jahispump, npumpsg, 'line', number_of_pump_nodes(), id_strlendim, &
+           ierr = unc_put_his_structure_static_vars(ihisfile, ST_PUMP, jahispump, npumpsg, 'line', number_of_pump_nodes(), id_strlendim, &
                                                     id_pumpdim, id_pump_id, id_pumpgeom_node_count, id_pumpgeom_node_coordx, id_pumpgeom_node_coordy, &
                                                     id_poly_xmid = id_pump_xmid, id_poly_ymid = id_pump_ymid)
            if (timon) call timstop ( handle_extra(63))
@@ -985,7 +985,7 @@ contains
    !> Define the static variables for a single structure type.
    !! This includes: NetCDF dimension ids, character Id variable and simple geometry container variables.
    !! Note: the writing ('putting') of data is done by another subroutine: unc_put_his_structure_static_vars.
-   function unc_def_his_structure_static_vars(ncid, prefix, name, output_enabled, count, geom_type, ngeom_node, id_strlendim, &
+   function unc_def_his_structure_static_vars(ncid, struc_type_id, output_enabled, count, geom_type, ngeom_node, id_strlendim, &
                                              id_strdim, id_strid, id_geom_node_count, id_geom_coordx, id_geom_coordy, &
                                              add_latlon, id_geom_coordlon, id_geom_coordlat, id_poly_xmid, id_poly_ymid) result(ierr)
       use string_module, only: strcmpi
@@ -994,8 +994,7 @@ contains
       use dfm_error, only: DFM_NOERR
       
       integer,           intent(in   ) :: ncid                 !< NetCDF id of already open dataset
-      character(len=*),  intent(in   ) :: prefix               !< Base name of this structure type, e.g., 'uniweir'
-      character(len=*),  intent(in   ) :: name                 !< Human readable name of this structure type, e.g., 'universal weir'
+      integer,           intent(in   ) :: struc_type_id        !< The id of the type of the structure (e.g. ST_CULVERT)
       integer,           intent(in   ) :: output_enabled       !< Whether or not (1/0) this structure's output must be written.
       integer,           intent(in   ) :: count                !< Number of structures for this structure_type
       character(len=*),  intent(in   ) :: geom_type            !< Geometry type, one of: 'point', 'line', 'polygon' (or 'none')
@@ -1015,6 +1014,9 @@ contains
       integer, optional, intent(  out) :: id_poly_ymid         !< NetCDF variable id created for the y-coordinate of the structure's polyline midpoint
 
       integer                          :: ierr                 !< Result status (NF90_NOERR if successful)
+      
+      character(len=255) :: prefix !< Base name of this structure type, e.g., 'uniweir'
+      character(len=255) :: name   !< Human readable name of this structure type, e.g., 'universal weir'
 
       ierr = DFM_NOERR
 
@@ -1022,40 +1024,109 @@ contains
          return
       end if
       
-      call check_netcdf_error( nf90_def_dim(ihisfile, prefix, count, id_strdim))
-      call check_netcdf_error( nf90_def_var(ihisfile, prefix//'_name',  nf90_char,   (/ id_strlendim, id_strdim /), id_strid))
+      call get_prefix_and_name_from_struc_type_id(struc_type_id, prefix, name)
+      
+      call check_netcdf_error( nf90_def_dim(ihisfile, trim(prefix), count, id_strdim))
+      call check_netcdf_error( nf90_def_var(ihisfile, trim(prefix)//'_name',  nf90_char,   (/ id_strlendim, id_strdim /), id_strid))
       call check_netcdf_error( nf90_put_att(ihisfile, id_strid,  'cf_role',   'timeseries_id'))
       call check_netcdf_error( nf90_put_att(ihisfile, id_strid,  'long_name', 'name of '//trim(name)))
 
       if (.not. strcmpi(geom_type, 'none') .and. len_trim(geom_type) > 0) then
          ! Define geometry related variables
-         ierr = sgeom_def_geometry_variables(ihisfile, prefix//'_geom', name, geom_type, ngeom_node, id_strdim, &
+         ierr = sgeom_def_geometry_variables(ihisfile, trim(prefix)//'_geom', trim(name), geom_type, ngeom_node, id_strdim, &
                                              id_geom_node_count, id_geom_coordx, id_geom_coordy, add_latlon, id_geom_coordlon, id_geom_coordlat)
       end if
          
       ! Polyline midpoint coordinates
-      if (strcmpi(prefix,'pump')) then  ! TODO (UNST-7919): define xmid,ymid for all polyline structures by replacing this line with:   if (strcmpi(geom_type,'line')) then
+      if (strcmpi(trim(prefix),'pump')) then  ! TODO (UNST-7919): define xmid,ymid for all polyline structures by replacing this line with:   if (strcmpi(geom_type,'line')) then
          if (.not. (present(id_poly_xmid) .and. present(id_poly_ymid))) then
             call mess(LEVEL_WARN, 'unc_def_his_structure_static_vars should return id_poly_xmid and id_poly_ymid for polyline structures')
          end if
-         call check_netcdf_error(nf90_def_var(ihisfile, prefix//'_xmid', nc_precision, [id_strdim], id_poly_xmid))
-         call check_netcdf_error(nf90_def_var(ihisfile, prefix//'_ymid', nc_precision, [id_strdim], id_poly_ymid))
+         call check_netcdf_error(nf90_def_var(ihisfile, trim(prefix)//'_xmid', nc_precision, [id_strdim], id_poly_xmid))
+         call check_netcdf_error(nf90_def_var(ihisfile, trim(prefix)//'_ymid', nc_precision, [id_strdim], id_poly_ymid))
          ! jsferic: xy pair is in : 0=cart, 1=sferic coordinates
          ierr = unc_addcoordatts(ihisfile, id_poly_xmid, id_poly_ymid, jsferic)
-         call check_netcdf_error(nf90_put_att(ihisfile, id_poly_xmid, 'long_name', 'x-coordinate of representative mid point of '//prefix//' location (snapped polyline)'))
-         call check_netcdf_error(nf90_put_att(ihisfile, id_poly_ymid, 'long_name', 'y-coordinate of representative mid point of '//prefix//' location (snapped polyline)'))
+         call check_netcdf_error(nf90_put_att(ihisfile, id_poly_xmid, 'long_name', 'x-coordinate of representative mid point of '//trim(prefix)//' location (snapped polyline)'))
+         call check_netcdf_error(nf90_put_att(ihisfile, id_poly_ymid, 'long_name', 'y-coordinate of representative mid point of '//trim(prefix)//' location (snapped polyline)'))
       end if
 
    end function unc_def_his_structure_static_vars
 
+   !> Get the NetCDF variable prefix and human-readable name of a structure type from its type id
+   subroutine get_prefix_and_name_from_struc_type_id(struc_type_id, prefix, name)
+      integer,           intent(in   ) :: struc_type_id        !< The id of the type of the structure (e.g. ST_CULVERT)
+      character(len=*),  intent(  out) :: prefix               !< Base name of this structure type, e.g., 'uniweir'
+      character(len=*),  intent(  out) :: name                 !< Human readable name of this structure type, e.g., 'universal weir'
+      
+      select case (struc_type_id)
+      case default
+         call mess(LEVEL_ERROR,'Programming error, please report: unrecognised struc_type_id in unc_write_his/get_prefix_and_name_from_struc_type_id')
+      case (ST_UNSET)
+         call mess(LEVEL_ERROR,'Programming error, please report: unrecognised struc_type_id in unc_write_his/get_prefix_and_name_from_struc_type_id')
+      case (ST_WEIR)
+         prefix = 'weirgen'
+         name = 'weir'
+      case (ST_ORIFICE)
+         prefix = 'orifice'
+         name = 'orifice'
+      case (ST_PUMP)
+         prefix = 'pump'
+         name = 'pump'
+      case (ST_GATE)
+         prefix = 'gate'
+         name = 'gate'
+      case (ST_GENERAL_ST)
+         prefix = 'general_structure'
+         name = 'general structure'
+      case (ST_UNI_WEIR)
+         prefix = 'uniweir'
+         name = 'universal weir'
+      case (ST_DAMBREAK)
+         prefix = 'dambreak'
+         name = 'dambreak'
+      case (ST_CULVERT)
+         prefix = 'culvert'
+         name = 'culvert'
+      case (ST_BRIDGE)
+         prefix = 'bridge'
+         name = 'bridge'
+      case (ST_COMPOUND)
+         prefix = 'cmpstru'
+         name = 'compound structure'
+      case (ST_LONGCULVERT)
+         prefix = 'longculvert'
+         name = 'long culvert'
+      case (ST_DAM)
+         prefix = 'cdam'
+         name = 'controllable dam'
+      case (ST_OBS_STATION)
+         prefix = 'station'
+         name = 'observation station'
+      case (ST_CROSS_SECTION)
+         prefix = 'cross_section'
+         name = 'observation cross section'
+      case (ST_RUNUP_GAUGE)
+         prefix = 'runup_gauge'
+         name = 'runup gauge'
+      case (ST_SOURCE_SINK)
+         prefix = 'source_sink'
+         name = 'source and sink'
+      case (ST_GATEGEN)
+         prefix = 'gategen'
+         name = 'gate'
+      case (ST_LATERAL)
+         prefix = 'lateral'
+         name = 'lateral'
+      end select
+   end subroutine get_prefix_and_name_from_struc_type_id
+
    !> Write ('put') the static variables for a single structure type.
-   function unc_put_his_structure_static_vars(ncid, prefix, name, output_enabled, count, geom_type, ngeom_node, id_strlendim, &
+   function unc_put_his_structure_static_vars(ncid, struc_type_id, output_enabled, count, geom_type, ngeom_node, id_strlendim, &
                                              id_strdim, id_strid, id_geom_node_count, id_geom_coordx, id_geom_coordy, &
                                              add_latlon, id_geom_coordlon, id_geom_coordlat, id_poly_xmid, id_poly_ymid) result(ierr)
       
       integer,           intent(in   ) :: ncid                 !< NetCDF id of already open dataset
-      character(len=*),  intent(in   ) :: prefix               !< Base name of this structure type, e.g., 'uniweir'
-      character(len=*),  intent(in   ) :: name                 !< Human readable name of this structure type, e.g., 'universal weir'
+      integer,           intent(in   ) :: struc_type_id        !< The id of the type of the structure (e.g. ST_CULVERT)
       integer,           intent(in   ) :: output_enabled       !< Whether or not (1/0) this structure's output must be written.
       integer,           intent(in   ) :: count                !< Number of structures for this structure_type
       character(len=*),  intent(in   ) :: geom_type            !< Geometry type, one of: 'point', 'line', 'polygon' (or 'none')
@@ -1086,7 +1157,7 @@ contains
       
       ! Polyline midpoint coordinates
       if (strcmpi(geom_type,'line')) then
-         ierr = unc_put_his_structure_static_vars_polyline_midpoints(ncid, prefix, count, id_poly_xmid, id_poly_ymid)
+         ierr = unc_put_his_structure_static_vars_polyline_midpoints(ncid, struc_type_id, count, id_poly_xmid, id_poly_ymid)
       end if
 
    end function unc_put_his_structure_static_vars
@@ -1096,11 +1167,11 @@ contains
    !! because CF conventions require that for variables on discrete geometries.
    !! Computed at half the total length of the snapped flow links
    !! (so, it lies on an edge, not per se on the input polyline)).
-   function unc_put_his_structure_static_vars_polyline_midpoints(ncid, prefix, count, id_poly_xmid, id_poly_ymid) result(ierr)
+   function unc_put_his_structure_static_vars_polyline_midpoints(ncid, struc_type_id, count, id_poly_xmid, id_poly_ymid) result(ierr)
       use stdlib_kinds, only: dp
       
       integer,           intent(in   ) :: ncid                 !< NetCDF id of already open dataset
-      character(len=*),  intent(in   ) :: prefix               !< Base name of this structure type, e.g., 'uniweir'
+      integer,           intent(in   ) :: struc_type_id        !< The id of the type of the structure (e.g. ST_CULVERT)
       integer,           intent(in   ) :: count                !< Number of structures for this structure_type
       integer,           intent(in   ) :: id_poly_xmid         !< NetCDF variable id created for the x-coordinate of the structure's polyline midpoint
       integer,           intent(in   ) :: id_poly_ymid         !< NetCDF variable id created for the y-coordinate of the structure's polyline midpoint
@@ -1113,7 +1184,7 @@ contains
       ierr = NF90_NOERR
       
       do i_struc = 1, count
-         call retrieve_set_of_flowlinks_for_polyline_structure(prefix, i_struc, links)
+         call retrieve_set_of_flowlinks_for_polyline_structure(struc_type_id, i_struc, links)
          call calc_midpoint_coords_of_set_of_flowlinks(links, xmid, ymid)
          ! Write the coordinates of this structure's midpoint to the his-file
          call check_netcdf_error(nf90_put_var(ncid, id_poly_xmid, xmid, [i_struc]))
