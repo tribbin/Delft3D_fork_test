@@ -2619,9 +2619,11 @@ private
          if (jahissed>0 .and. jased>0 .and. stm_included) then
             select case (stmpar%morlyr%settings%iunderlyr)
             case (1)
-               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DPSED),valobs(:,IPNT_DPSED))
-               temp_pointer(1:(IVAL_BODSEDN-IVAL_BODSED1+1)*ntot) => valobs(:,IVAL_BODSED1:IVAL_BODSEDN)
-               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_BODSED),temp_pointer)
+               if(ISED1 > 0) then
+                  call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DPSED),valobs(:,IPNT_DPSED))
+                  temp_pointer(1:(IVAL_BODSEDN-IVAL_BODSED1+1)*ntot) => valobs(:,IVAL_BODSED1:IVAL_BODSEDN)
+                  call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_BODSED),temp_pointer)
+               end if
             case (2)
                nlyrs = stmpar%morlyr%settings%nlyr
                if(ISED1 > 0) then
