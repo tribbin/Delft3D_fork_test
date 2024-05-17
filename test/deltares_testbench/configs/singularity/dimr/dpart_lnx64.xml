@@ -3,7 +3,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xi="http://www.w3.org/2001/XInclude"
         xsi:schemaLocation="http://schemas.deltares.nl/deltaresTestbench_v3 http://content.oss.deltares.nl/schemas/deltaresTestbench_v3-2.00.xsd">
-
     <config>
         <localPaths>
             <testCasesDir>./data/cases</testCasesDir>
@@ -11,6 +10,10 @@
             <referenceDir>./data/reference_results</referenceDir>
         </localPaths>
         <locations>
+            <location name="reference_engines">
+                <credential ref="commandline"/>
+                <root>{server_base_url}/references</root>
+            </location>
             <location name="reference_results">
                 <credential ref="commandline"/>
                 <root>{server_base_url}/references</root>
@@ -19,13 +22,24 @@
                 <credential ref="commandline"/>
                 <root>{server_base_url}/cases</root>
             </location>
+            <location name="engines_to_compare">
+                <credential ref="commandline"/>
+                <root>{server_base_url}/references</root>
+            </location>
             <location name="local">
                 <root>./data/engines</root>
             </location>
         </locations>
     </config>
-
+    <!--
+    Programs
+    -->
     <programs>
+        <!--
+        The order is important. Start with the following programs:
+            command_prompt
+            mpi
+        -->
         <program name="command_prompt">
             <path>/bin/bash</path>
             <arguments>
@@ -34,46 +48,53 @@
         </program>
         <program name="vs" ignoreStandardError="true" ignoreReturnValue="true" addSearchPaths="true" excludeSearchPathsContaining="share/delft3d/esmf">
             <shell ref="command_prompt"/>
-            <path>thirdparty/vs/lnx64/vs</path>
+            <path>thirdparty\vs\lnx64\vs</path>
             <environments>
                 <environment name="PAGER" type="raw">more</environment>
             </environments>
         </program>
-
-        <program name="PART" logOutputToFile="true" addSearchPaths="true" excludeSearchPathsContaining="share/delft3d/esmf">
-            <location ref="local" type="check">
-                <from>teamcity_artifacts/lnx64</from>
+        <program name="PART" logOutputToFile="true" programStringRemoveQuotes="true">
+            <location ref="reference_engines" type="reference">
+                <from>lnx64</from>
             </location>
-            <path>bin/run_delpar.sh</path>
+            <location ref="local" type="check">
+                <from>teamcity_artifacts</from> <!-- just the first part of the directory structure, will be filled by TeamCity -->
+            </location>
+            <path>execute_singularity_tc.sh</path>
+            <environments>
+                <environment name="OMP_NUM_THREADS" type="raw">1</environment>
+                <environment name="PROC_DEF_DIR" type="path">/opt/delft3dfm_latest/lnx64/share/delft3d</environment> <!-- this directory points to the binaries in the container -->
+            </environments>
         </program>
     </programs>
-                <!--
-                default testCases
-                
-                Testcases may refer to a default testCase with the attribute
-                ref="name_of_default_testcase"
-                -->
+    <!--
+    default testCases
+    -->
     <defaultTestCases>
         <testCase name="part_default">
             <programs>
                 <program ref="PART">
                     <arguments>
+                        <argument>-p</argument>
+                        <argument>5</argument>
+                        <argument>run_delpar.sh</argument>
                         <argument>runid.par</argument>
                     </arguments>
                 </program>
             </programs>
-            <location ref="cases" type="input">
-                <!-- if "to" is not specified, "from" is used as target -->
-                <from>.</from>
-            </location>
             <location ref="reference_results" type="reference">
                 <from>lnx64</from>
             </location>
-            <maxRunTime>3600.0</maxRunTime> <!-- seconds -->
+            <location ref="cases" type="input">
+                <from>.</from>
+            </location>
+            <maxRunTime>60.0</maxRunTime>
+            <!-- seconds -->
         </testCase>
     </defaultTestCases>
     <!--
     testCases
     -->
-    <xi:include href="../include/dpart_all_cases_fm.xml"/>
+    <xi:include href="../../include/dpart_all_cases.xml"/>
+    <xi:include href="../../include/dpart_all_cases_fm.xml"/>
 </deltaresTestbench_v3>
