@@ -11,6 +11,7 @@ from typing import Any, Optional
 
 from src.config.credentials import Credentials
 from src.config.types.mode_type import ModeType
+from src.utils.handlers.credential_handler import CredentialHandler
 from src.suite.test_bench_settings import TestBenchSettings
 from src.utils.common import get_log_level
 
@@ -71,7 +72,7 @@ class TestBenchParameterParser:
         settings.config_file = (
             cls.__get_argument_value("config", args) or "config.xml"
         )
-        settings.credentials = cls.__get_credentials(args)
+        settings.credentials = cls.__get_credentials(args, settings.teamcity)
 
         return settings
 
