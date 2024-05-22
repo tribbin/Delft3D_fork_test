@@ -2416,17 +2416,13 @@ private
       !
 
       ! Basic flow quantities
-      if (ntot > 0) then
+      if (model_has_obs_stations()) then
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_WATERLEVEL),valobs(:,IPNT_S1)                               )
          if(stm_included) then
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_BEDLEVEL)  ,valobs(:,IPNT_BL)                             )
          end if
          if (jahiswatdep > 0) then
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_WATERDEPTH),valobs(:,IPNT_HS)                               )
-         end if
-      end if
-      if (jahisvelvec > 0) then
-         if (numobs+nummovobs > 0) then
          end if
          if (jahisvelvec > 0) then
             if (model_is_3D()) then
