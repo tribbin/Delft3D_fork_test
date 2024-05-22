@@ -2742,7 +2742,7 @@ module geometry_module
                      ds   = -alf*dotp(xcc3,ycc3,tex,tey)  ! - sign not present in given formula
                      if (jsferic == 1) then
                         ds   = raddeg_hp*ds/earth_radius
-                        xccf = xccf + tex*ds*xf           ! even erbijblijven voor beste resultaat
+                        xccf = xccf + tex*ds*xf           ! sign present for best result
                         yccf = yccf + tey*ds
                      else
                         xccf = xccf + tex*ds
