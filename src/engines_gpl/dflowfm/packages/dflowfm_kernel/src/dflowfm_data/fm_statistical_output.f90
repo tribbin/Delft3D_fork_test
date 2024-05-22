@@ -309,7 +309,7 @@ private
 
       output_config_set%configs(idx_const(2*num))%input_value = &
             output_config_set%configs(IDX_HIS_OBSCRS_CONST_ABSTRACT)%input_value
-   enddo
+   end do
    !
    ! Sediment transport
    !
@@ -401,7 +401,7 @@ private
          obscrs_data(i, 5 + (num-1)*2 + 1) = crs(i)%sumvalcur(IP)/rhol
          obscrs_data(i, 5 + (num-1)*2 + 2) = crs(i)%sumvalcum(IP)/rhol
       end do
-   enddo
+   end do
 
    if (jased == 4) then
 
@@ -2427,7 +2427,7 @@ private
       end if
       if (jahisvelvec > 0) then
          if (numobs+nummovobs > 0) then
-         endif
+         end if
          if (jahisvelvec > 0) then
             if (model_is_3D()) then
                temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_UCX:IPNT_UCX+kmx)
@@ -2444,8 +2444,8 @@ private
             else
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_X_VELOCITY), valobs(:, IPNT_UCX))
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_Y_VELOCITY), valobs(:, IPNT_UCY))
-            endif
-         endif
+            end if
+         end if
          if (jahisvelocity > 0) then
             if (jaeulervel==0) then
                if (model_is_3D()) then
@@ -2453,47 +2453,47 @@ private
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_VELOCITY_MAGNITUDE),temp_pointer)
                else
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_VELOCITY_MAGNITUDE),valobs(:,IPNT_UMAG)                                        )
-               endif
+               end if
             else
                if (model_is_3D()) then
                   temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_UMAG:IPNT_UMAG+kmx)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_VELOCITY_MAGNITUDE_EULERIAN),temp_pointer)
                else
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_VELOCITY_MAGNITUDE_EULERIAN),valobs(:,IPNT_UMAG)                                        )
-               endif
-            endif
-         endif
+               end if
+            end if
+         end if
          if (jahisdischarge > 0) then
             if (model_is_3D()) then
                temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_QMAG:IPNT_QMAG+kmx)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DISCHARGE_MAGNITUDE),temp_pointer)
             else
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DISCHARGE_MAGNITUDE),valobs(:,IPNT_QMAG)                                       )
-            endif
-         endif
+            end if
+         end if
          ! Turbulence model
          if (model_is_3D()) then
             if (iturbulencemodel >= 3 .and. jahistur > 0) then
                temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_TKIN:IPNT_TKIN+kmx)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TKE),temp_pointer)
-            endif
+            end if
             if (iturbulencemodel == 3 .and. jahistur >0) then
                temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_TEPS:IPNT_TEPS+kmx)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_EPS),temp_pointer)
-            endif
+            end if
             if (iturbulencemodel > 1) then
                temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_VICWW:IPNT_VICWW+kmx)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_VICWW),temp_pointer)
-            endif
+            end if
             if (iturbulencemodel == 4 .and. jahistur > 0) then
                temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_TEPS:IPNT_TEPS+kmx)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TAU),temp_pointer)
-            endif
-         endif
+            end if
+         end if
          if (idensform > 0 .and. jaRichardsononoutput > 0 .and. model_is_3D()) then
             temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_RICH:IPNT_RICH+kmx)
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_RICH),temp_pointer)
-         endif
+         end if
 
          ! Gravity + buoyancy
          if (jasal > 0 .and. jahissal > 0) then
@@ -2502,8 +2502,8 @@ private
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SALINITY   ),temp_pointer                                )
             else
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SALINITY   ),valobs(:,IPNT_SA1)                                )
-            endif
-         endif
+            end if
+         end if
 
          if (jatem > 0 .and. jahistem > 0) then
             if (model_is_3D()) then
@@ -2511,7 +2511,7 @@ private
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TEMPERATURE),temp_pointer)
             else
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TEMPERATURE),valobs(:,IPNT_TEM1))
-            endif
+            end if
          end if
 
          if( (jasal > 0 .or. jatem > 0 .or. jased > 0 )  .and. jahisrho > 0) then
@@ -2522,14 +2522,14 @@ private
                else
                   temp_pointer(1:kmx*ntot) => valobs(1:ntot,IPNT_RHOP:IPNT_RHOP+kmx)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_POTENTIAL_DENSITY), temp_pointer)
-               endif
+               end if
 
                temp_pointer(1:(kmx+1)*ntot) => valobs(1:ntot,IPNT_BRUV:IPNT_BRUV+kmx)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_BRUNT_VAISALA_N2),temp_pointer)
             else
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_POTENTIAL_DENSITY),valobs(:,IPNT_RHOP))
-            endif
-         endif
+            end if
+         end if
 
          ! Wave model
          if (jawave>0 .and. jahiswav > 0) then
@@ -2552,12 +2552,12 @@ private
             else
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_USTOKES),valobs(:,IPNT_UCXST)                                 )
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_VSTOKES),valobs(:,IPNT_UCYST)                                 )
-            endif
-         endif
+            end if
+         end if
          if (jahistaucurrent>0) then
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TAUSX),valobs(:,IPNT_TAUX)                                                    )
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TAUSY),valobs(:,IPNT_TAUY)                                                    )
-         endif
+         end if
 
          ! Meteo
          if (japatm > 0 .and. jahiswind > 0) then
@@ -2569,16 +2569,16 @@ private
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_WINDX_SFERIC  ),valobs(:,IPNT_wx)                )
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_WINDY         ),valobs(:,IPNT_wy)                )
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_WINDY_SFERIC  ),valobs(:,IPNT_wy)                )
-         endif
+         end if
 
          if (jarain > 0 .and. jahisrain > 0) then
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_RAIN            ),valobs(:,IPNT_rain)                      )
-         endif
+         end if
 
          if ((infiltrationmodel == DFM_HYD_INFILT_CONST .or. infiltrationmodel == DFM_HYD_INFILT_HORTON) .and. jahisinfilt > 0) then
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_INFILTRATION_CAP)                 ,valobs(:,IPNT_infiltcap)                                          )
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_INFILTRATION_INFILTRATION_ACTUAL) ,valobs(:,IPNT_infiltact)            )
-         endif
+         end if
 
          if (ja_airdensity + ja_computed_airdensity > 0 .and. jahis_airdensity > 0) then
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_AIR_DENSITY),valobs(:,IPNT_AIRDENSITY))
@@ -2591,7 +2591,7 @@ private
             if (jatem == 5 .and. allocated(Rhum) .and. allocated(Clou) ) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_RHUM),valobs(:,IPNT_RHUM)                                    )
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_CLOU),valobs(:,IPNT_CLOU)                                    )
-            endif
+            end if
             if (jatem == 5 ) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_QSUN  ),valobs(:,IPNT_QSUN)                                     )
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_QEVA  ),valobs(:,IPNT_QEVA)                                     )
@@ -2599,9 +2599,9 @@ private
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_QLONG ),valobs(:,IPNT_QLON)                                     )
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_QFREVA),valobs(:,IPNT_QFRE)                                     )
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_QFRCON),valobs(:,IPNT_QFRC)                                     )
-            endif
+            end if
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_QTOT  ),valobs(:,IPNT_QTOT)                                     )
-         endif
+         end if
 
          ! Sediment model
          if (jased > 0 .and. .not. stm_included) then
@@ -2610,7 +2610,7 @@ private
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SED),temp_pointer)
             else
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SED),valobs(:,IPNT_SED)                                  )
-            endif
+            end if
          else if (stm_included .and. ISED1 > 0 .and. jahissed > 0 .and. IVAL_SF1 > 0) then
             if (model_is_3D()) then
                temp_pointer(1:(IVAL_SFN-IPNT_SF1+1)*kmx*ntot) => valobs(1:ntot,IVAL_SF1:IVAL_SFN+(IVAL_SFN-IVAL_SF1*kmx))
@@ -2618,47 +2618,47 @@ private
                temp_pointer(1:(IVAL_SFN-IPNT_SF1+1)*ntot) => valobs(:,IPNT_SF1:IVAL_SFN)
             end if
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SED), temp_pointer)
-         endif
+         end if
          if (IVAL_WS1 > 0) then
             if (model_is_3D()) then
                temp_pointer(1:(IVAL_WSN-IPNT_WS1+1)*kmx*ntot) => valobs(1:ntot,IPNT_WS1:IPNT_WS1+(IVAL_WSN-IVAL_WS1*kmx))
             else
                temp_pointer(1:(IVAL_WSN-IPNT_WS1+1)*ntot) => valobs(1:ntot,IPNT_WS1:IVAL_WSN)
-            endif
+            end if
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_WS),temp_pointer                                                        )
-         endif
+         end if
          if (IVAL_SEDDIF1 > 0) then
             temp_pointer(1:(IVAL_WSN-IPNT_WS1+1)*kmx*ntot) => valobs(1:ntot,IPNT_WS1:IPNT_WS1+(IVAL_WSN-IVAL_WS1*kmx))
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SEDDIF),temp_pointer                                          )
-         endif
+         end if
 
          if (jahissed>0 .and. jased>0 .and. stm_included) then
             if (stmpar%morpar%moroutput%taub) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TAUB),valobs(IPNT_TAUB,:))
-            endif
+            end if
             if (stmpar%lsedtot>0) then
                if (stmpar%morpar%moroutput%sbcuv) then
                   function_pointer => calculate_sediment_SBC
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SBCX),null(),function_pointer)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SBCY),SBCY)
-               endif
+               end if
                if (stmpar%morpar%moroutput%sbwuv) then
                   function_pointer => calculate_sediment_SBW
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SBWX),null(),function_pointer)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SBWY),SBWY)
-               endif
+               end if
                if (stmpar%morpar%moroutput%sscuv .and. jawave>0 .and. .not. flowWithoutWaves) then
                   function_pointer => calculate_sediment_SSC
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SSCX),null(),function_pointer)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SSCY),SSCY)
-               endif
+               end if
                if (stmpar%morpar%moroutput%sswuv .and. jawave>0 .and. .not. flowWithoutWaves) then
                   function_pointer => calculate_sediment_SSW
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SSWX),null(),function_pointer)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SSWY),SSWY)
-               endif
-            endif
-         endif
+               end if
+            end if
+         end if
          ! Bed composition variables
          if (jahissed>0 .and. jased>0 .and. stm_included) then
             select case (stmpar%morlyr%settings%iunderlyr)
@@ -2683,21 +2683,21 @@ private
                if (stmpar%morlyr%settings%iporosity > 0) then
                   temp_pointer(1:ntot*nlyrs) => valobs(:,IPNT_POROS:IPNT_POROS+(nlyrs-1))
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_POROS),temp_pointer)
-               endif
+               end if
             end select
             if(ISED1 > 0) then
                if (stmpar%morpar%moroutput%frac) then
                   temp_pointer(1:ntot*(IPNT_FRACN-IPNT_FRAC1+1)) => valobs(:,IPNT_FRAC1:IPNT_FRACN)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_FRAC),temp_pointer)
-               endif
+               end if
                if (stmpar%morpar%moroutput%fixfac) then
                   temp_pointer(1:ntot*(IVAL_FIXFACN-IVAL_FIXFAC1+1)) => valobs(:,IVAL_FIXFAC1:IVAL_FIXFACN)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_FIXFRAC),temp_pointer)
-               endif
+               end if
                if (stmpar%morpar%moroutput%hidexp) then
                   temp_pointer(1:ntot*(IVAL_HIDEXPN-IVAL_HIDEXP1+1)) => valobs(:,IVAL_HIDEXP1:IVAL_HIDEXPN)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_HIDEXP),temp_pointer)
-               endif
+               end if
                if (stmpar%morpar%flufflyr%iflufflyr>0 .and. stmpar%lsedsus>0) then
                   temp_pointer(1:ntot*(IVAL_MFLUFFN-IVAL_MFLUFF1+1)) => valobs(:,IVAL_MFLUFF1:IVAL_MFLUFFN)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_MFLUFF),temp_pointer)
@@ -2705,11 +2705,11 @@ private
             end if
             if (stmpar%morpar%moroutput%mudfrac) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_MUDFRAC),valobs(:,IPNT_MUDFRAC))
-            endif
+            end if
             if (stmpar%morpar%moroutput%sandfrac) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SANDFRAC),valobs(:,IPNT_SANDFRAC))
-            endif
-         endif
+            end if
+         end if
       ! Water quality variables
       if(jawaqproc > 0 .and. num_wq_user_outputs > 0) then
          call add_station_water_quality_configs(config_set_his, idx_his_hwq)
@@ -2736,7 +2736,7 @@ private
          if (model_has_tracers()) then
             call add_station_tracer_configs(output_config_set, idx_tracers_stations)
             call add_station_tracer_output_items(output_set, output_config_set, idx_tracers_stations)
-         endif!testcase: UNST-7713
+         end if!testcase: UNST-7713
       end if
       !
       ! Variables on observation cross sections
@@ -2763,7 +2763,7 @@ private
             if (idx_constituents_crs(i) > 0) then
                call add_stat_output_items(output_set, output_config_set%configs(idx_constituents_crs(i)), obscrs_data(:,5 + i))
             end if
-         enddo
+         end do
       end if
       !
       ! Variables on lateral discharges
