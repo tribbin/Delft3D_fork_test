@@ -26,12 +26,12 @@ module m_write_history_output
     implicit none
 
     private
-    public :: write_history_output
+    public :: write_binary_history_output
 
 contains
 
 
-    SUBROUTINE write_history_output(history_file_unit, NAMFIH, ITIME, MONAME, NODUMP, &
+    SUBROUTINE write_binary_history_output(history_file_unit, NAMFIH, ITIME, MONAME, NODUMP, &
             IDUMP, DUNAME, NOTOT1, SYNAM1, CONC1, &
             NOTOT2, SYNAM2, CONC2, INIT)
         ! Writes history output
@@ -65,7 +65,7 @@ contains
         integer(kind = int_wp) :: i, k1, k2, j
 
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("write_history_output", ithandl)
+        if (timon) call timstrt ("write_binary_history_output", ithandl)
 
         ! Initialize file
         if (init == 1) then
@@ -83,6 +83,6 @@ contains
                 j = 1, nodump)
         if (timon) call timstop (ithandl)
 
-    end subroutine write_history_output
+    end subroutine write_binary_history_output
 
 end module m_write_history_output
