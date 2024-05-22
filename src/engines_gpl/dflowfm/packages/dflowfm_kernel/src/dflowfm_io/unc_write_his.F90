@@ -952,20 +952,6 @@ subroutine unc_write_his(tim)            ! wrihis
        end do
     end if
 
-    ! Source-sinks
-    if (jahissourcesink > 0 .and. numsrc > 0) then
-       do j = 1,size(out_variable_set_his%statout)
-          if (out_variable_set_his%statout(j)%output_config%name == 'source_sink_prescribed_discharge') then
-             associate(id_var => out_variable_set_his%statout(j)%id_var)
-             do i = 1, numsrc
-                if(id_var > 0) then
-                   call check_netcdf_error( nf90_put_var(ihisfile, id_var, qstss((numconst+1)*(i-1)+1), (/ i, it_his /))) ! Intentionally here for the first output time
-                end if
-             end do
-             end associate
-          end if
-       end do
-    end if
     if ( jacheckmonitor.eq.1 ) then
        call check_netcdf_error( nf90_put_var(ihisfile, id_checkmon, checkmonitor, start=(/ 1, it_his /)))
 
