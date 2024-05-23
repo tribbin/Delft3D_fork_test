@@ -28,8 +28,8 @@ module m_sobbal
 
 contains
 
-
-    SUBROUTINE SOBBAL (NOTOT, ITIME, NOSYS, NOFLUX, NDMPAR, &
+    ! TODO: Sobak balance output
+    SUBROUTINE write_balance_text_output(NOTOT, ITIME, NOSYS, NOFLUX, NDMPAR, &
             NDMPQ, NTDMPQ, ITSTOP, IMSTRT, IMSTOP, &
             IQDMP, IPDMP, ASMASS, FLXINT, STOCHI, &
             SYNAME, DANAM, MONAME, DMPQ, NOBND, &
@@ -197,7 +197,7 @@ contains
         ! Skip this routine when there are no balance area's
         IF (NDMPAR==0) RETURN
 
-        if (timon) call timstrt ("sobbal", ithandl)
+        if (timon) call timstrt ("write_balance_text_output", ithandl)
 
         IF (INIOUT == 1) THEN
             IFIRST = .TRUE.
