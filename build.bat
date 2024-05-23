@@ -388,40 +388,42 @@ rem =======================
 rem =======================
 rem === Usage =============
 rem =======================
-:usage    echo.
+:usage
+    echo.
     echo Usage:
-    echo build.bat"
-    echo build.bat <CONFIG> [OPTIONS]"
-    echo     The following actions will be executed:"
-    echo     - Create directory 'build_<CONFIG>'"
-    echo       Delete it first when it already exists"
-    echo     - Execute 'CMake <CONFIG>' to create file '<CONFIG>.sln' inside 'build_<CONFIG>'"
+    echo build.bat
+    echo build.bat ^<CONFIG^> [OPTIONS]
+    echo     The following actions will be executed:
+    echo     - Create directory 'build_^<CONFIG^>'
+    echo       Delete it first when it already exists
+    echo     - Execute 'CMake ^<CONFIG^>' to create file '^<CONFIG^>.sln' inside 'build_^<CONFIG^>'
     echo.
-    echo "<CONFIG>:"
-    echo "- all     (default) : D-Flow FM   , D-WAQ, D-Waves, DIMR"
-    echo "- delft3d4          : Delft3D-FLOW, D-WAQ, D-Waves"
-    echo "- delft3dfm         : D-Flow FM   , D-WAQ, D-Waves, DIMR"
-    echo "- dflowfm           : D-Flow FM"
-    echo "- dflowfm_interacter: D-Flow FM with Interacter"
-    echo "- dimr              : DIMR"
-    echo "- drr               : D-RR"
-    echo "- dwaq              : D-WAQ"
-    echo "- dwaves            : D-Waves"
-    echo "- flow2d3d          : Delft3D-FLOW"
-    echo "- swan              : SWAN"
-    echo "- tests"
-    echo "- tools"
-    echo "- tools_gpl"
+    echo ^<CONFIG^>:
+    echo - all     (default) : D-Flow FM   , D-WAQ, D-Waves, DIMR
+    echo - delft3d4          : Delft3D-FLOW, D-WAQ, D-Waves
+    echo - delft3dfm         : D-Flow FM   , D-WAQ, D-Waves, DIMR
+    echo - dflowfm           : D-Flow FM
+    echo - dflowfm_interacter: D-Flow FM with Interacter
+    echo - dimr              : DIMR
+    echo - drr               : D-RR
+    echo - dwaq              : D-WAQ
+    echo - dwaves            : D-Waves
+    echo - flow2d3d          : Delft3D-FLOW
+    echo - swan              : SWAN
+    echo - tests
+    echo - tools
+    echo - tools_gpl
     echo.
-    echo "[OPTIONS]: usage [OPTION], sometimes followed by a value, space separated, in any order"
-    echo "-coverage: Instrument object files for code-coverage tool (codecov). Example: -coverage"
-    echo "-build: Run build and install steps after running cmake.             Example: -build"
-    echo "-vs: desired visual studio version. Overrides default.               Example: -vs 2019"
-    echo "-ifort: desired intel fortran compiler version. Overrides default.   Example: -ifort 21"
-    echo "-build_type: build optimization level.                               Example: -build_type Debug"
+    echo [OPTIONS]: usage [OPTION], sometimes followed by a value, space separated, in any order
+    echo -help: Show this help page.                                          Example: -help
+    echo -coverage: Instrument object files for code-coverage tool (codecov). Example: -coverage
+    echo -build: Run build and install steps after running cmake.             Example: -build
+    echo -vs: desired visual studio version. Overrides default.               Example: -vs 2019
+    echo -ifort: desired intel fortran compiler version. Overrides default.   Example: -ifort 21
+    echo -build_type: build optimization level.                               Example: -build_type Release
     echo.
-    echo "More info  : https://oss.deltares.nl/web/delft3d/source-code"
-    echo "About CMake: https://git.deltares.nl/oss/delft3d/-/tree/main/src/cmake/doc/README"
+    echo More info  : https://oss.deltares.nl/web/delft3d/source-code
+    echo About CMake: https://git.deltares.nl/oss/delft3d/-/tree/main/src/cmake/doc/README
     echo.
     set ERRORLEVEL=1
     goto :end
