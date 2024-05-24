@@ -28,18 +28,17 @@ module m_outdmp
 contains
 
 
-    SUBROUTINE OUTDMP (IOUT, LCHOUT, ITIME, MNAME, NX, &
-            NY, LGRID, CGRID, NOTOT, NOSYS, &
-            SNAME, CONC, BOUND, NOTOT2, SYNAM2, &
-            CONC2, IP, ISFLAG, INIOUT)
+    SUBROUTINE writes_concentrations_in_grid_layout(iout, lchout, itime, mname, nx, &
+            ny, lgrid, cgrid, notot, nosys, &
+            sname, conc, bound, notot2, synam2, &
+            conc2, ip, isflag, iniout)
 
         ! Writes concentrations in grid-layout and
         ! writes the result in IOUT .
         !
         !     LOGICAL UNITS      : IOUT = number of dump file
 
-        !     NAME    KIND     LENGTH      FUNCT.  DESCRIPTION
-        !     ---------------------------------------------------------
+
         !     IOUT    INTEGER  1           INPUT   unit number output file
         !     LCHOUT  CHAR*(*) 1           INPUT   name output file
         !     ITIME   INTEGER  1           INPUT   present time in clock units
@@ -59,165 +58,149 @@ contains
         !     IP      INTEGER  6           IN/OUT  paging structure
         !     ISFLAG  INTEGER  1           INPUT   if 1 then dd-hh:mm'ss'
         !     INIOUT  INTEGER  1           IN/OUT  Initialize flag
-        !
-        !     Declaration of arguments
-        !
-        use date_time_utils, only : report_time
+
+        use date_time_utils, only: report_time
         use timers
 
-        INTEGER(kind = int_wp) :: IOUT, ITIME, NX, NY, NOTOT, &
-                NOSYS, ISFLAG, NOTOT2, INIOUT
-        INTEGER(kind = int_wp) :: LGRID(*), IP(*)
-        REAL(kind = real_wp) :: CONC(NOTOT, *), BOUND(NOSYS, *), &
-                CONC2 (*)
-        character(len=6)   CGRID (20, *)
-        character(len=20)  SNAME (*), SYNAM2(*)
-        character(len=40)  MNAME (*)
-        character(len=*) LCHOUT
-        !
-        !     Local declaration
-        !
+        integer(kind = int_wp) :: iout, itime, nx, ny, notot, &
+                nosys, isflag, notot2, iniout
+        integer(kind = int_wp) :: lgrid(*), ip(*)
+        real(kind = real_wp) :: conc(notot, *), bound(nosys, *), &
+                conc2 (*)
+        character(len = 6)   cgrid (20, *)
+        character(len = 20)  sname (*), synam2(*)
+        character(len = 40)  mname (*)
+        character(len = *) lchout
+
+        ! local declaration
         integer(kind = int_wp) :: itot, i, i1, i2, i3, k, j, iscale, factor, nend
         real(kind = real_wp) :: cmax, c
-        real(kind = real_wp), PARAMETER :: RMISS = -999.
-        character(len=6)   POINT, PADDER
-        DATA          POINT / '  .   ' /
+        real(kind = real_wp), parameter :: rmiss = -999.
+        character(len = 6)   point, padder
+        data          point / '  .   ' /
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("outdmp", ithandl)
-        !
-        IF (NX * NY == 0) goto 9999  !   RETURN
-        !
-        !         initialise the paging
-        !
-        IF (IP(3) == 0) THEN
-            IP(3) = MAX(1, IP(1) / (7 + (NY + 5) * ((NX + IP(2) - 1) / IP(2))))
-            IP(4) = 0
-        ENDIF
-        !
-        !      repeat output for every substance
-        !
-        DO ITOT = 1, NOTOT
-            !
-            !      Calculate maximum concentration of displayed segments
-            !
-            CMAX = 0.0
-            DO I1 = 1, NY
-                DO I2 = 1, NX
-                    I3 = LGRID ((I1 - 1) * NX + I2)
-                    IF (I3 > 0) CMAX = AMAX1 (CMAX, CONC (ITOT, I3))
-                    IF (I3 < 0 .AND. ITOT <= NOSYS) &
-                            CMAX = AMAX1 (CMAX, BOUND(ITOT, -I3))
-                end do
-            end do
-            !
-            !      Calculate scale factor
-            !
-            IF (CMAX <= 0.0) THEN
-                ISCALE = 0
-            ELSE IF (CMAX >= 0.5) THEN
-                ISCALE = AINT(ALOG10(CMAX) + 2.2E-5)
-            ELSE
-                ISCALE = -AINT(-ALOG10(CMAX) - 2.2E-5) - 1
-            ENDIF
-            !
-            !         start printing
-            !
-            IF (MOD(IP(4), IP(3)) == 0) THEN
-                WRITE (IOUT, '('' '')')
-                WRITE (IOUT, 2040) (MNAME(K), K = 1, 4)
-            ENDIF
-            IP(4) = IP(4) + 1
-            CALL report_time (IOUT, ITIME, ISFLAG, -999.)
-            WRITE(IOUT, 2000) SNAME(ITOT), ISCALE
-            !
-            !      Put concentration values in grid layout
-            !
-            FACTOR = 10.0**ISCALE
-            DO I = 1, NX, IP(2)
-                DO J = 1, NY
-                    NEND = MIN (NX, I + IP(2) - 1)
-                    DO K = I, NEND
-                        CGRID (K - I + 1, J) = POINT
-                        I3 = LGRID ((J - 1) * NX + K)
-                        IF (I3 > 0) THEN
-                            WRITE (PADDER, '(F6.3)')   CONC (ITOT, I3) / FACTOR
-                            CGRID(K - I + 1, J) = PADDER
-                        ENDIF
-                        IF (I3 < 0 .AND. ITOT <= NOSYS) THEN
+        if (timon) call timstrt ("writes_concentrations_in_grid_layout", ithandl)
 
-                            WRITE (PADDER, '(F6.3)')   BOUND(ITOT, -I3) / FACTOR
-                            CGRID(K - I + 1, J) = PADDER
-                        ENDIF
+        if (nx * ny == 0) goto 9999  !   return
+
+        ! initialise the paging
+        if (ip(3) == 0) then
+            ip(3) = max(1, ip(1) / (7 + (ny + 5) * ((nx + ip(2) - 1) / ip(2))))
+            ip(4) = 0
+        endif
+
+        ! repeat output for every substance
+        do itot = 1, notot
+
+            ! calculate maximum concentration of displayed segments
+            cmax = 0.0
+            do i1 = 1, ny
+                do i2 = 1, nx
+                    i3 = lgrid ((i1 - 1) * nx + i2)
+                    if (i3 > 0) cmax = amax1 (cmax, conc (itot, i3))
+                    if (i3 < 0 .and. itot <= nosys) &
+                            cmax = amax1 (cmax, bound(itot, -i3))
+                end do
+            end do
+
+            ! calculate scale factor
+            if (cmax <= 0.0) then
+                iscale = 0
+            else if (cmax >= 0.5) then
+                iscale = aint(alog10(cmax) + 2.2e-5)
+            else
+                iscale = -aint(-alog10(cmax) - 2.2e-5) - 1
+            endif
+
+            ! start printing
+            if (mod(ip(4), ip(3)) == 0) then
+                write (iout, '('' '')')
+                write (iout, 2040) (mname(k), k = 1, 4)
+            endif
+            ip(4) = ip(4) + 1
+            call report_time (iout, itime, isflag, -999.)
+            write(iout, 2000) sname(itot), iscale
+
+            ! put concentration values in grid layout
+            factor = 10.0**iscale
+            do i = 1, nx, ip(2)
+                do j = 1, ny
+                    nend = min (nx, i + ip(2) - 1)
+                    do k = i, nend
+                        cgrid (k - i + 1, j) = point
+                        i3 = lgrid ((j - 1) * nx + k)
+                        if (i3 > 0) then
+                            write (padder, '(f6.3)')   conc (itot, i3) / factor
+                            cgrid(k - i + 1, j) = padder
+                        endif
+                        if (i3 < 0 .and. itot <= nosys) then
+
+                            write (padder, '(f6.3)')   bound(itot, -i3) / factor
+                            cgrid(k - i + 1, j) = padder
+                        endif
                     end do
-                    WRITE (IOUT, 2030) (CGRID (K - I + 1, J), K = I, NEND)
+                    write (iout, 2030) (cgrid (k - i + 1, j), k = i, nend)
                 end do
-                WRITE (IOUT, '('' '')')
+                write (iout, '('' '')')
             end do
-            !
         end do
-        !
-        !      repeat output for extra substance
-        !
-        DO ITOT = 1, NOTOT2
-            !
-            !      Calculate maximum concentration of displayed segments
-            !
-            CMAX = 0.0
-            DO I1 = 1, NY
-                DO I2 = 1, NX
-                    CMAX = AMAX1 (CMAX, CONC2(ITOT + (I2 * I1 - 1) * NOTOT2))
+
+        ! repeat output for extra substance
+        do itot = 1, notot2
+
+            ! calculate maximum concentration of displayed segments
+            cmax = 0.0
+            do i1 = 1, ny
+                do i2 = 1, nx
+                    cmax = amax1 (cmax, conc2(itot + (i2 * i1 - 1) * notot2))
                 end do
             end do
-            !
-            !      Calculate scale factor
-            !
-            IF (CMAX <= 0.0) THEN
-                ISCALE = 0
-            ELSE IF (CMAX >= 0.5) THEN
-                ISCALE = AINT(ALOG10(CMAX) + 2.2E-5)
-            ELSE
-                ISCALE = -AINT(-ALOG10(CMAX) - 2.2E-5) - 1
-            ENDIF
-            !
-            !         start printing
-            !
-            IF (MOD(IP(4), IP(3)) == 0) THEN
-                WRITE (IOUT, '('' '')')
-                WRITE (IOUT, 2040) (MNAME(K), K = 1, 4)
-            ENDIF
-            IP(4) = IP(4) + 1
-            CALL report_time (IOUT, ITIME, ISFLAG, -999.)
-            WRITE(IOUT, 2000) SYNAM2(ITOT), ISCALE
-            !
-            !      Put concentration values in grid layout
-            !
-            FACTOR = 10.0**ISCALE
-            DO I = 1, NX, IP(2)
-                DO J = 1, NY
-                    NEND = MIN (NX, I + IP(2) - 1)
-                    DO K = I, NEND
-                        CGRID (K - I + 1, J) = POINT
-                        C = CONC2(ITOT + ((J - 1) * NX + K - 1) * NOTOT2)
-                        IF (C /= RMISS) THEN
-                            WRITE (PADDER, '(F6.3)')   C / FACTOR
-                            CGRID(K - I + 1, J) = PADDER
-                        ENDIF
+
+            ! calculate scale factor
+            if (cmax <= 0.0) then
+                iscale = 0
+            else if (cmax >= 0.5) then
+                iscale = aint(alog10(cmax) + 2.2e-5)
+            else
+                iscale = -aint(-alog10(cmax) - 2.2e-5) - 1
+            endif
+
+            ! start printing
+            if (mod(ip(4), ip(3)) == 0) then
+                write (iout, '('' '')')
+                write (iout, 2040) (mname(k), k = 1, 4)
+            endif
+            ip(4) = ip(4) + 1
+            call report_time (iout, itime, isflag, -999.)
+            write(iout, 2000) synam2(itot), iscale
+
+            ! Put concentration values in grid layout
+            factor = 10.0**iscale
+            do i = 1, nx, ip(2)
+                do j = 1, ny
+                    nend = min (nx, i + ip(2) - 1)
+                    do k = i, nend
+                        cgrid (k - i + 1, j) = point
+                        c = conc2(itot + ((j - 1) * nx + k - 1) * notot2)
+                        if (c /= rmiss) then
+                            write (padder, '(f6.3)')   c / factor
+                            cgrid(k - i + 1, j) = padder
+                        endif
                     end do
-                    WRITE (IOUT, 2030) (CGRID (K - I + 1, J), K = I, NEND)
+                    write (iout, 2030) (cgrid (k - i + 1, j), k = i, nend)
                 end do
-                WRITE (IOUT, '('' '')')
+                write (iout, '('' '')')
             end do
-            !
         end do
-        !
+
         9999 if (timon) call timstop (ithandl)
         RETURN
-        !
+
         2000 FORMAT (/' DUMP OF RESULTS OF ', A20, &
                 ' SCALE FACTOR = 10.0 EXP (', I3, ' ).'//)
         2030 FORMAT (6X, 20A6)
         2040 FORMAT (45X, A40)
-        !
-    END SUBROUTINE OUTDMP
+
+    end subroutine writes_concentrations_in_grid_layout
 
 end module m_outdmp

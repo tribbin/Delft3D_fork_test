@@ -496,14 +496,14 @@ contains
                 !
             elseif (isrtou == idmp) then
                 !
-                call outdmp (lunout, lchout, itime, moname, nx, &
+                call writes_concentrations_in_grid_layout (lunout, lchout, itime, moname, nx, &
                         ny, lgrid, cgrid, notot, nosys, &
                         syname, conc, bound, nrvar, ounam(k1), &
                         riobuf, ip(5), isflag, iniout)
                 !
             elseif (isrtou == idm2) then
                 !
-                call outdmp (lunout, lchout, itime, moname, nx, &
+                call writes_concentrations_in_grid_layout (lunout, lchout, itime, moname, nx, &
                         ny, lgrid, cgrid, 0, 0, &
                         syname, conc, bound, nrvar, ounam(k1), &
                         riobuf, ip(5), isflag, iniout)
