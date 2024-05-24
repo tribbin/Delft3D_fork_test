@@ -548,9 +548,9 @@ contains
         !     lfirst  logical       1     output  if .t. then first step
 
 
-        integer(kind = int_wp) :: itime, idt, istrt, istop, istep
+        integer :: itime, idt, istrt, istop, istep
         logical :: lflag, lfirst
-        integer(kind = int_wp) :: ithandl = 0
+        integer :: ithandl = 0
         if (timon) call timstrt ("evaluate_timers", ithandl)
 
         ! evaluate timer
