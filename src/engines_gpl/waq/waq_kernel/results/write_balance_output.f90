@@ -28,8 +28,7 @@ module m_sobbal
 
 contains
 
-    ! TODO: Sobak balance output
-    SUBROUTINE write_balance_text_output(NOTOT, ITIME, NOSYS, NOFLUX, NDMPAR, &
+    subroutine write_balance_text_output(NOTOT, ITIME, NOSYS, NOFLUX, NDMPAR, &
             NDMPQ, NTDMPQ, ITSTOP, IMSTRT, IMSTOP, &
             IQDMP, IPDMP, ASMASS, FLXINT, STOCHI, &
             SYNAME, DANAM, MONAME, DMPQ, NOBND, &
@@ -88,11 +87,10 @@ contains
         !     INWTYP  INTEGER  NOWST      INPUT   wasteload type number (index in WSTTYP)
         !     WSTDMP  REAL     NOTOT,NOWST,2  I   accumulated wasteloads 1/2 in and out
         !     ==================================================================
-        !
-        use m_write_history_output
-        use m_logger_helper, only : stop_with_error, get_log_unit_number
+        use m_write_map_output, only: write_binary_history_output
+        use m_logger_helper, only: stop_with_error, get_log_unit_number
         use data_processing, only: extract_value_from_group
-        use m_cli_utils, only : get_command_argument_by_name
+        use m_cli_utils, only: get_command_argument_by_name
         use m_open_waq_files
         use timers
         INTEGER(kind = int_wp) :: NOTOT, ITIME, NOSYS, NOSEG, LUNOUT, &
@@ -172,10 +170,10 @@ contains
                 INCLUD, BOUNDA, LUMPTR, B_AREA, B_VOLU
         REAL(kind = real_wp) :: RDUM(1)
         REAL(kind = real_wp) :: ST, TFACTO(NOSUM)
-        character(len=20)  C20, SYNAMS(NOSUM)
-        character(len=40)  CDUM
-        character(len=255) FILNAM
-        character(len=2)   c2
+        character(len = 20)  C20, SYNAMS(NOSUM)
+        character(len = 40)  CDUM
+        character(len = 255) FILNAM
+        character(len = 2)   c2
         character(:), allocatable :: inifil
         integer(kind = int_wp) :: lunini
         integer(kind = int_wp) :: iseg, iw, idum, ivan, ibal_off, idump_out
@@ -921,7 +919,7 @@ contains
         write (*, *) 'Error allocating memory'
         call stop_with_error()
     end
-    SUBROUTINE OUTBAI (IOBALI, MONAME, IBSTRT, IBSTOP, NOOUT, &
+    SUBROUTINE OUTBAI(IOBALI, MONAME, IBSTRT, IBSTOP, NOOUT, &
             NOTOT, NDMPAR, DANAMP, OUNAME, SYNAME, &
             IMASSA, IEMISS, NEMISS, ITRANS, NTRANS, &
             IPROCS, NPROCS, BALTOT, ONLYSM, NOSUM, &
@@ -1088,9 +1086,9 @@ contains
         RETURN
     END
 
-    subroutine comsum (nosum, tfacto, notot, syname, sfacto, nocons, coname, cons)
+    subroutine comsum(nosum, tfacto, notot, syname, sfacto, nocons, coname, cons)
 
-        use m_logger_helper, only : stop_with_error, get_log_unit_number
+        use m_logger_helper, only: stop_with_error, get_log_unit_number
         use timers
         use bloom_data_mass_balance
 
@@ -1232,7 +1230,7 @@ contains
         return
     end
 
-    SUBROUTINE UPDBAL (IDUMP, NOTOT, IMASSA, ITERMS, IOFFSE, &
+    subroutine updbal(IDUMP, NOTOT, IMASSA, ITERMS, IOFFSE, &
             BALANS, NOSUM, DMASSA, FACTOR, NTEL, &
             SFACTO, NOOUT, NOLAST)
 
@@ -1347,7 +1345,7 @@ contains
         if (timon) call timstop (ithandl)
     end subroutine sum_sub_areas_surfaces
 
-    SUBROUTINE sum_sub_areas_values (NDMPAR, IPDMP, VALSEG, VALDMP)
+    SUBROUTINE sum_sub_areas_values(NDMPAR, IPDMP, VALSEG, VALDMP)
         !  sums values for sub-area's
 
         !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
