@@ -29,8 +29,7 @@ module m_write_output
     use m_write_map_output, only: write_binary_history_output, write_binary_map_output
     use m_write_nefis_output, only: write_nefis_history_output
     use m_write_netcdf_output
-    use m_fill_output_arrays, only: writes_concentrations_in_grid_layout, store_variables_in_output_grid, raatra
-    use m_fiosub
+    use m_fill_output_arrays, only: writes_concentrations_in_grid_layout, store_variables_in_output_grid, raatra, fiosub
     use timers, only: evaluate_timers
 
 
