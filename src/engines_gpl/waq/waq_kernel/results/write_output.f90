@@ -25,7 +25,6 @@ module m_write_output
     use m_values
     use m_sobbal
     use m_write_monitoring_output
-    use m_write_nefis_output
     use m_write_map_output, only: write_binary_history_output, write_binary_map_output
     use m_write_nefis_output, only: write_nefis_history_output
     use m_write_netcdf_output
@@ -292,15 +291,13 @@ contains
                 call stop_with_error()
             endif
         endif
-        !
-        !     Evaluate standard DELWAQ output timers
-        !
-        call evaluate_timers (itime, idt, imstrt, imstop, imstep, imflag, lmfirs)
-        call evaluate_timers (itime, idt, idstrt, idstop, idstep, idflag, ldfirs)
-        call evaluate_timers (itime, idt, ihstrt, ihstop, ihstep, ihflag, lhfirs)
-        !
-        !     Fill mass in AMASS2 array by summing AMASS over all segments
-        !
+
+        ! Evaluate standard DELWAQ output timers
+        call evaluate_timers(itime, idt, imstrt, imstop, imstep, imflag, lmfirs)
+        call evaluate_timers(itime, idt, idstrt, idstop, idstep, idflag, ldfirs)
+        call evaluate_timers(itime, idt, ihstrt, ihstop, ihstep, ihflag, lhfirs)
+
+        ! Fill mass in AMASS2 array by summing AMASS over all segments
         if (imflag) then
             damass2 = amass2
             iaflag = 1
@@ -312,9 +309,8 @@ contains
             enddo
             amass2 = damass2
         endif
-        !
-        !     Fill mass in ASMASS array using DMPQ and DMPS
-        !
+
+        ! Fill mass in ASMASS array using DMPQ and DMPS
         if (imflag .or. (ihflag .and. noraai > 0)) then
             if (ibflag == 1) then
                 call fill_dump_areas_balances(notot, nosys, noflux, ndmpar, ndmpq, &
@@ -325,22 +321,20 @@ contains
 
             if (noraai > 0) then
                 if (lhfirs) then
-                    call initialize_real_array   (trraai, noraai * nosys)
+                    call initialize_real_array(trraai, noraai * nosys)
                 else
                     call raatra (nosys, ndmpq, noraai, ntraaq, ioraai, &
                             nqraai, iqraai, iqdmp, dmpq, trraai)
                 endif
             endif
-            !
+
         endif
-        !
-        !     Initialize K1, pointer in IOPOIN and OUNAM
-        !
+
+        ! Initialize K1, pointer in IOPOIN and OUNAM
         lread = .true.
         k1 = 1
-        !
-        !     Loop over the output files
-        !
+
+        ! Loop over the output files
         do iout = 1, noutp
             !
             !        Map output structure to single variables part 1
@@ -808,7 +802,7 @@ contains
 
     end subroutine fill_dump_areas_balances
 
-    subroutine fill_transect_output_buffer (OUTVAL, NRVAR, TRRAAI, NORAAI, NOSYS)
+    subroutine fill_transect_output_buffer(OUTVAL, NRVAR, TRRAAI, NORAAI, NOSYS)
 
         !  Fills output buffer OUTVAL for raaien
 
