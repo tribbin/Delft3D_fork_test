@@ -418,7 +418,7 @@ contains
                         noraai > 0) then
                     nrvar3 = notot + nrvar2
                     ip1 = (ncout + nrvar2) * ndmpar + 1
-                    call fioraa (riobuf(ip1), nrvar3, trraai, noraai, nosys)
+                    call fill_transect_output_buffer (riobuf(ip1), nrvar3, trraai, noraai, nosys)
                 endif
             else
                 nrvar2 = nrvar
@@ -810,7 +810,7 @@ contains
 
     end subroutine fill_dump_areas_balances
 
-    SUBROUTINE FIORAA (OUTVAL, NRVAR, TRRAAI, NORAAI, NOSYS)
+    SUBROUTINE fill_transect_output_buffer (OUTVAL, NRVAR, TRRAAI, NORAAI, NOSYS)
 
         !  Fills output buffer OUTVAL for raaien
 
@@ -831,7 +831,7 @@ contains
         integer(kind = int_wp) :: iraai, isys
         real(kind = real_wp), PARAMETER :: RMISS = -999.
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("fioraa", ithandl)
+        if (timon) call timstrt ("fill_transect_output_buffer", ithandl)
 
         ! Copy values into output buffer
         DO IRAAI = 1, NORAAI
@@ -845,7 +845,7 @@ contains
 
         if (timon) call timstop (ithandl)
 
-    END SUBROUTINE FIORAA
+    END SUBROUTINE fill_transect_output_buffer
 
     SUBROUTINE ACTLOC (IOPOIN, NRVAR, NOCONS, NOPA, NOFUN, &
             NOSFUN, NOTOT, NOSEG, NOLOC, NOGRID, &
