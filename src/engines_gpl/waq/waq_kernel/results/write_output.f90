@@ -379,7 +379,7 @@ contains
                     isrtou == iba2) .and. ibflag /= 1) goto 100
 
             ! Set all local variables used active on base grid
-            call actloc (iopoin, nrvar, nocons, nopa, nofun, &
+            call update_base_grid_local_array (iopoin, nrvar, nocons, nopa, nofun, &
                     nosfun, notot, noseg, noloc, nogrid, &
                     novar, vararr, varidx, vartda, vardag, &
                     arrknd, arrpoi, arrdm1, arrdm2, vgrset, &
@@ -847,7 +847,7 @@ contains
 
     END SUBROUTINE fill_transect_output_buffer
 
-    SUBROUTINE ACTLOC (IOPOIN, NRVAR, NOCONS, NOPA, NOFUN, &
+    SUBROUTINE update_base_grid_local_array(IOPOIN, NRVAR, NOCONS, NOPA, NOFUN, &
             NOSFUN, NOTOT, NOSEG, NOLOC, NOGRID, &
             NOVAR, VARARR, VARIDX, VARTDA, VARDAG, &
             ARRKND, ARRPOI, ARRDM1, ARRDM2, VGRSET, &
@@ -912,7 +912,7 @@ contains
         INTEGER(kind = int_wp) :: IOPA, IOFUNC, IOSFUN, IOCONC, IOLOC, &
                 IODEF, IP
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("actloc", ithandl)
+        if (timon) call timstrt ("update_base_grid_local_array", ithandl)
         !
         !     If no locals get out of here
         !
@@ -1070,7 +1070,7 @@ contains
 
         if (timon) call timstop (ithandl)
 
-    END SUBROUTINE ACTLOC
+    END SUBROUTINE update_base_grid_local_array
 
     SUBROUTINE evaluate_timers (ITIME, IDT, ISTRT, ISTOP, ISTEP, LFLAG, LFIRST)
         !  Evaluates if action is necessary according to timers
