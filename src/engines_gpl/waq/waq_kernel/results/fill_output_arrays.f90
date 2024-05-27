@@ -27,8 +27,9 @@ module m_fill_output_arrays
     implicit none
 
     private
-    public :: write_concentrations_in_grid_layout, store_variables_in_output_grid, fill_transport_terms, &
-            store_variables_in_output_sub_grid
+    public :: write_concentrations_in_grid_layout, store_variables_in_output_grid, fill_transport_terms_transects, &
+            fill_output_buffer_sub_grid, fill_dump_areas_balances, fill_transect_output_buffer, &
+            update_base_grid_local_array, calculate_balance_terms
 
 contains
 
@@ -354,7 +355,7 @@ contains
 
     end subroutine store_variables_in_output_grid
 
-    subroutine fill_transport_terms(nosys, ndmpq, noraai, ntraaq, ioraai, nqraai, iqraai, iqdmp, dmpq, trraai)
+    subroutine fill_transport_terms_transects(nosys, ndmpq, noraai, ntraaq, ioraai, nqraai, iqraai, iqdmp, dmpq, trraai)
         !! Fills transport terms for raaien
 
 
@@ -378,7 +379,7 @@ contains
         integer(kind = int_wp) :: itel1, isys, iraai, nqc, integration_id, iqc, iq, ipq
 
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("fill_transport_terms", ithandl)
+        if (timon) call timstrt ("fill_transport_terms_transects", ithandl)
 
         ! loop over the raaien
         itel1 = 0
@@ -417,10 +418,10 @@ contains
         end do
 
         if (timon) call timstop (ithandl)
-    end subroutine fill_transport_terms
+    end subroutine fill_transport_terms_transects
 
 
-    subroutine store_variables_in_output_sub_grid(outval, iopoin, nrvar, nocons, nopa, &
+    subroutine fill_output_buffer_sub_grid(outval, iopoin, nrvar, nocons, nopa, &
             nofun, nosfun, notot, conc, segfun, &
             func, param, cons, idt, itime, &
             volume, noseg, nosys, ndmpar, ipdmp, &
@@ -489,7 +490,7 @@ contains
         real(kind = real_wp) :: hlpvar, hlpcum, valcum, valvar, srf, cumsrf
         logical     parm
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("store_variables_in_output_sub_grid", ithandl)
+        if (timon) call timstrt ("fill_output_buffer_sub_grid", ithandl)
         ! Pointer offsets
         iocons = nopred + 1
         iopa = iocons + nocons
@@ -798,6 +799,440 @@ contains
 
         if (timon) call timstop (ithandl)
 
-    end subroutine store_variables_in_output_sub_grid
+    end subroutine fill_output_buffer_sub_grid
+
+    subroutine fill_dump_areas_balances(NOTOT, NOSYS, NOFLUX, NDMPAR, NDMPQ, &
+            NDMPS, NTDMPQ, IQDMP, ISDMP, IPDMP, &
+            DMPQ, MASS, DMPS, FLXDMP, ASMASS, &
+            FLXINT)
+
+        ! Fills balances for sub-area's
+
+
+        !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
+        !     ----    -----    ------     ------- -----------
+        !     NOTOT   INTEGER       1     INPUT   Total number of substances
+        !     NOSYS   INTEGER       1     INPUT   Total number of active substances
+        !     NOFLUX  INTEGER       1     INPUT   Nr. of fluxes
+        !     NDMPAR  INTEGER       1     INPUT   Number of dump areas
+        !     NDMPQ   INTEGER       1     INPUT   Number of dump exchanges
+        !     NDMPS   INTEGER       1     INPUT   Number of dump segments
+        !     NTDMPQ  INTEGER       1     INPUT   total number exchanges in dump area
+        !     IQDMP   INTEGER       *     INPUT   Exchange to dumped exchange pointer
+        !     ISDMP   INTEGER       *     INPUT   Segment to dumped segment pointer
+        !     IPDMP   INTEGER       *     INPUT   pointer structure dump area's
+        !     DMPQ    REAL  NOSYS*NDMPQ*? INPUT   mass balance dumped exchange
+        !     DMPS    REAL  NOTOT*NDMPS*? INPUT   mass balance dumped segments
+        !     FLXDMP  REAL  NOFLUX*NDMPS  INPUT   Integrated fluxes
+        !     ASMASS  REAL NOTOT*NDMPAR*6 OUTPUT  Mass balance terms
+        !     FLXINT  REAL  NOFLUX*NDMPAR OUTPUT  Integrated fluxes
+
+        use timers
+
+        INTEGER(kind = int_wp) :: NOTOT, NOSYS, NOFLUX, NDMPAR, NDMPQ, &
+                NDMPS, NTDMPQ
+        INTEGER(kind = int_wp) :: IQDMP(*), ISDMP(*), &
+                IPDMP(*)
+        REAL(kind = real_wp) :: DMPQ(NOSYS, NDMPQ, *), MASS(NOTOT, *), &
+                DMPS(NOTOT, NDMPS, *), FLXDMP(NOFLUX, *), &
+                ASMASS(NOTOT, NDMPAR, *), FLXINT(NOFLUX, *)
+
+        INTEGER(kind = int_wp) :: ITEL1, ITEL2, IP1, IDUMP, NQC, &
+                IQC, IQ, IPQ, ISYS, NSC, &
+                ISC, ISEG, IPS
+        integer(kind = int_wp) :: ithandl = 0
+        if (timon) call timstrt ("fill_dump_areas_balances", ithandl)
+
+        !
+        !     Loop over the dump area's
+        !
+        ITEL1 = NDMPAR
+        IP1 = NDMPAR + NTDMPQ
+        ITEL2 = NDMPAR + NTDMPQ + NDMPAR
+        DO IDUMP = 1, NDMPAR
+            !
+            !        the exchange contributes
+            !
+            NQC = IPDMP(IDUMP)
+            DO IQC = 1, NQC
+                ITEL1 = ITEL1 + 1
+                IQ = IPDMP(ITEL1)
+                IF (IQ > 0) THEN
+                    IPQ = IQDMP(IQ)
+                    DO ISYS = 1, NOSYS
+                        ASMASS(ISYS, IDUMP, 5) = ASMASS(ISYS, IDUMP, 5) + &
+                                DMPQ(ISYS, IPQ, 2)
+                        ASMASS(ISYS, IDUMP, 6) = ASMASS(ISYS, IDUMP, 6) + &
+                                DMPQ(ISYS, IPQ, 1)
+                    end do
+                ELSE
+                    IPQ = IQDMP(-IQ)
+                    DO ISYS = 1, NOSYS
+                        ASMASS(ISYS, IDUMP, 5) = ASMASS(ISYS, IDUMP, 5) + &
+                                DMPQ(ISYS, IPQ, 1)
+                        ASMASS(ISYS, IDUMP, 6) = ASMASS(ISYS, IDUMP, 6) + &
+                                DMPQ(ISYS, IPQ, 2)
+                    end do
+                ENDIF
+            end do
+            !
+            !        the segment contributes
+            !
+            DO ISYS = 1, NOTOT
+                ASMASS(ISYS, IDUMP, 1) = 0.0
+            ENDDO
+            NSC = IPDMP(IP1 + IDUMP)
+            DO ISC = 1, NSC
+                ITEL2 = ITEL2 + 1
+                ISEG = IPDMP(ITEL2)
+                IF (ISEG > 0) THEN
+                    IPS = ISDMP(ISEG)
+                    DO ISYS = 1, NOTOT
+                        ASMASS(ISYS, IDUMP, 1) = ASMASS(ISYS, IDUMP, 1) + &
+                                MASS(ISYS, ISEG)
+                        ASMASS(ISYS, IDUMP, 2) = ASMASS(ISYS, IDUMP, 2) + &
+                                DMPS(ISYS, IPS, 1)
+                        ASMASS(ISYS, IDUMP, 3) = ASMASS(ISYS, IDUMP, 3) + &
+                                DMPS(ISYS, IPS, 2)
+                        ASMASS(ISYS, IDUMP, 4) = ASMASS(ISYS, IDUMP, 4) + &
+                                DMPS(ISYS, IPS, 3)
+                    end do
+                ENDIF
+
+            end do
+
+        end do
+
+        if (timon) call timstop (ithandl)
+
+    end subroutine fill_dump_areas_balances
+
+    subroutine fill_transect_output_buffer(OUTVAL, NRVAR, TRRAAI, NORAAI, NOSYS)
+
+        !  Fills output buffer OUTVAL for raaien
+
+        !
+        !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
+        !     ----    -----    ------     ------- -----------
+        !     OUTVAL  REAL    NRVAR,*     OUTPUT  Values for vars on output grid
+        !     NRVAR   INTEGER       1     INPUT   Number of output vars
+        !     TRRAAI  REAL    NOSYS,*     INPUT   Tranport over raai for active substanc
+        !     NORAAI  INTEGER       1     INPUT   Number of raaien
+        !     NOSYS   INTEGER       1     INPUT   Number of parameters in TRRAAI
+
+        use timers
+
+        INTEGER(kind = int_wp) :: NRVAR, NORAAI, NOSYS
+        REAL(kind = real_wp) :: OUTVAL(NRVAR, *), TRRAAI(NOSYS, *)
+
+        integer(kind = int_wp) :: iraai, isys
+        real(kind = real_wp), PARAMETER :: RMISS = -999.
+        integer(kind = int_wp) :: ithandl = 0
+        if (timon) call timstrt ("fill_transect_output_buffer", ithandl)
+
+        ! Copy values into output buffer
+        DO IRAAI = 1, NORAAI
+            DO ISYS = 1, NOSYS
+                OUTVAL(ISYS, IRAAI) = TRRAAI(ISYS, IRAAI)
+            end do
+            DO ISYS = NOSYS + 1, NRVAR
+                OUTVAL(ISYS, IRAAI) = RMISS
+            end do
+        end do
+
+        if (timon) call timstop (ithandl)
+
+    END SUBROUTINE fill_transect_output_buffer
+
+    subroutine update_base_grid_local_array(IOPOIN, NRVAR, NOCONS, NOPA, NOFUN, &
+            nosfun, notot, noseg, noloc, nogrid, &
+            novar, vararr, varidx, vartda, vardag, &
+            arrknd, arrpoi, arrdm1, arrdm2, vgrset, &
+            grdnos, grdseg, a)
+        ! Sets all variable from the LOCAL array used for output actual for the base grid.
+        ! (ouput always uses the value from base grid)
+
+
+        !
+        !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
+        !     ----    -----    ------     ------- -----------
+        !     IOPOIN  INTEGER       *     INPUT   Pointers to arrays for vars
+        !     NRVAR   INTEGER       1     INPUT   Number of output vars
+        !     NOCONS  INTEGER       1     INPUT   Number of constants used
+        !     NOPA    INTEGER       1     INPUT   Number of parameters
+        !     NOFUN   INTEGER       1     INPUT   Number of functions ( user )
+        !     NOSFUN  INTEGER       1     INPUT   Number of segment functions
+        !     NOTOT   INTEGER       1     INPUT   Total number of substances
+        !     NOSEG   INTEGER       1     INPUT   Nr. of computational elements
+        !     NOLOC   INTEGER       1     INPUT   Number of variables in PROLOC
+        !     NOGRID  INTEGER       1     INPUT   Number of grids
+        !     NOVAR   INTEGER       1     INPUT   Number of variables
+        !     VARARR  INTEGER   NOVAR     INPUT   Variable array number
+        !     VARIDX  INTEGER   NOVAR     INPUT   Variable index in array
+        !     VARTDA  INTEGER   NOVAR     INPUT   Type of disaggregation
+        !     VARDAG  INTEGER   NOVAR     INPUT   Variable disaggr. weight var.
+        !     ARRKND  INTEGER   NOARR     INPUT   Kind of array
+        !     ARRPOI  INTEGER   NOARR     INPUT   Array pointer in A
+        !     ARRDM1  INTEGER   NOARR     INPUT   First dimension
+        !     ARRDM2  INTEGER   NOARR     INPUT   Second dimension
+        !     VGRSET  INTEGER   NOVAR,*   IN/OUT  Actual indication
+        !     GRDNOS  INTEGER   NOGRID    INPUT   Number of segments in grid
+        !     GRDSEG  INTEGER   NOGRID    INPUT   Segment pointering
+        !     A       REAL      *         IN/OUT  Real array work space
+
+        use m_dhgvar
+        use m_array_manipulation, only: set_array_parameters
+        use timers
+        use aggregation, only: resample_v2
+
+        integer(kind = int_wp) :: nrvar, nocons, nopa, nofun, nosfun, &
+                notot, noseg, noloc, nogrid, novar, &
+                nototo, nototi, noseg2, nopred, i, ix_hlp, &
+                iv_idx, iv_hlp, iv_da, ivar, isyso, isysi, &
+                nototw, ix_da, isysw, isysh, ip_hlp, ip_da, &
+                iparw, ip_arr, ip_aro, ipari, iocons, iloc, &
+                ik_hlp, nototh, iswcum, ip_arw, ip_ari, ip_arh, &
+                ik_da, igrid, idim2, idim1, idatyp, id2_da, id2hlp, &
+                id1_da, id1hlp, ia_loc, ia_hlp, ia_da, iarr, iarknd
+
+        integer(kind = int_wp) :: iopoin(nrvar), vararr(novar), &
+                varidx(novar), vartda(novar), &
+                vardag(novar), arrknd(*), &
+                arrpoi(*), arrdm1(*), &
+                arrdm2(*), vgrset(novar, *), &
+                grdnos(nogrid), grdseg(noseg, nogrid)
+        real(kind = real_wp) :: a(*)
+        !
+        !     local
+        !
+        parameter (nopred = 6)
+        integer(kind = int_wp) :: iopa, iofunc, iosfun, ioconc, ioloc, &
+                iodef, ip
+        integer(kind = int_wp) :: ithandl = 0
+        if (timon) call timstrt ("update_base_grid_local_array", ithandl)
+        !
+        !     if no locals get out of here
+        !
+        if (noloc == 0) return
+        !
+        !     pointer offsets
+        !
+        iocons = nopred + 1
+        iopa = iocons + nocons
+        iofunc = iopa + nopa
+        iosfun = iofunc + nofun
+        ioconc = iosfun + nosfun
+        ioloc = ioconc + notot
+        iodef = ioloc + noloc
+        !
+        ia_loc = 33
+        ix_hlp = 1
+        ia_hlp = 33
+        call dhgvar(ia_hlp, ix_hlp, iv_hlp)
+        ik_hlp = arrknd(ia_hlp)
+        ip_hlp = arrpoi(ia_hlp)
+        id1hlp = arrdm1(ia_hlp)
+        id2hlp = arrdm2(ia_hlp)
+        !
+        do i = 1, nrvar
+            ip = iopoin(i)
+            !
+            !        is it a local value
+            !
+            if (ip < iodef .and. ip >= ioloc) then
+                !
+                !           get variable number
+                !
+                iloc = ip - ioloc + 1
+                call dhgvar(ia_loc, iloc, ivar)
+                !
+                !           check is variable is active for base grid
+                !
+                if (vgrset(ivar, 1) == 0) then
+                    !
+                    iarr = ia_loc
+                    iv_idx = varidx(ivar)
+                    iarknd = arrknd(iarr)
+                    ip_arr = arrpoi(iarr)
+                    idim1 = arrdm1(iarr)
+                    idim2 = arrdm2(iarr)
+                    !
+                    !              set variable
+                    !
+                    do igrid = 2, nogrid
+                        if (vgrset(ivar, igrid) == 1) then
+                            noseg2 = grdnos(igrid)
+                            !
+                            !                    determine characteristics of variable
+                            !
+                            call set_array_parameters(ivar, iarr, &
+                                    iarknd, iv_idx, &
+                                    idim1, idim2, &
+                                    ip_arr, igrid, &
+                                    isysi, nototi, &
+                                    ip_ari)
+                            call set_array_parameters(ivar, iarr, &
+                                    iarknd, iv_idx, &
+                                    idim1, idim2, &
+                                    ip_arr, 1, &
+                                    isyso, nototo, &
+                                    ip_aro)
+                            !
+                            !                    determine characteristics of weight variable
+                            !                    ( don't mind if this one is actuel ? )
+                            !
+                            idatyp = vartda(ivar)
+                            if (idatyp == 2) then
+                                iv_da = vardag(ivar)
+                                ia_da = vararr(iv_da)
+                                ik_da = arrknd(ia_da)
+                                if (ik_da == 1) then
+                                    !
+                                    !                          not variable in space use help var
+                                    !
+                                    idatyp = 3
+                                    iv_da = iv_hlp
+                                    ia_da = vararr(iv_da)
+                                    ik_da = arrknd(ia_da)
+                                endif
+                                ix_da = varidx(iv_da)
+                                ip_da = arrpoi(ia_da)
+                                id1_da = arrdm1(ia_da)
+                                id2_da = arrdm2(ia_da)
+                                call set_array_parameters(iv_da, ia_da, &
+                                        ik_da, ix_da, &
+                                        id1_da, id2_da, &
+                                        ip_da, 1, &
+                                        isysw, nototw, &
+                                        ip_arw)
+                                call set_array_parameters(iv_hlp, ia_hlp, &
+                                        ik_hlp, ix_hlp, &
+                                        id1hlp, id2hlp, &
+                                        ip_hlp, igrid, &
+                                        isysh, nototh, &
+                                        ip_arh)
+                            elseif (idatyp == 3) then
+                                iv_da = iv_hlp
+                                ia_da = vararr(iv_da)
+                                ik_da = arrknd(ia_da)
+                                ix_da = varidx(iv_da)
+                                ip_da = arrpoi(ia_da)
+                                id1_da = arrdm1(ia_da)
+                                id2_da = arrdm2(ia_da)
+                                call set_array_parameters(iv_da, ia_da, &
+                                        ik_da, ix_da, &
+                                        id1_da, id2_da, &
+                                        ip_da, 1, &
+                                        isysw, nototw, &
+                                        ip_arw)
+                                call set_array_parameters(iv_hlp, ia_hlp, &
+                                        ik_hlp, ix_hlp, &
+                                        id1hlp, id2hlp, &
+                                        ip_hlp, igrid, &
+                                        isysh, nototh, &
+                                        ip_arh)
+                            else
+                                !
+                                !                       weight and help array's dummy's
+                                !                       so set to the variable itself
+                                !
+                                isysw = isyso
+                                isysh = isysi
+                                nototw = nototo
+                                nototh = nototi
+                                ip_arw = ip_aro
+                                ip_arh = ip_ari
+                                !
+                            endif
+                            !
+                            iswcum = 0
+                            call resample_v2(noseg, noseg2, &
+                                    nototi, nototw, &
+                                    nototh, nototo, &
+                                    isysi, isysw, &
+                                    isysh, isyso, &
+                                    grdseg(1, igrid), idatyp, &
+                                    a(ip_ari), a(ip_arw), &
+                                    iswcum, a(ip_arh), &
+                                    a(ip_aro))
+                            vgrset(ivar, 1) = 1
+                        endif
+                    enddo
+
+                endif
+
+            endif
+
+        enddo
+
+        if (timon) call timstop (ithandl)
+
+    end subroutine update_base_grid_local_array
+
+    subroutine calculate_balance_terms(NOTOT, NOFLUX, NDMPAR, NOBALT, STOCHI, &
+            FLXINT, ASMASS, BALINT)
+
+        ! Makes BALINT from FLXINT and STOCHI
+
+        !     NAME    KIND     LENGTH     FUNCT.  DESCRIPTION
+        !     ----    -----    ------     ------- -----------
+        !     NOTOT   INTEGER       1     INPUT   Total number of substances
+        !     NOFLUX  INTEGER       1     INPUT   Nr. of fluxes
+        !     NDMPAR  INTEGER       1     INPUT   Nr. of dump areas
+        !     NOBALT  INTEGER       1     INPUT   Nr. of balance terms total
+        !     STOCHI  REAL   NOTOT*NOFLUX INPUT   Proces stochiometry
+        !     FLXINT  REAL  NOFLUX*NDMPAR INPUT   Accumulated fluxes
+        !     ASMASS  REAL NOTOT*NDMPAR*6 INPUT   Mass balance terms
+        !     BALINT  REAL  NOBALT*NDMPAR OUTPUT  Balance terms
+
+        use m_logger_helper, only: stop_with_error, get_log_unit_number
+        use timers
+
+        INTEGER(kind = int_wp) :: NOTOT, NOFLUX, NDMPAR, NOBALT
+        REAL(kind = real_wp) :: STOCHI(NOTOT, NOFLUX), FLXINT(NOFLUX, NDMPAR), &
+                ASMASS(NOTOT, NDMPAR, 6), BALINT(NOBALT, NDMPAR)
+
+        ! local
+        integer(kind = int_wp) :: ibalt, isys, i, idmp, iflx, lurep
+        real(kind = real_wp) :: st
+        integer(kind = int_wp) :: ithandl = 0
+        if (timon) call timstrt ("calculate_balance_terms", ithandl)
+        !
+        !     We construeren nu de BALINT's
+        !
+        IBALT = 0
+        DO ISYS = 1, NOTOT
+            DO I = 1, 4
+                IBALT = IBALT + 1
+                IF (I == 1 .OR. I == 3) THEN
+                    DO IDMP = 1, NDMPAR
+                        BALINT(IBALT, IDMP) = ASMASS(ISYS, IDMP, I + 2)
+                    ENDDO
+                ELSE
+                    DO IDMP = 1, NDMPAR
+                        BALINT(IBALT, IDMP) = -ASMASS(ISYS, IDMP, I + 2)
+                    ENDDO
+                ENDIF
+            ENDDO
+            DO IFLX = 1, NOFLUX
+                ST = STOCHI(ISYS, IFLX)
+                IF (ABS(ST) > 1.E-20) THEN
+                    IBALT = IBALT + 1
+                    IF (IBALT > NOBALT) THEN
+                        CALL get_log_unit_number(LUREP)
+                        WRITE(LUREP, *) 'ERROR, INTERNAL calculate_balance_terms'
+                        WRITE(*, *)     'ERROR, INTERNAL calculate_balance_terms'
+                        CALL stop_with_error()
+                    ENDIF
+                    DO IDMP = 1, NDMPAR
+                        BALINT(IBALT, IDMP) = FLXINT(IFLX, IDMP) * ST
+                    ENDDO
+                ENDIF
+            ENDDO
+        ENDDO
+
+        if (timon) call timstop (ithandl)
+
+    end subroutine calculate_balance_terms
 
 end module m_fill_output_arrays
