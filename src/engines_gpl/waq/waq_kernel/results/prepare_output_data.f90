@@ -27,9 +27,9 @@ module m_prepare_output_data
     implicit none
 
     private
-    public :: write_concentrations_in_grid_layout, store_variables_in_output_grid, fill_transport_terms_transects, &
+    public :: write_concentrations_in_grid_layout, fill_output_buffer_base_grid, fill_transport_terms_transects, &
             fill_output_buffer_sub_grid, fill_dump_areas_balances, fill_transect_output_buffer, &
-            update_base_grid_local_array, calculate_balance_terms, fill_output_buffer_base_grid
+            update_base_grid_local_array, calculate_balance_terms, write_balance_history_output
 
 contains
 
@@ -209,7 +209,7 @@ contains
 
     end subroutine write_concentrations_in_grid_layout
 
-    subroutine store_variables_in_output_grid(outval, iopoin, nrvar, nocons, nopa, &
+    subroutine fill_output_buffer_base_grid(outval, iopoin, nrvar, nocons, nopa, &
             nofun, nosfun, notot, conc, segfun, &
             func, param, cons, idt, itime, &
             volume, noseg, nosys, nodump, idump, &
@@ -270,7 +270,7 @@ contains
         integer(kind = int_wp) :: iopa, iofunc, iosfun, ioconc, ioloc, &
                 iodef, ip, icel, iseg, iocons, nocel, i, iicel, iip
         integer(kind = int_wp) :: ithandl = 0
-        if (timon) call timstrt ("store_variables_in_output_grid", ithandl)
+        if (timon) call timstrt ("fill_output_buffer_base_grid", ithandl)
         !
         !     pointer offsets
         !
@@ -353,7 +353,7 @@ contains
 
         if (timon) call timstop (ithandl)
 
-    end subroutine store_variables_in_output_grid
+    end subroutine fill_output_buffer_base_grid
 
     subroutine fill_transport_terms_transects(nosys, ndmpq, noraai, ntraaq, ioraai, nqraai, iqraai, iqdmp, dmpq, trraai)
         !! Fills transport terms for raaien
@@ -1235,7 +1235,7 @@ contains
 
     end subroutine calculate_balance_terms
 
-    subroutine fill_output_buffer_base_grid(balance_file_unit, simulation_time, model_name, num_substances, &
+    subroutine write_balance_history_output(balance_file_unit, simulation_time, model_name, num_substances, &
             num_fluxes, substances_names, num_dump_segments, monitoring_station_names, mass_balance_terms, &
             integrated_fluxes, num_extra_variables, extra_variables, initialize_file)
         ! Writes balance output
@@ -1259,7 +1259,7 @@ contains
         integer(kind = int_wp) :: j, i, k, isys, iflx, ihlp
         integer(kind = int_wp) :: ithandl = 0
         integer(kind = int_wp) :: nopout
-        if (timon) call timstrt ("fill_output_buffer_base_grid", ithandl)
+        if (timon) call timstrt ("write_balance_history_output", ithandl)
 
         ! Initialize file
         if (initialize_file == 1) then
@@ -1282,6 +1282,6 @@ contains
 
         if (timon) call timstop (ithandl)
 
-    end subroutine fill_output_buffer_base_grid
+    end subroutine write_balance_history_output
 
 end module m_prepare_output_data

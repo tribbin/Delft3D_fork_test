@@ -28,10 +28,10 @@ module m_write_output
     use m_write_map_output, only: write_binary_history_output, write_binary_map_output
     use m_write_nefis_output, only: write_nefis_history_output, write_nefis_map_output
     use m_write_netcdf_output
-    use m_prepare_output_data, only: write_concentrations_in_grid_layout, store_variables_in_output_grid, &
+    use m_prepare_output_data, only: write_concentrations_in_grid_layout, fill_output_buffer_base_grid, &
             fill_transport_terms_transects, fill_output_buffer_sub_grid, fill_transect_output_buffer, &
             fill_dump_areas_balances, update_base_grid_local_array, calculate_balance_terms, &
-            fill_output_buffer_base_grid
+            write_balance_history_output
     use timers, only: evaluate_timers
 
     implicit none
@@ -412,11 +412,11 @@ contains
                         noraai > 0) then
                     nrvar3 = notot + nrvar2
                     ip1 = (ncout + nrvar2) * ndmpar + 1
-                    call fill_transect_output_buffer (riobuf(ip1), nrvar3, trraai, noraai, nosys)
+                    call fill_transect_output_buffer(riobuf(ip1), nrvar3, trraai, noraai, nosys)
                 endif
             else
                 nrvar2 = nrvar
-                call store_variables_in_output_grid (riobuf, iopoin(k1), nrvar, nocons, nopa, &
+                call fill_output_buffer_base_grid(riobuf, iopoin(k1), nrvar, nocons, nopa, &
                         nofun, nosfun, notot, conc, segfun, &
                         func, param, cons, idt, itime, &
                         volume, noseg, nosys, nodump, idump, &
@@ -655,7 +655,7 @@ contains
 
             elseif (isrtou == ibal) then
 
-                call fill_output_buffer_base_grid(lunout, itime, moname, notot, noflux, syname, ndmpar, danam, asmass, &
+                call write_balance_history_output(lunout, itime, moname, notot, noflux, syname, ndmpar, danam, asmass, &
                         flxint, nrvar2, riobuf, iniout)
 
             elseif (isrtou == iba2) then
