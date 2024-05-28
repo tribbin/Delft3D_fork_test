@@ -1,18 +1,19 @@
 import os
-import shutil
 import uuid
+
+from pyfakefs.fake_filesystem import FakeFilesystem
 
 from src.utils.logging.file_logger import FileLogger
 from src.utils.logging.log_level import LogLevel
 
 
 class TestFileLogger:
-    def test_init_logger_should_create_1_log_file(self):
+    def test_init_logger_should_create_1_log_file(self, fs: FakeFilesystem):
         # Arrange
         random_hash = str(uuid.uuid4())
         log_folder = os.path.join(os.curdir, random_hash)
         log_path = os.path.join(log_folder, "file.log")
-        os.makedirs(log_folder, exist_ok=True)
+        fs.create_dir(log_folder)
         test_message = "hello-world"
 
         # Act
@@ -29,16 +30,13 @@ class TestFileLogger:
             relevant_lines = [line for line in log_contents if test_message in line]
             assert len(relevant_lines) > 0, "The log file does not contain the expected message."
 
-        # Teardown
-        shutil.rmtree(log_folder)
-
-    def test_init_logger_should_back_up_old_logs_with_same_name(self):
+    def test_init_logger_should_back_up_old_logs_with_same_name(self, fs: FakeFilesystem):
         # Arrange
         random_hash = str(uuid.uuid4())
         log_folder = os.path.join(os.curdir, random_hash)
         log_path = os.path.join(log_folder, "file.log")
         log_path_back_up = os.path.join(log_folder, "file.log.1")
-        os.makedirs(log_folder, exist_ok=True)
+        fs.create_dir(log_folder)
         test_message1 = "hello-world"
         test_message2 = "hello-space"
 
@@ -65,6 +63,3 @@ class TestFileLogger:
             log_contents = log_file.readlines()
             relevant_lines = [line for line in log_contents if test_message2 in line]
             assert len(relevant_lines) > 0, "The log file does not contain the expected message."
-
-        # Teardown
-        shutil.rmtree(log_folder)
