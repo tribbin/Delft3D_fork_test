@@ -60,7 +60,7 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
     use message_module
     use morphology_data_module
     use sediment_basics_module
-    use flocculation, only: FLOC_NONE, FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR, FLOC_VERNEY_ETAL, DiaMicro, UstarMacro
+    use flocculation, only: FLOC_NONE, FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR, FLOC_VERNEY_ETAL
     use system_utils, only:SHARED_LIB_PREFIX, SHARED_LIB_EXTENSION
     use grid_dimens_module, only: griddimtype
     !
@@ -75,6 +75,8 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
     real(fp)                           , pointer :: sc_cmf1
     real(fp)                           , pointer :: sc_cmf2
     real(fp)                           , pointer :: sc_flcf
+    real(fp)                           , pointer :: d_micro
+    real(fp)                           , pointer :: ustar_macro
     integer                            , pointer :: nmudfrac
     integer                            , pointer :: sc_mudfac
     logical          , dimension(:)    , pointer :: cmpupdfrac
@@ -196,6 +198,8 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
     sc_cmf1              => sedpar%sc_cmf1
     sc_cmf2              => sedpar%sc_cmf2
     sc_flcf              => sedpar%sc_flcf
+    d_micro              => sedpar%d_micro
+    ustar_macro          => sedpar%ustar_macro
     flocmod              => sedpar%flocmod
     nflocpop             => sedpar%nflocpop
     nflocsizes           => sedpar%nflocsizes
@@ -472,10 +476,8 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
           sedpar%tbreakup = sedpar%tfloc
           call prop_get(sed_ptr, 'SedimentOverall', 'TBreakUp', sedpar%tbreakup)
           !
-          DiaMicro = 1.e-4_fp
-          UstarMacro = 0.067_fp
-          call prop_get(sed_ptr, 'SedimentOverall', 'DiaMicro', DiaMicro)
-          call prop_get(sed_ptr, 'SedimentOverall', 'UstarMacro', UstarMacro)
+          call prop_get(sed_ptr, 'SedimentOverall', 'DiaMicro', d_micro)
+          call prop_get(sed_ptr, 'SedimentOverall', 'UstarMacro', ustar_macro)
        endif
        !
        sedpar%flnrd(0) = ' '
@@ -1226,7 +1228,7 @@ subroutine echosed(lundia    ,error     ,lsed      ,lsedtot   , &
     use message_module
     use morphology_data_module
     use sediment_basics_module
-    use flocculation, only: FLOC_NONE, FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR, FLOC_VERNEY_ETAL, DiaMicro, UstarMacro
+    use flocculation, only: FLOC_NONE, FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR, FLOC_VERNEY_ETAL
     use m_rdtrafrm, only:echotrafrm
     !
     implicit none
@@ -1417,9 +1419,9 @@ subroutine echosed(lundia    ,error     ,lsed      ,lsedtot   , &
        txtput1 = 'Floc break-up time scale'
        write (lundia, '(2a,e12.4)') txtput1, ':', sedpar%tbreakup
        txtput1 = 'Characteristic diameter of micro flocs'
-       write (lundia, '(2a,e12.4)') txtput1, ':', DiaMicro
+       write (lundia, '(2a,e12.4)') txtput1, ':', sedpar%d_micro
        txtput1 = 'Characteristic shear velocity of macro flocs'
-       write (lundia, '(2a,e12.4)') txtput1, ':', UstarMacro
+       write (lundia, '(2a,e12.4)') txtput1, ':', sedpar%ustar_macro
     endif
     if (bsskin) then
        txtput1 = 'Skin friction Soulsby 2004'

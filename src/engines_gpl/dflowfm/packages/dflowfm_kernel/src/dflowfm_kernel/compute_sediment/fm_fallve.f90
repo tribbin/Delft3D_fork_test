@@ -60,6 +60,8 @@
    real(fp), dimension(:)             , pointer :: localpar
    real(fp), dimension(:,:)           , pointer :: ws
    real(fp)                           , pointer :: csoil
+   real(fp)                           , pointer :: d_micro
+   real(fp)                           , pointer :: ustar_macro
    real(fp)           , dimension(:)  , pointer :: rhosol
    real(fp)         , dimension(:,:)  , pointer :: dss
    real(fp)           , dimension(:)  , pointer :: sedd50
@@ -123,6 +125,8 @@
    dss                 => stmpar%sedpar%dss
    sedd50              => stmpar%sedpar%sedd50
    sedd50fld           => stmpar%sedpar%sedd50fld
+   d_micro             => stmpar%sedpar%d_micro
+   ustar_macro         => stmpar%sedpar%ustar_macro
 
    npar                => stmpar%trapar%npar
    dll_usrfil          => stmpar%trapar%dll_usrfil_settle
@@ -294,6 +298,8 @@
             dll_reals(WS_RP_CHEZY) = real(chezy      ,hp)
             dll_reals(WS_RP_SHTUR) = real(tshear     ,hp)
             dll_reals(WS_RP_CCLAY) = real(cclay      ,hp)
+            dll_reals(WS_RP_DMIC ) = real(d_micro    ,hp)
+            dll_reals(WS_RP_USMAC) = real(ustar_macro,hp)
             !
             if (max_integers < WS_MAX_IP) then
                write(errmsg,'(a,a,a)') 'Insufficient space to pass integer values to settling routine.'

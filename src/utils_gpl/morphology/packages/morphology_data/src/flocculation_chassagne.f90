@@ -41,16 +41,11 @@ module flocculation_chassagne
     public micro_floc_settling_chassagne
     public macro_floc_frac_chassagne
     public floc_chassagne
-    
-    public DiaMicro, UstarMacro
-
-    real(fp)                       :: DiaMicro    !< Characteristic diameter of micro flocs
-    real(fp)                       :: UstarMacro  !< Characteristic shear velocity of macro flocs
 
 contains
     
 !> Calculate the settling velocity of macro flocs using the formulation
-subroutine macro_floc_settling_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, ws_macro )
+subroutine macro_floc_settling_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, d_micro, ustar_macro, ws_macro )
 !
 ! Global variables
 !
@@ -60,21 +55,16 @@ subroutine macro_floc_settling_chassagne( spm, tshear, tdiss, grav, viskin, rho_
     real(fp), intent(in)  :: grav                 !< Gravitational acceleration [m/s2]
     real(fp), intent(in)  :: viskin               !< Kinematic viscosity of water [m2/s]
     real(fp), intent(in)  :: rho_water            !< Water density [kg/m3]
+    real(fp), intent(in)  :: d_micro              !< Characteristic diameter of micro flocs [m]
+    real(fp), intent(in)  :: ustar_macro          !< Characteristic shear velocity of macro flocs [m/s]
     real(fp), intent(out) :: ws_macro             !< Settling velocity of macro flocs [m/s]
 
 !
 ! Local variables
 !
     real(fp)              :: factor1, factor2, factor3, factor4
-    
-    real(fp)              :: d_micro              ! Characteristic diameter of micro flocs [m]
-    real(fp)              :: ustar_macro          ! Characteristic shear velocity of macro flocs [m/s]
-
     !
     ! Compute dimensionless terms
-    !
-    d_micro = DiaMicro
-    ustar_macro = UstarMacro
     !
     factor1  = (tdiss * d_micro ** 4 / viskin ** 3) ** 0.166_fp
     factor2  = (spm / rho_water) ** 0.22044_fp
@@ -156,7 +146,7 @@ end subroutine macro_floc_frac_chassagne
 !! applicable, a different approach is required, but it is not really clear how
 !! to determine if the condition is violated or how to deal with a non-stationary
 !! situation.
-subroutine floc_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, &
+subroutine floc_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, d_micro, ustar_macro, &
                            ws_avg, macro_frac, ws_macro, ws_micro )
 !
 ! Global variables
@@ -167,6 +157,8 @@ subroutine floc_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, &
     real(fp), intent(in)  :: grav                 !< Gravitational acceleration [m/s2]
     real(fp), intent(in)  :: viskin               !< Kinematic viscosity of water [m2/s]
     real(fp), intent(in)  :: rho_water            !< Water density [kg/m3]
+    real(fp), intent(in)  :: d_micro              !< Characteristic diameter of micro flocs [m]
+    real(fp), intent(in)  :: ustar_macro          !< Characteristic shear velocity of macro flocs [m/s]
     real(fp), intent(out) :: ws_avg               !< Downward flux of SPM due to settling [g/m2/s]
     real(fp), intent(out) :: macro_frac           !< Fraction of macro flocs mass of total spm mass [-]
     real(fp), intent(out) :: ws_macro             !< Settling velocity of macro flocs [m/s]
@@ -185,7 +177,7 @@ subroutine floc_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, &
     !
     ! Settling velocity of macro flocs (m/s)
     !
-    call macro_floc_settling_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, ws_macro )
+    call macro_floc_settling_chassagne( spm, tshear, tdiss, grav, viskin, rho_water, d_micro, ustar_macro, ws_macro )
 
     !
     ! Settling velocity of micro flocs (m/s)

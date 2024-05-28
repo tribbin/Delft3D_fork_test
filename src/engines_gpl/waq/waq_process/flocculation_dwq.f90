@@ -34,7 +34,7 @@
 module flocculation_dwq
     use m_waq_precision
     use flocculation, only: get_tshear_tdiss, floc_manning, floc_chassagne, FLOC_MANNING_DYER, &
-                            FLOC_CHASSAGNE_SAFAR, FLOC_VERNEY_ETAL, DiaMicro, UstarMacro
+                            FLOC_CHASSAGNE_SAFAR, FLOC_VERNEY_ETAL
     use precision, only: fp
     implicit none
 
@@ -73,6 +73,8 @@ subroutine flocculate_dwq( swfloform, cmacro, cmicro, tpm, tau, total_depth, loc
     real(kind=fp) :: local_depth_fp !< Total depth (distance segment to surface) [m]
     real(kind=fp) :: viscosity_fp   !< Kinematic viscosity [m2/s]
     real(kind=fp) :: rho_water_fp   !< Density of water- [kg/m3]
+    real(kind=fp) :: d_micro_fp     !< Characteristic diameter of micro flocs [m]
+    real(kind=fp) :: ustar_macro_fp !< Characteristic shear velocity of macro flocs [m/s]
     real(kind=fp) :: spmratioem_fp  !< Ratio of concentration macro flocs to total [-]
     real(kind=fp) :: turb_diss_fp   !< Turbulent dissipation epsilon [m2/s3]
     real(kind=fp) :: tshear_fp      !< Turbulent shear stress [N/m2)
@@ -86,9 +88,8 @@ subroutine flocculate_dwq( swfloform, cmacro, cmicro, tpm, tau, total_depth, loc
     local_depth_fp = real(local_depth,fp)
     viscosity_fp = real(viscosity,fp)
     rho_water_fp = real(rho_water,fp)
-    
-    DiaMicro   = d_micro
-    UstarMacro = ustar_macro
+    d_micro_fp   = real(d_micro,fp)
+    ustar_macro_fp = real(ustar_macro,fp)
     
     call get_tshear_tdiss( tshear_fp, turb_diss_fp, rho_water_fp, taub=tau_fp, &
                            waterdepth=total_depth_fp, localdepth=local_depth_fp, &
@@ -99,7 +100,7 @@ subroutine flocculate_dwq( swfloform, cmacro, cmicro, tpm, tau, total_depth, loc
        call floc_manning( tpm_fp, tshear_fp, ws_avg_fp, spmratioem_fp, ws_macro_fp, ws_micro_fp )
 
     case (FLOC_CHASSAGNE_SAFAR)
-       call floc_chassagne( tpm_fp, tshear_fp, turb_diss_fp, GRAV_fp, viscosity_fp, rho_water_fp, &
+       call floc_chassagne( tpm_fp, tshear_fp, turb_diss_fp, GRAV_fp, viscosity_fp, rho_water_fp, d_micro_fp, ustar_macro_fp, &
                 ws_avg_fp, spmratioem_fp, ws_macro_fp, ws_micro_fp )
 
     case (FLOC_VERNEY_ETAL)
