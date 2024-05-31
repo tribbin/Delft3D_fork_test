@@ -54,7 +54,9 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    integer, intent(in)         :: jas
 
    double precision            :: dvoli
-   integer                     :: i, iconst, j, kk, kkk, k, kb, kt, n, kk2, L, imba, jamba_src
+   integer                     :: iconst, j, kk, kkk, k, kb, kt, n, kk2, L, imba, jamba_src
+   integer                     :: jsed ! counter for suspended sediment fractions
+   integer                     :: jtra ! counter for tracers
    double precision, parameter :: dtol=1d-8
    double precision            :: spir_ce, spir_be, spir_e, alength_a, time_a, alpha, fcoriocof, qsrck, qsrckk, dzss
 
@@ -73,9 +75,9 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
       endif
 
       if ( ISED1.ne.0 ) then
-         do i=1,mxgr
-            iconst = ISED1+i-1
-            constituents(iconst,k) = sed(i,k)
+         do jsed=1,mxgr
+            iconst = ISED1+jsed-1
+            constituents(iconst,k) = sed(jsed,k)
          end do
       end if
    end do
@@ -85,8 +87,8 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
          if ( ISED1.ne.0 ) then
             do k=1,ndx
                if (hs(k)<stmpar%morpar%sedthr) then
-                  do i=1,mxgr
-                     iconst = ISED1+i-1
+                  do jsed=1,mxgr
+                     iconst = ISED1+jsed-1
                      call getkbotktop(k,kb,kt)
                      constituents(iconst,kb:kt) = 0d0
                   end do
@@ -127,25 +129,25 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    endif
 
    if ( ISED1.ne.0) then
-      do i=1,mxgr
-         iconst = ISED1+i-1
+      do jsed=1,mxgr
+         iconst = ISED1+jsed-1
          if (dicouv .ge. 0d0) difsedu(iconst) = 0d0
          if (dicoww .ge. 0d0) then
             difsedw(iconst) = dicoww
-            sigdifi(iconst) = 1d0/sigsed(iconst)
+            sigdifi(iconst) = 1d0/sigsed(jsed)
          endif
-         if (jased < 4) wsf(iconst) = ws(i)
+         if (jased < 4) wsf(iconst) = ws(jsed)
       end do
    end if
 
    if ( ITRA1.gt.0 ) then
-      do i=ITRA1,ITRAN
-         difsedu(i)   =            difmoltracer
+      do jtra=ITRA1,ITRAN
+         difsedu(jtra)   =            difmoltracer
          if (dicoww .ge. 0d0) then
-             difsedw(i) = dicoww + difmoltracer
-             sigdifi(i) = 1d0/sigtracer
+             difsedw(jtra) = dicoww + difmoltracer
+             sigdifi(jtra) = 1d0/sigtracer
          endif
-         wsf(i) = wstracers(i - itra1 + 1)
+         wsf(jtra) = wstracers(jtra - ITRA1 + 1)
       end do
    end if
 
@@ -223,16 +225,16 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 !
       if ( stm_included ) then
          if ( ISED1.gt.0 .and. kk.le.Ndxi ) then
-            do i=1,mxgr
-               kkk = sedtra%kmxsed(kk,i)
+            do jsed=1,mxgr
+               kkk = sedtra%kmxsed(kk,jsed)
                if ( kkk.gt.0 ) then
-                  iconst = i+ISED1-1
-                  const_sour(iconst,kkk) = const_sour(iconst,kkk)+sedtra%sourse(kk,i)
-                  const_sink(iconst,kkk) = const_sink(iconst,kkk)+sedtra%sinkse(kk,i)
+                  iconst = jsed+ISED1-1
+                  const_sour(iconst,kkk) = const_sour(iconst,kkk)+sedtra%sourse(kk,jsed)
+                  const_sink(iconst,kkk) = const_sink(iconst,kkk)+sedtra%sinkse(kk,jsed)
                   
                   if (stmpar%morpar%flufflyr%iflufflyr .gt. 0) then
-                     const_sour(iconst,kkk) = const_sour(iconst,kkk) + stmpar%morpar%flufflyr%sourf(i,kk)
-                     const_sink(iconst,kkk) = const_sink(iconst,kkk) + stmpar%morpar%flufflyr%sinkf(i,kk)
+                     const_sour(iconst,kkk) = const_sour(iconst,kkk) + stmpar%morpar%flufflyr%sourf(jsed,kk)
+                     const_sink(iconst,kkk) = const_sink(iconst,kkk) + stmpar%morpar%flufflyr%sinkf(jsed,kk)
                   end if
 
                end if
