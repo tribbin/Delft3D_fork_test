@@ -204,7 +204,7 @@ class Rewinder:
         tags: Optional[tags], optional
             Key-value pairs to add to all of the MinIO objects.
         allow_create_and_delete: bool, optional
-            By default: `False`. If set to `True`, only include 'updates' in the plan. Exclude 'create's and 'remove's.
+            By default: `False`. If set to `True`, next to include 'updates' in the plan also include 'create's and 'remove's.
         part_size : Optional[int], optional
             Size in bytes of multipart uploads. If not set use the `multipart_upload_part_size` instance
             variable. The computation of the ETag depends on the value of the multipart upload part size.

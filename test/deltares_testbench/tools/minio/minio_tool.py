@@ -86,8 +86,8 @@ class MinioTool:
         By default `push` uses case/reference data in the local
         directories configured in the test bench config file. If some other
         directory is required, it can be passed through the `local_dir` parameter.
-        The `allow_create_and_delete` parameter can be used to only plan 'update's to the objects
-        in MinIO. No 'create' and 'remove' operations will be performed.
+        The `allow_create_and_delete` parameter can be used to next to plan 'update's to the objects
+        in MinIO. Also 'create' and 'remove' operations will be performed.
 
         Parameters
         ----------
