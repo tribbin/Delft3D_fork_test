@@ -444,23 +444,34 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
        case ('verney_etal')
           flocmod = FLOC_VERNEY_ETAL
           nflocsizes = -999
-          call prop_get_integer(sed_ptr, 'SedimentOverall', 'NFlocSizes', nflocsizes)
-          if (nflocsizes == -999) then
-             errmsg = 'NFlocSizes must be specified when using the population balance model.'
-             call write_error(errmsg, unit=lundia)
-             error = .true.
-             return
-          elseif (nflocsizes <= 1) then
-             errmsg = 'Invalid value specified for NFlocSizes.'
-             call write_error(errmsg, unit=lundia)
-             error = .true.
-             return
-          endif
        case default
            errmsg = 'Unknown flocculation model "'//trim(floc_str)//'" specified.'
            call write_error(errmsg, unit=lundia)
            error = .true.
            return
+       end select
+       !
+       call prop_get_integer(sed_ptr, 'SedimentOverall', 'NFlocSizes', nflocsizes)
+       select case (flocmod)
+       case (FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR)
+          if (nflocsizes /= 1 .and. nflocsize /= 2) then
+             errmsg = 'NFlocSizes must be 1 or 2 for the selected flocculation model.'
+             call write_error(errmsg, unit=lundia)
+             error = .true.
+             return
+          endif
+       case (FLOC_VERNEY_ETAL)
+          if (nflocsizes == -999) then
+             errmsg = 'NFlocSizes must be specified when using the population balance model.'
+             call write_error(errmsg, unit=lundia)
+             error = .true.
+             return
+          elseif (nflocsizes < 1) then
+             errmsg = 'Invalid value specified for NFlocSizes.'
+             call write_error(errmsg, unit=lundia)
+             error = .true.
+             return
+          endif
        end select
        !
        if (flocmod /= FLOC_NONE) then
@@ -747,13 +758,17 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
              if (flocmod /= FLOC_NONE .and. sedtyp(l) == SEDTYP_CLAY) then
                  select case (flocmod)
                  case (FLOC_MANNING_DYER)
-                     if (flocsize(l) == 1) then
+                     if (nflocsizes == 1) then
+                        iform_settle(l) = WS_FORM_MANNING_DYER
+                     elseif (flocsize(l) == 1) then
                         iform_settle(l) = WS_FORM_MANNING_DYER_MICRO
                      else
                         iform_settle(l) = WS_FORM_MANNING_DYER_MACRO
                      endif
                  case (FLOC_CHASSAGNE_SAFAR)
-                     if (flocsize(l) == 1) then
+                     if (nflocsizes == 1) then
+                        iform_settle(l) = WS_FORM_CHASSAGNE_SAFAR
+                     elseif (flocsize(l) == 1) then
                         iform_settle(l) = WS_FORM_CHASSAGNE_SAFAR_MICRO
                      else
                         iform_settle(l) = WS_FORM_CHASSAGNE_SAFAR_MACRO
@@ -828,6 +843,9 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
                 call prop_get(sedblock_ptr, '*', 'SalMax', par_settle(1,l))
                 par_settle(2,l) = 1.0_fp
                 call prop_get(sedblock_ptr, '*', 'GamFloc', par_settle(2,l))
+             case (WS_FORM_CHASSAGNE_SAFAR, WS_FORM_CHASSAGNE_SAFAR_MACRO)
+                par_settle(1,l) = d_micro
+                par_settle(2,l) = ustar_micro
              end select
              !
              ! Tracer calibration factor

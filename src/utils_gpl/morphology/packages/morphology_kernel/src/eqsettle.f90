@@ -255,8 +255,8 @@ subroutine eqsettle(dll_function, dll_handle, max_integers, max_reals, max_strin
        tdiss  = real(dll_reals(WS_RP_EPTUR),fp)
        rhow   = real(dll_reals(WS_RP_RHOWT),fp)
        vcmol  = real(dll_reals(WS_RP_VICML),fp)
-       d_micro      = real(dll_reals(WS_RP_DMIC ),fp)
-       ustar_macro  = real(dll_reals(WS_RP_USMAC),fp)
+       d_micro      = parloc(1)
+       ustar_macro  = parloc(2)
        call macro_floc_settling_chassagne( cclay, tshear, tdiss, ag, vcmol, rhow, d_micro, ustar_macro, wsloc )
        apply_hinset = .true.
 
@@ -282,8 +282,8 @@ subroutine eqsettle(dll_function, dll_handle, max_integers, max_reals, max_strin
        tdiss  = real(dll_reals(WS_RP_EPTUR),fp)
        rhow   = real(dll_reals(WS_RP_RHOWT),fp)
        vcmol  = real(dll_reals(WS_RP_VICML),fp)
-       d_micro      = real(dll_reals(WS_RP_DMIC ),fp)
-       ustar_macro  = real(dll_reals(WS_RP_USMAC),fp)
+       d_micro      = parloc(1)
+       ustar_macro  = parloc(2)
        call floc_chassagne( cclay, tshear, tdiss, ag, vcmol, rhow, d_micro, ustar_macro, wsloc, macro_frac, ws_macro, ws_micro )
        apply_hinset = .true.
 

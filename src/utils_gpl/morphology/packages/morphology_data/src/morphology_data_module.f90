@@ -190,9 +190,7 @@ integer, parameter, public :: WS_RP_VMEAN = 20 ! Depth-averaged flow velocity co
 integer, parameter, public :: WS_RP_CHEZY = 21 ! Chezy roughness
 integer, parameter, public :: WS_RP_SHTUR = 22 ! Turbulent shear stress [N/m2]
 integer, parameter, public :: WS_RP_CCLAY = 23 ! Clay concenrtration [kg/m3]
-integer, parameter, public :: WS_RP_DMIC  = 24 ! Characteristic diameter of micro flocs [m]
-integer, parameter, public :: WS_RP_USMAC = 25 ! characteristic shear velocity of macro flocs [m/s]
-integer, parameter, public :: WS_MAX_RP   = 25
+integer, parameter, public :: WS_MAX_RP   = 23
 !
 integer, parameter, public :: WS_IP_NM    =  1
 integer, parameter, public :: WS_IP_N     =  2
