@@ -74,14 +74,16 @@ subroutine test_get_lateral_discharge()
    call aerr('reference_lateral_discharge_in',iostat,numlatsg*ndxi,'test_get_lateral_discharge' )
    allocate(reference_lateral_discharge_out(numlatsg,ndxi),stat=iostat)
    call aerr('reference_lateral_discharge_out',iostat,numlatsg*ndxi,'test_get_lateral_discharge' )
-      
+
+   ! check setup_testcase: lateral inflow over three cells with vol1
+   ! lateral outflow over 2 lateral cells with vol1
    reference_lateral_discharge_in = 0._dp
-   reference_lateral_discharge_in(1,nnlat(1)) = 3._dp
-   reference_lateral_discharge_in(1,nnlat(2)) = 3._dp
-   reference_lateral_discharge_in(1,nnlat(3)) = 3._dp
+   reference_lateral_discharge_in(1,nnlat(1)) = qplat(1,1)*vol1(1)
+   reference_lateral_discharge_in(1,nnlat(2)) = qplat(1,1)*vol1(2)
+   reference_lateral_discharge_in(1,nnlat(3)) = qplat(1,1)*vol1(3)
    reference_lateral_discharge_out = 0._dp
-   reference_lateral_discharge_out(2,nnlat(4)) = 5._dp
-   reference_lateral_discharge_out(2,nnlat(5)) = 5._dp
+   reference_lateral_discharge_out(2,nnlat(4)) = -qplat(1,2)*vol1(1)
+   reference_lateral_discharge_out(2,nnlat(5)) = -qplat(1,2)*vol1(1)
    
    call get_lateral_discharge(lateral_discharge_in,lateral_discharge_out,vol1)
    

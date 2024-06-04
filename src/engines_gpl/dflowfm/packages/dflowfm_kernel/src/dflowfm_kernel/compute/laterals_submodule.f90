@@ -133,19 +133,16 @@ implicit none
       
       integer :: k1, i_cell, i_lateral
       real(kind=dp) :: qlat
-      real(kind=dp) :: total_lateral_volume
       
       if (numlatsg > 0) then
          lateral_discharge_in=0._dp
          lateral_discharge_out=0._dp
          do i_lateral = 1,numlatsg
-            total_lateral_volume=0._dp
             if (apply_transport(i_lateral) ==1) then 
                do k1=n1latsg(i_lateral),n2latsg(i_lateral)
                   ! loop over all elements of the lateral that are inside the current domain
                   i_cell = nnlat(k1)
                   qlat = qplat(1,i_lateral) * cell_volume(i_cell)
-                  total_lateral_volume = total_lateral_volume + cell_volume(i_cell)
                   if (qlat > 0) then
                      if (.not. is_ghost_node(i_cell)) then 
                         lateral_discharge_in(i_lateral,i_cell) = lateral_discharge_in(i_lateral,i_cell) + qlat
@@ -157,8 +154,6 @@ implicit none
                      end if
                   end if
                end do
-               lateral_discharge_in(i_lateral,:) = lateral_discharge_in(i_lateral,:) / total_lateral_volume 
-               lateral_discharge_out(i_lateral,:) = lateral_discharge_out(i_lateral,:) / total_lateral_volume
             end if
          end do
       end if
