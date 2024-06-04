@@ -454,7 +454,7 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
        call prop_get_integer(sed_ptr, 'SedimentOverall', 'NFlocSizes', nflocsizes)
        select case (flocmod)
        case (FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR)
-          if (nflocsizes /= 1 .and. nflocsize /= 2) then
+          if (nflocsizes /= 1 .and. nflocsizes /= 2) then
              errmsg = 'NFlocSizes must be 1 or 2 for the selected flocculation model.'
              call write_error(errmsg, unit=lundia)
              error = .true.
@@ -476,6 +476,11 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
        !
        if (flocmod /= FLOC_NONE) then
           nflocpop = nclayfrac / nflocsizes
+          !
+          if (istat==0) allocate (sedpar%namflocpop(nflocpop), stat = istat)
+          namflocpop    => sedpar%namflocpop
+          namflocpop = ' '
+          !
           if (nflocpop * nflocsizes /= nclayfrac) then
              write(errmsg,'(a,i0,a,i0,a)') 'The number of clay fractions (',nclayfrac,') is not a multiple of the number of floc sizes (',nflocsizes,').'
              call write_error(errmsg, unit=lundia)
@@ -645,6 +650,7 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
           !
           if (flocmod /= FLOC_NONE .and. sedtyp(l) == SEDTYP_CLAY) then
              call prop_get(sedblock_ptr, '*', 'ClayLabel', namclay(l))
+             if (nflocpop == nclayfrac) namflocpop(l) = namclay(l) ! for now namflocpop is only needed when nflocsizes=1
              call prop_get(sedblock_ptr, '*', 'FlocSize' , flocsize(l))
           endif
           !
@@ -845,7 +851,7 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
                 call prop_get(sedblock_ptr, '*', 'GamFloc', par_settle(2,l))
              case (WS_FORM_CHASSAGNE_SAFAR, WS_FORM_CHASSAGNE_SAFAR_MACRO)
                 par_settle(1,l) = d_micro
-                par_settle(2,l) = ustar_micro
+                par_settle(2,l) = ustar_macro
              end select
              !
              ! Tracer calibration factor
@@ -986,7 +992,6 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
        if (.not. associated(sedpar%floclist)) then
           !
           if (istat==0) allocate (sedpar%floclist  (nflocpop, nflocsizes ), stat = istat)
-          if (istat==0) allocate (sedpar%namflocpop(nflocpop             ), stat = istat)
           !
           if (istat/=0) then
              errmsg = 'RDSED: memory alloc error - floclist'
@@ -998,17 +1003,15 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
           ! update local pointers
           !
           floclist      => sedpar%floclist
-          namflocpop    => sedpar%namflocpop
        endif
        !
        floclist = 0
-       namflocpop = ' '
        !
        do l = 1, lsed
           if (sedtyp(l) /= SEDTYP_CLAY) cycle
           !
           do i = 1, nflocpop
-             if (namclay(l) == namflocpop(i) .or. namflocpop(i) == ' ') exit
+             if (namclay(l) == namflocpop(i) .or. namflocpop(i) == ' ') exit ! here it requires unique names in namclay() and namflocpop()
           enddo
           if (i > nflocpop) then
              errmsg = 'Too many different clay labels.'
@@ -1017,7 +1020,17 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
              return
           endif
           !
-          isize = flocsize(l)
+          if (nflocsizes == 1) then
+             isize = 1
+          elseif (nflocsizes > 1) then
+             isize = flocsize(l)
+          else
+             errmsg = 'The number of floc size is invalid.'
+             call write_error(errmsg, unit=lundia)
+             error = .true.
+             return
+          endif
+          !
           if (isize <= 0) then
              errmsg = 'The floc size of fraction '//trim(namsed(l))//' is invalid.'
              call write_error(errmsg, unit=lundia)

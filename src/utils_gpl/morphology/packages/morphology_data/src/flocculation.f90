@@ -78,47 +78,47 @@ subroutine flocculate(cfloc, flocdt, breakdt, flocmod)
     real(fp) :: eq_cfloc_micro !< Equilibrium concentration of micro flocs within specific clay population [g/m3]
     real(fp) :: eq_cfloc_macro !< Equilibrium concentration of macro flocs within specific clay population [g/m3]
     real(fp) :: macro_frac     !< Fraction of macro flocs mass of total spm mass [-]
-    real(fp) :: tcclay         !< Total clay concentration [g/m3]
     real(fp) :: tcpop          !< Total concentration of specific clay population [g/m3]
     !
     nflocpop = size(cfloc,1)
     nflocsizes = size(cfloc,2)
     
-    tcclay = 0.0_fp
-    do j = 1, nflocsizes
-       do i = 1, nflocpop
-           tcclay = tcclay + cfloc(i,j)
-       enddo
+    do i = 1, nflocpop
+
+        tcpop = 0.0_fp
+        do j = 1, nflocsizes
+            tcpop = tcpop + cfloc(i,j)
+        enddo
+           
+        select case (flocmod)
+        case (FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR)
+           if (flocmod == FLOC_MANNING_DYER) then
+              call macro_floc_frac_manning( tcpop, macro_frac )
+           else
+              call macro_floc_frac_chassagne( tcpop, macro_frac )
+           endif
+           !
+           eq_cfloc_macro = macro_frac * tcpop
+           eq_cfloc_micro = tcpop - eq_cfloc_macro
+           !
+           ! only change the composition when nflocsizes >1, 
+           ! otherwise it is seen as a mixture of microflocs and macroflocs, 
+           ! we only need to apply the average settling velocity to it.
+           if (nflocsizes > 1) then
+              if (eq_cfloc_macro > cfloc(i,2)) then ! towards more macro flocs, use flocculation time scale
+                 adt = flocdt
+              else ! towards less macro flocs, use break-up time scale
+                 adt = breakdt
+              endif
+              cfloc(i,1) = cfloc(i,1) + adt * (eq_cfloc_micro - cfloc(i,1))
+              cfloc(i,2) = cfloc(i,2) + adt * (eq_cfloc_macro - cfloc(i,2))
+           endif
+        case (FLOC_VERNEY_ETAL)
+           !call floc_verney
+        end select
+
     enddo
 
-    select case (flocmod)
-    case (FLOC_MANNING_DYER, FLOC_CHASSAGNE_SAFAR)
-       if (flocmod == FLOC_MANNING_DYER) then
-          call macro_floc_frac_manning( tcclay, macro_frac )
-       else
-          call macro_floc_frac_chassagne( tcclay, macro_frac )
-       endif
-       
-       do i = 1, nflocpop
-          tcpop = cfloc(i,1) + cfloc(i,2)
-          !
-          eq_cfloc_macro = macro_frac * tcpop
-          eq_cfloc_micro = tcpop - eq_cfloc_macro
-          !
-          if (eq_cfloc_macro > cfloc(i,2)) then ! towards more macro flocs, use flocculation time scale
-             adt = flocdt
-          else ! towards less macro flocs, use break-up time scale
-             adt = breakdt
-          endif
-          cfloc(i,1) = cfloc(i,1) + adt * (eq_cfloc_micro - cfloc(i,1))
-          cfloc(i,2) = cfloc(i,2) + adt * (eq_cfloc_macro - cfloc(i,2))
-       enddo
-
-    case (FLOC_VERNEY_ETAL)
-       !call floc_verney
-
-    end select
-   
 end subroutine flocculate
 
 
