@@ -2,13 +2,15 @@ import glob
 import os
 import pathlib as pl
 from unittest.mock import MagicMock, call
-from pytest_mock import MockerFixture
 
 import pytest
+from pytest_mock import MockerFixture
+
 from src.config.local_paths import LocalPaths
 from src.config.location import Location
 from src.config.test_case_config import TestCaseConfig
 from src.config.test_case_path import TestCasePath
+from src.config.types.handler_type import HandlerType
 from src.config.types.path_type import PathType
 from src.suite.comparison_runner import ComparisonRunner
 from src.suite.test_bench_settings import TestBenchSettings
@@ -19,8 +21,8 @@ from src.utils.paths import Paths
 
 
 class TestComparisonRunner:
-    @staticmethod
-    def test_run_tests_and_debug_log_downloaded_file():
+    @pytest.mark.usefixtures("fs")  # Use fake filesystem.
+    def test_run_tests_and_debug_log_downloaded_file(self, mocker: MockerFixture) -> None:
         # Arrange
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
@@ -31,6 +33,8 @@ class TestComparisonRunner:
         logger = MagicMock(spec=ConsoleLogger)
         testcase_logger = MagicMock()
         logger.create_test_case_logger.return_value = testcase_logger
+        download_mock = mocker.patch("src.suite.test_set_runner.HandlerFactory.download")
+        detect_mock = mocker.patch("src.suite.test_set_runner.ResolveHandler.detect", return_value=HandlerType.WEB)
 
         runner = ComparisonRunner(settings, logger)
 
@@ -38,14 +42,13 @@ class TestComparisonRunner:
         runner.run_tests_sequentially()
 
         # Assert
-        path = Paths().rebuildToLocalPath(
-                            Paths().mergeFullPath('references', 'Name_1', 'Name_1')
-                            )
+        path = Paths().rebuildToLocalPath(Paths().mergeFullPath("references", "Name_1", "Name_1"))
         expected_log_message = f"Downloading reference result, {path} from https://deltares.nl/Name_1/abc/prefix"
         assert call(expected_log_message) in testcase_logger.debug.call_args_list
+        assert download_mock.call_count == 2  # Downloads case AND reference data.
+        assert detect_mock.call_count == 2
 
-    @staticmethod
-    def test_log_and_skip_with_argument_skip_run(mocker: MockerFixture):
+    def test_log_and_skip_with_argument_skip_run(self, mocker: MockerFixture) -> None:
         # Arrange
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
@@ -64,14 +67,12 @@ class TestComparisonRunner:
         # Act
         runner.run_tests_sequentially()
 
-        # Assert
         expected_log_message = "Skipping execution of testcase (postprocess only)...\n"
         assert call(expected_log_message) in testcase_logger.info.call_args_list
         prepare_mock.assert_called()
         run_mock.assert_not_called()
 
-    @staticmethod
-    def test_skip_download_for_parameter_no_download(mocker: MockerFixture):
+    def test_skip_download_for_parameter_no_download(self, mocker: MockerFixture) -> None:
         # Arrange
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
@@ -84,6 +85,7 @@ class TestComparisonRunner:
         logger.create_test_case_logger.return_value = testcase_logger
         download_mock = mocker.patch("src.suite.test_set_runner.HandlerFactory.download")
         run_mock = mocker.patch("src.suite.test_case.TestCase.run")
+        detect_mock = mocker.patch("src.suite.test_set_runner.ResolveHandler.detect", return_value=HandlerType.WEB)
 
         runner = ComparisonRunner(settings, logger)
 
@@ -91,13 +93,13 @@ class TestComparisonRunner:
         runner.run_tests_sequentially()
 
         # Assert
-        expected_log_message = 'Skipping input of case download (skip download argument)'
+        expected_log_message = "Skipping input of case download (skip download argument)"
         assert call(expected_log_message) in testcase_logger.info.call_args_list
         download_mock.assert_not_called()
         run_mock.assert_called()
+        assert detect_mock.call_count == 2
 
-    @staticmethod
-    def test_run_tests_in_parallel_with_empty_settings_raises_value_error():
+    def test_run_tests_in_parallel_with_empty_settings_raises_value_error(self) -> None:
         # Arrange
         settings = TestBenchSettings()
         settings.configs = []
@@ -108,8 +110,7 @@ class TestComparisonRunner:
         with pytest.raises(ValueError):
             runner.run_tests_in_parallel()
 
-    @staticmethod
-    def test_run_tests_in_parallel_with_ignore_check_if_log_file_exist():
+    def test_run_tests_in_parallel_with_ignore_check_if_log_file_exist(self) -> None:
         # Arrange
         log_folder_path = get_default_logging_folder_path()
         log_file_1 = os.path.join(log_folder_path, "Name_1.log")
@@ -143,15 +144,15 @@ class TestComparisonRunner:
         return config
 
     @staticmethod
-    def create_location(name, type):
+    def create_location(name: str, type: PathType) -> Location:
         location1 = Location()
         location1.root = "https://deltares.nl/"
-        location1.from_path = name.replace(' ', '')
+        location1.from_path = name.replace(" ", "")
         location1.type = type
         return location1
 
     @staticmethod
-    def clean_empty_logs(filenames):
+    def clean_empty_logs(filenames: str) -> None:
         try:
             for filename in glob.glob(filenames.split(".")[0]):
                 os.remove(filename)
@@ -159,5 +160,5 @@ class TestComparisonRunner:
             pass
 
     @staticmethod
-    def assertIsFile(path):
+    def assertIsFile(path: str) -> None:
         assert pl.Path(path).resolve().is_file(), f"File does not exist: {str(path)}"
