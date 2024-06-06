@@ -340,7 +340,7 @@ subroutine test_get_lateral_volume_per_layer
 end subroutine test_get_lateral_volume_per_layer
 
 !==============================================================================
-!> Test computation of distribution of lateral discharge per layer, which is retrived from BMI,
+!> Test computation of distribution of lateral discharge per layer, which is retrieved from BMI,
 !! to discharge per layer per cell.
 !! This test assumes a model of dimension (nx,ny,nz) = (4,2,3), i.e. 3 layers.
 !! In the last node, the model is shallow meaning it has only 2 active layers.
@@ -364,7 +364,7 @@ subroutine test_distribute_lateral_discharge_per_layer_per_cell
    ! Initialize number of active layers for each cell
    call realloc(kmxn, ndx, stat=ierr, keepExisting=.false., fill=0)
    call check_allocation_error_write_message(ierr, 'kmxn', 'test_distribute_lateral_discharge_per_layer_per_cell')
-   kmxn = [3,3,3,3,3,3,3,2] ! The last cell is assumed shallow and contains only two layers
+   kmxn = [3,3,3,3,3,3,3,2] ! The 8th cell is assumed shallow and contains only two layers
 
    ! Initialize water volume per cell, vol1
    kmx = 3

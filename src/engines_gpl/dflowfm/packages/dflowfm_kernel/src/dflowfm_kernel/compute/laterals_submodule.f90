@@ -254,7 +254,7 @@ implicit none
             i_active_bottom_layer = kmx - kmxn(i_node) + 1
             i_layer = i_active_bottom_layer
             do i_flownode = i_node_bottom_layer, i_node_top_layer
-               if (comparereal(lateral_volume_per_layer(i_layer, i_lateral), 0d0, flow1d_eps10) /= 0) then ! Avoid devided by 0
+               if (comparereal(lateral_volume_per_layer(i_layer, i_lateral), 0d0, flow1d_eps10) /= 0) then ! Avoid division by 0
                   lateral_discharge_per_layer_per_cell(i_layer, i_flownode) = vol1(i_flownode) &
                                                                               / lateral_volume_per_layer(i_layer, i_lateral) &
                                                                               * provided_lateral_discharge_per_layer(i_layer, i_lateral)

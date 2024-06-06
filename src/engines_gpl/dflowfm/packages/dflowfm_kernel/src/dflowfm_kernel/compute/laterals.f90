@@ -37,9 +37,9 @@ module m_lateral
       public average_concentrations_for_laterals
       public add_lateral_load_and_sink
       public get_lateral_discharge
+      public get_lateral_volume_per_layer
       public reset_outgoing_lat_concentration 
       public finish_outgoing_lat_concentration
-      public get_lateral_volume_per_layer
       public distribute_lateral_discharge_per_layer_per_cell
       !!
       !! Laterals
