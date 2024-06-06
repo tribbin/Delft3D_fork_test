@@ -148,7 +148,7 @@ set_source_files_properties(${source}
 if (WIN32)
 
     target_include_directories(${library_name} PRIVATE  ${include_path}
-                                                        ${mpi_include_path}
+                                                        ${mpi_module_path}
                                                         ${petsc_libdir}
                                                         ${tecplot_path})
 
