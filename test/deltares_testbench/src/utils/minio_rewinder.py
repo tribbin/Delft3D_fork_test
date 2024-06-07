@@ -83,7 +83,7 @@ class Plan:
         return "\n".join(str(op) for op in self.items)
 
 
-@dataclass(frozen=True)
+@dataclass
 class VersionPair:
     """A pair of 'object versions' in MinIO with the same 'key'.
 
@@ -340,7 +340,9 @@ class Rewinder:
                     object_name=item.minio_path.key,
                 )
 
-    def detect_conflicts(self, prefix: S3Path, timestamp: datetime) -> List[VersionPair]:
+    def detect_conflicts(
+        self, prefix: S3Path, timestamp: datetime, add_tags_to_latest: bool = False
+    ) -> List[VersionPair]:
         """Detect conflicts in MinIO between now and the given timestamp.
 
         Parameters
@@ -349,6 +351,8 @@ class Rewinder:
             S3 Prefix of a set of objects in MinIO.
         timestamp: datetime
             Compare the MinIO objects from this point in time to the current objects.
+        add_tags_to_latest: bool, optional
+            Request and attach the object tags to the latest minio object. Default: False.
 
         Returns
         -------
@@ -360,15 +364,23 @@ class Rewinder:
             return next((obj for obj in versions if timestamp >= obj.last_modified), None)
 
         object_map = self.__object_versions_grouped_by_key(prefix)
-        version_pairs = (
-            VersionPair(
-                rewinded_version=get_rewinded_version(versions, timestamp),
-                latest_version=versions[0],
+        version_pairs = [
+            pair
+            for pair in (
+                VersionPair(
+                    rewinded_version=get_rewinded_version(versions, timestamp),
+                    latest_version=versions[0],
+                )
+                for versions in object_map.values()
             )
-            for versions in object_map.values()
-        )
+            if pair.update_type != Operation.NONE
+        ]
 
-        return [pair for pair in version_pairs if pair.update_type != Operation.NONE]
+        if add_tags_to_latest:
+            for pair in version_pairs:
+                pair.latest_version = self.__add_object_tags(pair.latest_version)
+
+        return version_pairs
 
     def __object_versions_grouped_by_key(self, prefix: S3Path) -> Mapping[str, List[MinioObject]]:
         """List object versions in MinIO by `prefix` and group them by object key.
@@ -438,6 +450,22 @@ class Rewinder:
         else:
             digests = b"".join(h.digest() for h in hashes)  # Files split in multiple parts
             return hashlib.md5(digests).hexdigest() + f"-{len(hashes)}"
+
+    def __add_object_tags(self, obj: MinioObject) -> MinioObject:
+        if obj.is_delete_marker:
+            return obj  # Deleted object don't have tags for some reason.
+
+        tags = self._client.get_object_tags(obj.bucket_name, obj.object_name, obj.version_id)  # type: ignore
+        return MinioObject(
+            obj.bucket_name,
+            obj.object_name,
+            last_modified=obj.last_modified,
+            etag=obj.etag,
+            size=obj.size,
+            version_id=obj.version_id,
+            is_latest=obj.is_latest,
+            tags=tags,
+        )
 
     @staticmethod
     def __dir_is_empty(dir: Path) -> bool:
