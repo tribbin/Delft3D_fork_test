@@ -27,11 +27,14 @@
 !                                                                               
 !-------------------------------------------------------------------------------
 
-! 
-! 
+submodule (m_external_forcings) external_forcings_boundaries
+
+implicit none
+
+contains
 
 !> set boundary conditions
-subroutine flow_setexternalforcingsonboundaries(tim, iresult)
+module subroutine flow_setexternalforcingsonboundaries(tim, iresult)
    use timers
    use m_flowtimes
    use m_flowgeom
@@ -297,3 +300,5 @@ subroutine flow_setexternalforcingsonboundaries(tim, iresult)
    return
 
  end subroutine flow_setexternalforcingsonboundaries
+
+end submodule external_forcings_boundaries

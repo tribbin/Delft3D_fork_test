@@ -36,6 +36,13 @@ character(len=max_registered_item_id), allocatable :: registered_items(:)
 integer            :: num_registered_items = 0
 
 interface
+   module subroutine flow_setexternalforcingsonboundaries(tim,iresult)
+   double precision, intent(in)    :: tim     !< (s)
+   integer,          intent(out)   :: iresult !< Integer error status: DFM_NOERR==0 if succesful.
+   end subroutine flow_setexternalforcingsonboundaries
+end interface
+
+interface
    module function init_external_forcings(external_force_file_name) result(res)
    character(len=*), intent(in) :: external_force_file_name  !< file name for new external forcing boundary blocks
    logical                      :: res
