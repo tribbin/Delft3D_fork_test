@@ -35,7 +35,7 @@
  use m_flowgeom
  use m_GlobalParameters, only: INDTP_2D
  use unstruc_model
- use m_flowexternalforcings
+ use fm_external_forcing_data
  use m_physcoef
  use m_flowparameters
  use m_flowtimes, only : ti_waq

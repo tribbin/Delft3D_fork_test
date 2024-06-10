@@ -90,7 +90,7 @@ subroutine findexternalboundarypoints()             ! find external boundary poi
     if (jawel) then
        if (mext /= 0) then
           ! Close first, if left open after prior flow_geominit().
-          ! NOTE: AvD: this if-check relies on the fact that mext is *not* set to 0 in default_flowexternalforcings(), when reinitializing an already initialized model.
+          ! NOTE: AvD: this if-check relies on the fact that mext is *not* set to 0 in default_fm_external_forcing_data(), when reinitializing an already initialized model.
           call doclose(mext)
        end if
 
@@ -268,7 +268,7 @@ subroutine readlocationfilesfromboundaryblocks(filename, nx, kce, num_bc_ini_blo
  use tree_structures
  use messageHandling
  use m_flowgeom, only: rrtol
- use m_flowexternalforcings, only: transformcoef
+ use fm_external_forcing_data, only: transformcoef
  use system_utils
  use unstruc_files, only: resolvePath
  use m_alloc
@@ -421,7 +421,7 @@ end subroutine readlocationfilesfromboundaryblocks
 
 subroutine appendrettime(qidfm, nbnd, rettime)
 
- use m_flowexternalforcings
+ use fm_external_forcing_data
  use m_alloc
 
  implicit none
@@ -736,7 +736,7 @@ subroutine processexternalboundarypoints(qid, filename, filetype, return_time, n
 
 !> Calls the ec_addtimespacerelation with all proper unstruc-specific target arrays and element set masks.
 function addtimespacerelation_boundaries(qid, filename, filetype, method, operand, forcingfile, targetindex) result(success)
-   use m_flowexternalforcings, no1=>qid, no2=>filetype, no3=>operand, no4 => success
+   use fm_external_forcing_data, no1=>qid, no2=>filetype, no3=>operand, no4 => success
    use m_meteo, no5=>qid, no6=>filetype, no7=>operand, no8 => success
    use m_flowparameters, only: jawave
    use m_flowtimes, only: dt_nodal
@@ -945,7 +945,7 @@ end subroutine prepare_lateral_mask
 !! Also handles inside one function the old-style *.ext quantities and
 !! the new style *.ext and structures.ini quantities.
 function adduniformtimerelation_objects(qid, locationfile, objtype, objid, paramname, paramvalue, targetindex, vectormax, targetarray) result(success)
-   !use m_flowexternalforcings, no1=>qid, no2=>filetype, no3=>operand, no4 => success
+   !use fm_external_forcing_data, no1=>qid, no2=>filetype, no3=>operand, no4 => success
    use m_meteo, no5=>qid, no6=>filetype, no7=>operand, no8 => success
    use string_module, only: strcmpi
    use timespace_parameters, only: uniform, bcascii, spaceandtime
@@ -1108,7 +1108,7 @@ subroutine init_threttimes()
 
  use m_flow
  use m_flowgeom
- use m_flowexternalforcings
+ use fm_external_forcing_data
  use m_transport
  use m_sediment, only: stm_included
  use unstruc_messages

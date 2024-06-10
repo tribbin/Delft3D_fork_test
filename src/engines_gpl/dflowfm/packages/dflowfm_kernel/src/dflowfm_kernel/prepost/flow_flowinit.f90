@@ -733,7 +733,7 @@ end subroutine set_internal_tides_friction_coefficient
 subroutine remember_initial_water_levels_at_water_level_boundaries()
    use m_flow,                 only : s1
    use m_flowgeom,             only : bl
-   use m_flowexternalforcings, only : nbndz, kbndz, zbndz0
+   use fm_external_forcing_data, only : nbndz, kbndz, zbndz0
 
    implicit none
 
@@ -854,7 +854,7 @@ end subroutine initialize_morphological_start_time
  
 !> for normal velocity boundaries, also initialise velocity on link
 subroutine initialize_values_at_normal_velocity_boundaries()
-   use m_flowexternalforcings, only : nbndn, kbndn, zbndn
+   use fm_external_forcing_data, only : nbndn, kbndn, zbndn
    use m_flow,                 only : u1
 
    implicit none
@@ -878,7 +878,7 @@ end subroutine initialize_values_at_normal_velocity_boundaries
 !> initialize discharge boundaries
 subroutine initialize_values_at_discharge_boundaries()
    use m_flowparameters,       only : epshu
-   use m_flowexternalforcings, only : nqbnd, L1qbnd, L2qbnd, kbndu
+   use fm_external_forcing_data, only : nqbnd, L1qbnd, L2qbnd, kbndu
    use m_flowgeom,             only : bob
    use m_flow,                 only : s1
 
@@ -1067,7 +1067,7 @@ subroutine set_data_for_ship_modelling()
    use m_ship,                 only : nshiptxy
    use m_flowparameters,       only : jasal
    use m_flow,                 only : kmx, ndkx, sa1
-   use m_flowexternalforcings, only : success
+   use fm_external_forcing_data, only : success
    
    implicit none
 
@@ -2291,7 +2291,7 @@ end subroutine apply_hardcoded_specific_input
 !> restore au and q1 for 3D case for the first write into a history file    
 subroutine restore_au_q1_3D_for_1st_history_record()
    use m_flow,                 only : q1, LBot, kmx, kmxL   
-   use m_flowexternalforcings, only : fusav, rusav, ausav, ncgen
+   use fm_external_forcing_data, only : fusav, rusav, ausav, ncgen
    use m_flowgeom,             only : lnx
 
    implicit none

@@ -243,7 +243,7 @@ contains
    !! The (external forcing) file is opened elsewhere and read block-by-block
    !! by consecutive calls to this routine.
    subroutine readprovider(minp,qid,filename,filetype,method,operand,transformcoef,ja,varname,smask, maxSearchRadius)
-     use m_flowexternalforcings, only: NTRANSFORMCOEF
+     use fm_external_forcing_data, only: NTRANSFORMCOEF
      use MessageHandling, only : LEVEL_WARN, LEVEL_INFO, mess
      ! globals
      integer,           intent(in)            :: minp             !< File handle to already opened input file.
@@ -6140,7 +6140,7 @@ contains
    use m_flowgeom, only : ln2lne, Ln, Lnx, Wu1Duni
    use m_partitioninfo
    use unstruc_netcdf
-   use m_flowexternalforcings, only: qid
+   use fm_external_forcing_data, only: qid
    use m_ec_interpolationsettings
    use m_flowparameters
    use m_missing
@@ -6579,7 +6579,7 @@ module m_meteo
    use m_flow
    use m_waves
    use m_ship
-   use m_flowexternalforcings
+   use fm_external_forcing_data
    use processes_input, only: nofun, funame, funinp, nosfunext, sfunname, sfuninp
    use unstruc_messages
    use m_observations

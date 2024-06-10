@@ -31,7 +31,7 @@
 ! 
 
 ! unstruc.f90
- module m_flowexternalforcings
+ module fm_external_forcing_data
  use m_wind
  use m_nudge
  use m_bnd
@@ -475,15 +475,15 @@
 
  contains
 !> Sets ALL (scalar) variables in this module to their default values.
-!! For external forcings it is equivalent with default_flowexternalforcings().
+!! For external forcings it is equivalent with default_fm_external_forcing_data().
 subroutine reset_flowexternalforcings()
-    call default_flowexternalforcings()
+    call default_fm_external_forcing_data()
 end subroutine reset_flowexternalforcings
 
 
 !> Resets external forcing variables intended for a restart of flow simulation.
 !! For external forcings it is equivalent with reset_flowexternalforcings().
-subroutine default_flowexternalforcings()
+subroutine default_fm_external_forcing_data()
     jatimespace = 0   ! doen ja/nee 1/0
     mhis   = 0        ! unit nr external forcings history *.exthis
     numbnp = 0        ! total nr of open boundary cells for network extension
@@ -523,6 +523,6 @@ subroutine default_flowexternalforcings()
     nubnd = 0
     numsrc  = 0
     numsrc_nf = 0
-end subroutine default_flowexternalforcings
+end subroutine default_fm_external_forcing_data
 
-end module m_flowexternalforcings
+end module fm_external_forcing_data
