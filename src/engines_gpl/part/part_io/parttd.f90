@@ -101,7 +101,7 @@ contains
 
       integer(4) ithndl              ! handle to time this subroutine
       data       ithndl / 0 /
-      if ( timon ) call timstrt( "dlwqtd", ithndl )
+      if ( timon ) call timstrt( "expands_vol_area_for_bottom_cells", ithndl )
 !
       update = .false.
       messge = 0
@@ -139,7 +139,7 @@ contains
          enddo
       else
          it2  = itime - idtime
-         div  = float(itime2-itime1)
+         div  = real(itime2-itime1)
          fac1 = (itime2-it2   )/div
          fac2 = (it2   -itime1)/div
          ! Stack overflow on large grid

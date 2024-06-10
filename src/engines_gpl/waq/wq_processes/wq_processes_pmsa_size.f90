@@ -30,7 +30,7 @@ contains
 
     subroutine wq_processes_pmsa_size (lunrep, noseg, noq, isizea)
 
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use m_array_manipulation, only : make_pointer, memory_partition, real_type
         use processes_input
         use processes_pointers
@@ -51,7 +51,7 @@ contains
         type(memory_partition) :: part      ! Private variables for make_pointer
         integer(kind = int_wp) :: i_rar                              ! loop counter
         integer(kind = int_wp) :: nr_rar                             ! number of real arrays
-        character*20    namarr                            ! help variable for array name
+        character(len=20)    namarr                            ! help variable for array name
         integer(kind = int_wp) :: iartyp                             ! help variable for array type
         integer(kind = int_wp) :: iarlen                             ! help variable for array length
         integer(kind = int_wp) :: ip                                 ! help variable for array pointer
@@ -172,7 +172,7 @@ contains
             endif
             if (isizea < 0) then
                 write(lunrep, 2005)
-                call srstop(1)
+                call stop_with_error()
             endif
         enddo
 
@@ -186,7 +186,7 @@ contains
                 ip = make_pointer(part, iartyp, iarlen)
                 if (ip <= 0) then
                     write(lunrep, 2010) namarr
-                    call srstop(1)
+                    call stop_with_error()
                 endif
             else
                 ip = 0

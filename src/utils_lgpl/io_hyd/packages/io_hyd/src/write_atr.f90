@@ -34,12 +34,12 @@
       ! global declarations
 
       use m_evaluate_waq_attribute
-      use hydmod                   ! module contains everything for the hydrodynamics
+      use m_hydmod                   ! module contains everything for the hydrodynamics
       implicit none
 
       ! declaration of the arguments
 
-      type(t_hyd)                            :: hyd                   ! description of the hydrodynamics
+      type(t_hydrodynamics)                            :: hyd                   ! description of the hydrodynamics
 
       ! local declarations
 
@@ -52,8 +52,8 @@
       integer :: il, is, ikmrk1, ikmrk2
       character( 2 ), allocatable :: kenout(:)          !!  this is now allocated on the stack !!!
 
-      call dlwqfile_open(hyd%file_atr)
-      lunatr = hyd%file_atr%unit_nr
+      call hyd%file_atr%open()
+      lunatr = hyd%file_atr%unit
 
       if ( hyd%atr_type .EQ. ATR_COMPLETE ) then
          write(lunatr,'(a)') '         ; DELWAQ_COMPLETE_ATTRIBUTES'
@@ -78,7 +78,7 @@
              write ( lunatr , * ) '  ;    layer: ',il
              do is = 1, hyd%nosegl
                  kenout(is) = '  '
-                 call evaluate_waq_attribute( 1, hyd%attributes(is + (il - 1) * hyd%nosegl), ikmrk1 )
+                 call extract_waq_attribute( 1, hyd%attributes(is + (il - 1) * hyd%nosegl), ikmrk1 )
                  if (ikmrk1 == 0) then
                     kenout(is) = ' 0'
                  else if (ikmrk1 == 1) then
@@ -100,7 +100,7 @@
              write ( lunatr , * ) '  ;    layer: ',il
              do is = 1, hyd%nosegl
                  kenout(is) = '  '
-                 call evaluate_waq_attribute( 2, hyd%attributes(is + (il - 1) * hyd%nosegl), ikmrk2 )
+                 call extract_waq_attribute( 2, hyd%attributes(is + (il - 1) * hyd%nosegl), ikmrk2 )
                  if (ikmrk2 == 0) then
                     kenout(is) = ' 0'
                  else if (ikmrk2 == 1) then
@@ -119,7 +119,7 @@
          enddo
          write ( lunatr , '(a)' )  '    0    ; no time dependent attributes'
 
-!         call evaluate_waq_attribute( 2, iknmrk(i1), ikmrk2 )
+!         call extract_waq_attribute( 2, iknmrk(i1), ikmrk2 )
       else
          write(lunatr,'(a)') '    1    ; Input option without defaults'
          if ( hyd%nolay .gt. 1 ) then

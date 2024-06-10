@@ -59,6 +59,7 @@ if (UNIX)
     set(CMAKE_C_FLAGS_DEBUG                      "-g -O0 -fPIC")
     set(CMAKE_Fortran_FLAGS_RELEASE              "-O2 -fPIC")
     set(CMAKE_Fortran_FLAGS_DEBUG                "-g -O0 -fPIC")
+    set(fortran_standard_flag                    "-std")
 
     set(cpp_compiler_flags                       "-std=c++17")
     set(cxx_compiler_flags......................."-lstdc++")

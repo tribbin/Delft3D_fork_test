@@ -129,7 +129,7 @@ contains
 
             IF (IFROM>0 .AND. ITO>0) THEN
 
-                CALL evaluate_waq_attribute(2, IKNMRK(IFROM), IKMRK)
+                CALL extract_waq_attribute(2, IKNMRK(IFROM), IKMRK)
                 IF ((IKMRK==0).OR.(IKMRK==1)) THEN
 
                     PMSA (IP3 + (IFROM - 1) * IN3) = &
@@ -176,7 +176,7 @@ contains
             !        toekennen aan de bovenliggende segmenten
 
             IF (IFROM>0 .AND. ITO>0) then
-                CALL evaluate_waq_attribute(1, IKNMRK(ITO), IKMRK)
+                CALL extract_waq_attribute(1, IKNMRK(ITO), IKMRK)
                 IF (IKMRK == 1) THEN
 
                     PMSA (IP3 + (IFROM - 1) * IN3) = &
@@ -193,7 +193,7 @@ contains
         IP4 = IPOINT(4)
         IP5 = IPOINT(5)
 
-        DO IK = 1, Coll%cursize
+        DO IK = 1, Coll%current_size
 
             IWA1 = Coll%set(IK)%fstwatsed
             IWA2 = Coll%set(IK)%lstwatsed

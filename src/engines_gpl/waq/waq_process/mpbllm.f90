@@ -60,7 +60,7 @@ contains
         !     ***********************************************************************
 
         use m_evaluate_waq_attribute
-        use m_write_error_message
+        use m_logger_helper, only : get_log_unit_number, write_error_message_with_values
 
         IMPLICIT NONE
 
@@ -141,8 +141,8 @@ contains
 
         DO ISEG = 1, NOSEG
 
-            CALL evaluate_waq_attribute(1, IKNMRK(ISEG), IKMRK1)
-            CALL evaluate_waq_attribute(2, IKNMRK(ISEG), IKMRK2)
+            CALL extract_waq_attribute(1, IKNMRK(ISEG), IKMRK1)
+            CALL extract_waq_attribute(2, IKNMRK(ISEG), IKMRK2)
 
             RADSURF = PMSA(IP(1))
             RADTOP = PMSA(IP(2))
@@ -176,7 +176,7 @@ contains
 
             !             check proces parameters
 
-            IF (I_NRDZ<=0) CALL write_error_message_with_values('I_NRDZ', FLOAT(I_NRDZ), ISEG, 'MPBLLM')
+            IF (I_NRDZ<=0) CALL write_error_message_with_values('I_NRDZ', real(I_NRDZ), ISEG, 'MPBLLM')
 
             !             scale all radiance to PAR, radsurf with enhancement since it is used as top of sediment layer radiation
 

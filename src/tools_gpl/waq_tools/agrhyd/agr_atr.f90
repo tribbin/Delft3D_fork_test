@@ -25,19 +25,15 @@
 
       ! function : initialise aggregation, time independent data
 
-      ! (c) DELFT HYDRAULICS
-
-      ! global declarations
-
-      use m_monsys
-      use hydmod
+      use m_logger_helper
+      use m_hydmod
       implicit none
 
       ! declaration of the arguments
 
-      type(t_hyd)          :: input_hyd             ! description of the input hydrodynamics
+      type(t_hydrodynamics)          :: input_hyd             ! description of the input hydrodynamics
       integer              :: ipnt(input_hyd%noseg) ! aggregation pointer segments
-      type(t_hyd)          :: output_hyd            ! description of the output hydrodynamics
+      type(t_hydrodynamics)          :: output_hyd            ! description of the output hydrodynamics
 
       ! local declarations
 
@@ -88,7 +84,7 @@
                output_hyd%attributes(iseg2) = input_hyd%attributes(iseg1)
             else
                if ( output_hyd%attributes(iseg2) .ne. input_hyd%attributes(iseg1) ) then
-                  call getmlu(lunrep)
+                  call get_log_unit_number(lunrep)
                   write(lunrep,1000) iseg1,input_hyd%attributes(iseg1),iseg2,output_hyd%attributes(iseg2)
                endif
 

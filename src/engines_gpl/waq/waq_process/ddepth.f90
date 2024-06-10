@@ -31,7 +31,7 @@ contains
     subroutine ddepth (pmsa, fl, ipoint, increm, noseg, &
             noflux, iexpnt, iknmrk, noq1, noq2, &
             noq3, noq4)
-        use m_write_error_message
+        use m_logger_helper, only : write_error_message
         use m_evaluate_waq_attribute
 
         !>\file
@@ -71,7 +71,7 @@ contains
         !
         IFLUX = 0
         DO ISEG = 1, NOSEG
-            CALL evaluate_waq_attribute(3, IKNMRK(ISEG), IKMRK3)
+            CALL extract_waq_attribute(3, IKNMRK(ISEG), IKMRK3)
             IF (IKMRK3==1 .OR. IKMRK3==3) THEN
                 !
                 VOLUME = PMSA(IP1)

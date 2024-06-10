@@ -10,7 +10,7 @@ contains
                               noflux , iexpnt , iknmrk , noq1  , noq2  , &
                               noq3   , noq4   )
       use data_processing, only : extract_value_from_group
-      use m_write_error_message
+      use m_logger_helper, only : write_error_message
       use m_evaluate_waq_attribute
 
 !!!!!!!DEC$ ATTRIBUTES DLLEXPORT, ALIAS: 'ESPACE' :: ESPACE
@@ -59,8 +59,8 @@ contains
                             in_mmperday, fwashoff, ferosion, froun, finf, fdisp, fdeepinf, fgwbflow
       real(kind=real_wp)                ::fluxloss, conc, fluxbound, fluxunbound, fluxinf, fluxroun, fluxero, fluxwash, fluxgwf, fluxdeepinf,&
                             fluxleak, fluxstp, kpaved, kunpaved, ksoil, kdunpaved, fluxexp
-      character*20       :: itemname
-      character*12       :: ddhhmmss1
+      character(len=20)       :: itemname
+      character(len=12)       :: ddhhmmss1
 
       ! fixed quantities
       integer(kind=int_wp),parameter    ::scu = 1
@@ -180,7 +180,7 @@ contains
       real(kind=real_wp),parameter  ::disp_hithr = 7.
 
       ! file names
-      character*255      :: file_out_nodes, file_in_names, file_usefor, file_subs
+      character(len=255)      :: file_out_nodes, file_in_names, file_usefor, file_subs
 
 !     other
       logical first
@@ -421,7 +421,7 @@ contains
           ! SEWER SYSTEM ------------------------------------------------------------------------------------
 
           iseg = isegl + (rec_sew-1)*nosegl
-          call evaluate_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
+          call extract_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
           if (iatt1>0) then
 
           leakage = pmsa(ipnt(ip_leakage))
@@ -445,7 +445,7 @@ contains
           ! PAVED SYSTEM ------------------------------------------------------------------------------------
 
           iseg = isegl + (rec_pav-1)*nosegl
-          call evaluate_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
+          call extract_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
           if (iatt1>0) then
 
           ropaved = pmsa(ipnt(ip_ropaved))
@@ -476,7 +476,7 @@ contains
           ! UNPAVED SYSTEM ------------------------------------------------------------------------------------
 
           iseg = isegl + (rec_unp-1)*nosegl
-          call evaluate_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
+          call extract_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
           if (iatt1>0) then
 
           rounpaved = pmsa(ipnt(ip_rounpaved))
@@ -524,7 +524,7 @@ contains
           ! SOIL SYSTEM ------------------------------------------------------------------------------------
 
           iseg = isegl + (rec_soi-1)*nosegl
-          call evaluate_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
+          call extract_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
           if (iatt1>0) then
 
           gwbaseflow = pmsa(ipnt(ip_gwbflow))
@@ -557,7 +557,7 @@ contains
           ! ENDPOINT STORM WATER
 
           iseg = isegl + (rec_stw-1)*nosegl
-          call evaluate_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
+          call extract_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
           if (iatt1>0) then
 
           boun = 0.0
@@ -578,7 +578,7 @@ contains
           ! ENDPOINT SURFACE WATER
 
           iseg = isegl + (rec_sfw-1)*nosegl
-          call evaluate_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
+          call extract_waq_attribute(1,iknmrk(iseg),iatt1) ! pick up first attribute
           if (iatt1>0) then
 
           do isubs = 1,nsubs
@@ -607,7 +607,7 @@ contains
       end
       subroutine ddhhmmss(timeinscu,scu,ddhhmmss1)
       integer(kind=int_wp)  ::timeinscu,scu
-      character*12 ddhhmmss1
+      character(len=12) ddhhmmss1
       integer(kind=int_wp)  ::dd,hh,mm,ss,timeinseconds
       timeinseconds = timeinscu*scu
       dd = timeinseconds/86400

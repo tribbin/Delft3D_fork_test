@@ -53,22 +53,22 @@ contains
         !     IERROR  INTEGER    1        OUTPUT  Error code
         !     OPTION  CHAR*256   1        IN/OUT  For future use
 
-        character*256 file_name(3), option
-        character*20  locdef(maxdef), loclst(maxlst)
+        character(len=256) file_name(3), option
+        character(len=20)  locdef(maxdef), loclst(maxlst)
         dimension     loctyp(maxlst), locnr (maxlst)
         logical       setall
-        character*256 :: ext     ! file extension
+        character(len=256) :: ext     ! file extension
         integer(kind = int_wp) :: extpos   ! position of extension
         integer(kind = int_wp) :: extlen   ! length of file extension
         logical :: mapfil  ! true if map file extension
-        integer(kind = int_wp) :: lun
+        integer(kind = int_wp) :: file_unit
         integer(kind = int_wp) :: k, i1, i2, i3, notot, ierror, nodump, idummy
         integer(kind = int_wp) :: itype, itmdep, iprdep, nrlst, maxk, nbase
         integer(kind = int_wp) :: locnr, loctyp, maxdef, maxlst
 
         ! open the delwaq .his file
-        lun = 10
-        call open_waq_files (lun, file_name(1), 24, 2, ierror)
+        file_unit = 10
+        call open_waq_files (file_unit, file_name(1), 24, 2, ierror)
         if (ierror /= 0) return
 
         ! map or his
@@ -81,9 +81,9 @@ contains
         endif
 
         ! read primary system characteristics
-        read (lun, err = 100) file_name(3)(1:160)
-        read (lun, err = 110) notot, nodump
-        read (lun, err = 120) (file_name(3)(181:200), k = 1, notot)
+        read (file_unit, err = 100) file_name(3)(1:160)
+        read (file_unit, err = 110) notot, nodump
+        read (file_unit, err = 120) (file_name(3)(181:200), k = 1, notot)
 
         ! read parameter names and try to find the wanted subset
         nrlst = 0
@@ -93,7 +93,7 @@ contains
         do i1 = 1, nodump, maxlst
             maxk = min(nodump, i1 + maxlst - nrlst - 1) - i1 + 1
             if (.not. mapfil) then
-                read (lun, err = 130) (idummy, loclst(k), k = nrlst + 1, nrlst + maxk)
+                read (file_unit, err = 130) (idummy, loclst(k), k = nrlst + 1, nrlst + maxk)
             else
                 do k = nrlst + 1, nrlst + maxk
                     write(loclst(k), '(''segment '',i8)') k
@@ -132,7 +132,7 @@ contains
         goto 200
         130 ierror = 13
 
-        200 close (lun)
+        200 close (file_unit)
 
     end subroutine get_loc
 
@@ -156,17 +156,17 @@ contains
 
         use time_module
 
-        character*256    file_name (3), option
+        character(len=256)    file_name (3), option
         integer(kind = int_wp) :: itmtyp(*)
         real(kind = dp) :: timlst(*), timdef(2, *), atime, otime, second
         logical          setall
 
         real(kind = real_wp), allocatable :: rdata(:)
-        character*256 :: ext     ! file extension
+        character(len=256) :: ext     ! file extension
         integer(kind = int_wp) :: extpos   ! position of extension
         integer(kind = int_wp) :: extlen   ! length of file extension
         logical :: mapfil  ! true if map file extension
-        integer(kind = int_wp) :: lun
+        integer(kind = int_wp) :: file_unit
         integer(kind = int_wp) :: nodump
         integer(kind = int_wp) :: k, i, notot, ntt
         integer(kind = int_wp) :: ierror, nrlst, iprcod, iprtyp
@@ -175,7 +175,7 @@ contains
         integer(kind = int_wp) :: isfact, idummy, idate, itime, iprdep
 
         ! open the delwaq .his file
-        call open_waq_files (lun, file_name(1), 24, 2, ierror)
+        call open_waq_files (file_unit, file_name(1), 24, 2, ierror)
         if (ierror /= 0) return
 
         ! map or his
@@ -188,7 +188,7 @@ contains
         endif
 
         ! read primary system characteristics
-        read (lun, err = 100)   file_name(3)(1:160)
+        read (file_unit, err = 100)   file_name(3)(1:160)
         if (file_name(3)(121:123) /= 't0: ' .and. &
                 file_name(3)(121:123) /= 't0: ' .and. &
                 file_name(3)(121:123) /= 't0= ' .and. &
@@ -202,10 +202,10 @@ contains
         read (file_name(3)(139:140), '(i2)') iminut
         read (file_name(3)(142:143), '(i2)') isecnd
         read (file_name(3)(151:158), '(i8)') isfact
-        read (lun, err = 110)   notot, nodump
-        read (lun, err = 120) (file_name(3)(181:200), k = 1, notot)
+        read (file_unit, err = 110)   notot, nodump
+        read (file_unit, err = 120) (file_name(3)(181:200), k = 1, notot)
         if (.not. mapfil) then
-            read (lun, err = 130) (idummy, file_name(3)(221:240), k = 1, nodump)
+            read (file_unit, err = 130) (idummy, file_name(3)(221:240), k = 1, nodump)
         endif
         idate = iyear * 10000 + imonth * 100 + iday
         itime = ihour * 10000 + iminut * 100 + isecnd
@@ -219,7 +219,7 @@ contains
         setall = .false.
         if (timdef(1, 1) < 0.5) setall = .true.
 
-        10 read (lun, err = 140, end = 200) idummy, (rdata(k), k = 1, ntt)
+        10 read (file_unit, err = 140, end = 200) idummy, (rdata(k), k = 1, ntt)
         do i = 1, maxdef
             atime = otime + idummy * isfact * second
             if ((atime>timdef(1, i) .and. atime<timdef(2, i)) .or. &
@@ -248,7 +248,7 @@ contains
         goto 200
         160 ierror = 16
 
-        200 close (lun)
+        200 close (file_unit)
         if (allocated(rdata)) deallocate(rdata)
         return
 
@@ -274,24 +274,24 @@ contains
         !     nrlst   integer    1        output  nr of parameters found
         !     ierror  integer    1        output  error code
         !     option  char*256   1        in/out  for future use
-        character*256 :: file_name(3), option
-        character*20 :: pardef(maxdef), parlst(maxlst), paruni(maxlst)
+        character(len=256) :: file_name(3), option
+        character(len=20) :: pardef(maxdef), parlst(maxlst), paruni(maxlst)
         dimension :: iprtyp(maxlst), iprcod(maxlst)
         logical :: setall
-        integer(kind = int_wp) :: lun
+        integer(kind = int_wp) :: file_unit
         integer(kind = int_wp) :: maxk
         integer(kind = int_wp) :: k, i1, i2, i3
         integer(kind = int_wp) :: ierror, notot, nodump, nrlst, iprcod, iprtyp
         integer(kind = int_wp) :: itype, maxdef, itmdep, locdep, maxlst, lang
 
         ! open the delwaq .his file
-        lun = 10
-        call open_waq_files (lun, file_name(1), 24, 2, ierror)
+        file_unit = 10
+        call open_waq_files (file_unit, file_name(1), 24, 2, ierror)
         if (ierror /= 0) return
 
         ! read primary system characteristics
-        read (lun, err = 100)   file_name(3)(1:160)
-        read (lun, err = 110)   notot, nodump
+        read (file_unit, err = 100)   file_name(3)(1:160)
+        read (file_unit, err = 110)   notot, nodump
 
         ! read parameter names and try to find the wanted subset
         nrlst = 0
@@ -299,7 +299,7 @@ contains
         if (pardef(1) == '*') setall = .true.
         do i1 = 1, notot, maxlst
             maxk = min(notot, i1 + maxlst - 1) - i1 + 1
-            read (lun, err = 120) (paruni(k), k = 1, maxk)
+            read (file_unit, err = 120) (paruni(k), k = 1, maxk)
             do i2 = 1, maxk
                 do i3 = 1, maxdef
                     if (paruni(i2) == pardef(i3) .or. setall) then
@@ -330,7 +330,7 @@ contains
         goto 200
         120 ierror = 12
 
-        200 close (lun)
+        200 close (file_unit)
 
     end subroutine get_parameter
 
@@ -351,16 +351,16 @@ contains
         !     option  char*256   1        in/out  for future use
         use time_module
 
-        character*256 file_name (3), option
+        character(len=256) file_name (3), option
         real(kind = real_wp) :: data(*)
         integer(kind = int_wp) :: loc(*)
         real(kind = dp) :: tim(2), otime, atime, second
         real(kind = real_wp) :: missing_value
-        character*256 :: ext     ! file extension
+        character(len=256) :: ext     ! file extension
         integer(kind = int_wp) :: extpos   ! position of extension
         integer(kind = int_wp) :: extlen   ! length of file extension
         logical :: mapfil  ! true if map file extension
-        integer(kind = int_wp) :: lun
+        integer(kind = int_wp) :: file_unit
         integer(kind = int_wp) :: i1
         integer(kind = int_wp) :: nodump, notot
         integer(kind = int_wp) :: k, l, i2, i3, i4, ierror, iyear, imonth, iday
@@ -369,7 +369,7 @@ contains
         integer(kind = int_wp) :: adummy, itype
 
         ! open the delwaq .his file if needed!
-        call open_waq_files (lun, file_name(1), 24, 2, ierror)
+        call open_waq_files (file_unit, file_name(1), 24, 2, ierror)
         if (ierror /= 0) return
 
         ! map or his
@@ -382,7 +382,7 @@ contains
         endif
 
         ! read primary system characteristics
-        read (lun, err = 100)   file_name(3)(1:160)
+        read (file_unit, err = 100)   file_name(3)(1:160)
         if (file_name(3)(121:123) /= 't0: ' .and. &
                 file_name(3)(121:123) /= 't0: ' .and. &
                 file_name(3)(121:123) /= 't0= ' .and. &
@@ -396,8 +396,8 @@ contains
         read (file_name(3)(139:140), '(i2)') iminut
         read (file_name(3)(142:143), '(i2)') isecnd
         read (file_name(3)(151:158), '(i8)') isfact
-        read (lun, err = 110)   notot, nodump
-        read (lun, err = 120) (file_name(3)(181:200), k = 1, notot)
+        read (file_unit, err = 110)   notot, nodump
+        read (file_unit, err = 120) (file_name(3)(181:200), k = 1, notot)
         if (.not. mapfil) then
             read (10, err = 130) (idummy, file_name(3)(221:240), k = 1, nodump)
         endif
@@ -414,7 +414,7 @@ contains
         i3 = loc(3) * notot - 1
         i4 = ntt - i1 - (1 + i3) * i2 - 1
         if (iset + i2 + 1 > maxdim) goto 150
-        read (lun, err = 150, end = 200) idummy, (adummy, k = 1, i1), &
+        read (file_unit, err = 150, end = 200) idummy, (adummy, k = 1, i1), &
                 (data(iset + k), (adummy, l = 1, i3), k = 1, i2), &
                 data(iset + i2 + 1), (adummy, l = 1, i4)
         atime = otime + idummy * second
@@ -436,7 +436,7 @@ contains
         goto 200
         150 ierror = 15
 
-        200 close (lun)
+        200 close (file_unit)
 
     end subroutine get_matrix_1
 
@@ -458,23 +458,23 @@ contains
         !     ierror  integer    1        in/out  error code
         !     option  char*256   1        in/out  for future use
 
-        character*256 file_name (3), option
+        character(len=256) file_name (3), option
         real(kind = real_wp) :: data(*)
         integer(kind = int_wp) :: loc(*)
         real(kind = dp) :: tim(2), otime, atime, second
         real(kind = real_wp) :: missing_value
-        character*256 :: ext     ! file extension
+        character(len=256) :: ext     ! file extension
         integer(kind = int_wp) :: extpos   ! position of extension
         integer(kind = int_wp) :: extlen   ! length of file extension
         logical :: mapfil  ! true if map file extension
-        integer(kind = int_wp) :: lun, nodump, notot, k, ntt
+        integer(kind = int_wp) :: file_unit, nodump, notot, k, ntt
         integer(kind = int_wp) :: ierror, iyear, imonth, iday
         integer(kind = int_wp) :: ihour, iminut, isecnd, isfact, idummy, idate
         integer :: itime, iset, iprcod(:), maxdim
         integer(kind = int_wp) :: adummy, itype
 
         ! open the delwaq .his file if needed
-        call open_waq_files (lun, file_name(1), 24, 2, ierror)
+        call open_waq_files (file_unit, file_name(1), 24, 2, ierror)
         if (ierror /= 0) return
 
         ! map or his
@@ -487,7 +487,7 @@ contains
         endif
 
         ! read primary system characteristics
-        read (lun, err = 100)   file_name(3)(1:160)
+        read (file_unit, err = 100)   file_name(3)(1:160)
         if (file_name(3)(121:123) /= 't0: ' .and. &
                 file_name(3)(121:123) /= 't0: ' .and. &
                 file_name(3)(121:123) /= 't0= ' .and. &
@@ -501,10 +501,10 @@ contains
         read (file_name(3)(139:140), '(i2)') iminut
         read (file_name(3)(142:143), '(i2)') isecnd
         read (file_name(3)(151:158), '(i8)') isfact
-        read (lun, err = 110)   notot, nodump
-        read (lun, err = 120) (file_name(3)(181:200), k = 1, notot)
+        read (file_unit, err = 110)   notot, nodump
+        read (file_unit, err = 120) (file_name(3)(181:200), k = 1, notot)
         if (.not. mapfil) then
-            read (lun, err = 130) (idummy, file_name(3)(221:240), k = 1, nodump)
+            read (file_unit, err = 130) (idummy, file_name(3)(221:240), k = 1, nodump)
         endif
         idate = iyear * 10000 + imonth * 100 + iday
         itime = ihour * 10000 + iminut * 100 + isecnd
@@ -516,7 +516,7 @@ contains
         iset = 0
         do
             if (iset + ntt > maxdim) goto 150
-            read (lun, err = 150, end = 200) idummy, (data(iset + k), k = 1, ntt)
+            read (file_unit, err = 150, end = 200) idummy, (data(iset + k), k = 1, ntt)
             atime = otime + idummy * second
             if (atime > tim(1) .and. atime < tim(2)) then
                 iset = iset + ntt
@@ -536,7 +536,7 @@ contains
         goto 200
         150 ierror = 15
 
-        200 close (lun)
+        200 close (file_unit)
 
     end subroutine get_matrix_2
 
@@ -560,14 +560,14 @@ contains
         !            ndim(2) = nr of locations  in the file
         !            ndim(3) = nr of time steps in the file
 
-        character*256 file_name(3), option
-        character*3   dim
+        character(len=256) file_name(3), option
+        character(len=3)   dim
         dimension     ndim(3)
-        character*256 :: ext     ! file extension
+        character(len=256) :: ext     ! file extension
         integer(kind = int_wp) :: extpos   ! position of extension
         integer(kind = int_wp) :: extlen   ! length of file extension
         logical :: mapfil  ! true if map file extension
-        integer(kind = int_wp) :: lun
+        integer(kind = int_wp) :: file_unit
         integer(kind = int_wp) :: nodump, notot
         integer(kind = int_wp) :: k, ntt, ierror, idummy, notim, ndim, itype
         real(kind = real_wp) :: adummy
@@ -575,8 +575,8 @@ contains
 
 
         ! open the delwaq .his file
-        lun = 10
-        call open_waq_files (lun, file_name(1), 24, 2, ierror)
+        file_unit = 10
+        call open_waq_files (file_unit, file_name(1), 24, 2, ierror)
         if (ierror /= 0) return
 
         ! map or his
@@ -589,18 +589,18 @@ contains
         endif
 
         ! read primary system characteristics
-        read (lun, err = 100)   file_name(3)(1:160)
-        read (lun, err = 110)   notot, nodump
-        read (lun, err = 120) (file_name(3)(181:200), k = 1, notot)
+        read (file_unit, err = 100)   file_name(3)(1:160)
+        read (file_unit, err = 110)   notot, nodump
+        read (file_unit, err = 120) (file_name(3)(181:200), k = 1, notot)
         if (.not. mapfil) then
-            read (lun, err = 130) (idummy, file_name(3)(221:240), k = 1, nodump)
+            read (file_unit, err = 130) (idummy, file_name(3)(221:240), k = 1, nodump)
         endif
 
         ! read the values at all times
         ntt = nodump * notot
         notim = 0
 
-        10 read (lun, err = 140, end = 20)   idummy, (adummy, k = 1, ntt)
+        10 read (file_unit, err = 140, end = 20)   idummy, (adummy, k = 1, ntt)
         notim = notim + 1
         goto 10
 
@@ -621,25 +621,25 @@ contains
         goto 200
         140 ierror = 14
 
-        200 close (lun)
+        200 close (file_unit)
 
     end subroutine get_dimension
 
-    subroutine read_data_ods(lunut, file_name, data_param, data_loc, missing_value, data_block, ierr)
+    subroutine read_data_ods(file_unit, file_name, data_param, data_loc, missing_value, data_block, ierr)
         !! read a block of data from ODS file
 
-        use dlwq_hyd_data   ! for definition and storage of data
+        use m_waq_data_structure   ! for definition and storage of data
         use timers          !   performance timers
         use m_sysi          ! Timer characteristics
         use time_module
         use m_string_utils
 
-        integer(kind = int_wp), intent(in) :: lunut         ! report file
+        integer(kind = int_wp), intent(in) :: file_unit         ! report file
         character(len = *), intent(in) :: file_name        ! filename ODS file
-        type(t_dlwq_item), intent(inout) :: data_param   ! list of param items in the data
-        type(t_dlwq_item), intent(inout) :: data_loc     ! list of loc items in the data
+        type(t_waq_item), intent(inout) :: data_param   ! list of param items in the data
+        type(t_waq_item), intent(inout) :: data_loc     ! list of loc items in the data
         real(kind = real_wp), intent(in) :: missing_value         ! missing value
-        type(t_dlwqdata), intent(inout) :: data_block   ! data block
+        type(t_data_block), intent(inout) :: data_block   ! data block
         integer(kind = int_wp), intent(inout) :: ierr          ! cummulative error count
 
         integer(kind = int_wp) :: iorder        ! order of the parameters and locations in the data array
@@ -692,7 +692,7 @@ contains
 
         ! write the ods file name
 
-        write (lunut, 1000) file_name
+        write (file_unit, 1000) file_name
 
         ! get the dimensions of the ods file
 
@@ -727,14 +727,14 @@ contains
                     ! location not found, warning
 
                     iloc_ods(iloc) = 0
-                    write (lunut, 1070) data_loc%ipnt(iloc), data_loc%name(iloc)
+                    write (file_unit, 1070) data_loc%ipnt(iloc), data_loc%name(iloc)
 
                     ! check if location in calculation, then error, but is this check sufficient
 
                     calculation = data_loc%ipnt(iloc) < 0
                     if (iloc /= data_loc%no_item) calculation = calculation .or. data_loc%ipnt(iloc + 1) < 0
                     if (calculation) then
-                        write (lunut, 1080)
+                        write (file_unit, 1080)
                         ierr = 2
                         goto 510
                     endif
@@ -785,7 +785,7 @@ contains
         afact = isfact / 864.0d+02
         if (isfact < 0) afact = -1.0d+00 / isfact / 864.0d+02
         if (num_records >= 1) then
-            write (lunut, 1020)
+            write (file_unit, 1020)
             a1 = deltim + itstrt * afact
             a2 = deltim + itstop * afact
             i1 = 1
@@ -802,22 +802,22 @@ contains
             if (times(1) > a1) then
                 call gregor (times(1), iy1, im1, id1, ih1, in1, is1, dummy)
                 call gregor (a1, iy2, im2, id2, ih2, in2, is2, dummy)
-                write (lunut, 1030)  iy1, im1, id1, ih1, in1, is1, &
+                write (file_unit, 1030)  iy1, im1, id1, ih1, in1, is1, &
                         iy2, im2, id2, ih2, in2, is2
             endif
             if (times(num_records) < a2) then
                 call gregor (times(num_records), iy1, im1, id1, ih1, in1, is1, dummy)
                 call gregor (a2, iy2, im2, id2, ih2, in2, is2, dummy)
-                write (lunut, 1040)  iy1, im1, id1, ih1, in1, is1, &
+                write (file_unit, 1040)  iy1, im1, id1, ih1, in1, is1, &
                         iy2, im2, id2, ih2, in2, is2
             endif
             num_records = i2 - i1 + 1
         endif
-        write (lunut, 1050) num_records
-        if (num_records == 1)    write (lunut, 1060)
+        write (file_unit, 1050) num_records
+        if (num_records == 1)    write (file_unit, 1060)
 
         ! times are converted to delwaq times
-        data_block%no_brk = num_records
+        data_block%num_breakpoints = num_records
         allocate(data_block%times(num_records))
         do ibrk = i1, i2
             a2 = times(ibrk) - a1
@@ -833,8 +833,8 @@ contains
             ndim1 = data_loc%no_item
             ndim2 = data_param%no_item
         endif
-        data_block%no_param = data_param%no_item
-        data_block%no_loc = data_loc%no_item
+        data_block%num_parameters = data_param%no_item
+        data_block%num_locations = data_loc%no_item
 
         allocate(data_block%values(ndim1, ndim2, num_records), buffer(num_records))
         data_block%values = missing_value
@@ -929,12 +929,12 @@ contains
     subroutine read_time_dependant_data_matrix(data_block, itfact, is_date_format, is_yyddhh_format, ierr)
 
         !! read a (time dependent) data matrix from input
-        use dlwq_hyd_data
+        use m_waq_data_structure
         use rd_token
         use timers       !   performance timers
         use date_time_utils, only : convert_string_to_time_offset, convert_relative_time
 
-        type(t_dlwqdata), intent(inout) :: data_block   ! data block
+        type(t_data_block), intent(inout) :: data_block   ! data block
         integer(kind = int_wp), intent(in) :: itfact        ! factor between clocks
         logical, intent(in) :: is_date_format       ! true if time in 'date' format
         logical, intent(in) :: is_yyddhh_format       ! true if yyetc instead of ddetc
@@ -966,16 +966,16 @@ contains
         ! dimension according to order
 
         if (data_block%iorder == ORDER_PARAM_LOC) then
-            ndim1 = data_block%no_param
-            ndim2 = data_block%no_loc
+            ndim1 = data_block%num_parameters
+            ndim2 = data_block%num_locations
         else
-            ndim1 = data_block%no_loc
-            ndim2 = data_block%no_param
+            ndim1 = data_block%num_locations
+            ndim2 = data_block%num_parameters
         endif
 
         ! read dependent on type of function
 
-        ftype = data_block%functype
+        ftype = data_block%function_type
         if (ftype == FUNCTYPE_CONSTANT) then
 
             ! read only one "time"
@@ -1101,7 +1101,7 @@ contains
 
         endif
 
-        data_block%no_brk = num_records
+        data_block%num_breakpoints = num_records
 
         9999 if (timon) call timstop(ithndl)
 

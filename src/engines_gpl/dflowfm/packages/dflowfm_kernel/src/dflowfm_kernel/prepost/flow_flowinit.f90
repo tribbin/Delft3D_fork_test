@@ -74,6 +74,7 @@ contains
    use fm_manhole_losses, only: init_manhole_losses
    use unstruc_channel_flow, only: network
    use m_fixedweirs, only: weirdte, nfxw
+   use m_setup_structures_and_weirs_list, only: build_structures_and_weirs_list
    
    implicit none
 
@@ -178,7 +179,7 @@ contains
    call initialize_structures_actual_params(network%sts)          ! After structure time series, and prior to adjust_bobs, to use proper crest levels.
 
    call adjust_bobs_for_dams_and_structs()
-   call setup_structures_and_weirs_list()
+   structuresAndWeirsList = build_structures_and_weirs_list()
    call set_floodfill_water_levels_based_on_sample_file()
 
    if (allocated(ibot)) then
@@ -1542,7 +1543,7 @@ end subroutine fill_constituents_with_temperature
 !> initialise_density_at_cell_centres
 subroutine initialise_density_at_cell_centres()
    use m_flowparameters,       only : jainirho
-   use m_flow,                 only : kmxn
+   use m_flow,                 only : kmxn, rho_read_rst
    use m_cell_geometry,        only : ndx
    use m_sediment,             only : stm_included
    use m_turbulence,           only : rhowat
@@ -1556,7 +1557,9 @@ subroutine initialise_density_at_cell_centres()
 
    if (jainirho == INITIALIZE) then
        do cell = 1, ndx
-          call setrhokk(cell)
+          if (.not. rho_read_rst) then
+             call setrhokk(cell)
+          endif
           if (stm_included) then
              call getkbotktop(cell, bottom_cell, top_cell)
              do cell3D = top_cell + 1, bottom_cell + kmxn(cell) - 1

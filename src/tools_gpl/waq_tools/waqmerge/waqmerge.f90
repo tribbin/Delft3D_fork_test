@@ -22,28 +22,29 @@
 !!  rights reserved.
 
 program waqmerge
+
+      use m_logger_helper, only : stop_with_error, set_log_unit_number
       use io_netcdf
       use m_write_waqgeom
-      use hydmod
+      use m_hydmod
       use hyd_waqgeom_old
       use m_alloc
-      use delwaq_version_module
-      use m_dattim
+      use waqmerge_version_module, only: getfullversionstring_waqmerge
+      use m_date_time_utils_external, only : write_date_time
       use m_file_path_utils, only : extract_file_extension
 
       implicit none
 
-      type(t_hyd)               :: hyd             ! description of the overall hydrodynamics
-      type(t_hyd), pointer      :: domain_hyd      ! description of one domain hydrodynamics
-      type(t_hyd_coll)          :: domain_hyd_coll ! description of all domain hydrodynamics
+      type(t_hydrodynamics)               :: hyd             ! description of the overall hydrodynamics
+      type(t_hydrodynamics), pointer      :: domain_hyd      ! description of one domain hydrodynamics
+      type(t_hydrodynamics_collection)          :: domain_hyd_coll ! description of all domain hydrodynamics
 
       character(len=10)         :: c_domain        ! number of domains
       integer                   :: n_domain        ! number of domains
       integer                   :: i_domain        ! domain index
-      character(len=80)         :: version_temp    ! temp version string
       character(len=80)         :: version         ! version string
       character(len=20)         :: rundat          ! date and time string
-      type(t_dlwqfile)          :: file_rep        ! report file
+      type(t_file)          :: file_rep        ! report file
       integer                   :: lunrep          ! unit number report file
       character(len=256)        :: filext          ! file extension
       character(len=256)        :: waq_output_dir  ! WAQ directory
@@ -69,9 +70,7 @@ program waqmerge
 
       ! Version string
 
-      version_temp = ' '
-      call getfullversionstring_delwaq(version_temp)
-      version = version_temp(5:)
+      call getfullversionstring_waqmerge(version)
       write(*,*)
       write (*,'(a)') ' ', trim(version)
 
@@ -84,7 +83,7 @@ program waqmerge
          inquire(file = trim(hyd%file_hyd%name),exist = mdu_exist)
          if (.not. mdu_exist) then
             write(*     ,'(a,a)') '*** ERROR File: '//trim(hyd%file_hyd%name)//' does not exist'
-            call srstop(1)
+            call stop_with_error()
          endif
 
          ! report
@@ -93,15 +92,15 @@ program waqmerge
          file_rep%name   = trim(hyd%file_hyd%name)//'-waqmerge.log'
          file_rep%type   = FT_ASC
          file_rep%status = 0
-         call dlwqfile_open(file_rep)
-         lunrep = file_rep%unit_nr
+         call file_rep%open()
+         lunrep = file_rep%unit
          write (lunrep,'(a)') ' ', trim(version)
       else
          file_rep%name   = 'waqmerge.log'
          file_rep%type   = FT_ASC
          file_rep%status = 0
-         call dlwqfile_open(file_rep)
-         lunrep = file_rep%unit_nr
+         call file_rep%open()
+         lunrep = file_rep%unit
          write (lunrep,'(a,a)') ' ', trim(version)
          write (lunrep,'(/a)') ' ERROR: no mdu name was given!'
          write (*     ,'(/a)') ' ERROR: no mdu name was given!'
@@ -111,11 +110,11 @@ program waqmerge
          write(*      ,'(/a)') ' Execution will stop '
          stop (1)
       endif
-      call setmlu(lunrep)
+      call set_log_unit_number(lunrep)
 
       ! execution start
 
-      call dattim(rundat)
+      call write_date_time(rundat)
       write (lunrep,*)
       write (lunrep,'(2a)') ' execution start : ',rundat
       write (lunrep,*)
@@ -150,9 +149,9 @@ program waqmerge
       if (n_domain .eq.0) then
          write(lunrep,'(a,a,a)') ' ERROR: no hydrodynamic descriptions found in directory ',trim(waq_output_dir)
          write(*     ,'(a,a,a)') ' ERROR: no hydrodynamic descriptions found in directory ',trim(waq_output_dir)
-         write(lunrep,'(a)')     '        Possible cause: the outputper domain is in separate directories', &
+         write(lunrep,'(a)')     '        Possible cause: the output per domain is in separate directories', &
                                  '        - this is an obsolete organisation of the files'
-         write(*     ,'(a)')     '        Possible cause: the outputper domain is in separate directories', &
+         write(*     ,'(a)')     '        Possible cause: the output per domain is in separate directories', &
                                  '        - this is an obsolete organisation of the files'
          write(lunrep,'(a,a)') ' Execution will stop '
          write(*     ,'(a,a)') ' Execution will stop '
@@ -165,7 +164,7 @@ program waqmerge
 
       allocate(domain_hyd_coll%hyd_pnts(n_domain))
       domain_hyd_coll%maxsize = n_domain
-      domain_hyd_coll%cursize = n_domain
+      domain_hyd_coll%current_size = n_domain
       do i_domain = 1 , n_domain
          domain_hyd => domain_hyd_coll%hyd_pnts(i_domain)
          domain_hyd%file_hyd%name = hyd%domain_coll%domain_pnts(i_domain)%name
@@ -178,7 +177,7 @@ program waqmerge
                domain_hyd%file_bnd%name = domain_hyd%file_lga%name
             else
                write(lunrep,'(a)') ' error: no boundary file found for domain'
-               call srstop(1)
+               call stop_with_error()
             endif
          endif
          if (domain_hyd%file_geo%name .eq. ' ') then
@@ -187,7 +186,7 @@ program waqmerge
                domain_hyd%file_geo%name = domain_hyd%file_cco%name
             else
                write(lunrep,'(a)') ' error: no waqgeom file found for domain'
-               call srstop(1)
+               call stop_with_error()
             endif
          endif
          call read_hyd_init(domain_hyd)
@@ -266,7 +265,7 @@ program waqmerge
                write(lunrep,'(a,i10)') 'Time in domain: ', itime_domain
                write(lunrep,'(a,i10)') 'Time expected:  ', itime
                write(lunrep,'(a,i10)') 'Domain is:      ', i_domain
-               call srstop(1)
+               call stop_with_error()
             endif
             if ( iend_domain .ne. iend ) then
                write(lunrep,'(a)') ' warning end time in domains not equal'
@@ -287,7 +286,7 @@ program waqmerge
 
       ! finished
 
-      call dattim(rundat)
+      call write_date_time(rundat)
       write (lunrep,*)
       write (lunrep,'(a)') ' normal end of execution'
       write (lunrep,'(2a)') ' execution stop : ',rundat

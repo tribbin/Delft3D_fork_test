@@ -30,20 +30,17 @@
       subroutine write_hyd(hyd, version_full)
 
       ! function : write a hydrodynamic description file
-
-      ! global declarations
-
-      use m_monsys
-      use hydmod
+      use m_logger_helper, only: get_log_unit_number
+      use m_hydmod
       use system_utils
-      use :: m_hyd_keys, only: key, nokey     ! keywords in hydfile
-      use m_dattim
+      use m_hyd_keys, only: key, nokey     ! keywords in hydfile
+      use m_date_time_utils_external, only : write_date_time
 
       implicit none
 
       ! declaration of the arguments
 
-      type(t_hyd)         :: hyd                    ! description of the hydrodynamics
+      type(t_hydrodynamics)         :: hyd                    ! description of the hydrodynamics
 
       ! local declarations
 
@@ -70,14 +67,14 @@
       character(len=2),parameter :: csq = ' '''     ! space with quote
 
 
-      call getmlu(lunrep)
+      call get_log_unit_number(lunrep)
 
-      call dlwqfile_open(hyd%file_hyd)
-      lunhyd = hyd%file_hyd%unit_nr
+      call hyd%file_hyd%open()
+      lunhyd = hyd%file_hyd%unit
 
       write(lunhyd,'(A,A)') 'file-created-by  '//trim(version_full)
 
-      call dattim(rundat)
+      call write_date_time(rundat)
       datetime = rundat(1:4)//'-'//rundat(6:7)//'-'//rundat(9:10)//','//rundat(11:19)
       write(lunhyd,'(A,A)') 'file-creation-date  '//datetime
 
@@ -198,9 +195,9 @@
 
       ! discharges
 
-      if(hyd%wasteload_coll%cursize .gt. 0) then
+      if(hyd%wasteload_coll%current_size .gt. 0) then
       write(lunhyd,'(a)') key(52)
-         do iwast = 1 , hyd%wasteload_coll%cursize
+         do iwast = 1 , hyd%wasteload_coll%current_size
             if ( hyd%wasteload_coll%wasteload_pnts(iwast)%type .eq. DLWQ_WASTE_NORMAL ) then
                wtype = key(58)
             elseif ( hyd%wasteload_coll%wasteload_pnts(iwast)%type .eq. DLWQ_WASTE_INLET ) then
@@ -222,7 +219,7 @@
 
       ! domains
 
-      n_domain = hyd%domain_coll%cursize
+      n_domain = hyd%domain_coll%current_size
       if ( n_domain .gt. 0 .and. hyd%geometry .eq. HYD_GEOM_CURVI) then
          write(lunhyd,'(a)') key(54)
          do i_domain = 1 , n_domain
@@ -237,7 +234,7 @@
 
       ! dd-boundaries
 
-      n_dd_bound = hyd%dd_bound_coll%cursize
+      n_dd_bound = hyd%dd_bound_coll%current_size
       if ( n_dd_bound .gt. 0 ) then
          write(lunhyd,'(a)') key(56)
          do i_dd_bound = 1 , n_dd_bound
@@ -257,7 +254,7 @@
          write(lunhyd,'(a)') key(57)
       endif
 
-      call dlwqfile_close(hyd%file_hyd)
+      call hyd%file_hyd%close()
 
       return
       end subroutine write_hyd

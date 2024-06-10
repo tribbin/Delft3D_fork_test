@@ -80,7 +80,7 @@ integer                         :: i, lsed
 double precision, external      :: densfm
 double precision                :: rhom, sal, temp, p1, dzz
 
-double precision, parameter     :: SED_DENSITY = 2600d0   !< default/typical sediment density [kg/m3]
+double precision, parameter     :: SEDIMENT_DENSITY = 2600d0   !< default/typical sediment density [kg/m3]
 
 call getsaltemk(cell,sal, temp)
 
@@ -112,18 +112,18 @@ if (jased > 0 .and. stm_included) then
          end if
       end do
    end if
-else if (jasubstancedensitycoupling > 0) then ! for now, only works for DELWAQ sediment fractions (concentrations in g/m3 and density of SED_DENSITY)
+else if (jasubstancedensitycoupling > 0) then ! for now, only works for DELWAQ sediment fractions (concentrations in g/m3 and density of SEDIMENT_DENSITY)
    if (itra1 == 0) then
        call mess(LEVEL_ERROR, 'SubstanceDensityCoupling was set to 1, but there are no substances.')
    end if
    rhom = setrho
    do i = itra1, itran 
-      setrho = setrho + (1d-3)*constituents(i,cell)*(SED_DENSITY - rhom)/SED_DENSITY ! Herman's suggestion 
+      setrho = setrho + (1d-3)*constituents(i,cell)*(SEDIMENT_DENSITY - rhom)/SEDIMENT_DENSITY
    enddo
 else if (jaseddenscoupling > 0) then  ! jased < 4
    rhom = setrho
    do i = 1,mxgr
-      setrho = setrho + sed(i,cell)*(rhosed(i) - rhom)/rhosed(i) ! good to see this is also adopted officially above %
+      setrho = setrho + sed(i,cell)*(rhosed(i) - rhom)/rhosed(i)
    enddo
 
 end if

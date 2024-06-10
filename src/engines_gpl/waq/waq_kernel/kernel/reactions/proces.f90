@@ -23,7 +23,7 @@
 module m_proces
     use m_waq_precision
     use m_provel
-    use m_proint
+    use m_integrate_areas_fluxes
     use m_profld
     use m_prodr2
 
@@ -69,28 +69,25 @@ contains
         !                           resample_v2, De-aggregation of a variable
         !                           DLWQ14, set deriv array
         !                           DLWQP0, set a step
-        !                           PROINT, integrate fluxes at dump segments
+        !                           integrate_fluxes_for_dump_areas , integrate fluxes at dump segments
         !                           PROVEL, calculate new velocities/dispersions
         !                           aggregate_extended, aggrgation of a variable
-        !                           GETMLU, get unit number monitor file
-        !                           SRSTOP, stops execution with an error indication
+        !                           get_log_unit_number, get unit number monitor file
+        !                           stop_with_error, stops execution with an error indication
 
         !     Files               : Monitoring file if needed for messages
 
         use m_dlwqp0
         use m_dlwq14
-        use m_srstop
-        use m_monsys
-        use m_cli_utils, only : retrieve_command_argument
+        use m_cli_utils, only : get_command_argument_by_name
         use aggregation, only : aggregate, aggregate_extended, resample, aggregate_attributes
         use m_dhgvar
         use m_array_manipulation, only : set_array_parameters
         use timers
         use process_registration
+        use omp_lib
 
         implicit none
-
-        !$    include "omp_lib.h"
 
         !     Arguments           :
 
@@ -207,12 +204,10 @@ contains
         integer(kind = int_wp) :: perf_function
         integer(kind = int_wp), save :: ifirst = 1
         integer(c_intptr_t), save :: dll_opb     ! open proces library dll handle
-        character(len = 256) :: shared_dll
-        logical :: lfound
-        integer(kind = int_wp) :: idummy
-        real(kind = real_wp) :: rdummy
         integer(kind = int_wp) :: ierror
-        integer(kind = int_wp) :: ierr2
+        character(:), allocatable :: shared_dll
+
+        logical :: parsing_error
         logical :: l_stop
 
 
@@ -240,10 +235,9 @@ contains
         ! open openpb dll
 
         if (ifirst == 1) then
-            call getmlu(lunrep)
-            call retrieve_command_argument ('-openpb', 3, lfound, idummy, rdummy, shared_dll, ierr2)
-            if (lfound) then
-                if (ierr2== 0) then
+            call get_log_unit_number(lunrep)
+            if (get_command_argument_by_name('-openpb', shared_dll, parsing_error)) then
+                if (.not. parsing_error) then
                     write(lunrep, *) ' -openpb command line argument found'
                     write(lunrep, *) ' using dll : ', trim(shared_dll)
                 else
@@ -266,7 +260,7 @@ contains
                 write(lunrep, *) 'ERROR : opening process library DLL'
                 write(lunrep, *) 'DLL   : ', trim(shared_dll)
                 write(lunrep, *) 'dll handle: ', dll_opb
-                call srstop(1)
+                call stop_with_error()
             endif
             ifirst = 0
         endif
@@ -315,7 +309,7 @@ contains
 
         !     Fill some specific variables absolute in the real array
 
-        defaul(2) = float(itime)
+        defaul(2) = real(itime)
         noq = noq1 + noq2 + noq3 + noq4
 
         !     BLOOM fractional step (derivs assumed zero at entry)
@@ -369,8 +363,8 @@ contains
                 idtpro = prondt(ipbloo) * idt
                 ipp_idt = nodef - 2 * nproc + ipbloo
                 ipp_delt = nodef - nproc + ipbloo
-                defaul(ipp_idt) = float(idt)
-                defaul(ipp_delt) = float(idt) / float(itfact)
+                defaul(ipp_idt) = real(idt)
+                defaul(ipp_delt) = real(idt) / real(itfact)
                 if (timon) call timstrt ("onepro", ithand2)
                 call onepro (ipbloo, ioffbl, idt, itfact, progrd, &
                         grdnos, prvnio, prvtyp, prvvar, vararr, &
@@ -432,9 +426,8 @@ contains
                 endif
 
                 !           Scale fluxes and update "processes" accumulation arrays
-
-                call dlwq14 (deriv, notot, noseg, itfact, amass2, &
-                        idt, iaflag, dmps, intopt, isdmp)
+                call scale_processes_derivs_and_update_balances (deriv, notot, noseg, itfact, amass2, &
+                     idt, iaflag, dmps, intopt, isdmp)
 
                 !           Integration (derivs are zeroed)
 
@@ -445,7 +438,7 @@ contains
                 !           Integrate the fluxes at dump segments
 
                 if (ibflag > 0) then
-                    call proint (noflux, ndmpar, idt, itfact, flxdmp, &
+                    call integrate_fluxes_for_dump_areas(noflux, ndmpar, idt, itfact, flxdmp, &
                             flxint, isdmp, ipdmp, ntdmpq)
                     flxdmp = 0.0
                 endif
@@ -542,8 +535,8 @@ contains
                     ipp_idt = nodef - 2 * nproc + iproc
                     ipp_delt = nodef - nproc + iproc
                     IDTPRO = PRONDT(IPROC) * IDT
-                    DEFAUL(ipp_idt) = FLOAT(IDTPRO)
-                    DEFAUL(ipp_delt) = FLOAT(IDTPRO) / FLOAT(ITFACT)
+                    DEFAUL(ipp_idt) = real(IDTPRO)
+                    DEFAUL(ipp_delt) = real(IDTPRO) / real(ITFACT)
 
                     call onepro (iproc, prvpnt(iproc), idt, itfact, progrd, &
                             grdnos, prvnio, prvtyp, prvvar, vararr, &
@@ -612,8 +605,8 @@ contains
 
                 !           Scale fluxes and update "processes" accumulation arrays
 
-                call dlwq14 (deriv, notot, noseg, itfact, amass2, &
-                        idt, iaflag, dmps, intopt, isdmp)
+                call scale_processes_derivs_and_update_balances(deriv, notot, noseg, itfact, amass2, &
+                     idt, iaflag, dmps, intopt, isdmp)
 
                 !           Integration (derivs are zeroed)
 
@@ -624,7 +617,7 @@ contains
                 !           Integrate the fluxes at dump segments
 
                 if (ibflag > 0) then
-                    call proint (noflux, ndmpar, idt, itfact, flxdmp, &
+                    call integrate_fluxes_for_dump_areas(noflux, ndmpar, idt, itfact, flxdmp, &
                             flxint, isdmp, ipdmp, ntdmpq)
                     flxdmp = 0.0
                 endif
@@ -690,7 +683,7 @@ contains
         REAL(kind = real_wp) :: A(:), FLUX(*), &
                 DERIV(*), STOCHI(*), &
                 VOLUME(*), FLXDMP(*)
-        CHARACTER*10        PRONAM(*)
+        character(len=10)        PRONAM(*)
         integer(c_intptr_t), intent(in) :: dll_opb     ! open proces library dll handle
         !
         !     Local

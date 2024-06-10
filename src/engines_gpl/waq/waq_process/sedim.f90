@@ -124,9 +124,9 @@ contains
 
             !     sedimentation towards the bottom
 
-            CALL evaluate_waq_attribute(1, IKNMRK(ISEG), IKMRK1)
+            CALL extract_waq_attribute(1, IKNMRK(ISEG), IKMRK1)
             IF (IKMRK1==1) THEN
-                CALL evaluate_waq_attribute(2, IKNMRK(ISEG), IKMRK2)
+                CALL extract_waq_attribute(2, IKNMRK(ISEG), IKMRK2)
                 IF ((IKMRK2==0).OR.(IKMRK2==3)) THEN
                     !
                     CONC = MAX (0.0, PMSA(IP1))
@@ -234,8 +234,8 @@ contains
 
                 !           Zoek eerste kenmerk van- en naar-segmenten
 
-                CALL evaluate_waq_attribute(1, IKNMRK(IVAN), IKMRKV)
-                CALL evaluate_waq_attribute(1, IKNMRK(INAAR), IKMRKN)
+                CALL extract_waq_attribute(1, IKNMRK(IVAN), IKMRKV)
+                CALL extract_waq_attribute(1, IKNMRK(INAAR), IKMRKN)
                 IF (IKMRKV==1.AND.IKMRKN==3) THEN
 
                     !               Bodem-water uitwisseling: NUL FLUX OM OOK OUDE PDF's
@@ -294,7 +294,7 @@ contains
         IP16 = IPOINT(16)
         IP17 = IPOINT(17)
 
-        DO IK = 1, Coll%cursize
+        DO IK = 1, Coll%current_size
 
             IWA1 = Coll%set(IK)%fstwatsed
             IWA2 = Coll%set(IK)%lstwatsed

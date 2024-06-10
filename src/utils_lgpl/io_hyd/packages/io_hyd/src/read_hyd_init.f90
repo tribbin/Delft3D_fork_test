@@ -29,13 +29,10 @@
 
       subroutine read_hyd_init(hyd)
 
-      ! function : read the time independent data from a hydrodynamics
+      ! read the time independent data from a hydrodynamics
 
-      ! global declarations
-
-      use m_srstop
-      use m_monsys
-      use hydmod
+      use m_logger_helper, only : stop_with_error, get_log_unit_number
+      use m_hydmod
       use io_netcdf
       use m_read_waqgeom
       use hyd_waqgeom_old
@@ -43,7 +40,7 @@
 
       ! declaration of the arguments
 
-      type(t_hyd)         :: hyd     ! description of the hydrodynamics
+      type(t_hydrodynamics)         :: hyd     ! description of the hydrodynamics
 
       ! local declarations
 
@@ -60,7 +57,7 @@
 
       ! some init
 
-      call getmlu(lunrep)
+      call get_log_unit_number(lunrep)
 
       ! allocate and read or define grid table
 
@@ -112,7 +109,7 @@
          endif
 
          hyd%openbndsect_coll%maxsize = 0
-         hyd%openbndsect_coll%cursize = 0
+         hyd%openbndsect_coll%current_size = 0
          call read_bnd(hyd%file_bnd, hyd%openbndsect_coll)
 
       endif
@@ -160,12 +157,12 @@
 
       ! read dispersion length, assume time independent
 
-      call dlwqfile_open(hyd%file_len)
-      read(hyd%file_len%unit_nr,iostat=ierr) itime,((hyd%displen(i,j),i=1,2),j=1,hyd%noq)
+      call hyd%file_len%open()
+      read(hyd%file_len%unit,iostat=ierr) itime,((hyd%displen(i,j),i=1,2),j=1,hyd%noq)
       if ( ierr .ne. 0 ) then
          write(*,*) 'ERROR: reading dispersion length file'
          write(lunrep,*) 'ERROR: reading dispersion length file'
-         call srstop(1)
+         call stop_with_error()
       endif
 
       ! read attributes
@@ -194,12 +191,12 @@
       return
   970 write(lunrep,*) 'error allocating memory:',ierr_alloc
       write(lunrep,*) 'hyd%noseg:',hyd%noseg
-      call srstop(1)
+      call stop_with_error()
   980 write(lunrep,*) 'error allocating memory:',ierr_alloc
       write(lunrep,*) 'hyd%nmax:',hyd%nmax
       write(lunrep,*) 'hyd%mmax:',hyd%mmax
-      call srstop(1)
+      call stop_with_error()
   990 write(lunrep,*) 'error allocating memory:',ierr_alloc
       write(lunrep,*) 'hyd%noq:',hyd%noq
-      call srstop(1)
+      call stop_with_error()
       end

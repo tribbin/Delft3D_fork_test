@@ -41,10 +41,10 @@ contains
         ! if nessacary turns on secondary processes
         ! fills defaults in defaul array
 
-        use m_monsys
+        use m_logger_helper
         use m_array_manipulation, only : is_missing
         use timers       !   performance timers
-        use dlwq_hyd_data
+        use m_waq_data_structure
         use processet
         use results, only : OutputPointers
         implicit none
@@ -55,7 +55,7 @@ contains
         integer(kind = int_wp) :: notot           ! number of substances
         character(len = *) :: syname(*)       ! substance name
         integer(kind = int_wp) :: nocons          ! number of constants
-        type(t_dlwq_item), intent(inout) :: constants       !< delwaq constants list
+        type(t_waq_item), intent(inout) :: constants       !< delwaq constants list
         integer(kind = int_wp) :: nopa            ! number of parameters
         character(len = *) :: paname(*)       ! parameter names
         integer(kind = int_wp) :: nofun           ! number of functions
@@ -115,18 +115,18 @@ contains
         line2 = ' '
 
         write (line, '(a)') '# determining the input for the processes (in reversed order)'
-        call monsys(line, 2)
+        call write_log_message(line)
         line = ' '
-        call monsys(line, 2)
+        call write_log_message(line)
 
         ! loop over all possible processes
 
-        nproc = procesdef%cursize
+        nproc = procesdef%current_size
         do iproc = nproc, 1, -1
             proc1 => procesdef%procesprops(iproc)
             if (proc1%active) then
                 write (line, '(4a)') ' Input for [', proc1%name, '] ', proc1%text(1:50)
-                call monsys(line, 4)
+                call write_log_message(line)
 
                 ! loop over the number of input items for this process
 
@@ -268,9 +268,9 @@ contains
                             endif
                         endif
                         proc1%input_item(i_input)%ip_val = ivalip
-                        if (line  /= ' ') call monsys(line, 4)
-                        if (line1 /= ' ') call monsys(line1, 4)
-                        if (line2 /= ' ') call monsys(line2, 4)
+                        if (line  /= ' ') call write_log_message(line)
+                        if (line1 /= ' ') call write_log_message(line1)
+                        if (line2 /= ' ') call write_log_message(line2)
                         line = ' '
                         line1 = ' '
                         line2 = ' '
@@ -368,9 +368,9 @@ contains
                             endif
                         endif
                         proc1%input_item(i_input)%ip_val = ivalip
-                        if (line  /= ' ') call monsys(line, 4)
-                        if (line1 /= ' ') call monsys(line1, 4)
-                        if (line2 /= ' ') call monsys(line2, 4)
+                        if (line  /= ' ') call write_log_message(line)
+                        if (line1 /= ' ') call write_log_message(line1)
+                        if (line2 /= ' ') call write_log_message(line2)
                         line = ' '
                         line1 = ' '
                         line2 = ' '
@@ -385,7 +385,7 @@ contains
                         valnam = proc1%output_item(ioutput)%name
                         ioux = 0
                         350             continue
-                        nrout = outputs%cursize - ioux
+                        nrout = outputs%current_size - ioux
                         iou = index_in_array(valnam, outputs%names(ioux + 1:nrout))
                         if (iou > 0) then
                             iou = iou + ioux
@@ -407,12 +407,12 @@ contains
                                 endif
                             endif
                             ioux = iou
-                            if (ioux < outputs%cursize) goto 350
+                            if (ioux < outputs%current_size) goto 350
                         endif
                     endif
                 enddo
 
-                call monsys(line, 2)
+                call write_log_message(line)
             endif
         enddo
 

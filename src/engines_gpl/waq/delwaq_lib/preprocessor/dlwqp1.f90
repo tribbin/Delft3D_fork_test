@@ -29,7 +29,7 @@ module m_dlwqp1
     use m_set_old_items
     use m_set_fractions
     use m_set_active
-    use m_setprg
+    use m_set_grid_all_processes, only : set_grid_all_processes
     use m_setopp
     use m_setopo
     use m_setdvp
@@ -49,7 +49,7 @@ module m_dlwqp1
 
 contains
 
-    subroutine dlwqp1(lun, lchar, &
+    subroutine dlwqp1(file_unit_list, file_name_list, &
             statprocesdef, allitems, &
             ioutps, outputs, &
             nomult, imultp, &
@@ -69,13 +69,13 @@ contains
         use m_algrep
         use m_actrep
         use m_startup_screen
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use m_working_files, only : read_working_file_4
-        use m_monsys
-        use m_cli_utils, only : retrieve_command_argument
+        use m_cli_utils, only : get_command_argument_by_name, &
+                                is_command_arg_specified
         use m_open_waq_files
         use timers
-        use dlwq_hyd_data
+        use m_waq_data_structure
         use processet
         use results, only : OutputPointers
         use partable
@@ -87,15 +87,15 @@ contains
 
         ! declaration of arguments
 
-        integer(kind = int_wp), intent(inout) :: lun(*)           !< unit numbers
-        character(len = *), intent(inout) :: lchar(*)        !< filenames
+        integer(kind = int_wp), intent(inout) :: file_unit_list(*)           !< unit numbers
+        character(len = *), intent(inout) :: file_name_list(*)        !< filenames
         type(procespropcoll), intent(in) :: statprocesdef   !< the statistical proces definition
         type(itempropcoll), intent(inout) :: allitems        !< all items of the proces system
         integer(kind = int_wp), intent(inout) :: ioutps(7, *)      !< (old) output structure
         type(OutputPointers), intent(inout) :: outputs         !< output structure
         integer(kind = int_wp), intent(in) :: nomult           !< number of multiple substances
         integer(kind = int_wp), intent(in) :: imultp(2, nomult) !< multiple substance administration
-        type(t_dlwq_item), intent(inout) :: constants       !< delwaq constants list
+        type(t_waq_item), intent(inout) :: constants       !< delwaq constants list
         integer(kind = int_wp), intent(in) :: refday           !< reference day, varying from 1 till 365
 
         type(error_status) :: status !< current error status
@@ -129,7 +129,6 @@ contains
         integer(kind = int_wp) :: lunblm           ! unit number bloom file
         integer(kind = int_wp) :: lunfrm           ! unit number bloom frm file
         integer(kind = int_wp) :: lund09           ! unit number bloom d09 file
-        integer(kind = int_wp) :: mlevel           ! monitoring level
 
         integer(kind = int_wp) :: isys             ! index variable
         integer(kind = int_wp) :: igrp             ! index variable
@@ -158,6 +157,7 @@ contains
         integer(kind = int_wp) :: idummy           ! dummy variable
         real(kind = real_wp) :: rdummy           ! dummy variable
         character :: cdummy            ! dummy variable
+        logical :: parsing_error
 
         integer(kind = int_wp), allocatable :: idpnt(:)         ! dispersion pointers
         integer(kind = int_wp), allocatable :: ivpnt(:)         ! velocity pointers
@@ -165,22 +165,22 @@ contains
         integer(kind = int_wp), allocatable :: sysgrd(:)        ! substance grid
         integer(kind = int_wp), allocatable :: sysndt(:)        ! substance timestep multiplier
 
-        character*40 :: modid(4)       ! model id
-        character*20, allocatable :: syname(:)       ! substance names
-        character*20, allocatable :: coname(:)       ! constant names
-        character*20, allocatable :: paname(:)       ! parameter names
-        character*20, allocatable :: funame(:)       ! function names
-        character*20, allocatable :: sfname(:)       ! segm.func. names
-        character*20, allocatable :: diname(:)       ! dispersion names
-        character*20, allocatable :: vename(:)       ! velocity names
-        character*20, allocatable :: dename(:)       ! default array names
-        character*20, allocatable :: locnam(:)       ! local array names
-        character*20, allocatable :: ainame(:)       ! all item names names in the proc_def
-        character*20 :: subname         ! substance name
-        character*100, allocatable :: substdname(:)   ! substance standard name
-        character*40, allocatable :: subunit(:)      ! substance unit
-        character*60, allocatable :: subdescr(:)     ! substance description
-        character*20 :: outname         ! output name
+        character(len=40) :: modid(4)       ! model id
+        character(len=20), allocatable :: syname(:)       ! substance names
+        character(len=20), allocatable :: coname(:)       ! constant names
+        character(len=20), allocatable :: paname(:)       ! parameter names
+        character(len=20), allocatable :: funame(:)       ! function names
+        character(len=20), allocatable :: sfname(:)       ! segm.func. names
+        character(len=20), allocatable :: diname(:)       ! dispersion names
+        character(len=20), allocatable :: vename(:)       ! velocity names
+        character(len=20), allocatable :: dename(:)       ! default array names
+        character(len=20), allocatable :: locnam(:)       ! local array names
+        character(len=20), allocatable :: ainame(:)       ! all item names names in the proc_def
+        character(len=20) :: subname         ! substance name
+        character(len=100), allocatable :: substdname(:)   ! substance standard name
+        character(len=40), allocatable :: subunit(:)      ! substance unit
+        character(len=60), allocatable :: subdescr(:)     ! substance description
+        character(len=20) :: outname         ! output name
 
         ! proces definition structure
 
@@ -190,7 +190,7 @@ contains
         integer(kind = int_wp) :: serial           ! serial number process definition
         integer(kind = int_wp) :: target_serial    ! target serial number process definition
         real(kind = real_wp) :: versio           ! version process defintion
-        character*20, allocatable :: actlst(:)
+        character(len=20), allocatable :: actlst(:)
 
         ! proces "output" structure
 
@@ -202,45 +202,45 @@ contains
 
         ! settings
 
-        character*80 :: swinam
-        character*80 :: blmnam
-        character*80 :: line
-        character*256 :: pdffil
-        character*10 :: config
+        character(len=80) :: swinam
+        character(len=80) :: blmnam
+        character(len=80) :: line
+        character(:), allocatable :: pdffil
+        character(:), allocatable :: config
         logical :: lfound, laswi, swi_nopro
         integer(kind = int_wp) :: blm_act                        ! index of ACTIVE_BLOOM_P
 
         ! information
 
-        character*20 :: rundat
+        character(len=20) :: rundat
         logical :: ex
 
         ! bloom-species database
 
-        character*256 :: blmfil
+        character(:), allocatable :: blmfil
         logical :: l_eco
         integer(kind = int_wp) :: maxtyp, maxcof
         parameter(maxtyp = 500, maxcof = 50)
         integer(kind = int_wp) :: notyp, nocof, nogrp
-        character*10 :: alggrp(maxtyp), algtyp(maxtyp)
-        character*5 :: abrgrp(maxtyp), abrtyp(maxtyp)
-        character*80 :: algdsc(maxtyp)
-        character*10 :: cofnam(maxcof)
+        character(len=10) :: alggrp(maxtyp), algtyp(maxtyp)
+        character(len=5) :: abrgrp(maxtyp), abrtyp(maxtyp)
+        character(len=80) :: algdsc(maxtyp)
+        character(len=10) :: cofnam(maxcof)
         real(kind = real_wp) :: algcof(maxcof, maxtyp)
         integer(kind = int_wp) :: algact(maxtyp)
         integer(kind = int_wp) :: noutgrp, nouttyp
-        character*10 :: outgrp(maxtyp), outtyp(maxtyp)
+        character(len=10) :: outgrp(maxtyp), outtyp(maxtyp)
         integer(kind = int_wp) :: noprot, nopralg
-        character*10 :: namprot(maxtyp), nampact(maxtyp), nampralg(maxtyp)
+        character(len=10) :: namprot(maxtyp), nampact(maxtyp), nampralg(maxtyp)
 
         ! actual algae
 
         integer(kind = int_wp) :: noalg
-        character*10 :: name10
-        character*10 :: grpnam(maxtyp)
-        character*5 :: grpabr(maxtyp)
-        character*10 :: typnam(maxtyp)
-        character*5 :: typabr(maxtyp)
+        character(len=10) :: name10
+        character(len=10) :: grpnam(maxtyp)
+        character(len=5) :: grpabr(maxtyp)
+        character(len=10) :: typnam(maxtyp)
+        character(len=5) :: typabr(maxtyp)
 
         ! output things
 
@@ -267,7 +267,7 @@ contains
 
         ! start
 
-        lchar(34) = 'proc_def'
+        file_name_list(34) = 'proc_def'
         noloc = 0
         nodef = 0
         ndspx = 0
@@ -277,42 +277,30 @@ contains
         nveln = 0
         noqtt = noq + noq4
         nosss = noseg + nseg2
-        procesdef%cursize = 0
+        procesdef%current_size = 0
         procesdef%maxsize = 0
-        old_items%cursize = 0
+        old_items%current_size = 0
         old_items%maxsize = 0
 
         ! open report file
 
-        call open_waq_files(lun(35), lchar(35), 35, 1, ierr2)
-        lurep = lun(35)
+        call open_waq_files(file_unit_list(35), file_name_list(35), 35, 1, ierr2)
+        lurep = file_unit_list(35)
         line = ' '
-        call setmlu(lurep)
+        call set_log_unit_number(lurep)
         call startup_screen(lurep)
-        call monsys(line, 11)
-        call monsys(line, 1)
+        call write_log_message(line)
 
         ! command line settingen , commands
 
-        ! monitoring level
-
-        call retrieve_command_argument('-m', 1, lfound, mlevel, rdummy, cdummy, ierr2)
-        if (lfound) then
-            if (ierr2 == 0) then
-                call setmmo(mlevel)
-            else
-                call setmmo(10)
-            end if
-        end if
 
         ! active processes only switch
 
-        call retrieve_command_argument('-a', 1, lfound, idummy, rdummy, cdummy, ierr2)
-        if (lfound) then
+        if (is_command_arg_specified('-a')) then
             write (line, '(a)') ' found -a command line switch'
-            call monsys(line, 1)
+            call write_log_message(line)
             write (line, '(a)') ' only activated processes are switched on'
-            call monsys(line, 1)
+            call write_log_message(line)
             laswi = .true.
         else
             laswi = .false.
@@ -320,13 +308,12 @@ contains
 
         ! no processes
 
-        call retrieve_command_argument('-np', 0, lfound, idummy, rdummy, cdummy, ierr2)
-        if (lfound) then
+        if (is_command_arg_specified('-np')) then
             swi_nopro = .true.
             write (line, '(a)') ' found -np command line switch'
-            call monsys(line, 1)
+            call write_log_message(line)
             write (line, '(a)') ' no processes from the process definition file are switched on'
-            call monsys(line, 1)
+            call write_log_message(line)
             versio = versip
         else
             swi_nopro = .false.
@@ -335,20 +322,19 @@ contains
         ! process definition file
 
         if (.not. swi_nopro) then
-            call retrieve_command_argument('-p', 3, lfound, idummy, rdummy, pdffil, ierr2)
-            if (lfound) then
-                if (ierr2 /= 0) then
+            if (get_command_argument_by_name('-p', pdffil, parsing_error)) then
+                if (parsing_error) then
                     pdffil = ' '
                 end if
             else
                 pdffil = ' '
             end if
             if (pdffil /= ' ') then
-                lchar(34) = pdffil
+                file_name_list(34) = pdffil
                 write (line, '(a)') ' found -p command line switch'
-                call monsys(line, 1)
+                call write_log_message(line)
             else
-                pdffil = lchar(34)
+                pdffil = file_name_list(34)
             end if
             ierr2 = status%ierr
             call rd_tabs(pdffil, lurep, versio, serial, status)
@@ -364,10 +350,10 @@ contains
                 write (*, *) '        Check if the filename after -p is correct, and exists.'
                 write (*, *) '        Use -np if you want to run without processes.'
                 write (*, *) ' '
-                call srstop(1)
+                call stop_with_error()
             else
                 write (lurep, *)
-                write (lurep, 2001) trim(lchar(34))
+                write (lurep, 2001) trim(file_name_list(34))
                 write (lurep, 2002) versio
                 write (lurep, 2003) serial
                 write (lurep, *)
@@ -381,18 +367,17 @@ contains
         ! old serial definitions
 
         if (.not. swi_nopro) then
-            call retrieve_command_argument('-target_serial', 1, lfound, target_serial, rdummy, cdummy, ierr2)
-            if (lfound) then
+            if (get_command_argument_by_name('-target_serial', target_serial, parsing_error)) then
                 write (line, '(a)') ' found -target_serial command line switch'
-                call monsys(line, 1)
-                if (ierr2 /= 0) then
+                call write_log_message(line)
+                if (parsing_error) then
                     old_items%target_serial = target_serial
                     write (line, '(a)') ' no serial number given, using current'
-                    call monsys(line, 1)
+                    call write_log_message(line)
                     old_items%target_serial = serial
                 else
                     write (line, '(a,i13)') ' using target serial number: ', target_serial
-                    call monsys(line, 1)
+                    call write_log_message(line)
                     old_items%target_serial = target_serial
                 end if
             else
@@ -402,17 +387,16 @@ contains
 
         ! configuration
 
-        call retrieve_command_argument('-conf', 3, lfound, idummy, rdummy, config, ierr2)
-        if (lfound) then
+        if (get_command_argument_by_name('-conf', config, parsing_error)) then
             write (line, '(a)') ' found -conf command line switch'
-            call monsys(line, 1)
-            if (ierr2 /= 0) then
+            call write_log_message(line)
+            if (parsing_error) then
                 write (line, '(a)') ' no configuration id given, using default'
-                call monsys(line, 1)
+                call write_log_message(line)
                 config = ' '
             else
                 write (line, '(a25,a10)') ' using configuration id: ', config
-                call monsys(line, 1)
+                call write_log_message(line)
             end if
         else
             config = ' '
@@ -420,33 +404,32 @@ contains
 
         ! eco coupling
 
-        call retrieve_command_argument('-eco', 3, lfound, idummy, rdummy, blmfil, ierr2)
-        if (lfound) then
+        if (get_command_argument_by_name('-eco', blmfil, parsing_error)) then
             l_eco = .true.
             line = ' '
-            call monsys(line, 1)
+            call write_log_message(line)
             write (line, '(a)') ' found -eco command line switch'
-            call monsys(line, 1)
-            if (ierr2 /= 0) then
+            call write_log_message(line)
+            if (parsing_error) then
                 blmfil = 'bloom.spe'
                 write (line, '(a30,a50)') ' using default eco input file:', blmfil
-                call monsys(line, 1)
+                call write_log_message(line)
             else
                 write (line, '(a22,a58)') ' using eco input file:', blmfil
-                call monsys(line, 1)
+                call write_log_message(line)
             end if
         else
             blmnam = 'ACTIVE_BLOOM_P'
-            blm_act = dlwq_find(constants, blmnam)
+            blm_act = constants%find(blmnam)
             if (blm_act > 0 .and. .not. swi_nopro) then
                 l_eco = .true.
                 line = ' '
-                call monsys(line, 1)
+                call write_log_message(line)
                 write (line, '(a)') ' found constant ACTIVE_BLOOM_P without -eco command line switch'
-                call monsys(line, 1)
+                call write_log_message(line)
                 blmfil = 'bloom.spe'
                 write (line, '(a39,a41)') ' will try using default eco input file:', blmfil
-                call monsys(line, 1)
+                call write_log_message(line)
             else
                 l_eco = .false.
                 noprot = 0
@@ -460,7 +443,7 @@ contains
             if (ierr2 /= 0) then
                 call status%increase_error_count()
                 write (line, '(3a)') ' eco input file - ', trim(blmfil), ' not found! Exiting'
-                call monsys(line, 1)
+                call write_log_message(line)
                 return
             end if
 
@@ -499,8 +482,8 @@ contains
 
         ! read ( rest ) of relevant delwaq files
 
-        call open_waq_files(lun(2), lchar(2), 2, 2, ierr2)
-        call read_working_file_4(lun(2), lurep, modid, syname, notot, &
+        call open_waq_files(file_unit_list(2), file_name_list(2), 2, 2, ierr2)
+        call read_working_file_4(file_unit_list(2), lurep, modid, syname, notot, &
                 nodump, nosys, nobnd, nowst, nocons, &
                 nopa, noseg, nseg2, coname, paname, &
                 funame, nofun, sfname, nosfun, nodisp, &
@@ -510,7 +493,7 @@ contains
                 sysgrd, sysndt)
         write (lurep, 2020) (modid(i), i = 1, 2)
         write (lurep, 2030) (modid(i), i = 3, 4)
-        close (lun(2))
+        close (file_unit_list(2))
 
         ! change names according to old_items table
 
@@ -542,7 +525,7 @@ contains
             ! when no algae were found, turn of eco mode
             if (noalg == 0) then
                 write (line, '(a)') ' no BLOOM algae were found, switching off eco mode.'
-                call monsys(line, 1)
+                call write_log_message(line)
                 l_eco = .false.
             else
                 ! set algal group list
@@ -566,12 +549,12 @@ contains
         ! active only switch set trough a constant
 
         swinam = 'only_active'
-        ix_act = dlwq_find(constants, swinam)
+        ix_act = constants%find(swinam)
         if (ix_act > 0) then
             write (line, '(a)') ' found only_active constant'
-            call monsys(line, 1)
+            call write_log_message(line)
             write (line, '(a)') ' only activated processes are switched on'
-            call monsys(line, 1)
+            call write_log_message(line)
             laswi = .true.
         end if
 
@@ -592,7 +575,7 @@ contains
                     config = 'waq'
                 end if
                 write (line, '(a,a10)') ' using default configuration: ', config
-                call monsys(line, 1)
+                call write_log_message(line)
             end if
         end if
 
@@ -611,21 +594,21 @@ contains
             call prprop(lurep, laswi, config, no_act, actlst, allitems, procesdef, &
                     old_items, status)
 
-            nbpr = procesdef%cursize
+            nbpr = procesdef%current_size
         else
             nbpr = 0
         end if
 
         ! add the statistical processes in the structure
 
-        if (statprocesdef%cursize > 0) then
-            do istat = 1, statprocesdef%cursize
+        if (statprocesdef%current_size > 0) then
+            do istat = 1, statprocesdef%current_size
                 statprocesdef%procesprops(istat)%sfrac_type = 0
                 iret = procespropcolladd(procesdef, statprocesdef%procesprops(istat))
                 actlst(no_act + istat) = statprocesdef%procesprops(istat)%name
             end do
-            nbpr = nbpr + statprocesdef%cursize
-            no_act = no_act + statprocesdef%cursize
+            nbpr = nbpr + statprocesdef%current_size
+            no_act = no_act + statprocesdef%current_size
         end if
 
         ! set processes and fluxes for the substance fractions, this adds and alters processes in procesdef!
@@ -716,8 +699,8 @@ contains
         allocate (defaul(maxdef))
         allocate (dename(maxdef))
         defaul = 0.0
-        defaul(5) = float(itstrt)
-        defaul(6) = float(itstop)
+        defaul(5) = real(itstrt)
+        defaul(6) = real(itstop)
         allocate (locnam(novarm))
 
         ! put theta in local array if wanted for output, the value will be filled by the integration routine
@@ -729,7 +712,7 @@ contains
             locnam(1) = parnam
             outputs%pointers(parindx) = nopred + nocons + nopa + nofun + nosfun + notot + 1
             write (line, '(3a)') ' output [', parnam, '] will be generated by numerical scheme'
-            call monsys(line, 4)
+            call write_log_message(line)
         end if
 
         call getinv(procesdef, notot, syname, nocons, constants, &
@@ -760,12 +743,12 @@ contains
         ! if not all input present , stop with exit code
 
         if (nmis > 0) then
-            call open_waq_files(lun(24), lchar(24), 24, 1, ierr2)
-            close (lun(24))
+            call open_waq_files(file_unit_list(24), file_name_list(24), 24, 1, ierr2)
+            close (file_unit_list(24))
             write (lurep, *) ' not all input available.'
             write (lurep, *) ' number off missing variables :', nmis
             write (lurep, *) ' simulation impossible.'
-            call srstop(1)
+            call stop_with_error()
         end if
 
         ! set new pointer for dispersion and velocity
@@ -775,7 +758,7 @@ contains
 
         ! set grid for processes
 
-        call setprg(procesdef, nogrid, notot, grdref, sysgrd, sysndt)
+        call set_grid_all_processes(procesdef, nogrid, notot, grdref, sysgrd, sysndt)
         deallocate (grdref, sysgrd, sysndt)
 
         ! write proces work file
@@ -784,8 +767,8 @@ contains
                 nocons, nopa, nofun, nosfun, notot, &
                 noloc, nodisp, novelo, ndspx, nvelx, &
                 nlocx, nosys, nogrid, dename, coname, paname, &
-                funame, sfname, syname, intopt, lun, &
-                lchar, noutp, ioutps, outputs, ndmpar, &
+                funame, sfname, syname, intopt, file_unit_list, &
+                file_name_list, noutp, ioutps, outputs, ndmpar, &
                 nbufmx, versio, ndspn, nveln, nrref, &
                 proref, nproc, nflux, novar, nipmsa)
         deallocate (defaul, dsto, vsto)
@@ -794,13 +777,13 @@ contains
 
         ! nrvart is in the boot sysn common
 
-        nrvart = outputs%cursize
+        nrvart = outputs%current_size
 
         ! Prepare descrtion and unit information for output from the proces library to be written in the NetCDF-file
 
         ! Extract names list from allitems
-        allocate (ainame(allitems%cursize))
-        do iitem = 1, allitems%cursize
+        allocate (ainame(allitems%current_size))
+        do iitem = 1, allitems%current_size
             ainame(iitem) = allitems%itemproppnts(iitem)%pnt%name
         end do
 
@@ -848,7 +831,7 @@ contains
         end do
 
         ! Lookup output names in names list
-        do ioutp = 1, outputs%cursize
+        do ioutp = 1, outputs%current_size
             outname = outputs%names(ioutp)
             call str_lower(outname)
             iindx = index_in_array(outname, ainame)
@@ -882,16 +865,16 @@ contains
         end do
         ! write updated output work file ( output.wrk )
 
-        call open_waq_files(lun(25), lchar(25), 25, 1, ierr2)
-        call wrwrko(lun(25), noutp, nbufmx, ioutps, outputs, &
+        call open_waq_files(file_unit_list(25), file_name_list(25), 25, 1, ierr2)
+        call wrwrko(file_unit_list(25), noutp, nbufmx, ioutps, outputs, &
                 notot, substdname, subunit, subdescr)
-        close (lun(25))
+        close (file_unit_list(25))
 
         ! write altoys input files, only for old balance file
         ! ( altoys.inp batoys.inp altoys.ini altoys.fil)
 
         if (btest(intopt, 3) .and. .not. btest(intopt, 4)) then
-            call wrtoys(lchar, lun, notot, syname, noutp, ioutps, outputs)
+            call wrtoys(file_name_list, file_unit_list, notot, syname, noutp, ioutps, outputs)
         end if
 
         if (timon) call timstop(ithndl)

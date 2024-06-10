@@ -43,7 +43,7 @@ contains
         !
         !     FUNCTION            : Sets io list for statistical routine STADSC
         !
-        !     SUBROUTINES CALLED  : SRSTOP, stops execution
+        !     SUBROUTINES CALLED  : stop_with_error, stops execution
         !                           ZOEK  , finds string in character array
         !
         !
@@ -63,7 +63,7 @@ contains
         !     aProcesProp               OUTPUT  properties for this proces
         !     AllItems                  INPUT   all items known to the proces system
         !
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use m_string_manipulation, only : get_trimmed_length
         USE ProcesSet
         use timers       !   performance timers
@@ -73,8 +73,8 @@ contains
         !     Declaration of arguments
         !
         INTEGER(kind = int_wp) :: LUNREP, NOKEY, PSTART, PSTOP, IPROC
-        CHARACTER*20 :: PERNAM, PERSFX
-        CHARACTER*20 :: KEYNAM(NOKEY), KEYVAL(NOKEY)
+        character(len=20) :: PERNAM, PERSFX
+        character(len=20) :: KEYNAM(NOKEY), KEYVAL(NOKEY)
         type(ProcesProp) :: aProcesProp         ! output statistical proces definition
         type(ItemPropColl) :: AllItems            ! all items of the proces system
         type(error_status), intent(inout) :: status !< current error status
@@ -83,7 +83,7 @@ contains
         !
         INTEGER(kind = int_wp) :: IERR_ALLOC, IKEY, ISTART, ISTOP, ISLEN, IERR2, IRET
         INTEGER(kind = int_wp), ALLOCATABLE :: ISUSED(:)
-        CHARACTER*20 :: SUFFIX
+        character(len=20) :: SUFFIX
         type(ItemProp) :: aItemProp            ! one item
         integer(kind = int_wp) :: ithndl = 0
 
@@ -96,7 +96,7 @@ contains
             WRITE(LUNREP, *) 'ERROR allocating buffer array:', IERR_ALLOC
             WRITE(LUNREP, *) 'in routine SETDSC_3, buffer length:', NOKEY
             WRITE(*, *) 'ERROR allocating buffer array:', IERR_ALLOC
-            CALL SRSTOP(1)
+            CALL stop_with_error()
         ENDIF
         ISUSED = 0
         IKEY = index_in_array('OUTPUT-OPERATION', KEYNAM)
@@ -125,7 +125,7 @@ contains
             WRITE(LUNREP, *) 'ERROR allocating IOitem array:', IERR_ALLOC
             WRITE(LUNREP, *) 'in routine SETDAY_1, array length:', aProcesProp%no_input, aProcesProp%no_output
             WRITE(*, *) 'ERROR allocating array:', IERR_ALLOC
-            CALL SRSTOP(1)
+            CALL stop_with_error()
         ENDIF
         !
         !     input on segments

@@ -39,7 +39,7 @@ contains
         !
         !     SUBROUTINES CALLED : RDTOK1 tokenized data file reading
         !
-        !     LOGICAL UNITS      : LUNIN = unit formatted inputfile
+        !     LOGICAL UNITS      : input_file = unit formatted inputfile
         !                          LUNREP= unit formatted outputfile
         !
         !     PARAMETERS         :
@@ -70,6 +70,7 @@ contains
         use timers
         use m_array_manipulation, only : resize_integer_array, resize_character_array
         use date_time_utils, only : convert_string_to_time_offset, convert_relative_time
+        use rd_token, only : rdtok1
 
         implicit none
 
@@ -77,14 +78,14 @@ contains
                 NOSTAT, NKEY
         LOGICAL :: is_date_format, is_yyddhh_format
         INTEGER(kind = int_wp) :: ILUN(*)
-        CHARACTER*(*) :: LCH  (*)
-        CHARACTER*1 :: CCHAR
-        CHARACTER*20, POINTER :: KEYNAM(:)
-        CHARACTER*20, POINTER :: KEYVAL(:)
+        character(len=*) :: LCH  (*)
+        character(len=1) :: CCHAR
+        character(len=20), POINTER :: KEYNAM(:)
+        character(len=20), POINTER :: KEYVAL(:)
         INTEGER(kind = int_wp), POINTER :: NOKEY(:)
         INTEGER(kind = int_wp) :: NPERIOD
-        CHARACTER*20, POINTER :: PERNAM(:)
-        CHARACTER*20, POINTER :: PERSFX(:)
+        character(len=20), POINTER :: PERNAM(:)
+        character(len=20), POINTER :: PERSFX(:)
         INTEGER(kind = int_wp), POINTER :: PSTART(:)
         INTEGER(kind = int_wp), POINTER :: PSTOP(:)
 
@@ -96,11 +97,11 @@ contains
         PARAMETER   (NPKEY = 4)
         PARAMETER   (NKEYPER = 4)
         PARAMETER   (NKEYPAR = 3)
-        CHARACTER*20 :: KEY, KEYS(NPKEY)
-        CHARACTER*20 :: KEYPER(NKEYPER)
-        CHARACTER*20 :: KEYPAR(NKEYPAR)
-        CHARACTER*20 :: KNAM, CDUMMY
-        CHARACTER*20 :: KVAL
+        character(len=20) :: KEY, KEYS(NPKEY)
+        character(len=20) :: KEYPER(NKEYPER)
+        character(len=20) :: KEYPAR(NKEYPAR)
+        character(len=20) :: KNAM, CDUMMY
+        character(len=20) :: KVAL
         REAL(kind = real_wp) :: ADUMMY
         INTEGER(kind = int_wp) :: IDUMMY, IERR2, IKEY, ITYPE, MAXKEY, &
                 MAXSTAT, VERSTAT, MINSTAT, IKEY2, ITSTRT, &

@@ -29,12 +29,12 @@ contains
 
 
     SUBROUTINE XERBLA (SRNAME, INFO)
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use timers
 
         !          ..    Scalar Arguments ..
         INTEGER(kind = int_wp) :: INFO
-        CHARACTER*6        SRNAME
+        character(len=6)        SRNAME
         integer(kind = int_wp) :: ithandl = 0
         if (timon) call timstrt ("xerbla", ithandl)
         !          ..
@@ -53,7 +53,7 @@ contains
         !       Parameters
         !       ==========
         !
-        !       SRNAME - CHARACTER*6.
+        !       SRNAME - character(len=6).
         !                On entry, SRNAME specifies the name of the routine which
         !                called XERBLA.
         !
@@ -70,7 +70,7 @@ contains
         !
         WRITE (*, 99999) SRNAME, INFO
         !
-        CALL SRSTOP(1)
+        CALL stop_with_error()
         !
         99999 FORMAT (' ** On entry to ', A6, ' parameter number ', I2, &
                 ' had an illegal value')

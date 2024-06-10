@@ -23,7 +23,7 @@
 module m_rd_stt
     use m_waq_precision
     use m_delwaq_statistical_process, only : setup_statistical
-    use m_srstop
+    use m_logger_helper, only : stop_with_error
 
     implicit none
 
@@ -32,7 +32,7 @@ contains
 
     subroutine rd_stt(lunrep, sttfil, statprocesdef, allitems, status)
 
-        use dlwq_hyd_data      ! for definition and storage of data
+        use m_waq_data_structure      ! for definition and storage of data
         use processet      ! processet definitions
         use rd_token       ! tokenized reading
         use m_error_status
@@ -55,7 +55,7 @@ contains
         open (newunit = ilun(1), file = lch(1), status = 'old', iostat = iostat)
         if(iostat /= 0) then
             write(*, *) 'Error reading file: ', trim(lch(1))
-            call srstop(1)
+            call stop_with_error()
         endif
         npos = 1000
         cchar = ';'

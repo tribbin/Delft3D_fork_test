@@ -46,7 +46,7 @@ contains
     subroutine delpar00 (mdpfile, noseg, noq, dwqvol, dwqflo, &
             nosfun, sfname, segfun)
 
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use partmem      !   for PARTicle tracking
         use alloc_mod    !   for PARTicle tracking
         use writrk_mod   !   for PARTicle tracking
@@ -96,6 +96,7 @@ contains
         if (mdpfile /= ' ') then
             call norm_init()
             alone = .false.
+            close( lunitp(2) ) ! Report file is already open, when run under DIMR
             call rdfnam (lunitp, mdpfile, fnamep, nfilesp, 2, &
                     1, .false.)
             lunut = lunitp(2)
@@ -259,7 +260,7 @@ contains
                         write (lunut, *) '        number of substances in the model setup: ', nosubs
                         write (*, *) ' Error: number of substances in the ini-file   : ', nosubs_idp
                         write (*, *) '        number of substances in the model setup: ', nosubs
-                        call srstop(1)
+                        call stop_with_error()
                     endif
                     do ilp = 1, nopart
                         read(luini) npart(ilp), mpart(ilp), kpart(ilp), xpart(ilp), ypart(ilp), zpart(ilp), wpart(1:nosubs, ilp), &
@@ -275,7 +276,7 @@ contains
                         write (lunut, *) '        number of substances in the model setup: ', nosubs
                         write (*, *) ' Error: number of substances in the ini-file   : ', nosubs_idp
                         write (*, *) '        number of substances in the model setup: ', nosubs
-                        call srstop(1)
+                        call stop_with_error()
                     endif
                     do ilp = 1, nopart
                         read(luini) npart(ilp), mpart(ilp), kpart(ilp), xpart(ilp), ypart(ilp), zpart(ilp), wpart(1:nosubs, ilp), &
@@ -331,7 +332,7 @@ contains
                 pblay = 0.7
             else
                 write(*, *) 'This model type has not been implemented yet '
-                call srstop(1)
+                call stop_with_error()
             endif
             ptlay = 1.0 - pblay
             nstep = 1 + (itstopp - itstrtp) / idelt
@@ -341,7 +342,7 @@ contains
             itraki = notrak  ! timestep for writing trackinformation to the track file, if notrack =0 then no track file
             if (ltrack) then
                 !     write initial information to track file
-                dtstep = float(idelt)
+                dtstep = real(idelt)
                 nstept = 1 + ((itstopp - itstrtp) / idelt) / itraki
                 call writrk (lunut, fout, fnamep(16), nopart, title(4), &
                         dtstep, nstept, ibuff, rbuff, cbuff, &

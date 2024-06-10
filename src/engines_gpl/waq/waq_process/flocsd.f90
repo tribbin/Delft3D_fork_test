@@ -120,7 +120,9 @@ contains
             ! only for active water segments
 
             active = btest(iknmrk(iseg), 0)
-            if (active) then
+            call extract_waq_attribute(1, iknmrk(iseg), ikmrk1)
+            bottom = ikmrk1==3
+            if (active .and. .not. bottom) then
                 call flocculate_dwq(swfloform, cmacro, cmicro, tpm, tau, total_depth, local_depth, viscosity, rho_water, &
                          d_micro, ustar_macro, spmratioem, ws_macro, ws_micro)
 

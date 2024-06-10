@@ -34,7 +34,7 @@ contains
 
         ! add the fluxes to the fractions by adding a distribution process
 
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use ProcesSet
         use timers       !   performance timers
 
@@ -78,7 +78,7 @@ contains
 
         ! loop over the processes
 
-        nproc = procesdef%cursize
+        nproc = procesdef%current_size
         do iproc = 1, nproc
 
             proc => procesdef%procesprops(iproc)
@@ -249,7 +249,7 @@ contains
                                     write(lunrep, *) 'error allocating work array in routine add_flxfrc:', ierr_alloc
                                     write(lunrep, *) 'array length:', procn%no_input, procn%no_fluxoutput, procn%no_fluxstochi
                                     write(*, *) 'error allocating array:', ierr_alloc
-                                    call srstop(1)
+                                    call stop_with_error()
                                 endif
 
                                 ! input on segments

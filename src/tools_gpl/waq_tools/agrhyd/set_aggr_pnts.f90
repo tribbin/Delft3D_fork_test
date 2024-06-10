@@ -21,8 +21,8 @@
 !!  of Stichting Deltares remain the property of Stichting Deltares. All
 !!  rights reserved.
 
-      subroutine set_aggr_pnts(input_hyd, ipnt_h , ipnt_v    , ipnt     , ipnt_vdf, & 
-                              ipnt_b   , nosegbt, output_hyd, l_regular, ipnt_tau, & 
+      subroutine set_aggr_pnts(input_hyd, ipnt_h , ipnt_v    , ipnt     , ipnt_vdf, &
+                              ipnt_b   , nosegbt, output_hyd, l_regular, ipnt_tau, &
                               l_expand , lunrep)
 
       ! function : set the aggregation pointer
@@ -31,20 +31,20 @@
 
       ! global declarations
 
-      use m_srstop
-      use hydmod
+      use m_logger_helper, only : stop_with_error
+      use m_hydmod
       implicit none
 
       ! declaration of the arguments
 
-      type(t_hyd)          :: input_hyd                             ! description of the input hydrodynamics
+      type(t_hydrodynamics)          :: input_hyd                             ! description of the input hydrodynamics
       integer              :: ipnt_h(input_hyd%nmax,input_hyd%mmax) ! horizontal aggregation
       integer              :: ipnt_v(input_hyd%kmax)                ! vertical aggregation
       integer              :: ipnt(input_hyd%noseg)                 ! aggregation pointer segments
       integer              :: ipnt_vdf(input_hyd%noseg)             ! aggregation pointer used for minimum vertical diffusion
       integer              :: nosegbt                               ! length aggregation pointer used for boundaries
       integer              :: ipnt_b(nosegbt)                       ! aggregation pointer used for boundaries
-      type(t_hyd)          :: output_hyd                            ! description of the output hydrodynamics
+      type(t_hydrodynamics)          :: output_hyd                            ! description of the output hydrodynamics
       logical              :: l_regular                             ! regular aggregartion option
       integer              :: ipnt_tau(input_hyd%noseg)             ! aggregation pointer used for tau
       logical              :: l_expand                              ! expand to full matrix
@@ -92,7 +92,7 @@
               enddo
           enddo
       endif
-      
+
       do m = 1 , input_hyd%mmax
          do n = 1 , input_hyd%nmax
             iseg = input_hyd%lgrid(n,m)
@@ -117,7 +117,7 @@
                      write(*,*) 'segment number before aggregation                 = ',iseg
                      write(*,*) 'segment number in aggregation                     = ',ipnt_h(n,m)
                      write(*,*) 'the same segment number was already aggregated to = ',ipnt(iseg)
-                     call srstop(1)
+                     call stop_with_error()
                   endif
                else
                   if ( ipnt_h(n,m) .eq. 0 ) then
@@ -162,7 +162,7 @@
                   write(*,*) 'n coordinate                                      = ',n
                   write(*,*) 'segment number before aggregation                 = ',iseg
                   write(*,*) 'segment number in aggregation                     = ',ipnt_h(n,m)
-                  call srstop(1)
+                  call stop_with_error()
                endif
             else
                if ( ipnt_h(n,m) .eq. 0 ) then
@@ -181,8 +181,8 @@
                   write(*,*) 'n coordinate                                      = ',n
                   write(*,*) 'segment number before aggregation                 = ',iseg
                   write(*,*) 'segment number in aggregation                     = ',ipnt_h(n,m)
-                  call srstop(1)
-               end if      
+                  call stop_with_error()
+               end if
             endif
          enddo
       enddo

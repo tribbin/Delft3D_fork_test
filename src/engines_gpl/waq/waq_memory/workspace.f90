@@ -24,7 +24,7 @@
 module workspace
 
     use m_waq_precision
-    use m_srstop
+    use m_logger_helper, only : stop_with_error
     USE memory_allocation, only : set_admin_array_indices, allocate_real_arrays, allocate_integer_arrays, &
             set_character_array_indices
 
@@ -131,7 +131,7 @@ CONTAINS
         if (ieflag ==    1) then
             write (logical_unit, 2040)
 
-            call srstop(1)
+            call stop_with_error()
         endif
         max_real_arr_size = itota
         max_int_arr_size = itoti
@@ -173,7 +173,7 @@ CONTAINS
         2020 FORMAT (' ERROR. Integer   array space exceeded !!! ', /, &
                 ' total integer array space: ', I10, ', allowed = ', I10)
         2030 FORMAT (' ERROR. Character array space exceeded !!! ', /, &
-                ' total Character*20  space: ', I10, ', allowed = ', I10)
+                ' total character(len=20)  space: ', I10, ', allowed = ', I10)
         2040 FORMAT (' EXECUTION HALTED, CONSULT YOUR SYSTEM MANAGER !!!')
 
     end subroutine set_array_indexes

@@ -1,47 +1,42 @@
 !----- GPL ---------------------------------------------------------------------
-!                                                                               
-!  Copyright (C)  Stichting Deltares, 2011-2024.                                
-!                                                                               
-!  This program is free software: you can redistribute it and/or modify         
-!  it under the terms of the GNU General Public License as published by         
-!  the Free Software Foundation version 3.                                      
-!                                                                               
-!  This program is distributed in the hope that it will be useful,              
-!  but WITHOUT ANY WARRANTY; without even the implied warranty of               
-!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                
-!  GNU General Public License for more details.                                 
-!                                                                               
-!  You should have received a copy of the GNU General Public License            
-!  along with this program.  If not, see <http://www.gnu.org/licenses/>.        
-!                                                                               
-!  contact: delft3d.support@deltares.nl                                         
-!  Stichting Deltares                                                           
-!  P.O. Box 177                                                                 
-!  2600 MH Delft, The Netherlands                                               
-!                                                                               
-!  All indications and logos of, and references to, "Delft3D" and "Deltares"    
-!  are registered trademarks of Stichting Deltares, and remain the property of  
-!  Stichting Deltares. All rights reserved.                                     
-!                                                                               
+!
+!  Copyright (C)  Stichting Deltares, 2011-2024.
+!
+!  This program is free software: you can redistribute it and/or modify
+!  it under the terms of the GNU General Public License as published by
+!  the Free Software Foundation version 3.
+!
+!  This program is distributed in the hope that it will be useful,
+!  but WITHOUT ANY WARRANTY; without even the implied warranty of
+!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!  GNU General Public License for more details.
+!
+!  You should have received a copy of the GNU General Public License
+!  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+!
+!  contact: delft3d.support@deltares.nl
+!  Stichting Deltares
+!  P.O. Box 177
+!  2600 MH Delft, The Netherlands
+!
+!  All indications and logos of, and references to, "Delft3D" and "Deltares"
+!  are registered trademarks of Stichting Deltares, and remain the property of
+!  Stichting Deltares. All rights reserved.
+!
 !-------------------------------------------------------------------------------
-!  
-!  
+!
+!
 
       subroutine write_src(hyd)
-
       ! function : write a src file
-
-      ! global declarations
-
-      use m_srstop
-      use m_monsys
-      use hydmod                   ! module contains everything for the hydrodynamics
+      use m_logger_helper, only : stop_with_error, get_log_unit_number
+      use m_hydmod                   ! module contains everything for the hydrodynamics
       use time_module, only: sec2ddhhmmss
       implicit none
 
       ! declaration of the arguments
 
-      type(t_hyd)                            :: hyd                   ! description of the hydrodynamics
+      type(t_hydrodynamics)                            :: hyd                   ! description of the hydrodynamics
 
       ! local declarations
 
@@ -62,18 +57,18 @@
       integer                                :: ibrk                  ! breakpoint index
       integer                                :: itime                 ! time in ddddhhmmss format
 
-      call getmlu(lunrep)
+      call get_log_unit_number(lunrep)
 
-      nowast = hyd%wasteload_coll%cursize
+      nowast = hyd%wasteload_coll%current_size
       if ( nowast .le. 0 ) return
       nolay  = hyd%nolay
-      nobrk  = hyd%wasteload_data%no_brk
+      nobrk  = hyd%wasteload_data%num_breakpoints
 
-      if ( nowast .ne. hyd%wasteload_data%no_loc ) then
+      if ( nowast .ne. hyd%wasteload_data%num_locations ) then
          write(lunrep,*) 'error, number of wasteloads in hyd file does not equal the data files'
          write(lunrep,*) 'number from hyd file:',nowast
-         write(lunrep,*) 'number from data    :',hyd%wasteload_data%no_loc
-         call srstop(1)
+         write(lunrep,*) 'number from data    :',hyd%wasteload_data%num_locations
+         call stop_with_error()
       endif
 
       if ( nolay .gt. 1 ) then
@@ -101,8 +96,8 @@
          waq_layers_frac = 1.0
       endif
 
-      call dlwqfile_open(hyd%file_src)
-      lunsrc = hyd%file_src%unit_nr
+      call hyd%file_src%open()
+      lunsrc = hyd%file_src%unit
 
       if ( hyd%wasteload_coll%l_seconds ) then
          write(lunsrc,*) 'SECONDS  ; seconds used as breakpoint time'
@@ -145,7 +140,7 @@
       enddo
       deallocate(waq_layers_frac)
 
-      close(hyd%file_src%unit_nr)
+      close(hyd%file_src%unit)
       hyd%file_src%status = FILE_STAT_UNOPENED
 
       return

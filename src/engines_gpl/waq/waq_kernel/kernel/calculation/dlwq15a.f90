@@ -79,7 +79,7 @@ contains
 
         !     Subroutines called  : wascal : the user specified wasteload dll
 
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use m_evaluate_waq_attribute
         use timers
         implicit none
@@ -193,7 +193,7 @@ contains
                     write(*, *) 'ERROR: allocating work array in DLWQ15'
                     write(*, *) 'ierr_alloc :', ierr_alloc
                     write(*, *) 'noseg,nowst:', noseg, nowst
-                    call SRSTOP(1)
+                    call stop_with_error()
                 endif
             endif
             IBpoint = 0
@@ -371,12 +371,12 @@ contains
                         if (btest(iknmrk(i1), 0)) then
                             select case (iwst)
                             case (-1)               ! surface processing
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 0 .or. ikmrk2 == 1) wflow(i1) = surf(i1)
                             case (-2)               ! bank processing
                                 wflow(i1) = length(i1)
                             case (-3)               ! bed processing
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 3 .or. ikmrk2 == 0) wflow(i1) = surf(i1)
                             end select
                         endif
@@ -418,12 +418,12 @@ contains
                         if (btest(iknmrk(i1), 0)) then
                             select case (iwst)
                             case (-1)
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 0 .or. ikmrk2 == 1) wflow(i1) = waste(0, i) * surf(i1)
                             case (-2)
                                 wflow(i1) = waste(0, i) * length(i1)
                             case (-3)
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 3 .or. ikmrk2 == 0) wflow(i1) = waste(0, i) * surf(i1)
                             end select
                         endif
@@ -465,12 +465,12 @@ contains
                         if (btest(iknmrk(i1), 0)) then
                             select case (iwst)
                             case (-1)
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 0 .or. ikmrk2 == 1) wflow(i1) = waste(0, i) * surf(i1)
                             case (-2)
                                 wflow(i1) = waste(0, i) * length(i1)
                             case (-3)
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 3 .or. ikmrk2 == 0) wflow(i1) = waste(0, i) * surf(i1)
                             end select
                         endif
@@ -503,12 +503,12 @@ contains
                         if (btest(iknmrk(i1), 0)) then
                             select case (iwst)
                             case (-1)
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 0 .or. ikmrk2 == 1) wflow(i1) = waste(0, i) * surf(i1)
                             case (-2)
                                 wflow(i1) = waste(0, i) * length(i1)
                             case (-3)
-                                call evaluate_waq_attribute(2, iknmrk(i1), ikmrk2)
+                                call extract_waq_attribute(2, iknmrk(i1), ikmrk2)
                                 if (ikmrk2 == 3 .or. ikmrk2 == 0) wflow(i1) = waste(0, i) * surf(i1)
                             end select
                         endif

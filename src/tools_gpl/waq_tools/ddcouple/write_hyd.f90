@@ -22,22 +22,19 @@
 !!  rights reserved.
 
       subroutine write_hyd(hyd, parallel)
-
       ! function : write a hydrodynamic description file
 
-      ! global declarations
-
-      use m_monsys
-      use hydmod
-      use :: m_hyd_keys, only: key, nokey     ! keywords in hydfile
-      use delwaq_version_module
-      use m_dattim
+      use m_logger_helper
+      use m_hydmod
+      use m_hyd_keys, only: key, nokey     ! keywords in hydfile
+      use ddcouple_version_module, only: getfullversionstring_ddcouple
+      use m_date_time_utils_external, only : write_date_time
 
       implicit none
 
       ! declaration of the arguments
 
-      type(t_hyd)         :: hyd                    ! description of the hydrodynamics
+      type(t_hydrodynamics)         :: hyd                    ! description of the hydrodynamics
       logical             :: parallel               ! parallel option, extra lines are removed
 
 
@@ -56,7 +53,7 @@
       integer                   :: i_dd_bound             ! index in collection
       type(t_dd_bound),pointer  :: dd_bound               ! one dd_bound description
 
-      character(Len=80) :: version_string_full
+      character(Len=80) :: version
       character(20)  rundat            !! Current date and time containing a combination of DATE and TIME
       character(21)  datetime          !! Date/time to be filled in the header
 
@@ -65,15 +62,15 @@
       character(len=2),parameter :: cqs = ''' '     ! quote with space
       character(len=2),parameter :: csq = ' '''     ! space with quote
 
-      call getmlu(lunrep)
+      call get_log_unit_number(lunrep)
 
-      call dlwqfile_open(hyd%file_hyd)
-      lunhyd = hyd%file_hyd%unit_nr
+      call hyd%file_hyd%open()
+      lunhyd = hyd%file_hyd%unit
 
-      call getfullversionstring_delwaq(version_string_full)
-      write(lunhyd,'(A,A)') 'file-created-by  '//trim(version_string_full(5:))
+      call getfullversionstring_ddcouple(version)
+      write(lunhyd,'(A,A)') 'file-created-by  '//trim(version)
 
-      call dattim(rundat)
+      call write_date_time(rundat)
       datetime = rundat(1:4)//'-'//rundat(6:7)//'-'//rundat(9:10)//','//rundat(11:19)
       write(lunhyd,'(A,A)') 'file-creation-date  '//datetime
 
@@ -166,7 +163,7 @@
       ! discharges
 
       write(lunhyd,'(a)') key(52)
-      do iwast = 1 , hyd%wasteload_coll%cursize
+      do iwast = 1 , hyd%wasteload_coll%current_size
          if ( hyd%wasteload_coll%wasteload_pnts(iwast)%type .eq. DLWQ_WASTE_NORMAL ) then
             wtype = key(58)
          elseif ( hyd%wasteload_coll%wasteload_pnts(iwast)%type .eq. DLWQ_WASTE_INLET ) then
@@ -187,7 +184,7 @@
 
       ! domains
 
-      n_domain = hyd%domain_coll%cursize
+      n_domain = hyd%domain_coll%current_size
       if ( n_domain .gt. 0 .and. .not. parallel) then
          write(lunhyd,'(a)') key(54)
          do i_domain = 1 , n_domain
@@ -202,7 +199,7 @@
 
       ! dd-boundaries
 
-      n_dd_bound = hyd%dd_bound_coll%cursize
+      n_dd_bound = hyd%dd_bound_coll%current_size
       if ( n_dd_bound .gt. 0 .and. .not. parallel) then
          write(lunhyd,'(a)') key(56)
          do i_dd_bound = 1 , n_dd_bound

@@ -30,7 +30,7 @@ contains
 
     SUBROUTINE DLWQT3 (ITIME, IPERIO, APHASE, AVALUE, NRHARM, &
             NOSUB, NOSPAC, IPOINT, NPOINT, RESULT, &
-            LUNTXT, LUNIN, LUNOUT, ISFLAG, IFFLAG, &
+            LUNTXT, input_file, LUNOUT, ISFLAG, IFFLAG, &
             UPDATE)
         !
         !     Deltares     SECTOR WATERRESOURCES AND ENVIRONMENT
@@ -39,10 +39,10 @@ contains
         !
         !     FUNCTION            : Makes harmonic function values.
         !
-        !     LOGICAL UNITNUMBERS : LUNIN file for initialisation of harmonics
+        !     LOGICAL UNITNUMBERS : input_file file for initialisation of harmonics
         !                           LUNOUT - monitor file
         !
-        !     SUBROUTINES CALLED  : SRSTOP, stops execution
+        !     SUBROUTINES CALLED  : stop_with_error, stops execution
         !
         !     PARAMETERS          :
         !
@@ -59,7 +59,7 @@ contains
         !     NPOINT  INTEGER       1     OUTPUT  last pointer in IPOINT
         !     RESULT  REAL     NOSUB*?    OUTPUT  function values at ITIME
         !     LUNTXT  CHAR*(*)      1     INPUT   text with unitnumber
-        !     LUNIN   INTEGER       1     INPUT   unit number intermediate file
+        !     input_file   INTEGER       1     INPUT   unit number intermediate file
         !     LUNOUT  INTEGER       1     INPUT   unit number monitor file
         !     ISFLAG  INTEGER       1     INPUT   = 1, 'DDHHMMSS' format
         !     IFFLAG  INTEGER       1     INPUT   = 1, first invocation
@@ -81,16 +81,16 @@ contains
         !
         !     DECLARATIONS        :
         !
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
         use timers
 
         real(kind = real_wp), PARAMETER :: TWOPI = 6.28319
         integer(kind = int_wp) :: IPERIO(*), IPOINT(*)
         real(kind = real_wp) :: APHASE(*), AVALUE(*), RESULT(NOSUB, *)
         integer(kind = int_wp) :: ITIME, NRHARM, NOSUB, NOSPAC, NPOINT, &
-                LUNIN, LUNOUT, ISFLAG, IFFLAG
+                input_file, LUNOUT, ISFLAG, IFFLAG
 
-        CHARACTER*(*) LUNTXT
+        character(len=*) LUNTXT
         LOGICAL       UPDATE
 
         integer(kind = int_wp) :: k, notot
@@ -119,14 +119,14 @@ contains
             !
             !         loop over the number of harmonics
             !
-            READ (LUNIN, END = 80, ERR = 80)   NOTOT, APHASE(IREC), &
+            READ (input_file, END = 80, ERR = 80)   NOTOT, APHASE(IREC), &
                     (AVALUE(K + NOSPAC), K = 1, NOTOT)
             NOSPAC = NOSPAC + NOTOT
             IPERIO(IREC) = NOTOT
             IHSTOP = APHASE(IREC) + 0.5
             IREC = IREC + 1
             DO IH = 1, IHSTOP
-                READ (LUNIN, END = 80, ERR = 80) IPERIO(IREC), APHASE(IREC), &
+                READ (input_file, END = 80, ERR = 80) IPERIO(IREC), APHASE(IREC), &
                         (AVALUE(K + NOSPAC), K = 1, NOTOT)
                 NOSPAC = NOSPAC + NOTOT
                 IREC = IREC + 1
@@ -158,7 +158,7 @@ contains
                 IF (IH == 1) THEN
                     FUNC = 1.0
                 ELSE
-                    FUNC = SIN((FLOAT(ITIME) / IPERIO(IREC) - APHASE(IREC)) * TWOPI)
+                    FUNC = SIN((real(ITIME) / IPERIO(IREC) - APHASE(IREC)) * TWOPI)
                 ENDIF
                 !
                 !         loop over the pointers and the values
@@ -184,20 +184,20 @@ contains
         !         errors during read
         !
         80 IF (ISFLAG == 1) THEN
-            WRITE(LUNOUT, 2020) LUNIN, LUNTXT, &
+            WRITE(LUNOUT, 2020) input_file, LUNTXT, &
                     ITIME / 86400, MOD(ITIME, 86400 / 3600), &
                     MOD(ITIME, 3600) / 60, MOD(ITIME, 60)
         ELSEIF (ISFLAG == 2) THEN
-            WRITE(LUNOUT, 2030) LUNIN, LUNTXT, &
+            WRITE(LUNOUT, 2030) input_file, LUNTXT, &
                     ITIME / 31536000, &
                     MOD(ITIME, 31536000) / 86400, &
                     MOD(ITIME, 86400) / 3600, &
                     MOD(ITIME, 3600) / 60, &
                     MOD(ITIME, 60)
         ELSE
-            WRITE(LUNOUT, 2010) LUNIN, LUNTXT, ITIME
+            WRITE(LUNOUT, 2010) input_file, LUNTXT, ITIME
         ENDIF
-        CALL SRSTOP(1)
+        CALL stop_with_error()
         9999 if (timon) call timstop (ithandl)
         RETURN
         !

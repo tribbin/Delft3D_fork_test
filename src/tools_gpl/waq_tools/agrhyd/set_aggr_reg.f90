@@ -29,14 +29,14 @@
 
       ! global declarations
 
-      use m_srstop
-      use hydmod
+      use m_logger_helper, only : stop_with_error
+      use m_hydmod
       implicit none
 
       ! declaration of the arguments
 
-      type(t_hyd)          :: input_hyd                             ! description of the input hydrodynamics
-      type(t_hyd)          :: output_hyd                            ! description of the output hydrodynamics
+      type(t_hydrodynamics)          :: input_hyd                             ! description of the input hydrodynamics
+      type(t_hydrodynamics)          :: output_hyd                            ! description of the output hydrodynamics
       integer              :: ipnt_h(input_hyd%nmax,input_hyd%mmax) ! horizontal aggregation
       integer              :: ipnt_v(input_hyd%kmax)                ! vertical aggregation
       integer              :: ipnt(input_hyd%noseg)                 ! aggregation pointer segments
@@ -81,7 +81,7 @@
                      write(*,*) 'iseg=:',iseg
                      write(*,*) 'ipnt=:',ipnt(iseg)
                      write(*,*) 'ipnt_h=:',ipnt_h(n,m)
-                     call srstop(1)
+                     call stop_with_error()
                   endif
 
                else
@@ -137,7 +137,7 @@
                   write(*,*) 'n=:',n
                   write(*,*) 'iseg=:',iseg
                   write(*,*) 'ipnt_h=:',ipnt_h(n,m)
-                  call srstop(1)
+                  call stop_with_error()
 
                endif
             endif

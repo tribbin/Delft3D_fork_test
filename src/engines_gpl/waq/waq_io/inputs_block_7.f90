@@ -32,33 +32,33 @@ module inputs_block_7
 
 contains
 
-    subroutine read_block_7_process_parameters (lun, lchar, filtype, inpfil, syname, &
+    subroutine read_block_7_process_parameters (file_unit_list, file_name_list, filtype, inpfil, syname, &
             iwidth, output_verbose_level, gridps, constants, chkpar, &
             status)
 
         !! Reads block 7 of input, process parameters
 
         use error_handling, only : check_error
-        use m_srstop
+        use m_logger_helper, only : stop_with_error
+        use m_string_utils, only : index_in_array
         use m_open_waq_files
-        use dlwqgrid_mod   ! for the storage of contraction grids
-        use dlwq_hyd_data  ! for definition and storage of data
+        use m_grid_utils_external   ! for the storage of contraction grids
+        use m_waq_data_structure  ! for definition and storage of data
         use rd_token       ! tokenized reading
         use partmem, only : alone, lsettl, layt        ! for the interface with Delpar (Tau and VertDisp)
         use timers       !   performance timers
         use m_sysn
+        use omp_lib
 
-        include 'omp_lib.h'
-
-        integer(kind = int_wp), intent(inout) :: lun(*)        !< unit numbers used
-        character(len = *), intent(inout) :: lchar(*)     !< filenames
+        integer(kind = int_wp), intent(inout) :: file_unit_list(*)        !< unit numbers used
+        character(len = *), intent(inout) :: file_name_list(*)     !< filenames
         integer(kind = int_wp), intent(inout) :: filtype(*)    !< type of binary file
-        type(inputfilestack), intent(inout) :: inpfil       !< input file structure with include stack and flags
+        type(t_input_file), intent(inout) :: inpfil       !< input file structure with include stack and flags
         character(len = *), intent(in) :: syname(*)    !< substance names
         integer(kind = int_wp), intent(in) :: iwidth        !< width of output
         integer(kind = int_wp), intent(in) :: output_verbose_level        !< level of reporting to ascii output file
         type(GridPointerColl), intent(in) :: GridPs       !< collection off all grid definitions
-        type(t_dlwq_item), intent(inout) :: constants    !< delwaq constants list
+        type(t_waq_item), intent(inout) :: constants    !< delwaq constants list
         logical, intent(in) :: chkpar(2)    !< check for SURF and LENGTH
 
         type(error_status) :: status !< current error status
@@ -66,13 +66,13 @@ contains
 
         !     local declarations
 
-        type(t_dlwqdatacoll) :: proc_pars            ! all the process parameters data from file
-        type(t_dlwqdata) :: dlwqdata             ! one data block
-        type(t_dlwq_item) :: substances           ! delwaq substances list
-        type(t_dlwq_item) :: parameters           ! delwaq parameters list
-        type(t_dlwq_item) :: functions            ! delwaq functions list
-        type(t_dlwq_item) :: segfuncs             ! delwaq segment-functions list
-        type(t_dlwq_item) :: segments             ! delwaq segments
+        type(t_data_column) :: proc_pars            ! all the process parameters data from file
+        type(t_data_block) :: dlwqdata             ! one data block
+        type(t_waq_item) :: substances           ! delwaq substances list
+        type(t_waq_item) :: parameters           ! delwaq parameters list
+        type(t_waq_item) :: functions            ! delwaq functions list
+        type(t_waq_item) :: segfuncs             ! delwaq segment-functions list
+        type(t_waq_item) :: segments             ! delwaq segments
         character(len = 255) :: ctoken               ! token from input
         character(len = 20) :: ch20                 ! name
         integer(kind = int_wp) :: itime                 ! time in scu (dummy used for constants)
@@ -93,19 +93,19 @@ contains
         !        Read initial conditions
 
         proc_pars%maxsize = 0
-        proc_pars%cursize = 0
-        ierr2 = dlwq_init(substances)
-        ierr2 = dlwq_resize(substances, notot)
+        proc_pars%current_size = 0
+        ierr2 = substances%initialize()
+        ierr2 = substances%resize(notot)
         substances%no_item = notot
         substances%name(1:notot) = syname(1:notot)
-        ierr2 = dlwq_init(constants)
-        ierr2 = dlwq_init(parameters)
-        ierr2 = dlwq_init(functions)
-        ierr2 = dlwq_init(segfuncs)
+        ierr2 = constants%initialize()
+        ierr2 = parameters%initialize()
+        ierr2 = functions%initialize()
+        ierr2 = segfuncs%initialize()
 
         nosss = noseg + nseg2
-        ierr2 = dlwq_init(segments)
-        ierr2 = dlwq_resize(segments, nosss)
+        ierr2 = segments%initialize()
+        ierr2 = segments%resize(nosss)
         segments%no_item = nosss
         do i = 1, nosss
             write (segments%name(i), '(''segment '',i8)') i
@@ -125,10 +125,10 @@ contains
                     ctoken == 'PARAMETERS'    .or. &
                     ctoken == 'SEG_FUNCTIONS') then
 
-                ! new file strucure
+                ! new file structure
 
                 push = .true.
-                call read_block (lun, lchar, filtype, inpfil, output_verbose_level, &
+                call read_block (file_unit_list, file_name_list, filtype, inpfil, output_verbose_level, &
                         iwidth, substances, constants, parameters, functions, &
                         segfuncs, segments, gridps, dlwqdata, ierr2, &
                         status)
@@ -139,39 +139,38 @@ contains
 
                 if (dlwqdata%subject == SUBJECT_CONSTANT) then
                     ch20 = 'NOVEC'
-                    inovec = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%no_param))
+                    inovec = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%num_parameters))
                     if (inovec > 0) then
                         novec = nint(dlwqdata%values(inovec, 1, 1))
-                        write(lunut, 2240)
-                        write(lunut, 2250) novec
+                        write(file_unit, 2240)
+                        write(file_unit, 2250) novec
                     endif
                     ch20 = 'NOTHREADS'
-                    inothr = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%no_param))
+                    inothr = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%num_parameters))
                     if (inothr > 0) then
                         nothrd = nint(dlwqdata%values(inothr, 1, 1))
-                        write(lunut, 2310)
-                        write(lunut, 2320) nothrd
+                        write(file_unit, 2310)
+                        write(file_unit, 2320) nothrd
                         if (nothrd > 0) call omp_set_num_threads(nothrd)
                         nothrd = omp_get_max_threads()
                     endif
                 endif
                 ch20 = 'TAU'
-                inovec = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%no_param))
+                inovec = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%num_parameters))
                 if (inovec > 0) taupart = .true.
                 ch20 = 'VERTDISPER'
-                inovec = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%no_param))
+                inovec = index_in_array(ch20, dlwqdata%param_name(:dlwqdata%num_parameters))
                 if (inovec > 0) vdfpart = .true.
 
                 ! add to the collection
-
-                idata = dlwqdataCollAdd(proc_pars, dlwqdata)
+                idata = proc_pars%add(dlwqdata)
 
             else
 
                 ! unrecognised keyword
 
                 if (ctoken(1:1) /= '#') then
-                    write (lunut, 2040) trim(ctoken)
+                    write (file_unit, 2040) trim(ctoken)
                     call status%increase_error_count()
                     goto 30
                 else
@@ -185,16 +184,16 @@ contains
         if (.not. alone) then              ! Delwaq runs with Delpar
             if (lsettl .or. layt > 1) then
                 if (taupart) then
-                    write (lunut, 2330)
+                    write (file_unit, 2330)
                 else
-                    write (lunut, 2340)
+                    write (file_unit, 2340)
                     call status%increase_warning_count()
                 endif
                 if (layt > 1) then
                     if (vdfpart) then
-                        write (lunut, 2350)
+                        write (file_unit, 2350)
                     else
-                        write (lunut, 2360)
+                        write (file_unit, 2360)
                         call status%increase_warning_count()
                     endif
                 endif
@@ -202,40 +201,37 @@ contains
         endif
 
         ! write to output and report files
-
         nocons = constants%no_item
         nopa = parameters%no_item
         nofun = functions%no_item
         nosfun = segfuncs%no_item
 
-        write (lunut, 2050) constants%no_item
-        write (lunut, 2060) parameters%no_item
-        write (lunut, 2070) functions%no_item
-        write (lunut, 2080) segfuncs%no_item
-        if (constants%no_item  > 0) write (lun(2)) (constants%name(i), i = 1, constants%no_item)
-        if (parameters%no_item > 0) write (lun(2)) (parameters%name(i), i = 1, parameters%no_item)
-        if (functions%no_item  > 0) write (lun(2)) (functions%name(i), i = 1, functions%no_item)
-        if (segfuncs%no_item   > 0) write (lun(2)) (segfuncs%name(i), i = 1, segfuncs%no_item)
+        write (file_unit, 2050) constants%no_item
+        write (file_unit, 2060) parameters%no_item
+        write (file_unit, 2070) functions%no_item
+        write (file_unit, 2080) segfuncs%no_item
+        if (constants%no_item  > 0) write (file_unit_list(2)) (constants%name(i), i = 1, constants%no_item)
+        if (parameters%no_item > 0) write (file_unit_list(2)) (parameters%name(i), i = 1, parameters%no_item)
+        if (functions%no_item  > 0) write (file_unit_list(2)) (functions%name(i), i = 1, functions%no_item)
+        if (segfuncs%no_item   > 0) write (file_unit_list(2)) (segfuncs%name(i), i = 1, segfuncs%no_item)
 
-        call open_waq_files(lun(16), lchar(16), 16, 1, ioerr)
-        write(lun(16)) ' 5.000PROCES'
-        write(lun(16)) proc_pars%cursize
-        do i = 1, proc_pars%cursize
-            ioerr = dlwqdataWrite(lun(16), proc_pars%dlwqdata(i))
+        call open_waq_files(file_unit_list(16), file_name_list(16), 16, 1, ioerr)
+        write(file_unit_list(16)) ' 5.000PROCES'
+        write(file_unit_list(16)) proc_pars%current_size
+        do i = 1, proc_pars%current_size
+            ioerr = proc_pars%data_block(i)%write(file_unit_list(16))
         enddo
-        close (lun(16))
+        close (file_unit_list(16))
 
-        !     evaluate constants for report in dlwqp1
-
+        ! evaluate constants for report in dlwqp1
         itime = 0
-        do i = 1, proc_pars%cursize
-            if (proc_pars%dlwqdata(i)%subject == SUBJECT_CONSTANT) then
-                ierr3 = dlwqdataevaluate(proc_pars%dlwqdata(i), gridps, itime, constants%no_item, 1, constants%constant)
+        do i = 1, proc_pars%current_size
+            if (proc_pars%data_block(i)%subject == SUBJECT_CONSTANT) then
+                ierr3 = proc_pars%data_block(i)%evaluate(gridps, itime, constants%no_item, 1, constants%constant)
             endif
         enddo
 
-        !     if necessary, check for the parameters SURF and LENGTH
-
+        ! if necessary, check for the parameters SURF and LENGTH
         if (chkpar(1)) then
             ch20 = 'SURF'
             special = index_in_array(ch20, parameters%name(:parameters%no_item))
@@ -243,7 +239,7 @@ contains
                 special = index_in_array(ch20, segfuncs%name(:segfuncs%no_item))
                 if (special <= 0) then
                     call status%increase_error_count()
-                    write(lunut, 2410)
+                    write(file_unit, 2410)
                 endif
             endif
         endif
@@ -255,28 +251,25 @@ contains
                 special = index_in_array(ch20, segfuncs%name(:segfuncs%no_item))
                 if (special <= 0) then
                     call status%increase_error_count()
-                    write(lunut, 2420)
+                    write(file_unit, 2420)
                 endif
             endif
         endif
 
-        !     proc_pars cleanup
-
-        ierr3 = dlwq_cleanup(substances)
-        ierr3 = dlwq_cleanup(parameters)
-        ierr3 = dlwq_cleanup(functions)
-        ierr3 = dlwq_cleanup(segfuncs)
-        ierr3 = dlwq_cleanup(segments)
+        ! proc_pars cleanup
+        ierr3 = substances%cleanup()
+        ierr3 = parameters%cleanup()
+        ierr3 = functions%cleanup()
+        ierr3 = segfuncs%cleanup()
+        ierr3 = segments%cleanup()
 
         30 continue
         if (ierr2 > 0 .and. ierr2 /= 2) call status%increase_error_count()
-        if (ierr2 == 3) call srstop(1)
+        if (ierr2 == 3) call stop_with_error()
         call check_error(ctoken, iwidth, 7, ierr2, status)
         if (timon) call timstop(ithndl)
+
         return
-        !
-        !       Output formats
-        !
         2040 FORMAT (/' ERROR, unrecognized token: ', A)
         2050 FORMAT(/' Total number of constants        : ', I4)
         2060 FORMAT(/' Total number of parameters       : ', I4)
@@ -292,7 +285,7 @@ contains
         2360 FORMAT (' WARNING: VertDisp not found. DELPAR will try to get its own VertDisp or compute it!')
         2410 FORMAT (/, ' ERROR: No parameter or segment function "SURF" found - needed for special waste loads!')
         2420 FORMAT (/, ' ERROR: No parameter or segment function "LENGTH" found - needed for special waste loads!')
-        !
-    END
+
+    END SUBROUTINE read_block_7_process_parameters
 
 end module inputs_block_7

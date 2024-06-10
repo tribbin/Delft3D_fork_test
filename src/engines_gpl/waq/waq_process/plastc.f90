@@ -8,7 +8,7 @@ contains
     subroutine PLASTC     (pmsa, fl, ipoint, increm, noseg, &
             noflux, iexpnt, iknmrk, noq1, noq2, &
             noq3, noq4)
-        use m_write_error_message
+        use m_logger_helper
         use m_evaluate_waq_attribute
 
         !XXXDEC$ ATTRIBUTES DLLEXPORT, ALIAS: 'PLASTC' :: PLASTC
@@ -128,8 +128,8 @@ contains
         ! files
         integer(kind = int_wp), save :: lu_bin
         integer(kind = int_wp), save :: lu_txt
-        character*80, parameter :: filbin = 'plastc_em.bin'
-        character*80, parameter :: filtxt = 'plastc_em.txt'
+        character(len=80), parameter :: filbin = 'plastc_em.bin'
+        character(len=80), parameter :: filtxt = 'plastc_em.txt'
 
         !     other
         logical first
@@ -245,7 +245,7 @@ contains
             ! PAVED SYSTEM -------- ----------------------------------------------
 
             iseg = isegl + (rec_pav - 1) * nosegl
-            call evaluate_waq_attribute(1, iknmrk(iseg), iatt1) ! pick up first attribute
+            call extract_waq_attribute(1, iknmrk(iseg), iatt1) ! pick up first attribute
             if (iatt1>0) then
 
                 ropaved = max(pmsa(ipnt(ip_ropaved)), 0.0)
@@ -269,21 +269,21 @@ contains
                 fluxwash = (plastic / delt + totflxin(nsubs, rec_pav) - fluxloss - fluxbur) * dble(fwashoff)
                 ! output velocities to move the substances
                 ioq = (pav2sfw - 1) * nosegl + isegl
-                pmsa(ipoint(offset_vel + nsubs) + increm(offset_vel + nsubs) * (ioq - 1)) = sngl(fluxwash)
+                pmsa(ipoint(offset_vel + nsubs) + increm(offset_vel + nsubs) * (ioq - 1)) = real(fluxwash)
                 ! increase the inflow balance of the downstream compartments
                 totflxin(nsubs, rec_sfw) = totflxin(nsubs, rec_sfw) + fluxwash
 
                 ! now set the fluxes
                 iflux = ifldec + (iseg - 1) * noflux
-                fl(iflux) = sngl(fluxloss)
+                fl(iflux) = real(fluxloss)
                 iflux = iflbur + (iseg - 1) * noflux
-                fl(iflux) = sngl(fluxbur)
+                fl(iflux) = real(fluxbur)
             endif
 
             ! UNPAVED SYSTEM ------------------------------------------------------------------------------------
 
             iseg = isegl + (rec_unp - 1) * nosegl
-            call evaluate_waq_attribute(1, iknmrk(iseg), iatt1) ! pick up first attribute
+            call extract_waq_attribute(1, iknmrk(iseg), iatt1) ! pick up first attribute
             if (iatt1>0) then
 
                 ! rounpaved = max(pmsa(ipnt(ip_rounpaved)),0.0)  THIS IS THE RIGHT STATEMENT AFTER CORRECTION OF BIN FILE
@@ -308,25 +308,25 @@ contains
                 fluxwash = (plastic / delt + totflxin(nsubs, rec_unp) - fluxloss - fluxbur) * dble(fwashoff)
                 ! output velocities to move the substances
                 ioq = (unp2sfw - 1) * nosegl + isegl
-                pmsa(ipoint(offset_vel + nsubs) + increm(offset_vel + nsubs) * (ioq - 1)) = sngl(fluxwash)
+                pmsa(ipoint(offset_vel + nsubs) + increm(offset_vel + nsubs) * (ioq - 1)) = real(fluxwash)
                 ! increase the inflow balance of the downstream compartments
                 totflxin(nsubs, rec_sfw) = totflxin(nsubs, rec_sfw) + fluxwash
                 ! now set the fluxes
                 iflux = ifldec + (iseg - 1) * noflux
-                fl(iflux) = sngl(fluxloss)
+                fl(iflux) = real(fluxloss)
                 iflux = iflbur + (iseg - 1) * noflux
-                fl(iflux) = sngl(fluxbur)
+                fl(iflux) = real(fluxbur)
 
             endif
 
             ! ENDPOINT SURFACE WATER
 
             iseg = isegl + (rec_sfw - 1) * nosegl
-            call evaluate_waq_attribute(1, iknmrk(iseg), iatt1) ! pick up first attribute
+            call extract_waq_attribute(1, iknmrk(iseg), iatt1) ! pick up first attribute
             if (iatt1>0) then
 
                 ! fluxes
-                fluxexp = sngl(totflxin(nsubs, rec_sfw))
+                fluxexp = real(totflxin(nsubs, rec_sfw))
                 ! routing
                 ioq = (sfw2exp - 1) * nosegl + isegl
                 pmsa(ipoint(offset_vel + nsubs) + increm(offset_vel + nsubs) * (ioq - 1)) = fluxexp

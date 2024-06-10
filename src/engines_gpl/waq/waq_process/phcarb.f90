@@ -90,7 +90,7 @@ contains
 
         !     Modules called : -
         !
-        use m_monsys
+        use m_logger_helper
         USE MOD_CHEMCONST
         USE MOD_ACBW_PHSOLVERS
         USE PHYSICALCONSTS, ONLY : CtoKelvin
@@ -181,7 +181,7 @@ contains
                 !     Error messages
 
                 IF (TIC < 1E-30) THEN
-                    CALL GETMLU(ILUMON)
+                    CALL get_log_unit_number(ILUMON)
                     IF (NR_MES < 10) THEN
                         NR_MES = NR_MES + 1
                         WRITE (ILUMON, *) 'WARNING :total carbonate <= 0', &
@@ -195,7 +195,7 @@ contains
                     TIC = 1E-30
                 ENDIF
                 IF (SAL < 1E-30) THEN
-                    CALL GETMLU(ILUMON)
+                    CALL get_log_unit_number(ILUMON)
                     IF (NRMES2 < 10) THEN
                         NRMES2 = NRMES2 + 1
                         WRITE (ILUMON, *) 'WARNING :salinity <= 0', &
@@ -209,7 +209,7 @@ contains
                     SAL = 1E-30
                 ENDIF
                 IF (SAL > 50.) THEN
-                    CALL GETMLU(ILUMON)
+                    CALL get_log_unit_number(ILUMON)
                     IF (NRMES4 < 10) THEN
                         NRMES4 = NRMES4 + 1
                         WRITE (ILUMON, *) 'WARNING :salinity => 50.', &
@@ -223,7 +223,7 @@ contains
                     SAL = 50.
                 ENDIF
                 IF (ALKA < 1E-30) THEN
-                    CALL GETMLU(ILUMON)
+                    CALL get_log_unit_number(ILUMON)
                     IF (NRMES3 < 10) THEN
                         NRMES3 = NRMES3 + 1
                         WRITE (ILUMON, *) 'WARNING: alkalinity <= 0', &
@@ -360,13 +360,13 @@ contains
                 ! Set temperature and salinity
                 CALL SETUP_API4PHTOT(DBLE(TEMPK), DBLE(SAL), 1.0D0)
                 ! First try the fast poly solver
-                AHPLUS = SNGL(SOLVE_ACBW_POLYFAST(DBLE(ALK), DBLE(TICM), DBLE(BT)))
+                AHPLUS = real(SOLVE_ACBW_POLYFAST(DBLE(ALK), DBLE(TICM), DBLE(BT)))
                 IF (AHPLUS < 0.0d0) THEN
                     ! If not succesfull try the normal poly solver
-                    AHPLUS = SNGL(SOLVE_ACBW_POLY(DBLE(ALK), DBLE(TICM), DBLE(BT)))
+                    AHPLUS = real(SOLVE_ACBW_POLY(DBLE(ALK), DBLE(TICM), DBLE(BT)))
                     IF (AHPLUS < 0.0d0) THEN
                         ! If still not succesfull use the robust solver
-                        AHPLUS = SNGL(SOLVE_ACBW_GENERAL(DBLE(ALK), DBLE(TICM), DBLE(BT)))
+                        AHPLUS = real(SOLVE_ACBW_GENERAL(DBLE(ALK), DBLE(TICM), DBLE(BT)))
                     ENDIF
                 ENDIF
                 PH = -LOG10(AHPLUS)

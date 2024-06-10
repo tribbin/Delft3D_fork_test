@@ -33,7 +33,7 @@ contains
         !>/File
         !>      sets processes for requested output
 
-        use m_monsys
+        use m_logger_helper
         use timers         !< performance timers
         use processet      !< processet definitions
         use results, only : OutputPointers         !< output definitions
@@ -59,13 +59,13 @@ contains
         ! set process on if output is requested and input ok
 
         write(line, '(a)') '# locating processes for requested output'
-        call monsys(line, 2)
+        call write_log_message(line)
         line = ' '
-        call monsys(line, 2)
+        call write_log_message(line)
 
-        nproc = procesdef%cursize
+        nproc = procesdef%current_size
 
-        do iou = 1, outputs%cursize
+        do iou = 1, outputs%current_size
 
             ! is the output undefined ( pointer -1 ) or from a proces
 
@@ -83,9 +83,9 @@ contains
                                 proc%active = .true.
 
                                 write (line, '(5a)') ' switching [', proc%name(1:10), '] on for output [', outputs%names(iou)(1:20), ']'
-                                call monsys(line, 4)
+                                call write_log_message(line)
                                 line = ' '
-                                call monsys(line, 4)
+                                call write_log_message(line)
                             endif
 
                             goto 300
