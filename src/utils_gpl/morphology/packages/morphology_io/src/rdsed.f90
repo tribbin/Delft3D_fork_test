@@ -1035,7 +1035,7 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
              if (namflocpop(i) == ' ') then
                 namflocpop(i) = namclay(l)
                 exit
-             enddo
+             endif
           enddo
           if (i > nflocpop) then
              errmsg = 'Too many different clay labels.'
