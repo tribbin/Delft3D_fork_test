@@ -1022,7 +1022,14 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
           if (sedtyp(l) /= SEDTYP_CLAY) cycle
           !
           do i = 1, nflocpop
-             if (namclay(l) == namflocpop(i) .or. namflocpop(i) == ' ') exit ! here it requires unique names in namclay() and namflocpop()
+             ! check if population name has already been encountered before
+             if (namclay(l) == namflocpop(i)) exit
+
+             ! if not, then insert it in the first empty slot
+             if (namflocpop(i) == ' ') then
+                namflocpop(i) = namclay(l)
+                exit
+             enddo
           enddo
           if (i > nflocpop) then
              errmsg = 'Too many different clay labels.'
