@@ -660,6 +660,12 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
              endif
              call prop_get(sedblock_ptr, '*', 'ClayLabel', namclay(l))
              call prop_get(sedblock_ptr, '*', 'FlocSize' , flocsize(l))
+             if (namclay(l) == ' ') then
+                errmsg = 'The ClayLabel string should not be empty for '//trim(namsed(l))
+                call write_error(errmsg, unit=lundia)
+                error = .true.
+                return
+             endif
           endif
           !
           rhosol(l) = rmissval
