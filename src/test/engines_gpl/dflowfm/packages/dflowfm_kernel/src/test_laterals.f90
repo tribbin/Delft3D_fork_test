@@ -411,7 +411,7 @@ subroutine test_distribute_lateral_discharge_per_layer_per_cell
    n2latsg = [2,4]
 
    ! Initialize lateral volume per layer and discharge per layer.
-   call realloc(lateral_volume_per_layer, [kmx, numlatsg] stat=ierr, keepExisting=.false., fill=0d0)
+   call realloc(lateral_volume_per_layer, [kmx, numlatsg], stat=ierr, keepExisting=.false., fill=0d0)
    call aerr('lateral_volume_per_layer', ierr, kmx*numlatsg, 'test_distribute_lateral_discharge_per_layer_per_cell')
    call realloc(provided_lateral_discharge_per_layer, [kmx, numlatsg], stat=ierr, keepExisting=.false., fill=0d0)
    call aerr('provided_lateral_discharge_per_layer', ierr, kmx*numlatsg, 'test_distribute_lateral_discharge_per_layer_per_cell')
