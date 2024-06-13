@@ -32,7 +32,7 @@
 
 !> extract constituent array
 subroutine extract_constituents()
-   use precision
+   use precision, only: dp
    use m_transport
    use m_flow
    use m_flowgeom

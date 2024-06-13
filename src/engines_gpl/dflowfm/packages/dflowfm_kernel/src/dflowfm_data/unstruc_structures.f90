@@ -1876,7 +1876,7 @@ subroutine calc_midpoint_coords_of_set_of_flowlinks(links, xmid, ymid)
    use MessageHandling, only: mess, LEVEL_ERROR
    use m_flowgeom, only: kcu, wu, lncn, xu, yu
    use network_data, only: xk, yk
-   use precision_basics, only: comparereal
+   use precision_basics, only: comparereal, dp
    
    integer, dimension(:), intent(in   ) :: links !< The set of flowlinks
    real(dp),              intent(  out) :: xmid  !< x-coordinate of the midpoint

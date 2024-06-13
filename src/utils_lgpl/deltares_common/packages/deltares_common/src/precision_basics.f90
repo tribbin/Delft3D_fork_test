@@ -125,14 +125,14 @@ integer :: comparerealdouble
 !
 ! Global variables
 !
-real(kind=hp), intent(in)           :: val1
-real(kind=hp), intent(in)           :: val2
-real(kind=hp), optional, intent(in) :: eps
+real(kind=dp), intent(in)           :: val1
+real(kind=dp), intent(in)           :: val2
+real(kind=dp), optional, intent(in) :: eps
 !
 ! Local variables
 !
-real(kind=hp) :: eps0
-real(kind=hp) :: value
+real(kind=dp) :: eps0
+real(kind=dp) :: value
 !
 !! executable statements -------------------------------------------------------
 !
@@ -241,14 +241,14 @@ integer :: compare
 !
 ! Global variables
 !
-real(kind=hp), intent(in)           :: val1
-real(kind=hp), intent(in)           :: val2
+real(kind=dp), intent(in)           :: val1
+real(kind=dp), intent(in)           :: val2
 logical,       intent(in)           :: check_finite
-real(kind=hp), optional, intent(in) :: eps
+real(kind=dp), optional, intent(in) :: eps
 !
 ! Local variables
 !
-real(kind=hp) :: value
+real(kind=dp) :: value
 !
 !! executable statements -------------------------------------------------------
 !
