@@ -405,7 +405,7 @@ implicit none
                   iconst = findname(NUMCONST, const_names, sfnam)
                end if
                if (iconst>0) then
-                  if ( allocated(viuh) ) deallocate(viuh)     ! _extmy array
+                  if ( allocated(viuh) ) deallocate(viuh)
                   allocate(viuh(Ndkx))
 
                   !          copy existing values (if they existed) in temp array
