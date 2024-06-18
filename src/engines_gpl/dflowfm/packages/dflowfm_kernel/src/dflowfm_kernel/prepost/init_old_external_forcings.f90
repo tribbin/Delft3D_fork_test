@@ -28,6 +28,7 @@ implicit none
    use m_ec_spatial_extrapolation, only: init_spatial_extrapolation
    use unstruc_inifields, only: set_friction_type_values
    use timers, only: timstop, timstrt
+   use m_lateral_helper_fuctions, only: prepare_lateral_mask
    
    integer, intent(out) :: iresult
    integer :: ja, method, lenqidnam, ierr, ilattype, inivelx, inively, isednum, kk, k, kb, kt, iconst

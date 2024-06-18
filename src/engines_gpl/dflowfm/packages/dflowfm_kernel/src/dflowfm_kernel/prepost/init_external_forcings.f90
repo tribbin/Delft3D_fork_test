@@ -54,6 +54,7 @@ contains
  use m_partitioninfo, only: jampi, reduce_sum, is_ghost_node
  use m_lateral, only : apply_transport
  use m_flow, only: kmx
+ use m_lateral_helper_fuctions, only: prepare_lateral_mask
 
  character(len=*), intent(in)  :: external_force_file_name   !< file name for new external forcing boundary blocks
  logical                       :: res
