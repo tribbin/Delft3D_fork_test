@@ -86,8 +86,12 @@ class TestSetRunner(ABC):
         )
 
         log_separator(self.__logger, char="-", with_new_line=True)
-
-        self.show_summary(results, self.__logger)
+        if results:
+            self.show_summary(results, self.__logger)
+        else:
+            self.__logger.info("No test results to summarize.")
+            if self.settings.filter:
+                self.__logger.info(f"Perhaps the filter argument {self.settings.filter} is not correct?")
         self.__duration = datetime.now() - start_time
 
     def run_tests_sequentially(self) -> List[TestCaseResult]:
