@@ -79,19 +79,15 @@ class TestSetRunner(ABC):
         self.__download_dependencies()
         log_sub_header("Running tests", self.__logger)
 
-        results = (
-            self.run_tests_in_parallel()
-            if self.__settings.parallel
-            else self.run_tests_sequentially()
-        )
+        results = self.run_tests_in_parallel() if self.__settings.parallel else self.run_tests_sequentially()
 
         log_separator(self.__logger, char="-", with_new_line=True)
         if results:
             self.show_summary(results, self.__logger)
         else:
-            self.__logger.info("No test results to summarize.")
-            if self.settings.filter:
-                self.__logger.info(f"Perhaps the filter argument {self.settings.filter} is not correct?")
+            self.__logger.error("No test results to summarize.")
+            if self.settings.filter and len(self.settings.configs_from_xml) != len(self.settings.configs_to_run):
+                self.__logger.warning(f"Perhaps the filter argument {self.settings.filter} is not correct?")
         self.__duration = datetime.now() - start_time
 
     def run_tests_sequentially(self) -> List[TestCaseResult]:
@@ -101,10 +97,10 @@ class TestSetRunner(ABC):
         Returns:
             List[TestCaseResult]: list of test results
         """
-        n_testcases = len(self.__settings.configs)
+        n_testcases = len(self.__settings.configs_to_run)
         results: List[TestCaseResult] = []
 
-        for i_testcase, config in enumerate(self.__settings.configs):
+        for i_testcase, config in enumerate(self.__settings.configs_to_run):
             run_data = RunData(i_testcase + 1, n_testcases)
 
             try:
@@ -125,9 +121,9 @@ class TestSetRunner(ABC):
         Returns:
             List[TestCaseResult]: list of test results
         """
-        n_testcases = len(self.__settings.configs)
+        n_testcases = len(self.__settings.configs_to_run)
 
-        config_process_count = sum(config.process_count for config in self.__settings.configs)
+        config_process_count = sum(config.process_count for config in self.__settings.configs_to_run)
         max_processes = min(config_process_count, multiprocessing.cpu_count())
         self.__logger.info(f"Creating {max_processes} processes to run test cases on.")
         process_manager = multiprocessing.Manager()
@@ -139,7 +135,7 @@ class TestSetRunner(ABC):
             in_use = process_manager.Value('i', 0)
             idle_process = process_manager.Condition()
 
-            for i_testcase, config in enumerate(self.__settings.configs):
+            for i_testcase, config in enumerate(self.__settings.configs_to_run):
                 run_data = RunData(i_testcase + 1, n_testcases)
 
                 with idle_process:
@@ -314,7 +310,7 @@ class TestSetRunner(ABC):
     def __log_failed_test(self, exception: BaseException):
         self.finished_tests += 1
         self.__logger.exception(
-            f"Error running ({self.finished_tests}/{len(self.__settings.configs)}): {repr(exception)}"
+            f"Error running ({self.finished_tests}/{len(self.__settings.configs_to_run)}): {repr(exception)}"
         )
 
     def __check_for_skipping(self, config: TestCaseConfig):
@@ -338,7 +334,7 @@ class TestSetRunner(ABC):
         return skip_testcase, skip_postprocessing
 
     def __download_dependencies(self):
-        configs_to_handle = [c for c in self.__settings.configs if c.dependency]
+        configs_to_handle = [c for c in self.__settings.configs_to_run if c.dependency]
         if len(configs_to_handle) == 0:
             return
 

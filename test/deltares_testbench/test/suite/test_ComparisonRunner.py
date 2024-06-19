@@ -30,7 +30,7 @@ class TestComparisonRunner:
         settings.skip_run = True
         config = TestComparisonRunner.create_test_case_config("Name_1", False)
         config.path = TestCasePath("abc/prefix", "v1")
-        settings.configs = [config]
+        settings.configs_to_run = [config]
         logger = MagicMock(spec=ConsoleLogger)
         testcase_logger = MagicMock()
         logger.create_test_case_logger.return_value = testcase_logger
@@ -56,7 +56,7 @@ class TestComparisonRunner:
         settings.skip_run = True
         config = TestComparisonRunner.create_test_case_config("Name_1", False, PathType.INPUT)
         config.path = TestCasePath("abc/prefix", "v1")
-        settings.configs = [config]
+        settings.configs_to_run = [config]
         logger = MagicMock(spec=ConsoleLogger)
         testcase_logger = MagicMock()
         logger.create_test_case_logger.return_value = testcase_logger
@@ -80,7 +80,7 @@ class TestComparisonRunner:
         settings.skip_download = [PathType.INPUT]
         config = TestComparisonRunner.create_test_case_config("Name_1", False, PathType.INPUT)
         config.path = TestCasePath("abc/prefix", "v1")
-        settings.configs = [config]
+        settings.configs_to_run = [config]
         logger = MagicMock(spec=ConsoleLogger)
         testcase_logger = MagicMock()
         logger.create_test_case_logger.return_value = testcase_logger
@@ -103,7 +103,7 @@ class TestComparisonRunner:
     def test_run_tests_in_parallel_with_empty_settings_raises_value_error(self) -> None:
         # Arrange
         settings = TestBenchSettings()
-        settings.configs = []
+        settings.configs_to_run = []
         logger = ConsoleLogger(LogLevel.INFO)
         runner = ComparisonRunner(settings, logger)
 
@@ -121,7 +121,7 @@ class TestComparisonRunner:
         settings = TestBenchSettings()
         config1 = TestComparisonRunner.create_test_case_config("Name_1", True)
         config2 = TestComparisonRunner.create_test_case_config("Name_2", False)
-        settings.configs = [config1, config2]
+        settings.configs_to_run = [config1, config2]
         logger = ConsoleLogger(LogLevel.INFO)
         runner = ComparisonRunner(settings, logger)
 
@@ -146,14 +146,16 @@ class TestComparisonRunner:
         runner.run()
 
         # Assert
-        assert call("No test results to summarize.") in logger.info.call_args_list
+        assert call("No test results to summarize.") in logger.error.call_args_list
 
-    def test_run_without_test_cases_due_to_filter_logs_no_results_with_filter_suggestion(self, mocker: MockerFixture) -> None:
+    def test_run_without_test_cases_due_to_filter_logs_no_results_with_filter_suggestion(
+        self, mocker: MockerFixture
+    ) -> None:
         # Arrange
         settings = TestBenchSettings()
         config1 = TestComparisonRunner.create_test_case_config("Banana_1", True)
         config2 = TestComparisonRunner.create_test_case_config("Banana_2", False)
-        settings.configs = [config1, config2]
+        settings.configs_from_xml = [config1, config2]
         settings.local_paths = LocalPaths()
         settings.parallel = False
         settings.filter = "testcase=Apple"
@@ -163,15 +165,15 @@ class TestComparisonRunner:
 
         # Act
         if settings.filter != "":
-            settings.configs = XmlConfigParser.filter_configs(
-                settings.configs, settings.filter, logger
+            settings.configs_to_run = XmlConfigParser.filter_configs(
+                settings.configs_from_xml, settings.filter, logger
             )
 
         runner.run()
 
         # Assert
-        assert call("No test results to summarize.") in logger.info.call_args_list
-        assert call(f"Perhaps the filter argument {settings.filter} is not correct?") in logger.info.call_args_list
+        assert call("No test results to summarize.") in logger.error.call_args_list
+        assert call(f"Perhaps the filter argument {settings.filter} is not correct?") in logger.warning.call_args_list
 
     @staticmethod
     def create_test_case_config(name: str, ignore: bool, type=PathType.REFERENCE) -> TestCaseConfig:
