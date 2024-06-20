@@ -31,7 +31,7 @@ implicit none
    use m_lateral_helper_fuctions, only: prepare_lateral_mask
    
    integer, intent(out) :: iresult
-   integer :: ja, method, lenqidnam, ierr, ilattype, inivelx, inively, isednum, kk, k, kb, kt, iconst
+   integer :: ja, method, lenqidnam, ierr, ilattype, isednum, kk, k, kb, kt, iconst
    integer :: ec_item, iwqbot, layer, ktmax, idum, mx, imba, itrac
    integer                       :: numz, numu, numq, numg, numd, numgen, npum, numklep, numvalv, nlat, jaifrcutp
    double precision               :: maxSearchRadius

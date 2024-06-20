@@ -532,6 +532,7 @@ subroutine default_fm_external_forcing_data()
     nubnd = 0
     numsrc  = 0
     numsrc_nf = 0
+    
 end subroutine default_fm_external_forcing_data
 
 end module fm_external_forcings_data
