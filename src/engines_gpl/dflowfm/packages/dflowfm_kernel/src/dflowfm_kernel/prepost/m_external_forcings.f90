@@ -38,7 +38,7 @@ integer            :: num_registered_items = 0
 interface
    module subroutine set_external_forcings_boundaries(time,iresult)
    double precision, intent(in)    :: time    !< current simulation time (s)
-   integer,          intent(out)   :: iresult !< Integer error status: DFM_NOERR==0 if succesful.
+   integer,          intent(out)   :: iresult !< Integer error status
    end subroutine set_external_forcings_boundaries
 end interface
 
