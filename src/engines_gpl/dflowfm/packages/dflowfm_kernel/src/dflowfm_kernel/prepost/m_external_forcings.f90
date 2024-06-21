@@ -2711,7 +2711,7 @@ use unstruc_inifields, only: initinitialfields
    
    !> Clean up after initialization, deallocate temporary arrays and check for any deprecated or not accessed keywords.
    subroutine initialize_ext_finalize()
-   use m_flowgeom, only: ndx, lnx, csu, snu, jagrounlay, wigr, argr, pergr, lnx1d, grounlay, grounlayuni, prof1d, ndxi, lnxi, ln, ba, bare, ndx2d, kcu, dx, bl, kcs, xz, yz, kcsini
+   use m_flowgeom, only: ndx, lnx, csu, snu, jagrounlay, wigr, argr, pergr, lnx1d, grounlay, grounlayuni, prof1d, ndxi, lnxi, ln, ba, bare, ndx2d, kcu, dx, bl, kcs, xz, yz
    use m_flowtimes, only: ti_mba
    use m_storage, only: t_storage, get_surface
    use m_structures, only: network

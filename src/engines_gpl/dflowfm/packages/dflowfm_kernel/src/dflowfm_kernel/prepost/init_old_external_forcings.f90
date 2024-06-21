@@ -9,7 +9,7 @@ implicit none
    module subroutine init_external_forcings_old(iresult)
    
    use m_flowtimes, only: handle_extra, irefdate, tunit, tstart_user, tim1fld, ti_mba
-   use m_flowgeom, only: lnx, ndx, xz, yz, xu, yu, iadv, ibot, kcsini, ndxi, lnx1d, grounlay, jagrounlay, kcs, ln
+   use m_flowgeom, only: lnx, ndx, xz, yz, xu, yu, iadv, ibot, ndxi, lnx1d, grounlay, jagrounlay, kcs, ln
    use m_inquire_flowgeom, only: IFLTP_1D, IFLTP_ALL
    use m_netw, only: xk, yk, zk, numk, numl
    use unstruc_model, only: md_extfile_dir, md_inifieldfile, md_extfile

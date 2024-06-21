@@ -56,7 +56,6 @@ contains
       use m_flow, only: kmx
       use m_deprecation, only: check_file_tree_for_deprecated_keywords
       use fm_deprecated_keywords, only: deprecated_ext_keywords
-      
       use m_lateral_helper_fuctions, only: prepare_lateral_mask
 
       character(len=*), intent(in)  :: external_force_file_name   !< file name for new external forcing boundary blocks
