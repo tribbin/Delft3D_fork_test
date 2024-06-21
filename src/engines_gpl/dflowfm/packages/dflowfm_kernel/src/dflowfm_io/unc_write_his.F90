@@ -263,11 +263,11 @@ subroutine unc_write_his(tim)            ! wrihis
 
         if (stm_included .and. jahissed > 0) then
            if ( ISED1 > 0 ) then
-              ! New implementation, sedsus fraction is additional dimension
-              call check_netcdf_error( nf90_def_dim(ihisfile, 'nSedTot', stmpar%lsedtot, id_sedtotdim))
               call check_netcdf_error( nf90_def_dim(ihisfile, 'nSedSus', stmpar%lsedsus, id_sedsusdim))
-              call definencvar(ihisfile, id_frac_name, nf90_char, (/ id_strlendim, id_sedtotdim /), 'sedfrac_name', 'sediment fraction identifier')
            end if
+           ! New implementation, sedsus fraction is additional dimension
+           call check_netcdf_error( nf90_def_dim(ihisfile, 'nSedTot', stmpar%lsedtot, id_sedtotdim))
+           call definencvar(ihisfile, id_frac_name, nf90_char, (/ id_strlendim, id_sedtotdim /), 'sedfrac_name', 'sediment fraction identifier')
            if (jased > 0 .and. stmpar%morlyr%settings%iunderlyr==2) then
               call check_netcdf_error( nf90_def_dim(ihisfile, 'nBedLayers', stmpar%morlyr%settings%nlyr, id_nlyrdim))
            end if
