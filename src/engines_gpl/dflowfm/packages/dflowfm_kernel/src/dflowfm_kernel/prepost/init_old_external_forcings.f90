@@ -47,14 +47,20 @@ implicit none
    double precision, allocatable  :: viuh(:), tt(:)
    integer, dimension(:), pointer :: pkbot, pktop
    double precision               :: factor
-   double precision,  external   :: ran0
-   character (len=256)           :: rec
-   integer, allocatable          :: mask(:)
+   double precision,  external    :: ran0
+   character (len=256)            :: rec
+   integer, allocatable           :: mask(:)
+   double precision, allocatable  :: xdum(:), ydum(:)
+   integer, allocatable           :: kdum(:)
    
    ! Finish with all remaining old-style ExtForceFile quantities.
    if (mext == 0) then
       return
    endif
+   
+   allocate ( xdum(1), ydum(1), kdum(1), stat=ierr)
+   call aerr('xdum(1), ydum(1), kdum(1)', ierr, 3)
+   xdum = 1d0 ; ydum = 1d0; kdum = 1
    
       call timstrt('Init ExtForceFile (old)', handle_extra(50)) ! extforcefile old
       ja = 1
@@ -1092,7 +1098,7 @@ implicit none
                kx = 2
                nshiptxy = nshiptxy + 1
                ! Converter will put 'x' in array(2*nshiptxy-1) and 'y' in array(2*nshiptxy). en welke array is dat?
-               success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename, filetype, method, operand, targetIndex = nshiptxy)
+               success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename, filetype, method, operand, targetIndex = nshiptxy)
 
             else if (qid == 'movingstationtxy') then
                kx = 2
@@ -1102,7 +1108,7 @@ implicit none
                call addMovingObservation(dmiss, dmiss, rec)
 
                ! Converter will put 'x' in array(2*nummovobs-1) and 'y' in array(2*nummovobs).
-               success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename, filetype, method, operand, targetIndex=nummovobs)
+               success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename, filetype, method, operand, targetIndex=nummovobs)
 
             else if (qid(1:15) == 'massbalancearea' .or. qid(1:18) == 'waqmassbalancearea') then
                if (ti_mba > 0) then
@@ -1146,7 +1152,7 @@ implicit none
                success  =  .true.
 
             else if (qid(1:11) == 'waqfunction') then
-               success = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename, filetype, method, operand)
+               success = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename, filetype, method, operand)
 
             else if (qid(1:18) == 'waqsegmentfunction') then
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
@@ -1340,7 +1346,13 @@ implicit none
       logical :: exist
       double precision, allocatable :: hulp(:,:) 
       double precision, allocatable :: widths(:) 
-
+      double precision, allocatable :: xdum(:), ydum(:)
+      integer, allocatable          :: kdum(:)
+      
+      allocate ( xdum(1), ydum(1), kdum(1), stat=ierr)
+      call aerr('xdum(1), ydum(1), kdum(1)', ierr, 3)
+      xdum = 1d0 ; ydum = 1d0; kdum = 1
+      
       ! If no source/sink exists, then do not write related statistics to His-file
       if (numsrc < 0) then
          jahissourcesink = 0
@@ -1404,7 +1416,7 @@ implicit none
                inquire (file = trim(filename0), exist = exist)
                if (exist) then
                   filetype0 = uniform            ! uniform=single time series vectormax = 1
-                  success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ngatesg)
+                  success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ngatesg)
                else
                   write (msgbuf, '(a,a,a)') 'No .tim-series file found for quantity gateloweredgelevel and file ''', trim(filename), '''. Keeping fixed (open) gate level.'
                   call warn_flush()
@@ -1459,7 +1471,7 @@ implicit none
                inquire (file = trim(filename0), exist = exist)
                if (exist) then
                   filetype0 = uniform            ! uniform=single time series vectormax = 1
-                  success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncdamsg)
+                  success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncdamsg)
                else
                   write (msgbuf, '(a,a,a)') 'No .tim-series file found for quantity damlevel and file ''', trim(filename), '''. Keeping fixed (closed) dam level.'
                   call warn_flush()
@@ -1593,7 +1605,7 @@ implicit none
                inquire (file = trim(filename0), exist = exist)
                if (exist) then
                   filetype0 = uniform            ! uniform=single time series vectormax = kx = 3
-                  success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncgensg)
+                  success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncgensg)
                else
                   write (msgbuf, '(a,a,a)') 'No .tim-series file found for quantity generalstructure and file ''', trim(filename), '''. Keeping fixed (closed) general structure.'
                   call warn_flush()
@@ -1696,7 +1708,7 @@ implicit none
                   method = min(1, method)        ! only method 0 and 1 are allowed, methods > 1 are set to 1 (no spatial interpolation possible here).
                   ! Converter will put 'qsrc, sasrc and tmsrc' values in array qstss on positions: (3*numsrc-2), (3*numsrc-1), and (3*numsrc), respectively.
                   call clearECMessage()
-                  if (.not.ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method, operand='O', targetIndex=numsrc)) then
+                  if (.not.ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method, operand='O', targetIndex=numsrc)) then
                      msgbuf = 'Connecting time series file ''' // trim(filename0) // ''' and polyline file ''' // trim(filename) &
                                                             // '''. for source/sinks failed:' // dumpECMessageStack(LEVEL_WARN,callback_msg)
                      call warn_flush()
