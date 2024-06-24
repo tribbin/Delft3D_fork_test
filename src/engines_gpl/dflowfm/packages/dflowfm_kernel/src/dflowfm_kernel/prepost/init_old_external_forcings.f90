@@ -31,10 +31,11 @@ implicit none
    use timers, only: timstop, timstrt
    use m_lateral_helper_fuctions, only: prepare_lateral_mask
    
-   integer, intent(out) :: iresult
+   integer, intent(inout) :: iresult !< integer error code, is preserved in case earlier errors occur.
+   
    integer :: ja, method, lenqidnam, ierr, ilattype, isednum, kk, k, kb, kt, iconst
    integer :: ec_item, iwqbot, layer, ktmax, idum, mx, imba, itrac
-   integer                       :: numz, numu, numq, numg, numd, numgen, npum, numklep, numvalv, nlat, jaifrcutp
+   integer                        :: numz, numu, numq, numg, numd, numgen, npum, numklep, numvalv, nlat, jaifrcutp
    double precision               :: maxSearchRadius
    character(len=256)             :: filename, sourcemask
    character (len=64)             :: varname
@@ -1329,7 +1330,8 @@ implicit none
       use m_sobekdfm, only: init_1d2d_boundary_points 
       use unstruc_files, only: resolvepath
       
-      integer, intent(out) :: iresult
+      integer, intent(inout) :: iresult !< integer error code, is preserved in case earlier errors occur.
+      
       integer :: ierr
       integer :: k, L, LF, KB, KBI, N, K2, ja, method, filetype0, num_layers
       integer :: k1, l1, l2
