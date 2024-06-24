@@ -1730,8 +1730,8 @@ use unstruc_inifields, only: initialize_initial_fields
    call realloc(lnxbnd, lnx-lnxi, keepExisting = .false., fill = 0)
 
    if (nbndz > 0) then                                 ! now you know the elementsets for the waterlevel bnds
-      allocate ( xbndz(nbndz), ybndz(nbndz), xy2bndz(2,nbndz), zbndz(nbndz), kbndz(n4,nbndz), zbndz0(nbndz), kdz(nbndz) , stat=ierr     )
-      call aerr('xbndz(nbndz), ybndz(nbndz), xy2bndz(2,nbndz), zbndz(nbndz), kbndz(n4,nbndz), zbndz0(nbndz), kdz(nbndz)', ierr, nbndz*10 )
+      allocate ( xbndz(nbndz), ybndz(nbndz), xy2bndz(2,nbndz), zbndz(nbndz), kbndz(N4,nbndz), zbndz0(nbndz), kdz(nbndz) , stat=ierr     )
+      call aerr('xbndz(nbndz), ybndz(nbndz), xy2bndz(2,nbndz), zbndz(nbndz), kbndz(N4,nbndz), zbndz0(nbndz), kdz(nbndz)', ierr, nbndz*10 )
       if (jased > 0 .and. jaceneqtr == 2 .and. .not. stm_included) then
          if (allocated(zkbndz) ) deallocate (zkbndz, kbanz)
          allocate ( zkbndz(2,nbndz) ,stat= ierr    )
@@ -1817,8 +1817,8 @@ use unstruc_inifields, only: initialize_initial_fields
 
    ! allocate the following even if not needed (for debugging purposes)
    tmp_nbndu = max(nbndu,1)
-   allocate ( xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(n4,tmp_nbndu), kdu(tmp_nbndu) , stat=ierr)
-   call aerr('xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(n4,tmp_nbndu), kdu(tmp_nbndu)', ierr, tmp_nbndu*(n4+5) )
+   allocate ( xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(N4,tmp_nbndu), kdu(tmp_nbndu) , stat=ierr)
+   call aerr('xbndu(tmp_nbndu), ybndu(tmp_nbndu), xy2bndu(2,tmp_nbndu), kbndu(N4,tmp_nbndu), kdu(tmp_nbndu)', ierr, tmp_nbndu*(N4+5) )
    if (jased > 0 .and. jaceneqtr == 2 .and. .not. stm_included) then
        if (allocated (zkbndu) ) deallocate(zkbndu, kbanu)
        allocate ( zkbndu(2,tmp_nbndu) , stat= ierr    )
