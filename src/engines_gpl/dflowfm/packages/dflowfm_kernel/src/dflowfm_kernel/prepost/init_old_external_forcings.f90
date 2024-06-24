@@ -513,7 +513,6 @@ implicit none
                         constituents(iconst,k) = viuh(k) * factor
                      end if
                   end do
-                  deallocate(mask)
                else
                   ! will only fill 2D part of viuh
                   success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, 2)
