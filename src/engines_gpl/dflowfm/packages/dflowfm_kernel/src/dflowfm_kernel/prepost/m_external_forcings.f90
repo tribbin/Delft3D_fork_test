@@ -1625,7 +1625,7 @@ use unstruc_model, only: md_inifieldfile
 use m_meteo
 use m_sediment, only: jaceneqtr, grainlay, mxgr, sedh
 use m_mass_balance_areas, only: mbadef, mbadefdomain, mbaname
-use dfm_error, only: dfm_extforcerror, dfm_wronginput, dfm_noerr
+use dfm_error, only: dfm_extforcerror, dfm_wronginput, dfm_noerr, dfm_strerror
 use m_sobekdfm, only: init_1d2d
 use timespace_data, only: settimespacerefdat
 use timers, only: timstop, timstrt
@@ -1645,7 +1645,6 @@ use unstruc_inifields, only: initialize_initial_fields
    
    iresult = DFM_NOERR
 
-   success = .true.    ! default if no valid providers are present in *.ext file (fm_external_forcings_data::success)
    tair_available = .false.
    dewpoint_available = .false.
    
@@ -2285,9 +2284,6 @@ use unstruc_inifields, only: initialize_initial_fields
    ! initialise mass balance areas - always allocate these arrays
    call realloc(mbadef, Ndkx, keepExisting=.false., fill =-999)
    call realloc(mbadefdomain, Ndkx, keepExisting=.false., fill =-999)
-
-   ! Start processing ext files, start with success.
-   success = .true.
  
    if (kmx > 0) then 
       if (jastructurelayersactive > 0) then 
@@ -2296,7 +2292,13 @@ use unstruc_inifields, only: initialize_initial_fields
       endif
    endif
    
-   end subroutine
+    if (iresult /= DFM_NOERR) then
+       call mess(LEVEL_WARN, 'Error during initialisation of External Forcings. See message:')
+       call dfm_strerror(msgbuf, iresult)
+       call warn_flush()
+    end if
+   
+   end subroutine initialize_ext_setup
 
    !> Initialization of all extra quantities not covered bi initialize_ext_old, such as structures and laterals
    subroutine initialize_ext_misc(iresult)
@@ -2307,7 +2309,7 @@ use unstruc_inifields, only: initialize_initial_fields
       use m_meteo
       use m_transport, only: numconst
       use m_strucs, only: generalstruc, idx_crestlevel, idx_gateloweredgelevel, idx_gateopeningwidth
-      use dfm_error, only: dfm_extforcerror
+      use dfm_error, only: dfm_extforcerror, dfm_noerr, dfm_strerror
       use m_sobekdfm, only: nbnd1d2d
       use m_partitioninfo, only: is_ghost_node, jampi, idomain, my_rank, reduce_sum
       use m_lateral, only : numlatsg, ILATTP_1D, ILATTP_2D, ILATTP_ALL, kclat, nlatnd, nnlat, n1latsg, n2latsg, balat, qplat, lat_ids, initialize_lateraldata, apply_transport
@@ -2713,6 +2715,12 @@ use unstruc_inifields, only: initialize_initial_fields
    if (.not. success) then
       iresult = DFM_EXTFORCERROR
       return
+   end if
+   
+   if (iresult /= DFM_NOERR) then
+      call mess(LEVEL_WARN, 'Error during initialisation of External Forcings. See message:')
+      call dfm_strerror(msgbuf, iresult)
+      call warn_flush()
    end if
    
    end subroutine initialize_ext_misc
