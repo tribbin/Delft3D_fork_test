@@ -1640,8 +1640,6 @@ use unstruc_inifields, only: initialize_initial_fields
    character (len=256)           :: fnam, rec
    logical, external             :: flow_init_structurecontrol
    integer                       :: tmp_nbndu, tmp_nbndt, tmp_nbndn
-   double precision, allocatable :: xdum(:), ydum(:), xy2dum(:,:)
-   integer, allocatable          :: kdum(:)
    
    iresult = DFM_NOERR
 
@@ -1671,10 +1669,10 @@ use unstruc_inifields, only: initialize_initial_fields
 
    ja_friction_coefficient_time_dependent = 0
 
-   if (allocated(xdum  )) deallocate(xdum, ydum, kdum, xy2dum)
-   allocate ( xdum(1), ydum(1), kdum(1), xy2dum(2,1) , stat=ierr)
-   call aerr('xdum(1), ydum(1), kdum(1), xy2dum     ', ierr, 3)
-   xdum = 1d0 ; ydum = 1d0; kdum = 1; xy2dum = 0d0
+   if (allocated(x_dummy  )) deallocate(x_dummy, y_dummy, k_dummy, xy2_dummy)
+   allocate ( x_dummy(1), y_dummy(1), k_dummy(1), xy2_dummy(2,1) , stat=ierr)
+   call aerr('x_dummy(1), y_dummy(1), k_dummy(1), xy2_dummy     ', ierr, 3)
+   x_dummy = 1d0 ; y_dummy = 1d0; k_dummy = 1; xy2_dummy = 0d0
    if (.not. allocated(sah) ) then
       allocate ( sah(ndx) , stat=ierr)
       call aerr('sah(ndx)', ierr, ndx)
@@ -2325,8 +2323,6 @@ use unstruc_inifields, only: initialize_initial_fields
       logical :: exist
       double precision, allocatable :: hulp(:,:) 
       double precision, allocatable :: widths(:) 
-      double precision, allocatable :: xdum(:), ydum(:), xy2dum(:,:)
-      integer, allocatable          :: kdum(:)
 
       ! If no source/sink exists, then do not write related statistics to His-file
       if (numsrc < 0) then
@@ -2339,10 +2335,6 @@ use unstruc_inifields, only: initialize_initial_fields
          call init_1d2d_boundary_points()
       endif
 
-      allocate ( xdum(1), ydum(1), kdum(1), xy2dum(2,1) , stat=ierr)
-      call aerr('xdum(1), ydum(1), kdum(1), xy2dum     ', ierr, 3)
-      xdum = 1d0 ; ydum = 1d0; kdum = 1; xy2dum = 0d0
-   
       if (jaoldstr > 0) then
          if (allocated (kgate) ) deallocate(kgate)
          if (allocated (xgate) ) deallocate(xgate)
@@ -2395,7 +2387,7 @@ use unstruc_inifields, only: initialize_initial_fields
                inquire (file = trim(filename0), exist = exist)
                if (exist) then
                   filetype0 = uniform            ! uniform=single time series vectormax = 1
-                  success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ngatesg)
+                  success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ngatesg)
                else
                   write (msgbuf, '(a,a,a)') 'No .tim-series file found for quantity gateloweredgelevel and file ''', trim(filename), '''. Keeping fixed (open) gate level.'
                   call warn_flush()
@@ -2450,7 +2442,7 @@ use unstruc_inifields, only: initialize_initial_fields
                inquire (file = trim(filename0), exist = exist)
                if (exist) then
                   filetype0 = uniform            ! uniform=single time series vectormax = 1
-                  success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncdamsg)
+                  success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncdamsg)
                else
                   write (msgbuf, '(a,a,a)') 'No .tim-series file found for quantity damlevel and file ''', trim(filename), '''. Keeping fixed (closed) dam level.'
                   call warn_flush()
@@ -2584,7 +2576,7 @@ use unstruc_inifields, only: initialize_initial_fields
                inquire (file = trim(filename0), exist = exist)
                if (exist) then
                   filetype0 = uniform            ! uniform=single time series vectormax = kx = 3
-                  success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncgensg)
+                  success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method=spaceandtime, operand='O', targetIndex=ncgensg)
                else
                   write (msgbuf, '(a,a,a)') 'No .tim-series file found for quantity generalstructure and file ''', trim(filename), '''. Keeping fixed (closed) general structure.'
                   call warn_flush()
@@ -2687,7 +2679,7 @@ use unstruc_inifields, only: initialize_initial_fields
                   method = min(1, method)        ! only method 0 and 1 are allowed, methods > 1 are set to 1 (no spatial interpolation possible here).
                   ! Converter will put 'qsrc, sasrc and tmsrc' values in array qstss on positions: (3*numsrc-2), (3*numsrc-1), and (3*numsrc), respectively.
                   call clearECMessage()
-                  if (.not.ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename0, filetype0, method, operand='O', targetIndex=numsrc)) then
+                  if (.not.ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename0, filetype0, method, operand='O', targetIndex=numsrc)) then
                      msgbuf = 'Connecting time series file ''' // trim(filename0) // ''' and polyline file ''' // trim(filename) &
                                                             // '''. for source/sinks failed:' // dumpECMessageStack(LEVEL_WARN,callback_msg)
                      call warn_flush()
@@ -2760,6 +2752,7 @@ use unstruc_inifields, only: initialize_initial_fields
       call doclose(mext) ! close ext file
    end if
 
+   if (allocated (x_dummy))     deallocate( x_dummy, y_dummy, k_dummy)
    if (allocated (kdz))      deallocate (kdz)
    if (allocated (kdu))      deallocate (kdu)
    if (allocated (kds))      deallocate (kds)
@@ -2779,6 +2772,8 @@ use unstruc_inifields, only: initialize_initial_fields
    if (allocated (xy2cgen) ) deallocate (xy2cgen)
 
    if (allocated (xy2pump) ) deallocate (xy2pump)
+
+   if (allocated (x_dummy)    ) deallocate( x_dummy, y_dummy, k_dummy, xy2_dummy)
 
    if (mxgr > 0 .and. .not.stm_included) then
       do j = 1,mxgr

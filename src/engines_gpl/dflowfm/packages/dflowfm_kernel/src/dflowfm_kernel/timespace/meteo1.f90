@@ -5056,7 +5056,7 @@ contains
    !
    ! ==========================================================================
    !> 
-   subroutine get_extend2D(n, m, x, y, kcs, xdum, ydum)
+   subroutine get_extend2D(n, m, x, y, kcs, x_dummy, y_dummy)
    
    
        double precision, dimension(:,:)  :: x
@@ -5064,25 +5064,25 @@ contains
        integer , dimension(:,:)  :: kcs
        integer                 :: n
        integer                 :: m
-       double precision, dimension(:)  :: xdum
-       double precision, dimension(:)  :: ydum
+       double precision, dimension(:)  :: x_dummy
+       double precision, dimension(:)  :: y_dummy
    
-       call get_extend1D(n*m, x, y, kcs, xdum, ydum)
+       call get_extend1D(n*m, x, y, kcs, x_dummy, y_dummy)
    
    end subroutine get_extend2D
    !
    !
    ! ==========================================================================
    !> 
-   subroutine get_extend1D(n, x, y, kcs, xdum, ydum)
+   subroutine get_extend1D(n, x, y, kcs, x_dummy, y_dummy)
    
    
        integer                 :: n
        double precision, dimension(n)  :: x
        double precision, dimension(n)  :: y
        integer , dimension(n)  :: kcs
-       double precision, dimension(4)  :: xdum
-       double precision, dimension(4)  :: ydum
+       double precision, dimension(4)  :: x_dummy
+       double precision, dimension(4)  :: y_dummy
        double precision                :: x_min
        double precision                :: x_max
        double precision                :: x_dist
@@ -5120,14 +5120,14 @@ contains
        y_min = y_min - 0.01d0*y_dist
        y_max = y_max + 0.01d0*y_dist
    
-       xdum(1) = x_min
-       ydum(1) = y_min
-       xdum(2) = x_min
-       ydum(2) = y_max
-       xdum(3) = x_max
-       ydum(3) = y_max
-       xdum(4) = x_max
-       ydum(4) = y_min
+       x_dummy(1) = x_min
+       y_dummy(1) = y_min
+       x_dummy(2) = x_min
+       y_dummy(2) = y_max
+       x_dummy(3) = x_max
+       y_dummy(3) = y_max
+       x_dummy(4) = x_max
+       y_dummy(4) = y_min
    
    end subroutine get_extend1D
    !

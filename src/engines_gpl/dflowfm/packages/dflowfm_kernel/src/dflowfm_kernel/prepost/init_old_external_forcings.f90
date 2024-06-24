@@ -49,17 +49,11 @@ implicit none
    double precision,  external   :: ran0
    character (len=256)           :: rec
    integer, allocatable          :: mask(:)
-   double precision, allocatable :: xdum(:), ydum(:), xy2dum(:,:)
-   integer, allocatable          :: kdum(:)
    
    ! Finish with all remaining old-style ExtForceFile quantities.
    if (mext == 0) then
       return
    endif
-   
-   allocate ( xdum(1), ydum(1), kdum(1), xy2dum(2,1) , stat=ierr)
-   call aerr('xdum(1), ydum(1), kdum(1), xy2dum     ', ierr, 3)
-   xdum = 1d0 ; ydum = 1d0; kdum = 1; xy2dum = 0d0
    
       call timstrt('Init ExtForceFile (old)', handle_extra(50)) ! extforcefile old
       ja = 1
@@ -1101,7 +1095,7 @@ implicit none
                kx = 2
                nshiptxy = nshiptxy + 1
                ! Converter will put 'x' in array(2*nshiptxy-1) and 'y' in array(2*nshiptxy). en welke array is dat?
-               success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename, filetype, method, operand, targetIndex = nshiptxy)
+               success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename, filetype, method, operand, targetIndex = nshiptxy)
 
             else if (qid == 'movingstationtxy') then
                kx = 2
@@ -1111,7 +1105,7 @@ implicit none
                call addMovingObservation(dmiss, dmiss, rec)
 
                ! Converter will put 'x' in array(2*nummovobs-1) and 'y' in array(2*nummovobs).
-               success  = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename, filetype, method, operand, targetIndex=nummovobs)
+               success  = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename, filetype, method, operand, targetIndex=nummovobs)
 
             else if (qid(1:15) == 'massbalancearea' .or. qid(1:18) == 'waqmassbalancearea') then
                if (ti_mba > 0) then
@@ -1155,7 +1149,7 @@ implicit none
                success  =  .true.
 
             else if (qid(1:11) == 'waqfunction') then
-               success = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename, filetype, method, operand)
+               success = ec_addtimespacerelation(qid, x_dummy, y_dummy, k_dummy, kx, filename, filetype, method, operand)
 
             else if (qid(1:18) == 'waqsegmentfunction') then
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
