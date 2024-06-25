@@ -27,7 +27,7 @@
 !                                                                               
 !-------------------------------------------------------------------------------
 module m_lateral
-   use precision, only: dp
+   use precision_basics, only: dp
    implicit none
 
       public reset_lateral
