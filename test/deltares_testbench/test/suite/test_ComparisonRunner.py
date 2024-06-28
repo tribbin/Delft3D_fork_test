@@ -114,8 +114,8 @@ class TestComparisonRunner:
     def test_run_tests_in_parallel_with_ignore_check_if_log_file_exist(self) -> None:
         # Arrange
         log_folder_path = get_default_logging_folder_path()
-        log_file_1 = os.path.join(log_folder_path, "Name_1.log")
-        log_file_2 = os.path.join(log_folder_path, "Name_2.log")
+        log_file_1 = os.path.join(log_folder_path, "Name_1", "Name_1.log")
+        log_file_2 = os.path.join(log_folder_path, "Name_2", "Name_2.log")
         TestComparisonRunner.clean_empty_logs(log_file_1)
         TestComparisonRunner.clean_empty_logs(log_file_2)
         settings = TestBenchSettings()

@@ -190,7 +190,7 @@ class TestSetRunner(ABC):
 
         log_header(
             f"Testcase {run_data.test_number} of {run_data.number_of_tests} "
-            + "(process id {run_data.process_id}): {config.name} ...",
+            + f"(process id {run_data.process_id}): {config.name} ...",
             logger,
         )
 

@@ -68,7 +68,6 @@
 				<argument>2</argument>
 				<argument>run_dimr.sh</argument>
 				<argument>-m dimr.xml</argument>
-				<argument>&gt;dimr_screen.log 2&gt;&amp;1</argument>
 			</arguments>
 		</program>
 		<program name="dimr_waq" logOutputToFile="true" programStringRemoveQuotes="true">
@@ -85,7 +84,6 @@
 				<argument>2</argument>
 				<argument>run_dimr.sh</argument>
 				<argument>-m dimr_waq.xml</argument>
-				<argument>&gt;dimr_screen.log 2&gt;&amp;1</argument>
 			</arguments>
 		</program>
 		<program name="checkhydbal" addSearchPaths="false" logOutputToFile="true">
