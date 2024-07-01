@@ -94,6 +94,32 @@ module m_wind
    double precision :: paver !< Average ambient pressure (N/m2)
    double precision :: patmfac !< 100 if Mbar, 1 if Pascal
 
+   integer :: jawind !< use wind yes or no
+   integer :: japatm !< use patm yes or no
+   integer :: jaspacevarcharn !< use space and time varying Charnock coefficients yes or no
+   integer :: jawindstressgiven !< wind given as stress, no conversion needed
+   integer :: jastresstowind !< if jawindstressgiven==1, convert stress to wind yes/no 1/0
+   integer :: ja_computed_airdensity !< compute airdensity yes/no 1/0
+   integer :: jarain !< use rain yes or no
+   integer :: jaevap !< use evap yes or no
+   integer :: ja_airdensity !< use variabele air density yes or no
+   integer :: jaheat_eachstep = 0 !< if 1, do it each step, else in externalforcings (default)
+   integer :: jaQext !< use Qin externally provided yes or no
+   integer :: jaqin !< use qin , sum of all in fluxes
+   integer :: update_wind_stress_each_time_step = 0 !< if 1, update wind (and air pressure) in each computational time step, else in externalforcings (default)
+   double precision :: windxav, windyav !< average wind for plotting
+
+   double precision :: windsp
+   double precision :: winddir !< deg from north sailor
+   double precision, target :: rainuni !< [mm/hr] uniform rain intensity. {"rank": 0}
+   double precision :: wsx
+   double precision :: wsy
+   double precision :: rhoair !< (kg/m3)
+   double precision :: PavBnd !< average ambient pressure (N/m2) for correction on open boundaries
+   double precision :: PavIni !< average ambient pressure (N/m2) for initial waterlevel correction
+   double precision :: paver !< Average ambient pressure (N/m2)
+   double precision :: patmfac !< 100 if Mbar, 1 if Pascal
+
    double precision :: cdb(3) !< breakpoints cd function cd coefficient
    double precision :: wdb(3) !< breakpoints cd function windspeed
    integer :: ICdtyp !< 1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955; 5=Hwang 2005; 6=Wuest 2005; 7=Hersbach 2010 (2 pts), 8: 4+viscous), 9=Garratt 1977.
@@ -148,7 +174,6 @@ contains
       japatm = 0 !< use patm yes or no
       jaspacevarcharn = 0 !< use space varying Charnock coefficients
       jawindstressgiven = 0 !< wind stress given in meteo file
-      jatair = 0
       ja_airdensity = 0
    end subroutine reset_wind
 end module m_wind
