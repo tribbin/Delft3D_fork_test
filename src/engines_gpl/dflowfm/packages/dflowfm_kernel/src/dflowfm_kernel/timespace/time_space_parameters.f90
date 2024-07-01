@@ -112,6 +112,8 @@ function convert_file_type_string_to_integer(string) result(file_type)
          file_type = inside_polygon
       case ('sample')
          file_type = triangulation
+      case ('spiderweb')
+         file_type = spiderweb
       case('uniform')
          file_type = uniform
       case default
@@ -136,7 +138,11 @@ function convert_method_string_to_integer(string) result(method)
       case ('triangulation')
          method = 5
       case ('old_11')
-         method = 103
+         method = 3
+      case ('spacefirst')
+         method = spacefirst
+      case ('spaceandtime')
+         method = spaceandtime
       case default
          method = -1
    end select
