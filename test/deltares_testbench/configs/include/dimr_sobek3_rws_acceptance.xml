@@ -1,4 +1,4 @@
-    <testCases>
+    <testCases xmlns="http://schemas.deltares.nl/deltaresTestbench_v3">
         <!-- ======================================================================== -->
         <testCase name="e111_f01_c01_sobek-maas-j19_5-v3" ref="sobek3_default">
             <path>e111_sobek3_suite/f01_rws_acceptance_models/c01_sobek-maas-j19_5-v3</path>

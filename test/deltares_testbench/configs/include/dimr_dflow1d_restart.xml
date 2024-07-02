@@ -1,4 +1,4 @@
-<testCases>
+<testCases xmlns="http://schemas.deltares.nl/deltaresTestbench_v3">
     <!-- ======================================================================== -->
     <testCase name="e106(dflow1d)_f18(restart)_c01_no_salinity_no_summerdikes" ref="dflow1d_default">
         <path version="2024-01-12T06:00:00">e106_dflow1d/f18_restart/c01_no_salinity_no_summerdikes</path>
