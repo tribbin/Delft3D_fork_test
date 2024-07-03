@@ -423,13 +423,7 @@ def main(tbroot, given_build_config, username, password, engines):
         lprint("    Percentage: %6.2f" % float(a))
 
 
-if __name__ == "__main__":
-    start_time = datetime.now()
-
-    if os.path.exists("TMPdownload_teamcity_retrieve"):
-        shutil.rmtree("TMPdownload_teamcity_retrieve")
-    os.mkdir("TMPdownload_teamcity_retrieve")
-
+def create_argument_parser():
     parser = argparse.ArgumentParser(
         description="Retrieve status of a testbench running on TeamCity"
     )
@@ -467,6 +461,17 @@ if __name__ == "__main__":
         dest="engines",
     )
 
+    return parser
+
+
+if __name__ == "__main__":
+    start_time = datetime.now()
+
+    if os.path.exists("TMPdownload_teamcity_retrieve"):
+        shutil.rmtree("TMPdownload_teamcity_retrieve")
+    os.mkdir("TMPdownload_teamcity_retrieve")
+
+    parser = create_argument_parser()
     args = parser.parse_args()
 
     out_put = "teamcity_retrieve_engine_test_status.txt"
