@@ -30,6 +30,7 @@ module m_statistical_output
    use m_read_statistical_output
    use m_temporal_statistics
    use precision, only: dp
+   use fm_location_types
 
    implicit none
 
