@@ -28,49 +28,8 @@
 !        $Date: 1-04-03 10:52 $
 !        $Source: /u/cvsroot/gpp/libsrc/ods/tri_his.f,v $
 !
-!#ifdef WINNT
-!      INCLUDE '../include/nfsintrf.i'
-!
-!      INTERFACE TO FUNCTION GETELT_i [ALIAS:'_GETELT']
-!     +                             ( VALUE1, VALUE2, VALUE3, VALUE4 ,
-!     +                               VALUE5, VALUE6, VALUE7, VALUE8 )
-!
-!      INTEGER   GETELT_i
-!
-!      INTEGER   VALUE1
-!      INTEGER   VALUE2
-!      CHARACTER VALUE3
-!      CHARACTER VALUE4
-!      INTEGER   VALUE5
-!      INTEGER   VALUE6
-!      INTEGER   VALUE7
-!      CHARACTER VALUE8
-!
-!      END
-!
-!      INTERFACE TO FUNCTION GETELT_j [ALIAS:'_GETELT']
-!     +                             ( VALUE1, VALUE2, VALUE3, VALUE4 ,
-!     +                               VALUE5, VALUE6, VALUE7, VALUE8 )
-!
-!      INTEGER   GETELT_j
-!
-!      INTEGER   VALUE1
-!      INTEGER   VALUE2
-!      CHARACTER VALUE3
-!      CHARACTER VALUE4
-!      INTEGER   VALUE5
-!      INTEGER   VALUE6
-!      INTEGER   VALUE7
-!      INTEGER   VALUE8
-!
-!      END
-
-!#endif
 
 subroutine hispar&
-!#ifdef WINNT
-!     *                 [ALIAS:'_hispar']
-!#endif
 &(fname , itype , pardef, maxdef, timdep, locdep,&
 &maxlst, lang  , parlst, paruni, partyp, parcod,&
 &nrlst , ierror, option                        )
@@ -213,11 +172,6 @@ subroutine hispar&
    character*64  elmdes
 !
    integer       GETELT,GETELS,INQELM
-
-!#ifdef WINNT
-!     integer       GETELT_i
-!#endif
-
    integer       TMLCDP
    parameter     ( TMLCDP = IPLDEP + IPLLST )
 !
@@ -412,11 +366,7 @@ subroutine hispar&
 !-----------------------------------------------------------------------
    buflen    = 23
    elmnam    = 'SELHIS'
-!#ifdef WINNT
-!     ierror    = GETELT_i
-!#else
    ierror    = GETELS&
-!#endif
    &(hdefds   ,grpdef    ,elmnam    ,&
    &uindex   ,usrord    ,buflen    ,SELHIS    )
    if (ierror .ne. 0) then
@@ -443,11 +393,7 @@ subroutine hispar&
    if (index (selhis( 5:14),'Y') .gt. 0) then
       buflen    = 20 * lmax
       elmnam    = 'NAMCON'
-!#ifdef WINNT
-!        ierror = GETELT_i
-!#else
       ierror = GETELS&
-!#endif
       &(hdefds,grpdef    ,elmnam    ,&
       &uindex,usrord    ,buflen    ,NAMCON    )
       if (ierror .ne. 0) then
@@ -753,9 +699,6 @@ subroutine hispar&
 end
 
 subroutine hisdim&
-!#ifdef WINNT
-!    *          [ALIAS:'_hisdim']
-!#endif
 &(fname ,itype ,dimtyp, pardep, timdep,&
 &locdep,ndim  ,ierror, option        )
 !-----------------------------------------------------------------------
@@ -876,9 +819,6 @@ subroutine hisdim&
 !
    integer       INQGRP,GETELT,GETELS,INQELM
    integer       INQMXI
-!#ifdef WINNT
-!     integer       GETELT_i
-!#endif
 
 !-----------------------------------------------------------------------
 !-----Initialisation
@@ -1007,11 +947,7 @@ subroutine hisdim&
 !-----------------------------------------------------------------------
    buflen    = 23
    elmnam    = 'SELHIS'
-!#ifdef WINNT
-!     ierror    = GETELT_i
-!#else
    ierror    = GETELS&
-!#endif
    &(hdefds   ,grpdef    ,elmnam    ,&
    &uindex   ,usrord    ,buflen    ,SELHIS    )
    if (ierror .ne. 0) then
@@ -1038,11 +974,7 @@ subroutine hisdim&
    if (index (selhis( 5:14),'Y') .gt. 0) then
       buflen    = 20 * lmax
       elmnam    = 'NAMCON'
-!#ifdef WINNT
-!        ierror    = GETELT_i
-!#else
       ierror    = GETELS&
-!#endif
       &(hdefds,grpdef    ,elmnam    ,&
       &uindex,usrord    ,buflen    ,NAMCON    )
       if (ierror .ne. 0) then
@@ -1268,9 +1200,6 @@ subroutine hisdim&
 end
 
 subroutine histme&
-!#ifdef WINNT
-!    *                 [ALIAS:'_histme']
-!#endif
 &(fname  ,itype  ,timdef, maxdef ,pardep , locdep,&
 &maxlst ,        timlst,         timtyp ,&
 &nrlst  ,ierror ,option                         )
@@ -1884,9 +1813,6 @@ subroutine julind(hdefds, hdafds, tim, nindex, ierror)
 end
 
 subroutine hisloc&
-!#ifdef WINNT
-!    *               [ALIAS:'_hisloc']
-!#endif
 &(fname  ,itype  ,locdef ,maxdef ,pardep ,timdep ,&
 &maxlst ,        loclst ,        loctyp ,nrlst  ,&
 &locnr  ,ierror ,zbuffs ,option                 )
@@ -1993,9 +1919,6 @@ subroutine hisloc&
    character*16  grpdef,elmnam
 !
    integer       GETELT,GETELS
-!#ifdef WINNT
-!     integer       GETELT_i
-!#endif
 !-----------------------------------------------------------------------
 !-----Initialisation
 !-----------------------------------------------------------------------
@@ -2064,11 +1987,7 @@ subroutine hisloc&
       usrord    = 1
       buflen    = 20 * nostat
       elmnam    = 'NAMST'
-!#ifdef WINNT
-!        ierror    = GETELT_i
-!#else
       ierror    = GETELS&
-!#endif
       &(hdefds,grpdef    ,elmnam    ,&
       &uindex,usrord    ,buflen    ,zbuffs     )
       if (ierror .ne. 0) then
@@ -2091,11 +2010,7 @@ subroutine hisloc&
       usrord    = 1
       buflen    = 20 * ntruv
       elmnam    = 'NAMTRA'
-!#ifdef WINNT
-!        ierror    = GETELT_i
-!#else
       ierror    = GETELS&
-!#endif
       &(hdefds,grpdef    ,elmnam    ,&
       &uindex,usrord    ,buflen    ,zbuffs     )
       if (ierror .ne. 0) then
@@ -2141,9 +2056,6 @@ subroutine hisloc&
 end
 
 subroutine hismat&
-!#ifdef WINNT
-!    *                [ALIAS:'_hismat']
-!#endif
 &(fname ,itype  ,parcod, loc   , tim   ,misval,&
 &i3gl  ,maxdim ,xdata , ierror, option,zbuffs)
 !-----------------------------------------------------------------------

@@ -61,9 +61,6 @@
 ! --------------------------------------------------------------------
 !
 SUBROUTINE ODS_DELWAQ_UNF_LGA&
-!#ifdef WINNT
-!    *          [ALIAS:'_ods_delwaq_unf_lga']
-!#endif
 &(FILNAM , ITYPE  , INDLOC , INDX   ,&
 &NOCELL , IGISTY , IERROR          )
 ! --------------------------------------------------------------------
@@ -295,9 +292,6 @@ END
 ! --------------------------------------------------------------------
 !
 SUBROUTINE ODS_DELWAQ_UNF_CCO&
-!#ifdef WINNT
-!    *          [ALIAS:'_ods_delwaq_unf_cco']
-!#endif
 &(&
 &FILNAM , ITYPE  , IPCODE , TIME   , INDLOC ,&
 &VALMIS , MAXDIM , DATA   , IERROR          )
