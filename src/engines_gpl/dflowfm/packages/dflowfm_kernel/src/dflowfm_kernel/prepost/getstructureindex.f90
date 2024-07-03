@@ -32,11 +32,11 @@
 
 !> Returns the index of a structure in the controllable value arrays.
 !! Structure is identified by strtypename, e.g. 'pumps', and structure name, e.g., 'Pump01'.
-!! Returned index can be used to directly address variables like, m_flowexternalforcings::qpump, zgate, etc.
+!! Returned index can be used to directly address variables like, fm_external_forcings_data::qpump, zgate, etc.
 subroutine getStructureIndex(strtypename, strname, index, is_in_network)
 ! NOTE: this will only return the GUI-used structures (i.e., the new gates and weirs via general structure, not the old ext-based damlevel and gateloweredgelevel).
 ! TODO: longer-term all structure sets run via channel_flow and t_structureset, cleanup this function then.
-   use m_flowexternalforcings
+   use fm_external_forcings_data
    use m_hash_search, only: hashsearch
    use unstruc_channel_flow, only: network
    use m_longculverts

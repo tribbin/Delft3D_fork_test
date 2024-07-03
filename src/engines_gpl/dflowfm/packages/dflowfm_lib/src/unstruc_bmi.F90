@@ -44,7 +44,7 @@ module bmi
   use m_wind
   use m_flowgeom
   use network_data
-  use m_flowexternalforcings
+  use fm_external_forcings_data
   use m_partitioninfo
   use m_sobekdfm
   use m_transport
@@ -1910,7 +1910,7 @@ subroutine get_compound_field(c_var_name, c_item_name, c_field_name, x) bind(C, 
    ! Return a pointer to the compound's field variable
    use iso_c_binding, only: c_double, c_char, c_loc
    use iso_c_utils
-   use m_flowexternalforcings
+   use fm_external_forcings_data
    use m_observations
    use m_monitoring_crosssections
    use m_strucs

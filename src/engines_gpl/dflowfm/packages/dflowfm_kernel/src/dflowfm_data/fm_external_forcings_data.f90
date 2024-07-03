@@ -31,7 +31,7 @@
 ! 
 
 ! unstruc.f90
- module m_flowexternalforcings
+ module fm_external_forcings_data
  use m_wind
  use m_nudge
  use m_bnd
@@ -41,7 +41,7 @@
  logical                           :: success           !< want je wil maar liever succes
  integer                           :: jatimespace       !< doen ja/nee 1/0
  integer                           :: mhis              !< unit nr external forcings history *.exthis
- integer, save                     :: kx, filetype, mext
+ integer                           :: kx, filetype, mext
  character(len=256)                :: qid
  character(len=1)                  :: operand
  integer                           :: numbnp            !< total nr of open boundary cells for network extension
@@ -472,18 +472,25 @@
  double precision, allocatable     :: qlatwaq (:)       !< Cumulative qsrc within current waq-timestep
  double precision, allocatable     :: qlatwaq0 (:)      !< Cumulative qsrc at the beginning of the time step before possible reduction
  double precision                  :: addksources = 0d0 !< Add k of sources to turkin 1/0
-
+ 
+ double precision, allocatable :: sah(:)  ! temp
+ double precision, allocatable :: grainlayerthickness(:,:) ! help array grain layer thickness
+ integer                       :: num_lat_ini_blocks
+ logical                       :: tair_available, dewpoint_available
+ double precision, allocatable :: uxini(:), uyini(:) !< optional initial velocity fields on u points in x/y dir.
+ integer                       :: inivelx, inively !< set to 1 when initial velocity x or y component is available in *.ext file
+ 
  contains
 !> Sets ALL (scalar) variables in this module to their default values.
-!! For external forcings it is equivalent with default_flowexternalforcings().
+!! For external forcings it is equivalent with default_fm_external_forcing_data().
 subroutine reset_flowexternalforcings()
-    call default_flowexternalforcings()
+    call default_fm_external_forcing_data()
 end subroutine reset_flowexternalforcings
 
 
 !> Resets external forcing variables intended for a restart of flow simulation.
 !! For external forcings it is equivalent with reset_flowexternalforcings().
-subroutine default_flowexternalforcings()
+subroutine default_fm_external_forcing_data()
     jatimespace = 0   ! doen ja/nee 1/0
     mhis   = 0        ! unit nr external forcings history *.exthis
     numbnp = 0        ! total nr of open boundary cells for network extension
@@ -523,6 +530,7 @@ subroutine default_flowexternalforcings()
     nubnd = 0
     numsrc  = 0
     numsrc_nf = 0
-end subroutine default_flowexternalforcings
+    
+end subroutine default_fm_external_forcing_data
 
-end module m_flowexternalforcings
+end module fm_external_forcings_data

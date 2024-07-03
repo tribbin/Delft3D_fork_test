@@ -32,7 +32,7 @@ subroutine fm_wq_processes_ini_sub()
     use unstruc_messages
     use m_flow, only : kmx
     use m_flowgeom, only : Ndxi
-    use m_flowexternalforcings
+    use fm_external_forcings_data
     use m_transport
     use m_partitioninfo
     use unstruc_model
@@ -378,7 +378,7 @@ subroutine fm_wq_processes_ini_proc()
     use m_flow, only : kmx
     use m_flowgeom, only : Ndxi, ba
     use m_flowparameters, only : jasal, jatem, jawave, jawaveSwartDelwaq
-    use m_flowexternalforcings
+    use fm_external_forcings_data
     use m_transport
     use m_partitioninfo
     use unstruc_model
@@ -901,9 +901,9 @@ end subroutine fm_wq_processes_ini_proc
 
 !! @return Integer result status (0 if successful)
 subroutine dfm_waq_initexternalforcings(iresult)
-    use m_init_ext_forcings
+    use fm_external_forcings
     use m_alloc
-    use m_flowexternalforcings
+    use fm_external_forcings_data
     use m_flowparameters
     use m_flowtimes
     use m_flowgeom
@@ -937,7 +937,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
 
     iresult = DFM_NOERR
 
-    success = .true.    ! default if no valid providers are present in *.ext file (m_flowexternalforcings::success)
+    success = .true.    ! default if no valid providers are present in *.ext file (fm_external_forcings_data::success)
 
     if (.not. allocated(paname)) then
         allocate(paname(0))
@@ -1255,7 +1255,7 @@ subroutine add_wqbot(wqbotnam, wqbotunit, iwqbot, janew)
     !> add waq bottom substance
     use m_flowgeom
     use m_flow, only : Ndkx
-    use m_flowexternalforcings, only : numtracers, trnames
+    use fm_external_forcings_data, only : numtracers, trnames
     use m_fm_wq_processes
     use m_alloc
     use m_missing

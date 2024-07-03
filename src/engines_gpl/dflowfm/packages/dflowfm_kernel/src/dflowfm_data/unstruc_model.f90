@@ -425,7 +425,7 @@ subroutine loadModel(filename)
     use m_alloc
     use m_cross_helper
     use m_flow1d_reader
-    use m_flowexternalforcings, only: pillar
+    use fm_external_forcings_data, only: pillar
     use m_sferic
     use unstruc_caching
     use m_longculverts
@@ -693,7 +693,7 @@ subroutine readMDUFile(filename, istat)
     use m_flowgeom !,              only : wu1Duni, bamin, rrtol, jarenumber, VillemonteCD1, VillemonteCD2
     use m_flowtimes
     use m_flowparameters
-    use m_flowexternalforcings, only: dambreakWideningString, dambreakWidening, DBW_SYMM, DBW_PROP, DBW_SYMM_ASYMM
+    use fm_external_forcings_data, only: dambreakWideningString, dambreakWidening, DBW_SYMM, DBW_PROP, DBW_SYMM_ASYMM
     use m_waves,                 only: rouwav, gammax, hminlw, jauorb, jahissigwav, jamapsigwav
     use m_wind ! ,                  only : icdtyp, cdb, wdb,
     use network_data,            only : zkuni, Dcenterinside, removesmalllinkstrsh, cosphiutrsh

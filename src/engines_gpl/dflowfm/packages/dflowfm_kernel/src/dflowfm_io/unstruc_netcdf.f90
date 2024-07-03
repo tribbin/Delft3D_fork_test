@@ -2957,7 +2957,7 @@ subroutine unc_write_rst_filepointer(irstfile, tim)
     use m_transport, only: NUMCONST, ISALT, ITEMP, ISED1, ISEDN, ITRA1, ITRAN, ITRAN0, constituents, itrac2const, const_names, const_units, ifrac2const
     use m_fm_wq_processes, only: wqbot3D_output, numwqbots, wqbotnames, wqbotunits, wqbot
     use m_xbeach_data, only: E, thetamean, sigmwav
-    use m_flowexternalforcings, only: numtracers
+    use fm_external_forcings_data, only: numtracers
     use m_partitioninfo
     use m_missing
     use m_turbulence
@@ -13086,7 +13086,7 @@ subroutine unc_read_map_or_rst(filename, ierr)
     use m_flowtimes
     use m_transport, only: NUMCONST, ISALT, ITEMP, ISED1, ISEDN, ITRA1, ITRAN, constituents, itrac2const, const_names,ifrac2const
     use m_fm_wq_processes
-    use m_flowexternalforcings, only: numtracers, trnames
+    use fm_external_forcings_data, only: numtracers, trnames
     use m_sediment
     use bedcomposition_module
     use m_flowgeom
@@ -14441,7 +14441,7 @@ function unc_read_merged_map(um, imapfile, filename, ierr) result (success)
    use dfm_error             , only : DFM_GENERICERROR
    use m_partitioninfo       , only : jampi, my_rank, idomain, ighostlev, sdmn, link_ghostdata, reduce_key, reduce_int_sum
    use m_flowgeom            , only : ndxi, lnx, ln, ndx
-   use m_flowexternalforcings, only : ibnd_own, kbndz, ndxbnd_own, jaoldrstfile
+   use fm_external_forcings_data, only : ibnd_own, kbndz, ndxbnd_own, jaoldrstfile
    character(len=*)     , intent(in   ) :: filename  !< Name of NetCDF file.
    integer              , intent(in   ) :: imapfile
    integer              , intent(inout) :: ierr
@@ -17332,7 +17332,7 @@ subroutine read_structures_from_rst(ncid, filename, it_read)
    use m_flow, only: au
    use m_1d_structures
    use m_General_Structure
-   use m_flowexternalforcings
+   use fm_external_forcings_data
    use m_longculverts
    implicit none
    integer,          intent(in   )   :: ncid        !< ID of the rst file
@@ -18434,7 +18434,7 @@ use m_flowgeom, only: ndxi, ndx
 use m_flow, only: kmx, work1
 use m_flowparameters, only: jarstbnd
 use m_missing, only: dmiss
-use m_flowexternalforcings, only: ndxbnd_own
+use fm_external_forcings_data, only: ndxbnd_own
 use m_partitioninfo, only: jampi
 
 !input/output

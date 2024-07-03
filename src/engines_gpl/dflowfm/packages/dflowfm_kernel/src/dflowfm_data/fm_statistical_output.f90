@@ -2148,7 +2148,7 @@ private
       use m_ug_nc_attribute
       use string_module, only: replace_char
       use m_flow
-      use m_flowexternalforcings
+      use fm_external_forcings_data
       use m_structures
       use m_observations
       use m_physcoef, only: density_is_pressure_dependent
