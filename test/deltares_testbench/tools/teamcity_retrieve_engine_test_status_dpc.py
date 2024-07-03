@@ -4,6 +4,7 @@ import os
 import shutil
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from typing import List
 
 import requests
 from requests.auth import HTTPBasicAuth
@@ -60,6 +61,14 @@ class Data(object):
         self.percentage = a
 
 
+class ConfigurationInfo(object):
+    """A class to store configuration info."""
+
+    def __init__(self, name: str, identifier: str) -> None:
+        self.name = name
+        self.identifier = identifier
+
+
 def lprint(*args: str) -> None:
     """
     Write to a log file.
@@ -81,25 +90,14 @@ def report_cases(url, given_build_config, username, password, buildname):
     global _enginge_statistics
     global summarydata_array
 
-    case_id = []
-    case_name = []
     engine_req = get_request(url, username, password)
     if not text_in_xml_message(engine_req.text):
         return 1
     xml_engine_root = ET.fromstring(engine_req.text)
 
-    for build_types in xml_engine_root.findall("buildTypes"):
-        for build_type in build_types:
-            if len(given_build_config) != 0:
-                for i in range(len(given_build_config)):
-                    if given_build_config[i] == build_type.attrib["id"]:
-                        case_id.append(build_type.attrib["id"])
-                        case_name.append(build_type.attrib["name"])
-            else:
-                case_id.append(build_type.attrib["id"])
-                case_name.append(build_type.attrib["name"])
+    case_info_list = get_configuration_info(xml_engine_root, given_build_config)
 
-    if len(case_id) != 0:
+    if len(case_info_list) != 0:
         print("        %s" % xml_engine_root.attrib["name"])
         lprint("        %s" % xml_engine_root.attrib["name"])
         lprint(
@@ -118,19 +116,20 @@ def report_cases(url, given_build_config, username, password, buildname):
     sum_passed_subtotal = 0
     not_passed_subtotal = 0
 
-    for case in case_id:
+    for case_info in case_info_list:
+        identifier = case_info.identifier
         computation_name = []
         deltares_build = "https://dpcbuild.deltares.nl"
         url = (
             "%s/httpAuth/app/rest/builds?locator=buildType:(id:%s),defaultFilter:false,branch:<default>&count=1&fields=count,build(number,statistics,status,statusText,testOccurrences,agent,lastChange,tags(tag),pinned,revisions(revision))"
-            % (deltares_build, case)
+            % (deltares_build, identifier)
         )
 
         case_req = get_request(url, username, password)
         if not text_in_xml_message(case_req.text):
             return 1
 
-        file_name = "TMPdownload_teamcity_retrieve/%s.xml" % case
+        file_name = "TMPdownload_teamcity_retrieve/%s.xml" % identifier
         with open(file_name, "wb") as out_file:
             out_file.write(case_req.content)
 
@@ -174,7 +173,7 @@ def report_cases(url, given_build_config, username, password, buildname):
         muted_exception.append(0)
 
         if len(failed) == 0:
-            lprint("ERROR: No data available for project %s" % case)
+            lprint("ERROR: No data available for project %s" % identifier)
             continue
 
         i = build_nr.__len__() - 1
@@ -208,10 +207,7 @@ def report_cases(url, given_build_config, username, password, buildname):
                                 exception[i] += 1
                                 computation_name.append(xml_test_occ.attrib["name"])
                     except:
-                        error_message = "ERROR retrieving data from last build for {case_name} : {xml_attrib}.".format(
-                            case_name=case_name[i],
-                            xml_attrib=xml_test_occ.attrib["name"],
-                        )
+                        error_message = f"ERROR retrieving data from last build for {case_info_list[i].name} : {xml_test_occ.attrib["name"]}."
                         print(error_message)
                         lprint(error_message)
 
@@ -232,14 +228,14 @@ def report_cases(url, given_build_config, username, password, buildname):
                     ignored[i],
                     muted[i],
                     a,
-                    case_name[i],
+                    case_info_list[i].name,
                     build_nr[i],
                 )
             )
         else:
             lprint(
                 "                   x        x        x        x        x        x        x  ---  %-24s (#%s)"
-                % (case_name[i], build_nr[i])
+                % (case_info_list[i].name, build_nr[i])
             )
             lprint(
                 "                                                                            xxx  %s" % (status_text)
@@ -268,13 +264,33 @@ def report_cases(url, given_build_config, username, password, buildname):
             summary.sum_ignored += _sum_ignored
             summary.sum_muted += _sum_muted
 
-    if len(case_id) != 0:
+    if len(case_info_list) != 0:
         engine_statistics.append(Data(xml_engine_root.attrib["name"], sum_passed_subtotal, not_passed_subtotal))
 
         i = len(engine_statistics) - 1
         lprint("            Total     : %6d" % engine_statistics[i].total)
         lprint("            Passed    : %6d" % engine_statistics[i].passed)
         lprint("            Percentage: %6.2f" % engine_statistics[i].percentage)
+
+
+def get_configuration_info(xml_engine_root, given_build_config) -> List[ConfigurationInfo]:
+    """
+    Get configuration info from xml tree.
+
+    Returns
+    -------
+        List[ConfigurationInfo]: List with configurations.
+    """
+    result = []
+    for build_types in xml_engine_root.findall("buildTypes"):
+        for build_type in build_types:
+            if len(given_build_config) != 0:
+                for i in range(len(given_build_config)):
+                    if given_build_config[i] == build_type.attrib["id"]:
+                        result.append(ConfigurationInfo(build_type.attrib["name"], build_type.attrib["id"]))
+            else:
+                result.append(ConfigurationInfo(build_type.attrib["name"], build_type.attrib["id"]))
+    return result
 
 
 def get_request(url: str, username: str, password: str) -> requests.Response:
@@ -434,7 +450,7 @@ def create_argument_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-e",
         "--engines",
-        help="Specify extra components to be summarized, between double quotes and separated by a komma",
+        help="Specify extra components to be summarized, between double quotes and separated by a comma",
         dest="engines",
     )
 
