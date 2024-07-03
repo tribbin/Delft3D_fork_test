@@ -27,9 +27,9 @@ teamcity_retrieve_engine_test_status.py --tbroot DFlowFlexibleMesh
 teamcity_retrieve_engine_test_status.py --tbroot Dimr_DimrTestbenchRelease  # DIMR testbench release
 teamcity_retrieve_engine_test_status.py --tbroot Delft3DSobek_DimrTestbench  # DIMR testbench daily
 """
-_summarydata_array = []
+summarydata_array = []
 global log_file
-global _engine_statistics
+global engine_statistics
 
 
 class summarydata(object):
@@ -67,7 +67,7 @@ def report_cases(url, given_build_config, username, password, buildname):
     _sum_muted = 0
 
     global _enginge_statistics
-    global _summarydata_array
+    global summarydata_array
 
     case_id = []
     case_name = []
@@ -80,16 +80,16 @@ def report_cases(url, given_build_config, username, password, buildname):
         print("Text is not in XML format: %s" % engine_req.text)
         return 1
 
-    for buildTypes in xml_engine_root.findall("buildTypes"):
-        for buildType in buildTypes:
+    for build_types in xml_engine_root.findall("buildTypes"):
+        for build_type in build_types:
             if len(given_build_config) != 0:
                 for i in range(len(given_build_config)):
-                    if given_build_config[i] == buildType.attrib["id"]:
-                        case_id.append(buildType.attrib["id"])
-                        case_name.append(buildType.attrib["name"])
+                    if given_build_config[i] == build_type.attrib["id"]:
+                        case_id.append(build_type.attrib["id"])
+                        case_name.append(build_type.attrib["name"])
             else:
-                case_id.append(buildType.attrib["id"])
-                case_name.append(buildType.attrib["name"])
+                case_id.append(build_type.attrib["id"])
+                case_name.append(build_type.attrib["name"])
 
     if len(case_id) != 0:
         print("        %s" % xml_engine_root.attrib["name"])
@@ -180,53 +180,53 @@ def report_cases(url, given_build_config, username, password, buildname):
             cnt = int(build.find("./testOccurrences").attrib["count"])
             href = build.find("./testOccurrences").attrib["href"]
             url_1 = "%s%s,count:%d" % (deltares_build, href, cnt)
-            testOccs_req = requests.get(
+            test_occs_req = requests.get(
                 url=url_1,
                 auth=HTTPBasicAuth(username, password),
                 stream=True,
                 verify=True,
             )
             try:
-                xml_testOccs = ET.fromstring(testOccs_req.text)
+                xml_test_occs = ET.fromstring(test_occs_req.text)
             except:
-                print("Text is not in XML format: %s" % testOccs_req.text)
+                print("Text is not in XML format: %s" % test_occs_req.text)
                 return 1
-            for tOcc in xml_testOccs.findall("testOccurrence"):
-                if tOcc.attrib["status"] == "FAILURE":
-                    href = tOcc.attrib["href"]
+            for t_occ in xml_test_occs.findall("testOccurrence"):
+                if t_occ.attrib["status"] == "FAILURE":
+                    href = t_occ.attrib["href"]
                     url_2 = "%s%s" % (deltares_build, href)
-                    testOcc_req = requests.get(
+                    test_occ_req = requests.get(
                         url=url_2,
                         auth=HTTPBasicAuth(username, password),
                         stream=True,
                         verify=True,
                     )
                     try:
-                        xml_testOcc = ET.fromstring(testOcc_req.text)
+                        xml_test_occ = ET.fromstring(test_occ_req.text)
                     except:
-                        print("Text is not in XML format: %s" % testOcc_req.text)
+                        print("Text is not in XML format: %s" % test_occ_req.text)
                         return 1
-                    txt = xml_testOcc.find("details").text
+                    txt = xml_test_occ.find("details").text
 
                     try:
                         if (
                             txt.find("Exception occurred") != -1
                             or txt.find("exception occurred") != -1
                         ):
-                            if "muted" in tOcc.attrib:
+                            if "muted" in t_occ.attrib:
                                 exception[i] += 1
                                 muted_exception[i] += 1
                                 computation_name.append(
-                                    "MUTED: " + xml_testOcc.attrib["name"]
+                                    "MUTED: " + xml_test_occ.attrib["name"]
                                 )
                             else:
                                 failed[i] -= 1
                                 exception[i] += 1
-                                computation_name.append(xml_testOcc.attrib["name"])
+                                computation_name.append(xml_test_occ.attrib["name"])
                     except:
                         error_message = "ERROR retrieving data from last build for {case_name} : {xml_attrib}.".format(
                             case_name=case_name[i],
-                            xml_attrib=xml_testOcc.attrib["name"],
+                            xml_attrib=xml_test_occ.attrib["name"],
                         )
                         print(error_message)
                         lprint(error_message)
@@ -284,35 +284,35 @@ def report_cases(url, given_build_config, username, password, buildname):
         sum_passed_subtotal += passed[i]
         not_passed_subtotal += failed[i] + exception[i] + ignored[i] + muted[i]
 
-    for sum in _summarydata_array:
-        if (sum.name in buildname) or sum.name == "All":
-            sum.sum_passed += _sum_passed
-            sum.sum_failed += _sum_failed
-            sum.sum_exception += _sum_exception
-            sum.sum_ignored += _sum_ignored
-            sum.sum_muted += _sum_muted
+    for summary in summarydata_array:
+        if (summary.name in buildname) or summary.name == "All":
+            summary.sum_passed += _sum_passed
+            summary.sum_failed += _sum_failed
+            summary.sum_exception += _sum_exception
+            summary.sum_ignored += _sum_ignored
+            summary.sum_muted += _sum_muted
 
     if len(case_id) != 0:
-        _engine_statistics.append(
+        engine_statistics.append(
             Data(
                 xml_engine_root.attrib["name"], sum_passed_subtotal, not_passed_subtotal
             )
         )
 
-        i = len(_engine_statistics) - 1
-        lprint("            Total     : %6d" % _engine_statistics[i].total)
-        lprint("            Passed    : %6d" % _engine_statistics[i].passed)
-        lprint("            Percentage: %6.2f" % _engine_statistics[i].percentage)
+        i = len(engine_statistics) - 1
+        lprint("            Total     : %6d" % engine_statistics[i].total)
+        lprint("            Passed    : %6d" % engine_statistics[i].passed)
+        lprint("            Percentage: %6.2f" % engine_statistics[i].percentage)
 
 
 def main(tbroot, given_build_config, username, password, engines):
-    global _engine_statistics
-    global _summarydata_array
+    global engine_statistics
+    global summarydata_array
 
-    _summarydata_array.append(summarydata("All"))
+    summarydata_array.append(summarydata("All"))
     if engines is not None:
         for engine in engines.split(","):
-            _summarydata_array.append(summarydata(engine))
+            summarydata_array.append(summarydata(engine))
 
     urltb = "https://dpcbuild.deltares.nl/httpAuth/app/rest/projects/id:%s" % tbroot
 
@@ -341,7 +341,7 @@ def main(tbroot, given_build_config, username, password, engines):
             engine_id.append(project.attrib["id"])
             engine_name.append(project.attrib["name"])
 
-    _engine_statistics = []
+    engine_statistics = []
 
     for engine in engine_id:
         project_id = []
@@ -397,29 +397,29 @@ def main(tbroot, given_build_config, username, password, engines):
         )
 
     lprint("\nTestbench root: %s" % xml_tb_root.attrib["name"])
-    for sum in _summarydata_array:
+    for summary in summarydata_array:
         total = (
-            sum.sum_passed
-            + sum.sum_failed
-            + sum.sum_exception
-            + sum.sum_ignored
-            + sum.sum_muted
+            summary.sum_passed
+            + summary.sum_failed
+            + summary.sum_exception
+            + summary.sum_ignored
+            + summary.sum_muted
         )
         not_passed = (
-            sum.sum_failed + sum.sum_exception + sum.sum_ignored + sum.sum_muted
+            summary.sum_failed + summary.sum_exception + summary.sum_ignored + summary.sum_muted
         )
         a = 0.0
         if total > 0:
-            a = float(sum.sum_passed) / float(total) * 100.0
+            a = float(summary.sum_passed) / float(total) * 100.0
 
-        lprint("\nSummary: %s" % sum.name)
+        lprint("\nSummary: %s" % summary.name)
         lprint("Total tests   : %6d" % (total))
-        lprint("    Passed    : %6d" % sum.sum_passed)
+        lprint("    Passed    : %6d" % summary.sum_passed)
         lprint("    Not passed: %6d" % not_passed)
-        lprint("    Failed    : %6d" % sum.sum_failed)
-        lprint("    Exception : %6d" % sum.sum_exception)
-        lprint("    Ignored   : %6d" % sum.sum_ignored)
-        lprint("    Muted     : %6d" % sum.sum_muted)
+        lprint("    Failed    : %6d" % summary.sum_failed)
+        lprint("    Exception : %6d" % summary.sum_exception)
+        lprint("    Ignored   : %6d" % summary.sum_ignored)
+        lprint("    Muted     : %6d" % summary.sum_muted)
         lprint("    Percentage: %6.2f" % float(a))
 
 
