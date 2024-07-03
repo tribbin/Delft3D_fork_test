@@ -31,6 +31,7 @@ summarydata_array = []
 global log_file
 global engine_statistics
 TEXT_NOT_IN_XML_MESSAGE = "Text is not in XML format: %s"
+BASE_URL = "https://dpcbuild.deltares.nl/httpAuth/app/rest/projects/id:%s"
 
 
 class SummaryData(object):
@@ -83,11 +84,9 @@ def report_cases(url, given_build_config, username, password, buildname):
     case_id = []
     case_name = []
     engine_req = get_request(url, username, password)
-    try:
-        xml_engine_root = ET.fromstring(engine_req.text)
-    except:
-        print(TEXT_NOT_IN_XML_MESSAGE % engine_req.text)
+    if not text_in_xml_message(engine_req.text):
         return 1
+    xml_engine_root = ET.fromstring(engine_req.text)
 
     for build_types in xml_engine_root.findall("buildTypes"):
         for build_type in build_types:
@@ -126,16 +125,16 @@ def report_cases(url, given_build_config, username, password, buildname):
             "%s/httpAuth/app/rest/builds?locator=buildType:(id:%s),defaultFilter:false,branch:<default>&count=1&fields=count,build(number,statistics,status,statusText,testOccurrences,agent,lastChange,tags(tag),pinned,revisions(revision))"
             % (deltares_build, case)
         )
+
         case_req = get_request(url, username, password)
-        try:
-            xml_case_root = ET.fromstring(case_req.text)
-        except:
-            print(TEXT_NOT_IN_XML_MESSAGE % case_req.text)
+        if not text_in_xml_message(case_req.text):
             return 1
 
         file_name = "TMPdownload_teamcity_retrieve/%s.xml" % case
         with open(file_name, "wb") as out_file:
             out_file.write(case_req.content)
+
+        xml_case_root = ET.fromstring(case_req.text)
 
         for build in xml_case_root.findall("build"):
             bnr = build.attrib["number"]
@@ -152,9 +151,7 @@ def report_cases(url, given_build_config, username, password, buildname):
                 else:
                     failed.append(0)
                 if "ignored" in build.find("./testOccurrences").attrib:
-                    ignored.append(
-                        int(build.find("./testOccurrences").attrib["ignored"])
-                    )
+                    ignored.append(int(build.find("./testOccurrences").attrib["ignored"]))
                 else:
                     ignored.append(0)
                 if "muted" in build.find("./testOccurrences").attrib:
@@ -187,34 +184,25 @@ def report_cases(url, given_build_config, username, password, buildname):
             href = build.find("./testOccurrences").attrib["href"]
             url_1 = "%s%s,count:%d" % (deltares_build, href, cnt)
             test_occs_req = get_request(url_1, username, password)
-            try:
-                xml_test_occs = ET.fromstring(test_occs_req.text)
-            except:
-                print(TEXT_NOT_IN_XML_MESSAGE % test_occs_req.text)
+            if not text_in_xml_message(test_occs_req.text):
                 return 1
+            xml_test_occs = ET.fromstring(test_occs_req.text)
             for t_occ in xml_test_occs.findall("testOccurrence"):
                 if t_occ.attrib["status"] == "FAILURE":
                     href = t_occ.attrib["href"]
                     url_2 = "%s%s" % (deltares_build, href)
                     test_occ_req = get_request(url_2, username, password)
-                    try:
-                        xml_test_occ = ET.fromstring(test_occ_req.text)
-                    except:
-                        print(TEXT_NOT_IN_XML_MESSAGE % test_occ_req.text)
+                    if not text_in_xml_message(test_occ_req.text):
                         return 1
+                    xml_test_occ = ET.fromstring(test_occ_req.text)
                     txt = xml_test_occ.find("details").text
 
                     try:
-                        if (
-                            txt.find("Exception occurred") != -1
-                            or txt.find("exception occurred") != -1
-                        ):
+                        if txt.find("Exception occurred") != -1 or txt.find("exception occurred") != -1:
                             if "muted" in t_occ.attrib:
                                 exception[i] += 1
                                 muted_exception[i] += 1
-                                computation_name.append(
-                                    "MUTED: " + xml_test_occ.attrib["name"]
-                                )
+                                computation_name.append("MUTED: " + xml_test_occ.attrib["name"])
                             else:
                                 failed[i] -= 1
                                 exception[i] += 1
@@ -227,14 +215,7 @@ def report_cases(url, given_build_config, username, password, buildname):
                         print(error_message)
                         lprint(error_message)
 
-        total = (
-            passed[i]
-            + failed[i]
-            + exception[i]
-            + ignored[i]
-            + muted[i]
-            - muted_exception[i]
-        )
+        total = passed[i] + failed[i] + exception[i] + ignored[i] + muted[i] - muted_exception[i]
         if total != 0:
             a = float(passed[i]) / float(total) * 100.0
         else:
@@ -261,8 +242,7 @@ def report_cases(url, given_build_config, username, password, buildname):
                 % (case_name[i], build_nr[i])
             )
             lprint(
-                "                                                                            xxx  %s"
-                % (status_text)
+                "                                                                            xxx  %s" % (status_text)
             )
 
         if exception[i] != 0:
@@ -289,11 +269,7 @@ def report_cases(url, given_build_config, username, password, buildname):
             summary.sum_muted += _sum_muted
 
     if len(case_id) != 0:
-        engine_statistics.append(
-            Data(
-                xml_engine_root.attrib["name"], sum_passed_subtotal, not_passed_subtotal
-            )
-        )
+        engine_statistics.append(Data(xml_engine_root.attrib["name"], sum_passed_subtotal, not_passed_subtotal))
 
         i = len(engine_statistics) - 1
         lprint("            Total     : %6d" % engine_statistics[i].total)
@@ -314,12 +290,29 @@ def get_request(url: str, username: str, password: str) -> requests.Response:
     -------
         requests.Response: The response object from the request.
     """
-    return requests.get(
-        url=url, auth=HTTPBasicAuth(username, password), stream=True, verify=True
-    )
+    return requests.get(url=url, auth=HTTPBasicAuth(username, password), stream=True, verify=True)
 
 
-def main(tbroot, given_build_config, username, password, engines):
+def text_in_xml_message(text: str) -> bool:
+    """
+    Check if HTTP GET response has text.
+
+    Args:
+        text (str): The HTTP GET response to check.
+
+    Returns
+    -------
+        bool: true or false depending on the text.
+    """
+    try:
+        ET.fromstring(text)
+        return True
+    except:
+        print("TEXT_NOT_IN_XML_MESSAGE" % text)
+        return False
+
+
+def retrieve_engine_test_status(project_id, given_build_config, username, password, engines):
     global engine_statistics
     global summarydata_array
 
@@ -328,27 +321,25 @@ def main(tbroot, given_build_config, username, password, engines):
         for engine in engines.split(","):
             summarydata_array.append(SummaryData(engine))
 
-    urltb = "https://dpcbuild.deltares.nl/httpAuth/app/rest/projects/id:%s" % tbroot
+    project_url = BASE_URL % project_id
 
     try:
-        tbroot_req = get_request(urltb, username, password)
+        project_response = get_request(project_url, username, password)
     except:
-        print("Given URL does not exist: %s" % urltb)
+        print("Given URL does not exist: %s" % project_url)
         return 1
 
-    try:
-        xml_tb_root = ET.fromstring(tbroot_req.text)
-    except:
-        print(TEXT_NOT_IN_XML_MESSAGE % tbroot_req.text)
+    if not text_in_xml_message(project_response.text):
         return 1
+    project_text = ET.fromstring(project_response.text)
 
     print("")
-    print("%s" % xml_tb_root.attrib["name"])
-    lprint("%s" % xml_tb_root.attrib["name"])
+    print("%s" % project_text.attrib["name"])
+    lprint("%s" % project_text.attrib["name"])
 
     engine_name = []
     engine_id = []
-    for projects in xml_tb_root.findall("projects"):
+    for projects in project_text.findall("projects"):
         for project in projects:
             engine_id.append(project.attrib["id"])
             engine_name.append(project.attrib["name"])
@@ -359,14 +350,12 @@ def main(tbroot, given_build_config, username, password, engines):
         project_id = []
         project_name = []
 
-        url = "https://dpcbuild.deltares.nl/httpAuth/app/rest/projects/id:%s" % engine
+        url = BASE_URL % engine
 
         engine_req = get_request(url, username, password)
-        try:
-            xml_engine_root = ET.fromstring(engine_req.text)
-        except:
-            print(TEXT_NOT_IN_XML_MESSAGE % engine_req.text)
+        if not text_in_xml_message(engine_req.text):
             return 1
+        xml_engine_root = ET.fromstring(engine_req.text)
         print("    %s" % xml_engine_root.attrib["name"])
         lprint("    %s" % xml_engine_root.attrib["name"])
 
@@ -375,15 +364,9 @@ def main(tbroot, given_build_config, username, password, engines):
                 project_id.append(project.attrib["id"])
                 project_name.append(project.attrib["name"])
 
-                url_3 = (
-                    "https://dpcbuild.deltares.nl/httpAuth/app/rest/projects/id:%s"
-                    % project.attrib["id"]
-                )
+                url_3 = BASE_URL % project.attrib["id"]
                 level_req = get_request(url, username, password)
-                try:
-                    ET.fromstring(level_req.text)
-                except:
-                    print(TEXT_NOT_IN_XML_MESSAGE % level_req.text)
+                if not text_in_xml_message(level_req.text):
                     return 1
                 report_cases(
                     url_3,
@@ -401,18 +384,12 @@ def main(tbroot, given_build_config, username, password, engines):
             engine_name[engine_id.index(engine)],
         )
 
-    lprint("\nTestbench root: %s" % xml_tb_root.attrib["name"])
+    lprint("\nTestbench root: %s" % project_text.attrib["name"])
     for summary in summarydata_array:
         total = (
-            summary.sum_passed
-            + summary.sum_failed
-            + summary.sum_exception
-            + summary.sum_ignored
-            + summary.sum_muted
+            summary.sum_passed + summary.sum_failed + summary.sum_exception + summary.sum_ignored + summary.sum_muted
         )
-        not_passed = (
-            summary.sum_failed + summary.sum_exception + summary.sum_ignored + summary.sum_muted
-        )
+        not_passed = summary.sum_failed + summary.sum_exception + summary.sum_ignored + summary.sum_muted
         a = 0.0
         if total > 0:
             a = float(summary.sum_passed) / float(total) * 100.0
@@ -428,10 +405,9 @@ def main(tbroot, given_build_config, username, password, engines):
         lprint("    Percentage: %6.2f" % float(a))
 
 
-def create_argument_parser():
-    parser = argparse.ArgumentParser(
-        description="Retrieve status of a testbench running on TeamCity"
-    )
+def create_argument_parser() -> argparse.ArgumentParser:
+    """Create custom argument parser."""
+    parser = argparse.ArgumentParser(description="Retrieve status of a testbench running on TeamCity")
 
     parser.add_argument(
         "-t",
@@ -441,12 +417,8 @@ def create_argument_parser():
         required="true",
     )
     parser.add_argument("-o", "--output", help="Output filename.", dest="out_put")
-    parser.add_argument(
-        "-b", "--build_config", help="Build configuration ID", dest="build_config"
-    )
-    parser.add_argument(
-        "-u", "--username", help="Username for accessing TeamCity.", dest="username"
-    )
+    parser.add_argument("-b", "--build_config", help="Build configuration ID", dest="build_config")
+    parser.add_argument("-u", "--username", help="Username for accessing TeamCity.", dest="username")
     parser.add_argument(
         "-p",
         "--password",
@@ -499,9 +471,7 @@ if __name__ == "__main__":
         if interactive:
             username = input("Username for TeamCity access:")
         else:
-            print(
-                'No username on commandline. add "-i True" to enable interactive input'
-            )
+            print('No username on commandline. add "-i True" to enable interactive input')
             exit()
     if args.password:
         password = args.password
@@ -509,9 +479,7 @@ if __name__ == "__main__":
         if interactive:
             password = getpass.getpass()
         else:
-            print(
-                'No password on commandline. add "-i True" to enable interactive input'
-            )
+            print('No password on commandline. add "-i True" to enable interactive input')
             exit()
     if args.engines:
         engines = args.engines
@@ -526,7 +494,7 @@ if __name__ == "__main__":
 
     print("Listing is written to: %s" % out_put)
 
-    main(tbroot, given_build_config, username, password, engines)
+    retrieve_engine_test_status(tbroot, given_build_config, username, password, engines)
 
     if os.path.exists("TMPdownload_teamcity_retrieve"):
         shutil.rmtree("TMPdownload_teamcity_retrieve")
