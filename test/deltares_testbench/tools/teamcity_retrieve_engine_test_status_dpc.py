@@ -32,7 +32,9 @@ summarydata_array = []
 global log_file
 global engine_statistics
 TEXT_NOT_IN_XML_MESSAGE = "Text is not in XML format: %s"
-BASE_URL = "https://dpcbuild.deltares.nl/httpAuth/app/rest/projects/id:%s"
+BASE_URL = "https://dpcbuild.deltares.nl"
+REST_API_URL = f"{BASE_URL}/httpAuth/app/rest"
+PROJECTS_URL = f"{REST_API_URL}/projects/id:%s"
 TEST_OCCURRENCES = "./testOccurrences"
 
 
@@ -120,11 +122,7 @@ def report_cases(url, given_build_config, username, password, buildname):
     for case_info in case_info_list:
         identifier = case_info.identifier
         computation_name = []
-        deltares_build = "https://dpcbuild.deltares.nl"
-        url = (
-            "%s/httpAuth/app/rest/builds?locator=buildType:(id:%s),defaultFilter:false,branch:<default>&count=1&fields=count,build(number,statistics,status,statusText,testOccurrences,agent,lastChange,tags(tag),pinned,revisions(revision))"
-            % (deltares_build, identifier)
-        )
+        url = f"{BASE_URL}/httpAuth/app/rest/builds?locator=buildType:(id:{identifier}),defaultFilter:false,branch:<default>&count=1&fields=count,build(number,statistics,status,statusText,testOccurrences,agent,lastChange,tags(tag),pinned,revisions(revision))"
 
         case_req = get_request(url, username, password)
         if not text_in_xml_message(case_req.text):
@@ -182,7 +180,7 @@ def report_cases(url, given_build_config, username, password, buildname):
         if failed[i] != 0:
             cnt = int(build.find(TEST_OCCURRENCES).attrib["count"])
             href = build.find(TEST_OCCURRENCES).attrib["href"]
-            url_1 = "%s%s,count:%d" % (deltares_build, href, cnt)
+            url_1 = f"{BASE_URL}{href},count:{cnt}"
             test_occs_req = get_request(url_1, username, password)
             if not text_in_xml_message(test_occs_req.text):
                 return 1
@@ -190,7 +188,7 @@ def report_cases(url, given_build_config, username, password, buildname):
             for t_occ in xml_test_occs.findall("testOccurrence"):
                 if t_occ.attrib["status"] == "FAILURE":
                     href = t_occ.attrib["href"]
-                    url_2 = "%s%s" % (deltares_build, href)
+                    url_2 = f"{BASE_URL}{href}"
                     test_occ_req = get_request(url_2, username, password)
                     if not text_in_xml_message(test_occ_req.text):
                         return 1
@@ -336,7 +334,7 @@ def retrieve_engine_test_status(project_id, given_build_config, username, passwo
         for engine in engines.split(","):
             summarydata_array.append(SummaryData(engine))
 
-    project_url = BASE_URL % project_id
+    project_url = PROJECTS_URL % project_id
 
     try:
         project_response = get_request(project_url, username, password)
@@ -365,7 +363,7 @@ def retrieve_engine_test_status(project_id, given_build_config, username, passwo
         project_id = []
         project_name = []
 
-        url = BASE_URL % engine
+        url = PROJECTS_URL % engine
 
         engine_req = get_request(url, username, password)
         if not text_in_xml_message(engine_req.text):
@@ -379,7 +377,7 @@ def retrieve_engine_test_status(project_id, given_build_config, username, passwo
                 project_id.append(project.attrib["id"])
                 project_name.append(project.attrib["name"])
 
-                url_3 = BASE_URL % project.attrib["id"]
+                url_3 = PROJECTS_URL % project.attrib["id"]
                 level_req = get_request(url, username, password)
                 if not text_in_xml_message(level_req.text):
                     return 1
