@@ -140,6 +140,9 @@ subroutine flow_sedmorinit()
         return
     endif
     ! initialize sigsed based on values of tpsnumber read from .sed file
+    if (allocated(sigsed)) then
+       deallocate(sigsed)
+    endif
     allocate (sigsed (stmpar%lsedtot))
     do i = 1, stmpar%lsedtot
         sigsed(i) = stmpar%sedpar%tpsnumber(i)
