@@ -32,18 +32,22 @@
 
    ! Interpolate flownode-based vector (sx,sy) to edge-based vector (e_sn, e_st)
    subroutine fm_upwbed(lsedtot, sx, sy, sxtot, sytot, e_sn, e_st)
-   use m_flowgeom
-   use m_flow
+   use m_flowgeom, only: acl, snu, csu, kcu
+   use m_flow, only: u1, epshu, hu
    use unstruc_messages
    use m_sediment, only: stmpar, jabndtreatment  
    use sediment_basics_module
-   use m_fm_erosed, only: link1, link1sign, tratyp, kfsed, link1sign2, lnx_mor, lnxi_mor, ndx_mor, ln_mor
+   use m_fm_erosed, only: link1, link1sign, tratyp, kfsed, link1sign2
+   use m_fm_erosed, only: ln=>ln_mor
+   use m_fm_erosed, only: ndx=>ndx_mor
+   use m_fm_erosed, only: lnx=>lnx_mor
+   use m_fm_erosed, only: lnxi=>lnxi_mor
    implicit none
 
    integer,                                      intent(in)  :: lsedtot        !< number of sediment fractions
-   double precision, dimension(Ndx_mor,lsedtot), intent(in)  :: sx, sy         !< cell (flownode)-based quantity
-   double precision, dimension(Ndx_mor,lsedtot), intent(in)  :: sxtot, sytot   !< cell (flownode)-based fluxes
-   double precision, dimension(Lnx_mor,lsedtot), intent(out) :: e_sn, e_st     !< edge (flowlink)-based quantity, normal and tangential components
+   double precision, dimension(Ndx,lsedtot), intent(in)  :: sx, sy         !< cell (flownode)-based quantity
+   double precision, dimension(Ndx,lsedtot), intent(in)  :: sxtot, sytot   !< cell (flownode)-based fluxes
+   double precision, dimension(Lnx,lsedtot), intent(out) :: e_sn, e_st     !< edge (flowlink)-based quantity, normal and tangential components
 
    double precision                                      :: sutot1, sutot2
 
@@ -58,9 +62,9 @@
    !end if
 
    if (jabndtreatment==0) then
-      lnxlnxi = lnx_mor
+      lnxlnxi = lnx
    else if (jabndtreatment==1) then
-      lnxlnxi = lnxi_mor
+      lnxlnxi = lnxi
    end if
 
    ! internal flowlinks (and boundary flowlinks if jabndtreatment==0 -- default)
@@ -68,8 +72,8 @@
       !     check if flowlink is active and if it connects two active sediment flownodes
       if ( hu(Lf)>epshu ) then
          !        find left and right neighboring flownodes
-         k1 = ln_mor(1,Lf)
-         k2 = ln_mor(2,Lf)
+         k1 = ln(1,Lf)
+         k2 = ln(2,Lf)
                   
          do l=1,lsedtot
             if (.not.has_bedload(tratyp(l))) cycle   ! cycle if this fraction doesn't include bedload
@@ -143,8 +147,8 @@
          ! outflow
          if ( hu(Lf)>epshu .and. u1(Lf)<=0d0) then
             ! find left and right neighboring flownodes
-            k1 = ln_mor(1,Lf)  ! boundary node
-            k2 = ln_mor(2,Lf)  ! internal node
+            k1 = ln(1,Lf)  ! boundary node
+            k2 = ln(2,Lf)  ! internal node
             !
             do l=1,lsedtot
                if (.not.has_bedload(tratyp(l))) cycle   ! cycle if this fraction doesn't include bedload
