@@ -37,7 +37,7 @@ contains
 
   LOGICAL FUNCTION RECHTSAF_active(K1,K2,K3)
 
-  use m_netw
+  use network_data, only: xk, yk
   use geometry_module, only : duitpl
   use m_sferic, only: jsferic
 

@@ -2063,19 +2063,14 @@
 
    LOGICAL FUNCTION RECHTSAF(K1,K2,K3)
    use network_data
-   use m_RECHTSAF_ACTIVE
    implicit none
    integer :: K1, K2, K3
-
+   
    double precision :: sig
-
+   
    rechtsaf = .false.
    return
-
-   rechtsaf = RECHTSAF_active(K1,K2,K3)
-
-   return
-
+   
    end FUNCTION RECHTSAF
 
    SUBROUTINE CONNECTDBN(K1,K2,LNU)
