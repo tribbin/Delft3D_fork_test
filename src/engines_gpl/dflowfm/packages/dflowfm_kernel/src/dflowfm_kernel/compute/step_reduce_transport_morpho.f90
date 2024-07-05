@@ -51,7 +51,6 @@
  use m_fm_bott3d, only: fm_bott3d
  use m_fm_erosed, only: ti_sedtrans
  use m_curvature, only: get_curvature
- use m_fm_update, only: update_part
  use m_xbeach_netcdf, only: xbeach_mombalance
  use mass_balance_areas_routines, only: comp_bedload_fluxmba
 
