@@ -699,10 +699,12 @@
 
       if ( hyd%layer_type == HYD_LAYERS_Z ) then
          if ( .not. ieee_is_finite(hyd%zbot) .or. .not. ieee_is_finite(hyd%ztop) ) then
-            call write_error_message('Error: hyd file should contain values for ztop and zbot')
+            call write_error_message('Error: hyd-file with z-layers should contain values for '// &
+                     'keywords "z-layers-ztop" and "z-layers-zbot"')
          endif
          if ( hyd%zbot >=  hyd%ztop ) then
-            call write_error_message('Error: values for ztop in hyd-file should be larger than value for zbot')
+            call write_error_message('Error: the value for "z-layers-ztop" in the hyd-file ' // &
+                     'should be larger than the value for "z-layers-bot"')
          endif
       endif
 
