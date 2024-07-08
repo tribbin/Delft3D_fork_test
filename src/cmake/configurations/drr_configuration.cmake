@@ -22,6 +22,12 @@ endif()
 
 # Utils LGPL
 # =====
+
+# Flow1d
+if(NOT TARGET flow1d_core)
+    add_subdirectory(${checkout_src_root}/${flow1d_core_module} flow1d_core)
+endif()
+
 if(NOT TARGET delftio_shm)
     add_subdirectory(${checkout_src_root}/${delftio_shm_module} delftio_shm)
 endif()

@@ -49,6 +49,7 @@ set(oss_dependencies_general control_lib
                             ec_module
                             gridgeom
                             io_netcdf
+                            flow1d_core
                             kdtree2
                             kdtree_wrapper
                             rr_kernel_f

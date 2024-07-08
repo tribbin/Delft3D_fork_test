@@ -30,6 +30,7 @@ target_compile_definitions(${library_name} PRIVATE "X64")
 
 set(oss_dependencies_general 
                             control_lib
+                            flow1d_core
                             delftio
                             delftio_shm
                             deltares_common

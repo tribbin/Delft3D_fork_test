@@ -16,7 +16,7 @@
 !! \ref hashsearch_or_add - look up a string and if it does not exist yet, add it
 !!
 module m_hash_search_rr
-
+use m_hash_search, only: t_hashlist
    use m_alloc
    use messageHandling
 
@@ -32,15 +32,15 @@ module m_hash_search_rr
       module procedure deallochashtable
    end interface
 
-   type, public :: t_hashlist  !< Definition of the hash list
-      integer :: hashcon
-      integer :: id_count = 0
-      integer :: growsby = 200
-      integer :: size = 0
-      character(len=idLen), allocatable, dimension(:) :: id_list
-      integer, allocatable, dimension(:) :: hashfirst
-      integer, allocatable, dimension(:) :: hashnext
-   end type
+   !type, public :: t_hashlist  !< Definition of the hash list
+   !   integer :: hashcon
+   !   integer :: id_count = 0
+   !   integer :: growsby = 200
+   !   integer :: size = 0
+   !   character(len=idLen), allocatable, dimension(:) :: id_list
+   !   integer, allocatable, dimension(:) :: hashfirst
+   !   integer, allocatable, dimension(:) :: hashnext
+   !end type
 
    integer, parameter :: hashcon = 1009
    contains

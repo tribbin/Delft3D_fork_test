@@ -32,6 +32,8 @@
 
 module unstruc_channel_flow
 use m_network
+use m_CrossSections, only: CS_TYPE_PREISMAN
+use messagehandling, only: idlen
 implicit none
 type(t_network), target              :: network
 integer                       :: CSCalculationOption  !< Calculation option for total area computation in 1d
