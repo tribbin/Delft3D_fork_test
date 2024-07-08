@@ -62,6 +62,10 @@ if(NOT TARGET kdtree_wrapper)
     add_subdirectory(${checkout_src_root}/${kdtree_wrapper_module} kdtree_wrapper)
 endif()
 
+if(NOT TARGET shp)
+    add_subdirectory(${checkout_src_root}/${shp_module} shp)
+endif()
+
 # fortrangis
 if(NOT TARGET fortrangis)
     add_subdirectory(${checkout_src_root}/${fortrangis_module} fortrangis)

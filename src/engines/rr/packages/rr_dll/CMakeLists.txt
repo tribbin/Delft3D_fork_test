@@ -7,7 +7,7 @@ get_fortran_source_files(${src_path} source_files)
 # Set version file variables
 #set(ini_version_file ${CMAKE_CURRENT_SOURCE_DIR}/../version/version_number.ini)
 #set(rc_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rr_dll_version.rc)
-#set(fortran_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rr_dll_version.F90)
+set(fortran_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rr_dll_version.F90)
 
 # # Generate the version files
 # generate_version_files(${rc_version_file} 
@@ -87,4 +87,9 @@ oss_include_libraries(${library_name} oss_dependencies)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${source_files})
 set_target_properties (${library_name} PROPERTIES FOLDER engines/rr)
 
-install(TARGETS ${library_name} DESTINATION bin)
+if(WIN32)
+    install(PROGRAMS $<TARGET_FILE:${library_name}> RENAME rr.${library_suffix} DESTINATION lib)
+endif(WIN32)
+if(UNIX)
+    install(TARGETS ${library_name} RUNTIME DESTINATION lib)
+endif(UNIX)

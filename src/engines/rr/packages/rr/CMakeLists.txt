@@ -7,7 +7,7 @@ get_fortran_source_files(${src_path} source_files)
 # Set version file variables
 # set(ini_version_file ${CMAKE_CURRENT_SOURCE_DIR}/../version/version_number.ini)
 # set(rc_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rrmain_version.rc)
-# set(fortran_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rrmain_version.F90)
+set(fortran_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rrmain_version.F90)
 
 # # Generate the version files
 # generate_version_files(${rc_version_file} 
@@ -94,4 +94,6 @@ oss_include_libraries(${executable_name} oss_dependencies)
 # Define how the files should be structured within Visual Studio
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${source_files})
 set_target_properties (${executable_name} PROPERTIES FOLDER engines/rr)
+
+install(TARGETS ${executable_name} RUNTIME DESTINATION bin)
 
