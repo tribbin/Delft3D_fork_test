@@ -1267,7 +1267,17 @@ subroutine readMDUFile(filename, istat)
     call prop_get(md_ptr, 'numerics', 'Oceaneddyvel'        , Oceaneddyvel)
     call prop_get(md_ptr, 'numerics', 'Oceaneddyyoff'       , Oceaneddyyoff)
     call prop_get(md_ptr, 'numerics', 'Oceaneddyxoff'       , Oceaneddyxoff)
-    call prop_get(md_ptr, 'numerics', 'FlowSolver'          , flow_solver)
+    
+    call prop_get_string ( md_ptr, 'numerics', 'FlowSolver',  md_flow_solver,      success)
+    call str_lower(md_flow_solver)
+    select case (md_flow_solver)
+    case ('generic1d2d3d')
+       flow_solver=FLOW_SOLVER_FM
+    case ('implicit1d')
+       flow_solver=FLOW_SOLVER_SRE
+    case default
+       call mess(LEVEL_ERROR, 'Invalid flow solver '''//trim(md_flow_solver)//''' . Select between `generic1d2d3d` and `implicit1d`.')
+    end select
     
     call prop_get(md_ptr, 'numerics', 'OneDImpomega'        , f1dimppar%omega  )
     call prop_get(md_ptr, 'numerics', 'OneDImppsi'          , f1dimppar%psi    )
@@ -3284,6 +3294,8 @@ endif
     if (testfixedweirs .ne. 0) then
         call prop_set(prop_ptr, 'numerics', 'Testfixedweirs', testfixedweirs, 'Test for fixed weir algoritms (0 = Sieben2010, 1 = Sieben2007)')
     endif
+
+    call prop_set(prop_ptr, 'numerics', 'FlowSolver',   trim(md_flow_solver), 'Flow solver.')
 
 ! Physics
     call prop_set(prop_ptr, 'physics', 'UnifFrictCoef',     frcuni,      'Uniform friction coefficient (0: no friction)')

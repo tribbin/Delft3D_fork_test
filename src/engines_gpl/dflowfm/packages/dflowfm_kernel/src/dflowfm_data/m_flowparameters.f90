@@ -380,6 +380,7 @@ integer                            :: javau3onbnd = 0   !< vert. adv. u1 bnd Upw
  integer                           :: jaZerozbndinflowadvection=0 !< set zero advection velocity on inflow at z boundaries 0=no, 1=yes
  
  integer                           :: flow_solver !< 1=stepreduce, 2=1d implicit
+ character(len=28)                 :: md_flow_solver           
  integer, parameter                :: FLOW_SOLVER_FM = 1
  integer, parameter                :: FLOW_SOLVER_SRE = 2
  
@@ -937,8 +938,7 @@ subroutine default_flowparameters()
     JaZlayercenterbedvel      = 1
     jastructurelayersactive   = 1
     JaZerozbndinflowadvection = 0
-    flow_solver = FLOW_SOLVER_FM       !< 1=stepreduce, 2=1d implicit
-    
+    md_flow_solver='generic1d2d3d'
     jabaroctimeint = -4  !< time integration baroclini pressure, 1 = expl., 2=AB rho , 3 = AB barocterm, 4=3dryfloodproof 5 = advect rho (n+1/2)
     jabarocterm    = 4   !  revised baroc term
     jaorgbarockeywords = 0
