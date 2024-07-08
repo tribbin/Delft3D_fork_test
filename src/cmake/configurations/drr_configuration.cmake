@@ -54,10 +54,36 @@ if(NOT TARGET io_netcdf)
     add_subdirectory(${checkout_src_root}/${io_netcdf_module} io_netcdf)
 endif()
 
+if(NOT TARGET io_netcdf_data)
+    add_subdirectory(${checkout_src_root}/${io_netcdf_data_module} io_netcdf_data)
+endif()
+
 if(NOT TARGET kdtree_wrapper)
     add_subdirectory(${checkout_src_root}/${kdtree_wrapper_module} kdtree_wrapper)
 endif()
 
+# fortrangis
+if(NOT TARGET fortrangis)
+    add_subdirectory(${checkout_src_root}/${fortrangis_module} fortrangis)
+endif()
+
+# proj
+if(WIN32)
+    if(NOT TARGET proj)
+        include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/proj_configuration.cmake)
+    endif()
+endif(WIN32)
+
+# esmfsm
+if(NOT TARGET esmfsm_version_number)
+    add_subdirectory(${checkout_src_root}/${esmfsm_version_number_module} esmfsm_version_number)
+endif()
+if(NOT TARGET esmfsm_c)
+    add_subdirectory(${checkout_src_root}/${esmfsm_c_module} esmfsm_c)
+endif()
+if(NOT TARGET esmfsm)
+    add_subdirectory(${checkout_src_root}/${esmfsm_module} esmfsm)
+endif()
 
 # Third party
 # ===========

@@ -192,6 +192,7 @@ set(swan_configuration "SWAN")
 set(flow2d3d_configuration "FLOW2D3D")
 set(tools_configuration "TOOLS")
 set(tools_gpl_configuration "TOOLS_GPL")
+set(drr_configuration "DRR")
 
 # Combined (multi-component) configurations
 set(delft3dfm_configuration "DELFT3DFM")
@@ -211,6 +212,7 @@ if(NOT (${configuration_type} STREQUAL ${tests_configuration}
      OR ${configuration_type} STREQUAL ${tools_gpl_configuration}
      OR ${configuration_type} STREQUAL ${delft3dfm_configuration}
      OR ${configuration_type} STREQUAL ${delft3d4_configuration}
+     OR ${configuration_type} STREQUAL ${drr_configuration}
      OR ${configuration_type} STREQUAL ${all_configuration}))
    message(FATAL_ERROR "${configuration_type} not recognized. CMake will abort solution generation now.")
 endif()
@@ -276,6 +278,12 @@ endif()
 if(${configuration_type} STREQUAL ${tools_gpl_configuration})
     message(STATUS "Generating solution for Tools_GPL ...")
     include(configurations/tools_gpl_configuration.cmake)
+endif()
+
+# D-RR configuration
+if(${configuration_type} STREQUAL ${drr_configuration})
+    message(STATUS "Generating solution for D-RR ...")
+    include(configurations/drr_configuration.cmake)
 endif()
 
 ### Composed configurations

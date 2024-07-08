@@ -1,5 +1,5 @@
 # File to define the engines components and their corresponding tests
-set(engines_path engines_gpl)
+set(engines_path engines)
 
 # RR Rainfall Runoff
 set(rr_module_path "${engines_path}/rr/packages")

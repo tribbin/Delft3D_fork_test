@@ -5,17 +5,17 @@ set(src_path src)
 get_fortran_source_files(${src_path} source_files)
 
 # Set version file variables
-set(ini_version_file ${CMAKE_CURRENT_SOURCE_DIR}/../version/version_number.ini)
-set(rc_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rrmain_version.rc)
-set(fortran_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rrmain_version.F90)
+# set(ini_version_file ${CMAKE_CURRENT_SOURCE_DIR}/../version/version_number.ini)
+# set(rc_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rrmain_version.rc)
+# set(fortran_version_file ${CMAKE_CURRENT_SOURCE_DIR}/src/rrmain_version.F90)
 
-# Generate the version files
-generate_version_files(${rc_version_file} 
-                       ${ini_version_file} 
-                       ON)
-generate_version_files(${fortran_version_file} 
-                       ${ini_version_file} 
-                       ON)
+# # Generate the version files
+# generate_version_files(${rc_version_file} 
+                       # ${ini_version_file} 
+                       # ON)
+# generate_version_files(${fortran_version_file} 
+                       # ${ini_version_file} 
+                       # ON)
 
 # Define executable
 set(executable_name rr)
@@ -23,16 +23,16 @@ add_executable(${executable_name} ${source_files}
                                 ${rc_version_file} 
                                 ${fortran_version_file})
 
-# Define prebuild events
-prebuild_version_number(${executable_name} ${rc_version_file} 
-                                        ${checkout_src_root}
-                                        ${ini_version_file}
-                                        ON)
+# # Define prebuild events
+# prebuild_version_number(${executable_name} ${rc_version_file} 
+                                        # ${checkout_src_root}
+                                        # ${ini_version_file}
+                                        # ON)
 
-prebuild_version_number(${executable_name} ${fortran_version_file} 
-                                        ${checkout_src_root}
-                                        ${ini_version_file}
-                                        ON)
+# prebuild_version_number(${executable_name} ${fortran_version_file} 
+                                        # ${checkout_src_root}
+                                        # ${ini_version_file}
+                                        # ON)
 
 set_source_files_properties(
                     src/rrmain.F90
