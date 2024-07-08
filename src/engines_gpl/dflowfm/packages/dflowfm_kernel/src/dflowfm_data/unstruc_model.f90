@@ -1279,24 +1279,25 @@ subroutine readMDUFile(filename, istat)
        call mess(LEVEL_ERROR, 'Invalid flow solver '''//trim(md_flow_solver)//''' . Select between `generic1d2d3d` and `implicit1d`.')
     end select
     
-    call prop_get(md_ptr, 'numerics', 'OneDImpomega'        , f1dimppar%omega  )
-    call prop_get(md_ptr, 'numerics', 'OneDImppsi'          , f1dimppar%psi    )
-    call prop_get(md_ptr, 'numerics', 'OneDImptheta'        , f1dimppar%theta  )
-    call prop_get(md_ptr, 'numerics', 'OneDImpepsh'         , f1dimppar%epsh   )
-    call prop_get(md_ptr, 'numerics', 'OneDImpepsq'         , f1dimppar%epsq   )
-    call prop_get(md_ptr, 'numerics', 'OneDImpflitmx'       , f1dimppar%flitmx )
-    call prop_get(md_ptr, 'numerics', 'OneDImpepsqrl'       , f1dimppar%epsqrl )
-    call prop_get(md_ptr, 'numerics', 'OneDImplambda'       , f1dimppar%lambda )
-    call prop_get(md_ptr, 'numerics', 'OneDImprelstr'       , f1dimppar%relstr )
-    call prop_get(md_ptr, 'numerics', 'OneDImpdhstru'       , f1dimppar%dhstru )
-    call prop_get(md_ptr, 'numerics', 'OneDImpcflpse'       , f1dimppar%cflpse )
-    call prop_get(md_ptr, 'numerics', 'OneDImpiterbc'       , f1dimppar%iterbc )
-    call prop_get(md_ptr, 'numerics', 'OneDImpresid'        , f1dimppar%resid  )
-    call prop_get(md_ptr, 'numerics', 'OneDImpoverlp'       , f1dimppar%overlp )
-    call prop_get(md_ptr, 'numerics', 'OneDImplconv'        , f1dimppar%lconv  )
-    call prop_get(md_ptr, 'numerics', 'OneDImpomcfl'        , f1dimppar%omcfl  )
-    call prop_get(md_ptr, 'numerics', 'OneDImpdhtyp'        , f1dimppar%dhtyp  )
-    call prop_get(md_ptr, 'numerics', 'OneDImpexrstp'       , f1dimppar%exrstp )   
+    !implicit1d
+    call prop_get(md_ptr, 'implicit1d', 'omega'        , f1dimppar%omega  )
+    call prop_get(md_ptr, 'implicit1d', 'psi'          , f1dimppar%psi    )
+    call prop_get(md_ptr, 'implicit1d', 'theta'        , f1dimppar%theta  )
+    call prop_get(md_ptr, 'implicit1d', 'epsh'         , f1dimppar%epsh   )
+    call prop_get(md_ptr, 'implicit1d', 'epsq'         , f1dimppar%epsq   )
+    call prop_get(md_ptr, 'implicit1d', 'flitmx'       , f1dimppar%flitmx )
+    call prop_get(md_ptr, 'implicit1d', 'epsqrl'       , f1dimppar%epsqrl )
+    call prop_get(md_ptr, 'implicit1d', 'lambda'       , f1dimppar%lambda )
+    call prop_get(md_ptr, 'implicit1d', 'relstr'       , f1dimppar%relstr )
+    call prop_get(md_ptr, 'implicit1d', 'dhstru'       , f1dimppar%dhstru )
+    call prop_get(md_ptr, 'implicit1d', 'cflpse'       , f1dimppar%cflpse )
+    call prop_get(md_ptr, 'implicit1d', 'iterbc'       , f1dimppar%iterbc )
+    call prop_get(md_ptr, 'implicit1d', 'resid'        , f1dimppar%resid  )
+    call prop_get(md_ptr, 'implicit1d', 'overlp'       , f1dimppar%overlp )
+    call prop_get(md_ptr, 'implicit1d', 'lconv'        , f1dimppar%lconv  )
+    call prop_get(md_ptr, 'implicit1d', 'omcfl'        , f1dimppar%omcfl  )
+    call prop_get(md_ptr, 'implicit1d', 'dhtyp'        , f1dimppar%dhtyp  )
+    call prop_get(md_ptr, 'implicit1d', 'exrstp'       , f1dimppar%exrstp )   
     
     ! Physics
     call prop_get_double (md_ptr, 'physics', 'UnifFrictCoef'  , frcuni)
@@ -2617,6 +2618,7 @@ subroutine writeMDUFilepointer(mout, writeall, istat)
     use m_output_config, only: set_properties
     use fm_statistical_output, only: config_set_his, config_set_map, config_set_clm
     use m_map_his_precision
+    use m_f1dimp, only: f1dimppar
 
     integer, intent(in)  :: mout  !< File pointer where to write to.
     logical, intent(in)  :: writeall !< Write all fields, including default values
@@ -3296,7 +3298,7 @@ endif
     endif
 
     call prop_set(prop_ptr, 'numerics', 'FlowSolver',   trim(md_flow_solver), 'Flow solver.')
-
+    
 ! Physics
     call prop_set(prop_ptr, 'physics', 'UnifFrictCoef',     frcuni,      'Uniform friction coefficient (0: no friction)')
     call prop_set(prop_ptr, 'physics', 'UnifFrictType',     ifrctypuni,  'Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: idem, WAQUA style)')
