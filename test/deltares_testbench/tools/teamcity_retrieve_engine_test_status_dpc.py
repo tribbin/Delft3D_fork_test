@@ -150,11 +150,7 @@ def print_case_list(case_info_list: List[ConfigurationInfo], buildname: str, eng
                 failed.append(0)
                 ignored.append(0)
                 muted.append(0)
-                status = build.find("statusText")
-                if status is not None:
-                    status_text = status.text
-                else:
-                    status_text = "Build failed!"
+                status_text = get_status_text_from_node(build)
 
         exception.append(0)  # first guess, initially there are no exceptions
         # first guess, initially there are no exceptions for a muted test
@@ -259,6 +255,26 @@ def print_case_list(case_info_list: List[ConfigurationInfo], buildname: str, eng
         lprint("            Total     : %6d" % engine_statistics[i].total)
         lprint("            Passed    : %6d" % engine_statistics[i].passed)
         lprint("            Percentage: %6.2f" % engine_statistics[i].percentage)
+
+
+def get_status_text_from_node(build: ET.Element) -> str:
+    """
+    Get status text from xml node.
+
+    Parameters
+    ----------
+    build : ET.Element
+        The XML node representing node.
+
+    Returns
+    -------
+        str: the status text.
+    """
+    status = build.find("statusText")
+    if status is not None:
+        return str(status.text)
+    else:
+        return "Build failed!"
 
 
 def get_number_of_tests(build: ET.Element, test_result: str) -> int:
