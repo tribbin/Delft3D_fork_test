@@ -625,10 +625,12 @@ public :: fm_bott3d
             wb1d = wu_mor(L)
             do ised = 1, lsedtot
                sb1d = e_sbcn(L, ised) * Ldir  ! first compute all outgoing sed. transport.
-               if (flow_solver == FLOW_SOLVER_FM) then !standard
+               if (flow_solver == FLOW_SOLVER_FM .or. pnod%numberofconnections==2) then !standard
                !V: In the standard scheme, at the <e_sbcn> of the outgoing links we have the upwind transport, i.e., 
                !part of the transport in the junction node. By summing over all of them we have the total transport at
-               !the junction node, which we then redistribute.
+               !the junction node, which we then redistribute. 
+               !We apply this to the standard scheme and to the nodes with only 2 connections, as in this second case
+               !we have not modified the link direction and the same logic applies as for the standard scheme.     
                     ! this works for one incoming branch TO DO: WO
                     if (sb_dir(inod, ised, j) == -1) then
                        sb_in(inod, ised) = sb_in(inod, ised) + max(-wb1d*sb1d, 0.0_fp)  ! outgoing transport is negative
