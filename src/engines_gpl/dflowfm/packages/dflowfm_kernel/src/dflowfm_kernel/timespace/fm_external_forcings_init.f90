@@ -784,17 +784,18 @@ contains
 
    end subroutine init_new
 
+   !> Scan the quantity name for heat relatede quantities.
    function scan_for_heat_quantities(quantity, heat_forcing_type, mask, kx) result(success)
       use m_flowparameters, only: t_heat_forcingtype
       use m_wind, only: tair, clou, rhum, qrad, longwave
       use m_flowgeom, only: ndx, kcs
       use m_alloc, only: aerr
 
-      character(len=*), intent(in) :: quantity
-      type(t_heat_forcingtype), intent(inout) :: heat_forcing_type
-      integer, dimension(:), intent(inout) :: mask
-      integer, intent(out) :: kx
-      logical :: success
+      character(len=*), intent(in) :: quantity !< Name of the data set.
+      type(t_heat_forcingtype), intent(inout) :: heat_forcing_type !< Derived type, containing flags for the available heat related quantities.
+      integer, dimension(:), intent(inout) :: mask !< Mask array for the quantity.
+      integer, intent(out) :: kx !< Number of individual quantities in the data set
+      logical :: success !< Return value, indicates whether the quantity is supported in this subroutine.
 
       integer :: ierr
 
