@@ -1176,10 +1176,13 @@ public :: fm_bott3d
    !! Declarations
    !!
    
-   use m_flowgeom , only: nd, bai_mor, ndxi, bl, wu_mor, ba, ln
+   use m_flowgeom , only: bai_mor, bl, wu_mor, ba
    use m_flow, only: s1, hs
    use m_flowparameters, only: epshs
-   use m_fm_erosed, only: lsedtot, kfsed, dbodsd, fixfac, frac, hmaxth, sedthr, thetsd, e_sbn, ndxi_mor, nd_mor, ln_mor
+   use m_fm_erosed, only: lsedtot, kfsed, dbodsd, fixfac, frac, hmaxth, sedthr, thetsd, e_sbn
+   use m_fm_erosed, only: ndxi=>ndxi_mor
+   use m_fm_erosed, only: nd=>nd_mor
+   use m_fm_erosed, only: ln=>ln_mor
    
    implicit none
 
@@ -1209,7 +1212,7 @@ public :: fm_bott3d
    ! Re-distribute erosion near dry and shallow points to allow erosion
    ! of dry banks
    !
-   do nm = 1, ndxi_mor
+   do nm = 1, ndxi
       !
       ! If this is a cell in which sediment processes are active then ...
       !
@@ -1238,8 +1241,8 @@ public :: fm_bott3d
          bamin      = ba(nm)
          totfixfrac = 0d0
          !
-         do L=1,nd_mor(nm)%lnx
-            k1 = ln_mor(1,iabs(nd_mor(nm)%ln(L))); k2 = ln_mor(2,iabs(nd_mor(nm)%ln(L)))
+         do L=1,nd(nm)%lnx
+            k1 = ln(1,iabs(nd(nm)%ln(L))); k2 = ln(2,iabs(nd(nm)%ln(L)))
             if (k2 == nm) then
                knb = k1
             else
@@ -1281,9 +1284,9 @@ public :: fm_bott3d
                ! adjust bedload transport rates to include this erosion
                ! process.
                !
-               do L=1,nd_mor(nm)%lnx
-                  k1 = ln_mor(1,iabs(nd_mor(nm)%ln(L))); k2 = ln_mor(2,iabs(nd_mor(nm)%ln(L)))
-                  Lf = iabs(nd_mor(nm)%ln(L))
+               do L=1,nd(nm)%lnx
+                  k1 = ln(1,iabs(nd(nm)%ln(L))); k2 = ln(2,iabs(nd(nm)%ln(L)))
+                  Lf = iabs(nd(nm)%ln(L))
                   ! cutcells
                   if (wu_mor(Lf)==0d0) cycle
                   !
@@ -1296,7 +1299,7 @@ public :: fm_bott3d
                      dv              = thet * fixfac(knb, ll)*frac(knb, ll)
                      dbodsd(ll, knb) = dbodsd(ll, knb) - dv*bai_mor(knb)
                      dbodsd(ll, nm)  = dbodsd(ll, nm)  + dv*bai_mor(nm)
-                     e_sbn(Lf,ll)    = e_sbn(Lf,ll)    + dv/(dtmor*wu_mor(Lf)) * sign(1d0,nd_mor(nm)%ln(L)+0d0)
+                     e_sbn(Lf,ll)    = e_sbn(Lf,ll)    + dv/(dtmor*wu_mor(Lf)) * sign(1d0,nd(nm)%ln(L)+0d0)
                   end if
                end do ! L
             enddo ! ll
