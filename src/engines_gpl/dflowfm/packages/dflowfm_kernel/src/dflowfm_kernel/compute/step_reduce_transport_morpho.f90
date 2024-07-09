@@ -78,9 +78,12 @@
 ! TODO: AvD: consider moving everything below to flow_finalize single_timestep?
  call setkbotktop(0)                                 ! bottom and top layer indices and new sigma distribution
 
- call u1q1()                                         ! the vertical flux qw depends on new sigma => after setkbotktop
- call compute_q_total_1d2d()
-
+ 
+ if (flow_solver == FLOW_SOLVER_FM) then
+    call u1q1()                                         ! the vertical flux qw depends on new sigma => after setkbotktop
+    call compute_q_total_1d2d()
+ endif
+ 
  !if ( jacheckmonitor.eq.1 ) then
  !   call comp_checkmonitor()
  !end if
