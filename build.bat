@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 rem Default arguments
 set config=all
 set build=
-set vs=0
+set vs=
 set coverage=
 set build_type=Debug
 set keep_build=
@@ -12,7 +12,7 @@ set keep_build=
 rem Non-argument variables
 set generator=
 set cmake=cmake
-set ifort=0
+set ifort=
 
 rem Argument variables
 set -help=
@@ -234,13 +234,12 @@ rem =================================
         echo Warning: Could not find Visual Studio version in environment.
     )
 
-    if NOT !-vs! == 0 (
+    if NOT "!-vs!" == "" (
         echo Overriding automatically found VS version !vs! with argument !-vs!
         set vs=!-vs!
     ) else if "!vs!" == "" (
-        echo Error: Visual Studio not found. Please ensure that Visual Studio is installed and run build.bat from a prompt with the right environment set.
-        set ERRORLEVEL=1
-        goto :end
+        echo Warning: Visual Studio not found nor provided by -vs. Please ensure that Visual Studio is installed and run build.bat from a prompt with the right environment set.
+        echo Continuing without specifying the generator, using the CMake default.
     )
     goto :eof
 
@@ -249,7 +248,7 @@ rem === Check CMake installation ===
 rem ================================
 :check_cmake_installation
     echo.
-    echo Checking whether CMake is installed ...
+    echo Checking whether CMake is installed...
     set count=1
     for /f "tokens=* usebackq" %%f in (`!cmake! --version`) do (
       if !count! LEQ 1 (
@@ -285,6 +284,7 @@ rem =======================
 rem === Set generator  ====
 rem =======================
 :set_generator
+    set generator=
     if "!vs!" == "2017" (
         set generator="Visual Studio 15 2017"
     )
@@ -294,6 +294,10 @@ rem =======================
     if "!vs!" == "2022" (
         set generator="Visual Studio 17 2022"
     )
+    set cmake_generator_arg=
+    if not "!generator!" == "" (
+        set "cmake_generator_arg=-G !generator!"
+    )
     goto :eof
 
 rem =======================
@@ -302,14 +306,6 @@ rem =======================
 :checks
     if "!config!" == "" (
         echo ERROR: config is empty.
-        set ERRORLEVEL=1
-        goto :end
-    )
-    if "!generator!" == "" (
-        echo ERROR: generator is empty.
-        echo        Possible causes:
-        echo            In prepare_sln.py:
-        echo                Chosen Visual Studio version is not installed
         set ERRORLEVEL=1
         goto :end
     )
@@ -346,7 +342,7 @@ rem =======================
     echo.
     call :create_cmake_dir build_!config!
     echo Running CMake for !config! ...
-    !cmake! -S .\src\cmake -B build_!config! -G %generator% -A x64 -D CONFIGURATION_TYPE="!config!" -D CMAKE_INSTALL_PREFIX=.\install_!config!\ 1>build_!config!\cmake_!config!.log 2>&1
+    !cmake! -S .\src\cmake -B build_!config! !cmake_generator_arg! -A x64 -D CONFIGURATION_TYPE:STRING="!config!" -D CMAKE_INSTALL_PREFIX=.\install_!config!\ 1>build_!config!\cmake_!config!.log 2>&1
     if !ERRORLEVEL! NEQ 0 call :errorMessage
     goto :eof
 
