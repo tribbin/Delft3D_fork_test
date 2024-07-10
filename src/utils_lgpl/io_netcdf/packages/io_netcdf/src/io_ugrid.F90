@@ -1341,13 +1341,15 @@ function ug_write_mesh_arrays(ncid, meshids, meshName, dim, dataLocs, numNode, n
    ! Edges:
    if (dim == 1 .or. ug_checklocation(dataLocs, UG_LOC_EDGE)) then
       !if is UGRID 1.0 network, we need to write the network here
-      if (is1dugridnetwork .and. present(ngeopointx) .and. associated(ngeopointx)) then
-        ! write network
-        ierr = ug_write_1d_network_nodes(ncid, networkids, nnodex, nnodey, nnodeids, nnodelongnames)
-        ierr = ug_put_1d_network_branches(ncid, networkids, sourceNodeId,targetNodeId, nbranchids, nbranchlengths, nbranchlongnames, nbranchgeometrynodes, nbranches, start_index)
-        ierr = ug_put_1d_network_branchorder(ncid, networkids, nbranchorder)
-        ierr = ug_write_1d_network_branches_geometry(ncid, networkids, ngeopointx, ngeopointy)
-      endif
+      if (is1dugridnetwork .and. present(ngeopointx)) then
+         if (associated(ngeopointx)) then
+            ! write network
+            ierr = ug_write_1d_network_nodes(ncid, networkids, nnodex, nnodey, nnodeids, nnodelongnames)
+            ierr = ug_put_1d_network_branches(ncid, networkids, sourceNodeId,targetNodeId, nbranchids, nbranchlengths, nbranchlongnames, nbranchgeometrynodes, nbranches, start_index)
+            ierr = ug_put_1d_network_branchorder(ncid, networkids, nbranchorder)
+            ierr = ug_write_1d_network_branches_geometry(ncid, networkids, ngeopointx, ngeopointy)
+         end if
+      end if
       ! write mesh1d
       if (lengthofnetworkname.gt.0) then
         if (present(nodebranchidx) .and. associated(nodebranchidx)) then
