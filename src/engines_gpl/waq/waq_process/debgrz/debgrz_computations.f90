@@ -647,15 +647,15 @@ module m_debgrz_computations
 
 
     !> Shell formation fluxes per individual
-    subroutine calculate_shell_formation_fluxes(pm, pja, pjj, prj, pv, frgsmo, frrespsmo, frsmosmi, ddis, pomm, pca)
-        real(kind=real_wp), intent(in   ) :: pm      !< Maintenance per individual                      [J/ind/d]
-        real(kind=real_wp), intent(in   ) :: pja     !< Maturity maintenance adults                     [J/ind/d]
-        real(kind=real_wp), intent(in   ) :: pjj     !< Maturity maintenance juveniles                  [J/ind/d]
-        real(kind=real_wp), intent(in   ) :: prj     !< Maturity development                            [J/ind/d]
+    subroutine calculate_shell_formation_fluxes(pm, pja, pjj, prj, pv, fpgrosmo, fpdissmo, ycacosmo, ddis, pomm, pca)
+        real(kind=real_wp), intent(in   ) :: pm       !< Maintenance per individual                      [J/ind/d]
+        real(kind=real_wp), intent(in   ) :: pja      !< Maturity maintenance adults                     [J/ind/d]
+        real(kind=real_wp), intent(in   ) :: pjj      !< Maturity maintenance juveniles                  [J/ind/d]
+        real(kind=real_wp), intent(in   ) :: prj      !< Maturity development                            [J/ind/d]
         real(kind=real_wp), intent(in   ) :: pv       !< Energy flux to growth (i.e. structural biomass)[J/ind/d]
-        real(kind=real_wp), intent(in   ) :: frgsmo   !< Fraction of growth flux to shell matrix              [-]
-        real(kind=real_wp), intent(in   ) :: frrespsmo!< Fraction of dissipation flux to shell matrix         [-]
-        real(kind=real_wp), intent(in   ) :: frsmosmi !< Fraction of shell matrix flux to calcification       [-]
+        real(kind=real_wp), intent(in   ) :: fpgrosmo !< Growth-based contribution to shell matrix      [-]
+        real(kind=real_wp), intent(in   ) :: fpdissmo !< Dissipation-based contribution to shell matrix [-]
+        real(kind=real_wp), intent(in   ) :: ycacosmo !< Yield coefficient CaCO3 deposition on matrix   [-]
 !        real(kind=real_wp), intent(in   ) :: satarg   !< aragonite saturation state                           [-]
 !        real(kind=real_wp), intent(in   ) :: ksat     !< half sat const for reduced aragonite precipitation   [-]
         real(kind=real_wp), intent(  out) :: ddis     !< Dissipation flux (not the same as respiration!)[J/ind/d]
@@ -663,8 +663,12 @@ module m_debgrz_computations
         real(kind=real_wp), intent(  out) :: pca      !< Energy flux to calcification of shell matrix   [J/ind/d]
 
         ddis = pm + pja + pjj + prj
-        pomm = max(0., (pv   * frgsmo + ddis * frrespsmo))
-        pca  = max(0., (pomm / frsmosmi))
+        pomm = max( 0.0, pv * fpgrosmo + ddis * fpdissmo )
+        if ( ycacosmo > 0.0 ) then
+            pca  = max( 0.0, pomm / ycacosmo )
+        else
+            pca  = 0.0
+        endif
 
         ! AM: for the second round
         ! s_s2 = satarg / (satarg + ksarag);                   ! reduced precipitation

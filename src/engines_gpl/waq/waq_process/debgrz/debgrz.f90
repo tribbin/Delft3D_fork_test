@@ -392,7 +392,7 @@ subroutine debgrz(pmsa , fl , ipoint , increm , noseg , noflux , &
                             kT, iv%rspawn, iv%tn, iv%tp, iv%dospawn, ov%gsi, &
                             pjj, prj, pja, pra, pr, dspw, dnspw, dpspw)
 
-        call calculate_shell_formation_fluxes(pm, pja, pjj, prj, pv, iv%frgsmo, iv%frrespsmo, iv%frsmosmi, ddis, pomm, pca)
+        call calculate_shell_formation_fluxes(pm, pja, pjj, prj, pv, iv%fpgrosmo, iv%fpdissmo, iv%ycacosmo, ddis, pomm, pca)
 
         call calculate_respiration(&
                             ddis, pomm, kappa_g, pg, pra, iv%kappar, &

@@ -93,9 +93,9 @@ module m_debgrz_input
         real(kind=real_wp) :: smitot                !< Shell matrix inorganic tissue    [gC/m3 or gDM/m2]
         real(kind=real_wp) :: egsmo                 !< Vol-spec growth costs for org shell matrix [J/cm3]
         real(kind=real_wp) :: egsmi                 !< Vol-spec growth costs for inorg shell matr [J/cm3]
-        real(kind=real_wp) :: frgsmo                !< Fraction of growth flux to shell matrix        [-]
-        real(kind=real_wp) :: frrespsmo             !< Fraction of resp flux to shell matrix          [-]
-        real(kind=real_wp) :: frsmosmi              !< Fraction of shell matrix flux to calcification [-]
+        real(kind=real_wp) :: fpgrosmo              !< Growth-based contribution to shell matrix      [-]
+        real(kind=real_wp) :: fpdissmo              !< Dissipation-based contribution to shell matrix [-]
+        real(kind=real_wp) :: ycacosmo              !< Yield coefficient CaCO3 deposition on matrix   [-]
         real(kind=real_wp) :: cso_cm3_gc            !< Conversion factor org shell cm3 into gC   [gC/cm3]
         real(kind=real_wp) :: csi_cm3_gc            !< Conversion factor inorg shell cm3 into gC [gC/cm3]
         real(kind=real_wp), dimension(4) :: detrit  !< Detritus
@@ -182,9 +182,9 @@ module m_debgrz_input
         this%smitot      =      pmsa( iparray(59))
         this%egsmo       =      pmsa( iparray(60))
         this%egsmi       =      pmsa( iparray(61))
-        this%frgsmo      =      pmsa( iparray(62))
-        this%frrespsmo   =      pmsa( iparray(63))
-        this%frsmosmi    =      pmsa( iparray(64))
+        this%fpgrosmo    =      pmsa( iparray(62))
+        this%fpdissmo    =      pmsa( iparray(63))
+        this%ycacosmo    =      pmsa( iparray(64))
         this%cso_cm3_gc  =      pmsa( iparray(65))
         this%csi_cm3_gc  =      pmsa( iparray(66))
         do i=1,ntotnut
