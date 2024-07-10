@@ -1078,9 +1078,11 @@ contains
 
       else
          if (dim == 1) then
-            if (present(ngeopointx) .and. associated(ngeopointx)) then !1d UGRID 1.6
-               !some results might still be saved at the edges, also for 1d
-               ierr = ug_create_1d_network(ncid, networkids, network1dname, size(nnodex), nbranches, ngeometry)
+            if (present(ngeopointx)) then
+               if (associated(ngeopointx)) then !1d UGRID 1.6
+                  !some results might still be saved at the edges, also for 1d
+                  ierr = ug_create_1d_network(ncid, networkids, network1dname, size(nnodex), nbranches, ngeometry)
+               end if
             end if
             if (numNode > 0) then
                ierr = ug_create_1d_mesh_v2(ncid, network1dname, meshids, meshname, numNode, numEdge, 1, crs) ! Creates node and edge variables
@@ -1332,18 +1334,26 @@ contains
          end if
          ! write mesh1d
          if (lengthofnetworkname > 0) then
-            if (present(nodebranchidx) .and. associated(nodebranchidx)) then
-               ierr = ug_put_1d_mesh_discretisation_points_v1(ncid, meshids, nodebranchidx, nodeoffsets, start_index, xn, yn)
+            if (present(nodebranchidx)) then
+               if (associated(nodebranchidx)) then
+                  ierr = ug_put_1d_mesh_discretisation_points_v1(ncid, meshids, nodebranchidx, nodeoffsets, start_index, xn, yn)
+               end if
             end if
             !write node ids and node long names
-            if (present(nodeids) .and. allocated(nodeids)) then
-               ierr = nf90_put_var(ncid, meshids%varids(mid_node_ids), nodeids)
+            if (present(nodeids)) then
+               if (allocated(nodeids)) then
+                  ierr = nf90_put_var(ncid, meshids%varids(mid_node_ids), nodeids)
+               end if
             end if
-            if (present(nodelongnames) .and. allocated(nodelongnames)) then
-               ierr = nf90_put_var(ncid, meshids%varids(mid_node_longnames), nodelongnames)
+            if (present(nodelongnames)) then
+               if (allocated(nodelongnames)) then
+                  ierr = nf90_put_var(ncid, meshids%varids(mid_node_longnames), nodelongnames)
+               end if
             end if
-            if (present(edgebranchidx) .and. associated(edgebranchidx)) then
-               ierr = ug_put_1d_mesh_edges(ncid, meshids, edgebranchidx, edgeoffsets, start_index, xe, ye)
+            if (present(edgebranchidx)) then
+               if (associated(edgebranchidx)) then
+                  ierr = ug_put_1d_mesh_edges(ncid, meshids, edgebranchidx, edgeoffsets, start_index, xe, ye)
+               end if
             end if
          end if
          ! always write edge nodes
@@ -4201,9 +4211,11 @@ contains
       contacts(2, :) = mesh2indexes(:)
 
       !we have not defined the start_index, so when we put the variable it must be zero based
-      if (present(startIndex) .and. startIndex /= -1) then
-         ierr = convert_start_index(contacts(1, :), imiss, startIndex, 0)
-         ierr = convert_start_index(contacts(2, :), imiss, startIndex, 0)
+      if (present(startIndex)) then
+         if (startIndex /= -1) then
+            ierr = convert_start_index(contacts(1, :), imiss, startIndex, 0)
+            ierr = convert_start_index(contacts(2, :), imiss, startIndex, 0)
+         end if
       end if
 
       ierr = nf90_put_var(ncid, contactids%varids(cid_contacttopo), abs(contacts))
