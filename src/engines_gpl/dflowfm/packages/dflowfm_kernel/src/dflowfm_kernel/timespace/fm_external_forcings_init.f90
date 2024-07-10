@@ -41,7 +41,7 @@ contains
       use messageHandling
       use fm_external_forcings_data
       use m_flowgeom
-      use timespace_data, only: weightfactors, poly_tim, uniform, spaceandtime, getmeteoerror
+      use timespace_data, only: WEIGHTFACTORS, POLY_TIM, UNIFORM, SPACEANDTIME, getmeteoerror
       use m_lateral, only: balat, qplat, lat_ids, n1latsg, n2latsg, ILATTP_1D, ILATTP_2D, ILATTP_ALL, kclat, numlatsg, nnlat, nlatnd
       use m_meteo, only: ec_addtimespacerelation
       use timespace
@@ -104,12 +104,12 @@ contains
       integer, allocatable :: itpenzr(:), itpenur(:)
 
       file_name = trim(external_force_file_name)
-      if (len_trim(file_name) > 0) then
-         res = .true.
-      else
-         res = .false.
+      if (len_trim(file_name) <= 0) then
+         iresult = DFM_NOERR
          return
       end if
+         
+      res = .true.
 
       call tree_create(file_name, bnd_ptr)
       call prop_file('ini', file_name, bnd_ptr, istat)
@@ -245,18 +245,18 @@ contains
 
          call prop_get(node_ptr, '', 'nodeId', location_file, is_successful)
          if (is_successful) then
-            filetype = node_id
-            method = spaceandtime
+            filetype = NODE_ID
+            method = SPACEANDTIME
          else
-            filetype = poly_tim
-            method = weightfactors
-            call prop_get(node_ptr, '', 'locationfile', location_file, is_successful)
+            filetype = POLY_TIM
+            method = WEIGHTFACTORS
+            call prop_get(node_ptr, '', 'locationFile', location_file, is_successful)
          end if
 
          if (is_successful) then
             call resolvePath(location_file, base_dir)
          else
-            write (msgbuf, '(5a)') 'Incomplete block in file ''', file_name, ''': [', group_name, ']. Field ''locationfile'' is missing.'
+            write (msgbuf, '(5a)') 'Incomplete block in file ''', file_name, ''': [', group_name, ']. Field ''locationFile'' is missing.'
             call warn_flush()
             return
          end if
@@ -278,7 +278,7 @@ contains
             num_items_in_block = size(node_ptr%child_nodes)
          end if
 
-         ! Now loop over all key-value pairs, to support reading *multiple* lines with forcingfile=...
+         ! Now loop over all key-value pairs, to support reading *multiple* lines with forcingFile=...
          do j = 1, num_items_in_block
             block_ptr => node_ptr%child_nodes(j)%node_ptr
             ! todo: read multiple quantities
@@ -287,10 +287,10 @@ contains
             if (is_successful) then
                if (property_name == 'quantity') then
                   quantity = property_value ! We already knew this
-               else if (property_name == 'locationfile') then
+               else if (strcmpi(property_name,'locationFile')) then
                   location_file = property_value ! We already knew this
                   call resolvePath(location_file, base_dir)
-               else if (property_name == 'forcingfile') then
+               else if (strcmpi(property_name,'forcingFile')) then
                   forcing_file = property_value
                   call resolvePath(forcing_file, base_dir)
                   if (oper /= 'O' .and. oper /= '+') then
@@ -417,7 +417,7 @@ contains
          ! fileVersion >= 2: nodeId                  => location_specifier = LOCTP_NODEID
          !                   branchId+chainage       => location_specifier = LOCTP_BRANCH_CHAINAGE
          !                   numcoor+xcoors+ycoors   => location_specifier = LOCTP_XY_POLYGON
-         ! fileVersion <= 1: LocationFile = test.pol => location_specifier = LOCTP_POLYGON_FILE
+         ! fileVersion <= 1: locationFile = test.pol => location_specifier = LOCTP_POLYGON_FILE
          loc_spec_type = imiss
          nodeId = ' '
          branchid = ' '
@@ -456,9 +456,9 @@ contains
             loc_spec_type = LOCTP_POLYGON_FILE
             !
             location_file = ''
-            call prop_get(node_ptr, '', 'LocationFile', location_file, is_successful)
+            call prop_get(node_ptr, '', 'locationFile', location_file, is_successful)
             if (.not. is_successful .or. len_trim(location_file) == 0) then
-               write (msgbuf, '(a,a,a)') 'Required field ''LocationFile'' missing in lateral ''', trim(loc_id), '''.'
+               write (msgbuf, '(a,a,a)') 'Required field ''locationFile'' missing in lateral ''', trim(loc_id), '''.'
                call warn_flush()
                return
             else
@@ -528,6 +528,7 @@ contains
          logical :: invert_mask
          logical :: is_variable_name_available
          logical :: is_target_mask_available
+         logical :: is_extrapolation_allowed
          character(len=INI_KEY_LEN) :: variable_name
          character(len=INI_VALUE_LEN) :: interpolation_method
          real(kind=hp) :: max_search_radius
@@ -586,7 +587,7 @@ contains
 
          is_variable_name_available = .false.
          variable_name = ' '
-         call prop_get(node_ptr, '', 'varname ', variable_name, is_variable_name_available)
+         call prop_get(node_ptr, '', 'forcingVariableName ', variable_name, is_variable_name_available)
 
          call prop_get(node_ptr, '', 'interpolationMethod ', interpolation_method, is_successful)
          if (is_successful) then
@@ -605,13 +606,23 @@ contains
             call warn_flush()
             return
          end if
+         
+         is_extrapolation_allowed = .false.
+         call prop_get(node_ptr, '', 'extrapolationAllowed ', is_extrapolation_allowed, is_successful)
+         call update_method_in_case_extrapolation(method, is_extrapolation_allowed)
 
          max_search_radius = -1
          call prop_get(node_ptr, '', 'extrapolationSearchRadius ', max_search_radius, is_successful)
 
          oper = 'O'
          call prop_get(node_ptr, '', 'operand ', oper, is_successful)
-
+         
+         transformcoef = DMISS
+         call prop_get(node_ptr, '', 'averagingType ', transformcoef(4), is_successful)
+         call prop_get(node_ptr, '', 'averagingRelSize ', transformcoef(5), is_successful)
+         call prop_get(node_ptr, '', 'averagingNumMin ', transformcoef(8), is_successful)
+         call prop_get(node_ptr, '', 'averagingPercentile ', transformcoef(7), is_successful)
+         
          filetype = convert_file_type_string_to_integer(forcing_file_type)
 
          select case (quantity)
