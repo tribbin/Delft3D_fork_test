@@ -800,7 +800,7 @@ contains
             else if (qid == 'humidity_airtemperature_cloudiness') then
 
                ! Meteo1
-               kx = 3; heat_forcing_type%typ = 1
+               kx = 3; itempforcingtyp = 1
                if (allocated(mask)) deallocate (mask)
                allocate (mask(ndx), source=1)
 
@@ -809,41 +809,41 @@ contains
             else if (qid == 'dewpoint_airtemperature_cloudiness') then
 
                ! Meteo1
-               kx = 3; heat_forcing_type%typ = 3
+               kx = 3; itempforcingtyp = 3
                if (allocated(mask)) deallocate (mask)
                allocate (mask(ndx), source=1)
 
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), mask, kx, filename, filetype, method, operand, varname=varname) ! vectormax = 3
                if (success) then
-                  heat_forcing_type%dewpoint = .true.
-                  heat_forcing_type%air_temperature = .true.
+                  dewpoint_available = .true.
+                  tair_available = .true.
                end if
 
             else if (qid == 'humidity_airtemperature_cloudiness_solarradiation') then
 
                ! Meteo1
-               kx = 4; heat_forcing_type%typ = 2
+               kx = 4; itempforcingtyp = 2
                if (allocated(mask)) deallocate (mask)
                allocate (mask(ndx), source=1)
 
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), mask, kx, filename, filetype, method, operand, varname=varname) ! vectormax = 4
                if (success) then
-                  heat_forcing_type%air_temperature = .true.
-                  heat_forcing_type%solar_radiation = .true.
-               end if
+                  tair_available = .true.
+                  solrad_available = .true.
+              end if
 
             else if (qid == 'dewpoint_airtemperature_cloudiness_solarradiation') then
 
                ! Meteo1
-               kx = 4; heat_forcing_type%typ = 4
+               kx = 4; itempforcingtyp = 4
                if (allocated(mask)) deallocate (mask)
                allocate (mask(ndx), source=1)
 
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), mask, kx, filename, filetype, method, operand, varname=varname) ! vectormax = 4
                if (success) then
-                  heat_forcing_type%dewpoint = .true.
-                  heat_forcing_type%air_temperature = .true.
-                  heat_forcing_type%solar_radiation = .true.
+                  dewpoint_available = .true.
+                  tair_available = .true.
+                  solrad_available = .true.
                end if
 
             else if (qid == 'nudge_salinity_temperature') then
@@ -894,7 +894,9 @@ contains
                end if
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  heat_forcing_type%air_temperature = .true.
+                  jatair = 1
+                  btempforcingtypA = .true.
+                  tair_available = .true.
                end if
 
             else if (qid == 'airdensity') then
@@ -919,7 +921,7 @@ contains
                end if
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  heat_forcing_type%humidity = .true.
+                  jarhum = 1; btempforcingtypH = .true.
                end if
 
             else if (qid == 'dewpoint') then ! Relative humidity array used to store dewpoints
@@ -930,10 +932,11 @@ contains
                   rhum = 0d0
                end if
 
-               heat_forcing_type%typ = 5
+               itempforcingtyp = 5
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  heat_forcing_type%dewpoint = .true.
+                  jarhum = 1
+                  dewpoint_available = .true.
                end if
 
             else if (qid == 'sea_ice_area_fraction' .or. qid == 'sea_ice_thickness') then
@@ -963,7 +966,7 @@ contains
                end if
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  heat_forcing_type%cloudiness = .true.
+                  jaclou = 1; btempforcingtypC = .true.
                end if
 
             else if (qid == 'solarradiation') then
@@ -975,7 +978,8 @@ contains
                end if
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  heat_forcing_type%solar_radiation = .true.
+                  btempforcingtypS = .true.
+                  solrad_available = .true.
                end if
 
             else if (qid == 'longwaveradiation') then
@@ -986,7 +990,8 @@ contains
                end if
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  heat_forcing_type%long_wave_radiation = .true.
+                  btempforcingtypL = .true.
+                  longwave_available = .true.
                end if
 
             else if (qid(1:8) == 'rainfall') then

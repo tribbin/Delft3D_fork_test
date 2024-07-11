@@ -521,7 +521,6 @@ contains
       !> reads meteo blocks from new external forcings file and makes required initialisations
       function init_meteo_forcings() result(res)
          use timespace_parameters
-         use m_flowparameters, only: heat_forcing_type
 
          logical :: res
 
@@ -785,14 +784,14 @@ contains
    end subroutine init_new
 
    !> Scan the quantity name for heat relatede quantities.
-   function scan_for_heat_quantities(quantity, heat_forcing_type, mask, kx) result(success)
-      use m_flowparameters, only: t_heat_forcingtype
-      use m_wind, only: tair, clou, rhum, qrad, longwave
+   function scan_for_heat_quantities(quantity, mask, kx) result(success)
+      use fm_external_forcings_data, only: tair_available, dewpoint_available, solrad_available, longwave_available
+      use m_flowparameters, only: btempforcingtypA, btempforcingtypC, btempforcingtypH, btempforcingtypL, btempforcingtypS, itempforcingtyp
+      use m_wind, only: tair, clou, rhum, qrad, longwave, jatair, jaclou, jarhum
       use m_flowgeom, only: ndx, kcs
       use m_alloc, only: aerr
 
       character(len=*), intent(in) :: quantity !< Name of the data set.
-      type(t_heat_forcingtype), intent(inout) :: heat_forcing_type !< Derived type, containing flags for the available heat related quantities.
       integer, dimension(:), intent(inout) :: mask !< Mask array for the quantity.
       integer, intent(out) :: kx !< Number of individual quantities in the data set
       logical :: success !< Return value, indicates whether the quantity is supported in this subroutine.
@@ -811,7 +810,9 @@ contains
             tair = 0d0
          end if
          !    success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
-         heat_forcing_type%air_temperature = .true.
+         jatair = 1
+         btempforcingtypA = .true.
+         tair_available = .true.
          mask = kcs
 
       case ('cloudiness')
@@ -821,7 +822,8 @@ contains
             clou = 0d0
          end if
          mask = kcs
-         heat_forcing_type%cloudiness = .true.
+         jaclou = 1
+         btempforcingtypC = .true.
 
       case ('humidity')
          if (.not. allocated(rhum)) then
@@ -829,7 +831,8 @@ contains
             call aerr('rhum(ndx)', ierr, ndx)
             rhum = 0d0
          end if
-         heat_forcing_type%humidity = .true.
+         jarhum = 1
+         btempforcingtypH = .true.
       case ('dewpoint') ! Relative humidity array used to store dewpoints
 
          if (.not. allocated(rhum)) then
@@ -838,8 +841,8 @@ contains
             rhum = 0d0
          end if
 
-         heat_forcing_type%typ = 5
-         heat_forcing_type%dewpoint = .true.
+         itempforcingtyp = 5
+         dewpoint_available = .true.
 
       case ('solarradiation')
          if (.not. allocated(qrad)) then
@@ -848,7 +851,8 @@ contains
             qrad = 0d0
          end if
          mask = kcs
-         heat_forcing_type%solar_radiation = .true.
+         btempforcingtypS = .true.
+         solrad_available = .true.
 
       case ('longwaveradiation')
          if (.not. allocated(longwave)) then
@@ -857,53 +861,38 @@ contains
             longwave = 0d0
          end if
          mask = kcs
-         heat_forcing_type%long_wave_radiation = .true.
+         btempforcingtypL = .true.
+         longwave_available = .true.
 
       case ('humidity_airtemperature_cloudiness')
-         heat_forcing_type%typ = 1
+         itempforcingtyp = 1
          kx = 3
          mask = 1
 
       case ('dewpoint_airtemperature_cloudiness')
-         heat_forcing_type%typ = 3
+         itempforcingtyp = 3
          kx = 3
          mask = 1
-         heat_forcing_type%dewpoint = .true.
-         heat_forcing_type%air_temperature = .true.
+         dewpoint_available = .true.
+         tair_available = .true.
 
       case ('humidity_airtemperature_cloudiness_solarradiation')
-         heat_forcing_type%typ = 2
-         heat_forcing_type%air_temperature = .true.
-         heat_forcing_type%solar_radiation = .true.
+         itempforcingtyp = 2
+         tair_available = .true.
+         solrad_available = .true.
          kx = 4
          mask = 1
 
       case ('dewpoint_airtemperature_cloudiness_solarradiation')
-         heat_forcing_type%typ = 4
-         heat_forcing_type%dewpoint = .true.
-         heat_forcing_type%air_temperature = .true.
-         heat_forcing_type%solar_radiation = .true.
+         itempforcingtyp = 4
+         dewpoint_available = .true.
+         tair_available = .true.
+         solrad_available = .true.
          kx = 4
          mask = 1
       case default
          success = .false.
       end select
    end function scan_for_heat_quantities
-
-   !> Allocate and initialize atmosperic pressure
-   module function allocate_patm() result(status)
-      use m_wind, only: patm
-      use m_cell_geometry, only: ndx
-      use m_alloc, only: aerr
-
-      integer :: status
-
-      status = 0
-      if (.not. allocated(patm)) then
-         allocate (patm(ndx), stat=status, source=0.d0)
-         call aerr('patm(ndx)', status, ndx)
-      end if
-
-   end function allocate_patm
 
 end submodule fm_external_forcings_init

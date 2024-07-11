@@ -102,7 +102,12 @@ module m_wind
    integer :: ja_computed_airdensity !< compute airdensity yes/no 1/0
    integer :: jarain !< use rain yes or no
    integer :: jaevap !< use evap yes or no
+   integer :: jatair !< use air temperature   yes or no
+   integer :: jarhum !< use relative humidity yes or no
+   integer :: jaclou !< use cloudiness        yes or no
    integer :: ja_airdensity !< use variabele air density yes or no
+   logical :: solrad_available = .false. !< solar radiation provided by user
+   logical :: longwave_available = .false. !< longwave radiation provided by user
    integer :: jaheat_eachstep = 0 !< if 1, do it each step, else in externalforcings (default)
    integer :: jaQext !< use Qin externally provided yes or no
    integer :: jaqin !< use qin , sum of all in fluxes
@@ -174,6 +179,7 @@ contains
       japatm = 0 !< use patm yes or no
       jaspacevarcharn = 0 !< use space varying Charnock coefficients
       jawindstressgiven = 0 !< wind stress given in meteo file
+      jatair = 0
       ja_airdensity = 0
    end subroutine reset_wind
 end module m_wind
