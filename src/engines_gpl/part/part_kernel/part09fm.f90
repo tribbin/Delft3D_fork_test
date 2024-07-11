@@ -201,10 +201,7 @@ contains
 
             if (radiuh.ne.-999.0) then
 !              spread the particles over a circle
-!               radiusr = radiuh * sqrt(rnd(rseed))
                dpangle    = 2.0D0 * pi * rnd(rseed)
-!               xpart(nopart+i) = xwasth + radiuh * sin(angle)
-!               ypart(nopart+i) = ywasth + radiuh * cos(angle)
 ! this is the code to deal with spherical models (if needed) to get the distances correct
                dradius = sqrt(rnd(rseed)) * radius(id) !noteradius is in m.
                dxp = cos(dpangle) * dradius
