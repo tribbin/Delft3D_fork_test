@@ -362,7 +362,7 @@
          fw = wavefricval
       endif
 
-      if (jaavgwavquant .eq. 1) then            ! arrays for statistical output wave quantities
+      if (jaavgwavquant .eq. 1) then             ! arrays for statistical output wave quantities
          call xbeach_allocateaverages()
       end if
    end if
