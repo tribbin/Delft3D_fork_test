@@ -17,7 +17,6 @@ from src.utils.handlers.http_handler import HTTPHandler
 from src.utils.handlers.i_handler import IHandler
 from src.utils.handlers.local_net_handler import LocalNetHandler
 from src.utils.handlers.resolve_handler import ResolveHandler
-from src.utils.handlers.svn_handler import SvnHandler
 from src.utils.handlers.minio_handler import MinIOHandler
 from src.utils.logging.i_logger import ILogger
 from src.utils.paths import Paths
@@ -54,10 +53,6 @@ class HandlerFactory(ABC):
         if handler_type == HandlerType.WEB:
             logger.debug(f"using HTTP handler for {to_path}")
             handler = HTTPHandler()
-        if handler_type == HandlerType.SVN:
-            logger.debug(f"using SVN handler for {to_path}")
-            svn_program = copy.deepcopy(next(p for p in programs if p.name == "svn"))
-            handler = SvnHandler(svn_program)
         if handler_type == HandlerType.FTP:
             logger.debug(f"using FTP handler for {to_path}")
             handler = FTPHandler()
