@@ -14,7 +14,7 @@ from src.utils.logging.test_loggers.teamcity_test_logger import TeamcityTestLogg
 
 class TeamCityLogger(ConsoleLogger):
     def create_test_case_logger(self, test_case_id: str) -> ITestLogger:
-        return TeamcityTestLogger(test_case_id)
+        return TeamcityTestLogger(test_case_id, self.log_level)
 
     def __base_log_message(self, message: str, log_level: int):
         message_to_log = escape_teamcity(message).strip()

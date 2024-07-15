@@ -14,6 +14,7 @@ from src.config.types.mode_type import ModeType
 from src.utils.handlers.credential_handler import CredentialHandler
 from src.suite.test_bench_settings import TestBenchSettings
 from src.utils.common import get_log_level
+from src.utils.logging.log_level import LogLevel
 from src.config.types.path_type import PathType
 
 
@@ -76,7 +77,7 @@ class TestBenchParameterParser:
         settings.config_file = (
             cls.__get_argument_value("config", args) or "config.xml"
         )
-        settings.credentials = cls.__get_credentials(args, settings.teamcity)
+        settings.credentials = cls.__get_credentials(args, settings.teamcity, settings.log_level)
 
         return settings
 
@@ -102,9 +103,9 @@ class TestBenchParameterParser:
         return return_value
 
     @classmethod
-    def __get_credentials(cls, args: Namespace, is_active_directory_user: bool) -> Credentials:
+    def __get_credentials(cls, args: Namespace, is_active_directory_user: bool, log_level: LogLevel) -> Credentials:
         credentials = Credentials()
-        credential_handler = CredentialHandler(credentials)
+        credential_handler = CredentialHandler(credentials=credentials, log_level=log_level)
         credentials.name = "commandline"
 
         is_interactive = cls.__get_argument_value("interactive", args) or False

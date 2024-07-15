@@ -18,9 +18,10 @@ from src.utils.logging.test_loggers.test_result_type import TestResultType
 class TeamcityTestLogger(ITestLogger):
     """Logs test case information for teamcity"""
 
-    def __init__(self, test_name: str) -> None:
+    def __init__(self, test_name: str, log_level: LogLevel) -> None:
         self.__test_name = test_name
         self.__flow_id = test_name
+        self.__log_level = log_level
 
     def error(self, message: str, exc_info=False):
         self.log(message, LogLevel.ERROR, exc_info=exc_info)
@@ -38,6 +39,9 @@ class TeamcityTestLogger(ITestLogger):
         self.log(message, LogLevel.DEBUG)
 
     def log(self, message: str, log_level: LogLevel, exc_info: bool = False):
+        if self.__log_level > log_level:
+            return
+
         status = self.__get_status(log_level)
 
         extra_tags = [f"status='{status}'"]
@@ -123,4 +127,3 @@ class TeamcityTestLogger(ITestLogger):
             return "WARNING"
 
         return "NORMAL"
-    

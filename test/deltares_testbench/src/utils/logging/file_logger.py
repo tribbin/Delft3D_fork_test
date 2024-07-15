@@ -23,7 +23,7 @@ class FileLogger(ILogger):
 
     def __init__(self, log_level: LogLevel, name: str, path: str) -> None:
         self.__path = path
-        level = self.__get_internal_log_level(log_level)
+        level = log_level.value
 
         logger = logging.getLogger(name)
         logger.propagate = False
@@ -55,16 +55,13 @@ class FileLogger(ILogger):
         self.__logger.debug(message)
 
     def log(self, message: str, log_level: LogLevel, exc_info: bool = False):
-        self.__logger.log(self.__get_internal_log_level(log_level), message, exc_info=exc_info)
+        self.__logger.log(log_level.value, message, exc_info=exc_info)
 
     def close(self):
         """Close all handlers of the logger."""
         for handler in self.__logger.handlers:
             handler.close()
             self.__logger.removeHandler(handler)
-
-    def __get_internal_log_level(self, log_level: LogLevel) -> int:
-        return log_level
 
     def __create_file_logger(self, log_level: int):
         log_folder = os.path.dirname(self.__path)
