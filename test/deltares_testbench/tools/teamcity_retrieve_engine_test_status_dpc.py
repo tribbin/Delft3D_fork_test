@@ -373,8 +373,11 @@ def get_number_of_tests(build: ET.Element, test_result: str) -> int:
     -------
         int: number of tests that match the test result.
     """
-    if test_result in build.find(TEST_OCCURRENCES).attrib:
-        return int(build.find(TEST_OCCURRENCES).attrib[test_result])
+    test_occurences = build.find(TEST_OCCURRENCES)
+    if test_occurences is not None:
+        test_occurences_attrib = test_occurences.attrib
+        if test_result in test_occurences_attrib:
+            return int(test_occurences_attrib[test_result])
 
     return 0
 
@@ -390,16 +393,10 @@ def create_configuration_test_result(build: ET.Element, name: str, status_text: 
     build_nr = ""
     if "number" in build.attrib:
         build_nr = build.attrib["number"]
-    if build.find(TEST_OCCURRENCES) is not None:
-        passed = get_number_of_tests(build, "passed")
-        failed = get_number_of_tests(build, "failed")
-        ignored = get_number_of_tests(build, "ignored")
-        muted = get_number_of_tests(build, "muted")
-    else:
-        passed = 0
-        failed = 0
-        ignored = 0
-        muted = 0
+    passed = get_number_of_tests(build, "passed")
+    failed = get_number_of_tests(build, "failed")
+    ignored = get_number_of_tests(build, "ignored")
+    muted = get_number_of_tests(build, "muted")
     return ConfigurationTestResult(name, build_nr, passed, failed, ignored, muted, status_text)
 
 
