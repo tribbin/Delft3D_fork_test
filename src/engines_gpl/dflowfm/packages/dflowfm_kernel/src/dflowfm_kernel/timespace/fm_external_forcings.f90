@@ -29,6 +29,7 @@
    
 module fm_external_forcings
    use precision_basics, only: hp
+   use fm_external_forcings_utils, only: get_tracername, get_sedfracname
    implicit none
 
    private
