@@ -30,6 +30,7 @@ BASE_URL = "https://dpcbuild.deltares.nl"
 REST_API_URL = f"{BASE_URL}/httpAuth/app/rest"
 PROJECTS_URL = f"{REST_API_URL}/projects/id:"
 TEST_OCCURRENCES = "./testOccurrences"
+HEADER_FMT = "{:>20s} {:>8s} {:>8s} {:>8s} {:>8s} {:>8s} {:>8s}  ---  {:24s} (#{:s})"
 
 
 class TestResultSummary(object):
@@ -553,7 +554,7 @@ def log_engine(log_file: TextIOWrapper, name: str, engines: List[ConfigurationTe
     log_to_file(log_file, f"        {name}")
     log_to_file(
         log_file,
-        "               total   passed   failed   except  ignored    muted        %  --- test case name            (# build)",
+        HEADER_FMT.format("total", "passed", "failed", "except", "ignored", "muted", "", "test case name", "build"),
     )
     for configuration_line in engines:
         log_coniguration_line(log_file, configuration_line)
@@ -569,19 +570,27 @@ def log_coniguration_line(log_file: TextIOWrapper, line: ConfigurationTestResult
     """Log configuration line to a file."""
     total = line.get_total()
     if total != 0:
-        a = float(line.test_result.passed) / float(total) * 100.0
+        percentage = float(line.test_result.passed) / float(total) * 100.0
     else:
-        a = 0
+        percentage = 0
     if total > 0:
         log_to_file(
             log_file,
-            f"            {total:8d} {line.test_result.passed:8d} {line.test_result.failed:8d} {line.test_result.exception:8d} {line.test_result.ignored:8d} {line.test_result.muted:8d} {a:8.2f}  ---  {line.name:<24s} (#{line.build_nr:s})",
+            "{:20d} {:8d} {:8d} {:8d} {:8d} {:8d} {:8.2f}  ---  {:24s} (#{:s})".format(
+                total,
+                line.test_result.passed,
+                line.test_result.failed,
+                line.test_result.exception,
+                line.test_result.ignored,
+                line.test_result.muted,
+                percentage,
+                line.name,
+                line.build_nr,
+            ),
         )
+
     else:
-        log_to_file(
-            log_file,
-            f"                   x        x        x        x        x        x        x  ---  {line.name:<24s} (#{line.build_nr:s})",
-        )
+        log_to_file(log_file, HEADER_FMT.format("x", "x", "x", "x", "x", "x", "x", line.name, line.build_nr))
         log_to_file(
             log_file,
             f"                                                                            xxx  {line.status_text}",
