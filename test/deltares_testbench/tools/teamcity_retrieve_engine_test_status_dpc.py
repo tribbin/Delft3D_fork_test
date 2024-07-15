@@ -2,6 +2,7 @@ import argparse
 import getpass
 import os
 import shutil
+import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from io import TextIOWrapper
@@ -279,7 +280,9 @@ def get_engine_cases_from_url(url: str, username: str, password: str, given_buil
     return EngineCaseList(engine_name, case_list)
 
 
-def get_test_result_list(log_file: TextIOWrapper, engine_cases: EngineCaseList) -> List[ConfigurationTestResult]:
+def get_test_result_list(
+    log_file: TextIOWrapper, engine_cases: EngineCaseList, username: str, password: str
+) -> List[ConfigurationTestResult]:
     """
     Get test results from the engine case list. Logs message to file in case of serious error.
 
@@ -491,7 +494,7 @@ def get_tree_entire_engine_test_results(
 
         engine_cases = get_engine_cases_from_url(url, username, password, given_build_config)
         if engine_cases.has_cases():
-            test_results = get_test_result_list(log_file, engine_cases)
+            test_results = get_test_result_list(log_file, engine_cases, username, password)
 
         xml_engine_root = ET.fromstring(engine_req.text)
         for projects_node in xml_engine_root.findall("projects"):
@@ -505,7 +508,9 @@ def get_tree_entire_engine_test_results(
                 sub_engine_cases = get_engine_cases_from_url(url_3, username, password, given_build_config)
                 if sub_engine_cases.has_cases():
                     sub_test_result.append(
-                        SubEngineTestResult(project_info.name, get_test_result_list(log_file, sub_engine_cases))
+                        SubEngineTestResult(
+                            project_info.name, get_test_result_list(log_file, sub_engine_cases, username, password)
+                        )
                     )
 
         if engine_cases.has_cases() or sub_engine_cases.has_cases():
@@ -640,6 +645,19 @@ def create_argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def get_number_of_failed_tests(tree_result_overview: TreeResult) -> int:
+    """Get the number of total tests failed."""
+    total_failed_tests = 0
+    for engine_result in tree_result_overview.engine_results:
+        for result in engine_result.engine_results:
+            total_failed_tests += result.get_not_passed_total()
+        for sub_engine_result in engine_result.sub_engine_results:
+            for result in sub_engine_result.engine_results:
+                total_failed_tests += result.get_not_passed_total()
+
+    return total_failed_tests
+
+
 if __name__ == "__main__":
     start_time = datetime.now()
 
@@ -701,9 +719,13 @@ if __name__ == "__main__":
     if os.path.exists(TEST_RESULT_FOLDER):
         shutil.rmtree(TEST_RESULT_FOLDER)
 
+    tests_failed = get_number_of_failed_tests(tree_result_overview)
+    print(f"Total test failed: {tests_failed}")
+
     log_to_file(log_file, f"\nStart: {start_time}")
     log_to_file(log_file, f"End  : {datetime.now()}")
     log_to_file(log_file, "Ready")
     print(f"\nStart: {start_time}")
     print(f"End  : {datetime.now()}")
     print("Ready")
+    sys.exit(tests_failed)
