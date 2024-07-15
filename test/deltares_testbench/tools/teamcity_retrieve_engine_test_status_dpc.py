@@ -303,9 +303,7 @@ def get_test_result_list(log_file: TextIOWrapper, engine_cases: EngineCaseList) 
         xml_case_root = ET.fromstring(case_req.text)
 
         for build in xml_case_root.findall("build"):
-            status_text = ""
-            if build.find(TEST_OCCURRENCES) is None:
-                status_text = get_status_text_from_node(build)
+            status_text = get_status_text(build)
             test_overview.append(create_configuration_test_result(build, case_info.name, status_text))
 
         if len(test_overview) == 0:
@@ -349,7 +347,7 @@ def get_test_result_list(log_file: TextIOWrapper, engine_cases: EngineCaseList) 
     return test_overview
 
 
-def get_status_text_from_node(build: ET.Element) -> str:
+def get_status_text(build: ET.Element) -> str:
     """
     Get status text from xml node.
 
@@ -357,11 +355,14 @@ def get_status_text_from_node(build: ET.Element) -> str:
     -------
         str: the status text.
     """
-    status = build.find("statusText")
-    if status is not None:
-        return str(status.text)
-    else:
-        return "Build failed!"
+    status_text = ""
+    if build.find(TEST_OCCURRENCES) is None:
+        status = build.find("statusText")
+        if status is not None:
+            return str(status.text)
+        else:
+            return "Build failed!"
+    return status_text
 
 
 def get_number_of_tests(build: ET.Element, test_result: str) -> int:
