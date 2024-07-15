@@ -13,6 +13,7 @@ from src.config.program_config import ProgramConfig
 from src.suite.program import Program
 from src.suite.test_bench_settings import TestBenchSettings
 from src.utils.logging.i_logger import ILogger
+from src.utils.logging.log_level import LogLevel
 
 
 @pytest.fixture
@@ -51,7 +52,9 @@ class TestProgram:
         config.working_directory = str(tmp_dir.absolute())
         config.absolute_bin_path = str(script.absolute())
         config.log_output_to_file = True
-        program = Program(config, TestBenchSettings())
+        settings = TestBenchSettings()
+        settings.log_level = LogLevel.DEBUG
+        program = Program(config, settings)
         logger = mocker.Mock(spec=ILogger)
         log_folder = mocker.patch("src.suite.program.get_default_logging_folder_path")
         log_folder.return_value = str(tmp_dir.absolute())

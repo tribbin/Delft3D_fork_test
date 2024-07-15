@@ -20,7 +20,6 @@ from src.suite.test_bench_settings import TestBenchSettings
 from src.utils.common import add_search_path, stripPassword, get_default_logging_folder_path
 from src.utils.logging.file_logger import FileLogger
 from src.utils.logging.i_logger import ILogger
-from src.utils.logging.log_level import LogLevel
 from src.utils.paths import Paths
 
 
@@ -193,7 +192,7 @@ class Program:
             )
 
         logger.debug(f"Program output will be written to: {log_file}")
-        file_logger = FileLogger(LogLevel.DEBUG, unique_name, log_file)
+        file_logger = FileLogger(self.__settings.log_level, unique_name, log_file)
         for line in completed_process.stdout.splitlines():
             file_logger.debug(line.decode())
 

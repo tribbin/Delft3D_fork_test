@@ -16,7 +16,6 @@ from src.utils.comparers.i_comparer import IComparer
 from src.utils.logging.composite_logger import CompositeLogger
 from src.utils.logging.file_logger import FileLogger
 from src.utils.logging.i_logger import ILogger
-from src.utils.logging.log_level import LogLevel
 from src.utils.logging.test_loggers.i_test_logger import ITestLogger
 from src.utils.logging.test_loggers.test_result_type import TestResultType
 from src.utils.paths import Paths
@@ -82,7 +81,7 @@ class ComparisonRunner(TestSetRunner):
         log_file = os.path.join(get_default_logging_folder_path(), test_case_config.name, "result.txt")
         logger.info(f"Detailed comparison results will be written to: {log_file}")
 
-        logger_list = [FileLogger(LogLevel.DEBUG, test_case_config.name, log_file)]
+        logger_list = [FileLogger(self.settings.log_level, test_case_config.name, log_file)]
         if self.settings.teamcity:
             logger_list.append(logger)
 
