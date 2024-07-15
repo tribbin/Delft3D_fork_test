@@ -25,7 +25,6 @@ teamcity_retrieve_engine_test_status.py --tbroot DFlowFlexibleMesh
 teamcity_retrieve_engine_test_status.py --tbroot Dimr_DimrTestbenchRelease  # DIMR testbench release
 teamcity_retrieve_engine_test_status.py --tbroot Delft3DSobek_DimrTestbench  # DIMR testbench daily
 """
-TEXT_NOT_IN_XML_MESSAGE = "Text is not in XML format: %s"
 BASE_URL = "https://dpcbuild.deltares.nl"
 REST_API_URL = f"{BASE_URL}/httpAuth/app/rest"
 PROJECTS_URL = f"{REST_API_URL}/projects/id:%s"
@@ -447,7 +446,7 @@ def text_in_xml_message(text: str) -> bool:
         ET.fromstring(text)
         return True
     except:
-        print("TEXT_NOT_IN_XML_MESSAGE" % text)
+        print(f"Text is not in XML format: {text}")
         return False
 
 
