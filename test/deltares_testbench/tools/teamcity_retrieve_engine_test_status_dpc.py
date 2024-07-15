@@ -373,9 +373,8 @@ def get_number_of_tests(build: ET.Element, test_result: str) -> int:
     -------
         int: number of tests that match the test result.
     """
-    if build.find(TEST_OCCURRENCES) is not None:
-        if test_result in build.find(TEST_OCCURRENCES).attrib:
-            return int(build.find(TEST_OCCURRENCES).attrib[test_result])
+    if test_result in build.find(TEST_OCCURRENCES).attrib:
+        return int(build.find(TEST_OCCURRENCES).attrib[test_result])
 
     return 0
 
