@@ -613,7 +613,7 @@ def create_argument_parser() -> argparse.ArgumentParser:
         "--tbroot",
         help="ProjetcId of the testbench root for which the status is needed.",
         dest="tbroot",
-        required="true",
+        required=True,
     )
     parser.add_argument("-o", "--output", help="Output filename.", dest="out_put")
     parser.add_argument("-b", "--build_config", help="Build configuration ID", dest="build_config")
