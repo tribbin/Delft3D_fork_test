@@ -110,7 +110,7 @@ contains
          iresult = DFM_NOERR
          return
       end if
-         
+
       res = .true.
 
       call tree_create(file_name, bnd_ptr)
@@ -289,10 +289,10 @@ contains
             if (is_successful) then
                if (property_name == 'quantity') then
                   quantity = property_value ! We already knew this
-               else if (strcmpi(property_name,'locationFile')) then
+               else if (strcmpi(property_name, 'locationFile')) then
                   location_file = property_value ! We already knew this
                   call resolvePath(location_file, base_dir)
-               else if (strcmpi(property_name,'forcingFile')) then
+               else if (strcmpi(property_name, 'forcingFile')) then
                   forcing_file = property_value
                   call resolvePath(forcing_file, base_dir)
                   if (oper /= 'O' .and. oper /= '+') then
@@ -614,7 +614,7 @@ contains
             call warn_flush()
             return
          end if
-         
+
          is_extrapolation_allowed = .false.
          call prop_get(node_ptr, '', 'extrapolationAllowed ', is_extrapolation_allowed, is_successful)
          call update_method_in_case_extrapolation(method, is_extrapolation_allowed)
@@ -624,13 +624,13 @@ contains
 
          oper = 'O'
          call prop_get(node_ptr, '', 'operand ', oper, is_successful)
-         
+
          transformcoef = DMISS
          call prop_get(node_ptr, '', 'averagingType ', transformcoef(4), is_successful)
          call prop_get(node_ptr, '', 'averagingRelSize ', transformcoef(5), is_successful)
          call prop_get(node_ptr, '', 'averagingNumMin ', transformcoef(8), is_successful)
          call prop_get(node_ptr, '', 'averagingPercentile ', transformcoef(7), is_successful)
-         
+
          filetype = convert_file_type_string_to_integer(forcing_file_type)
 
          ! Default location type: s-points. Only cases below that need u-points or different, will override.
@@ -694,7 +694,7 @@ contains
             call warn_flush()
             return
          end if
-         
+
          ! The actual construction of the time-space relation
          select case (trim(str_tolower(forcing_file_type)))
          case ('bcascii')
@@ -747,13 +747,13 @@ contains
 
       ierr = DFM_NOERR
 
-      select case(target_location_type)
-      case(UNC_LOC_S)
+      select case (target_location_type)
+      case (UNC_LOC_S)
          target_num_points = ndx
          target_x => xz(1:target_num_points)
          target_x => xz(1:target_num_points)
          ! TODO: mask => kcs
-      case(UNC_LOC_U)
+      case (UNC_LOC_U)
          target_num_points = lnx
          target_x => xu(1:target_num_points)
          target_x => xu(1:target_num_points)
