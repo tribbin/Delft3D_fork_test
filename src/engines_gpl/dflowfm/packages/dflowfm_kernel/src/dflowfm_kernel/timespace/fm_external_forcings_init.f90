@@ -139,14 +139,12 @@ contains
       itpenur(:) = 0
       do ibt = 1, nbndz
          ib = itpenz(ibt)
-         !TODO: the check on the upper bound becomes obsolete, when the old external forcingsfile is removed
          if (ib > 0 .and. ib <= num_items_in_file) then
             itpenzr(ib) = ibt
          end if
       end do
       do ibt = 1, nbndu
          ib = itpenu(ibt)
-         !TODO: the check on the upper bound becomes obsolete, when the old external forcingsfile is removed
          if (ib > 0 .and. ib <= num_items_in_file) then
             itpenur(ib) = ibt
          end if
@@ -772,6 +770,40 @@ contains
 
             case ('windx', 'windy', 'windxy', 'stressxy', 'stressx', 'stressy')
                jawind = 1
+            case ('airtemperature')
+               jatair = 1
+               btempforcingtypA = .true.
+               tair_available = .true.
+            case ('cloudiness')
+               jaclou = 1
+               btempforcingtypC = .true.
+            case ('humidity')
+               jarhum = 1
+               btempforcingtypH = .true.
+            case ('dewpoint') ! Relative humidity array used to store dewpoints
+               itempforcingtyp = 5
+               dewpoint_available = .true.
+            case ('solarradiation')
+               btempforcingtypS = .true.
+               solrad_available = .true.
+            case ('longwaveradiation')
+               btempforcingtypL = .true.
+               longwave_available = .true.
+            case ('humidity_airtemperature_cloudiness')
+               itempforcingtyp = 1
+            case ('dewpoint_airtemperature_cloudiness')
+               itempforcingtyp = 3
+               dewpoint_available = .true.
+               tair_available = .true.
+            case ('humidity_airtemperature_cloudiness_solarradiation')
+               itempforcingtyp = 2
+               tair_available = .true.
+               solrad_available = .true.
+            case ('dewpoint_airtemperature_cloudiness_solarradiation')
+               itempforcingtyp = 4
+               dewpoint_available = .true.
+               tair_available = .true.
+               solrad_available = .true.
             end select
 
             res = .true.
@@ -788,7 +820,8 @@ contains
       use m_flowparameters, only: btempforcingtypA, btempforcingtypC, btempforcingtypH, btempforcingtypL, btempforcingtypS, itempforcingtyp
       use m_wind, only: tair, clou, rhum, qrad, longwave, jatair, jaclou, jarhum
       use m_flowgeom, only: ndx, kcs
-      use m_alloc, only: aerr
+      use m_alloc, only: aerr, realloc
+      use m_alloc, only:
 
       character(len=*), intent(in) :: quantity !< Name of the data set.
       integer, dimension(:), intent(inout) :: mask !< Mask array for the quantity.
@@ -800,95 +833,36 @@ contains
       kx = 1
       success = .true.
 
+      is_data_on_p_points
+
       select case (quantity)
 
       case ('airtemperature')
-         if (.not. allocated(tair)) then
-            allocate (tair(ndx), stat=ierr)
-            call aerr('tair(ndx)', ierr, ndx)
-            tair = 0d0
-         end if
-         !    success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
-         jatair = 1
-         btempforcingtypA = .true.
-         tair_available = .true.
-         mask = kcs
-
+         call realloc(tair, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
+         call aerr('tair(ndx)', ierr, ndx)
       case ('cloudiness')
-         if (.not. allocated(clou)) then
-            allocate (clou(ndx), stat=ierr)
-            call aerr('clou(ndx)', ierr, ndx)
-            clou = 0d0
-         end if
-         mask = kcs
-         jaclou = 1
-         btempforcingtypC = .true.
-
+         call realloc(clou, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
+         call aerr('clou(ndx)', ierr, ndx)
       case ('humidity')
-         if (.not. allocated(rhum)) then
-            allocate (rhum(ndx), stat=ierr)
-            call aerr('rhum(ndx)', ierr, ndx)
-            rhum = 0d0
-         end if
-         jarhum = 1
-         btempforcingtypH = .true.
+         call realloc(rhum, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
+         call aerr('rhum(ndx)', ierr, ndx)
       case ('dewpoint') ! Relative humidity array used to store dewpoints
-
-         if (.not. allocated(rhum)) then
-            allocate (rhum(ndx), stat=ierr)
-            call aerr('rhum(ndx)', ierr, ndx)
-            rhum = 0d0
-         end if
-
-         itempforcingtyp = 5
-         dewpoint_available = .true.
-
+         call realloc(rhum, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
+         call aerr('rhum(ndx)', ierr, ndx)
       case ('solarradiation')
-         if (.not. allocated(qrad)) then
-            allocate (qrad(ndx), stat=ierr)
-            call aerr('qrad(ndx)', ierr, ndx)
-            qrad = 0d0
-         end if
-         mask = kcs
-         btempforcingtypS = .true.
-         solrad_available = .true.
-
+         call realloc(qrad, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
+         call aerr('qrad(ndx)', ierr, ndx)
       case ('longwaveradiation')
-         if (.not. allocated(longwave)) then
-            allocate (longwave(ndx), stat=ierr)
-            call aerr('longwave(ndx)', ierr, ndx)
-            longwave = 0d0
-         end if
-         mask = kcs
-         btempforcingtypL = .true.
-         longwave_available = .true.
-
+         call realloc(longwave, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
+         call aerr('longwave(ndx)', ierr, ndx)
       case ('humidity_airtemperature_cloudiness')
-         itempforcingtyp = 1
          kx = 3
-         mask = 1
-
       case ('dewpoint_airtemperature_cloudiness')
-         itempforcingtyp = 3
          kx = 3
-         mask = 1
-         dewpoint_available = .true.
-         tair_available = .true.
-
       case ('humidity_airtemperature_cloudiness_solarradiation')
-         itempforcingtyp = 2
-         tair_available = .true.
-         solrad_available = .true.
          kx = 4
-         mask = 1
-
       case ('dewpoint_airtemperature_cloudiness_solarradiation')
-         itempforcingtyp = 4
-         dewpoint_available = .true.
-         tair_available = .true.
-         solrad_available = .true.
          kx = 4
-         mask = 1
       case default
          success = .false.
       end select
