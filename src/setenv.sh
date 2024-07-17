@@ -19,8 +19,8 @@ echo "Module Load"
 if [[ "$1" == intel24* ]]; then
      echo "Loading Intel24 compiled modules"
   
-     module load intel/2024.0.0
-     module load intelmpi/2021.11.0
+     module load intel/2024.2.0
+     module load intelmpi/2021.13.0
      module load cmake/3.30.0_intel2024.0.0
      module load netcdf/4.9.2_4.6.1_intel2023.1.0_standalone
      module load gdal/3.6.3_intel2023.1.0_standalone
