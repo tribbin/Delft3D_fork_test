@@ -484,8 +484,8 @@ def get_tree_entire_engine_test_results(
     for projects_node in project_text.findall("projects"):
         for project in projects_node:
             engine_name = project.attrib["name"]
-            if "Experimental" in engine_name:
-                print(f"Skip {engine_name}")
+            if project_is_archived(project):
+                print(f"Skip archived {engine_name}")
                 continue
 
             engines.append(ConfigurationInfo(engine_name, project.attrib["id"]))
@@ -526,6 +526,10 @@ def get_tree_entire_engine_test_results(
         if engine_cases.has_cases() or sub_engine_cases.has_cases():
             engine_results.append(EngineTestResult(engine.name, test_results, sub_test_result))
     return TreeResult(tree_name, engine_results)
+
+def project_is_archived(project: ET.Element) -> bool:
+    """Determine if project is archived."""
+    return bool(project.attrib.get("archived", False))
 
 
 def log_executive_summary(log_file: TextIOWrapper, summarydata: ExecutiveSummary) -> None:
