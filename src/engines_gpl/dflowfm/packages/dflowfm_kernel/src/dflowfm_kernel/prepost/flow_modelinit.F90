@@ -515,8 +515,6 @@
     call average_concentrations_for_laterals(numconst, kmx, kmxn, vol1, constituents, 1._dp)
     call get_lateral_volume_per_layer(lateral_volume_per_layer)
 
-    call setzcs()
-    call get_lateral_layer_positions(lateral_center_position_per_layer, zcs)
  endif
  
  ! Initialise sedtrails statistics

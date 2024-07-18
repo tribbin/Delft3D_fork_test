@@ -56,10 +56,6 @@ subroutine updateValuesOnLaterals(tim1, timestep)
    num_layers = max(1,kmx)
 
    ! Compute realized discharge
-
-   ! TODO-8090
-   ! Change the loop in accordance with s1ini
-
    qLatReal = 0d0
    do i = 1,numlatsg
       do k1=n1latsg(i),n2latsg(i)
@@ -67,7 +63,7 @@ subroutine updateValuesOnLaterals(tim1, timestep)
          if (k > 0) then
             if (.not. is_ghost_node(k)) then
                do nlayer = 1, num_layers
-                  qLatReal(i) = qLatReal(i) + qqLat(nlayer,k)
+                  qLatReal(i) = qLatReal(i) + qqLat(nlayer,i,k)
                end do
             end if
          end if

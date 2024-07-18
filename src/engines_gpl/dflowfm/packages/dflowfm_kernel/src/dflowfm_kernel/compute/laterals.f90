@@ -41,7 +41,7 @@ module m_lateral
    public get_lateral_volume_per_layer
    public reset_outgoing_lat_concentration
    public finish_outgoing_lat_concentration
-   public distribute_lateral_discharge_per_layer_per_cell
+   public distribute_lateral_discharge
    public get_lateral_layer_positions
    !!
    !! Laterals
@@ -51,22 +51,22 @@ module m_lateral
    integer, parameter, public :: ILATTP_2D = 2  !< Type code for laterals that only apply to 2D nodes.
 
    integer, target, public :: numlatsg           !< [-] nr of lateral discharge providers  {"rank": 0}
-   ! TODO-8090
    ! I see 3 occurences where QPLAT is being allocated. Investigate if this is necessary.
-
-   real(kind=dp), allocatable, target, public :: qplat(:, :)         !< [m3/s] Lateral discharge of provider {"shape": ["num_layers","numlatsg"]}
-   ! TODO-8090
-   ! Dimension QQLAT to maximum number of nodes in a polygon for all laterals.
-   real(kind=dp), allocatable, target, public :: qqlat(:, :)         !< [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["num_layers","ndx"]}
-   real(kind=dp), allocatable, target, public :: balat(:)           !< [m2] total area of all cells in provider numlatsg {"shape": ["numlatsg"]}
-   character(len=128), allocatable, public :: lat_ids(:)         !< id of laterals {"shape": ["numlatsg"]}
-   real(kind=dp), allocatable, target, public :: qplatCum(:)        !< [m3/s] Cumulative lateral discharge of provider {"shape": ["numlatsg"]}
-   real(kind=dp), allocatable, target, public :: qplatCumPre(:)     !< [m3/s] Cumulative lateral discharge of provider at previous history output time{"shape": ["numlatsg"]}
-   real(kind=dp), allocatable, target, public :: qplatAve(:)        !< [m3/s] Average lateral discharge of provider during the past history output interal {"shape": ["numlatsg"]}
-   real(kind=dp), allocatable, target, public :: qLatReal(:)        !< [m3/s] Realized lateral discharge {"shape": ["numlatsg"]}
-   real(kind=dp), allocatable, target, public :: qLatRealCum(:)     !< [m3/s] Cumulative realized lateral discharge {"shape": ["numlatsg"]}
-   real(kind=dp), allocatable, target, public :: qLatRealCumPre(:)  !< [m3/s] Cumulative realized lateral discharge at previous history output time{"shape": ["numlatsg"]}
-   real(kind=dp), allocatable, target, public :: qLatRealAve(:)     !< [m3/s] Average realized lateral discharge during the past history output interal{"shape": ["numlatsg"]}
+   ! QPLAT is allocated 1) in fm_external_forcings_init_old, module subroutine init_new (will be removed)
+   !                    2) in fm_external_forcings_init, module subroutine init_new
+   !                    3) in test_laterals (unit test)
+   ! so yes, 3 is necessary for now.
+   real(kind=dp),      allocatable, target, public :: qplat(:,:)         !< [m3/s] Lateral discharge of provider {"shape": ["num_layers", "numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qqlat(:,:,:)       !< [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["num_layers","numlatsg", "ndx"]}
+   real(kind=dp),      allocatable, target, public :: balat(:)           !< [m2] total area of all cells in provider numlatsg {"shape": ["numlatsg"]}
+   character(len=128), allocatable,         public :: lat_ids(:)         !< id of laterals {"shape": ["numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qplatCum(:)        !< [m3/s] Cumulative lateral discharge of provider {"shape": ["numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qplatCumPre(:)     !< [m3/s] Cumulative lateral discharge of provider at previous history output time{"shape": ["numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qplatAve(:)        !< [m3/s] Average lateral discharge of provider during the past history output interal {"shape": ["numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qLatReal(:)        !< [m3/s] Realized lateral discharge {"shape": ["numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qLatRealCum(:)     !< [m3/s] Cumulative realized lateral discharge {"shape": ["numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qLatRealCumPre(:)  !< [m3/s] Cumulative realized lateral discharge at previous history output time{"shape": ["numlatsg"]}
+   real(kind=dp),      allocatable, target, public :: qLatRealAve(:)     !< [m3/s] Average realized lateral discharge during the past history output interal{"shape": ["numlatsg"]}
 
    !! Lateral lookup tables: n1/n2latsg(ilat) = n1/n2, nnlat(n1:n2) = { flow node nrs affected by lateral ilat }
    integer, public :: nlatnd      !< lateral nodes dimension, counter of nnlat(:)
@@ -149,21 +149,21 @@ module m_lateral
 
    !> Add lateral input contribution to the load being transported
    interface add_lateral_load_and_sink
-      module subroutine add_lateral_load_and_sink(transport_load, transport_sink, discharge_in, discharge_out, cell_volume, dtol)
-         real(kind=dp), dimension(:, :), intent(inout) :: transport_load  !< Load being transported into domain
-         real(kind=dp), dimension(:, :), intent(inout) :: transport_sink  !< Load being transported out
-         real(kind=dp), dimension(:, :), intent(in) :: discharge_in    !< Lateral discharge going into domain (source)
-         real(kind=dp), dimension(:, :), intent(in) :: discharge_out   !< Lateral discharge going out (sink)
-         real(kind=dp), dimension(:), intent(in) :: cell_volume     !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
-         real(kind=dp), intent(in) :: dtol            !< cut off value for vol1, to prevent division by zero
-      end subroutine add_lateral_load_and_sink
+     module subroutine add_lateral_load_and_sink(transport_load,transport_sink,discharge_in,discharge_out,cell_volume,dtol)
+        real(kind=dp), dimension(:,:), intent(inout) :: transport_load  !< Load being transported into domain
+        real(kind=dp), dimension(:,:), intent(inout) :: transport_sink  !< Load being transported out
+        real(kind=dp), dimension(:,:,:), intent(in)    :: discharge_in  !< Lateral discharge going into domain (source)
+        real(kind=dp), dimension(:,:,:), intent(in)    :: discharge_out  !< Lateral discharge going out (sink)
+        real(kind=dp), dimension(:),   intent(in)    :: cell_volume     !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
+        real(kind=dp), intent(in)                    :: dtol            !< cut off value for vol1, to prevent division by zero
+     end subroutine add_lateral_load_and_sink
    end interface add_lateral_load_and_sink
 
    !> Calculate lateral discharges at each of the active grid cells, both source (lateral_discharge_in) and sink (lateral_discharge_out).
    interface get_lateral_discharge
       module subroutine get_lateral_discharge(lateral_discharge_in, lateral_discharge_out, cell_volume)
-         real(kind=dp), dimension(:, :), intent(inout) :: lateral_discharge_in   !< Lateral discharge flowing into the model (source)
-         real(kind=dp), dimension(:, :), intent(inout) :: lateral_discharge_out  !< Lateral discharge extracted out of the model (sink)
+         real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_in   !< Lateral discharge flowing into the model (source)
+         real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_out  !< Lateral discharge extracted out of the model (sink)
          real(kind=dp), dimension(:), intent(in) :: cell_volume            !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
       end subroutine get_lateral_discharge
    end interface get_lateral_discharge
@@ -185,13 +185,13 @@ module m_lateral
    end interface get_lateral_layer_positions
 
    !> Distributes lateral discharge per layer, that is retrieved from BMI, to per layer per cell
-   interface distribute_lateral_discharge_per_layer_per_cell
-      module subroutine distribute_lateral_discharge_per_layer_per_cell(provided_lateral_discharge_per_layer, lateral_discharge_per_layer_per_cell)
-         real(kind=dp), dimension(:, :), intent(in) :: provided_lateral_discharge_per_layer !< Provided lateral discharge per
-                                                                                               !! layer, retrieved from BMI
-         real(kind=dp), dimension(:, :), intent(out) :: lateral_discharge_per_layer_per_cell !< Real lateral discharge
-                                                                                               !! per layer per cell
-      end subroutine distribute_lateral_discharge_per_layer_per_cell
-   end interface distribute_lateral_discharge_per_layer_per_cell
+   interface distribute_lateral_discharge
+      module subroutine distribute_lateral_discharge(provided_lateral_discharge, lateral_discharge_per_layer_lateral_cell)
+         real(kind=dp), dimension(:, :), intent(in) :: provided_lateral_discharge !< Provided lateral discharge per
+                                                                                  !! layer, retrieved from BMI
+        real(kind=dp), dimension(:,:,:), intent(  out) :: lateral_discharge_per_layer_lateral_cell !< Real lateral discharge
+                                                                                               !! per layer per lateral per cell
+      end subroutine distribute_lateral_discharge
+   end interface distribute_lateral_discharge
 end module m_lateral
 

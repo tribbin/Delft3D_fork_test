@@ -1368,7 +1368,7 @@ contains
       integer, intent(inout) :: iresult !< integer error code, is preserved in case earlier errors occur.
 
       integer :: ierr
-      integer :: k, L, LF, KB, KBI, N, K2, ja, method, filetype0, num_layers
+      integer :: k, L, LF, KB, KBI, N, K2, ja, method, filetype0
       integer :: k1, l1, l2
       character(len=256) :: filename, sourcemask, filename0
       character(len=64) :: varname
@@ -1530,8 +1530,8 @@ contains
       ! Allow laterals from old ext, even when new structures file is present (but only when *no* [Lateral]s were in new extforce file).
       if (num_lat_ini_blocks == 0 .and. numlatsg > 0) then
          call realloc(balat, numlatsg, keepExisting=.false., fill=0d0)
-         num_layers = max(1, kmx)
-         call realloc(qplat, (/num_layers, numlatsg/), keepExisting=.false., fill=0d0)
+         call realloc(qplat, (/max(1, kmx), numlatsg/), keepExisting=.false., fill=0d0)
+         call realloc(apply_transport, numlatsg, fill=0)
          call realloc(lat_ids, numlatsg, keepExisting=.false., fill='')
 
          do n = 1, numlatsg

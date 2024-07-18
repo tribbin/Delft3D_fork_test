@@ -63,8 +63,8 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    double precision            :: spir_ce, spir_be, spir_e, alength_a, time_a, alpha, fcoriocof, qsrck, qsrckk, dzss
 
    double precision            :: Trefi
-   double precision, allocatable, dimension(:,:)     :: qin_over_laterals
-   double precision, allocatable, dimension(:,:)     :: qout_over_laterals
+   double precision, allocatable, dimension(:,:,:)     :: qin_over_laterals
+   double precision, allocatable, dimension(:,:,:)     :: qout_over_laterals
 
    integer(4) ithndl /0/
    if (timon) call timstrt ( "fill_constituents", ithndl )
@@ -157,13 +157,14 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 
    ! add lateral in- and outflow of constituents as sources and sinks
    if (apply_transport_is_used) then 
-      allocate(qin_over_laterals(numlatsg,ndxi),stat=iostat)
-      call aerr('qin_over_laterals',iostat,numlatsg*ndxi,'fill_constituents')
-      allocate(qout_over_laterals(numlatsg,ndxi),stat=iostat)
-      call aerr('qout_over_laterals',iostat,numlatsg*ndxi,'fill_constituents')
+      allocate(qin_over_laterals(max(1, kmx), numlatsg, ndxi), stat=iostat)
+      call aerr('qin_over_laterals', iostat, numlatsg*ndxi, 'fill_constituents')
+      allocate(qout_over_laterals(max(1, kmx), numlatsg,ndxi), stat=iostat)
+      call aerr('qout_over_laterals', iostat, numlatsg*ndxi, 'fill_constituents')
 
-      call get_lateral_discharge(qin_over_laterals,qout_over_laterals,vol1)
-      call add_lateral_load_and_sink(const_sour, const_sink,qin_over_laterals,qout_over_laterals,vol1,dtol)
+      ! TODO ZSF: this can be simplified by using qqlat(numlayer, numlatsg, ndx)
+      call get_lateral_discharge(qin_over_laterals, qout_over_laterals, vol1)
+      call add_lateral_load_and_sink(const_sour, const_sink,qin_over_laterals, qout_over_laterals, vol1, dtol)
 
       deallocate(qin_over_laterals)
       deallocate(qout_over_laterals)

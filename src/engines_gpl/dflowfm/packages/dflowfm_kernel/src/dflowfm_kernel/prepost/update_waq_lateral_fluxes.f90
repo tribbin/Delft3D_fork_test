@@ -43,7 +43,7 @@ use m_partitioninfo, only: is_ghost_node
 use m_flow
 use m_flowgeom
 use m_flowtimes
-use m_lateral, only: numlatsg, nodeCountLat, n1latsg, n2latsg, nnlat, qqlat
+use m_lateral, only: numlatsg, n1latsg, n2latsg, nnlat, qqlat
 implicit none
 
 integer :: k, k1, ilat
@@ -51,8 +51,6 @@ integer :: ilatwaq, nlayer, num_layers
 
 ! Accumulate lateral discharges for waq
 
-! TODO-8090
-! Change the loop in accordance with s1ini
 ilatwaq = 0
 num_layers = max(1,kmx)
 do ilat = 1,numlatsg
@@ -62,7 +60,7 @@ do ilat = 1,numlatsg
          if (.not. is_ghost_node(k)) then
             ilatwaq = ilatwaq + 1
             do nlayer = 1, num_layers
-               qlatwaq(ilatwaq) = qlatwaq(ilatwaq) + dts*qqLat(nlayer,k)
+               qlatwaq(ilatwaq) = qlatwaq(ilatwaq) + dts*qqLat(nlayer,ilat,k)
             end do
          end if
       end if

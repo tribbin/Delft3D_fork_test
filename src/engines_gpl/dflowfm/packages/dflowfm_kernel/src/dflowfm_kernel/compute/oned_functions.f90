@@ -841,7 +841,7 @@ module m_oned_functions
    !! * the highest nearby cross section level ("embankment") for other nodes,
    !! * dmiss, i.e. not applicable, if no cross section is defined at the node.
    subroutine set_ground_level_for_1d_nodes(network)
-   use m_flowgeom, only: groundLevel, groundStorage, ndxi, ndx2d, nd, lnxi, kcu
+   use m_flowgeom, only: groundLevel, groundStorage, ndxi, ndx2d, nd, kcu
    use m_Storage
    use m_CrossSections
    use m_network
@@ -1125,35 +1125,27 @@ module m_oned_functions
    !> Update total net inflow of all laterals for each 1d node with given computational time step.
    subroutine updateTotalInflowLat(dts)
    use m_flow, only: vTotLat, qCurLat, kmx
-   use m_flowgeom, only: ndx2d, ndxi
-   use m_lateral, only: qqlat
+   use m_flowgeom, only: ndx2d
+   use m_lateral, only: qqlat, numlatsg, n1latsg, n2latsg, nnlat
    implicit none
    double precision, intent(in) :: dts ! current computational time step
-   integer                      :: n, nlayer, num_layers
+   integer                      :: n, num_layers
+   integer :: i_lat, i_node
 
    qCurLat = 0d0
    num_layers = max(1,kmx)
    ! Don't reset vTotLat
 
-   ! TODO-8090
-   ! change the loop into
-   ! do lat = 1, nlatsg
-   !    i = 0
-   !    do n = n1latsg(lat), n2latsg(lat)
-   !       i = i+1
-   !       inode = nnlat(n)
-   !       if (inode <= ndx2d) then
-   !          cycle   
-   !       endif
-   !       qCurLat(inode) = qCurLat(inode) + qqlat(nlayer, i)
-   !       vTotLat(inode) = vTotLat(inode) + qqlat(nlayer, i)*dts
-   !    enddo   
-   ! enddo   
    if (allocated(qqlat)) then
-      do n = ndx2d+1, ndxi ! all 1d nodes
-         do nlayer = 1, num_layers !loop on layers
-            qCurLat(n) = qCurLat(n) + qqlat(nlayer, n)
-            vTotLat(n) = vTotLat(n) + qqlat(nlayer, n)*dts
+      do i_lat = 1, numlatsg
+         do n = n1latsg(i_lat), n2latsg(i_lat)
+            i_node = nnlat(n)
+            if (i_node <= ndx2d) then
+              cycle   
+            endif
+            ! only 1D nodes, so only 1 layer in qqlat
+            qCurLat(i_node) = qCurLat(i_node) + qqlat(1, i_lat, i_node)
+            vTotLat(i_node) = vTotLat(i_node) + qqlat(1, i_lat, i_node)*dts
          end do
       end do
    else

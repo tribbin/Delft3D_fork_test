@@ -46,12 +46,14 @@ contains
    !> allocate the arrays for laterals on 3d/BMI
    module subroutine initialize_lateraldata(numconst)
       use m_flow, only: kmx
+      use m_flowgeom, only: ndx
       use m_alloc
 
       integer, intent(in) :: numconst  !< number of constitiuents
 
       integer :: i           ! loop counter
       integer :: num_layers  ! Number of layers
+      integer :: ierr  ! error status
 
       apply_transport_is_used = .false.
       if (allocated(apply_transport)) then
@@ -70,6 +72,12 @@ contains
       call realloc(outgoing_lat_concentration, [num_layers, numconst, numlatsg])
       call realloc(lateral_volume_per_layer, [num_layers, numlatsg])
       call realloc(lateral_center_position_per_layer, [num_layers, numlatsg])
+
+      call realloc(lateral_volume_per_layer,[num_layers,numlatsg])
+      call realloc(lateral_center_position_per_layer,[num_layers,numlatsg])
+      allocate (qqlat(num_layers, numlatsg, ndx), stat=ierr)
+      call aerr('qqlat(num_layers, numlatsg, ndx)', ierr, num_layers*numlatsg*ndx)
+      qqlat = 0._dp
 
    end subroutine initialize_lateraldata
 
@@ -155,13 +163,15 @@ contains
       use m_flowtimes, only: dts
       use m_partitioninfo, only: is_ghost_node
 
-      real(kind=dp), dimension(:, :), intent(inout) :: lateral_discharge_in   !< Lateral discharge flowing into the model (source)
-      real(kind=dp), dimension(:, :), intent(inout) :: lateral_discharge_out  !< Lateral discharge extracted out of the model (sink)
+      real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_in   !< Lateral discharge flowing into the model (source)
+      real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_out  !< Lateral discharge extracted out of the model (sink)
       real(kind=dp), dimension(:), intent(in) :: cell_volume            !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
 
-      integer :: k1, i_cell, i_lateral
+      integer :: k1, i_cell, i_lateral, i_layer
       real(kind=dp) :: qlat
 
+      ! TODO-8090 set i_layer = 1 for the moment
+      i_layer = 1
       if (numlatsg > 0) then
          lateral_discharge_in = 0._dp
          lateral_discharge_out = 0._dp
@@ -173,12 +183,12 @@ contains
                   qlat = qplat(1, i_lateral) * cell_volume(i_cell)
                   if (qlat > 0) then
                      if (.not. is_ghost_node(i_cell)) then
-                        lateral_discharge_in(i_lateral, i_cell) = lateral_discharge_in(i_lateral, i_cell) + qlat
+                        lateral_discharge_in(i_layer, i_lateral, i_cell) = lateral_discharge_in(i_layer, i_lateral, i_cell) + qlat
                      end if
                   else if (hs(i_cell) > epshu) then
                      qlat = -min(0.5_dp * cell_volume(i_cell) / dts, -qlat) ! this is required to conserve mass
                      if (.not. is_ghost_node(i_cell)) then
-                        lateral_discharge_out(i_lateral, i_cell) = lateral_discharge_out(i_lateral, i_cell) - qlat
+                        lateral_discharge_out(i_layer, i_lateral, i_cell) = lateral_discharge_out(i_layer, i_lateral, i_cell) - qlat
                      end if
                   end if
                end do
@@ -192,14 +202,16 @@ contains
       use m_transportdata, only: numconst
       real(kind=dp), dimension(:, :), intent(inout) :: transport_load  !< Load being transported into domain
       real(kind=dp), dimension(:, :), intent(inout) :: transport_sink  !< Load being transported out
-      real(kind=dp), dimension(:, :), intent(in) :: discharge_in    !< Lateral discharge going into domain (source)
-      real(kind=dp), dimension(:, :), intent(in) :: discharge_out   !< Lateral discharge going out (sink)
+      real(kind=dp), dimension(:, :, :), intent(in) :: discharge_in    !< Lateral discharge going into domain (source)
+      real(kind=dp), dimension(:, :, :), intent(in) :: discharge_out   !< Lateral discharge going out (sink)
       real(kind=dp), dimension(:), intent(in) :: cell_volume     !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
       real(kind=dp), intent(in) :: dtol            !< cut off value for cell_volume, to prevent division by zero
 
       real(kind=dp) :: delta_cell_volume
-      integer :: i_const, i_lateral, i_cell, k1
+      integer :: i_const, i_lateral, i_cell, k1, i_layer
 
+      ! TODO-8090 set i_layer = 1 for the moment
+      i_layer = 1
       do i_const = 1, numconst
          do i_lateral = 1, numlatsg
             do k1 = n1latsg(i_lateral), n2latsg(i_lateral)
@@ -207,8 +219,8 @@ contains
                delta_cell_volume = 1._dp / max(cell_volume(i_cell), dtol)
                ! transport_load is added to RHS of transport equation, sink is added to diagonal:
                ! only multiply transport_load with concentration
-               transport_load(i_const, i_cell) = transport_load(i_const, i_cell) + delta_cell_volume * discharge_in(i_lateral, i_cell) * incoming_lat_concentration(1, i_const, i_lateral)
-               transport_sink(i_const, i_cell) = transport_sink(i_const, i_cell) + delta_cell_volume * discharge_out(i_lateral, i_cell)
+               transport_load(i_const, i_cell) = transport_load(i_const, i_cell) + delta_cell_volume * discharge_in(i_layer, i_lateral, i_cell) * incoming_lat_concentration(1, i_const, i_lateral)
+               transport_sink(i_const, i_cell) = transport_sink(i_const, i_cell) + delta_cell_volume * discharge_out(i_layer, i_lateral, i_cell)
             end do
          end do
       end do
@@ -323,39 +335,39 @@ contains
       outgoing_lat_concentration = outgoing_lat_concentration / time_interval
    end subroutine finish_outgoing_lat_concentration
 
-   !> Distributes lateral discharge per layer, that is retrieved from BMI, to per layer per cell
-   module subroutine distribute_lateral_discharge_per_layer_per_cell(provided_lateral_discharge_per_layer, &
-                                                                     lateral_discharge_per_layer_per_cell)
+   !> Distributes lateral discharge per layer, that is retrieved from BMI, to per layer per lateral, per cell
+   module subroutine distribute_lateral_discharge(provided_lateral_discharge, lateral_discharge_per_layer_lateral_cell)
 
       use m_flow, only: vol1, kmx, kmxn
       use precision_basics, only: comparereal
       use m_GlobalParameters, only: flow1d_eps10
 
-      real(kind=dp), dimension(:, :), intent(in) :: provided_lateral_discharge_per_layer !< Provided lateral discharge per
+      real(kind=dp), dimension(:, :), intent(in) :: provided_lateral_discharge !< Provided lateral discharge per
                                                                                            !! layer, which is retrieved from BMI
-      real(kind=dp), dimension(:, :), intent(out) :: lateral_discharge_per_layer_per_cell !< Real lateral discharge per layer
-                                                                                           !! per cell
+      real(kind=dp), dimension(:, :, :), intent(out) :: lateral_discharge_per_layer_lateral_cell !< Real lateral discharge per layer
+                                                                                           !! per lateral, per cell
 
       integer :: i_lateral, i_layer, i_nnlat, i_node, i_flownode
       integer :: i_node_bottom_layer, i_node_top_layer, i_active_bottom_layer
 
-      lateral_discharge_per_layer_per_cell(:, :) = 0.0_dp
-      ! TODO-8090 gebruik if (apply_transport(n)) then
+      lateral_discharge_per_layer_lateral_cell(:, :, :) = 0.0_dp
       do i_lateral = 1, numlatsg
-         do i_nnlat = n1latsg(i_lateral), n2latsg(i_lateral)
-            i_node = nnlat(i_nnlat)
-            call getkbotktop(i_node, i_node_bottom_layer, i_node_top_layer)
-            i_active_bottom_layer = kmx - kmxn(i_node) + 1
-            i_layer = i_active_bottom_layer
-            do i_flownode = i_node_bottom_layer, i_node_top_layer
-               if (comparereal(lateral_volume_per_layer(i_layer, i_lateral), 0.0_dp, flow1d_eps10) /= 0) then ! Avoid division by 0
-                  lateral_discharge_per_layer_per_cell(i_layer, i_flownode) = vol1(i_flownode) &
-                                                                              / lateral_volume_per_layer(i_layer, i_lateral) &
-                                                                              * provided_lateral_discharge_per_layer(i_layer, i_lateral)
-                  i_layer = i_layer + 1
-               end if
+         if (apply_transport(i_lateral) > 0) then 
+            do i_nnlat = n1latsg(i_lateral), n2latsg(i_lateral)
+               i_node = nnlat(i_nnlat)
+               call getkbotktop(i_node, i_node_bottom_layer, i_node_top_layer)
+               i_active_bottom_layer = kmx - kmxn(i_node) + 1
+               i_layer = max(i_active_bottom_layer,1)
+               do i_flownode = i_node_bottom_layer, i_node_top_layer
+                  if (comparereal(lateral_volume_per_layer(i_layer, i_lateral), 0.0_dp, flow1d_eps10) /= 0) then ! Avoid division by 0
+                     lateral_discharge_per_layer_lateral_cell(i_layer, i_lateral, i_flownode) = vol1(i_flownode) &
+                                                                                 / lateral_volume_per_layer(i_layer, i_lateral) &
+                                                                                 * provided_lateral_discharge(i_layer, i_lateral)
+                     i_layer = i_layer + 1
+                  end if
+               end do
             end do
-         end do
+         end if
       end do
-   end subroutine distribute_lateral_discharge_per_layer_per_cell
+   end subroutine distribute_lateral_discharge
 end submodule m_lateral_implementation

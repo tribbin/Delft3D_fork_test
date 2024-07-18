@@ -41,10 +41,10 @@
  use m_mass_balance_areas
  use m_partitioninfo
  use m_lateral, only : numlatsg, qqlat, n1latsg, n2latsg, nnlat, balat, qplat, &
-                       apply_transport_is_used
+                       apply_transport
  implicit none
 
- integer          :: L, k1, k2, k, n, LL, kt, idim, imba
+ integer          :: L, k1, k2, k, LL, kt, idim, imba, ilat
  double precision :: aufu, auru, tetau
  double precision :: ds, hsk, Qeva_ow, Qeva_icept, Qrain, Qicept, Qextk, aloc
  logical :: isGhost
@@ -172,37 +172,23 @@
     end if
 
     if (numlatsg > 0) then
+       ! First accumulate all lateral discharges per grid cell
+       ! qqlat may have been computed in flow_run_sometimesteps already but only for 
+       ! laterals with apply_transort(ilat) > 0
        num_layers = max(1,kmx)
-
-       ! if apply_transport_is_used: qqlat has been computed in flow_run_sometimesteps already
-       ! TODO-8090: this is not correct. The check must be done for each lateral individually. 
-       !            so use apply_transport(n) as well
-
-       if (.not. apply_transport_is_used) then 
-         ! First accumulate all lateral discharges per grid cell
          
-         ! TODO-8090
-         ! change the loop into
-         ! do lat = 1, nlatsg
-         !    i = 0
-         !    do n = n1latsg(lat), n2latsg(lat)
-         !       i = i+1
-         !       inode = nnlat(n)
-         !       QQLat(i, lat) = QQLat(i, lat) + QPlat(1,lat)*ba(n)/baLat(lat)
-         !    enddo   
-         ! enddo   
-         QQLat(1:num_layers,1:ndx) = 0d0
-         do n = 1,numlatsg
-             do k1=n1latsg(n),n2latsg(n)
+       do ilat = 1,numlatsg
+          if (apply_transport(ilat)==0) then 
+             do k1=n1latsg(ilat),n2latsg(ilat)
                 k = nnlat(k1)
                 if (k > 0) then
                    do nlayer = 1, num_layers
-                      QQLat(nlayer,k) = QQLat(nlayer,k) + QPlat(nlayer,n)*ba(k)/baLat(n)
+                      qqlat(nlayer,ilat,k) = qqlat(nlayer,ilat,k) + qplat(nlayer,ilat)*ba(k)/balat(ilat)
                    end do
                 end if
              end do
-          end do
-       end if 
+          end if
+       end do
        ! Now, handle the total lateral discharge for each grid cell
        do k = 1,ndxi
           if (k <= ndx2d) then
@@ -214,22 +200,22 @@
           !DIR$ FORCEINLINE
           isGhost = is_ghost_node(k)
 
-         ! TODO-8090
-         ! change the loop
           do nlayer = 1, num_layers
-             if (QQLat(nlayer,k) > 0) then
-                if (.not. isGhost) then ! Do not count ghosts in mass balances
-                   qinlat(idim) = qinlat(idim) + QQLat(nlayer,k)                        ! Qlat can be pos or neg
-                end if
-             else if (hs(k) > epshu) then
-                QQlat(nlayer,k) = - min(0.5d0*vol1(k)/dts , -QQlat(nlayer,k))
-                if (.not. isGhost) then
-                   qoutlat(idim) = qoutlat(idim) - QQlat(nlayer,k)
-                end if
-             else
-                QQlat(nlayer,k) = 0d0
-             endif
-             qin(k) = qin(k) + QQlat(nlayer,k)
+             do ilat = 1, numlatsg
+                if (qqlat(nlayer,ilat,k) > 0) then
+                   if (.not. isGhost) then ! Do not count ghosts in mass balances
+                      qinlat(idim) = qinlat(idim) + qqLat(nlayer,ilat,k)                        ! qqlat can be pos or neg
+                   end if
+                else if (hs(k) > epshu) then
+                   qqlat(nlayer,ilat,k) = - min(0.5d0*vol1(k)/dts , -qqlat(nlayer,ilat,k))
+                   if (.not. isGhost) then
+                      qoutlat(idim) = qoutlat(idim) - qqlat(nlayer,ilat,k)
+                   end if
+                else
+                   qqlat(nlayer,ilat,k) = 0d0
+                endif
+                qin(k) = qin(k) + qqlat(nlayer,ilat,k)
+            end do
           end do
        enddo
     endif

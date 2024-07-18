@@ -36,7 +36,7 @@ select case(var_name)
     type_name = "double"
   case("twav")
     type_name = "double"
-  case("Uorb")
+  case("uorb")
     type_name = "double"
   case("bodsed")
     type_name = "double"
@@ -140,36 +140,6 @@ select case(var_name)
     type_name = "double"
   case("evap")
     type_name = "double"
-  case("numlatsg")
-    type_name = "int"
-  case("qplat")
-    type_name = "double"
-  case("qqlat")
-    type_name = "double"
-  case("balat")
-    type_name = "double"
-  case("qplatCum")
-    type_name = "double"
-  case("qplatCumPre")
-    type_name = "double"
-  case("qplatAve")
-    type_name = "double"
-  case("qLatReal")
-    type_name = "double"
-  case("qLatRealCum")
-    type_name = "double"
-  case("qLatRealCumPre")
-    type_name = "double"
-  case("qLatRealAve")
-    type_name = "double"
-  case("n1latsg")
-    type_name = "int"
-  case("n2latsg")
-    type_name = "int"
-  case("nnlat")
-    type_name = "int"
-  case("kclat")
-    type_name = "int"
   case("qext")
     type_name = "double"
   case("qextreal")
@@ -178,6 +148,36 @@ select case(var_name)
     type_name = "double"
   case("rainuni")
     type_name = "double"
+  case("numlatsg")
+    type_name = "int"
+  case("qplat")
+    type_name = "float"
+  case("qqlat")
+    type_name = "float"
+  case("balat")
+    type_name = "float"
+  case("qplatCum")
+    type_name = "float"
+  case("qplatCumPre")
+    type_name = "float"
+  case("qplatAve")
+    type_name = "float"
+  case("qLatReal")
+    type_name = "float"
+  case("qLatRealCum")
+    type_name = "float"
+  case("qLatRealCumPre")
+    type_name = "float"
+  case("qLatRealAve")
+    type_name = "float"
+  case("n1latsg")
+    type_name = "int"
+  case("n2latsg")
+    type_name = "int"
+  case("nnlat")
+    type_name = "int"
+  case("kclat")
+    type_name = "int"
   case("Qsunmap")
     type_name = "double"
   case("zbndz")
@@ -277,8 +277,6 @@ select case(var_name)
   case("viusp")
     type_name = "double"
   case("diusp")
-    type_name = "double"
-  case("taus")
     type_name = "double"
   case("ndxi")
     type_name = "int"
