@@ -84,8 +84,7 @@ module rtc_version_module
     character(*),  public, parameter :: rtc_version      = rtc_major//'.'//rtc_minor//'.'//rtc_revision//'.'//rtc_build_number//' '//rtc_architecture
     character(*),  public, parameter :: rtc_version_full = 'Deltares, '//rtc_program//' Version '//rtc_version//', '//__DATE__//', '//__TIME__
     character(*),  public, parameter :: rtc_version_id   = '@(#)'//rtc_version_full
-    character(*),  public, parameter :: rtc_checkout     = '@(#) $HeadURL: https://repos.deltares.nl/repos/ds/trunk/src/engines/rtc/packages/rtc/src/rtc_version.F90.svn $'
-
+    
 contains
 
     subroutine getfullversionstring_rtc(stringout)
@@ -131,12 +130,6 @@ contains
 
         stringout = trim(rtc_build_number)
     end subroutine getsvnrevisionstring_rtc
-
-    subroutine getbuildlocation(stringout)
-        character(*), intent(out) :: stringout
-
-        stringout = trim(rtc_checkout)
-    end subroutine getbuildlocation
 
     subroutine getarchitecturestring_rtc(stringout)
         character(*), intent(out) :: stringout

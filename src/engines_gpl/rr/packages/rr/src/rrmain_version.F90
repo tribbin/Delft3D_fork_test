@@ -59,7 +59,6 @@ module rrmain_version_module
     character(*),  public, parameter :: rrmain_version      = rrmain_major//'.'//rrmain_minor//'.'//rrmain_revision//'.'//rrmain_build_number//' '//rrmain_architecture
     character(*),  public, parameter :: rrmain_version_full = 'Deltares, '//rrmain_program//' Version '//rrmain_version//', '//__DATE__//', '//__TIME__
     character(*),  public, parameter :: rrmain_version_id   = '@(#)'//rrmain_version_full
-    character(*),  public, parameter :: rrmain_checkout     = '@(#) $HeadURL: https://repos.deltares.nl/repos/ds/trunk/src/engines/rr/packages/rr/src/rrmain_version.F90.svn $'
 
 contains
 
@@ -106,12 +105,6 @@ contains
 
         stringout = trim(rrmain_build_number)
     end subroutine getsvnrevisionstring_rrmain
-
-    subroutine getbuildlocation(stringout)
-        character(*), intent(out) :: stringout
-
-        stringout = trim(rrmain_checkout)
-    end subroutine getbuildlocation
 
     subroutine getarchitecturestring_rrmain(stringout)
         character(*), intent(out) :: stringout

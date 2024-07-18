@@ -85,7 +85,6 @@
     character(*),  public, parameter :: rr_dll_version      = trim(rr_dll_major)//'.'//trim(rr_dll_minor)//'.'//trim(rr_dll_revision)//'.'//trim(rr_dll_build_number)
     character(*),  public, parameter :: rr_dll_version_full = rr_dll_company//', '//rr_dll_program//' Version '//rr_dll_version//', '//__DATE__//', '//__TIME__
     character(*),  public, parameter :: rr_dll_version_id   = '@(#)'//rr_dll_version_full
-    character(*),  public, parameter :: rr_dll_checkout     = '@(#) $HeadURL: https://repos.deltares.nl/repos/ds/trunk/src/engines/rr/packages/rr_dll/src/rr_dll_version.F90.svn $'
 
 contains
 
@@ -132,12 +131,6 @@ contains
 
         stringout = trim(rr_dll_build_number)
     end subroutine getsvnrevisionstring_rr_dll
-
-    subroutine getbuildlocation(stringout)
-        character(*), intent(out) :: stringout
-
-        stringout = trim(rr_dll_checkout)
-    end subroutine getbuildlocation
 
     subroutine getarchitecturestring_rr_dll(stringout)
         character(*), intent(out) :: stringout
