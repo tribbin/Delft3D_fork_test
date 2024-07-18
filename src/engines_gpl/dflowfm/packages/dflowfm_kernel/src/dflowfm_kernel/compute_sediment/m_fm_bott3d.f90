@@ -1062,7 +1062,7 @@ public :: fm_bott3d
                      do iL = Lb,Lt
                         flux = flux + fluxhortot(j,iL)
                      enddo
-                     !See: UNST-7371
+					 !See: UNST-7371
                      call fm_sumflux(LL,sumflux,flux)
                   end do
                else
@@ -1852,7 +1852,7 @@ public :: fm_bott3d
       !
       do jb = 1, nopenbndsect
          icond = morbnd(jb)%icond
-         if (icond .eq. 0) then
+            if (icond == 0) then
             do ib = 1, morbnd(jb)%npnt
                bl(morbnd(jb)%nm(ib))    = bl(morbnd(jb)%nxmx(ib))
                blchg(morbnd(jb)%nm(ib)) = blchg(morbnd(jb)%nxmx(ib))  ! needed below

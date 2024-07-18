@@ -31,7 +31,7 @@
 ! 
 
    subroutine wave_uorbrlabda()
-   use m_waves, only: uorb, wlenwav, uorbwav, twav, hwav, gammax, rlabda, jauorb, jauorbfromswan
+      use m_waves, only: uorb, wlenwav, uorbwav, twav, hwav, hwavcom, gammax, rlabda, jauorb, jauorbfromswan
    use m_flow, only: s1
    use m_flowgeom, only: ndx, bl
    use m_physcoef, only: ag
@@ -60,13 +60,13 @@
       else
          call getwavenr(hss,per,rk)
       endif
-      if (wlenwav_from_SWAN.eq.1) then
+         if (wlenwav_from_SWAN == 1) then
          rlabda(k) = wlenwav(k)
       else
          rlabda(k) = 2d0*pi/rk
       endif
       if (rk*hss<80d0) then            ! if not very deep water
-         if (jauorbfromswan.eq.1) then
+            if (jauorbfromswan == 1) then
             uorb(k)    = uorbwav(k)
          else
             uorb(k)      = 0.5d0*hwav(k)*omeg/sinh(rk*hss)

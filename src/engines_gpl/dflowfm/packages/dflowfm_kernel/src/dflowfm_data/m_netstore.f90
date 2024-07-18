@@ -74,7 +74,7 @@ contains
 
       do i=1,size(k)
          N = netcell(k(i))%N
-         if ( N.gt.maxnodespercell ) then
+         if (N > maxnodespercell) then
             call qnerror('local_netstore: array size error', ' ', ' ')
             return
          end if
@@ -110,7 +110,7 @@ contains
       else
    !     memory checks and reallocation if necessary
    !     maxnodes check
-         if ( size(ik_st).lt.maxnodes ) then
+         if (size(ik_st) < maxnodes) then
             deallocate(nod_st)
             allocate(nod_st(maxnodes))
             do i=1,maxnodes
@@ -124,7 +124,7 @@ contains
          end if
 
    !     maxlinks check
-         if ( size(iL_st).lt.maxlinks ) then
+         if (size(iL_st) < maxlinks) then
             call realloc(lnn_st, maxlinks)
             call realloc(lne_st, (/2,maxlinks/))
             call realloc(kn_st, (/3,maxlinks/))
@@ -132,7 +132,7 @@ contains
          end if
 
    !     maxcells check
-         if ( size(ip_st).lt.maxcells ) then
+         if (size(ip_st) < maxcells) then
             deallocate(netcell_st)
             allocate(netcell_st(maxcells))
             do i=1,maxcells
@@ -142,7 +142,7 @@ contains
          end if
 
    !     maxlinkspernode check
-         if ( size(nod_st(1)%lin) .lt. maxlinkspernode ) then
+         if (size(nod_st(1)%lin) < maxlinkspernode) then
             do i=1,maxnodes
                call realloc(nod_st(i)%lin, maxlinkspernode)
             end do
@@ -171,12 +171,12 @@ contains
             inode = netcell(icell)%nod(j)
             ilink = netcell(icell)%lin(j)
 
-            if ( nmk(inode).gt.maxlinkspernode ) then
+            if (nmk(inode) > maxlinkspernode) then
                call qnerror('local_netstore: array size error', ' ', ' ')
                return
             end if
 
-            if ( nmk(inode).ge.0 ) then
+            if (nmk(inode) >= 0) then
                numnodes         = numnodes+1
 
                ik_st(numnodes)  = inode
@@ -189,7 +189,7 @@ contains
                nmk(inode)       = -nmk(inode) - 100
             end if
 
-            if ( lnn(ilink).ge.0 ) then
+            if (lnn(ilink) >= 0) then
                numlinks           = numlinks+1
 
                iL_st(numlinks)    = ilink

@@ -57,7 +57,7 @@
  integer          :: j, kj, n, k, kg, nn, n1, L, LL,  jabanhydrad = 0, kb
 
  integer :: ndraw
- COMMON /DRAWTHIS/ ndraw(50)
+    common / DRAWTHIS / ndraw(50)
 
  if (stm_included) return
 

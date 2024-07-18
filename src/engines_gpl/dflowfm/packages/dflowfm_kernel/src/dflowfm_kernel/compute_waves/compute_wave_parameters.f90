@@ -121,7 +121,7 @@
       end if
       !
       ! Surfbeat model
-      if (jawave.eq.4) then
+      if (jawave == 4) then
          ! pro memore
       end if
       !
@@ -137,12 +137,12 @@
                if (hh<=epshu) then
                   ustokes(L) = 0d0; vstokes(L) = 0d0
                else
-                  hw=0.5d0*(hwav(k1)+hwav(k2));tw=.5d0*(twav(k1)+twav(k2))
-                  cs = 0.5*(cosd(phiwav(k1))+cosd(phiwav(k2)))
-                  sn = 0.5*(sind(phiwav(k1))+sind(phiwav(k2)))
+                  hw=0.5d0 * (hwav(k1)+hwav(k2));tw=.5d0*(twav(k1)+twav(k2))
+                  cs = 0.5d0 * (cosd(phiwav(k1))+cosd(phiwav(k2)))
+                  sn = 0.5d0 * (sind(phiwav(k1))+sind(phiwav(k2)))
                   call tauwavehk(hw, tw, hh, uorbi, rkw, ustt)
-                  ustokes(L) = ustt*(csu(L)*cs + snu(L)*sn)
-                  vstokes(L) = ustt*(-snu(L)*cs + csu(L)*sn)
+                  ustokes(L) = ustt * (csu(L)*cs + snu(L)*sn)
+                  vstokes(L) = ustt * (-snu(L)*cs + csu(L)*sn)
                endif
             enddo
             call wave_uorbrlabda()

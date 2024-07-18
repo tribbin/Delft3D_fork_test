@@ -76,26 +76,26 @@
       end subroutine realan
    end interface
 
-   COMMON /DRAWTHIS/ ndraw(50)
-   COMMON /BACKGROUND/ SCREENFILE
-   CHARACTER FILNAM*86, SCREENFILE*86
+      common / DRAWTHIS / ndraw(50)
+      common / BACKGROUND / SCREENFILE
+      character FILNAM * 86, SCREENFILE * 86
 
    KEY    = 0
 
-   IF (NWHAT .EQ. 1) THEN
+      if (NWHAT == 1) then
       FILNAM = '*.mdu'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN   ! Cancel
+         else if (ierror == -1) then ! Cancel
          NUM = 1
-      ELSE
+         else
         call doclose(mlan) ! TODO: change... [AvD]
         call inidat() ! TODO: call reset_display_settings() +  call dfm_reset_globaldata()
         call resetFullFlowModel()
-        CALL loadModel(filnam)
+            call loadModel(filnam)
         call minmxns()
         ! Check for presence of associated display presets
         inquire (file = trim(md_ident)//'.cfg', exist = jawel)
@@ -111,153 +111,153 @@
         NDRAW(2) = 1
         KEY = 3
         NUM = 0
-      ENDIF
-   ELSE IF (NWHAT .EQ. 2) THEN
+         end if
+      else if (NWHAT == 2) then
       FILNAM = '*_net.nc'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
         call doclose(mlan) ! TODO: change... [AvD]
-         CALL loadNetwork(filnam, JA, 0)
-         IF (JA == 0) THEN
-            CALL resetFlow()
+            call loadNetwork(filnam, JA, 0)
+            if (JA == 0) then
+               call resetFlow()
             nump = 0 ! Reset cell data
-            CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-            CALL MINMXNS()
+               call MESSAGE('YOU LOADED ', filnam, ' ')
+               call MINMXNS()
             NDRAW(2) = 1
             KEY = 3
             NUM = 0
             md_netfile = ' '
             md_netfile = trim(filnam)
-         ELSE
-            CALL qnerror('NO NET LOADED', ' ', ' ')
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 3) THEN
+            else
+               call qnerror('NO NET LOADED', ' ', ' ')
+            end if
+         end if
+      else if (NWHAT == 3) then
       FILNAM = '*_net.nc'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
-         IF (INDEX(FILNAM, '.jan') > 0) then
+         else
+            if (index(FILNAM, '.jan') > 0) then
             call REAJANET(Mlan,JA,1)
-         ELSE IF (INDEX(FILNAM, '.adc') > 0) then
+            else if (index(FILNAM, '.adc') > 0) then
             call READADCIRCNET(Mlan,JA,1)
          else
             call doclose(mlan) ! TODO: change... [AvD]
             call loadNetwork(filnam, JA, 1)
          endif
 
-         IF (JA == 0) THEN
-            CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-            CALL MINMXNS()
+            if (JA == 0) then
+               call MESSAGE('YOU LOADED ', filnam, ' ')
+               call MINMXNS()
             NDRAW(2) = 1
             KEY = 3
             NUM = 0
             md_netfile = ' '
             md_netfile = trim(filnam)
-         ELSE
-            CALL qnerror('NO NET LOADED', ' ', ' ')
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 4) THEN
+            else
+               call qnerror('NO NET LOADED', ' ', ' ')
+            end if
+         end if
+      else if (NWHAT == 4) then
       FILNAM = '*.grd'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
-         NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
-         NUM = 1
-      ELSE
-         CALL REAgrid(MLAN,FILNAM,ja)  ! DOORLADEN
-         IF (JA .GE. 1) THEN
-            CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-            CALL MINMXNS()
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
+            NUM = 1
+         else if (ierror == -1) then
+            NUM = 1
+         else
+            call REAgrid(MLAN, FILNAM, ja) ! DOORLADEN
+            if (JA >= 1) then
+               call MESSAGE('YOU LOADED ', filnam, ' ')
+               call MINMXNS()
             NDRAW(2) = 1
             KEY = 3
             NUM = 0
-         ELSE
-            CALL QNERROR('PREMATURE END OF FILE', FILNAM, ' ')
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 5) THEN
+            else
+               call QNERROR('PREMATURE END OF FILE', FILNAM, ' ')
+            end if
+         end if
+      else if (NWHAT == 5) then
       FILNAM = '*.asc'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
-         NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
-         NUM = 1
-      ELSE
-         CALL readarcinfo(MLAN,ja)  ! DOORLADEN
-         IF (JA .GE. 1) THEN
-            CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-            CALL MINMXNS()
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
+            NUM = 1
+         else if (ierror == -1) then
+            NUM = 1
+         else
+            call readarcinfo(MLAN, ja) ! DOORLADEN
+            if (JA >= 1) then
+               call MESSAGE('YOU LOADED ', filnam, ' ')
+               call MINMXNS()
             NDRAW(2) = 1
             KEY = 3
             NUM = 0
-         ELSE
-            CALL QNERROR('PREMATURE END OF FILE', FILNAM, ' ')
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 6) THEN
+            else
+               call QNERROR('PREMATURE END OF FILE', FILNAM, ' ')
+            end if
+         end if
+      else if (NWHAT == 6) then
       FILNAM = '*.pol,*.pli,*.pliz'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
-         NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
-         NUM = 1
-      ELSE
-         CALL REAPOL(MLAN, 0)
-         IF (NPL .GT. 0) THEN
-            CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-            CALL MINMXNS( )
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
+            NUM = 1
+         else if (ierror == -1) then
+            NUM = 1
+         else
+            call REAPOL(MLAN, 0)
+            if (NPL > 0) then
+               call MESSAGE('YOU LOADED ', filnam, ' ')
+               call MINMXNS()
             KEY = 3
             NUM = 0
 
    !        read polygon: netcell administration out of date
             netstat = NETSTAT_CELLS_DIRTY
-         ELSE
-            CALL qnerror('file' , filnam, 'not found ')
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 7) THEN
+            else
+               call qnerror('file', filnam, 'not found ')
+            end if
+         end if
+      else if (NWHAT == 7) then
       FILNAM = '*.spl'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (MLAN .NE. 0) THEN
-         CALL readSplines(mlan)
-         IF (mcs .GT. 0) THEN
-            CALL MESSAGE('You Opened File ', FILNAM, ' ')
-            CALL MINMXNS()
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (MLAN /= 0) then
+            call readSplines(mlan)
+            if (mcs > 0) then
+               call MESSAGE('You Opened File ', FILNAM, ' ')
+               call MINMXNS()
             NUM  = 0
             NDRAW(15) = 1
             KEY  = 3
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 8) THEN
+            end if
+         end if
+      else if (NWHAT == 8) then
       FILNAM = '*.ldb'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
         i = len_trim(filnam)
         if (i > 3) then
             if (filnam(i-2:i) == '.nc') then
@@ -267,30 +267,30 @@
             end if
         end if
 
-         CALL REALAN(MLAN)
+            call REALAN(MLAN)
 
-         IF (MXLAN .GT. 0) THEN
-            CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-            CALL MINMXNS()
+            if (MXLAN > 0) then
+               call MESSAGE('YOU LOADED ', filnam, ' ')
+               call MINMXNS()
             NDRAW(3) = 1
             KEY = 3
             NUM = 0
             md_ldbfile = ' '
             md_ldbfile = filnam
-         ELSE
-            CALL qnerror('MXLAN = 0',' ',' ')
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 9 .or. NWHAT .EQ. 10 ) THEN
+            else
+               call qnerror('MXLAN = 0', ' ', ' ')
+            end if
+         end if
+      else if (NWHAT == 9 .or. NWHAT == 10) then
       FILNAM = '*_obs.xyn'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
          ja = 0
          key = 3
          call doclose(mlan) ! Ugly, but loadObservations reads by filename, not filepointer [AvD]
@@ -300,21 +300,21 @@
             ja = 0
          end if
          call loadObservations(filnam, ja)
-         CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-         CALL MINMXNS()
+            call MESSAGE('YOU LOADED ', filnam, ' ')
+            call MINMXNS()
          md_obsfile = ' '
          md_obsfile = filnam
-      ENDIF
-   ELSE IF (NWHAT .EQ. 11 .or. NWHAT .EQ. 12 ) THEN
+         end if
+      else if (NWHAT == 11 .or. NWHAT == 12) then
       FILNAM = '*_crs.pli'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
          ja = 0
          key = 3
          if (NWHAT == 12) then
@@ -325,22 +325,22 @@
          ipli=0
          CALL reapol_nampli(MLAN, ja,1,ipli) ! Read pol/pli as crs
          call pol_to_crosssections(xpl, ypl, npl, names=nampli)
-         if ( NPL.gt.0 ) call delpol()
-         CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-         CALL MINMXNS()
+            if (NPL > 0) call delpol()
+            call MESSAGE('YOU LOADED ', filnam, ' ')
+            call MINMXNS()
          md_crsfile = ' '
          md_crsfile = filnam
-      ENDIF
-   ELSE IF (NWHAT .EQ. 13 .or. NWHAT .EQ. 14 ) THEN
+         end if
+      else if (NWHAT == 13 .or. NWHAT == 14) then
       FILNAM = '*_thd.pli'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
          ja = 0
          key = 3
          if (NWHAT == 14) then
@@ -348,23 +348,23 @@
          else
             ja = 0
          end if
-         CALL REAPOL(MLAN, ja) ! Read pol/pli as thin dam-type crs
+            call REAPOL(MLAN, ja) ! Read pol/pli as thin dam-type crs
          call pol_to_thindams(xpl, ypl, npl)
-         CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-         CALL MINMXNS()
+            call MESSAGE('YOU LOADED ', filnam, ' ')
+            call MINMXNS()
          md_thdfile = ' '
          md_thdfile = filnam
-      ENDIF
-   ELSE IF (NWHAT .EQ. 15) THEN
+         end if
+      else if (NWHAT == 15) then
       FILNAM = '*.xyz,*.dem,*.asc,*.tif*'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
          ja = 0
          key = 3
          i = len_trim(filnam)
@@ -388,15 +388,15 @@
                call doclose(mlan)
                success = read_samples_from_geotiff(filnam)
             else if (strcmpi(filnam(i-3:i), '.xyz')) then
-                CALL reasam(MLAN,ja)  ! DOORLADEN
+                  call reasam(MLAN, ja) ! DOORLADEN
             end if
          else
-            CALL reasam(MLAN,ja)  ! DOORLADEN
+               call reasam(MLAN, ja) ! DOORLADEN
          end if
-         CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-         CALL MINMXNS()
-      ENDIF
-   ELSE IF (NWHAT .EQ. 16) THEN
+            call MESSAGE('YOU LOADED ', filnam, ' ')
+            call MINMXNS()
+         end if
+      else if (NWHAT == 16) then
       if (ndx == 0 .or. lnx == 0) then
          call qnerror('First reinitialise flow model, current dimensions are 0',' ',' ')
          return
@@ -406,36 +406,36 @@
       else if (ibedlevtyp == 2) then
          FILNAM = '*.xyblu'
       else
-         CALL qnerror('Loading cell bottom levels bl (ibedlevtyp=1) or flow link bottom levels blu (ibedlevtyp=2)',' ',' ')
-         CALL qnerror('Change parameter ibedlevtyp in Various, Change Geometry Parameters',' ',' ')
+            call qnerror('Loading cell bottom levels bl (ibedlevtyp=1) or flow link bottom levels blu (ibedlevtyp=2)', ' ', ' ')
+            call qnerror('Change parameter ibedlevtyp in Various, Change Geometry Parameters', ' ', ' ')
          return
       endif
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
          if (ibedlevtyp == 1) then
-            CALL reabl(MLAN)
+               call reabl(MLAN)
          else if (ibedlevtyp == 2) then
-            CALL reablu(MLAN)
+               call reablu(MLAN)
          endif
-         CALL MESSAGE('YOU LOADED ' , filnam, ' ')
+            call MESSAGE('YOU LOADED ', filnam, ' ')
          ! CALL MINMXNS()
-      ENDIF
-   ELSE IF (NWHAT .EQ. 17) THEN
+         end if
+      else if (NWHAT == 17) then
       FILNAM = '*_rst.nc'
       MLAN   = 0
-      CALL FILEMENU(MLAN,FILNAM,ierror)
-      IF (ierror .EQ. -2) THEN
-         CALL qnerror('file' , filnam, 'not found ')
+         call FILEMENU(MLAN, FILNAM, ierror)
+         if (ierror == -2) then
+            call qnerror('file', filnam, 'not found ')
          NUM = 1
-      ELSE IF (ierror .EQ. -1) THEN
+         else if (ierror == -1) then
          NUM = 1
-      ELSE
+         else
          i = len_trim(filnam)
          if (filnam(i-6:i) == '_rst.nc' .or. filnam(i-6:i) == '_RST.NC') then
             call doclose(mlan) ! TODO: change... [AvD]
@@ -464,58 +464,58 @@
             call qnerror('NO RESTART LOADED', ' ', ' ')
          endif
          ! CALL MINMXNS()
-      ENDIF
-   ELSE IF (NWHAT .EQ. 18) THEN
+         end if
+      else if (NWHAT == 18) then
          NUM    = 0
          FILNAM = '*.bmp'
          MIDP   = 0
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+         call FILEMENU(MIDP, FILNAM, ierror)
+         if (ierror /= 0) then
             NDRAW(26) = 0
-         ELSE IF (MIDP /= 0) THEN
-            CALL DOCLOSE(MIDP)
-            CALL LOADBITMAP(FILNAM)
-            CALL MESSAGE('YOU LOADED ' , filnam, ' ')
-            CALL MINMXNS( )
-         ENDIF
+         else if (MIDP /= 0) then
+            call DOCLOSE(MIDP)
+            call LOADBITMAP(FILNAM)
+            call MESSAGE('YOU LOADED ', filnam, ' ')
+            call MINMXNS()
+         end if
          KEY = 3
-   ELSE IF (NWHAT .EQ. 20) THEN
+      else if (NWHAT == 20) then
       FILNAM = '*.mdu'
       MTEK   = 1
-      CALL FILEMENU(MTEK,FILNAM,ierror)
-      IF (ierror /= 0) THEN
+         call FILEMENU(MTEK, FILNAM, ierror)
+         if (ierror /= 0) then
          NUM = 1
-      ELSE
+         else
          call doclose(mtek)
          call writeMDUFile(filnam, ja)
-         CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+            call MESSAGE('YOU SAVED ', filnam, ' ')
          NUM = 0
-      ENDIF
-   ELSE IF (NWHAT .EQ. 21 .or. NWHAT .EQ. 22 .or. NWHAT .EQ. 24) THEN
-      IF (NUMK .EQ. 0) THEN
-         CALL QNERROR('NO NET TO SAVE',' ',' ')
+         end if
+      else if (NWHAT == 21 .or. NWHAT == 22 .or. NWHAT == 24) then
+         if (NUMK == 0) then
+            call QNERROR('NO NET TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
-         if ( nwhat.eq.21 .or. nwhat .eq. 22) then
+         else
+            if (nwhat == 21 .or. nwhat == 22) then
          FILNAM = '*_net.nc'
-         else if ( nwhat.eq.24 ) then
+            else if (nwhat == 24) then
             FILNAM = '*_net.plt'
          end if
 
          MTEK   = 1
-         CALL FILEMENU(MTEK,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MTEK, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
+            else
             call doclose(mtek)
-            if (nwhat.eq.21) then
+               if (nwhat == 21) then
                if (index(filnam, '.net') > 0) then
-                   CALL NEWFIL(MTEK, filnam) ; CALL WRINET(MTEK)
+                     call NEWFIL(MTEK, filnam); call WRINET(MTEK)
                else
                call unc_write_net(filnam, janetcell = 0, janetbnd = 0)
                endif
-            else if ( nwhat .eq. 22) then ! _net.nc with extra cell info (for example necessary for Baseline/Bas2FM input)
-               if ( netstat.ne.NETSTAT_OK ) then
+               else if (nwhat == 22) then ! _net.nc with extra cell info (for example necessary for Baseline/Bas2FM input)
+                  if (netstat /= NETSTAT_OK) then
                   call findcells(0)
                   call find1dcells()
                end if
@@ -524,23 +524,23 @@
 
                !origial call unc_write_net(filnam, janetcell = 1, janetbnd = 0)
                call unc_write_net('UG'//filnam, janetcell = 1, janetbnd = 0, iconventions = UNC_CONV_UGRID)
-            else if ( nwhat.eq.24 ) then
+               else if (nwhat == 24) then
                call ini_tecplot()
                call wrinet_tecplot(filnam)
             end if
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             md_netfile = ' '
             md_netfile = filnam
 
 
             NUM = 0
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 23) THEN
-      IF (NUMK .EQ. 0) THEN
-         CALL QNERROR('NO NET TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 23) then
+         if (NUMK == 0) then
+            call QNERROR('NO NET TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
           !call foam_write_polymesh('testfoam')
          FILNAM = '*.kml'
          MTEK   = 1
@@ -554,138 +554,138 @@
              ja = 1 ! Hereafter, 1 means 'no/cancelled'
          end if
          if (ja==0) then ! 0: NOT cancelled
-            CALL FILEMENU(MTEK,FILNAM,ierror)
-            IF (ierror /= 0) THEN
+               call FILEMENU(MTEK, FILNAM, ierror)
+               if (ierror /= 0) then
                 NUM = 1
-            ELSE
+               else
                 call doclose(mtek)
                 call kml_write_net(filnam)
-                CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+                  call MESSAGE('YOU SAVED ', filnam, ' ')
                 NUM = 0
             end if
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 24) THEN
-   ELSE IF (NWHAT .EQ. 25) THEN
-      IF (MC == 0 .or. NC == 0) THEN
-         CALL QNERROR('NO GRID TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 24) then
+      else if (NWHAT == 25) then
+         if (MC == 0 .or. NC == 0) then
+            call QNERROR('NO GRID TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*.grd'
          MTEK   = 1
-         CALL FILEMENU(MTEK,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MTEK, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
+            else
             call wrirgf(mtek, filnam)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 26) THEN
-      IF (NPL .EQ. 0) THEN
-         CALL QNERROR('THERE IS NO POLYGON TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 26) then
+         if (NPL == 0) then
+            call QNERROR('THERE IS NO POLYGON TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*.pol,*.pli,*.pliz'
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
-            CALL WRIPOL(MIDP)
+            else
+               call WRIPOL(MIDP)
             if ( index(Filnam,'crs') == 0 .and. index(Filnam,'CRS') == 0 .and. index(Filnam,'vlay') == 0 .and. index(Filnam,'VLAY') == 0) then
                 call wricmps(filnam)
             endif
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
             md_plifile = ' ' ; md_plifile = filnam
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 27) THEN
-      IF (mcs .EQ. 0) THEN
-         CALL QNERROR('There Are No Splines to SAVE',' ',' ')
-      ELSE
+            end if
+         end if
+      else if (NWHAT == 27) then
+         if (mcs == 0) then
+            call QNERROR('There Are No Splines to SAVE', ' ', ' ')
+         else
          FILNAM = '*.spl'
          MLAN   = 1
-         CALL FILEMENU(MLAN,FILNAM,ierror)
-         IF (ierror == 0) THEN
-            CALL writeSplines(MLAN)
-            CALL MESSAGE('You Saved File ', FILNAM, ' ')
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 28) THEN
-      IF (MXLAN .EQ. 0) THEN
-         CALL QNERROR('THERE IS NO LANDBOUNDARY TO SAVE',' ',' ')
+            call FILEMENU(MLAN, FILNAM, ierror)
+            if (ierror == 0) then
+               call writeSplines(MLAN)
+               call MESSAGE('You Saved File ', FILNAM, ' ')
+            end if
+         end if
+      else if (NWHAT == 28) then
+         if (MXLAN == 0) then
+            call QNERROR('THERE IS NO LANDBOUNDARY TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*.ldb'
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
-            CALL WRILAN(MIDP)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+            else
+               call WRILAN(MIDP)
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
             md_ldbfile = ' '
             md_ldbfile = filnam
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 29) THEN
-      IF (numobs .EQ. 0) THEN
-         CALL QNERROR('THERE are NO observation points TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 29) then
+         if (numobs == 0) then
+            call QNERROR('THERE are NO observation points TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = defaultFilename('obs')
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
+            else
             call doclose(midp)
-            CALL saveObservations(filnam)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+               call saveObservations(filnam)
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
             md_obsfile = ' '
             md_obsfile = filnam
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 30) THEN
-      IF (ncrs .EQ. 0) THEN
-         CALL QNERROR('THERE are NO cross sections TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 30) then
+         if (ncrs == 0) then
+            call QNERROR('THERE are NO cross sections TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*_crs.pli'
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
-            CALL WRICRS(MIDP)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+            else
+               call WRICRS(MIDP)
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
             md_crsfile = ' '
             md_crsfile = filnam
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 31) THEN
-      IF (Ns .EQ. 0) THEN
-         CALL QNERROR('THERE are NO samples TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 31) then
+         if (Ns == 0) then
+            call QNERROR('THERE are NO samples TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*.xyz'
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
-            CALL WRIsam(MIDP)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
-            NUM = 0
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 32) THEN
+            else
+               call WRIsam(MIDP)
+               call MESSAGE('YOU SAVED ', filnam, ' ')
+               NUM = 0
+            end if
+         end if
+      else if (NWHAT == 32) then
       if (ndx == 0 .or. lnx == 0) then
          call qnerror('First reinitialise flow model, current dimensions are 0',' ',' ')
 
@@ -696,71 +696,71 @@
          else if (ibedlevtyp == 2) then
             FILNAM = '*.xyblu'
          else
-            CALL qnerror('Just saving the network is sufficient for (preferred option) ibedlevtyp = 3 ',' ',' ')
-            CALL qnerror('See Various, Change Geometry Parameters ',' ',' ')
+               call qnerror('Just saving the network is sufficient for (preferred option) ibedlevtyp = 3 ', ' ', ' ')
+               call qnerror('See Various, Change Geometry Parameters ', ' ', ' ')
             return
          endif
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
+            else
             if (ibedlevtyp == 1) then
-               CALL WRIbl(MIDP)
+                  call WRIbl(MIDP)
             else if (ibedlevtyp == 2) then
-               CALL WRIblu(MIDP)
+                  call WRIblu(MIDP)
             endif
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 33) THEN
-      IF (NDX .EQ. 0) THEN
-         CALL QNERROR('THERE IS NO FLOW TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 33) then
+         if (NDX == 0) then
+            call QNERROR('THERE IS NO FLOW TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*_rst.nc'
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
+            else
             call doclose(midp)
-            CALL unc_write_rst(filnam)
+               call unc_write_rst(filnam)
             call wrirstfileold(time1)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 34) THEN
-      IF (NDX .EQ. 0) THEN
-         CALL QNERROR('THERE IS NO FLOW TO SAVE',' ',' ')
+            end if
+         end if
+      else if (NWHAT == 34) then
+         if (NDX == 0) then
+            call QNERROR('THERE IS NO FLOW TO SAVE', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*_map.nc'
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
+            else
             call doclose(midp)
-            CALL unc_write_map(filnam)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+               call unc_write_map(filnam)
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 35) THEN
+            end if
+         end if
+      else if (NWHAT == 35) then
      FILNAM = '*'
      MIDP   = 0
-     CALL FILEMENU(MIDP,FILNAM,ierror)
-     IF (ierror /= 0) THEN
+         call FILEMENU(MIDP, FILNAM, ierror)
+         if (ierror /= 0) then
         NUM = 1
-     ELSE
+         else
         call doclose(midp)
         call parsekerst(filnam)
         NUM = 0
         KEY = 3
-     ENDIF
+         end if
 !
 
 !
@@ -781,51 +781,51 @@
 !
 !      ENDIF
 
-   ELSE IF (NWHAT .EQ. 36) THEN
+      else if (NWHAT == 36) then
 
-      IF (numk .EQ. 0) THEN
-         CALL QNERROR('THERE is no network to save ',' ',' ')
+         if (numk == 0) then
+            call QNERROR('THERE is no network to save ', ' ', ' ')
          NUM = 0
-      ELSE
+         else
          FILNAM = '*.node'
          MIDP   = 1
-         CALL FILEMENU(MIDP,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MIDP, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
-            CALL WRIswan(MIDP,filnam)
-            CALL MESSAGE('YOU SAVED ' , filnam, ' ')
+            else
+               call WRIswan(MIDP, filnam)
+               call MESSAGE('YOU SAVED ', filnam, ' ')
             NUM = 0
-         ENDIF
-      ENDIF
-   ELSE IF (NWHAT .EQ. 37 ) THEN    ! partition files
-      if ( ndomains.lt.1 ) then
+            end if
+         end if
+      else if (NWHAT == 37) then ! partition files
+         if (ndomains < 1) then
          call qnerror('no partitions found', ' ', ' ')
       else
 !         FILNAM = '*_net.nc'
          filnam = md_netfile
          MTEK   = 1
-         CALL FILEMENU(MTEK,FILNAM,ierror)
-         IF (ierror /= 0) THEN
+            call FILEMENU(MTEK, FILNAM, ierror)
+            if (ierror /= 0) then
             NUM = 1
-         ELSE
+            else
             call doclose(mtek)
             md_partugrid = 1
             call getint('NetCDF ugrid? (0:UGRID-0.9, 1:UGRID-1.0, needed for 1D)', md_partugrid)
             call partition_write_domains(filnam, 6, 1, 1, md_partugrid) ! make subdomains for default solver
-            CALL MESSAGE('YOU SAVED ' , filnam, ' partitions')
+               call MESSAGE('YOU SAVED ', filnam, ' partitions')
             md_netfile = ' '
             md_netfile = filnam
 
             NUM = 0
-         ENDIF
+            end if
       end if
 
-   ELSE IF (NWHAT .EQ. 38) THEN
-      CALL STOPINT()
+      else if (NWHAT == 38) then
+         call STOPINT()
       NUM = 0
-   ENDIF
+      end if
    ! Nader uitwerken, of helemaal overboord ermee
    NUM = 0
-   RETURN
-   END SUBROUTINE NFILES
+      return
+   end subroutine NFILES

@@ -60,9 +60,9 @@ subroutine tauwavefetch(tim)
  double precision   :: U10, fetchL, fetchd, hsig, tsig, rsqrt2, dum
 
  integer :: ndraw
- COMMON /DRAWTHIS/ ndraw(50)
+   common / DRAWTHIS / ndraw(50)
  
- if ( .not. allocated (fetch) .or. size (fetch,2) .ne. ndx) then
+   if (.not. allocated(fetch) .or. size(fetch, 2) /= ndx) then
       nwf = 13
       call timstrt('Ext.forcings fetch', handle_fetch)
       
@@ -544,11 +544,11 @@ do link = 1, lnx
    wyc(k1) = wyc(k1) + wcL(1,link)*wy(link)
    wyc(k2) = wyc(k2) + wcL(2,link)*wy(link)  
 enddo   
-phiwav = atan2(wyc,wxc)*180d0/pi
+phiwav = atan2(wyc,wxc)*180d0/pi    
 
 end subroutine get_phiwav_values
 
-!> copy values to boundary nodes
+!> copy values to boundary nodes     
 subroutine copy_values_to_boundary_nodes()
 use m_waves, only : phiwav, rlabda
 use m_flowgeom

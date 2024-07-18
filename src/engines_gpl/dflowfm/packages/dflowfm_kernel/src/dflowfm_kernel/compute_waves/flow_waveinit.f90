@@ -135,7 +135,7 @@
       call aerr   ('uorb    (ndx)',     ierr, ndx)
    endif
 
-   if (jawave .eq. 4) then
+      if (jawave == 4) then
       if (trim(instat)=='stat' .or. &
           trim(instat)=='stat_table') then
          call allocstatsolverarrays(0,ierr)
@@ -328,7 +328,7 @@
       !endif
 
       ! handle wave friction, has to be post-poned until here because of unavailability of ndx
-      if (wavefricfile .ne. ' ') then
+         if (wavefricfile /= ' ') then
          call check_file_exist(wavefricfile)   ! if not, program will exit here
          call writelog('lws','(a,a,a)','Warning: wave friction coefficient values from file ''',&
             trim(wavefricfile), &
@@ -338,7 +338,7 @@
          !
          jdla = 1
          fw  = dmiss
-         CALL triinterp2(xz, yz, fw, ndx,JDLA, &
+            call triinterp2(xz, yz, fw, ndx, JDLA, &
             XS, YS, ZS, NS, dmiss, jsferic, jins, jasfer3D, NPL, MXSAM, MYSAM, XPL, YPL, ZPL, transformcoef)
          !
          ! mirror boundary cells if undefined if equal to dmiss
@@ -362,7 +362,7 @@
          fw = wavefricval
       endif
 
-      if (jaavgwavquant .eq. 1) then             ! arrays for statistical output wave quantities
+         if (jaavgwavquant == 1) then ! arrays for statistical output wave quantities
          call xbeach_allocateaverages()
       end if
    end if

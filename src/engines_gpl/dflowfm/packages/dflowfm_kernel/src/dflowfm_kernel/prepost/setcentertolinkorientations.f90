@@ -53,7 +53,7 @@
     if ( allocated (csb) ) deallocate(csb)
     if ( allocated (snb) ) deallocate(snb)
 
-    if ( jsferic.eq.0 .or. jasfer3D.eq.0 ) return
+    if (jsferic == 0 .or. jasfer3D == 0) return
 
     allocate ( csb(2,Lnx) , stat  = ierr) ; csb = 1d0
     call aerr('csb(2,Lnx)', ierr, 2*Lnx)

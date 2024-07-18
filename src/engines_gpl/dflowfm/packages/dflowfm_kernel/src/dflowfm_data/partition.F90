@@ -260,7 +260,7 @@ implicit none
    double precision, allocatable :: zbndint(:,:)      ! (1,:): beta value, (2,:): interface value, dim(2,nbndint)
    double precision              :: stoptol =1d-4     ! parameter of stopping criteria for subsolver of Schwarz method
    double precision              :: sbeta = 10d0      ! beta value in Robin-Robin coupling for Schwarz iterations
-   double precision              :: prectol = 0.50D-2 ! tolerance for drop of preconditioner
+   double precision :: prectol = 0.50d-2 ! tolerance for drop of preconditioner
    integer                       :: jabicgstab = 1    ! 
    integer                       :: Nsubiters  = 1000
 
@@ -325,10 +325,10 @@ implicit none
       end if
       
       if ( Lfindcells ) then
-         if ( janet.eq.1 ) then
+         if (janet == 1) then
             call findcells(0)
             call find1dcells()
-         else if ( janet.eq.2 ) then   ! add 1D net
+         else if (janet == 2) then ! add 1D net
             call find1dcells()
          end if
          
@@ -336,9 +336,9 @@ implicit none
       end if
       
 !     determine number of cells
-      if ( janet.eq.1 .or. janet.eq.2 ) then
+      if (janet == 1 .or. janet == 2) then
          numcells = nump1d2d  ! netcells
-         if ( janet.eq.1 ) then
+         if (janet == 1) then
             istart = 1
          else
             istart = nump+1
@@ -351,7 +351,7 @@ implicit none
       end if
 
 !     allocate
-      if ( janet.eq.0  .or. janet.eq.1 ) then
+      if (janet == 0 .or. janet == 1) then
          call realloc(idomain, numcells, keepExisting=.false., fill=0) ! default domain number
       else
          call realloc(idomain, numcells, keepExisting=.true., fill=0)
@@ -369,12 +369,12 @@ implicit none
       
 !     see wich domain numbers are already used
       do ipol=1,npartition_pol
-         if ( partition_pol(ipol)%len.gt.0 ) then ! non-empty polygons only
+         if (partition_pol(ipol)%len > 0) then ! non-empty polygons only
 !           see if this polygon already has a domain number assigned
             zval = partition_pol(ipol)%z(1)
-            if ( zval.ne.DMISS ) then
+            if (zval /= DMISS) then
                idmn = int(zval)
-               if ( idmn.lt.0 .or. idmn.gt.npartition_pol ) then
+               if (idmn < 0 .or. idmn > npartition_pol) then
                   call qnerror('partition_pol_to_idomain: numbering error', ' ', ' ')
                else
                   idum(idmn) = -1   ! deactivated
@@ -387,10 +387,10 @@ implicit none
 !       determine number of domains
       ndomains=1
       do ipol=1,npartition_pol
-         if ( partition_pol(ipol)%len.gt.0 ) then
+         if (partition_pol(ipol)%len > 0) then
             zval = partition_pol(ipol)%z(1)
-            if ( zval.eq.DMISS ) then
-               idmn = minval(idum, mask=idum.gt.0) ! smallest of active domain numbers
+            if (zval == DMISS) then
+               idmn = minval(idum, mask=idum > 0) ! smallest of active domain numbers
                partition_pol(ipol)%z(1)=idmn
                idum(idmn) = -1   ! deactivated
             else
@@ -405,22 +405,22 @@ implicit none
 !     determine domain number
       do idmn=1,ndomains
          do ipol=1,npartition_pol
-            if ( partition_pol(ipol)%len.le.0 ) cycle ! non-zero polygons only
-            if ( int(partition_pol(ipol)%z(1)).ne.idmn ) cycle ! polygon belonging to this domain only
+            if (partition_pol(ipol)%len <= 0) cycle ! non-zero polygons only
+            if (int(partition_pol(ipol)%z(1)) /= idmn) cycle ! polygon belonging to this domain only
             
             in = -1
             do i=istart,iend
                
-               if ( i.le.nump1d2d ) then
+               if (i <= nump1d2d) then
                   call dbpinpol_tpoly(partition_pol(ipol), xzw(i), yzw(i), in)
 !                 SPvdP: (xzw,yzw) are not safe for spherical, periodic coordinates, use (xz, yz) instead
 !                  call dbpinpol_tpoly(partition_pol(ipol), xz(i), yz(i), in)
                else  ! fictitious boundary cells: use xz, yz
                   call dbpinpol_tpoly(partition_pol(ipol), xz(i), yz(i), in)
                end if
-               if ( in.eq.1 ) then
+               if (in == 1) then
 !                 check if this cell is already inside the domain
-                  if ( idomain(i).eq.idmn ) then
+                  if (idomain(i) == idmn) then
 !                    outside this domain again
                      idomain(i) = idomain_prev(i)
                   else
@@ -481,12 +481,12 @@ implicit none
       integer, intent(in) :: icgsolver !< solver type
       
 !     set overlap for Schwarz solver, if uninitialized (0)
-      if ( icgsolver.eq.9 .or. icgsolver.gt.90 ) then
+      if (icgsolver == 9 .or. icgsolver > 90) then
          numlay_cellbased = 4
          numlay_nodebased = 3
          ighosttype_s = IGHOSTTYPE_NODEBASED
       
-         if ( icgsolver.gt.90 ) then
+         if (icgsolver > 90) then
             minghostlev_s = icgsolver-90
             maxghostlev_s = minghostlev_s
             
@@ -554,14 +554,14 @@ implicit none
     call set_idomain_for_all_open_boundaries()
      
 !     check the number of ranks
-      if ( ndomains.ne.numranks .and. jampi.eq.1 ) then
+      if (ndomains /= numranks .and. jampi == 1) then
          write(mesg, "('partition_init: numdomains = ', I0, ' <> numranks = ', I0)") ndomains, numranks 
          call qnerror(trim(mesg), ' ', ' ')
          jampi = 0
          goto 1234
       end if
 
-      if ( ndomains.le.1 ) then  ! only one domain
+      if (ndomains <= 1) then ! only one domain
          jampi = 0   ! turn off parallel computing
          ierror = 0
          goto 1234
@@ -585,7 +585,7 @@ implicit none
       
 !     make non-overlapping ghost- and sendlists (for solver)      
       call partition_fill_ghostsendlist_nonoverlap(ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
 
       call partition_make_globalnumbers(ierror)
       if ( ierror /= 0 ) goto 1234
@@ -992,20 +992,20 @@ implicit none
          ic4 = iabs(lne_org(2,L_org))  ! second new candiate, can be 0 if lnn_org==1
          do i=1,2
             k = iabs(lne(i,L))     ! this cell number
-            if ( k.eq.0 ) cycle
+            if (k == 0) cycle
             ic1 = icandidate(1,k)  ! first stored candidate
             ic2 = icandidate(2,k)  ! second stored candidate
             
-            if ( ic1.eq.-1 .and. ic2.eq.-1 ) then  ! initialization: accept both new candidates
+            if (ic1 == -1 .and. ic2 == -1) then ! initialization: accept both new candidates
                icandidate(1,k) = ic3
                icandidate(2,k) = ic4
             else   ! compare two new candidates (ic3,ic4) with the two stored ones (ic1,ic2)
-               if ( ic3.ne.ic1 .and. ic4.ne.ic1 ) then  ! compare with c1
+               if (ic3 /= ic1 .and. ic4 /= ic1) then ! compare with c1
                   ! it's not ic1
                   icandidate(1,k) = 0
                end if
                
-               if ( ic3.ne.ic2 .and. ic4.ne.ic2 ) then
+               if (ic3 /= ic2 .and. ic4 /= ic2) then
                   ! it's not ic2
                   icandidate(2,k) = 0
                end if
@@ -1016,11 +1016,11 @@ implicit none
 !     retrieve original cell numbers, 0 if no cell found
       iorg = 0
       do k=1,nump1d2d
-         if ( icandidate(1,k).gt.0 .and. icandidate(2,k).gt.0 .and. icandidate(1,k).ne.icandidate(2,k) ) then
+         if (icandidate(1, k) > 0 .and. icandidate(2, k) > 0 .and. icandidate(1, k) /= icandidate(2, k)) then
 !           cell is endnode on a branch
-         else if ( icandidate(1,k).gt.0 )then
+         else if (icandidate(1, k) > 0) then
             iorg(k) = icandidate(1,k)
-         else if ( icandidate(2,k).gt.0 ) then
+         else if (icandidate(2, k) > 0) then
             iorg(k) = icandidate(2,k)
          end if
       end do
@@ -1031,14 +1031,14 @@ implicit none
             k = iabs(lne(i,L))     ! this cell number
             kother = iabs(lne(3-i,L))  ! other cell number
             
-            if ( k.eq.0 .or. kother.eq.0 ) cycle
+            if (k == 0 .or. kother == 0) cycle
             
-            if ( iorg(k).eq.0 .and. iorg(kother).gt.0 ) then   ! unassigned original cell number
+            if (iorg(k) == 0 .and. iorg(kother) > 0) then ! unassigned original cell number
                ic1 = icandidate(1,k)
                ic2 = icandidate(2,k)
-               if ( ic1.eq.iorg(kother) ) then
+               if (ic1 == iorg(kother)) then
                   iorg(k) = ic2
-               else if ( ic2.eq.iorg(kother) ) then
+               else if (ic2 == iorg(kother)) then
                   iorg(k) = ic1
                end if
             end if
@@ -1145,11 +1145,11 @@ implicit none
 !     compute node-based ghostlevels
       call partition_set_ghostlevels_cellbased(idmn, numlay_cell, ierror)
       
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       
 !     compute node-based ghostlevels
       call partition_set_ghostlevels_nodebased(idmn, numlay_node, ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       
       num = 0
       
@@ -1157,8 +1157,8 @@ implicit none
       
       do ic=1,nump1d2d
 !         if ( ighostlev_nodebased(ic).gt.0 .and. ighostlev_nodebased(ic).le.MAX_NODEBASED_GHOSTLEVEL ) then
-         if ( ighostlev_nodebased(ic).gt.0 ) then
-            if ( ighostlev_cellbased(ic).eq.0 ) then
+         if (ighostlev_nodebased(ic) > 0) then
+            if (ighostlev_cellbased(ic) == 0) then
                num = num+1
                ighostlev(ic) = max(ighostlev_nodebased(ic),2)
             else
@@ -1170,14 +1170,14 @@ implicit none
       call mess(LEVEL_INFO, 'added node-based ghostcells:', num)
       
 !     set ghostlevels in boundaries (if applicable)
-      if ( jaboundary.eq.1 ) then
+      if (jaboundary == 1) then
          call partition_set_ghostlevels_boundaries()
       end if
       
       ierror = 0
  1234 continue
  
-      if ( ierror.ne.0 ) then
+      if (ierror /= 0) then
          call mess(LEVEL_ERROR, 'partition_set_ghostlevels: error')
       end if
       
@@ -1210,13 +1210,13 @@ implicit none
 
       do ilay=1,numlay_loc                ! loop over the number of layers
          do L=1,numL                      ! loop over the netlinks
-            if ( lnn(L).lt.2 ) cycle      ! 1d-links: relies on proper lnn (set by find1dcells)
+            if (lnn(L) < 2) cycle ! 1d-links: relies on proper lnn (set by find1dcells)
             do n=1,2                      ! loop over the cells attached to this link
                ic = iabs(lne(n,L))
-               if ( idomain(ic).eq.idmn .or. ( ilay.gt.1 .and. ighostlev_cellbased(ic).eq.ilay-1 ) ) then
+               if (idomain(ic) == idmn .or. (ilay > 1 .and. ighostlev_cellbased(ic) == ilay - 1)) then
 !                activate inactive other cell
                  icother = iabs(lne(1,L))+iabs(lne(2,L))-ic
-                 if ( idomain(icother).ne.idmn .and. ighostlev_cellbased(icother).eq.0 ) then ! other cell not active
+                  if (idomain(icother) /= idmn .and. ighostlev_cellbased(icother) == 0) then ! other cell not active
                     ighostlev_cellbased(icother) = ilay   ! set ighostlev_cellbased to the layer number
                  end if
                end if
@@ -1260,18 +1260,18 @@ implicit none
       
       do ilay=1,numlay_loc
          do ic=1,nump
-            if ( idomain(ic).eq.idmn .or. ( ilay.gt.1 .and. ighostlev_nodebased(ic).eq.ilay-1 ) ) then
+            if (idomain(ic) == idmn .or. (ilay > 1 .and. ighostlev_nodebased(ic) == ilay - 1)) then
                do kk=1,netcell(ic)%N
                   k = netcell(ic)%nod(kk)
                   do i=1,nmk(k)
-                     ip1 = i+1; if ( ip1.gt.nmk(k) ) ip1=ip1-nmk(k)
+                     ip1 = i + 1; if (ip1 > nmk(k)) ip1 = ip1 - nmk(k)
                      L = nod(k)%lin(i)
                      Lp1 = nod(k)%lin(ip1)
                      icother = common_cell_for_two_net_links(L,Lp1)
                      
-                     if ( icother.eq.0 ) cycle  ! boundary links
+                     if (icother == 0) cycle ! boundary links
                      
-                     if ( idomain(icother).ne.idmn .and. ighostlev_nodebased(icother).eq.0 ) then ! other cell not active
+                     if (idomain(icother) /= idmn .and. ighostlev_nodebased(icother) == 0) then ! other cell not active
                        ighostlev_nodebased(icother) = ilay   ! set ighostlev to the layer number
                      end if
                   end do
@@ -1353,36 +1353,36 @@ implicit none
 
       ierror = 0
 
-      if ( iwhat.eq.0 ) then
+      if (iwhat == 0) then
          ierror_ = 0
          i = 0
-         do while ( ierror_.eq.0 )
+         do while (ierror_ == 0)
             i = i+1
             call partition_cleanup(i, ierror_)
          end do
-      else if ( iwhat.eq.1 ) then
+      else if (iwhat == 1) then
          if ( allocated(idomain) )   deallocate(idomain)
          if ( allocated(ighostlev) ) deallocate(ighostlev)
          if ( allocated(ighostlev_cellbased) ) deallocate(ighostlev_cellbased)
          if ( allocated(ighostlev_nodebased) ) deallocate(ighostlev_nodebased)
-      else if ( iwhat.eq.2 ) then
+      else if (iwhat == 2) then
          if ( allocated(partition_pol) ) then
             call dealloc_tpoly(partition_pol)
             npartition_pol = 0
          end if
-      else if ( iwhat.eq.3 ) then
+      else if (iwhat == 3) then
          if ( allocated(ighostlist_s) ) deallocate(ighostlist_s)
          if ( allocated(nghostlist_s) ) deallocate(nghostlist_s)
-      else if ( iwhat.eq.4 ) then
+      else if (iwhat == 4) then
          if ( allocated(ighostlist_u) ) deallocate(ighostlist_u)
          if ( allocated(nghostlist_u) ) deallocate(nghostlist_u)
-      else if ( iwhat.eq.5 ) then
+      else if (iwhat == 5) then
          if ( allocated(isendlist_s) ) deallocate(isendlist_s)
          if ( allocated(nsendlist_s) ) deallocate(nsendlist_s)
-      else if ( iwhat.eq.6 ) then
+      else if (iwhat == 6) then
          if ( allocated(isendlist_u) ) deallocate(isendlist_u)
          if ( allocated(nsendlist_u) ) deallocate(nsendlist_u)
-      else if ( iwhat.eq.7 ) then
+      else if (iwhat == 7) then
          if ( allocated(nghostlist_s_3d) ) deallocate(nghostlist_s_3d)
          if ( allocated(nsendlist_s_3d)  ) deallocate(nsendlist_s_3d)
          
@@ -1398,7 +1398,7 @@ implicit none
          ierror = 1
       end if
 
-      if ( iwhat.eq.0 .or. iwhat.eq.2 ) then
+      if (iwhat == 0 .or. iwhat == 2) then
       end if
 
       return
@@ -1447,7 +1447,7 @@ implicit none
 
 !     water-level ghost nodes
       numnampli = numnampli+1
-      if ( numnampli.gt.size(nampli) ) call realloc(nampli,int(1.2d0*dble(numnampli)+1d0),keepExisting=.true.,fill='')
+      if (numnampli > size(nampli)) call realloc(nampli, int(1.2d0 * dble(numnampli) + 1d0), keepExisting=.true., fill='')
       nampli(numnampli) = 'water-level'
 
       do i=0,ubound(nghostlist_s,1)
@@ -1461,7 +1461,7 @@ implicit none
       end do
 
 !     add dmiss
-      if ( NPL.gt.0 ) then
+      if (NPL > 0) then
          NPL = NPL+1
          xpl(NPL) = DMISS
          ypl(NPL) = DMISS
@@ -1470,7 +1470,7 @@ implicit none
 
 !     velocity ghost links
       numnampli = numnampli+1
-      if ( numnampli.gt.size(nampli) ) call realloc(nampli,int(1.2d0*dble(numnampli)+1d0),keepExisting=.true.,fill='')
+      if (numnampli > size(nampli)) call realloc(nampli, int(1.2d0 * dble(numnampli) + 1d0), keepExisting=.true., fill='')
       nampli(numnampli) = 'velocity'
 
       do i=0,ubound(nghostlist_u,1)
@@ -1613,30 +1613,30 @@ implicit none
          iglev  = 0
       end if
       
-      if ( ( idmnL.ne.idmn .and. idmnR.ne.idmn ) .or.  &
-           ( idmnL.eq.idmn .and. idmnR.lt.idmn ) .or.  &
-           ( idmnL.lt.idmn .and. idmnR.eq.idmn )       &
+      if ((idmnL /= idmn .and. idmnR /= idmn) .or. &
+          (idmnL == idmn .and. idmnR < idmn) .or. &
+          (idmnL < idmn .and. idmnR == idmn) &
          ) then
          jaghost = 1
       else if ( present(ighostlevL) .and. present(ighostlevR) ) then
-         if ( ( idmnL.eq.idmn .and. ighostlevL.gt.0 ) .or.  &
-              ( idmnR.eq.idmn .and. ighostlevR.gt.0 ) &
+         if ((idmnL == idmn .and. ighostlevL > 0) .or. &
+             (idmnR == idmn .and. ighostlevR > 0) &
             ) then
             jaghost = 1
          end if
       end if
       
-      if ( jaghost.eq.1 ) then
+      if (jaghost == 1) then
   
          if ( present(ighostlevL) .and. present(ighostlevR) .and. present(iglev) ) then
             idmn_link = min(idmnL,idmnR)  ! a choice
             
 !           ghost domain cannot be own domain         
-            if ( idmn_link.eq.idmn ) idmn_link = idmnL+idmnR-idmn
+            if (idmn_link == idmn) idmn_link = idmnL + idmnR - idmn
             iglev = min(ighostlevL,ighostlevR)
             
 !           ghost level may be zero
-            if ( iglev.eq.0 ) iglev = max(ighostlevL,ighostlevR)
+            if (iglev == 0) iglev = max(ighostlevL, ighostlevR)
          end if
       end if
                
@@ -2190,7 +2190,7 @@ implicit none
       
 !     mark the own flownodes      
       do k=1,Ndx
-         if ( idomain(k).eq.my_rank ) then
+         if (idomain(k) == my_rank) then
             imask(k) = 1
          end if
       end do
@@ -2202,11 +2202,11 @@ implicit none
          
 !        safety check
          dum = abs(abs(csu_loc(L)*csu(L) + snu_loc(L)*snu(L))-1d0)
-         if ( dum.ge.dtol ) then
+         if (dum >= dtol) then
 !           check if this is a valid ghostlink (see also subroutine "disable_invalid_ghostcells_with_wu")
             k1 = ln(1,L)
             k2 = ln(2,L)
-            if ( imask(k1).eq.1 .and. imask(k2).eq.1 .and. L.le.Lnxi ) then
+            if (imask(k1) == 1 .and. imask(k2) == 1 .and. L <= Lnxi) then
                write(message, "('partition_fixorientation_ghostlist: flowlink mismatch, val=', E15.5, ', link=', I0)") dum, L
                call mess(LEVEL_ERROR, trim(message))
             else
@@ -2215,7 +2215,7 @@ implicit none
             end if
          end if
          
-         if ( abs(csu_loc(L)*csu(L) + snu_loc(L)*snu(L) + 1d0).lt.dtol ) then
+         if (abs(csu_loc(L) * csu(L) + snu_loc(L) * snu(L) + 1d0) < dtol) then
             ighostlist_u(i) = -ighostlist_u(i)
             num = num+1
          end if
@@ -2306,7 +2306,7 @@ implicit none
       
       ierror = 0   ! so far, so good
       
-      if ( kmx.eq.0 ) goto 1234
+      if (kmx == 0) goto 1234
       
       ierror = 1
       
@@ -2401,7 +2401,7 @@ implicit none
       nsendlist_snonoverlap = 0
      
 !     check for overlap (in solver)      
-      if ( maxghostlev_s.eq.1 ) then
+      if (maxghostlev_s == 1) then
           jaoverlap = 0
           error     = 0
           return
@@ -2420,15 +2420,15 @@ implicit none
 !     select nodes from ghostlist
       inum = 0
       do idmn=0,ndomains-1
-         if ( idmn.eq.my_rank) cycle
+         if (idmn == my_rank) cycle
          
          do i=nghostlist_sall(idmn-1)+1,nghostlist_sall(idmn)        
             k = ighostlist_sall(i)
             
 !           get appropriate ghostlevel
-            if ( ighosttype_s.eq.IGHOSTTYPE_CELLBASED ) then
+            if (ighosttype_s == IGHOSTTYPE_CELLBASED) then
                iglev = ighostlev_cellbased(k)
-            else if ( ighosttype_s.eq.IGHOSTTYPE_NODEBASED ) then
+            else if (ighosttype_s == IGHOSTTYPE_NODEBASED) then
                iglev = ighostlev_nodebased(k)
             else  ! combined
                iglev = ighostlev(k)
@@ -2437,7 +2437,7 @@ implicit none
 !!           only add ghost nodes with ghostlevel >= minghostlev_s            
 !           only add ghost nodes with ghostlevel >= maxghostlev_s 
 !            if ( iglev.ge.minghostlev_s .or. iglev.eq.0 ) then
-            if ( iglev.ge.maxghostlev_s .or. iglev.eq.0 ) then
+            if (iglev >= maxghostlev_s .or. iglev == 0) then
                nghostlist_snonoverlap(idmn) = nghostlist_snonoverlap(idmn) + 1
                inum = inum+1
                ighostlist_snonoverlap(inum) = k
@@ -2656,19 +2656,19 @@ implicit none
 !     allocate work array (will be reallocated later)
       if ( .not.allocated(work) ) allocate(work(INIWORKSIZE))
       
-      if ( ja3d.ne.1 ) then
+      if (ja3d /= 1) then
          num = nsend(ndomains-1)*NDIM
       else
          num = nsend3d(ndomains-1)*NDIM
       end if
       
-      if ( ubound(work,1).lt.num ) then
+      if (ubound(work, 1) < num) then
          call realloc(work, int(1.2d0*dble(num)+1d0))
       end if
       
 !     fill work array
-      if ( ja3d.ne.1 ) then
-         if ( NDIM.eq.1 ) then
+      if (ja3d /= 1) then
+         if (NDIM == 1) then
             do i=1,nsend(ndomains-1)
 !               if ( isend(i).gt.0 ) then
                   work(i) = s(isend(i))
@@ -2696,7 +2696,7 @@ implicit none
             end do
          end if
       else  ! 3D extension
-         if ( NDIM.eq.1 ) then
+         if (NDIM == 1) then
             icount = 0
             do i=1,nsend(ndomains-1)
                i2d = iabs(isend(i))
@@ -2743,7 +2743,7 @@ implicit none
                end do   ! do i=ib,it
             end do
          end if
-         if ( icount.ne.nsend3d(ndomains-1) ) then
+         if (icount /= nsend3d(ndomains - 1)) then
             call qnerror('update_ghost_loc: 3d numbering error', ' ', ' ')
          end if
       end if
@@ -2752,14 +2752,14 @@ implicit none
       call mpi_barrier(DFM_COMM_DFMWORLD,ierr)
 
 !     send
-      if ( ja3d.eq.0 ) then
+      if (ja3d == 0) then
          nreq = 0
          do other_rank=0,ndomains-1
             istart = NDIM*nsend(other_rank-1)+1 ! nsend(other_rank-1)+1
             iend   = NDIM*nsend(other_rank)     ! nsend(other_rank)
             num    = iend-istart+1
          
-            if ( num.gt.0 ) then
+            if (num > 0) then
                nreq = nreq+1
                call mpi_isend(work(istart),num,mpi_double_precision,other_rank,itag,DFM_COMM_DFMWORLD,irequest(nreq),ierr)
             end if
@@ -2771,7 +2771,7 @@ implicit none
             iend   = NDIM*nsend3d(other_rank)     ! nsend3d(other_rank)
             num    = iend-istart+1
          
-            if ( num.gt.0 ) then
+            if (num > 0) then
 !               write(6, "('update_ghost_loc:    send, domain: ', I3, ', other domain: ', I3, ', num: ', I7)") my_rank, other_rank, num
                nreq = nreq+1
                call mpi_isend(work(istart),num,mpi_double_precision,other_rank,itag,DFM_COMM_DFMWORLD,irequest(nreq),ierr)
@@ -2783,22 +2783,22 @@ implicit none
 !     allocate work array (will be reallocated later)
       if ( .not.allocated(workrec) ) allocate(workrec(INIWORKSIZE))
       
-      if ( ja3d.ne.1 ) then
+      if (ja3d /= 1) then
          num = NDIM*nghost(ndomains-1)
       else
          num = NDIM*nghost3d(ndomains-1)
       end if
       
-      if ( ubound(workrec,1).lt.num ) then
+      if (ubound(workrec, 1) < num) then
          call realloc(workrec,int(1.2d0*dble(num)+1d0))
       end if
       
-      if ( ja3d.ne.1 ) then
+      if (ja3d /= 1) then
          do other_rank=0,ndomains-1
             istart = NDIM*nghost(other_rank-1)+1 ! nghost(other_rank-1)+1
             iend   = NDIM*nghost(other_rank)     ! nghost(other_rank)
             num    = iend-istart+1
-            if ( num.gt.0 ) then
+            if (num > 0) then
                !call mpi_recv(s(ighost(istart)),num,mpi_double_precision,other_rank,itag,DFM_COMM_DFMWORLD,istat,ierr)
             
    !           ghost cells are NOT ordered
@@ -2806,7 +2806,7 @@ implicit none
 
    !           check message size
                call mpi_get_count(istat, mpi_double_precision, icount, ierr)
-               if ( icount.ne.num ) then
+               if (icount /= num) then
                   write(str, *) 'update_ghost_loc: icount.ne.num, domain: ', my_rank, ', other domain: ', other_rank, ' icount: ', icount, ', num: ', num
                   call qnerror(str, ' ', ' ')
                   goto 1234
@@ -2819,7 +2819,7 @@ implicit none
             iend   = NDIM*nghost3d(other_rank)     ! nghost3d(other_rank)
             num    = iend-istart+1
             
-            if ( num.gt.0 ) then
+            if (num > 0) then
                !call mpi_recv(s(ighost(istart)),num,mpi_double_precision,other_rank,itag,DFM_COMM_DFMWORLD,istat,ierr)
             
 !               write(6, "('update_ghost_loc: recieve, domain: ', I3, ', other domain: ', I3, ', num: ', I7)") my_rank, other_rank, num
@@ -2829,7 +2829,7 @@ implicit none
 
    !           check message size
                call mpi_get_count(istat, mpi_double_precision, icount, ierr)
-               if ( icount.ne.num ) then
+               if (icount /= num) then
                   write(str, *) 'update_ghost_loc: icount.ne.num, domain: ', my_rank, ', other domain: ', other_rank, ' icount: ', icount, ', num: ', num
                   call qnerror(str, ' ', ' ')
                   goto 1234
@@ -2839,14 +2839,14 @@ implicit none
       end if
       
 !     copy work array to ghost nodes
-      if ( ja3d.ne.1 ) then
-         if ( NDIM.eq.1 ) then
+      if (ja3d /= 1) then
+         if (NDIM == 1) then
             do i=1,nghost(ndomains-1)
 !               if ( workrec(i).ne.DNOCELL ) then
             
-                if ( ighost(i).gt.0 ) then
+               if (ighost(i) > 0) then
                    s(ighost(i)) = workrec(i)
-                else if ( ighost(i).lt.0 ) then
+               else if (ighost(i) < 0) then
                    ! Some quantities may not need an orientation fix on u-points:
                    if (ignore_orientation_) then
                       s(-ighost(i)) =  workrec(i)
@@ -2863,11 +2863,11 @@ implicit none
          else  ! NDIM.ne.1
             do i=1,nghost(ndomains-1)
 !               if ( workrec(NDIM*(i-1)+1).ne.DNOCELL ) then ! check first element only
-                  if ( ighost(i).gt.0 ) then
+               if (ighost(i) > 0) then
                      do j=1,NDIM
                         s(NDIM*(ighost(i)-1)+j) = workrec(NDIM*(i-1)+j)
                      end do
-                  else if ( ighost(i).lt.0 ) then
+               else if (ighost(i) < 0) then
                      do j=1,NDIM
                         s(NDIM*(-ighost(i)-1)+j) = -workrec(NDIM*(i-1)+j)
                      end do
@@ -2879,9 +2879,9 @@ implicit none
          end if
       else  ! 3D extension, we assume that bot and top matches the ibotsend in the other subdomain(s)
          icount = 0
-         if ( NDIM.eq.1 ) then
+         if (NDIM == 1) then
             do i=1,nghost(ndomains-1)
-               if ( ighost(i).gt.0 ) then
+               if (ighost(i) > 0) then
                   i2d = ighost(i)
                   ib = kbot(i2d)
                   it = ib + kmxnL(i2d) - 1   ! override it
@@ -2893,7 +2893,7 @@ implicit none
    !!                    do nothing
    !                  end if
                   end do
-               else if ( ighost(i).lt.0 ) then
+               else if (ighost(i) < 0) then
                   i2d = -ighost(i)
                   ib = kbot(i2d)
                   it = ib + kmxnL(i2d) - 1   ! override it
@@ -2909,7 +2909,7 @@ implicit none
             end do
          else  ! NDIM.ne.1
             do i=1,nghost(ndomains-1)
-               if ( ighost(i).gt.0 ) then
+               if (ighost(i) > 0) then
                   i2d = ighost(i)
                   ib = kbot(i2d)
                   it = ib + kmxnL(i2d) - 1   ! override it
@@ -2923,7 +2923,7 @@ implicit none
    !!                    do nothing
    !                  end if
                   end do
-               else if ( ighost(i).lt.0 ) then
+               else if (ighost(i) < 0) then
                   i2d = -ighost(i)
                   ib = kbot(i2d)
                   it = ib + kmxnL(i2d) - 1   ! override it
@@ -2941,7 +2941,7 @@ implicit none
             end do
          end if
          
-         if ( icount.ne.nghost3d(ndomains-1) ) then
+         if (icount /= nghost3d(ndomains - 1)) then
             call qnerror('update_ghost_loc: 3d numbering error', ' ', ' ')
          end if
       end if
@@ -2983,12 +2983,12 @@ subroutine partition_make_globalnumbers(ierror)
    ierror = 1
 
    allocate(inums(Ndx), stat=istat)
-   if ( istat.ne.0 ) then
+      if (istat /= 0) then
       goto 1234
    end if
    
    allocate(idum(Ndx), stat=istat)
-   if ( istat.ne.0 ) then
+      if (istat /= 0) then
       goto 1234
    end if
    
@@ -3002,7 +3002,7 @@ subroutine partition_make_globalnumbers(ierror)
 !     set internal numbers (non-boundary nodes)
       numlist = 0
       do k=1,Ndxi
-         if ( idomain(k).eq.my_rank ) then
+            if (idomain(k) == my_rank) then
             numlist = numlist+1
             inums(numlist)  = k
          end if
@@ -3029,7 +3029,7 @@ subroutine partition_make_globalnumbers(ierror)
 !     find connected internal node (<=Ndxi)
       ki = min(ln(1,L), ln(2,L))
 !     only add boundary node if the connected internal node is not a ghost node
-      if ( idomain(ki).eq.my_rank ) then
+         if (idomain(ki) == my_rank) then
          numlist = numlist + 1
          inums(numlist) = k
       end if
@@ -3043,7 +3043,7 @@ subroutine partition_make_globalnumbers(ierror)
       k=inums(i)
       
 !     check if this node did not already have a global number assigned
-      if ( iglobal_s(k).ne.0 ) then
+         if (iglobal_s(k) /= 0) then
          call mess(LEVEL_ERROR, 'partition_make_globalnumbers: numbering error')
          goto 1234
       end if
@@ -3102,8 +3102,8 @@ end subroutine partition_make_globalnumbers
          iglobnum(iactive(i)) = 1
       end do
       
-      if ( jampi.eq.1 ) then
-         if ( jaoverlap.eq.0 ) then
+      if (jampi == 1) then
+         if (jaoverlap == 0) then
    !        unmark ghost cells
             do i=1,numghost_sall
                iglobnum(ighostlist_sall(i)) = 0
@@ -3123,18 +3123,18 @@ end subroutine partition_make_globalnumbers
 !         end do
          
 !        compute number of active non-ghost cells
-         num = count(iglobnum.eq.1)
+         num = count(iglobnum == 1)
 !         write(6,*) 'my_rank', my_rank, 'num=', num, 'numghosts_sall=', numghost_sall
          
 !        communicate active non-ghost cell numbers
          
-         if ( jatime.eq.1 ) call starttimer(IMPICOMM)
+         if (jatime == 1) call starttimer(IMPICOMM)
          call mpi_allgather(num, 1, MPI_INTEGER, numglobcells, 1, MPI_INTEGER, DFM_COMM_DFMWORLD, ierror)
-         if ( jatime.eq.1 ) call stoptimer(IMPICOMM)
+         if (jatime == 1) call stoptimer(IMPICOMM)
          
 !        compute global cell numbers for own non-ghost cells
          num = 0
-         if ( my_rank.gt.0 ) then
+         if (my_rank > 0) then
             num = sum(numglobcells(0:my_rank-1))
          end if
       else  ! jampi.eq.0
@@ -3144,25 +3144,25 @@ end subroutine partition_make_globalnumbers
 
       do i=1,numactive
          n = iactive(i)
-         if ( iglobnum(n).ne.0 ) then
+         if (iglobnum(n) /= 0) then
             num = num+1
             iglobnum(n) = num
          end if
       end do
 
-      if ( jampi.eq.1 ) then
+      if (jampi == 1) then
 !        update global ghost-cell numbers
          dum = dble(iglobnum)
-         if ( jatime.eq.1 ) call starttimer(IMPICOMM)
+         if (jatime == 1) call starttimer(IMPICOMM)
          !call update_ghost(dum,ierror)
-         if ( jampi.eq.1 ) then
-            if ( jaoverlap.eq.0 ) then
+         if (jampi == 1) then
+            if (jaoverlap == 0) then
                call update_ghosts(ITYPE_Sall, 1, Ndx, dum, ierror)
             else
                call update_ghosts(ITYPE_Snonoverlap, 1, Ndx, dum, ierror)
             end if
          end if
-         if ( jatime.eq.1 ) call stoptimer(IMPICOMM)
+         if (jatime == 1) call stoptimer(IMPICOMM)
          
          iglobnum = int(dum)
       
@@ -3495,7 +3495,7 @@ end subroutine partition_make_globalnumbers
       
       integer :: ierror
 
-      if (nqhbnd .eq. 0) then 
+      if (nqhbnd == 0) then
          return
       end if
 #ifdef HAVE_MPI
@@ -3638,7 +3638,7 @@ end subroutine partition_make_globalnumbers
       double precision, parameter                   :: DPENALTY = 1d10  ! should be smaller than DREJECT
       double precision, parameter                   :: DREJECT  = 2d99  ! should be larger than DPENALTY
       
-      if ( N.lt.1 ) return
+      if (N < 1) return
       
       allocate(dist(N))
       dist = DREJECT
@@ -3648,20 +3648,20 @@ end subroutine partition_make_globalnumbers
 !     set distances to observation stations
       do i=1,N
          k1 = kobs(i)
-         if ( k1.eq.0 ) cycle
+         if (k1 == 0) cycle
          
 !        check if the observation station is inside the cell
          call pinpok(xobs(i), yobs(i), size(nd(k1)%x), nd(k1)%x, nd(k1)%y, in, jins, dmiss)
       
 !        determine preference
-         if ( in.eq.1 ) then
-            if ( idomain(k1).eq.my_rank ) then
+         if (in == 1) then
+            if (idomain(k1) == my_rank) then
                dist(i) = 0d0
             else
                dist(i) = DPENALTY
             end if
-         else if ( jaoutside.eq.1 ) then
-            if ( idomain(k1).eq.my_rank ) then
+         else if (jaoutside == 1) then
+            if (idomain(k1) == my_rank) then
                xp = xz(k1)
                yp = yz(k1)
                dist(i) = DPENALTY + dbdistance(xobs(i),yobs(i),xp,yp, jsferic, jasfer3D, dmiss)
@@ -3708,10 +3708,10 @@ end subroutine partition_make_globalnumbers
          
 !        compare distance with distances in other subdomains         
          do other_domain=0,ndomains-1
-            if ( dist_all(i,other_domain).eq.DREJECT ) then
+            if (dist_all(i, other_domain) == DREJECT) then
                cycle
-            else if ( dist_all(i,other_domain).lt.dist(i) .or. dist(i).eq.DREJECT ) then
-               if ( other_domain.eq.my_rank ) then
+            else if (dist_all(i, other_domain) < dist(i) .or. dist(i) == DREJECT) then
+               if (other_domain == my_rank) then
                   k1 = kobs(i)   ! use value in this subdomain
                else
                   k1 = -1        ! in another subdomain
@@ -3727,13 +3727,13 @@ end subroutine partition_make_globalnumbers
 !     safety: check uniqueness
       dist = 0d0
       do i=1,N
-         if ( kobs(i).gt.0 ) then
+         if (kobs(i) > 0) then
             dist(i) = 1d0
          end if
       end do
       call mpi_allreduce(dist, dist_all, N, MPI_DOUBLE_PRECISION, MPI_SUM, DFM_COMM_DFMWORLD, ierror) ! re-use (part of) dist_all
       do i=1,N
-         if ( dist_all(i,0).gt.1d0 ) then
+         if (dist_all(i, 0) > 1d0) then
             call mess(LEVEL_ERROR, 'reduce_kobs: non-unique observation station(s)')
          end if
       end do
@@ -3784,9 +3784,7 @@ end subroutine partition_make_globalnumbers
       double precision, dimension(numobs,numvals), intent(inout) :: valobs       !< values at obervations stations to be output.
       
       double precision, parameter                                :: dsmall = -huge(1d0)
-      
       integer                                                    :: iobs, ival
-      
       integer                                                    :: ierror
       
 #ifdef HAVE_MPI
@@ -3795,7 +3793,7 @@ end subroutine partition_make_globalnumbers
 !     disable observation stations with missing values in this domain
       do iobs=1,numobs
          do ival=1,numvals
-            if ( valobs(iobs,ival).eq.DMISS ) then
+            if (valobs(iobs, ival) == DMISS) then
                 valobs(iobs,ival) = dsmall
             end if
          end do
@@ -3806,7 +3804,7 @@ end subroutine partition_make_globalnumbers
 !     set values of observation stations that were not found in any subdomain
       do iobs=1,numobs
          do ival=1,numvals
-            if ( valobs(iobs,ival).eq.dsmall ) then   ! safety, check all vals until not found (not necessary)
+            if (valobs(iobs, ival) == dsmall) then ! safety, check all vals until not found (not necessary)
                valobs(iobs,ival) = DMISS
             end if
          end do
@@ -3884,7 +3882,6 @@ end subroutine partition_make_globalnumbers
 #ifdef HAVE_MPI
       call MPI_allreduce(srsn,srsn_all,numsrc*NUMVALS,mpi_double_precision,mpi_sum,DFM_COMM_DFMWORLD,ierror)
       srsn = srsn_all
-      
 #endif
       return
    end subroutine reduce_srsn
@@ -3921,10 +3918,10 @@ end subroutine partition_make_globalnumbers
       idum = 0d0
       
       call MPI_allreduce(distsam, dum, Nproflocs, MPI_DOUBLE_PRECISION, MPI_MIN, DFM_COMM_DFMWORLD, ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
             
       do i=1,Nproflocs
-         if ( distsam(i).gt.dum(i)+dtol ) then
+         if (distsam(i) > dum(i) + dtol) then
             xlsam(i) = DLARGE
             iconnsam(i) = ILARGE
          end if
@@ -3933,13 +3930,13 @@ end subroutine partition_make_globalnumbers
       distsam = dum
       
       call MPI_allreduce(xlsam, dum, Nproflocs, MPI_DOUBLE_PRECISION, MPI_MIN, DFM_COMM_DFMWORLD, ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       
       call MPI_allreduce(iconnsam, idum, Nproflocs, MPI_INTEGER, MPI_MIN, DFM_COMM_DFMWORLD, ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       
       do i=1,Nproflocs
-         if ( xlsam(i).eq.DLARGE ) then
+         if (xlsam(i) == DLARGE) then
             xlsam(i) = dum(i)
             iconnsam(i) = idum(i)
          end if
@@ -4001,7 +3998,7 @@ end subroutine partition_make_globalnumbers
       resu_all = 0d0
       
       call mpi_allreduce(resu,resu_all,num_rugs,mpi_2double_precision,mpi_maxloc,DFM_COMM_DFMWORLD,ierror)
-      if (ierror .ne. 0) then
+      if (ierror /= 0) then
          goto 1234
       endif   
       resu = resu_all
@@ -4023,7 +4020,7 @@ end subroutine partition_make_globalnumbers
       integer :: i
       integer :: k, L, LL
       
-      if ( jaoverlap.eq.0 ) then 
+      if (jaoverlap == 0) then
          do i=1,nghostlist_sall(ndomains-1)
             kfs(ighostlist_sall(i)) = -abs(kfs(ighostlist_sall(i))) !0
          end do
@@ -4040,7 +4037,7 @@ end subroutine partition_make_globalnumbers
   klp:do k=1,Ndxi
          do LL=1,nd(k)%lnx
             L = iabs(nd(k)%ln(LL))
-            if ( wu(L).ne.0d0 ) then
+            if (wu(L) /= 0d0) then
                cycle klp
             end if
          end do
@@ -4154,7 +4151,7 @@ end subroutine partition_make_globalnumbers
       
 !     make global branch numbering
       call MPI_allgather(numnetbr, 1, MPI_INTEGER, numbranches, 1, MPI_INTEGER, DFM_COMM_DFMWORLD, ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       
       numallnetbr = sum(numbranches(0:numranks-1))
       
@@ -4201,9 +4198,9 @@ end subroutine partition_make_globalnumbers
 !        note that this can also be achieved by using mpi_allgatherv,
 !        but now we do not need to use an offset in the global array
       call MPI_allreduce(xyL_loc,xyL_all,3*numallnetbr,MPI_DOUBLE_PRECISION,MPI_SUM,DFM_COMM_DFMWORLD,ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       call MPI_allreduce(xyR_loc,xyR_all,3*numallnetbr,MPI_DOUBLE_PRECISION,MPI_SUM,DFM_COMM_DFMWORLD,ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       
 !     find the global branch connectivity
       call find_branch_conn(ibr_glob_left, ibr_glob_right, Lother_left, Lother_right, ierror)
@@ -4218,7 +4215,7 @@ end subroutine partition_make_globalnumbers
       iorient = 0
       ipoint(1) = 1
       do ibr=1,numallnetbr
-         if ( inew(ibr).ne.0 ) cycle   ! branch has already new global number assigned
+         if (inew(ibr) /= 0) cycle ! branch has already new global number assigned
          numnew = numnew+1
          idum = 0
          icount = 0
@@ -4233,7 +4230,7 @@ end subroutine partition_make_globalnumbers
 !        walk right
          call connect_branches(ibr,numnew,1,icount)
          
-         if ( my_rank.eq.0 ) then
+         if (my_rank == 0) then
             write(6,"(I4, ':', 100I4)") numnew, (idum(i), i=1,icount)
             write(6,"(I4, ':', 100I4)") numnew, (iorient(iabs(idum(i))), i=1,icount)
          end if
@@ -4247,17 +4244,17 @@ end subroutine partition_make_globalnumbers
             ibr_glob = iabs(idum(i))
             ibrr = ibr_glob-iglobalbranch_first+1
             
-            if ( ibrr.lt.1 .or. ibrr.gt.numnetbr ) cycle ! local branches only
+            if (ibrr < 1 .or. ibrr > numnetbr) cycle ! local branches only
             
             N = netbr(ibrr)%NX
 !           check orientation of this branch            
-            if ( iorient(ibr_glob).ne.1 ) then
+            if (iorient(ibr_glob) /= 1) then
 !              swap orientation
                call swap_branch(ibrr)
             end if
             
 !           find the link that is connected to the start/end of the other link
-            if ( i.gt.1 ) then
+            if (i > 1) then
                Lconnect = Lother_right(iabs(idum(i-1)))  ! we need the right connection of the previous branch, since the orientation is always from left to right
             else
                Lconnect = 0
@@ -4268,7 +4265,7 @@ end subroutine partition_make_globalnumbers
             do k=1,N
                L = netbr(ibrr)%LN(k)
                dlength = dlength + dlinklength(L)
-               if ( iabs(L).eq.iabs(Lconnect) ) then  ! offset link
+               if (iabs(L) == iabs(Lconnect)) then ! offset link
                   dleft = dlength
                end if
             end do
@@ -4282,15 +4279,15 @@ end subroutine partition_make_globalnumbers
       
 !     gather information from all domains
       call MPI_allreduce(dlL,ddum,numallnetbr,MPI_DOUBLE_PRECISION,MPI_SUM,DFM_COMM_DFMWORLD,ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       dlL = ddum
       
       call MPI_allreduce(dltot,ddum,numallnetbr,MPI_DOUBLE_PRECISION,MPI_SUM,DFM_COMM_DFMWORLD,ierror)
-      if ( ierror.ne.0 ) goto 1234
+      if (ierror /= 0) goto 1234
       dltot = ddum
       
-      if ( my_rank.eq.0 ) write(6,*) (dlL(i), i=1,numallnetbr)
-      if ( my_rank.eq.0 ) write(6,*) (dltot(i), i=1,numallnetbr)
+      if (my_rank == 0) write (6, *) (dlL(i), i=1, numallnetbr)
+      if (my_rank == 0) write (6, *) (dltot(i), i=1, numallnetbr)
       
       dlR = dltot - dlL
       
@@ -4302,7 +4299,7 @@ end subroutine partition_make_globalnumbers
             ibrr = ibr_glob-iglobalbranch_first+1
       
 !           fill local branch properties    
-            if ( ibrr.ge.1 .and. ibrr.le.numnetbr ) then
+            if (ibrr >= 1 .and. ibrr <= numnetbr) then
                netbr(ibrr)%iconn = i
                netbr(ibrr)%doff  = dconnected - dlL(ibr_glob)
             end if
@@ -4375,7 +4372,7 @@ end subroutine partition_make_globalnumbers
          do i=1,N
             Ldum = netbr(ibr)%LN(i)
             La = iabs(Ldum)
-            if ( Ldum.gt.0 ) then
+            if (Ldum > 0) then
                K1BR(NRLB(La)) = kn(1,La)
             else
                K1BR(NRLB(La)) = kn(2,La)
@@ -4400,7 +4397,7 @@ end subroutine partition_make_globalnumbers
          
          ibra = iabs(ibr)
          
-         if ( inew(ibra).ne.0 ) return  ! branch has already new global number assigned
+         if (inew(ibra) /= 0) return ! branch has already new global number assigned
          
          inew(ibra) = numcur
          
@@ -4408,15 +4405,15 @@ end subroutine partition_make_globalnumbers
          idum(icount)  = ibra
          iorient(ibra) = idir
          
-         if ( idir.eq.1 ) then   ! walk right
+         if (idir == 1) then ! walk right
             inext = ibr_glob_right(ibra)
          else                    ! walk left
             inext = ibr_glob_left(ibra)
          end if
          
-         if ( inext.gt.0 ) then
+         if (inext > 0) then
             call connect_branches(inext,numcur,idir,icount)
-         else if ( inext.lt.0 ) then   ! swap orientation
+         else if (inext < 0) then ! swap orientation
             call connect_branches(inext,numcur,1-idir,icount)
          end if
          
@@ -4449,7 +4446,7 @@ end subroutine partition_make_globalnumbers
             istart = 1 + ioff                   ! global branch number of first branch in other domain
             iend   = numbranches(idmn) + ioff   ! global branch number of last  branch in other domain
               
-            if ( idmn.ne.my_rank ) then
+            if (idmn /= my_rank) then
                do ibr_other = istart,iend  ! global branch number
    !              compare start(called left) and end (called right) of branch in other domain with branches in own domain               
                   Lleftfound  = .false.
@@ -4463,17 +4460,17 @@ end subroutine partition_make_globalnumbers
                         La = iabs(L)
                         xloc = 0.5d0*(xk(kn(1,La))+xk(kn(2,La)))
                         yloc = 0.5d0*(yk(kn(1,La))+yk(kn(2,La)))               
-                        if ( dbdistance(xloc,yloc,xyL_all(1,ibr_other),xyL_all(2,ibr_other),jsferic, jasfer3D, dmiss).lt.dtol ) then
+                        if (dbdistance(xloc, yloc, xyL_all(1, ibr_other), xyL_all(2, ibr_other), jsferic, jasfer3D, dmiss) < dtol) then
    !                       left match found
                            Lleftfound = .true.
                            Lother_left(ibr_other) = L
                         
    !                       check orientation
                            dabsangle = abs(dLinkangle(L)-xyL_all(3,ibr_other))
-                           if ( dabsangle.lt.dtol ) then
+                           if (dabsangle < dtol) then
    !                          same orientation
                               ibr_glob_left(ibr_other) = ibr_glob
-                           else if ( abs(dabsangle-pi).lt.dtol ) then
+                           else if (abs(dabsangle - pi) < dtol) then
    !                          opposite orientation
                               ibr_glob_left(ibr_other) = -ibr_glob
                            else
@@ -4483,17 +4480,17 @@ end subroutine partition_make_globalnumbers
                            end if
                         end if      
                      
-                        if ( dbdistance(xloc,yloc,xyR_all(1,ibr_other),xyR_all(2,ibr_other),jsferic, jasfer3D, dmiss).lt.dtol ) then
+                        if (dbdistance(xloc, yloc, xyR_all(1, ibr_other), xyR_all(2, ibr_other), jsferic, jasfer3D, dmiss) < dtol) then
    !                       right match found
                            Lrightfound = .true.
                            Lother_right(ibr_other) = L
                         
    !                       check orientation
                            dabsangle = abs(dLinkangle(L)-xyR_all(3,ibr_other))
-                           if ( dabsangle.lt.dtol ) then
+                           if (dabsangle < dtol) then
    !                          same orientation
                               ibr_glob_right(ibr_other) = ibr_glob
-                           else if ( abs(dabsangle-pi).lt.dtol ) then
+                           else if (abs(dabsangle - pi) < dtol) then
    !                          opposite orientation
                               write(6,*) 'ibr_other=', ibr_other
                               write(6,*) 'ibr=', ibr
@@ -4518,19 +4515,19 @@ end subroutine partition_make_globalnumbers
       
 !        gather information from all domains
          call MPI_allreduce(ibr_glob_left,idum,numallnetbr,MPI_INTEGER,MPI_MAX,DFM_COMM_DFMWORLD,ierror)
-         if ( ierror.ne.0 ) goto 1234
+         if (ierror /= 0) goto 1234
          ibr_glob_left = idum
       
          call MPI_allreduce(ibr_glob_right,idum,numallnetbr,MPI_INTEGER,MPI_MAX,DFM_COMM_DFMWORLD,ierror)
-         if ( ierror.ne.0 ) goto 1234
+         if (ierror /= 0) goto 1234
          ibr_glob_right = idum
       
          call MPI_allreduce(Lother_left,idum,numallnetbr,MPI_INTEGER,MPI_MAX,DFM_COMM_DFMWORLD,ierror)
-         if ( ierror.ne.0 ) goto 1234
+         if (ierror /= 0) goto 1234
          Lother_left = idum
       
          call MPI_allreduce(Lother_right,idum,numallnetbr,MPI_INTEGER,MPI_MAX,DFM_COMM_DFMWORLD,ierror)
-         if ( ierror.ne.0 ) goto 1234
+         if (ierror /= 0) goto 1234
          Lother_right = idum
 
          where (ibr_glob_left == -huge(0))
@@ -4551,30 +4548,30 @@ end subroutine partition_make_globalnumbers
          do ibr=1,numallnetbr
    !        check right
             inext = ibr_glob_right(ibr)
-            if ( inext.gt.0 ) then
+            if (inext > 0) then
    !           same orientation: should connect with next left
-               if ( ibr_glob_left(inext).ne.ibr ) then
+               if (ibr_glob_left(inext) /= ibr) then
    !              deactivate connection
                   ibr_glob_right(ibr) = 0
                end if
-            else if ( inext.lt.0 ) then
+            else if (inext < 0) then
    !           opposite orientation: should connect with next right
-               if ( ibr_glob_right(-inext).ne.-ibr ) then
+               if (ibr_glob_right(-inext) /= -ibr) then
                   ibr_glob_right(ibr) = 0
                end if
             end if
          
    !        check left
             inext = ibr_glob_left(ibr)
-            if ( inext.gt.0 ) then
+            if (inext > 0) then
    !           same orientation: should connect with next right
-               if ( ibr_glob_right(inext).ne.ibr ) then
+               if (ibr_glob_right(inext) /= ibr) then
    !              deactivate connection
                   ibr_glob_left(ibr) = 0
                end if
-            else if ( inext.lt.0 ) then
+            else if (inext < 0) then
    !           opposite orientation: should connect with next left
-               if ( ibr_glob_left(-inext).ne.-ibr ) then
+               if (ibr_glob_left(-inext) /= -ibr) then
                   ibr_glob_left(ibr) = 0
                end if
             end if
@@ -4611,26 +4608,26 @@ end subroutine partition_make_globalnumbers
       write(6,*) 'XXX'
       
       N = ubound(var,1)
-      if ( N.lt.1 ) goto 1234
+      if (N < 1) goto 1234
       
       allocate(dum(N))
       dum = var
       
-      if ( itype.eq.ITYPE_U ) then
+      if (itype == ITYPE_U) then
          call update_ghosts(itype,1,N,dum,ierr)
          do L=1,Lnxi
-            if ( idomain(ln(1,L)).eq.my_rank .or. idomain(ln(2,L)).eq.my_rank ) then
-               if ( abs(dum(L)-var(L)).gt.1d-12 ) then
+            if (idomain(ln(1, L)) == my_rank .or. idomain(ln(2, L)) == my_rank) then
+               if (abs(dum(L) - var(L)) > 1d-12) then
                   write(6,*) 'XXX: ', my_rank, L, dum(L), var(L), dum(L)-var(L)
                end if
             end if
          end do
-      else if ( itype.eq.ITYPE_S .or. itype.eq.ITYPE_Sall ) then
+      else if (itype == ITYPE_S .or. itype == ITYPE_Sall) then
          call update_ghosts(itype,1,N,dum,ierr)
          do i=1,nghostlist_sall(ndomains-1)
             k = ighostlist_sall(i)
-            if ( ighostlev_cellbased(k).gt.3 .or. ighostlev_nodebased(k).gt.2 )  cycle
-            if ( abs(dum(k)-var(k)).gt.1d-12) then
+            if (ighostlev_cellbased(k) > 3 .or. ighostlev_nodebased(k) > 2) cycle
+            if (abs(dum(k) - var(k)) > 1d-12) then
                write(6,*) 'XXX: ', my_rank, k, dum(k), var(k), dum(k)-var(k)
             end if
          end do
@@ -4698,9 +4695,9 @@ end subroutine partition_make_globalnumbers
          quantitiesByWeight = 0.0d0
          weight = 0.0d0
 
-         if ( jampi.eq.1 ) then
+            if (jampi == 1) then
             ! Exclude ghost nodes
-            if ( idomain(indQuantity).ne.my_rank ) then
+               if (idomain(indQuantity) /= my_rank) then
                cycle
             end if
          end if
@@ -4740,14 +4737,14 @@ end subroutine partition_make_globalnumbers
       results(2,ns) = sumWeights
    end do
 
-   if (jampi.eq.1) then
+      if (jampi == 1) then
       ! Here we reduce the results
-      if ( jatimer.eq.1 ) call starttimer(IMPIREDUCE)
+         if (jatimer == 1) call starttimer(IMPIREDUCE)
 #ifdef HAVE_MPI
       call MPI_allreduce(results,resultsSum,2*nsegments,mpi_double_precision,mpi_sum,DFM_COMM_DFMWORLD, ierr)
       results = resultsSum
 #endif  
-      if ( jatimer.eq.1 ) call stoptimer(IMPIREDUCE)
+         if (jatimer == 1) call stoptimer(IMPIREDUCE)
    end if
 
    end function getAverageQuantityFromLinks
@@ -4792,7 +4789,7 @@ end subroutine partition_make_globalnumbers
          nstop  = Ndomains-1
       endif
       
-      if ( netstat.eq.NETSTAT_CELLS_DIRTY ) then
+      if (netstat == NETSTAT_CELLS_DIRTY) then
          call findcells(0)
          call find1Dcells()
          
@@ -4800,7 +4797,7 @@ end subroutine partition_make_globalnumbers
       end if
       
 !     check for 1D cells (not supported)
-      if ( nump1d2d.gt.nump ) then
+      if (nump1d2d > nump) then
          call mess(LEVEL_WARN, 'generate_partition_pol_from_idomain: 1D not supported')
          goto 1234
       end if
@@ -4826,17 +4823,17 @@ end subroutine partition_make_globalnumbers
             jabound = 0 ! default
             icL = lne(1,L)
             icR = lne(2,L)
-            if ( lnn(L).eq.1 ) then
-               if ( idomain(icL).eq.idmn ) jabound = 1
-            else if ( lnn(L).eq.2 ) then
-               if ( (idomain(icL).ne.idomain(icR)) .and.    &
-                      ( (idomain(icL).eq.idmn) .or. (idomain(icR).eq.idmn) ) ) then
+            if (lnn(L) == 1) then
+               if (idomain(icL) == idmn) jabound = 1
+            else if (lnn(L) == 2) then
+               if ((idomain(icL) /= idomain(icR)) .and. &
+                   ((idomain(icL) == idmn) .or. (idomain(icR) == idmn))) then
                      jabound = 1
                end if
             end if
             
 !           modify lnn
-            if ( jabound.eq.1 ) then
+            if (jabound == 1) then
                lnn(L) = 1
             else
                lnn(L) = 2
@@ -5713,7 +5710,7 @@ end module m_partitioninfo
 
       call MPI_barrier(DFM_COMM_ALLWORLD,ierr)
 
-      if ( my_rank.eq.0 ) then
+   if (my_rank == 0) then
          write(6,*) "press a key from rank 0..."
          read(5,*)
       end if
@@ -5765,7 +5762,7 @@ end module m_partitioninfo
          allocate(t_max(3,NUMT), t_ave(3,NUMT), tcpu_max(3,NUMT), tcpu_ave(3,NUMT))
 !      end if
 
-      if ( jampi.eq.1 ) then
+   if (jampi == 1) then
 #ifdef HAVE_MPI
 !        reduce timings
          call mpi_reduce(t,t_max,3*NUMT,MPI_DOUBLE_PRECISION,MPI_MAX,0,DFM_COMM_DFMWORLD,ierr)
@@ -5783,18 +5780,18 @@ end module m_partitioninfo
       end if
       
 !     reduce number of iterations
-      if ( jampi.eq.1 ) then
+   if (jampi == 1) then
 #ifdef HAVE_MPI
          call mpi_reduce(numcgits,itsol_max,1,MPI_INTEGER,MPI_MAX,0,DFM_COMM_DFMWORLD,ierr)
 #endif
          jadoit = 0
-         if ( my_rank.eq.0 ) jadoit = 1
+      if (my_rank == 0) jadoit = 1
       else
          itsol_max = numcgits
          jadoit = 1
       end if
       
-      if ( jadoit.eq.1 ) then
+   if (jadoit == 1) then
          inquire(FILE=FNAM,EXIST=Lexist)
          open(newunit=MFILE,FILE=trim(FNAM),access='APPEND')
          
@@ -6046,7 +6043,7 @@ end module m_partitioninfo
 
          xadj_tmp = xadj
          do L=1,numL
-            if ( lnn(L).gt.1 ) then
+         if (lnn(L) > 1) then
                k1 = abs(lne(1,L))
                k2 = abs(lne(2,L))
                adjncy(xadj_tmp(k1)) = k2
@@ -6159,21 +6156,21 @@ end module m_partitioninfo
 
       call cosphiunetcheck(1)
 
-      if ( NPL.gt.1 ) then ! use the polygons
+   if (NPL > 1) then ! use the polygons
          call generate_partitioning_from_pol()
       else  ! use metis
          Ndomains = 0
-         do while ( Ndomains.lt.1 )
+      do while (Ndomains < 1)
             call getint('Number of domains', Ndomains)
          end do
          method = -1
-         do while ( method.lt.0 .or. method.gt.3 )
+      do while (method < 0 .or. method > 3)
              method = 1
              call getint('Partition method? (1: K-Way, 2: Recursive bisection, 3: Mesh-dual)', method) ! default method is K-way
          enddo
          jacontiguous = -1
-         if ( method.eq.1 .or. method .eq. 0) then ! K-Way (default) method enables contiguous
-             do while ( jacontiguous.ne.0 .and. jacontiguous.ne.1 )
+      if (method == 1 .or. method == 0) then ! K-Way (default) method enables contiguous
+         do while (jacontiguous /= 0 .and. jacontiguous /= 1)
                 jacontiguous = 1
                 call getint('Enforce contiguous domains? (0:no, 1:yes)', jacontiguous)
              enddo
@@ -6181,15 +6178,15 @@ end module m_partitioninfo
          call partition_METIS_to_idomain(Ndomains, jacontiguous, method, 0)
       
          japolygon = -1
-         do while (japolygon.ne.1 .and. japolygon.ne.0)
+      do while (japolygon /= 1 .and. japolygon /= 0)
              japolygon = 0
              call getint('Generate polygon? (0: no, 1: yes)', japolygon)
          enddo
-         if ( japolygon.eq.1 ) then
+      if (japolygon == 1) then
 !            generate partitioning polygons
              call generate_partition_pol_from_idomain(ierror)
          
-             if ( ierror.eq.0 ) then
+         if (ierror == 0) then
 !               get 1D domain numbers from polygons
                 call partition_pol_to_idomain(2)
              else
@@ -6206,7 +6203,7 @@ end module m_partitioninfo
       
 !     count and output number of cells
       do i=0,ndomains-1
-         numndx(i) = count(idomain.eq.i)
+      numndx(i) = count(idomain == i)
          write(message, "('domain', I5, ' contains', I7, ' cells.')") i, numndx(i)
          call mess(LEVEL_INFO, message)
       end do
@@ -6288,7 +6285,7 @@ end module m_partitioninfo
 #endif
       call flush(6)
 
-      if ( my_rank.eq.0 ) then
+   if (my_rank == 0) then
          write(6,*) trim(mesg)
       end if
 
@@ -6391,7 +6388,7 @@ end module m_partitioninfo
       itag = 2
       
 !     get subdomain numbers in netcell  
-      if ( npartition_pol.gt.0 ) then
+   if (npartition_pol > 0) then
          call partition_pol_to_idomain(1,jafindcells=0)
       endif
       
@@ -6410,10 +6407,10 @@ end module m_partitioninfo
 !     count number of requested boundary links from other subdomains
       Nbnd = 0
       do L=1,numL
-         if ( kce(L).eq.1 ) then
+      if (kce(L) == 1) then
             Nbnd = Nbnd+1
             idmn = idomain(ke(L))
-            if ( idmn.ne.my_rank .and. idmn.ge.0 .and. idmn.le.ndomains-1 ) then
+         if (idmn /= my_rank .and. idmn >= 0 .and. idmn <= ndomains - 1) then
                numrequest_loc(idmn) = numrequest_loc(idmn)+1
             end if
          end if
@@ -6426,15 +6423,15 @@ end module m_partitioninfo
       nrequest = 0   ! number of outgoing requests
       istart = 1     ! start index in xysnd
       do other_domain=0,ndomains-1
-         if ( other_domain.eq.my_rank ) cycle
+      if (other_domain == my_rank) cycle
          num = numrequest(other_domain, my_rank)
-         if ( num.lt.1 ) cycle
+      if (num < 1) cycle
          
 !        get link center coordinates
          num = 0
          do L=1,numL
-            if ( kce(L).eq.1 ) then
-               if ( idomain(ke(L)).eq.other_domain ) then
+         if (kce(L) == 1) then
+            if (idomain(ke(L)) == other_domain) then
                   k3 = kn(1,L)
                   k4 = kn(2,L)
                   xysnd(1,istart+num) = 0.5d0*(xk(k3)+xk(k4))
@@ -6467,13 +6464,13 @@ end module m_partitioninfo
 !         end if
 !        END DEBUG
          
-         if ( num.lt.1 ) cycle
+      if (num < 1) cycle
 !        get message length
          call mpi_probe(other_domain,itag,DFM_COMM_DFMWORLD,istat,ierror)
          call mpi_get_count(istat,mpi_double_precision,icount,ierror)
          
 !        check message length (safety)
-         if ( icount.ne.3*num ) then
+      if (icount /= 3 * num) then
             write(str, *) 'partition_reduce_mirrorcells: icount.ne.3*num, domain: ', my_rank, ', other domain: ', other_domain, ' icount: ', icount, ', 3*num: ', 3*num
             call mess(LEVEL_ERROR, str)
          end if
@@ -6490,13 +6487,13 @@ end module m_partitioninfo
          numfound = 0
          call klok(t2)
    Lloop:do L=1,numL
-            if ( kce(L).ne.1 ) cycle  ! boundary links only
-            if ( idomain(ke(L)).ne.my_rank ) cycle  ! in own domain only
+         if (kce(L) /= 1) cycle ! boundary links only
+         if (idomain(ke(L)) /= my_rank) cycle ! in own domain only
 
             do i=1,num
-               if ( jafound(i).eq.1 ) cycle
+            if (jafound(i) == 1) cycle
                
-               if ( int(xyrec(3,i)).ne.kn(3,L) ) cycle   ! check netlink type
+            if (int(xyrec(3, i)) /= kn(3, L)) cycle ! check netlink type
                
 !              get netlink coordinates
                k3 = kn(1,L)
@@ -6506,11 +6503,11 @@ end module m_partitioninfo
                
 !              measure distance
                dis = dbdistance(xL,yL,xyrec(1,i),xyrec(2,i),jsferic, jasfer3D, dmiss)
-               if ( dis.lt.dtol ) then ! found
+            if (dis < dtol) then ! found
                   kcesnd(istart-1+i)  = 1
                   jafound(i) = 1
                   numfound = numfound+1
-                  if ( numfound.ge.num ) exit Lloop
+               if (numfound >= num) exit Lloop
                end if
             end do
          end do Lloop
@@ -6555,13 +6552,13 @@ end module m_partitioninfo
 !     recieve kcesnd from other domains
       do other_domain=0,ndomains-1
          num = numrequest(other_domain,my_rank)
-         if ( num.lt.1 ) cycle
+      if (num < 1) cycle
 !        get message length
          call mpi_probe(other_domain,itag,DFM_COMM_DFMWORLD,istat,ierror)
          call mpi_get_count(istat,mpi_integer,icount,ierror)
          
 !        check message length (safety)
-         if ( icount.ne.num ) then
+      if (icount /= num) then
             write(str, *) 'partition_reduce_mirrorcells: icount.ne.num, domain: ', my_rank, ', other domain: ', other_domain, ' icount: ', icount, ', num: ', num
             call mess(LEVEL_ERROR, str)
          end if
@@ -6575,10 +6572,10 @@ end module m_partitioninfo
 !        update kce
          num = 0
          do L=1,numL
-            if ( kce(L).eq.1 ) then
-               if ( idomain(ke(L)).eq.other_domain ) then
+         if (kce(L) == 1) then
+            if (idomain(ke(L)) == other_domain) then
                   num = num+1
-                  if ( kce(L).ne.kcerec(num) ) then
+               if (kce(L) /= kcerec(num)) then
 !                     write(str, "('my_rank: ', I0, ' setting kce(',I0,') = ', I0, ' (was: ',I0,'). And ke(',I0,') = ', I0, ', with idomain(ke(L))=',I0,'.')") my_rank, L, kcerec(num), kce(L), L, ke(L), idomain(ke(L))
 !                     call mess(LEVEL_INFO, trim(str))
                      numdisabled = numdisabled+1
@@ -6594,7 +6591,7 @@ end module m_partitioninfo
          call mpi_wait(irequest(i),istat,ierror)
       end do
       
-      if ( numdisabled.gt.0 ) then
+   if (numdisabled > 0) then
          write(str, "('disabled ', I0, ' boundary links')") numdisabled
          call mess(LEVEL_INFO, trim(str))
       end if
@@ -6644,7 +6641,7 @@ end module m_partitioninfo
          do n=L1qbnd(nq),L2qbnd(nq)  ! apart
             ki = kbndu(2,n)
             
-            if ( idomain(ki).ne.my_rank ) then
+         if (idomain(ki) /= my_rank) then
                japartqbnd = 1
                exit mnlp
             end if
@@ -6685,7 +6682,7 @@ end module m_partitioninfo
       
       ierror = 1
       
-      if ( jacheck.eq.1 .and. Lnx.gt.Lnxi ) then
+   if (jacheck == 1 .and. Lnx > Lnxi) then
 !        check if all ghost boundary flowlinks are being update
          allocate(Lbndmask(1:Lnx-Lnxi+1))
          Lbndmask = 0
@@ -6693,15 +6690,15 @@ end module m_partitioninfo
 !        mask updated boundary flowlinks         
          do i=1,nghostlist_u(ndomains-1)
              L = ighostlist_u(i)
-             if ( L.gt.Lnxi ) then
+         if (L > Lnxi) then
                 Lbndmask(L-Lnxi+1) = 1
              end if
          end do
          
 !        check if all ghost boundary flowlinks are being updated
          do L=Lnxi+1,Lnx   ! boundary links
-            if ( idomain(ln(2,L)).ne.my_rank ) then   ! ghost link
-               if ( Lbndmask(L-Lnxi+1).ne.1 ) then ! not masked
+         if (idomain(ln(2, L)) /= my_rank) then ! ghost link
+            if (Lbndmask(L - Lnxi + 1) /= 1) then ! not masked
                   call mess(LEVEL_ERROR, 'update_ghostboundvals: not all ghost boundary flowlinks are being updated')
                   goto 1234
                end if
@@ -6716,13 +6713,13 @@ end module m_partitioninfo
       call realloc(dum, NDIM*Lnx, fill=DMISS)
       
 !     fill internal boundary-node values with boundary values
-      if ( itype.eq.ITYPE_S .or. itype.eq.ITYPE_Sall ) then
+   if (itype == ITYPE_S .or. itype == ITYPE_Sall) then
          do L=Lnxi+1,Lnx
             do i=1,NDIM
                dum(NDIM*(L-1)+i)=var(NDIM*(ln(1,L)-1)+i)
             end do
          end do
-      else if ( itype.eq.ITYPE_U ) then
+   else if (itype == ITYPE_U) then
          do L=Lnxi+1,Lnx
             do i=1,NDIM
                dum(NDIM*(L-1)+i)=var(NDIM*(L-1)+i)
@@ -6735,16 +6732,16 @@ end module m_partitioninfo
       
 !     update ghost values
       call update_ghosts(ITYPE_U, NDIM, Lnx, dum, ierror)
-      if ( ierror.ne.0 ) goto 1234
+   if (ierror /= 0) goto 1234
       
 !     copy internal boundary-node values to boundary values   
-      if ( itype.eq.ITYPE_S .or. itype.eq.ITYPE_Sall ) then
+   if (itype == ITYPE_S .or. itype == ITYPE_Sall) then
          do L=Lnxi+1,Lnx
             do i=1,NDIM
                var(NDIM*(ln(1,L)-1)+i)=dum(NDIM*(L-1)+i)
             end do
          end do
-      else if ( itype.eq.ITYPE_U ) then
+   else if (itype == ITYPE_U) then
          do L=Lnxi+1,Lnx
             do i=1,NDIM
                var(NDIM*(L-1)+i)=dum(NDIM*(L-1)+i)

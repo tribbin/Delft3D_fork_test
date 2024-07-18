@@ -84,7 +84,7 @@ module m_waves
 
  double precision                           :: facmax               !< maximum wave force
  double precision                           :: JONSWAPgamma0=3.3    !< Peak enhancement factor JONSWAP
- 
+
  ! for visualisation
  integer                                    :: waveparopt
  integer                                    :: numoptwav

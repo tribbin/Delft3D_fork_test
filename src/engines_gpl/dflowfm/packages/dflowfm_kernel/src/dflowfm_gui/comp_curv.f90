@@ -71,7 +71,7 @@ subroutine comp_curv(num, xsp, ysp, xsp2, ysp2, s, curv, dnx, dny, dsx, dsy)
    xpp = A*xsp2(iL) + B*xsp2(iR)
    ypp = A*ysp2(iL) + B*ysp2(iR)
 
-   if ( jsferic.eq.1 ) then
+   if (jsferic == 1) then
       csy = cos(dg2rd*y)
       xp  = xp  * dg2rd*Ra*csy
       xpp = xpp * dg2rd*Ra*csy

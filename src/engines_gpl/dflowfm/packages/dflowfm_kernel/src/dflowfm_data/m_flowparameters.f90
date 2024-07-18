@@ -727,7 +727,7 @@ subroutine default_flowparameters()
     jaSELFALcorrectWLwithIni = 0   !< correct water level with initial atmospheric pressure in SAL
 
     ! DOODSONSTART = 55.565D0 ; DOODSONSTOP = 375.575D0 ; Doodsoneps = .00D0    ! standaard TRIWAQ alle 484 cmp
-      DOODSONSTART = 55.565D0 ; DOODSONSTOP = 375.575D0 ; Doodsoneps = .00D0    !
+      DOODSONSTART = 55.565d0; DOODSONSTOP = 375.575d0; Doodsoneps = .00d0 !
     ! DOODSONSTART = 57.555D0 ; DOODSONSTOP = 275.555D0 ; Doodsoneps = .03D0    ! Delft3D
 
     jasecflow = 0     ! include secondary flow (0=no, 1=yes)

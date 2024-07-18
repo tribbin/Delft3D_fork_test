@@ -723,6 +723,7 @@ subroutine readMDUFile(filename, istat)
     use m_bedform, only: bfm_included
     use m_debug
     use m_fm_icecover, only: fm_ice_read
+    use m_f1dimp, only: f1dimppar
     use m_sediment
     use m_waves, only: hwavuni, twavuni, phiwavuni
     use m_sedtrails_data, only: sedtrails_analysis
@@ -732,7 +733,7 @@ subroutine readMDUFile(filename, istat)
     use m_read_statistical_output, only: read_output_parameter_toggle
     use fm_deprecated_keywords, only: deprecated_mdu_keywords
     use m_deprecation, only: check_file_tree_for_deprecated_keywords
-    use m_f1dimp, only: f1dimppar
+
     use m_map_his_precision
 
     character(*), intent(in)  :: filename !< Name of file to be read (the MDU file must be in current working directory).
@@ -1189,7 +1190,7 @@ subroutine readMDUFile(filename, istat)
  
     call prop_get_integer(md_ptr, 'numerics', 'EnableJRE', jajre)
 
-      if (icgsolver == 8) then   ! for parms solver
+      if (icgsolver == 8) then ! for parms solver
        do i=1,NPARMS_INT
           call prop_get_integer(md_ptr, 'numerics', trim(iparmsnam(i)), iparms(i))
        end do
@@ -1266,7 +1267,7 @@ subroutine readMDUFile(filename, istat)
     call prop_get(md_ptr, 'numerics', 'Oceaneddyvel'        , Oceaneddyvel)
     call prop_get(md_ptr, 'numerics', 'Oceaneddyyoff'       , Oceaneddyyoff)
     call prop_get(md_ptr, 'numerics', 'Oceaneddyxoff'       , Oceaneddyxoff)
-
+    
     call prop_get_string ( md_ptr, 'numerics', 'FlowSolver',  md_flow_solver,      success)
     call str_lower(md_flow_solver)
     select case (md_flow_solver)
@@ -2274,7 +2275,7 @@ subroutine readMDUFile(filename, istat)
        jaeulervel = 0
     endif
     !
-      if (jawave == 4) then    ! not for Delta Shell
+      if (jawave == 4) then ! not for Delta Shell
        call prop_get_integer(md_ptr, 'output', 'AvgWaveQuantities'    , jaavgwavquant)
        call prop_get_string(md_ptr,  'output', 'AvgWaveQuantitiesFile', md_avgwavquantfile, success)
        ti_wav_array=0d0
@@ -2298,7 +2299,7 @@ subroutine readMDUFile(filename, istat)
 
        call prop_get_integer(md_ptr, 'output', 'MomentumBalance'    , jamombal, success)
        call prop_get_integer(md_ptr, 'output', 'AvgWaveWriteAll'    , jaavgwriteall, success)
-         if (success .and. jaavgwriteall == 0) then    ! else don't bother, everything written anyway
+         if (success .and. jaavgwriteall == 0) then ! else don't bother, everything written anyway
            call prop_get_integer(md_ptr, 'output', 'AvgWaveWriteH'    , jaavgwriteH    , success)   ! height
            call prop_get_integer(md_ptr, 'output', 'AvgWaveWriteE'    , jaavgwriteE    , success)   ! energy
            call prop_get_integer(md_ptr, 'output', 'AvgWaveWriteR'    , jaavgwriteR    , success)   ! roller
@@ -3183,7 +3184,7 @@ endif
        call prop_set(prop_ptr, 'numerics', 'Rhointerfaces', jarhointerfaces,'Evaluate rho at interfaces, 0=org at centers, 1=at interfaces )')
     endif
   
-      if (icgsolver == 8) then   ! for parms solver
+      if (icgsolver == 8) then ! for parms solver
        do i=1,NPARMS_INT
           call prop_set_integer(prop_ptr, 'numerics', trim(iparmsnam(i)), iparms(i), '0: parms-default')
        end do
@@ -3561,6 +3562,7 @@ endif
        call prop_set(prop_ptr, 'hydrology', 'InterceptionModel', interceptionmodel, 'Interception model (0: none, 1: on, via layer thickness)')
     end if
 
+   ! JRE -> aanvullen, kijken wat aangeleverd wordt
     if (writeall .or. jawave > 0) then
        call prop_set(prop_ptr, 'waves', 'Wavemodelnr',         jawave,         'Wave model nr. (0: none, 1: fetch/depth limited hurdlestive, 2: Young-Verhagen, 3: SWAN, 5: uniform, 6: SWAN-NetCDF, 7: Offline Wave Coupling')
        call prop_set(prop_ptr, 'waves', 'Rouwav',              rouwav,         'Friction model for wave induced shear stress: FR84 (default) or: MS90, HT91, GM79, DS88, BK67, CJ85, OY88, VR04')

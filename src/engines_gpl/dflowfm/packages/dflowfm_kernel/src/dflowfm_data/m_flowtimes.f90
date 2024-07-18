@@ -304,7 +304,7 @@ subroutine reset_flowtimes()
     time_waqset  = tstart_user       !< next time for reset the quantities for waq output
     time_waqproc = tstart_user+ti_waqproc !< next time for wq processes
     time_mba     = tstart_user+ti_mba !< next time for balance update
-    if ( ti_stat.gt.0d0 ) then
+      if (ti_stat > 0d0) then
        time_stat    = tstart_user    !< next model time for simulation statistics output
     else
        time_stat    = 0d0            !< next wall-clock time for simulation statistics output
