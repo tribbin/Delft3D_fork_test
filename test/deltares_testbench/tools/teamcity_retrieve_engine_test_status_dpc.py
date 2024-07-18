@@ -1,7 +1,6 @@
 import argparse
 import getpass
 import os
-import shutil
 import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime
@@ -270,12 +269,18 @@ def get_engine_cases_from_url(url: str, username: str, password: str, given_buil
     """
     engine_req = get_request(url, username, password)
     if not text_in_xml_message(engine_req.text):
-        return EngineCaseList("", [ConfigurationInfo("", "")])
+        return EngineCaseList("", [])
     xml_engine_root = ET.fromstring(engine_req.text)
     engine_name = xml_engine_root.attrib["name"]
+
+    if "Experimental" in engine_name:
+        print(f"\tSkip {engine_name}")
+        return EngineCaseList("", [])
+    else:
+        print(f"\tRetrieving {engine_name}")
+
     case_list = get_configuration_info(xml_engine_root, given_build_config)
-    if len(case_list) != 0:
-        print(f"\tRetrieved {engine_name}")
+
     return EngineCaseList(engine_name, case_list)
 
 
@@ -293,8 +298,8 @@ def get_test_result_list(
 
     for case_info in engine_cases.list:
         identifier = case_info.identifier
-        url = f"{BASE_URL}/httpAuth/app/rest/builds?locator=buildType:(id:{identifier}),defaultFilter:false,branch:<default>&count=1&fields=count,build(number,statistics,status,statusText,testOccurrences,agent,lastChange,tags(tag),pinned,revisions(revision))"
 
+        url = f"{BASE_URL}/httpAuth/app/rest/builds?locator=buildType:(id:{identifier}),defaultFilter:false,branch:<default>&count=1&fields=count,build(number,statistics,status,statusText,testOccurrences,agent,lastChange,tags(tag),pinned,revisions(revision))"
         case_req = get_request(url, username, password)
         if not text_in_xml_message(case_req.text):
             return 1
@@ -413,7 +418,11 @@ def get_configuration_info(xml_engine_root: ET.Element, given_build_config: str)
         for build_type in build_types:
             build_id = build_type.attrib["id"]
             if not given_build_config or build_id in given_build_config:
-                result.append(ConfigurationInfo(build_type.attrib["name"], build_id))
+                build_name = build_type.attrib["name"]
+                if "Not in DIMR-Release" in build_name:
+                    print(f"\tSkip {build_name}")
+                    continue
+                result.append(ConfigurationInfo(build_name, build_id))
     return result
 
 
@@ -474,7 +483,12 @@ def get_tree_entire_engine_test_results(
     engines = []
     for projects_node in project_text.findall("projects"):
         for project in projects_node:
-            engines.append(ConfigurationInfo(project.attrib["name"], project.attrib["id"]))
+            engine_name = project.attrib["name"]
+            if project_is_archived(project):
+                print(f"Skip archived {engine_name}")
+                continue
+
+            engines.append(ConfigurationInfo(engine_name, project.attrib["id"]))
 
     engine_results = []
     for engine in engines:
@@ -495,6 +509,7 @@ def get_tree_entire_engine_test_results(
         for projects_node in xml_engine_root.findall("projects"):
             for project in projects_node:
                 project_info = ConfigurationInfo(project.attrib["name"], project.attrib["id"])
+
                 url_3 = f"{PROJECTS_URL}{project_info.identifier}"
                 level_req = get_request(url_3, username, password)
                 if not text_in_xml_message(level_req.text):
@@ -511,6 +526,10 @@ def get_tree_entire_engine_test_results(
         if engine_cases.has_cases() or sub_engine_cases.has_cases():
             engine_results.append(EngineTestResult(engine.name, test_results, sub_test_result))
     return TreeResult(tree_name, engine_results)
+
+def project_is_archived(project: ET.Element) -> bool:
+    """Determine if project is archived."""
+    return bool(project.attrib.get("archived", False))
 
 
 def log_executive_summary(log_file: TextIOWrapper, summarydata: ExecutiveSummary) -> None:
