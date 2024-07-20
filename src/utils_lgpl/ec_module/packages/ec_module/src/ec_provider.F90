@@ -408,6 +408,8 @@ contains
          else
             call setECMessage("ERROR: ec_provider::ecProviderCreateItems: NetCDF requires a quantity name.")
          end if
+      case (provFile_t3D)
+         success = ecProviderCreatet3DItems(instancePtr, fileReaderPtr)
       case default
          call setECMessage("ERROR: ec_provider::ecProviderCreateItems: Unknown file type.")
       end select
