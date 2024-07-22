@@ -118,7 +118,6 @@ contains
       double precision, intent(in) :: global_value !< Global value
       character(len=*), intent(in) :: ini_file_name !< Name of ini file, used for error messages
 
-      integer :: i
       integer, parameter :: enum_water_level = 0
       integer, parameter :: enum_water_depth = 1
       integer :: water_specifier
@@ -191,11 +190,9 @@ contains
       character(len=ini_value_len) :: varname
       character(len=ini_value_len) :: global_water_level_quantity
       integer :: num_items_in_file
-      logical :: retVal
       character(len=255) :: fnam, filename
       character(len=255) :: basedir
-      integer :: i, j, ib, L, iprimpos, kc_size_store, mx, k1, k2, ja
-      integer, allocatable :: kcc(:), kc1D(:), kc2D(:)
+      integer :: i, ib, ja
       integer :: method, iloctype, filetype, ierr_loc
       logical(kind=c_bool), allocatable :: specified_water_levels(:) !< indices where waterlevels are specified with non-global values
       logical(kind=c_bool), allocatable :: specified_indices(:)
@@ -409,7 +406,6 @@ contains
       character(len=*), intent(out), optional :: smask !< Name of mask-file applied to source arcinfo meteo-data
       double precision, intent(out), optional :: maxSearchRadius !< max search radius for method == 11
 
-      integer :: istat
       integer, parameter :: ini_key_len = 32
       integer, parameter :: ini_value_len = 256
       character(len=ini_value_len) :: dataFileType
@@ -606,7 +602,6 @@ contains
 
 !> Read the global section of the 1dField file
    subroutine init_1d_field_read_global(field_ptr, ini_field_file_name, ini_file_name, intended_quantity, value, value_provided, num_errors)
-      use m_missing, only: dmiss
       use tree_data_types, only: tree_data
 
       type(tree_data), pointer, intent(in) :: field_ptr !< tree of inifield-file's [Initial] or [Parameter] blocks
@@ -737,7 +732,6 @@ contains
       double precision, allocatable :: chainage(:) !
       integer :: num_items_in_file !
       logical :: retVal !
-      character(len=ini_value_len) :: fnam !
       integer :: ib, i, numerr !
 
       ierr = DFM_NOERR
@@ -926,7 +920,7 @@ contains
       use m_network
       use m_inquire_flowgeom
       use unstruc_channel_flow
-      use m_flowgeom, only: ndxi, ndx2d
+      use m_flowgeom, only: ndx2d
       use m_flowparameters, only: eps10
       use precision_basics
       use m_hash_search
@@ -940,7 +934,7 @@ contains
       double precision, intent(inout) :: res(:) !< Flow state array into which the interpolated values will be stored. Should be only the 1D slice (especially in the case of ipos==2, flow nodes).
       logical(kind=c_bool), intent(inout) :: modified_elements(:) !< true for every index for which res was set
 
-      integer :: nbrstart, nbrend, ibr, k, j, i, ierr, ipre, ns, ncount
+      integer :: nbrstart, ibr, k, j, i, ipre, ns, ncount
       integer :: is, ip1, ip2, ipe
       type(t_branch), pointer :: pbr
       double precision :: chai, sChaiPrev, sChai, sValPrev, sVal, minsChai, maxsChai

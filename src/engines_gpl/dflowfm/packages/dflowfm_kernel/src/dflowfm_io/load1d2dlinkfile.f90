@@ -33,7 +33,6 @@
    !> Reads custom parameters for 1D2D links from a *.ini file,
    !! and assigns them to the correct flow links.
    subroutine load1D2DLinkFile(filename)
-      use m_missing, only: dmiss
       use string_module, only: strcmpi
       use m_flowgeom, only: lnx1d, kcu, wu1D2D, hh1D2D, xz, yz, ndx, ln, lnx, lnx1D
       use m_inquire_flowgeom
@@ -65,7 +64,6 @@
       integer :: loc_spec_type
 
       integer :: numcontactblocks, numok
-      character(len=IdLen) :: buf
       integer, allocatable :: ke1d2dprops(:)
       integer :: num1d2dprops
       integer :: LL, Lf

@@ -1078,7 +1078,7 @@ contains
       double precision, allocatable, intent(in) :: zpl(:) !< (numlinks+1) Bed level on the long culvert support points
       integer, intent(out) :: iref !< Index of reference cross section definition (if csdefId was found)
 
-      integer :: j, k
+      integer :: k
       integer :: inext
       integer :: indx
       type(t_CrossSection), pointer :: pCrs

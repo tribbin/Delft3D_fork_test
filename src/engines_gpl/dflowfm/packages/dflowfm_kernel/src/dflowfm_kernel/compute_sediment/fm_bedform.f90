@@ -50,10 +50,10 @@ contains
       use precision
       use m_bedform
       use m_sediment, only: sedtra, stmpar, stm_included
-      use m_physcoef, only: ag, rhomean, backgroundwatertemperature, vismol
-      use m_flowgeom, only: ndxi, ndx, lnx, lnxi, kfs, ln, wcl, bl
-      use m_flowparameters, only: epshs, jawave, epshu, flowWithoutWaves
-      use m_flow, only: ucx, ucy, frcu, ifrcutp, hu, hs, u1, u0, s1, ucx_mor, ucy_mor, lnkx, z0ucur
+      use m_physcoef, only: ag, rhomean, vismol
+      use m_flowgeom, only: ndxi, ndx, lnx, lnxi, ln, wcl, bl
+      use m_flowparameters, only: epshs, jawave, flowWithoutWaves
+      use m_flow, only: frcu,ifrcutp,hu, u1,s1, ucx_mor, ucy_mor, lnkx
       use m_flowtimes
       use m_waves
       !
@@ -80,14 +80,10 @@ contains
 ! Local variables
 !
       integer :: nm
-      integer :: ken
       integer :: kb, kt, k1, k2, ki
       integer :: ierr
       integer :: L
       real(fp) :: depth
-      real(fp) :: uuub
-      real(fp) :: vvvb
-      real(fp) :: umodb
       real(fp) :: dstar
       real(fp) :: thetac
       real(fp) :: ucbsv2
@@ -294,9 +290,9 @@ contains
       use m_bedform
       use m_sediment, only: stmpar, sedtra
       use m_physcoef, only: ag
-      use m_flowtimes, only: dts, dnt, time1, tfac, dt_user, tstart_user
-      use m_flowgeom, only: ndxi, lnxi, ndx, lnx, kfs, wcx1, wcx2, wcy1, wcy2, ln, wu, nd, ba
-      use m_flow, only: hs, hu, u1, v, au, plotlin, kmx
+      use m_flowtimes, only: dts, time1, tfac, dt_user, tstart_user
+      use m_flowgeom, only: ndxi, lnxi, ndx, lnx, wcx1, wcx2, wcy1, wcy2, ln, wu, nd, ba
+      use m_flow, only: hs, hu, u1, v, kmx
       use m_flowparameters, only: epshu, epshs
       use unstruc_files, only: mdia
       use m_alloc
@@ -319,7 +315,7 @@ contains
       integer :: kk
       real(fp) :: hdtb, hdtb_max, nsteps
       real(fp) :: hpow
-      real(fp) :: cflcheck, dtsori
+      real(fp) :: dtsori
       real(fp) :: T_relax !< bedform relaxation time in seconds
       real(fp) :: phi
       real(fp) :: gamma
@@ -331,9 +327,7 @@ contains
       real(fp) :: vmean
       real(fp) :: dum
       real(fp) :: qbf
-      character(256) :: errmsg
       integer, pointer :: bdfrlxtype
-      integer, pointer :: itmor
       integer, pointer :: lsedtot
       logical, pointer :: lfbdfmor
       logical, pointer :: lfbedfrm
@@ -348,7 +342,6 @@ contains
       real(fp), pointer :: bdfPmax
       real(fp), pointer :: bedformL_H
       real(fp), pointer :: bedformT_H
-      real(fp), pointer :: dryflc
       real(fp), pointer :: morfac
       real(fp), pointer :: tcmp
       real(fp), dimension(:), pointer :: cdpar
@@ -358,8 +351,6 @@ contains
       real(fp), dimension(:), pointer :: qbedformn
       real(fp), dimension(:), pointer :: qbedformt
       real(fp), dimension(:), pointer :: ubedform
-      integer, dimension(:, :), pointer :: ibtyp
-      real(fp), dimension(:, :), pointer :: bval
       real(fp), dimension(:, :), pointer :: e_sbn
       real(fp), dimension(:, :), pointer :: e_sbt
 
@@ -651,15 +642,14 @@ contains
       use precision
       use sediment_basics_module, only: dsand, dgravel, dsilt
       use m_sferic, only: pi
-      use m_physcoef, only: ag, frcuni, ifrctypuni
+      use m_physcoef, only: ag
       use m_flowtimes, only: dt_user, tfac
-      use m_flow, only: kmx, s1, u1, u0, hs, z0ucur, z0urou, ucx, ucy, frcu, ifrcutp, hu, ucx_mor, ucy_mor, zws, lnkx
-      use m_flowgeom, only: ndx, kfs, bl, ndxi, lnx, lnxi, wcl, ln
-      use m_flowparameters, only: v2dwbl, jatrt, epshs, jawave, flowWithoutWaves, epsz0
+      use m_flow, only: kmx, s1, u1, u0, hs, z0ucur, z0urou, frcu, ifrcutp, hu, ucx_mor, ucy_mor, zws, lnkx
+      use m_flowgeom, only: ndx, bl, ndxi, lnx, lnxi, wcl, ln
+      use m_flowparameters, only: v2dwbl, epshs, jawave, flowWithoutWaves, epsz0
       use m_sediment
       use m_bedform
       use m_rdtrt
-      use m_trachy, only: trachy_fl
       use m_waves
       !
       implicit none
@@ -672,8 +662,6 @@ contains
       integer, pointer :: i90
       integer, pointer :: lsedtot
       real(fp), dimension(:), pointer :: xx
-      integer, pointer :: ntrt
-      integer, dimension(:, :), pointer :: ittdef
       integer, pointer :: bdfrpt
       real(fp), dimension(:), pointer :: bedformD50
       real(fp), dimension(:), pointer :: bedformD90
@@ -684,7 +672,6 @@ contains
       real(fp), dimension(:), pointer :: rksmr
       real(fp), dimension(:), pointer :: rksd
       real(fp), dimension(:, :), pointer :: dxx
-      real(fp), dimension(:, :), pointer :: rttdef
       character(256), pointer :: flsdia
 
       real(fp), parameter :: rwe = 1.65
@@ -696,7 +683,7 @@ contains
       real(fp) :: llabda ! local limited rlabda value
       real(fp) :: maxdepfrac, zcc, zz
       real(fp) :: hh, arg, uw, rr, umax, t1, uu, a11, raih, rmax, uon, uoff, uwbih, depth, umod, u2dh
-      real(fp) :: d50l, d90l, fch2, fcoarse, uwc, psi, rksr0, rksmr0, rksd0, cz_dum, z00
+      real(fp) :: d50l, d90l, fch2, fcoarse, uwc, psi, rksr0, rksmr0, rksd0
       double precision, dimension(:), allocatable :: u0eul
       double precision, dimension(:), allocatable :: z0rou, deltas
 
@@ -1010,10 +997,9 @@ contains
 
    subroutine fm_advecbedform(thevar, uadv, qadv, bedform_sour, bedform_sink, limityp, ierror)
       use m_transport
-      use m_flowgeom, only: Ndx, Ndxi, Lnxi, Lnx, ln, nd, ba, wu ! static mesh information
-      use m_flow, only: Ndkx, Lnkx, au, qw, zws, kbot, ktop, Lbot, Ltop, kmxn, kmxL, kmx, viu, vicwws, plotlin, vol1, epshu
-      use m_flowtimes, only: dts, ja_timestep_auto
-      use m_physcoef, only: dicoww, vicouv, difmolsal
+      use m_flowgeom, only: Ndx, Lnx, ln, ba, wu ! static mesh information
+      use m_flow, only: Ndkx, Lnkx, qw, zws, kbot, ktop, Lbot, Ltop, kmxn, kmxL, kmx, viu, vicwws, plotlin, vol1, epshu
+      use m_flowtimes, only: ja_timestep_auto
       use m_transport
       use m_alloc
       use precision
@@ -1031,7 +1017,7 @@ contains
       integer, intent(in) :: limityp !< limiter type (>0) or upwind (0)
       integer, intent(out) :: ierror !< error (1) or not (0)
 
-      double precision :: dvoli, dumd, dtol
+      double precision :: dvoli, dumd
       integer :: k1, k2
 
       double precision, dimension(:, :), allocatable :: fluxhorbf ! horizontal fluxes

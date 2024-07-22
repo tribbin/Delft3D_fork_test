@@ -37,7 +37,7 @@ subroutine copyCrossSectionsToPol()
    use m_polygon
    use m_alloc
    implicit none
-   integer :: i, ip
+   integer :: i
 
    npl = 0
    call realloc(nampli, ncrs, fill=' ')

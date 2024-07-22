@@ -52,7 +52,6 @@ contains
       character(len=76) :: filnam
 
       logical :: jawel
-      integer :: istat
 
       call initSysEnv() ! Init paths
 
@@ -88,12 +87,10 @@ contains
 
       integer :: larch
       integer :: lendum
-      integer :: lenp
       integer :: lertxt
       integer :: nval
-      character FILNAM * 76
       character errtxt * 8, arch * 10, hlpstr * 999
-      logical JAWEL, d3dhom
+      logical d3dhom
 !-----------------------------------------------------------------------
 !-----Environment variable defined as D3D_HOME-ARCH-PROGNM-
 !     or RGForQN_PATH-
@@ -163,7 +160,6 @@ contains
    subroutine HCACCESS(nval, larch, arch)
       implicit none
       integer :: infoopsystem
-      integer :: l
       integer :: larch
       integer :: lendum
       integer :: nopsys
@@ -198,9 +194,6 @@ contains
       implicit none
       double precision :: croshrsz
       double precision :: dv
-      double precision :: dx
-      double precision :: dxshow
-      double precision :: dy
       integer :: i, INTINIT, ISTAT, maxarctiler, maxsamarcr
       integer :: iblue
       integer :: icl
@@ -210,7 +203,6 @@ contains
       integer :: ihmous
       integer :: ired
       integer :: ivmous
-      integer :: ja
       integer :: jaauto
       integer :: jvga
       integer :: k
@@ -218,7 +210,6 @@ contains
       integer :: limslo
       integer :: limtel
       integer :: limwat
-      integer :: mout
       integer :: ncols
       integer :: ndec
       integer :: ndraw
@@ -232,15 +223,12 @@ contains
       integer :: nvec
       integer :: nxpix
       integer :: nypix, jaopengl_loc
-      double precision :: rmiss
       double precision :: scalesize
-      double precision :: signz
       double precision :: val
       double precision :: vfac
       double precision :: vfacforce
       double precision :: vmax
       double precision :: vmin
-      double precision :: xd
       double precision :: xsc
       double precision :: ysc
       double precision :: tsize
@@ -250,7 +238,6 @@ contains
       character(len=76) :: filnam
       character(len=180) :: inifilename
 
-      character REC * 132
       common / CSPEED / LIMTEL, LIMSLO, LIMWAT, IHMOUS, IVMOUS
       common / INITSCREEN / CROSHRSZ, JVGA, NXPIX, NYPIX, NTXCOLS, NTXROWS
       common / DEPMAX / VMAX, VMIN, DV, VAL(256), NCOLS(256), NV, NIS, NIE, JAAUTO

@@ -39,10 +39,8 @@
     use m_sobekdfm
     implicit none
 
-    double precision :: qwave
-    integer :: k, k1, k2, L
-    integer :: numchanged
-    integer :: iter, ierror
+    integer :: k
+    integer :: ierror
 
     double precision, parameter :: dtol = 1d-16
 

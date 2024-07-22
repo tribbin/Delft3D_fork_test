@@ -903,7 +903,7 @@ contains
       integer :: ierr !< Result status (UG_NOERR==NF90_NOERR if successful).
       integer :: numk1d ! Number of 1D nodes
       integer :: n1d2dcontacts ! Number of 1D2D contacts (exchanges)
-      integer :: k1, k2, L, n1, n2
+      integer :: L, n1, n2
 
       ierr = UG_NOERR
 
@@ -1129,7 +1129,7 @@ contains
       integer, parameter :: missing_value = -999
       integer, dimension(:), allocatable :: node_mapping_table, reverse_node_mapping_table, reverse_edge_mapping_table !< Mapping tables.
       integer :: input_edge_count, output_edge_count, output_node_count, output_face_count, max_nodes_per_face, node_count !< Counters.
-      integer :: i, j, input_edge, output_edge, input_node, output_node, output_face !< Counters.
+      integer :: i, input_edge, output_edge, input_node, output_node, output_face !< Counters.
       integer, dimension(2) :: faces !< Helper array.
       integer, dimension(:, :), allocatable :: input_edge_output_faces !< Helper array.
       integer, dimension(:), allocatable :: face_edge_count, nodes !< Helper arrays.
@@ -1564,7 +1564,7 @@ contains
       use network_data
       use m_partitioninfo, only: is_ghost_node
       use fm_external_forcings_data
-      use m_lateral, only: numlatsg, nodeCountLat, n1latsg, n2latsg, nnlat, lat_ids
+      use m_lateral, only: numlatsg, n1latsg, n2latsg, nnlat, lat_ids
       use unstruc_files
       use m_sferic, only: jsferic, jasfer3D
       use m_missing, only: dmiss, dxymis
@@ -1579,7 +1579,6 @@ contains
       integer :: lunbnd
       character(len=255) :: filename
       double precision :: x1, y1, x2, y2, xn, yn
-      integer :: namelen
       character(len=20) :: sectionname
       !
    !! executable statements -------------------------------------------------------
@@ -1696,7 +1695,6 @@ contains
 !! (.len, .poi, .srf)
    subroutine waq_wri_model_files()
       use m_flowgeom
-      use m_flow, only: Lnkx
       use unstruc_files, only: defaultFilename
 
       implicit none
@@ -1764,8 +1762,7 @@ contains
       !
       integer :: itim !< Time (seconds) since simulation start.
       integer, save :: itim_prev = -1
-      integer :: L, k1, k2
-      !   double precision ::  wrc, cf, cfn, cz, frcn, ar, wa
+      integer :: L
       !
    !! executable statements -------------------------------------------------------
       !
@@ -2570,10 +2567,10 @@ contains
       !
       !           Local variables
       !
-      integer :: i, k, kb, kt, ktx, kk, k1, k2, LL, L, lb, ltx, Lt, num = 0, jacheck = 0
+      integer :: i, k, kb, kt, ktx, kk, k1, k2, LL, L, lb, Lt, num = 0, jacheck = 0
 
       double precision, save, allocatable :: dv(:), dv1(:)
-      double precision :: errvol, qwq
+      double precision :: errvol
       !
    !! executable statements -------------------------------------------------------
       !

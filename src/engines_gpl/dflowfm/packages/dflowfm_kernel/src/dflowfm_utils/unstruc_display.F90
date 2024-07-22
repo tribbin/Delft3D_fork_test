@@ -1,5 +1,4 @@
-
-    !----- AGPL --------------------------------------------------------------------
+!----- AGPL --------------------------------------------------------------------
 !
 !  Copyright (C)  Stichting Deltares, 2017-2024.
 !
@@ -644,7 +643,7 @@ contains
       use m_observations
       use M_FLOWGEOM
       use m_flow
-      use m_transport, only: NUMCONST, itemp, ITRA1, ITRAN, constituents
+      use m_transport, only: itemp, constituents
 
       integer :: n, NN, K, kb, kt
       character*40 :: tex
@@ -1105,13 +1104,10 @@ contains
       use M_SPLINES
       implicit none
       double precision :: aspect
-      double precision :: dx
-      double precision :: dy
       integer :: n
       integer :: ndraw
       double precision :: xcmax, xcmin, xlmax, xlmin, xplmax, xplmin, xsmax, xsmin, xspmax, xspmin
       double precision :: ycmax, ycmin, ylmax, ylmin, yplmax, yplmin, ysmax, ysmin, yspmax, yspmin
-      double precision :: xm, ym
       double precision :: XH(10), YH(10)
       common / DRAWTHIS / ndraw(50)
       call DMINMAX(XLAN, MXLAN, XLMIN, XLMAX, MAXLAN)
@@ -1235,7 +1231,6 @@ contains
       integer :: is, link
       double precision :: icon_rw_size !< Size of plotted icons in real-world coordinates.
       double precision :: x, y
-      character(len=Idlen) :: text
       logical :: active, inview
 
       if (ndrawStructures <= 1) then
@@ -1985,7 +1980,7 @@ subroutine upotukinueaa(upot, ukin, ueaa)
    use m_missing
    implicit none
    double precision :: upot, ukin, ueaa
-   double precision :: vtot, roav, hh, zz, dzz, rhok, bmin
+   double precision :: vtot, roav, zz, rhok, bmin
    integer k, kk
 
    upot = 0d0; ukin = 0d0; ueaa = 0d0; vtot = 0d0; roav = 0d0; bmin = 1d9

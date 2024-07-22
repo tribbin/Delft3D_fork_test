@@ -34,9 +34,8 @@
     use m_grid
     implicit none
     integer :: mthd, mout
-    double precision :: xce, yce, z = 9999d0
+    double precision :: z = 9999d0
     character(len=132) :: rec
-    character(len=1) :: uv
     integer :: m, n, m2, n2, mn, mx, nn, nx, i
 
 10  read (mthd, '(a)', end=999) rec

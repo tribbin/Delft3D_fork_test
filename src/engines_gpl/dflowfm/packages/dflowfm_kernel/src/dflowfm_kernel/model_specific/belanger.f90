@@ -39,7 +39,7 @@
     use m_flow, only: s1, iadvec
 
     implicit none
-    double precision :: chezy, cf, h0, h1, x0, x1, q, u, constant, bot, a, x, hav, slope, h, h3, hc, hc3, he, he3
+    double precision :: chezy, cf, h0, h1, x0, x1, q, constant, bot, a, x, hav, slope, h, h3, hc, hc3, he3
     integer :: k, kb, L
     integer, parameter :: mmax = 100000, num = 200
     double precision, allocatable :: xx(:), ss(:), uu(:)

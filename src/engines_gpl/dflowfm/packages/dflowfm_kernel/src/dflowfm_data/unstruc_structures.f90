@@ -957,7 +957,7 @@ contains
       !< an orifice should be called with istrtypein = ST_ORIFICE, whereas its struct(istru)%type = ST_GENERAL_ST.
       integer, intent(in) :: nstru !< Total number of structures of this structure type
 
-      integer :: i, nNodes, nLinks
+      integer :: i, nNodes
 
       get_total_number_of_geom_nodes = 0
       do i = 1, nstru

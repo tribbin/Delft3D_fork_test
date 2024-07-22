@@ -34,7 +34,7 @@
 subroutine splitlink(xp, yp, L_, dcosmin, jatek, ierror)
    use m_netw
    use network_data, only: xzw, yzw
-   use m_flowgeom, only: ndx, xz, yz, ba
+   use m_flowgeom, only: xz, yz, ba
    use unstruc_colors, only: ncoldn
    use geometry_module, only: dbdistance, dcosphi
    use m_sferic, only: jsferic, jasfer3D, dtol_pole
@@ -58,10 +58,10 @@ subroutine splitlink(xp, yp, L_, dcosmin, jatek, ierror)
    integer :: L ! link number
    integer :: ic1, icL, icR ! cell numbers
    integer :: LL, LR ! left and right connected links
-   integer :: Ln1, Ln2, LnL, LnR ! new links
-   integer :: kk, kkk, kk1, kk2, kk3, kkL, kkR
-   integer :: k1, k2, k3, kp, kotherL, kotherR
-   integer :: i, N, kL, kR, Lk, kLL, kRR, LnLL, LnRR
+   integer :: LnL, LnR ! new links
+   integer :: kk1, kkL, kkR
+   integer :: k1, k2, k3, kp
+   integer :: i, N, kL, kR, kLL, kRR, LnLL, LnRR
    integer :: idum, icLL, icRR, kLLL, kRRR, numnew
    integer :: N2Dcells
 
@@ -426,7 +426,7 @@ contains
       integer, dimension(Nrep), intent(in) :: iarep !< array to be inserted
 
       integer, dimension(N + Nrep - 1) :: idum
-      integer :: k, kk, knew
+      integer :: k, knew
 
       logical :: Ldone
 

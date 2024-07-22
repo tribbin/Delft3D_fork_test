@@ -75,8 +75,6 @@
 
       character TEX * 26, WRDKEY * 40, fnam * 255
 
-      integer :: iii
-
       if (jampi == 1) then
          write (tex, "(' EDITPOL:', I5)") my_rank
       else

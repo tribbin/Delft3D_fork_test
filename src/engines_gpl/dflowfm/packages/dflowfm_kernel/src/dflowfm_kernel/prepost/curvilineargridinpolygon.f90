@@ -70,7 +70,6 @@
          integer :: npo
          integer :: nr
          common / drawthis / ndraw(50)
-         double precision :: dprodin
 
          double precision, allocatable :: XH(:, :), YH(:, :)
 

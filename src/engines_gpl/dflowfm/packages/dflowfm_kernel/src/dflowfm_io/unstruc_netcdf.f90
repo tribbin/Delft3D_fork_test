@@ -7998,7 +7998,6 @@ contains
       integer :: ierr
 
       integer :: nn
-      integer :: numk2d
       double precision, allocatable :: array_on_file(:)
 
       allocate (array_on_file(numk))
@@ -13099,7 +13098,7 @@ contains
       integer :: sedtot_read, sedsus_read, nlyr_read
       integer :: kloc, kk, itmp, i, iconst, iwqbot, nm, Lf, j, k
       integer :: iostat
-      logical :: fname_has_date, mdu_has_date
+      logical :: mdu_has_date
       integer, allocatable :: maptimes(:)
       logical :: file_exists
       double precision, allocatable :: max_threttim(:)
@@ -13120,7 +13119,6 @@ contains
       integer :: jamergedmap_same_bu
       integer :: tmp_loc
       integer :: numl1d
-      integer :: nrlay
 
       character(len=8) :: numformat
       character(len=2) :: numtrastr, numsedfracstr
@@ -18365,7 +18363,7 @@ contains
       double precision, allocatable, intent(in) :: rho(:)
 
 !local
-      integer :: kk, kt, nlayb, nrlay, ierr, ndxbnd
+      integer :: ierr, ndxbnd
 
       if (jampi == 0) then
          ndxbnd = ndx - ndxi

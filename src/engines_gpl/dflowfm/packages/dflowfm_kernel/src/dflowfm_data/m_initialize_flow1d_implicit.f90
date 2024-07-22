@@ -478,7 +478,7 @@ contains
    subroutine inifm1dimp_lob(iresult)
 
       use m_f1dimp
-      use m_flowgeom, only: ndx, lnx, lnx1D, ln, nd, tnode, lnxi, lnx1Db
+      use m_flowgeom, only: ndx, lnx, ln, nd, tnode, lnxi, lnx1Db
       use unstruc_channel_flow, only: network
       use unstruc_messages
       use m_fm_erosed, only: link1sign2, ndx_mor, lnx_mor, lnxi_mor, ndxi_mor, ln_mor, nd_mor, ndkx_mor

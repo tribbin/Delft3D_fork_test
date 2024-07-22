@@ -35,7 +35,7 @@ subroutine flow_dredgeinit()
    use dredge_data_module, only: initdredge
    use m_fm_dredge, only: fm_rddredge
    use unstruc_model, only: md_dredgefile
-   use m_sediment, only: stm_included, jased
+   use m_sediment, only: stm_included
    use MessageHandling, only: mess, LEVEL_FATAL
 
    implicit none

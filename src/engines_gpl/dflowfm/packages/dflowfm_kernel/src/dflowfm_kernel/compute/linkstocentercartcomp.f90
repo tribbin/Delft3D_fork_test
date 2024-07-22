@@ -41,7 +41,7 @@
     double precision, intent(in) :: vlin(lnkx)
     double precision, intent(out) :: vnod(2, max(kmx, 1))
 
-    integer :: L, k1, k2, k3, LL, LLL, Lb, Lt, kb, kt, k
+    integer :: L, k1, k2, k3, LL, LLL, Lb, Lt
 
     vnod = 0d0
     if (kmx == 0) then

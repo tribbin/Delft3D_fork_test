@@ -1616,11 +1616,11 @@ contains
       use m_mass_balance_areas, only: mbaname
       use m_flowparameters, only: itempforcingtyp, btempforcingtypa, btempforcingtypc, btempforcingtyph, btempforcingtyps, btempforcingtypl, ja_friction_coefficient_time_dependent
       use m_flowtimes, only: refdat, julrefdat, timjan, handle_extra
-      use m_flowgeom, only: ndx, lnx, lnxi, lne2ln, ln, xyen, nd, teta, kcu, kcs, iadv, lncn, ntheta, xu, yu
-      use m_netw, only: xe, ye, zk, numk, numl
+      use m_flowgeom, only: ndx, lnx, lnxi, lne2ln, ln, xyen, nd, teta, kcu, kcs, iadv, lncn, ntheta
+      use m_netw, only: xe, ye, zk
       use unstruc_model, only: md_inifieldfile
       use m_meteo
-      use m_sediment, only: jaceneqtr, grainlay, mxgr, sedh
+      use m_sediment, only: jaceneqtr, grainlay, mxgr
       use m_mass_balance_areas, only: mbadef, mbadefdomain, mbaname
       use dfm_error, only: dfm_extforcerror, dfm_wronginput, dfm_noerr, dfm_strerror
       use m_sobekdfm, only: init_1d2d
@@ -1634,7 +1634,7 @@ contains
       logical :: exist
       integer :: k, L, LF, KB, KBI, N, K2, iad, numnos, isf, mx, itrac
       integer, parameter :: N4 = 6
-      character(len=256) :: fnam, rec
+      character(len=256) :: rec
       logical, external :: flow_init_structurecontrol
       integer :: tmp_nbndu, tmp_nbndt, tmp_nbndn
 
@@ -2306,10 +2306,10 @@ contains
       use m_structures, only: check_model_has_structures_across_partitions
       use m_lateral, only: initialize_lateraldata
 
-      integer :: j, k, ierr, l, n, itp, kk, k1, k2, kb, kt, nstpr, nstor, i, ja
+      integer :: j, k, ierr, l, n, itp, kk, k1, k2, kb, kt, nstor, i, ja
       integer :: imba, needextramba, needextrambar
       logical :: hyst_dummy(2)
-      double precision :: area, width, hdx, factor
+      double precision :: area, width, hdx
       type(t_storage), pointer :: stors(:)
 
       ! Cleanup:

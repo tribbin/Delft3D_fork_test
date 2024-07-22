@@ -41,8 +41,8 @@
     double precision :: time, dxw, xc
     double precision :: g, t, dt, xd, x0, xu, h1, h0, eps, c1, c0, u20, z0, c20, &
        aa, ab, ac, ad, ba, bb, bc, bd, ca, cb, cc, cd, dd, d1, d2, d3, dz, &
-       dc2, du2, z, c2, h2, u2, xm, c, si1
-    integer :: itmax, mc, i, iter, m, n
+       dc2, du2, z, c2, h2, u2, xm, c
+    integer :: itmax, mc, i, iter, m
 
 !c
 !c initialise

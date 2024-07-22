@@ -43,7 +43,7 @@ subroutine update_waq_lateral_fluxes()
    use m_flow
    use m_flowgeom
    use m_flowtimes
-   use m_lateral, only: numlatsg, nodeCountLat, n1latsg, n2latsg, nnlat, qqlat
+   use m_lateral, only: numlatsg, n1latsg, n2latsg, nnlat, qqlat
    implicit none
 
    integer :: k, k1, ilat

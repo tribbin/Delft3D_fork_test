@@ -560,7 +560,6 @@ contains
 !! Also takes care of possible open-ended intervals for first and/or last class.
    subroutine classes_to_classbounds(N, class_bnds, bnds_table, lbound, ubound)
       use string_module, only: replace_char
-      use m_missing, only: dmiss
       use m_alloc
       integer, intent(in) :: N !< Number of input classes
       real(kind=hp), intent(in) :: class_bnds(:) !< (N) class boundary values

@@ -92,7 +92,7 @@ contains
       double precision :: chainage
       integer :: ierr ! error number from allocate function
       integer :: ilattype, nlat
-      integer :: k, n, k1, nini
+      integer :: k, n, k1
       integer, dimension(1) :: target_index
       integer :: ib, ibqh, ibt
       integer :: maxlatsg
@@ -102,7 +102,7 @@ contains
       double precision, allocatable :: xcoordinates(:), ycoordinates(:)
       character(len=:), allocatable :: file_name
       integer, allocatable :: itpenzr(:), itpenur(:)
-
+      
       file_name = trim(external_force_file_name)
       if (len_trim(file_name) <= 0) then
          iresult = DFM_NOERR

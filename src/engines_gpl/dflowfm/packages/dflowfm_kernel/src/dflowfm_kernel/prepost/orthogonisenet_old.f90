@@ -44,16 +44,16 @@
       implicit none
 
       double precision :: X0, Y0, X1, Y1, W0, XL, YL, XR, YR, ZZZ
-      double precision :: X2, Y2, X3, Y3, X4, Y4, A, B, DIS, DIS2, DIS3, XN, YN
+      double precision :: X2, Y2, X3, Y3, X4, Y4, A, B, DIS2, DIS3, XN, YN
       integer :: JACROS
       double precision :: SL, SM, XCR, YCR, CRP
       double precision :: R01, R23
       double precision, allocatable :: WW(:, :)
       integer, allocatable :: KK1(:, :)
-      integer :: I, N, NO, NN, L, LL, K, KK, K0, K1, K2, K3, KL, KR, kprev, knext, kdone, NMKX, NR, K1L, JA, JA2, JA3, NNI
+      integer :: I, N, NO, NN, L, LL, K, KK, K0, K1, K2, K3, KL, KR, kprev, knext, kdone, NMKX, NR, K1L, JA, JA2, JA3
       double precision :: ATPF1
       integer, save :: NUMKO = 0, NUMLO = 0
-      double precision :: area, areatot, xzwr, yzwr, rout, din
+      double precision :: area, areatot, xzwr, yzwr, rout
       double precision, external :: dprodin
       double precision :: relaxin, relax1
 

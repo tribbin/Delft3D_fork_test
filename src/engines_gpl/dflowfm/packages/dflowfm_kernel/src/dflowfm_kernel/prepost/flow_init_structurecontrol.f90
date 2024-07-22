@@ -62,7 +62,7 @@ function flow_init_structurecontrol() result(status)
    character(len=256) :: fnam, rec, key
    integer, allocatable :: pumpidx(:), gateidx(:), cdamidx(:), cgenidx(:), dambridx(:) ! temp
    double precision :: tmpval
-   integer :: istrtype, itmp, janewformat
+   integer :: istrtype, itmp
    integer :: numg, numd, npum, ngs, numgen, ndambr
    type(TREE_DATA), pointer :: str_ptr
    double precision, allocatable :: widths(:)

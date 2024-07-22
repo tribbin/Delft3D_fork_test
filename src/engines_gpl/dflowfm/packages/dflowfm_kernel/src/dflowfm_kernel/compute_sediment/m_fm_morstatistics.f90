@@ -369,8 +369,6 @@ contains
       integer :: k
       integer :: kb
       integer :: kt
-      integer :: idx
-      real(fp) :: q
       real(fp) :: qu
       real(fp) :: qv
       real(fp) :: rhol

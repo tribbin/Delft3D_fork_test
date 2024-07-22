@@ -58,7 +58,7 @@
       use morphology_data_module
       use sediment_basics_module
       use m_physcoef, only: ag, vonkar, sag, ee, backgroundsalinity, backgroundwatertemperature, vismol
-      use m_sediment, only: stmpar, sedtra, stm_included, mtd, jatranspvel, sbcx_raw, sbcy_raw, sswx_raw, sswy_raw, sbwx_raw, sbwy_raw
+      use m_sediment, only: stmpar, stm_included, jatranspvel, sbcx_raw, sbcy_raw, sswx_raw, sswy_raw, sbwx_raw, sbwy_raw
       use m_flowgeom, only: bl, dxi, csu, snu, wcx1, wcx2, wcy1, wcy2, acl, csu, snu, wcl
       use m_flow, only: s0, s1, u1, kmx, zws, hs, &
                         iturbulencemodel, z0urou, ifrcutp, hu, spirint, spiratx, spiraty, u_to_umain, frcu_mor, javeg, jabaptist, cfuhi, epshs, taubxu, epsz0
