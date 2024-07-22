@@ -81,12 +81,12 @@ class EngineCaseList(object):
         self.list = case_list
 
     def has_cases(self) -> bool:
-        """
-        Check if the EngineCaseList has any cases.
+        """Check if the EngineCaseList has any cases.
 
         Returns
         -------
-            bool: True if there are cases, False otherwise.
+        bool
+            True if there are cases, False otherwise.
         """
         if len(self.list) != 0:
             return True
@@ -108,22 +108,22 @@ class TestResult(object):
         self.muted_exception = muted_exception
 
     def get_total(self) -> int:
-        """
-        Get total number of testcases.
+        """Get total number of testcases.
 
         Returns
         -------
-            int: total testcases
+        int
+            Total testcases.
         """
         return self.passed + self.failed + self.exception + self.ignored + self.muted - self.muted_exception
 
     def get_not_passed_total(self) -> int:
-        """
-        Get total number of testcases that did not pass.
+        """Get total number of testcases that did not pass.
 
         Returns
         -------
-            int: total testcases that did not pass
+        int
+            Total testcases that did not pass.
         """
         return self.failed + self.exception + self.ignored + self.muted
 
@@ -148,22 +148,22 @@ class ConfigurationTestResult(object):
         self.test_result = TestResult(passed, failed, ignored, muted, 0, 0)
 
     def get_total(self) -> int:
-        """
-        Get total number of testcases.
+        """Get total number of testcases.
 
         Returns
         -------
-            int: total testcases
+        int
+            Total testcases.
         """
         return self.test_result.get_total()
 
     def get_not_passed_total(self) -> int:
-        """
-        Get total number of testcases that did not pass.
+        """Get total number of testcases that did not pass.
 
         Returns
         -------
-            int: total testcases that did not pass
+        int
+            Total testcases that did not pass.
         """
         return self.test_result.get_not_passed_total()
 
@@ -195,12 +195,11 @@ class TreeResult(object):
         self.engine_results = engine_results
 
     def get_executive_summary(self) -> ExecutiveSummary:
-        """
-        Get executive summary of the test results.
+        """Get executive summary of the test results.
 
         Returns
         -------
-            ExecutiveSummary: Executive summary
+        ExecutiveSummary
         """
         summary_data = TestResultSummary("All")
         for engine_results in self.engine_results:
@@ -225,12 +224,12 @@ class TreeResult(object):
 
 
 def get_sum_test_result(test_overview: List[ConfigurationTestResult]) -> TestResult:
-    """
-    Get sum of the test results.
+    """Get sum of the test results.
 
     Returns
     -------
-    TestResult: Data object with the aggregated sum of the tests
+    TestResult
+        Data object with the aggregated sum of the tests.
     """
     sum_passed = 0
     sum_failed = 0
@@ -249,23 +248,25 @@ def get_sum_test_result(test_overview: List[ConfigurationTestResult]) -> TestRes
 
 
 def log_to_file(log_file: TextIOWrapper, *args: str) -> None:
-    """
-    Write to a log file.
+    """Write to a log file.
 
-    Args:
-        log_file: the file it logs to
-        *args: Variable number of arguments to be written to the log file.
+    Parameters
+    ----------
+    log_file : TextIOWrapper
+        The file it logs to.
+    *args
+        Variable number of arguments to be written to the log file.
     """
     log_file.write(" ".join(map(str, args)) + "\n")
 
 
 def get_engine_cases_from_url(url: str, username: str, password: str, given_build_config: str) -> EngineCaseList:
-    """
-    Get name and cases from XML node that is requested via the URL.
+    """Get name and cases from XML node that is requested via the URL.
 
     Returns
     -------
-    EngineCaseList: Data object with name and a case list
+    EngineCaseList
+        Data object with name and a case list.
     """
     engine_req = get_request(url, username, password)
     if not text_in_xml_message(engine_req.text):
@@ -287,12 +288,12 @@ def get_engine_cases_from_url(url: str, username: str, password: str, given_buil
 def get_test_result_list(
     log_file: TextIOWrapper, engine_cases: EngineCaseList, username: str, password: str
 ) -> List[ConfigurationTestResult]:
-    """
-    Get test results from the engine case list. Logs message to file in case of serious error.
+    """Get test results from the engine case list. Logs message to file in case of serious error.
 
     Returns
     -------
-    List[ConfigurationTestResult]: list with test results
+    List[ConfigurationTestResult]
+        List with test results.
     """
     test_overview = []
 
@@ -352,12 +353,12 @@ def get_test_result_list(
 
 
 def get_status_text(build: ET.Element) -> str:
-    """
-    Get status text from xml node.
+    """Get status text from xml node.
 
     Returns
     -------
-        str: the status text.
+    str
+        The status text.
     """
     status_text = ""
     if build.find(TEST_OCCURRENCES) is None:
@@ -370,12 +371,12 @@ def get_status_text(build: ET.Element) -> str:
 
 
 def get_number_of_tests(build: ET.Element, test_result: str) -> int:
-    """
-    Get number of tests from xml node.
+    """Get number of tests from xml node.
 
     Returns
     -------
-        int: number of tests that match the test result.
+    int
+        Number of tests that match the test result.
     """
     test_occurences = build.find(TEST_OCCURRENCES)
     if test_occurences is not None:
@@ -387,12 +388,12 @@ def get_number_of_tests(build: ET.Element, test_result: str) -> int:
 
 
 def create_configuration_test_result(build: ET.Element, name: str, status_text: str) -> ConfigurationTestResult:
-    """
-    Create configuration test result from XML node.
+    """Create configuration test result from XML node.
 
     Returns
     -------
-        ConfigurationTestResult: configuration test result from XML.
+    ConfigurationTestResult
+        Configuration test result from XML.
     """
     build_nr = ""
     if "number" in build.attrib:
@@ -405,12 +406,12 @@ def create_configuration_test_result(build: ET.Element, name: str, status_text: 
 
 
 def get_configuration_info(xml_engine_root: ET.Element, given_build_config: str) -> List[ConfigurationInfo]:
-    """
-    Get configuration info from xml tree.
+    """Get configuration info from xml tree.
 
     Returns
     -------
-        List[ConfigurationInfo]: List with configurations.
+    List[ConfigurationInfo]
+        List with configurations.
     """
     result = []
     build_types = xml_engine_root.find("buildTypes")
@@ -427,27 +428,29 @@ def get_configuration_info(xml_engine_root: ET.Element, given_build_config: str)
 
 
 def get_request(url: str, username: str, password: str) -> requests.Response:
-    """
-    Send an HTTP GET request with authentication.
+    """Send an HTTP GET request with authentication.
 
     Returns
     -------
-        requests.Response: The response object from the request.
+    requests.Response
+        The response object from the request.
     """
     headers = {"Accept": "application/xml"}
     return requests.get(url=url, auth=HTTPBasicAuth(username, password), headers=headers, stream=True, verify=True)
 
 
 def text_in_xml_message(text: str) -> bool:
-    """
-    Check if HTTP GET response has text.
+    """Check if HTTP GET response has text.
 
-    Args:
-        text (str): The HTTP GET response to check.
+    Parameters
+    ----------
+    text : str
+        The HTTP GET response to check.
 
     Returns
     -------
-        bool: true or false depending on the text.
+    bool
+        true or false depending on the text.
     """
     try:
         ET.fromstring(text)
@@ -460,12 +463,12 @@ def text_in_xml_message(text: str) -> bool:
 def get_tree_entire_engine_test_results(
     log_file: TextIOWrapper, project_ids: str, given_build_config: str, username: str, password: str
 ) -> TreeResult:
-    """
-    Get entire tree test results.
+    """Get entire tree test results.
 
     Returns
     -------
-        TreeResult: entire tree test results.
+    TreeResult
+        Entire tree test results.
     """
     project_url = f"{PROJECTS_URL}{project_ids}"
 
