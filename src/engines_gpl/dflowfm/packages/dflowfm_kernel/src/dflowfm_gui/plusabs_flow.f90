@@ -34,7 +34,7 @@
  subroutine plusabs_flow(numchoice)
     use m_flow
     use m_flowgeom
-    use m_transport, only: NUMCONST, ISALT, ITEMP, ISED1, ISEDN, ITRA1, ITRAN, ITRAN0, constituents, itrac2const, const_names, const_units
+    use m_transport, only: ISALT, constituents
 
     implicit none
 

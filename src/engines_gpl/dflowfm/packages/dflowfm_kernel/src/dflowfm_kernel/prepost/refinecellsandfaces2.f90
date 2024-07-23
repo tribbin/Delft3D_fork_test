@@ -39,7 +39,6 @@ subroutine refinecellsandfaces2()
    use m_missing
    use m_alloc
    use unstruc_messages
-   use unstruc_colors, only: ncolhl
    use unstruc_display, only: jaGUI
    use kdtree2Factory
    use m_sferic
@@ -56,11 +55,11 @@ subroutine refinecellsandfaces2()
 
    integer, dimension(:), allocatable :: kc_sav ! save of kc
 
-   double precision :: xboundmin, xboundmax, x1, x2, dxxmax, dxxmin, dl
+   double precision :: xboundmin, xboundmax, dxxmax, dxxmin, dl
 
    integer :: ierror ! error (1) or not (0)
    integer :: ja, jaCourantnetwork
-   integer :: i, ic, ip, j, k, kother, kk, kkm1, kkp1, kkk, L, Lm1, Lp1, N
+   integer :: ic, k, kother, kk, kkm1, kkp1, kkk, L, Lm1, Lp1, N
    integer :: numL_old
    integer :: numrefine ! number of cells to be refined
    integer :: nump_virtual
@@ -460,7 +459,7 @@ contains
       double precision :: xc, yc, area
       double precision :: zz ! not used
 
-      integer :: i, ic, ip, j, k, kk, kkm1, kkp1, N
+      integer :: ic, ip, j, k, kk, kkm1, kkp1, N
       integer :: L, LL
 
       integer, parameter :: NDIM = 4 ! sample vector dimension
@@ -860,7 +859,7 @@ contains
 !      integer, dimension(:), allocatable   :: janode        !  refine around node (1) or not (0), dim: numk
       integer, dimension(:), allocatable :: jalin !  refine at link (1) or not (0), dim: numL
 
-      integer :: iter, ic, k, kk, kkm1, kkp1, L, N
+      integer :: iter, ic, kk, L, N
 
       if (NUMITCOURANT < 1) return ! nothing to do
 
@@ -1279,7 +1278,7 @@ contains
 
       integer :: jawritten
 
-      integer :: ic, L, k, kk, N
+      integer :: ic, L, kk, N
       integer :: jasplit, num, numrefine, numhang, numhangnod, N_eff
       integer :: ierror
 

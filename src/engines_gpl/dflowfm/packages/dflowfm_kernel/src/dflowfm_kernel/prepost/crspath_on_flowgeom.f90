@@ -63,7 +63,7 @@ subroutine crspath_on_flowgeom(path, includeghosts, jalinklist, numlinks, linkli
 
    integer :: jaghost, idmn_ghost
 
-   double precision :: x1, y1, x2, y2, xn, yn, af
+   double precision :: x1, y1, x2, y2, xn, yn
 
    double precision, allocatable :: dpl(:)
 

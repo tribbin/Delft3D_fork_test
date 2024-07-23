@@ -75,8 +75,8 @@ subroutine flgsfm(n, ng, L, firstiter, jarea)
    double precision :: w2, wsd, wstr
    double precision :: zb2, zs
    double precision :: gateloweredgelevel, gatedoorheight
-   double precision :: DsL, hh, zb, zt, au0, au1, au2, au3
-   double precision :: gatefraction, aulf
+   double precision :: DsL, au0, au1, au2, au3
+   double precision :: gatefraction
    double precision :: hhi(3), zbi(3), zti(3)
 
 !

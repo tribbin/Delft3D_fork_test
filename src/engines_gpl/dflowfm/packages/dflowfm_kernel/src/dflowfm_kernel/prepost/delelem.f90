@@ -46,7 +46,6 @@
        double precision :: pi
        double precision :: rho
        double precision :: rhow
-       double precision :: rmas
 
        common / CONSTANTS / E0, RHO, RHOW, CFL, EPS, AG, PI
 

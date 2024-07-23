@@ -36,7 +36,6 @@
 !! NOTE: This functionality ONLY supports when using "polylinefile" to specify the structure location
 !! TODO: extend it to support other ways of specifying the structure location.
 subroutine find_netcells_for_structures(size_istrucells, nstrucells, istrucells)
-   use m_cell_geometry, only: xz, yz
    use m_structures
    use string_module
    use timespace_parameters
@@ -47,8 +46,6 @@ subroutine find_netcells_for_structures(size_istrucells, nstrucells, istrucells)
    use network_data
    use timespace, only: read1polylin
    use kdtree2Factory
-   use m_sferic, only: jsferic
-   use m_missing, only: dmiss
    use m_alloc
    implicit none
 
@@ -63,7 +60,7 @@ subroutine find_netcells_for_structures(size_istrucells, nstrucells, istrucells)
    integer, allocatable :: istrulinks(:), ipol_tmp(:)
    double precision, allocatable :: xpl_tmp(:), ypl_tmp(:), DSL_tmp(:)
    integer :: i, L, k, ii, nstr, loc_spec_type, nstrulinks, &
-              npl_tmp, minp_tmp, maxpol_tmp, ierror, nstru_read1, nstru_read2
+              npl_tmp, minp_tmp, ierror, nstru_read1, nstru_read2
 
    nstrucells = 0
    if (len_trim(md_structurefile) == 0) then

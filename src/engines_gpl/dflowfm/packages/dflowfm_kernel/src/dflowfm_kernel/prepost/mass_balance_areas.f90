@@ -774,7 +774,7 @@ contains
       use m_mass_balance_areas
       use timers
       use m_transport, only: numconst, fluxhor
-      use m_fm_erosed, only: lsedtot, morfac
+      use m_fm_erosed, only: morfac
 
       integer :: i !< balance area exchange link index
       integer :: iconst !< constituent number
@@ -784,7 +784,6 @@ contains
       integer :: Lb !< index of bottom-most 3D flow link
       integer :: LL !< index of 2D flow link
       integer :: Lt !< index of top-most 3D flow link
-      integer :: n !< source/sink index
       double precision :: dt !< effective time step
 
       integer(4) :: ithndl = 0 !< timer handle

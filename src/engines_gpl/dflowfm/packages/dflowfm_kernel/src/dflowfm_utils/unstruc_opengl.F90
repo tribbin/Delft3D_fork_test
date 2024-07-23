@@ -379,7 +379,7 @@ contains
       integer, intent(in) :: height
 
 #ifdef HAVE_OPENGL
-      integer(HANDLE) :: font, prevFont
+      integer(HANDLE) :: font
       logical(c_bool) :: res
 
       ! prepare the font to render text in

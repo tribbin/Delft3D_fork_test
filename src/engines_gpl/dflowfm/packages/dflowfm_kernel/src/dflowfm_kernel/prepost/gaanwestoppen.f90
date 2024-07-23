@@ -33,7 +33,7 @@
   subroutine GAANWESTOPPEN(K, KN316, JASTOP, LO) !SET JASTOP = 1 ALS WE GAAN STOPPEN
      use M_NETW
      implicit none
-     integer :: K2, KN316, JASTOP, N1, N6, KK, L, K1, K, LO
+     integer :: KN316, JASTOP, N1, N6, KK, L, K, LO
 
      JASTOP = 0; N1 = 0; N6 = 0
 

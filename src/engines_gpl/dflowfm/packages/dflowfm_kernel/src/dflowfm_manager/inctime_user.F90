@@ -70,7 +70,6 @@
 ! binnencelpunten. graag goed zetten
  subroutine inctime_user()
     use m_flowtimes
-    use fm_external_forcings_data, only: nbndz, zbndz
     implicit none
     if (time1 >= time_user) then
        ! If not, current time_user was not yet reached (user interrupt in interface)

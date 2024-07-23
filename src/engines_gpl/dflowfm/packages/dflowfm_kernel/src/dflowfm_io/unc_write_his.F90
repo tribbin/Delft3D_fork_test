@@ -57,7 +57,7 @@ subroutine unc_write_his(tim) ! wrihis
    use m_timer
    use m_sediment
    use fm_external_forcings_data, only: numtracers, trnames
-   use m_transport, only: NUMCONST_MDU, ITRA1, ITRAN, ISED1, ISEDN, const_names, const_units, NUMCONST, itemp, isalt
+   use m_transport, only: ITRA1, ITRAN, ISED1, NUMCONST
    use m_structures
    use m_fm_wq_processes, only: wq_user_outputs => outputs, noout_statt, noout_state, noout_user, jawaqproc
    use string_module
@@ -84,10 +84,10 @@ subroutine unc_write_his(tim) ! wrihis
    !> local ids of netcdf variables and dims
    integer, save :: id_timedim, id_num_timesteps, id_comp_time, &
                     id_laydim, id_laydimw, id_sedtotdim, id_sedsusdim, id_frac_name, &
-                    id_statdim, id_strlendim, id_crsdim, id_crslendim, id_crsptsdim, &
+                    id_statdim, id_strlendim, id_crsdim, &
                     id_statx, id_staty, id_stat_id, id_statname, id_time, id_timestep, &
-                    id_statlon, id_statlat, id_crs_id, id_crsname, id_varb, id_qsrccur, id_nlyrdim, &
-                    id_zcs, id_zws, id_zwu, id_checkmon, id_varruh, &
+                    id_statlon, id_statlat, id_crs_id, id_varb, id_nlyrdim, &
+                    id_zcs, id_zws, id_zwu, id_checkmon, &
                     id_pumpdim, id_pump_id, &
                     id_gatedim, id_gate_id, &
                     id_cdamdim, id_cdam_id, &
@@ -97,23 +97,22 @@ subroutine unc_write_his(tim) ! wrihis
                     id_orifgendim, id_orifgen_id, &
                     id_bridgedim, id_bridge_id, &
                     id_culvertdim, id_culvert_id, &
-                    id_srcdim, id_srclendim, id_srcname, id_srcx, id_srcy, id_srcptsdim, &
+                    id_srcdim, id_srcname, id_srcx, id_srcy, id_srcptsdim, &
                     id_dredlinkdim, id_dreddim, id_dumpdim, id_dred_name, id_dump_name, &
                     id_dambreakdim, id_dambreak_id, &
                     id_uniweirdim, id_uniweir_id, &
                     id_cmpstrudim, id_cmpstru_id, &
                     id_longculvertdim, id_longculvert_id, &
-                    id_latdim, id_lat_id, id_lat_predis_inst, id_lat_predis_ave, id_lat_realdis_inst, id_lat_realdis_ave, &
-                    id_rugdim, id_rugx, id_rugy, id_rugid, id_rugname
+                    id_latdim, id_lat_id, &
+                    id_rugdim, id_rugid, id_rugname
 
    ! ids for geometry variables, only use them once at the first time of history output
    integer, save :: &
       id_statgeom_node_count, id_statgeom_node_coordx, id_statgeom_node_coordy, id_statgeom_node_lon, id_statgeom_node_lat, &
       id_latgeom_node_count, id_latgeom_node_coordx, id_latgeom_node_coordy, &
-      id_weirgengeom_input_node_count, id_weirgengeom_input_node_coordx, id_weirgengeom_input_node_coordy, &
       id_weirgengeom_node_count, id_weirgengeom_node_coordx, id_weirgengeom_node_coordy, id_weirgen_xmid, id_weirgen_ymid, &
       id_crsgeom_node_count, id_crsgeom_node_coordx, id_crsgeom_node_coordy, id_crs_xmid, id_crs_ymid, &
-      id_orifgengeom_node_count, id_orifgengeom_node_coordx, id_orifgengeom_node_coordy, id_orifgen_xmid, id_orifgen_ymid, &
+      id_orifgengeom_node_count, id_orifgengeom_node_coordx, id_orifgengeom_node_coordy, &
       id_genstrugeom_node_count, id_genstrugeom_node_coordx, id_genstrugeom_node_coordy, id_genstru_xmid, id_genstru_ymid, &
       id_uniweirgeom_node_count, id_uniweirgeom_node_coordx, id_uniweirgeom_node_coordy, id_uniweir_xmid, id_uniweir_ymid, &
       id_culvertgeom_node_count, id_culvertgeom_node_coordx, id_culvertgeom_node_coordy, id_culvert_xmid, id_culvert_ymid, &
@@ -127,17 +126,12 @@ subroutine unc_write_his(tim) ! wrihis
    integer, allocatable :: node_count(:)
    integer, allocatable, save :: id_tra(:)
    integer, allocatable, save :: id_hwq(:)
-   integer, allocatable, save :: id_hwqb(:)
-   integer, allocatable, save :: id_hwqb3d(:)
-   integer, allocatable, save :: id_sedbtransfrac(:)
-   integer, allocatable, save :: id_sedstransfrac(:)
    integer :: maxlocT, maxvalT !< row+column count of valobs
 
-   integer :: IP, num, ngenstru_, n, nlyrs
+   integer :: ngenstru_, n
 
    double precision, save :: curtime_split = 0d0 ! Current time-partition that the file writer has open.
-   integer :: ntot, k, i, j, ierr, kk, L, Lf, k3, k4, nNodeTot, nNodes, L0, k1, k2, nlinks
-   double precision :: cof0
+   integer :: ntot, i, j, ierr, nNodeTot, nNodes, k1, k2, nlinks
 
    integer :: strlen_netcdf ! string length definition for (station) names on history file
    character(len=255) :: filename
@@ -145,19 +139,12 @@ subroutine unc_write_his(tim) ! wrihis
    character(len=1024) :: statcoordstring, local_statcoordstring
    integer :: igen, istru
    integer :: ndims
-   character(len=255) :: tmpstr
    integer :: jawrizc = 0
    integer :: jawrizw = 0
-   double precision :: w1, pumplensum, pumplenmid, pumpxmid, pumpymid
-   double precision :: rhol
-   double precision, allocatable :: toutput1(:), toutputx(:, :), toutputy(:, :), toutput3(:, :, :)
-   double precision, allocatable :: toutput_cum, toutput_cur
-   integer :: lsed
    logical :: add_latlon
 
    ! NOTE: below new variables based on statistical output modules
    character(len=255) :: var_name, var_standard_name, var_long_name
-   type(t_output_quantity_config), pointer :: config
    type(ug_nc_attribute), target :: attributes(4)
    integer :: ivar
 

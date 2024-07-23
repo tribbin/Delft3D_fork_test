@@ -45,7 +45,7 @@ subroutine pillargrid(ierror)
 
    integer :: i, j, jstart, jend, num, ipol
 
-   double precision :: R0, R1, R, x0, y0, x1, y1, alpha, beta
+   double precision :: R0, R1, x0, y0, x1, y1, alpha, beta
 
    ierror = 1
 

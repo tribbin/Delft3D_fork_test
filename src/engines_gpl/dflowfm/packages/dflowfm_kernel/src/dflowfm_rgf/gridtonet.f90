@@ -40,8 +40,7 @@
         double precision :: af
 
         integer, allocatable :: mn(:, :)
-        double precision XX(8), YY(8), ZZ(8), tooclose0, length
-        integer :: k0, l0, ja, jadoorladen, i, j, k, l, method, ierr, key
+        integer :: k0, l0, ja, jadoorladen, i, j, k, l, ierr
 
         jadoorladen = 1
 

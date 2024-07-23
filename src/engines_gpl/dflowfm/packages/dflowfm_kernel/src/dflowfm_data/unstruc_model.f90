@@ -2592,7 +2592,6 @@ contains
       use m_heatfluxes
       use m_fm_wq_processes
       use m_trachy
-      use m_transport, only: ITRA1
       use m_structures, only: jahiscgen, jahiscdam, jahispump, jahisgate, jahisweir, jahisorif, jahisbridge, jahisculv, jahisdambreak, jahisuniweir, jahiscmpstru, jahislongculv
       use m_1d2d_fixedweirs, only: lat_fix_weir_umin, lat_fix_weir_umin_method, lat_fix_weir_minimal_1d2d_embankment, lat_fix_weir_relax, lat_fix_weir_dx
       use m_subsidence, only: sdu_update_s1
@@ -2602,7 +2601,6 @@ contains
       use m_output_config, only: set_properties
       use fm_statistical_output, only: config_set_his, config_set_map, config_set_clm
       use m_map_his_precision
-      use m_f1dimp, only: f1dimppar
 
       integer, intent(in) :: mout !< File pointer where to write to.
       logical, intent(in) :: writeall !< Write all fields, including default values

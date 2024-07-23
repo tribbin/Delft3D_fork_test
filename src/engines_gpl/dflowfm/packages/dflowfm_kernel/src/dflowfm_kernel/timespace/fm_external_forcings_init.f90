@@ -92,7 +92,7 @@ contains
       double precision :: chainage
       integer :: ierr ! error number from allocate function
       integer :: ilattype, nlat
-      integer :: k, n, k1, nini
+      integer :: k, n, k1
       integer, dimension(1) :: target_index
       integer :: ib, ibqh, ibt
       integer :: maxlatsg
@@ -102,7 +102,7 @@ contains
       double precision, allocatable :: xcoordinates(:), ycoordinates(:)
       character(len=:), allocatable :: file_name
       integer, allocatable :: itpenzr(:), itpenur(:)
-
+      
       file_name = trim(external_force_file_name)
       if (len_trim(file_name) <= 0) then
          iresult = DFM_NOERR
@@ -609,6 +609,14 @@ contains
          filetype = convert_file_type_string_to_integer(forcing_file_type)
 
          select case (quantity)
+         case ('airdensity')
+            kx = 1
+            is_data_on_p_points = .true. 
+            if (.not. allocated(airdensity)) then
+               allocate (airdensity(ndx), stat=ierr, source=0d0)
+               call aerr('airdensity(ndx)', ierr, ndx)
+            end if
+            
          case ('airpressure', 'atmosphericpressure')
             kx = 1
             is_data_on_p_points = .true.
@@ -747,6 +755,10 @@ contains
 
          if (is_successful) then
             select case (quantity)
+            case ('airdensity')
+               call mess(LEVEL_INFO, 'Enabled variable airdensity for windstress while reading external forcings.')
+               ja_airdensity = 1
+                  
             case ('airpressure', 'atmosphericpressure')
                japatm = 1
 

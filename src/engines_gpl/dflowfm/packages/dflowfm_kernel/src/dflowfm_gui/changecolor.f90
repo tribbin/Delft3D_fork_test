@@ -54,7 +54,7 @@
          double precision :: vmin
          double precision :: xp
          double precision :: yp
-         character TEX * 26, WRDKEY * 40
+         character :: WRDKEY * 40
 
          common / DEPMAX / VMAX, VMIN, DV, VAL(256), NCOLS(256), NV, NIS, NIE, JAAUTO
          common / HELPNOW / WRDKEY, NLEVEL

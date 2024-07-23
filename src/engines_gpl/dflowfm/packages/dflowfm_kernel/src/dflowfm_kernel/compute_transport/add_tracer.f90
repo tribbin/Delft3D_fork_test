@@ -42,7 +42,7 @@ subroutine add_tracer(tracer_name, iconst)
 
    character(len=8) :: str
 
-   integer :: ierror, i, itrac
+   integer :: ierror, itrac
 
    integer, external :: findname
 

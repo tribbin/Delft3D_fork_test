@@ -43,14 +43,12 @@
      double precision :: eps
      integer :: in1
      integer :: in2
-     integer :: k
      integer :: k1
      integer :: k2
      integer :: l
      double precision :: pi
      double precision :: rho
      double precision :: rhow
-     double precision :: rmas
      common / CONSTANTS / E0, RHO, RHOW, CFL, EPS, AG, PI
 
 !  DO K = 1,NUMK

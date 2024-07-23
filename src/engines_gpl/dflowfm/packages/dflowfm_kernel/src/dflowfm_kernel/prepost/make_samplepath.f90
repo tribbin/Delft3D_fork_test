@@ -44,7 +44,7 @@ subroutine make_samplepath(xp, yp)
 
    integer, dimension(:), allocatable :: ipsub
 
-   integer :: i, ierror, ip, ip0, ip1
+   integer :: ierror, ip, ip0, ip1
    integer :: ipnext, ipcur, ipprev
    integer :: Nsub, isub
    integer :: iter, idir, ipol1, ipol2

@@ -128,26 +128,9 @@ contains
       type(spectrum) :: combspec
       type(waveparamsnew) :: wp ! Most will be deallocated, but some variables useful to keep?
       integer :: iloc
-      integer :: iostat
-      real*8 :: spectrumendtimeold, fmax
-      character(slen) :: model
-
-      ! Variables copied for now from JONSWAP function. To be removed
-      ! once input is generic
-      integer :: i, ii, ier, ip, ind
-      integer :: nmodal
-      integer, dimension(2) :: indvec
-      real*8, dimension(:), allocatable :: x, y, Dd, tempdir
-      real*8 :: Hm0, fp, gam, mainang, scoeff
-      real*8 :: dfj, fnyq
-      real*8 :: Tp
-      type(spectrum), dimension(:), allocatable :: multinomalspec, scaledspec
-      logical :: cont
-      real*8, dimension(:), allocatable :: scalefac1, scalefac2, tempmax, avgscale
-      real*8, dimension(:), allocatable :: oldvariance, newvariance
+      real*8 :: fmax
       real*8, dimension(:), allocatable :: wL, wR
       integer, dimension(:), allocatable :: kL, kR
-      real*8 :: newconv, oldconv
 
       type(filenames), save :: waveSpectrumFileName
 
@@ -1325,7 +1308,6 @@ contains
       ! internal
       integer :: i, j, dummy
       real*8 :: m0, df, dang
-      real*8, dimension(naint) :: Sd
       real*8 :: hm0pre, hm0post, Sfnow, factor, tempt0
       real*8, dimension(:, :), allocatable :: Stemp
 
@@ -1681,9 +1663,9 @@ contains
       type(waveparamsnew), intent(inout) :: wp
       ! internal
       integer :: i, ii
-      integer :: ind1, ind2, dummy, seed
-      real*8, dimension(:), allocatable :: randnums, pdflocal, cdflocal, kh
-      real*8 :: L0, L, kmax, fmax, dummy_real
+      integer :: ind1, ind2, dummy
+      real*8, dimension(:), allocatable :: randnums, pdflocal, cdflocal
+      real*8 :: L0, L, kmax, fmax
 
       ! If we are running non-hydrostatic boundary conditions, we want to remove
       ! very high frequency components, as these will not be computed well anyway
@@ -2065,13 +2047,10 @@ contains
       integer, intent(in) :: ibnd
       type(waveparamsnew), intent(inout) :: wp
       ! internal
-      integer :: i, ii, dummy
-      integer :: j
+      integer :: i, ii
       integer :: kkL, kkR
-      integer, dimension(2) :: interpindex
-      real*8, dimension(2) :: positions, sf
       real*8 :: sfnow, sfimp
-      real*8 :: wwL, wwR, dum
+      real*8 :: wwL, wwR
 
       ! allocate space for the amplitude array and representative integration angle
       allocate (wp%A(npb, wp%K))
@@ -2205,13 +2184,11 @@ contains
       type(waveparamsnew), intent(inout) :: wp
       integer, intent(in) :: ibnd, nspr
       ! internal
-      integer :: i, ii, itheta
+      integer :: i, itheta
       real*8, dimension(:, :), allocatable :: binedges
-      logical :: toosmall, toolarge
       real*8 :: lostvar, keptvar, perclost
       integer :: lntheta ! local copies that can be changed without
       real*8 :: ldtheta ! damage to the rest of the model
-      real*8 :: dang
 
       ! Calculate the bin edges of all the computational wave bins in the
       ! XBeach model (not the input spectrum)
@@ -2313,12 +2290,11 @@ contains
       integer, intent(in) :: ibnd
       type(waveparamsnew), intent(inout) :: wp
       ! internal
-      integer :: itheta, iy, iwc, it, irec
+      integer :: itheta, iy, iwc, it
       integer :: index, status
-      integer :: reclen, fid
       integer :: nInBoundaryFile
       integer, dimension(:), allocatable :: nwc
-      real*8, dimension(:, :, :), allocatable :: zeta, Ampzeta, E_tdir, E_interp
+      real*8, dimension(:, :, :), allocatable :: zeta, Ampzeta, E_tdir
       real*8, dimension(:, :), allocatable :: eta, Amp
       complex(fftkind), dimension(:), allocatable :: Gn, tempcmplx, tempcmplxhalf
       integer, dimension(:), allocatable :: tempindex, tempinclude
@@ -2669,9 +2645,9 @@ contains
       integer, intent(in) :: ibnd
       type(waveparamsnew), intent(inout) :: wp
       ! internal
-      integer :: j, m, iq, irec, it ! counters
+      integer :: j, m, iq, it ! counters
       integer :: K ! copy of K
-      integer :: halflen, reclen, fid, status
+      integer :: halflen, status
       integer :: nInBoundaryFile
       logical :: firsttime ! used for output message only
       real*8 :: deltaf ! difference frequency
@@ -3014,7 +2990,6 @@ contains
       double precision :: xcycle
       double precision, dimension(:), allocatable :: angcart, Sdcart, eet
       integer :: j
-      integer :: reclen, fid
 
       allocate (angcart(combspec%nang))
       allocate (Sdcart(combspec%nang))

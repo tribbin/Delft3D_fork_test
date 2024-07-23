@@ -468,11 +468,11 @@ contains
 
    subroutine read_cllfile(md_cllfile, clddata, phase)
       use unstruc_messages
-      use m_missing, only: dmiss, intmiss
+      use m_missing, only: intmiss
       use unstruc_files, only: mdia
       use system_utils, only: exifil
-      use m_monitoring_crosssections, only: crs, ncrs
-      use m_observations, only: namobs, numobs
+      use m_monitoring_crosssections, only: crs
+      use m_observations, only: namobs
       use network_data, only: lnn, numl
       use kdtree2Factory
       use m_sferic, only: jsferic
@@ -749,7 +749,7 @@ contains
    subroutine update_clddata()
       use unstruc_messages
       use m_monitoring_crosssections
-      use m_observations, only: numobs, valobs, IPNT_S1
+      use m_observations, only: valobs, IPNT_S1
 
       !integer, intent(in) :: update_mode
       double precision :: zs

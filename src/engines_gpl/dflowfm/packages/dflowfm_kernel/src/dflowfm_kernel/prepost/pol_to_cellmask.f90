@@ -42,7 +42,7 @@ subroutine pol_to_cellmask()
 
    implicit none
 
-   integer :: i, ic, in, k, KMOD
+   integer :: in, k, KMOD
    integer :: num
 
    if (allocated(cellmask)) deallocate (cellmask)

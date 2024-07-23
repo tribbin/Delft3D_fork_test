@@ -37,7 +37,7 @@
 
          implicit none
          integer :: ja
-         double precision :: X1, Y1, X2, Y2, X3, Y3, DIS, XN, YN, ZN, d2
+         double precision :: X1, Y1, X2, Y2, X3, Y3, DIS, XN, YN
          double precision :: R2, RL, X21, Y21, Z21, X31, Y31, Z31
          double precision :: xx1, xx2, xx3, yy1, yy2, yy3, zz1, zz2, zz3, xxn, yyn, zzn
          !     korste afstand tot lijnelement

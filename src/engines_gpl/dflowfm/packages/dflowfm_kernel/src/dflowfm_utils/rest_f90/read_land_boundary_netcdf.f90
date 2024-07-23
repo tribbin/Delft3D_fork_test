@@ -43,7 +43,6 @@ subroutine read_land_boundary_netcdf(filename)
 
    character(len=*), intent(in) :: fileName
 
-   double precision, dimension(:), allocatable :: x_lan, y_lan
    integer, dimension(:), allocatable :: k
    integer :: i
 

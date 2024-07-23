@@ -135,7 +135,7 @@ contains
 
    subroutine xbeach_write_stats(tim)
       use m_flowparameters, only: jawave, jaavgwavquant, eps10, jamombal
-      use m_flowtimes, only: ti_wav, ti_wavs, ti_wave, tstop_user, time_wav, Tudunitstr
+      use m_flowtimes, only: ti_wav, ti_wavs, ti_wave, tstop_user, time_wav
       use precision_basics
 
       implicit none
@@ -217,7 +217,7 @@ contains
       use unstruc_netcdf
       use m_xbeach_avgoutput
       use m_flowgeom
-      use m_flowtimes, only: refdat, ti_wav, ti_wavs, ti_wave
+      use m_flowtimes, only: ti_wav, ti_wavs, ti_wave
       use m_sferic, only: pi
       use m_flowtimes, only: Tudunitstr
       use m_flowparameters, only: jamombal
@@ -954,9 +954,8 @@ contains
       implicit none
 
       double precision, intent(in) :: dt ! timestep
-      double precision :: mult, fill
-      double precision :: ucos, usin
-      integer :: ierr, result1, result2, k
+      double precision :: mult
+      integer :: ierr, k
       integer :: jaeulervel_
 
       double precision :: vis(2)
@@ -1591,7 +1590,7 @@ contains
 
       implicit none
 
-      integer :: L, k, k1, k2, ierr
+      integer :: k
       double precision, allocatable :: ducxdx_(:), ducxdy_(:), ducydx_(:), ducydy_(:)
 
       if (.not. allocated(ducydx_)) then

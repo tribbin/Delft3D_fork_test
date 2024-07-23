@@ -42,8 +42,6 @@ pure logical function is_1d_boundary_candidate(L, i)
    integer, intent(in) :: L !<  net link to check for boundary candidate
    integer, intent(in) :: i !<  node to check, equals 1 or 2
 
-   logical :: isEndNode
-
    is_1d_boundary_candidate = nmk(kn(i, L)) == 1 .and. lne(i, L) < 0 .and. &
                               (nmk(kn(3 - i, L)) == 2 .or. jaAllowBndAtBifurcation == 1)
 

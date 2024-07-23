@@ -30,14 +30,13 @@
       use m_netw
       use m_flow
       use m_flowgeom
-      use m_flowtimes, only: time1
       implicit none
 
       integer, parameter :: JACSTOT = 0 !< 0 for computing the total area
       integer, parameter :: JACSFLW = 1 !< 1 for computing the flow area
       integer, parameter :: CALCCONV = 0 !< don't update wu, cfuhi, etc inside getprof_1D
 
-      integer :: L, LL, La, n, nx, ip, i12, k2, ja1D
+      integer :: L, LL, La, n, nx, ja1D
 
       double precision :: q_net_in !< [m3/s] sum of inflowing Q minus sum of outflowing Q over links of node n
       double precision :: q_in !< [m3/s] sum of inflowing Q over links of node n

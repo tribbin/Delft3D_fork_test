@@ -42,7 +42,7 @@ subroutine get_jaupdatehorflux(nsubsteps, limtyp, jaupdate, jaupdatehorflux)
    integer, dimension(Ndx), intent(in) :: jaupdate !< cell updated (1) or not (0)
    integer, dimension(Lnx), intent(out) :: jaupdatehorflux !< update horizontal flux (1) or not (0)
 
-   integer :: kk, k1, k2, LL
+   integer :: k1, k2, LL
    integer :: kk1L, kk2L
    integer :: kk1R, kk2R
 

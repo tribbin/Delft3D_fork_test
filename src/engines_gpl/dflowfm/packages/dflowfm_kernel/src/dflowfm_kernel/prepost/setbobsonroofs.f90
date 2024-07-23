@@ -47,13 +47,11 @@ subroutine setbobsonroofs() ! override bobs along pliz's
 
    integer :: i, k, L, n1, n2, k1, k2, nt, nt2, minp, lastfoundk, kL, kint, kf, jacros
    integer :: iL, numLL, numcrossedLinks, ierror, jakdtree = 1, inp, n, ip, ip1, ip2, ierr
-   double precision :: SL, SM, XCR, YCR, CRP, Xa, Ya, Xb, Yb, zc, af, roofgutterheight = 0.1d0
+   double precision :: SL, SM, XCR, YCR, CRP, Xa, Ya, Xb, Yb, zc, af
    double precision, allocatable :: dSL(:), blav(:)
-   integer, allocatable :: iLink(:), iLcr(:), iPol(:), nblav(:)
+   integer, allocatable :: iLink(:), iPol(:), nblav(:)
    double precision :: t0, t1
    character(len=128) :: mesg
-
-   character(len=5) :: sd
 
    if (len_trim(md_roofsfile) == 0) then
       return

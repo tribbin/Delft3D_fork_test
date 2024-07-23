@@ -66,7 +66,6 @@ integer function initialise_fetch_proc_data() result(iresult)
    integer :: ndx_max, index_loop, error, source, tag = 100, icount
    integer, dimension(:), allocatable :: iglobal_s_source
    integer :: flow_node, isearch, j0
-   double precision :: x0, y0
    double precision, dimension(:), allocatable :: xz_proc, yz_proc
    logical :: iglobal_s_exist_on_fetch_proc = .false.
    double precision, parameter :: tolerance = 1.0d-3
@@ -351,7 +350,6 @@ end function stop_fetch_computation
 !> send a message to the fetch proc that other procs are finished, then it calls clean_fetch_proc_settings subroutine
 subroutine finish_fetch_proc()
    use m_partitioninfo, only: my_rank, fetch_proc_rank, use_fetch_proc
-   use m_waves, only: nwf
    use fetch_proc_operation_data
    use m_flowtimes
    use MessageHandling

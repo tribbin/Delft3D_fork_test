@@ -102,7 +102,7 @@ contains
       use m_monitoring_crosssections
       use unstruc_model
       implicit none
-      integer :: k, ierr, minp, mout, L1, istat, i
+      integer :: ierr, minp, mout, L1, istat, i
       integer :: MODE, NUM, NWHAT, KEY
       double precision :: QQQ, upot, ukin, ueaa
       character*(*) :: batfile

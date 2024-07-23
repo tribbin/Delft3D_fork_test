@@ -38,8 +38,6 @@
          double precision :: dv
          double precision :: dxh
          double precision :: dyh
-         double precision :: f1
-         double precision :: f2
          double precision :: fmx
          integer :: i, kp
          integer, save :: ini = 0

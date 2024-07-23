@@ -45,8 +45,6 @@ subroutine orthonet_compute_orientation(aspect, uu1, vv1, uu2, vv2, i)
    double precision, intent(out) :: vv1, vv2 !< components of second orientation vector
 
    double precision, dimension(2, 2) :: B, Jacobian ! Jacobian matrix
-   double precision :: lambda1, lambda2 ! eigen values of J
-   double precision, dimension(2) :: L1, L2, R1, R2 ! left and right eigen vectors of J
 
    integer, parameter :: M = 6 ! maximum nodes in cell
    double precision, dimension(M, 2) :: A, R ! coefficient matrix
@@ -60,9 +58,7 @@ subroutine orthonet_compute_orientation(aspect, uu1, vv1, uu2, vv2, i)
    double precision, dimension(2, 2) :: UU, VV ! left and right singular vectors
    double precision, dimension(2) :: S ! singular values
 
-   double precision :: xx, yy, zz
-
-   integer :: j, k, link, N
+   integer :: j, k, N
 
    double precision, parameter :: EPS = 1d-4
 

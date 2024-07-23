@@ -48,8 +48,7 @@
     integer :: iL, numLL, numcrossedLinks, ierror, jakdtree = 1, ja2pt
     double precision :: SL, SM, XCR, YCR, CRP, Xa, Ya, Xb, Yb, zc, af, width
     double precision, allocatable :: dSL(:)
-    integer, allocatable :: iLink(:), iLcr(:), iPol(:)
-    character(len=5) :: sd
+    integer, allocatable :: iLink(:), iPol(:)
     double precision :: t0, t1
     character(len=128) :: mesg
 

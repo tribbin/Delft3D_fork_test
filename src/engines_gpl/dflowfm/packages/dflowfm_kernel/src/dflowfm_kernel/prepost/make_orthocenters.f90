@@ -37,7 +37,7 @@ subroutine make_orthocenters(dmaxnonortho, maxiter)
    use unstruc_display, only: ncolhl
    use geometry_module, only: dcosphi
    use m_sferic, only: jsferic, jasfer3D
-   use m_missing, only: dmiss, dxymis
+   use m_missing, only: dxymis
    use gridoperations
 
    implicit none
@@ -47,18 +47,15 @@ subroutine make_orthocenters(dmaxnonortho, maxiter)
 
    integer, parameter :: N6 = 6 ! maximum polygon dimension
 
-   integer, dimension(N6) :: nodelist
    double precision, dimension(N6) :: xplist, yplist, xflist, yflist
 
    double precision, dimension(:), allocatable :: xc, yc !< cell centers
-
-   double precision :: SL, SM, xcr, ycr, crp
 
    double precision :: af, dmaxabscosphi, drmsabscosphi, dabscosphi
 
    integer :: iter
 
-   integer :: i, ip1, ii, ic, ic1, j, ja3, k, kp1, L, N, jacros
+   integer :: i, ip1, ii, ic, ic1, j, ja3, k, kp1, L, N
 
    integer :: ierror
 

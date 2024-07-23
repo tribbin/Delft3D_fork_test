@@ -44,8 +44,8 @@
     implicit none
     integer :: mpol
     integer :: k, j, jstart, jend, ierr, jdla, ipoint, jakdtree, ndim, n, in, nspl, n1
-    integer, allocatable :: indxn(:, :), nds(:), inp(:), ndn(:)
-    double precision, allocatable :: wfn(:, :), zz(:)
+    integer, allocatable :: nds(:), ndn(:)
+    double precision, allocatable :: zz(:)
 
     call reapol(mpol, 0)
 

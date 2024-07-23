@@ -38,7 +38,6 @@
       use m_wind
       use unstruc_display
       use m_reduce
-      use m_sediment, only: dmorfac
       use dflowfm_version_module, only: company, product_name
       use unstruc_messages
       use m_fixedweirs
@@ -53,7 +52,7 @@
       integer, external :: infoinput
       external :: highlight_form_line
 !
-      integer :: ir, il, iw, ixp, iyp, ih, i, iuvfieldorg, ifexit, ifinit, key, ja, niadvec
+      integer :: ir, il, iw, ixp, iyp, ih, i, ifexit, ifinit, key, ja, niadvec
       integer :: nbut, imp, inp
 
       NLEVEL = 4

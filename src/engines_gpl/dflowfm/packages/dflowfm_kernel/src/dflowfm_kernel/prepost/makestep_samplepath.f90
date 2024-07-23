@@ -48,14 +48,14 @@ subroutine makestep_samplepath(ipprev, ipcur, ipnext, Nsub, ipsub, ierror)
    integer, intent(out) :: ierror !< no errors (0), need to realloc ipsub (-newsize) or other error (1)
 
    integer :: i, j, i0, i1, j0, j1, ip, iploc, icur, jcur, num, Nsub0
-   integer :: isub, jsub, i00, i11, j00, j11, ii, jj, ip1, ip2
+   integer :: isub, jsub, i00, i11, j00, j11, ii, ip1, ip2
 
    double precision :: dcsphi, disub, djsub, zs_ave, zs_max
-   double precision :: Dh, Dzs
+   double precision :: Dh
 
    integer, parameter :: Nwidth = 5 !  number of sample widths considered
 
-   integer :: Nlist, jatoosteep
+   integer :: Nlist
    integer, dimension(2*(Nwidth + 1)) :: iplist
 
    ipnext = 0

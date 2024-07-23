@@ -37,7 +37,7 @@
     implicit none
 
     integer :: n, nlayb, nrlay
-    integer :: j, j1, j3, k, Ltn, mx ! layerdistribution indexes
+    integer :: k, Ltn, mx ! layerdistribution indexes
     double precision :: bobL
 
     Ltn = laydefnr(n)

@@ -40,10 +40,8 @@ subroutine copySplinesToFinePol(numk)
 
    integer, intent(in) :: numk !< resample factor
 
-   integer :: i, k, m, numpi, Numnew, ierror
-   double precision :: tn, xk, yk, xh2(500), yh2(500)
+   integer :: m, numpi, Numnew, ierror
 
-!    NUMK  = 11
    do m = 1, mcs
       call NUMP(m, NUMPI)
 

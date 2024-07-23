@@ -39,12 +39,12 @@
     use m_longculverts
     implicit none
 
-    double precision :: wud, wuL1, wuL2, wuk, cs, sn
-    integer :: k, L, ierr, n, kk, n12, lnxmax
-    integer :: k1, k2, k3, k4, nn, LL, jaclosedcorner
+    double precision :: wud, wuL1, wuL2, cs, sn
+    integer :: L, ierr, n, kk, n12, lnxmax
+    integer :: k1, k2, LL
     integer :: ilongc, L1dlink
 
-    double precision :: xloc, yloc, beta, aa1, wcw, alf
+    double precision :: aa1, wcw, alf
     double precision, allocatable :: wwL(:)
 
     double precision, allocatable :: wcxy(:, :) ! center weight factors (2,ndx) , only for normalising

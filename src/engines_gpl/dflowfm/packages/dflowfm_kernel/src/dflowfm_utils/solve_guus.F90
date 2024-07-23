@@ -46,8 +46,8 @@
     ! noactive
     ! nbrstk
     implicit none
-    integer m, n, ierr, nsiz
-    integer idmn, L, k1, k2, k
+    integer m, ierr
+    integer idmn, k
 
     lintot = lnx; nodtot = ndx
 
@@ -494,7 +494,6 @@
     use m_flowparameters
     use m_reduce
     use m_flowtimes
-    use m_flowgeom, only: ln, xz, yz
     use m_partitioninfo, only: my_rank, ndomains
     use m_timer
 
@@ -508,15 +507,6 @@
     double precision :: s1(ndx)
     integer :: itsol
     integer :: ierror ! error (1) or not (0)
-
-    character(len=11) :: fmt
-
-    integer :: l, m1m2, i, jj, k, fout, irowstart, bla
-
-! integer           :: ipre   !< Preconditioner, 0=rowscaling, 1=GS, 2=trial
-    integer :: ierr
-    integer, dimension(:), allocatable :: node_numbers
-    integer :: noel_start
 
     ierror = 0
 
@@ -629,24 +619,22 @@
     use m_flowgeom, only: kfs
     use MessageHandling
     use m_flowparameters, only: Noderivedtypes
-    use m_partitioninfo, only: jampi, sdmn, my_rank
+    use m_partitioninfo, only: my_rank
     use m_netw, only: xzw, yzw
     use unstruc_model, only: md_ident
 
     implicit none
-    integer :: ndx, ipre, its
+    integer :: ndx, its
     double precision :: s1(ndx)
     double precision, dimension(Ndx), intent(in) :: righthandside !< right-hand side, all cells
     integer, intent(in) :: jaini !< compute preconditioner and permutation (1) or not (0), or initialization only (-1), or ILU solve only (2)
     integer, intent(in) :: jadosafe !< thread-safe (1) or not (0), will set jasafe module variable
     integer, intent(out) :: ierror !< error (1) or not (0)
 
-    integer :: j, jj, n, ntot, na, matr, nietnul, m
+    integer :: j, jj, n, ntot, na, nietnul, m
     integer :: minp, k
 
-    double precision :: res, dum
-
-    character(len=100) :: message
+    double precision :: res
 
     logical, save :: jaoutput = .false.
 
@@ -961,7 +949,7 @@
     integer :: ndx, ipre
     double precision :: s1(ndx)
 
-    integer :: i, j, jj, n, ntot, mout, japrint = 0
+    integer :: i, j, jj, n, ntot
     double precision :: rkzki, rkzki0, pkapki, alfak, betak
     double precision :: eps
 
@@ -1111,10 +1099,6 @@
     integer i, ipre, j, jj, n
     double precision :: rkzki, rkzki0, pkapki, alfak, betak
     double precision :: eps
-    integer :: ntot
-    logical :: isnan
-
-    character(len=100) :: message
 
     if (nocg <= 0) return
 
@@ -1276,8 +1260,6 @@
     integer i, ipre, j, jj, n
     double precision :: rkzki, rkzki0, pkapki, alfak, betak
     double precision :: eps
-    integer :: ntot
-    logical :: isnan
 
     if (nocg <= 0) return
 
@@ -1448,9 +1430,8 @@
 
     integer :: ndx
     double precision :: s1(ndx)
-    double precision :: dum
 
-    integer m, n, np
+    integer m, n
     do n = nogauss, 1, -1
 
        ndn = noel(n)
@@ -1559,7 +1540,7 @@
     use m_reduce
     implicit none
     !double precision :: ccc(500)
-    integer j, k, m, n, np, m1, nodm1, m1m2, nn
+    integer j, k, m, n, np, m1, nodm1, m1m2
     ccc = 0d0
     do n = 1, nogauss
        ndn = noel(n)
@@ -1590,7 +1571,7 @@
     use m_reduce
     implicit none
     !double precision :: ccc(500)
-    integer j, k, m, n, np, m1, nodm1, m1m2, nn, mm, jj, m1m2b
+    integer j, k, m, n, m1, nodm1, m1m2, mm, jj
 
     ccc = 0d0
     do n = 1, nogauss
@@ -1631,7 +1612,7 @@
     use m_partitioninfo
 
     implicit none
-    integer nn, m, l, m1, m2
+    integer nn
 
     call setkfs()
 
@@ -1796,8 +1777,7 @@
     use m_alloc
     implicit none
 
-    integer allocerr, ker, errornumber
-    character * 6 string1, string2
+    integer allocerr
 
     if (allocated(ccr)) deallocate (ccr)
     allocate (ccr(0:ijstck), STAT=allocErr); ccr = 0
@@ -1845,8 +1825,7 @@
 
     implicit none
 
-    integer :: k, n, nn, l, il
-    double precision :: ff
+    integer :: n, nn
 
     do n = nogauss + nocg + 1, nowet ! alle expliciete punten
        nn = noel(n)
@@ -1894,9 +1873,9 @@
     character(len=100) :: message
 
 #ifdef HAVE_MPI
-    integer :: irank, nopreconditioner
+    integer :: nopreconditioner
 
-    integer :: i, j, jj, n, ntot, mout, japrint = 0
+    integer :: i, j, jj, n, ntot
     double precision :: rkzki, rkzki0, pkapki, alfak, betak
     double precision :: eps
 
@@ -2264,7 +2243,7 @@
 
     integer, dimension(:), allocatable :: imask
 
-    integer :: i, ip1, k, k1, k2, L
+    integer :: i, ip1, k1, k2, L
     integer :: iglev1, iglev2
     integer :: n
     integer :: jawritten
@@ -2392,9 +2371,7 @@
     use m_partitioninfo
     use m_reduce
     use m_saad
-    use m_flowgeom, only: kfs, dxi, Lnx
-    use m_flow, only: u1
-    use m_flowtimes, only: dts
+    use m_flowgeom, only: kfs
     use unstruc_messages
     use m_timer
     use network_data, only: xzw
@@ -2411,18 +2388,16 @@
 
 !    double precision, dimension(:), allocatable      :: bdum, cdum, ddum
 
-    double precision :: maxdiff, resloc, maxresloc, diff
+    double precision :: maxdiff
     double precision :: res ! residual
     double precision :: dum
     double precision :: beta, val
-
-    integer :: maxits ! maxinum number of matrix-vector multiplications in Saad solver
-
+    
     integer, parameter :: MAXITER = 100
     integer :: iter, its
-    integer :: j, jj, n, na, ntot
+    integer :: jj, n, na
     integer :: iout
-    integer :: ki, kb, L, k
+    integer :: ki, kb, L
 
     integer, parameter :: javerbose = 1
 

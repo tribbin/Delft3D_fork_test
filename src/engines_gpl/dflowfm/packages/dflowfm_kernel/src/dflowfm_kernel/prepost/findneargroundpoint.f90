@@ -38,7 +38,7 @@
          use m_sferic, only: jsferic, jasfer3D
 
          implicit none
-         integer :: k1, k2, k, kk, n1, n2
+         integer :: k1, k2, k, n1, n2
 
          k2 = 0
          n1 = max(1, k1 - 2000)

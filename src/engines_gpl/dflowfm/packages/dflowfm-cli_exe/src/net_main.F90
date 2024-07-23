@@ -112,7 +112,6 @@ program unstruc
    integer, external :: read_commandline
    integer, external :: flow_modelinit
 
-   integer :: mklok
    double precision :: tstartall, tstopall ! just checking...
 
    call klok(tstartall)

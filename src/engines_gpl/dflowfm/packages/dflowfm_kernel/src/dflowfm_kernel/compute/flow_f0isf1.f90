@@ -41,7 +41,7 @@
 
     implicit none
 
-    integer :: ierror, k, kk, kb, kt, Lf, i, k1, k2, ll
+    integer :: k, kk, kb, kt, Lf, i, k1, k2
     integer :: ndraw
     common / DRAWTHIS / ndraw(50)
 

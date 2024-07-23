@@ -41,8 +41,8 @@
      double precision :: x1, y1, x2, y2, x3, y3, x4, y4
      integer :: ja, k1k, k2k
 
-     double precision :: r1, r2, rm, xd, yd, xm, ym, dis1, dis2
-     integer :: ja1, ja2
+     double precision :: r1, r2, rm, xd, yd, xm, ym, dis1
+     integer :: ja1
 
      k1k = 0
      k2k = 0

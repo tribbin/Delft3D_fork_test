@@ -40,8 +40,8 @@
          use gridoperations
 
          implicit none
-         integer :: i, j, n, ncol, jatel, in, k, im, jm, mxnum
-         double precision :: xx(4), yy(4), x, y, z
+         integer :: i, j, n, jatel, in, k, im, jm, mxnum
+         double precision :: x, y, z
 
          double precision :: vmax, vmin, dv, val
          integer :: ncols, nv, nis, nie, jaauto

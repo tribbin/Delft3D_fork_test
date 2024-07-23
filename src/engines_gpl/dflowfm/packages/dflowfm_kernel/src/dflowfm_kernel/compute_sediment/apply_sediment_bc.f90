@@ -35,7 +35,7 @@
       use m_flowgeom
       use m_flow, only: q1
       use m_meteo
-      use m_transport, only: ised1, numconst, constituents, ifrac2const
+      use m_transport, only: ised1, constituents, ifrac2const
       use m_sediment, only: sedtot2sedsus
       use sediment_basics_module
       use m_fm_erosed

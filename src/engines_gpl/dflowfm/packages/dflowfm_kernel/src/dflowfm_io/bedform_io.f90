@@ -274,7 +274,6 @@ contains
       !
       ! Local variables
       !
-      character(6) :: keyw
       character(20) :: ctemp
       character(60) :: txtput2
       character(40) :: txtput1

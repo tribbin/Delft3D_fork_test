@@ -46,7 +46,7 @@ subroutine update_waq_sink_source_fluxes()
 
    integer :: k, k1, k2, isrc, ip, ilaysin, ilaysor
    integer :: kksin, kbsin, ktsin, kksor, kbsor, ktsor
-   integer :: kkksin, kkbsin, kktsin, kktxsin, kkksor, kkbsor, kktsor, kktxsor
+   integer :: kkbsin, kktsin, kktxsin, kkbsor, kktsor, kktxsor
    real(8) :: dzss, qsrck, fsor, fsorlay
    real(8), allocatable :: fsin(:)
 

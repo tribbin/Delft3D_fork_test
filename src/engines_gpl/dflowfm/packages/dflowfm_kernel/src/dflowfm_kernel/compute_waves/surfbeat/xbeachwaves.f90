@@ -914,7 +914,6 @@ subroutine xbeach_wave_instationary()
    double precision, allocatable :: RH(:)
    double precision, external :: sinhsafei
 
-   double precision :: ee_eps, tt_eps
    double precision :: cost, sint, rsl, rhog8
 
    allocate (hh(1:ndx), ddlok(1:ntheta, 1:ndx), dd(1:ntheta, 1:ndx), wete(1:ndx), drr(1:ntheta, 1:ndx), stat=ierr)
@@ -4250,7 +4249,7 @@ subroutine xbeach_solve_wave_stationary(callType, ierr)
    use m_xbeach_data, m_xbeach_data_hminlw => hminlw
    use m_flowgeom
    use m_flowtimes, only: dnt
-   use m_flow, only: s1, epshu, kmx, flowwithoutwaves
+   use m_flow, only: epshu, flowwithoutwaves
    use network_data, only: xk, yk, numk
    use m_sferic, only: pi, dg2rd, rd2dg
    use m_physcoef, only: ag, rhomean
@@ -4269,11 +4268,10 @@ subroutine xbeach_solve_wave_stationary(callType, ierr)
    integer, parameter :: callTypeDirections = 1
    integer, parameter :: np = 12
 
-   integer :: k, k1, k2, L, cn1, cn2, n
+   integer :: k, L, cn1, cn2, n
    integer :: itheta
    integer :: nthetalocal
    double precision :: dthetalocal
-   double precision :: sigm ! angular frequency
    double precision :: wavdir ! incident angle in radians
    double precision :: t0, t1, t2, t3, t4 ! timers
    !

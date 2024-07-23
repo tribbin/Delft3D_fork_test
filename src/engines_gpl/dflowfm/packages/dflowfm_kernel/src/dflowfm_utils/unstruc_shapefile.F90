@@ -451,7 +451,6 @@ contains
       use m_flowgeom, only: ln2lne
       use m_strucs, only: generalstruc
       use m_structures, only: gates
-      use m_missing, only: dmiss
       implicit none
 
       integer, parameter :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
@@ -669,7 +668,7 @@ contains
       integer, parameter :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
       type(shpfileobject) :: shphandle
       type(shpobject) :: shpobj
-      integer :: i, j, ii, nshp, k, k1, k2, L, ishape, Lb, istart
+      integer :: i, j, ii, k1, k2, L, ishape, Lb, istart
       character(len=lencharattr) :: filename, objectid, ebmname_loc
       integer :: id_objectid, id_crestlev
       double precision :: tmp_x(2), tmp_y(2)
@@ -774,7 +773,7 @@ contains
       integer, parameter :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
       type(shpfileobject) :: shphandle
       type(shpobject) :: shpobj
-      integer :: i, j, Lf, La, L, k, k1, k2, ii, nshp, ishape
+      integer :: i, j, Lf, La, k, k1, k2, ii, nshp, ishape
       character(len=lencharattr) :: filename, objectid
       character(len=6) :: lenobj_loc
       integer :: id_objectid, id_crestlev, id_crestlen, id_sillhl, id_sillhr, id_taludslpl, id_taludslpr, &
@@ -1191,10 +1190,10 @@ contains
       integer, parameter :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
       type(shpfileobject) :: shphandle
       type(shpobject) :: shpobj
-      integer :: i, j, n, ishape, igen, Lf, La, L, k, k1, k2
+      integer :: i, j, n, ishape, Lf, La, L, k, k1, k2
       character(len=lencharattr) :: filename, objectid
       character(len=4) :: lenobj_loc
-      integer :: id_objectid, id_flowlinknr, id_weirgen_cresth
+      integer :: id_objectid, id_flowlinknr
       double precision :: tmp_x(2), tmp_y(2)
       if (jampi == 0) then
          call mess(LEVEL_INFO, 'SHAPEFILE: Writing a shape file for pumps.')
@@ -1286,7 +1285,7 @@ contains
       integer, parameter :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
       type(shpfileobject) :: shphandle
       type(shpobject) :: shpobj
-      integer :: i, j, n, ishape, igen, Lf, La, L, k, k1, k2
+      integer :: j, ishape, L, k, k1, k2
       character(len=lencharattr) :: filename, objectid
       character(len=6) :: lenobj_loc
       integer :: id_objectid, id_flowlinknr, id_linktype
@@ -1385,7 +1384,6 @@ contains
       use m_flowgeom, only: ln2lne, wu
       use m_strucs, only: generalstruc
       use m_structures, only: valgenstru
-      use m_missing, only: dmiss
       implicit none
 
       integer, parameter :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
@@ -1590,7 +1588,7 @@ contains
       integer, parameter :: lencharattr = 256, tshp = shpt_arc ! arcs (Polylines, possible in parts)
       type(shpfileobject) :: shphandle
       type(shpobject) :: shpobj
-      integer :: i, ii, ishape, j, k, k1, k2, L, La, Lf, n, nshp
+      integer :: i, ishape, j, k, k1, k2, L, La, Lf, n
       character(len=lencharattr) :: filename, objectid
       character(len=6) :: lenobj_loc
       integer :: id_objectid, id_flowlinknr

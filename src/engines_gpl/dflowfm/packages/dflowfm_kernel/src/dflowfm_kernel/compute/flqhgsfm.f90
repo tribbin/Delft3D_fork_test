@@ -32,7 +32,6 @@
 
 subroutine flqhgsfm(m, teken, husb, hdsb, uu, zs, wstr, w2, wsd, zb2, ds1, ds2, &
                     dg, cgf, cgd, cwf, cwd, mugf, lambda, strdamf, jarea, ds)
-   use m_flow, only: au, fu, ru
 
    use m_physcoef, only: ag
 

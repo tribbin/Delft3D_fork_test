@@ -48,18 +48,18 @@
 
      implicit none
 
-     integer :: ini = 0, kt, mout = 0, jaref
+     integer :: ini = 0, kt, jaref
      double precision :: vmin, vmax, ugem, viceld
-     integer :: n, kb, kbn, kbn1, km, km1, k, kk, ku, kd, kku, kkd, Lb0, Lb, Lt, Lm1, L, LL, La
+     integer :: n, kb, km, km1, k, kk, ku, kku, Lb0, Lb, Lt, Lm1, L, LL, La
      double precision :: zmin, zmax
-     double precision :: h0, b0, z00, zinc, cz, cf, ustbref, ustwref, zint, z1, dz2, zz
+     double precision :: h0, b0, z00, zinc, cz, ustbref, ustwref, zint, z1, dz2, zz
      double precision :: tkebot, tkesur, tkewin
-     double precision :: epsbot, epssur, epswin, dzkap, sqcf, ulx, sg, drhodz, rhomea, rhop0, prsappr
+     double precision :: epsbot, epssur, dzkap, sqcf, ulx, sg, drhodz, rhomea, rhop0, prsappr
      double precision, external :: densfm, setrhofixedp
 
      double precision :: VMAX2, VMIN2, DV2, VAL2
      integer :: NCOLS2, NV2, NIS2, NIE2, JAAUTO2, is, Ls, LLs, Lbs, Lts
-     integer :: iconst, jabruv
+     integer :: jabruv
 
      integer :: ndraw
      common / DRAWTHIS / ndraw(50)

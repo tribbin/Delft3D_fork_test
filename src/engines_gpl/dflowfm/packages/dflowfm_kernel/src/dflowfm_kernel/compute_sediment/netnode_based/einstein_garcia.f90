@@ -35,7 +35,7 @@ subroutine einstein_garcia(da, rs, dj1, dj2)
    implicit none
    double precision :: da, rs, dj1, dj2
 
-   double precision :: aa, cck, rsk, dj12, dj22
+   double precision :: aa, rsk, dj12, dj22
    integer :: i1, i2, k
 
    if (da < 0.001d0) then

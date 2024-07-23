@@ -60,7 +60,7 @@ subroutine sam2net_curvi(numk, xk, yk, zk)
    double precision :: xiloc, etaloc, zloc(1, 1, 1), etamin, etamax
 
    integer :: ierror
-   integer :: i, ipoint, j, ja, jadl, jakdtree, k, N
+   integer :: i, ipoint, j, ja, jadl, jakdtree, k
 
    logical :: Ldeletedpol
    logical :: L1D

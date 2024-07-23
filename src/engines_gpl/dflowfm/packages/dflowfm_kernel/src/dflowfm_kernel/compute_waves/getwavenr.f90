@@ -47,9 +47,8 @@
     double precision, intent(out) :: k !  Approximation of wave lenght
 
     double precision :: den ! Denominator
-    double precision :: kd ! Double value for K
     double precision :: num ! Numerator
-    double precision :: ome2, rk, fac, rlabda, rlab0, rn ! Omega
+    double precision :: ome2
 
     ome2 = ((twopi / T)**2) * h / ag
     num = 1.0d0 + ome2 * (a1 + ome2 * (a2 + ome2 * (a3 + ome2 * (a4 + ome2 * (a5 + ome2 * a6)))))

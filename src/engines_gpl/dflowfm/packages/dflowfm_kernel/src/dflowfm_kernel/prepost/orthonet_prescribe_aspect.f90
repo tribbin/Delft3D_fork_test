@@ -47,15 +47,10 @@ subroutine orthonet_prescribe_aspect(smp_mu, idir, aspect, ic, jc)
 
    integer, dimension(numk) :: ic, jc !< start indices on curvi-grid
 
-   double precision, dimension(2) :: orient ! prescribed orientation
-
-!   integer, parameter                 :: IMISS = -999999
-
-   double precision :: x1, y1, x2, y2, x3, y3
-   double precision :: R01, cosphi, cos2phi, sin2phi
+   double precision :: cosphi, cos2phi, sin2phi
    double precision :: A, A2, fA2, mu
 
-   integer :: L, k1, k2, imin, jmin, mc, nc
+   integer :: L, k1, k2
 
 !   orient = (/ 0d0, 1d0 /)
 !   orient = orient / sqrt(sum(orient**2))

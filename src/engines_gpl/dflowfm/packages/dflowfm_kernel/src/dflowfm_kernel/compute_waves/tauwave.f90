@@ -33,13 +33,11 @@
    subroutine tauwave()
       use m_sferic
       use m_flowparameters
-      use m_flow, only: plotlin, rhomean, ag, s1, s0, hu, jaconveyance2D, hs, u1, v, taus, frcu, ifrcutp, huvli, z0ucur, z0urou, tausx, tausy, ucx, ucy, cfuhi, ifrctypuni, frcuni, taubxu, taubu
+      use m_flow, only: rhomean, ag, hu, jaconveyance2D, u1, v, frcu, ifrcutp, z0urou, cfuhi, ifrctypuni, frcuni, taubxu, taubu
       use m_flowgeom
-      use m_flowtimes, only: time1
       use m_physcoef, only: rhomean, ee, sag, vonkar
       use m_waves
       use m_bedform, only: bfmpar
-      use m_turbulence, only: rho
       use m_vegetation
       use m_trachy, only: trachy_resistance
       use unstruc_messages
@@ -48,13 +46,13 @@
       implicit none
 
       logical :: javegczu
-      integer :: k, k1, k2, L, kb, ki
-      double precision :: phivr, sintu, costu
+      integer :: k1, k2, L
+      double precision :: phivr
       double precision :: fw, astar, astarc, tauwav, taucur, cdrag, tpu, z0, uorbu, fsqrtt
-      double precision :: cz, uuu, vvv, umod, umodsq, abscos, uorbhs, waveps, u2dh
-      double precision :: xpar, ymxpar, yparL
+      double precision :: cz, uuu, vvv, umod, umodsq, abscos, uorbhs, waveps
+      double precision :: ymxpar, yparL
       double precision :: ust, ac1, ac2, rhoL, csw, snw
-      double precision :: wbl, rz, cf, cwall, huL
+      double precision :: rz, cf, cwall, huL
       double precision :: hrmsu, rlabdau, rr, umax, t1, u11, a11, raih, rmax, uon, uoff, uwbih
       double precision :: rksru, rksmru, gamma, ksc, uratio, ka, ca
       double precision :: cosk1, cosk2, sink1, sink2

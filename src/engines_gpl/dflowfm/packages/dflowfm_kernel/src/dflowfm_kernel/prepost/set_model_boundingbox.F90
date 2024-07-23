@@ -53,9 +53,6 @@ function set_model_boundingbox() result(ierr)
    implicit none
 
    integer :: ierr !< Result status (DFM_NOERR if successful)
-
-   integer :: jabndnd_ !< Flag specifying whether boundary nodes are to be written.
-   integer :: ndxndxi !< Last node to be saved. Equals ndx when boundary nodes are written, or ndxi otherwise.
    integer :: n, k, kk, nv
 
    double precision, pointer :: lonn(:), latn(:)

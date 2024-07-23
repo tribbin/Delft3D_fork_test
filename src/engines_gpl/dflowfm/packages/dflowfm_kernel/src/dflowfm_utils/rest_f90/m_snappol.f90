@@ -345,9 +345,9 @@ contains
       double precision, dimension(4) :: xx, yy
       double precision :: xzz, yzz, xci, yci, xce2, yce2
 
-      integer :: ierr, mx1Dend, Nx, numpols, jamiss
-      integer :: i, iend, j, k1, k2, k3, k4, kL, kR, L, m, num, NDIM
-      integer :: ja, isec, numsec, k, Lf
+      integer :: mx1Dend, Nx, numpols, jamiss
+      integer :: i, iend, k1, k2, k3, k4, kL, kR, L, m, num, NDIM
+      integer :: ja, isec, numsec
 
       integer :: ioutput
 

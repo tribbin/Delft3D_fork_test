@@ -46,8 +46,6 @@
 
      integer :: jacros
      integer :: k
-     integer :: k1
-     integer :: k2
      integer :: ku
      double precision :: XP1, YP1, XP2, YP2, sl, sm, XCR, YCR, CRP, currentSegmentLength
 

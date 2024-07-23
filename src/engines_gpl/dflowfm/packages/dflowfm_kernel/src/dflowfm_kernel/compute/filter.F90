@@ -35,7 +35,7 @@
 subroutine ini_filter(jafilter, filterorder, jacheckmonitor, ierr)
    use m_flowgeom, only: Lnx, ln, ln2lne, nd, lne2ln, dx, wu, ba, ban, lncn, xu, yu, csu, snu
    use network_data, only: lne, nmk, kn, nod, nb, kc
-   use m_flow, only: layertype, Lnkx, kmx
+   use m_flow, only: Lnkx, kmx
    use m_filter
    use m_solver
    use m_alloc
@@ -457,8 +457,8 @@ end subroutine add_rowelem
 !>  (I-Delta t F) u^* = u^n
 subroutine comp_filter_predictor()
    use m_filter
-   use m_flowgeom, only: Lnx, Dx, Ln
-   use m_flow, only: layertype, kmx, fu, ru, u0, hu, plotlin, adve
+   use m_flowgeom, only: Lnx
+   use m_flow, only: kmx, u0, plotlin, adve
    use m_flowtimes, only: Dts
    use m_physcoef, only: ag
    use unstruc_messages
@@ -789,7 +789,7 @@ end subroutine get_Deltax
 !> compute "checkerboard" mode monitor
 subroutine comp_checkmonitor()
    use m_flowgeom, only: Lnx, Dx, wu, ba, ln
-   use m_flow, only: qw, kmx, Lbot, Ltop, kmxL
+   use m_flow, only: qw, kmx, Lbot, Ltop
    use m_turbulence, only: ln0
    use m_filter
    use m_partitioninfo
@@ -850,9 +850,9 @@ end subroutine comp_checkmonitor
 
 !> get filter coefficient (sigma only)
 subroutine get_filter_coeff()
-   use m_flowgeom, only: Lnx, ln, nd, acL, wcx1, wcx2, wcy1, wcy2, csu, snu, Dx, ba
-   use m_flow, only: qa, vol1, kmx, vicLu, hu, Lbot, Ltop, kmxL
-   use m_filter, only: iLvec, jLvec, ALvec, jadebug, eps, order, Deltax
+   use m_flowgeom, only: Lnx, ln, nd, acL, wcx1, wcx2, wcy1, wcy2, csu, snu
+   use m_flow, only: qa, vol1, kmx, vicLu, hu, Lbot, Ltop
+   use m_filter, only: iLvec, jLvec, ALvec, eps, order, Deltax
 
    double precision, dimension(kmx) :: eps1 ! first-order filter coefficient
    double precision :: eps2 ! second-order filter coefficient
@@ -863,8 +863,6 @@ subroutine get_filter_coeff()
    double precision :: wcx, wcy, w, alpha
    double precision :: volu
    double precision :: vicouv !< typical viscosity
-   double precision :: maxeps
-   double precision :: dinpr
 
    integer :: klay
    integer :: LL

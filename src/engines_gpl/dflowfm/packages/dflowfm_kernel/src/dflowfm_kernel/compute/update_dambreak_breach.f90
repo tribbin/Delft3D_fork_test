@@ -51,9 +51,6 @@ subroutine update_dambreak_breach(startTime, deltaTime)
 
    !locals
    double precision :: tempValue, smax, smin, hmx, hmn
-   integer :: indAverageUpStream(ndambreaklinks)
-   integer :: indAverageDownStream(ndambreaklinks)
-   integer :: nAverageUpStream, nAverageDownStream
    integer :: n, ierr, istru, indexLevelsAndWidths
 
    if (ndambreaksignals > 0) then ! Variable ndambreaksignals is >0 for all partitions if there is a dambreak, even if it is outside

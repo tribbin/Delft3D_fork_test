@@ -36,7 +36,7 @@
          use m_polygon
          use m_missing
          use m_wearelt
-         use m_sferic, only: jsferic, jasfer3D, dtol_pole
+         use m_sferic, only: dtol_pole
          use gridoperations
 
          implicit none

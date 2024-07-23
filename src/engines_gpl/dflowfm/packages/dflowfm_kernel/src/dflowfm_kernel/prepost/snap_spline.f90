@@ -57,7 +57,7 @@ subroutine snap_spline(ispline)
 
    double precision, dimension(:), allocatable :: xspp, yspp ! second order spline derivatives
 
-   double precision :: x1, y1, xn, yn, dis, rL, curv, dsx, dsy, fac
+   double precision :: dis, rL, curv, dsx, dsy
 
    double precision :: dn1x, dn1y, dn2x, dn2y, xx1, yy1, xx2, yy2 ! constraints: (x(1)-xx1)nx1 + (y(1)-yy1)ny1 = 0, etc.
 

@@ -52,7 +52,7 @@ subroutine tauwavefetch(tim)
 
    double precision, intent(in) :: tim
 
-   integer :: error, cell, nr_cells_done_red
+   integer :: error, cell
    integer, save :: total_nr_cells
    integer, external :: initialise_fetch_proc_data
    logical, external :: stop_fetch_computation
@@ -338,7 +338,6 @@ subroutine search_starting_cells(u_wind, v_wind, nr_cells_done)
    use m_flow, only: s1, dxymis
    use m_flowtimes
    use timers
-   use m_waves, only: nwf, fetch, fetdp
    use m_partitioninfo
    use unstruc_display, only: jagui
    use geometry_module, only: getdx, getdy, dbdistance, cross, normalout, normalin

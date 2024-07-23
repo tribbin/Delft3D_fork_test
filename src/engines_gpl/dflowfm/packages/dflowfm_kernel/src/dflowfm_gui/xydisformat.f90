@@ -56,7 +56,6 @@
          double precision :: val
          double precision :: vmax, XLC, YLC, XA, YA
          double precision :: vmin
-         double precision :: dlen
 
          common / DEPMAX / VMAX, VMIN, DV, VAL(256), NCOLS(256), NV, NIS, NIE, JAAUTO
 

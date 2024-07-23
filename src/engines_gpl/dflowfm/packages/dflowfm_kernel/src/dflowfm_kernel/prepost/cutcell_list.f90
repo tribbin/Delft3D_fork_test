@@ -48,11 +48,9 @@
      character(LEN=lenf), intent(in) :: FILNAM
      integer, intent(in) :: jamasks !< store masks and polygons (1), use stored masks and polygons (2), use stored masks masks and polygons and clear masks and polygons (3), do not use stored masks and polygons at all (0)
      logical JAWEL
-     double precision :: xplmax, xplmin
-
      double precision :: t0, t1
 
-     integer N, MPOL, MLIST, KEY, JADEL, NN, L, K, IN, NUMFIL, ierror
+     integer N, MPOL, MLIST, KEY, JADEL, NN, L, K, NUMFIL, ierror
      character(LEN=132), allocatable :: FILIST(:)
 
      character(len=128) :: mesg

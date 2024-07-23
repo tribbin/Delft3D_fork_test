@@ -53,9 +53,9 @@
 
     implicit none
 
-    integer :: k, mout, i
+    integer :: k, i
     double precision :: frac, tot, dtav
-    double precision :: dum, f
+    double precision :: f
     double precision :: tstop
     double precision :: tcpustep
     double precision :: time_cpu

@@ -43,7 +43,6 @@
     use m_xbeach_netcdf
     use waq
     use m_timer
-    use m_reduce, only: nocgiter
     use m_partitioninfo, only: ndomains, jampi, my_rank
     use m_flowparameters, only: jashp_crs, jashp_obs, jashp_weir, jashp_thd, jashp_gate, jashp_emb, jashp_fxw, jashp_src
     use m_flowgeom, only: ndx2d, ndxi, lnx1d
@@ -62,11 +61,8 @@
     implicit none
 
     double precision, intent(in) :: tim !< Current time, should in fact be time1, since all writers use s1, q1, etc.
-    double precision :: time_map_int, time_map_mpt
+    double precision :: time_map_mpt
     double precision :: runtime
-    integer :: mpt_minval
-    character(len=16) :: filepostfix
-    integer :: numomp
     double precision :: tem_dif
 
     call inctime_split(tim)

@@ -39,8 +39,6 @@
       use m_partitioninfo
       implicit none
 
-      character(len=256) :: str
-
       double precision :: GradHinUc, dum, Lambda, dfac
       double precision :: dumx1, dumy1, dumx2, dumy2
       double precision :: diss

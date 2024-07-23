@@ -36,8 +36,8 @@
 
      implicit none
 
-     integer :: NRL1D, NRL, NRLO, L, JONCE, K, K1, K2, K3, IBR, N, JASTOP, JASTART, IERR, IBX, KS, KK, KE, ja, JA1, JA2
-     integer :: NRL1D6, KN316, NRL1D16, NUM0, J
+     integer :: NRL1D, NRL, NRLO, L, K, K1, K2, K3, IBR, N, JASTOP, JASTART, IERR, IBX, KS, KK, KE, ja
+     integer :: NRL1D6, KN316, NRL1D16, J
 
      call setnodadm(0)
 

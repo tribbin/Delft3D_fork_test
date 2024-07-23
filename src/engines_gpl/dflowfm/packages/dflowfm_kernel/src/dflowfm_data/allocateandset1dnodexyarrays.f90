@@ -42,7 +42,7 @@
     integer :: n, LL
 
     ! locals
-    integer :: m, k, nn, no, L, La, n1, n2, ierr, JACROS
+    integer :: m, k, no, L, La, n1, n2, ierr, JACROS
     double precision :: x1, y1, x2, y2, hwu, cs, sn
     double precision :: x1a, y1a, x2a, y2a, x1b, y1b, x2b, y2b
     double precision :: SL, SM, XCR, YCR, CRP

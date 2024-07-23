@@ -52,7 +52,7 @@ function read_commandline() result(istat)
 
    integer :: istat !< Returned result status
    integer :: ncount
-   integer :: k, iastat, L, LS
+   integer :: k, iastat
    logical :: jawel
 
    character(len=255) :: inarg, inarg0
@@ -64,8 +64,6 @@ function read_commandline() result(istat)
    integer, dimension(MAXKEYS) :: ivals ! values as integers
    character(len=MAXSTRLEN), dimension(MAXKEYS) :: svals ! values as strings
    integer :: ikey
-
-   character(len=MAXOPTLEN) :: md_identloc
 
    istat = DFM_NOERR
 

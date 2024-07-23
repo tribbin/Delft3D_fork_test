@@ -46,7 +46,7 @@ subroutine flow_fourierinit()
    use m_oned_functions, only: set_ground_level_for_1d_nodes, set_max_volume_for_1d_nodes
 
    implicit none
-   integer :: minp, ierr
+   integer :: minp
    logical :: success
    real(kind=fp) :: ti_fou
 

@@ -43,7 +43,7 @@
         use gridoperations
         use unstruc_display, only: idisLink, dis_info_1d_link, nhlFlowLink
         use m_inquire_flowgeom
-        use m_transport, only: NUMCONST, ISALT, ITEMP, ISED1, ISEDN, ITRA1, ITRAN, ITRAN0, constituents, itrac2const, const_names, const_units
+        use m_transport, only: ISALT, constituents
 
         implicit none
         integer :: MODE, KEY, kb, kt, k, NL

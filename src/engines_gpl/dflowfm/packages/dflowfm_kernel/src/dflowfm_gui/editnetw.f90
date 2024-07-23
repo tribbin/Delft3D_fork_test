@@ -39,7 +39,6 @@
          use unstruc_messages
          use gridoperations
          use m_mergenodes
-         use m_save_ugrid_state, only: nodeids
          use unstruc_display, only: nhlNetNode
          implicit none
          integer :: MODE, KEY
@@ -52,7 +51,7 @@
          integer :: ja
          integer :: jadd
          integer :: k
-         integer :: k1, k2, k3
+         integer :: k1, k2
          integer :: kp
          integer :: kpp
          integer :: LL

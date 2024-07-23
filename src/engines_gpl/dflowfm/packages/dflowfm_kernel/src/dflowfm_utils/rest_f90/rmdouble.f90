@@ -45,7 +45,7 @@
          integer :: ns
          integer :: nsorg
          integer :: numweg
-         integer :: isam, jsam, ksam
+         integer :: isam, jsam
          double precision, intent(inout) :: XS(NS), YS(NS), ZS(NS)
          integer, dimension(NS), intent(inout) :: IPSAM !< permutation array (increasing x-coordinate)
          integer, dimension(:), allocatable :: newnode
@@ -64,7 +64,7 @@
 
          double precision, parameter :: dtol2 = 1d-8 ! sample-on-top of each other tolerance, squared
 
-         character OUD * 8, NIEUW * 8
+         character OUD * 8
          NSORG = NS
 
          allocate (newnode(NS))

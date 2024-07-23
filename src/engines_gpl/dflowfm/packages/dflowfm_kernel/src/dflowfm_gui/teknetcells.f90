@@ -46,13 +46,11 @@
 
       integer, intent(in) :: netwhat, jahalt, jacol
 
-      double precision :: xx(6), yy(6), zz(6), aspect, uu1, vv1, uu2, vv2, VFAC, VFACFORCE
-      double precision, allocatable :: zn(:)
+      double precision :: xx(6), yy(6), aspect, uu1, vv1, uu2, vv2, VFAC, VFACFORCE
 
-      double precision :: xc, yc
       double precision :: xfac
 
-      integer :: k, kk, n, ja, ncol, nodemode, nn, nvec
+      integer :: k, kk, ja, ncol, nodemode, nn, nvec
 
       integer :: ntopology, numcellstoplot
 

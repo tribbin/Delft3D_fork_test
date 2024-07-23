@@ -53,7 +53,7 @@ subroutine find_nearest_meshline(jasnap)
    integer, dimension(:), allocatable :: nodelist ! in connect_boundary_paths: nodes found so far
 
    integer :: MXLAN_sav
-   integer :: i, k, k_, L, N, in, ja
+   integer :: k, L, ja
 
    integer :: numseg ! land boundary segment number
    integer :: jstart, jend, jstart1
@@ -353,13 +353,9 @@ contains
       integer, allocatable, dimension(:) :: listnext ! next-cell list in maskcells
       integer :: numnext ! size of next-cell list in maskcells
 
-      integer :: k1, k2, N
+      integer :: N
 
-      integer :: in, j, ja, jacross, jland
-
-      double precision :: dis, xn, yn, rL
-
-!      integer, parameter                 :: IMISS = -999
+      integer :: in, j
 
 !     clear nodemask
       nodemask = IMISS
@@ -469,19 +465,11 @@ contains
 
       integer :: numnext ! number of cells in next-cell list
       integer, allocatable, dimension(:) :: listnext ! next-node list
-
-!      integer, intent(in)           :: jland          !< node in land boundary that is visited first
-
-      integer :: jacross, jaland, jland, jacell
-      integer :: ic, k, k1, k2, kk
+      integer :: jacross, jacell
+      integer :: ic, k1, k2, kk
       integer :: kcell, kothercell
 
-      double precision :: sl, sm, xcr, ycr, crp ! needed in subroutine cross
-      double precision :: x1, x2, x3, x4
-      double precision :: y1, y2, y3, y4
-      double precision :: rL
-
-      integer :: iter, j_, j
+      integer :: j
 
       integer :: i, L, LL, N, in, NN
       integer :: jalinkcrossed(6)
@@ -753,7 +741,7 @@ contains
 !>  note: will use jleft, jright, rLleft and rLright
    subroutine get_kstartend(jstart, jend, kstart, kend)
 
-      use m_missing, only: dmiss, imiss, JINS
+      use m_missing, only: dmiss, JINS
       use m_polygon, only: NPL, xpl, ypl, zpl
       use geometry_module, only: dbpinpol, dbdistance
       use m_sferic, only: jsferic, jasfer3D
@@ -883,7 +871,7 @@ contains
       integer :: ka, kb, kd, ke
 
       double precision :: xstart, ystart, xend, yend ! coordinates of begin and end point of land boundary segment respectively
-      double precision :: xa, ya, xb, yb, xd, yd, xe, ye
+      double precision :: xa, ya, xb, yb
       double precision :: xn, yn, r ! for toland
 
       double precision :: disstart, disend

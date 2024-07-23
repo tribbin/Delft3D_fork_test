@@ -46,7 +46,7 @@
        integer :: ntot, n, k, kd, ku
        double precision :: xlr
 
-       character CHARMC * 5, MATR * 4, REC * 132
+       character MATR * 4, REC * 132
        double precision :: XL, YL, ZL
 
        if (present(antot)) then

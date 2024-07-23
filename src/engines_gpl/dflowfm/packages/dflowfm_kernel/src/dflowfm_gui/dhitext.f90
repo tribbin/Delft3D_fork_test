@@ -36,7 +36,6 @@
          integer :: ival
          double precision :: x
          double precision :: y
-         double precision :: z
          double precision XD, YD, ZD
          !CALL DRIETWEE(XD,YD,ZD,X,Y,Z)
          call DPROJECT(Xd, Yd, X, Y, 1)
