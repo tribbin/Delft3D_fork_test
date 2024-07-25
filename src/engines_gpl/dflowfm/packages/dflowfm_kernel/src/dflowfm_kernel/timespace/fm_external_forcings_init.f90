@@ -869,12 +869,12 @@ contains
       case (UNC_LOC_S)
          target_num_points = ndx
          target_x => xz(1:target_num_points)
-         target_y => xz(1:target_num_points)
+         target_y => yz(1:target_num_points)
          target_mask => kcs
       case (UNC_LOC_U)
          target_num_points = lnx
          target_x => xu(1:target_num_points)
-         target_x => xu(1:target_num_points)
+         target_x => yu(1:target_num_points)
          target_mask => null()
       case default
          ierr = DFM_NOTIMPLEMENTED
