@@ -1051,11 +1051,15 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                     if (cb->subBlocks[i].compTimesCurrent > 0) {
                         // Computation times specified in a timeserie:
                         // Use the current element from the compTimes array. Substract tNext to obtain the new tStep.
-                        // Increase index comptimesCurrent, reset to -1 if there no valid timepoint in array compTimes anymore
-                        cb->subBlocks[i].tStep = cb->subBlocks[i].compTimes[cb->subBlocks[i].compTimesCurrent] - cb->subBlocks[i].tNext;
+                        // Increase index comptimesCurrent, reset to -1 if there no valid timepoints in array compTimes anymore
                         cb->subBlocks[i].compTimesCurrent++;
-                        if (cb->subBlocks[i].compTimesCurrent >= cb->subBlocks[i].compTimesLen)
+                        if (cb->subBlocks[i].compTimesCurrent >= cb->subBlocks[i].compTimesLen) {
+                            cb->subBlocks[i].tStep = 2.0 * masterComponent->tEnd;
                             cb->subBlocks[i].compTimesCurrent = -1;
+                        }
+                        else {
+                            cb->subBlocks[i].tStep = cb->subBlocks[i].compTimes[cb->subBlocks[i].compTimesCurrent] - cb->subBlocks[i].tNext;
+                        }
                     }
                 }
             }
@@ -1729,6 +1733,8 @@ void Dimr::scanControl(XmlTree* controlBlockXml, dimr_control_block* controlBloc
                 ++controlBlock->compTimesLen;
             // Rewind
             compTimesFile.close(); compTimesFile.open(timeElt->charData);
+            if (controlBlock->compTimesLen < 3)
+                throw Exception(true, Exception::ERR_INVALID_INPUT, "File '%s' must contain at least 3 times", timeElt->charData);
             // Use compTimesLen to allocate compTimes
             controlBlock->compTimes = new double[controlBlock->compTimesLen];
             // Read compTimes from the file
@@ -1740,7 +1746,7 @@ void Dimr::scanControl(XmlTree* controlBlockXml, dimr_control_block* controlBloc
             compTimesFile.close();
             controlBlock->tStart = controlBlock->compTimes[0];                       // First  timePoint to do a computation
             controlBlock->tStep = controlBlock->compTimes[1] - controlBlock->tStart; // Second timePoint to do a computation
-            controlBlock->compTimesCurrent = 2;                                      // Index to next timePoint
+            controlBlock->compTimesCurrent = 1;                                      // Index to current timePoint
             controlBlock->tEnd = 9.99e99;                                            // Set tEnd to infinity
         }
         else {
