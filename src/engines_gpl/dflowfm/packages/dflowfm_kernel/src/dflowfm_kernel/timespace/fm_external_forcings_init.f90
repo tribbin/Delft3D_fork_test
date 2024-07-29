@@ -525,20 +525,17 @@ contains
          logical :: res
 
          integer, allocatable :: mask(:)
-         integer, allocatable :: selected_points(:)
-         integer :: number_of_selected_points, point
-         logical :: invert_mask
+         logical :: invert_mask, bla
          logical :: is_variable_name_available
          logical :: is_extrapolation_allowed
          character(len=INI_KEY_LEN) :: variable_name
          character(len=INI_VALUE_LEN) :: interpolation_method
-         real(kind=hp) :: max_search_radius
+         real(hp) :: max_search_radius
          ! generalized properties+pointers to target element grid:
          integer :: target_location_type !< The location type parameter (one from fm_location_types::UNC_LOC_*) for this quantity's target element set.
          integer :: target_num_points !< Number of points in target element set.
          real(hp), dimension(:), pointer :: target_x !< Pointer to x-coordinates array of target element set.
          real(hp), dimension(:), pointer :: target_y !< Pointer to y-coordinates array of target element set.
-         integer, dimension(:), pointer :: target_mask !< Pointer to x-coordinates array of target element set.
          integer :: ierr
 
          res = .false.
@@ -618,9 +615,7 @@ contains
          target_location_type = UNC_LOC_S
 
          success = scan_for_heat_quantities(quantity, kx)
-         if (success) then
-            continue
-         else
+         if (.not. success) then
             select case (quantity)
             case ('airdensity')
                kx = 1
@@ -719,7 +714,7 @@ contains
          end if
 
          ! Derive target element set properties from the quantity's topological location type
-         ierr = get_location_target_properties(target_location_type, target_num_points, target_x, target_y, target_mask)
+         call get_location_target_properties(target_location_type, target_num_points, target_x, target_y, ierr)
          if (ierr /= DFM_NOERR) then
             write (msgbuf, '(7a)') 'Invalid data in file ''', file_name, ''': [', group_name, &
                ']. Line ''quantity = ', trim(quantity), ''' has no known target grid properties.'
@@ -727,43 +722,14 @@ contains
             return
          end if
 
-         ! Prepare target mask array for later ec_addtimespacerelation call.
-         allocate (mask(target_num_points), source=0)
-
-         if (len_trim(target_mask_file) > 0) then
-            ! Mask flow nodes/links/etc. based on inside polygon(s), or outside.
-            allocate (selected_points(target_num_points), source=0)
-            select case (target_location_type)
-            case (UNC_LOC_S)
-               ! in: kcs, all flow nodes, out: mask: all masked flow nodes.
-               call selectelset_internal_nodes(xz, yz, kcs, ndx, selected_points, number_of_selected_points, LOCTP_POLYGON_FILE, &
-                                                target_mask_file)
-            case (UNC_LOC_U)
-               call selectelset_internal_links(xz, yz, ndx, ln, lnx, selected_points, number_of_selected_points, LOCTP_POLYGON_FILE, &
-                                         target_mask_file)
-            case default
-               ierr = DFM_NOTIMPLEMENTED
-               write (msgbuf, '(7a)') 'Unsupported data in file ''', file_name, ''': [', group_name, &
-                  ']. Line ''quantity = ', trim(quantity), ''' cannot be combined with targetMaskFile.'
-               call warn_flush()
-               return
-            end select
-
-            do point = 1, number_of_selected_points
-               mask(selected_points(point)) = 1
-            end do
-            if (invert_mask) then
-               mask = ieor(mask, 1)
-            end if
-         else
-            if (associated(target_mask)) then
-               ! 100% masking: accept all flow locations that were already active in their own mask array.
-               where (target_mask /= 0) mask = 1
-            else
-                mask = 1
-            end if
+         !> Prepare target mask for the quantity's target element set.
+         call construct_target_mask(mask, target_num_points, target_mask_file, target_location_type, invert_mask, ierr)
+         if (ierr /= DFM_NOERR) then
+            write (msgbuf, '(7a)') 'Unsupported data in file ''', file_name, ''': [', group_name, &
+               ']. Line ''quantity = ', trim(quantity), ''' cannot be combined with targetMaskFile.'
+            call warn_flush()
+            return
          end if
-
 
          select case (trim(str_tolower(forcing_file_type)))
          case ('bcascii')
@@ -848,20 +814,19 @@ contains
 
    !> Get several target grid properties for a given location type.
    !!
-   !! Properties include: coordinates, mask and location count,
+   !! Properties include: coordinates and location count,
    !! typically used in setting up the time-space relations for
    !! external forcings quantities.
-   function get_location_target_properties(target_location_type, target_num_points, target_x, target_y, target_mask) result(ierr)
+   subroutine get_location_target_properties(target_location_type, target_num_points, target_x, target_y, ierr)
       use fm_location_types
-      use m_flowgeom, only: ndx, lnx, xz, yz, xu, yu, kcs
+      use m_flowgeom, only: ndx, lnx, xz, yz, xu, yu
       use precision_basics, only: hp
       use dfm_error
-      integer, intent(in) :: target_location_type                !< The location type parameter (one from fm_location_types::UNC_LOC_*) for this quantity's target element set.
-      integer, intent(out) :: target_num_points                  !< Number of points in target element set.
-      real(hp), dimension(:), pointer, intent(out) :: target_x   !< Pointer to x-coordinates array of target element set.
-      real(hp), dimension(:), pointer, intent(out) :: target_y   !< Pointer to y-coordinates array of target element set.
-      integer, dimension(:), pointer, intent(out) :: target_mask !< Pointer to mask array for the target element set.
-      integer :: ierr                                            !< Result status (DFM_NOERR if succesful, or different if unknown quantity was given).
+      integer, intent(in) :: target_location_type !< The location type parameter (one from fm_location_types::UNC_LOC_*) for this quantity's target element set.
+      integer, intent(out) :: target_num_points !< Number of points in target element set.
+      real(hp), dimension(:), pointer, intent(out) :: target_x !< Pointer to x-coordinates array of target element set.
+      real(hp), dimension(:), pointer, intent(out) :: target_y !< Pointer to y-coordinates array of target element set.
+      integer, intent(out) :: ierr !< Result status (DFM_NOERR if succesful, or different if unknown quantity location was given).
 
       ierr = DFM_NOERR
 
@@ -870,16 +835,69 @@ contains
          target_num_points = ndx
          target_x => xz(1:target_num_points)
          target_y => yz(1:target_num_points)
-         target_mask => kcs
       case (UNC_LOC_U)
          target_num_points = lnx
          target_x => xu(1:target_num_points)
          target_x => yu(1:target_num_points)
-         target_mask => null()
       case default
          ierr = DFM_NOTIMPLEMENTED
       end select
-   end function get_location_target_properties
+   end subroutine get_location_target_properties
+
+   !> Construct target mask array for later ec_addtimespacerelation/timespaceinitialfield calls.
+   subroutine construct_target_mask(mask, target_num_points, target_mask_file, target_location_type, invert_mask, ierr)
+      use fm_location_types
+      use m_flowgeom, only: ndx, lnx, xz, yz, kcs, ln
+      use timespace_parameters, only: LOCTP_POLYGON_FILE
+      use timespace, only: selectelset_internal_nodes, selectelset_internal_links
+      use dfm_error, only: DFM_NOTIMPLEMENTED, DFM_NOERR
+
+      integer, dimension(:), allocatable, intent(out) :: mask !< Mask array for the target element set.
+      integer, intent(in) :: target_num_points !< Number of points in target element set. Will be used to allocate the mask array.
+      character(len=*), intent(in) :: target_mask_file !< File name of the target mask file (*.pol). When empty, 100% masking is assumed.
+      integer, intent(in) :: target_location_type !< The location type parameter (one from fm_location_types::UNC_LOC_*) for this quantity's target element set.
+      logical, intent(in) :: invert_mask !< Flag to invert the mask (1s to 0s and vice versa).
+      integer, intent(out) :: ierr !< Result status (DFM_NOERR if succesful, or different if mask could not be constructed for this quantity's location).
+
+      integer, dimension(:), allocatable :: selected_points !< Array of selected points based on the target mask file.
+      integer :: number_of_selected_points, point
+
+      ierr = DFM_NOERR
+
+      allocate (mask(target_num_points), source=0)
+
+      if (len_trim(target_mask_file) > 0) then
+         ! Mask flow nodes/links/etc. based on inside polygon(s), or outside.
+         allocate (selected_points(target_num_points), source=0)
+         select case (target_location_type)
+         case (UNC_LOC_S)
+            ! in: kcs, all allowed flow nodes, out: mask: all masked flow nodes.
+            call selectelset_internal_nodes(xz, yz, kcs, ndx, selected_points, number_of_selected_points, LOCTP_POLYGON_FILE, &
+                                            target_mask_file)
+         case (UNC_LOC_U)
+            ! in: no link pre-mask, all flow links, out: mask: all masked flow links.
+            call selectelset_internal_links(xz, yz, ndx, ln, lnx, selected_points, number_of_selected_points, LOCTP_POLYGON_FILE, &
+                                            target_mask_file)
+         case default
+            ierr = DFM_NOTIMPLEMENTED
+            return
+         end select
+
+         do point = 1, number_of_selected_points
+            mask(selected_points(point)) = 1
+         end do
+         if (invert_mask) then
+            mask = ieor(mask, 1)
+         end if
+      else
+         if (target_location_type == UNC_LOC_S) then
+            ! 100% masking: accept all flow locations that were already active in their own mask array.
+            where (kcs /= 0) mask = 1
+         else
+            mask = 1
+         end if
+      end if
+   end subroutine construct_target_mask
 
    !> Scan the quantity name for heat relatede quantities.
    function scan_for_heat_quantities(quantity, kx) result(success)

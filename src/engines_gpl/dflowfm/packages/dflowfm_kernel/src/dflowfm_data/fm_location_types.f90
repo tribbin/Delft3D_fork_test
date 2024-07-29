@@ -34,7 +34,7 @@ module fm_location_types
    implicit none
    private
 
-   public location_specifier_to_string
+   public get_location_specifier_string
 
    integer, parameter, public :: UNC_LOC_UNKNOWN = 0      !< Data location: unknown or invalid location.
    ! Grid locations:
@@ -74,7 +74,7 @@ module fm_location_types
    integer, parameter, public :: UNC_LOC_DRED_LINK = 41   !< Data location: dredge links
 contains
    !> Convert a location specifier to a human-readable string
-   function location_specifier_to_string(location_specifier) result(string)
+   function get_location_specifier_string(location_specifier) result(string)
       use MessageHandling, only: mess, LEVEL_ERROR
 
       integer, intent(in) :: location_specifier !< The location specifier (one from the UNC_LOC_XXX parameter set).
@@ -141,7 +141,7 @@ contains
       case (UNC_LOC_DRED_LINK)
          string = 'dredge link'
       case default
-         call mess(LEVEL_ERROR, 'Programming error, please report: unrecognised location_specifier in fm_location_types::location_specifier_to_string(), location_specifier = ', location_specifier)
+         call mess(LEVEL_ERROR, 'Programming error, please report: unrecognised location_specifier in fm_location_types::get_location_specifier_string(), location_specifier = ', location_specifier)
       end select
-   end function location_specifier_to_string
+   end function get_location_specifier_string
 end module fm_location_types
