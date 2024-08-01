@@ -34,7 +34,7 @@
 !! ! Note: if it is a parallel simulation, qplat is already for all subdomains, so no need for mpi communication.
 subroutine updateValuesOnLaterals(tim1, timestep)
    use m_flowtimes, only: ti_his, time_his, ti_hiss
-   use m_lateral, only: qqLat, numlatsg, qplat, qplatCum, qplatCumPre, qplatAve, qLatReal, &
+   use m_lateral, only: qqLat, numlatsg, num_layers, qplat, qplatCum, qplatCumPre, qplatAve, qLatReal, &
                         qLatRealCum, qLatRealCumPre, qLatRealAve, n1latsg, n1latsg, n2latsg, nnlat
    use precision
    use m_alloc
@@ -45,7 +45,7 @@ subroutine updateValuesOnLaterals(tim1, timestep)
    double precision, intent(in) :: tim1 !< Current (new) time
    double precision, intent(in) :: timestep !< Timestep is the difference between tim1 and the last update time
 
-   integer :: i, k, k1, nlayer, num_layers
+   integer :: i, k1, i_lat, i_layer, i_node
    double precision, allocatable :: qLatRealCumTmp(:), qLatRealMPI(:)
 
    ! If current time has not reached the history output start time yet, do not update
@@ -53,17 +53,15 @@ subroutine updateValuesOnLaterals(tim1, timestep)
       return
    end if
 
-   num_layers = max(1, kmx)
-
    ! Compute realized discharge
    qLatReal = 0d0
-   do i = 1, numlatsg
-      do k1 = n1latsg(i), n2latsg(i)
-         k = nnlat(k1)
-         if (k > 0) then
-            if (.not. is_ghost_node(k)) then
-               do nlayer = 1, num_layers
-                  qLatReal(i) = qLatReal(i) + qqLat(nlayer, i, k)
+   do i_lat = 1, numlatsg
+      do k1 = n1latsg(i_lat), n2latsg(i_lat)
+         i_node = nnlat(k1)
+         if (i_node > 0) then
+            if (.not. is_ghost_node(i_node)) then
+               do i_layer = 1, num_layers
+                  qLatReal(i_lat) = qLatReal(i_lat) + qqLat(i_layer, i_lat, i_node)
                end do
             end if
          end if
@@ -77,9 +75,9 @@ subroutine updateValuesOnLaterals(tim1, timestep)
 
    !! Compute average discharge
    ! cumulative discharge from starting time of history output
-   do i = 1, numlatsg
-      do nlayer = 1, num_layers
-         qplatCum(i) = qplatCum(i) + timestep * qplat(nlayer, i)
+   do i_lat = 1, numlatsg
+      do i_layer = 1, num_layers
+         qplatCum(i) = qplatCum(i) + timestep * qplat(i_layer, i_lat)
       end do
       qLatRealCum(i) = qLatRealCum(i) + timestep * qLatReal(i)
    end do

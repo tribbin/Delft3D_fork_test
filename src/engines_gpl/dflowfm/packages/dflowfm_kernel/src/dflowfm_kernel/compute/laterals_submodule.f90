@@ -52,7 +52,6 @@ contains
       integer, intent(in) :: numconst !< number of constitiuents
 
       integer :: i ! loop counter
-      integer :: num_layers ! Number of layers
       integer :: ierr ! error status
 
       apply_transport_is_used = .false.
@@ -96,17 +95,15 @@ contains
       integer, intent(in) :: numconst !< Number or constituents.
       integer, intent(in) :: kmx !< Number of layers (0 means 2D computation).
       integer, dimension(:), intent(in) :: kmxn !< Maximum number of vertical cells per base node n.
-      real(kind=dp), dimension(:), intent(in) :: cell_volume !< Volume of water in computational cells.
+      real(kind=dp), dimension(:), intent(in) :: cell_volume !< Volume of water in computational cells [m3].
       real(kind=dp), dimension(:, :), intent(in) :: constituents !< Concentrations of constituents.
       real(kind=dp), intent(in) :: dt !< Timestep in seconds.
 
       integer :: ilat, i_node, iconst, k, k1, kt, kb
-      integer :: num_layers, i_layer
+      integer :: i_layer
       integer :: iostat
 
       real(kind=dp), dimension(:), allocatable :: total_volume
-
-      num_layers = max(1, kmx)
 
       allocate (total_volume(num_layers), stat=iostat)
       call aerr('total_volume', iostat, num_layers, 'average_concentrations_for_laterals')
@@ -158,7 +155,7 @@ contains
 
       real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_in !< Lateral discharge flowing into the model (source)
       real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_out !< Lateral discharge extracted out of the model (sink)
-      real(kind=dp), dimension(:), intent(in) :: cell_volume !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
+      real(kind=dp), dimension(:), intent(in) :: cell_volume !< cell_volume !< Volume of water in computational cells [m3].
 
       integer :: k1, i_cell, i_lateral, i_layer
       real(kind=dp) :: qlat

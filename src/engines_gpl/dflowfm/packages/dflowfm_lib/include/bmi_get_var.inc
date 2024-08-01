@@ -150,9 +150,9 @@
      x = c_loc(rainuni)
   case("numlatsg") !<  [-] nr of lateral discharge providers {"rank": 0}
      x = c_loc(numlatsg)
-  case("qplat") !<  [m3/s] Lateral discharge of provider {"shape": ["max(1, kmx)", "numlatsg"]}
+  case("qplat") !<  [m3/s] Lateral discharge of provider {"shape": ["num_layers", "numlatsg"]}
      x = c_loc(qplat)
-  case("qqlat") !<  [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["max(1, kmx)","numlatsg", "ndx"]}
+  case("qqlat") !<  [m3/s] Lateral discharge at xz,yz {"location": "face", "shape": ["num_layers","numlatsg", "ndx"]}
      x = c_loc(qqlat)
   case("balat") !<  [m2] total area of all cells in provider numlatsg {"shape": ["numlatsg"]}
      x = c_loc(balat)

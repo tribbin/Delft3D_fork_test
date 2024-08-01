@@ -40,7 +40,7 @@
     use m_hydrology_data, only: jadhyd, ActEvap, interceptionmodel, InterceptThickness, InterceptHs, DFM_HYD_INTERCEPT_LAYER
     use m_mass_balance_areas
     use m_partitioninfo
-    use m_lateral, only: numlatsg, qqlat, n1latsg, n2latsg, nnlat, balat, qplat, &
+    use m_lateral, only: numlatsg, num_layers, qqlat, n1latsg, n2latsg, nnlat, balat, qplat, &
                          apply_transport
     implicit none
 
@@ -48,7 +48,7 @@
     double precision :: aufu, auru, tetau
     double precision :: ds, hsk, Qeva_ow, Qeva_icept, Qrain, Qicept, Qextk, aloc
     logical :: isGhost
-    integer :: i_layer, num_layers
+    integer :: i_layer
 
     bb = 0d0
     ccr = 0d0
@@ -175,7 +175,6 @@
           ! First accumulate all lateral discharges per grid cell
           ! qqlat may have been computed in flow_run_sometimesteps already but only for
           ! laterals with apply_transort(i_lat) > 0
-          num_layers = max(1, kmx)
 
           do i_lat = 1, numlatsg
              if (apply_transport(i_lat) == 0) then

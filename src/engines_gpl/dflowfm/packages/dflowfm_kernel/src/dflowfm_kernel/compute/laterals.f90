@@ -50,6 +50,7 @@ module m_lateral
    integer, parameter, public :: ILATTP_2D = 2 !< Type code for laterals that only apply to 2D nodes.
 
    integer, target, public :: numlatsg !< [-] nr of lateral discharge providers  {"rank": 0}
+   integer, public :: num_layers !< first dimension of qplat and qqlat array, 1 for 2D, kmx for 3D. 
    ! I see 3 occurences where QPLAT is being allocated. Investigate if this is necessary.
    ! QPLAT is allocated 1) in fm_external_forcings_init_old, module subroutine init_new (will be removed)
    !                    2) in fm_external_forcings_init, module subroutine init_new
@@ -151,7 +152,7 @@ module m_lateral
          real(kind=dp), dimension(:, :), intent(inout) :: transport_sink !< Load being transported out
          real(kind=dp), dimension(:, :, :), intent(in) :: discharge_in !< Lateral discharge going into domain (source)
          real(kind=dp), dimension(:, :, :), intent(in) :: discharge_out !< Lateral discharge going out (sink)
-         real(kind=dp), dimension(:), intent(in) :: cell_volume !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
+         real(kind=dp), dimension(:), intent(in) :: cell_volume !< cell_volume !< Volume of water in computational cells [m3]
          real(kind=dp), intent(in) :: dtol !< cut off value for vol1, to prevent division by zero
       end subroutine add_lateral_load_and_sink
    end interface add_lateral_load_and_sink
@@ -161,7 +162,7 @@ module m_lateral
       module subroutine get_lateral_discharge(lateral_discharge_in, lateral_discharge_out, cell_volume)
          real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_in !< Lateral discharge flowing into the model (source)
          real(kind=dp), dimension(:, :, :), intent(inout) :: lateral_discharge_out !< Lateral discharge extracted out of the model (sink)
-         real(kind=dp), dimension(:), intent(in) :: cell_volume !< [m3] total volume at end of timestep {"location": "face", "shape": ["ndx"]}
+         real(kind=dp), dimension(:), intent(in) :: cell_volume !< cell_volume !< Volume of water in computational cells [m3]
       end subroutine get_lateral_discharge
    end interface get_lateral_discharge
 

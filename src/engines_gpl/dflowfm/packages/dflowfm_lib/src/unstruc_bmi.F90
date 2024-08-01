@@ -869,7 +869,7 @@ contains
       use network_data
       use m_observations, only: numobs, nummovobs, MAXNUMVALOBS2D, MAXNUMVALOBS3D, MAXNUMVALOBS3Dw
       use m_monitoring_crosssections, only: ncrs, maxnval
-      use m_lateral, only: numlatsg
+      use m_lateral, only: num_layers, numlatsg
       use unstruc_channel_flow, only: network
       use m_transport, only: NAMLEN, NUMCONST
       use m_lateral, only: numlatsg, nlatnd

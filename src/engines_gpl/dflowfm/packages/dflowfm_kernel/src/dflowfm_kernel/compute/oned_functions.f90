@@ -1113,14 +1113,13 @@ contains
    subroutine updateTotalInflowLat(dts)
       use m_flow, only: vTotLat, qCurLat, kmx
       use m_flowgeom, only: ndx2d
-      use m_lateral, only: qqlat, numlatsg, n1latsg, n2latsg, nnlat
+      use m_lateral, only: qqlat, num_layers, numlatsg, n1latsg, n2latsg, nnlat
       implicit none
       double precision, intent(in) :: dts ! current computational time step
-      integer :: n, num_layers
+      integer :: n
       integer :: i_lat, i_node
 
       qCurLat = 0d0
-      num_layers = max(1, kmx)
       ! Don't reset vTotLat
       if (allocated(qqlat)) then
          do i_lat = 1, numlatsg
