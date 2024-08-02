@@ -196,7 +196,7 @@ Dimr::~Dimr(void) {
 void Dimr::deleteControlBlock(dimr_control_block cb) {
     if (cb.numSubBlocks > 0) {
         for (int i = 0; i < cb.numSubBlocks; i++) {
-            if (cb.computeTimes->size() > 0)
+            if (cb.computeTimes->empty())
                 cb.computeTimes->clear();
             // Recursively delete all subBlocks
             deleteControlBlock(cb.subBlocks[i]);
@@ -1057,8 +1057,8 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                         if (cb->subBlocks[i].computeTimesCurrent >= cb->subBlocks[i].computeTimes->size())
                             cb->subBlocks[i].tStep = 2.0 * (masterComponent->tEnd - *currentTime);
                         else {
-                            // Substract tNext to obtain the new tStep
-                            cb->subBlocks[i].tStep = cb->subBlocks[i].computeTimes->at(cb->subBlocks[i].computeTimesCurrent) - cb->subBlocks[i].tNext;
+                            // Substract the previous computeTimes-entry to obtain the new tStep
+                            cb->subBlocks[i].tStep = cb->subBlocks[i].computeTimes->at(cb->subBlocks[i].computeTimesCurrent) - cb->subBlocks[i].computeTimes->at(cb->subBlocks[i].computeTimesCurrent - 1);
                         }
                     }
                 }

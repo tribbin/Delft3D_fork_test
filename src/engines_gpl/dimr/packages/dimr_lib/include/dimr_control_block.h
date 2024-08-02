@@ -18,7 +18,7 @@ struct dimr_control_block {
 	double             tEnd;
 	double             tNext;
 	double             tCur;
-	vector<double>*    computeTimes;
+	vector<double>*    computeTimes;      // Ideally this should not be a pointer. But dimr_control_block is allocated using malloc.
 	int                computeTimesCurrent;
 }
 ;
