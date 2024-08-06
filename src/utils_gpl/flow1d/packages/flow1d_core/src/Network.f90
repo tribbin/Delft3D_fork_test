@@ -423,7 +423,7 @@ contains
                      call SetMessage(LEVEL_WARN, 'Incorrect CrossSection input for CrossSections '''//trim(c1%csid)//''', '''//trim(c2%csid)//''' on branch '''//trim(pbran%id)// &
                         '''. CrossSections must be of the same type!')
                   endif
-                  if (c1%closed /= c2%closed) then
+                  if (c1%closed .neqv. c2%closed) then
                      call SetMessage(LEVEL_WARN, 'Incorrect CrossSection input for CrossSections '''//trim(c1%csid)//''', '''//trim(c2%csid)//''' on branch '''//trim(pbran%id)// &
                         '''. CrossSections must have same closed state!')
                   endif

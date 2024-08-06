@@ -1122,7 +1122,7 @@ contains
             !
             ! Calculate MAX value
             !
-            if (gdfourier%foumask(ifou)) then
+            if (gdfourier%foumask(ifou) /= 0) then
                do n = 1, nmaxus
                   if (kfs(n) == 1 .and. initial_wet_mask(n) == 0) then
                      fousmas(n) = max(fousmas(n), real(rarray(n), kind=sp))

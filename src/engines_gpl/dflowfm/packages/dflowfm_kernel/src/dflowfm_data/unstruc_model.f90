@@ -484,7 +484,7 @@ contains
       end if
       call timstop(timerHandle)
 
-      if (useVolumeTables .and. (network%loaded == .false.)) then
+      if (useVolumeTables .and. (.not. network%loaded)) then
          useVolumeTables = .false.
       end if
 
@@ -1864,7 +1864,7 @@ contains
       call prop_get_string(md_ptr, 'output', 'NcMapDataPrecision', md_nc_map_precision, success)
       call prop_get_string(md_ptr, 'output', 'NcHisDataPrecision', md_nc_his_precision, success)
       call prop_get_logical(md_ptr, 'output', 'NcCompression', md_nccompress, success, value_parsed)
-      if (success .and. value_parsed == .false.) then
+      if (success .and. .not. value_parsed) then
          call mess(LEVEL_ERROR, 'Did not recognise NcCompression value. It must be 0 or 1.')
       end if
       call unc_set_nccompress(md_nccompress)

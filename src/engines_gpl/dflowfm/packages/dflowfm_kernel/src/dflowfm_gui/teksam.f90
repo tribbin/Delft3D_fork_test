@@ -144,6 +144,8 @@
 
       double precision :: x, y, z, rc, hrc
       integer :: met, m, n
+      
+      logical, external :: inview
 
       common / DRAWTHIS / ndraw(50)
 

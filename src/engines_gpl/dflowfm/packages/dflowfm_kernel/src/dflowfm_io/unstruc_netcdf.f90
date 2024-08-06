@@ -6315,12 +6315,12 @@ contains
          end if
 
          ! for 1D only
-         if (ndxi - ndx2d > 0 .and. jamapPure1D_debug) then
+         if (ndxi - ndx2d > 0 .and. jamapPure1D_debug /= 0) then
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_adve, nc_precision, UNC_LOC_U, 'adve', '', 'Explicit advection term', 's', which_meshdim=1, jabndnd=jabndnd_)
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_advi, nc_precision, UNC_LOC_U, 'advi', '', 'Implicit advection term', 's', which_meshdim=1, jabndnd=jabndnd_)
          end if
 
-         if (ndxi - ndx2d > 0 .and. jaPure1D >= 3 .and. jamapPure1D_debug) then
+         if (ndxi - ndx2d > 0 .and. jaPure1D >= 3 .and. jamapPure1D_debug /= 0) then
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_q1d_1, nc_precision, UNC_LOC_U, 'q1d_1', '', 'Discharge at begin of flow link', 's', which_meshdim=1, jabndnd=jabndnd_)
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_q1d_2, nc_precision, UNC_LOC_U, 'q1d_2', '', 'Discharge at end of flow link', 's', which_meshdim=1, jabndnd=jabndnd_)
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_volu1d, nc_precision, UNC_LOC_U, 'volu1d', '', 'Volume of flow link', 's', which_meshdim=1, jabndnd=jabndnd_)
@@ -7761,7 +7761,7 @@ contains
       end if
 
       ! JRE debug variables
-      if (jawritedebug) then
+      if (jawritedebug /= 0) then
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg1d, UNC_LOC_U, debugarr1d(1:lnx), jabndnd=jabndnd_)
 
          if (allocated(debugarr2d)) then
@@ -7894,12 +7894,12 @@ contains
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_veg_stemheight, UNC_LOC_S, stemheight, jabndnd=jabndnd_)
       end if
 
-      if (ndxi - ndx2d > 0 .and. jamapPure1D_debug) then
+      if (ndxi - ndx2d > 0 .and. jamapPure1D_debug/=0) then
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_adve, UNC_LOC_U, adve(:), jabndnd=jabndnd_)
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_advi, UNC_LOC_U, advi(:), jabndnd=jabndnd_)
       end if
 
-      if (ndxi - ndx2d > 0 .and. jaPure1D >= 3 .and. jamapPure1D_debug) then
+      if (ndxi - ndx2d > 0 .and. jaPure1D >= 3 .and. jamapPure1D_debug/=0) then
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_q1d_1, UNC_LOC_U, q1d(1, :), jabndnd=jabndnd_)
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_q1d_2, UNC_LOC_U, q1d(2, :), jabndnd=jabndnd_)
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_volu1d, UNC_LOC_U, volu1D(:), jabndnd=jabndnd_)

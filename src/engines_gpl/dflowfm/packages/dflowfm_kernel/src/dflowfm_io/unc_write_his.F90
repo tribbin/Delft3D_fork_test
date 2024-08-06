@@ -186,7 +186,7 @@ subroutine unc_write_his(tim) ! wrihis
    end if
 
    ! When no crs/obs present, return immediately.
-   if (model_has_obs_stations() == .false. .and. ncrs <= 0 .and. jahisbal <= 0 .and. jahiscgen <= 0 .and. num_rugs <= 0) then
+   if (.not. model_has_obs_stations() .and. ncrs <= 0 .and. jahisbal <= 0 .and. jahiscgen <= 0 .and. num_rugs <= 0) then
       if (ihisfile == 0) then
          call mess(LEVEL_WARN, 'No observations nor cross sections defined. Will not produce a history file.')
       end if

@@ -831,7 +831,7 @@ contains
                if (success) then
                   tair_available = .true.
                   solrad_available = .true.
-              end if
+               end if
 
             else if (qid == 'dewpoint_airtemperature_cloudiness_solarradiation') then
 
@@ -943,7 +943,7 @@ contains
             else if (qid == 'sea_ice_area_fraction' .or. qid == 'sea_ice_thickness') then
 
                ! if ice properties not yet read before, initialize ...
-               if (.not. (ja_ice_area_fraction_read .or. ja_ice_thickness_read)) then
+               if (ja_ice_area_fraction_read == 0 .and. ja_ice_thickness_read == 0) then
                   call fm_ice_activate_by_ext_forces(ndx)
                end if
                ! add the EC link
