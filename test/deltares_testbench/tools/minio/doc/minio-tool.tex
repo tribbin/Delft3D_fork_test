@@ -221,9 +221,10 @@ The content of the credentials file should have the following format:
 
 \section{Using the MinIO tool}
 To use the \texttt{minio} tool, navigate to the \texttt{'<delft3d\_repo\_root>/test/deltares\_testbench'} directory. This directory will be your working directory throughout this guide. If you've installed the dependencies of the deltares testbench in a virtual environment, make sure you have your virtual environment activated. Try the following command to see if you can run the tool:
-\begin{verbatim}
-	python -m tools.minio --help
-\end{verbatim}
+\newline
+\command{python -m tools.minio ---help}
+\newline
+\newline
 You should get a list of subcommands you can use. There are three (at the time of writing):
 \newline
 \begin{itemize}
@@ -234,45 +235,37 @@ You should get a list of subcommands you can use. There are three (at the time o
 
 \subsection{Pull}
 The pull command downloads either the case or reference data from MinIO and stores them as files on your computer. Examples:
-\begin{verbatim}
-	# Print command line help
-	python -m tools.minio pull --help
-	
-	# Pull the 'case' data from test case 'e999_f42_c01_case1' in 
-	# the config 'path/to/config.xml' to your computer. By default, 
-	# the data will be stored in the directory configured in the 
-	# 'config.xml' file. Usually this is'./data/cases'. The same 
-	# location is used by the testbench to store case data. 
-	
-	python -m tools.minio pull --case --config path/to/config.xml \
-		--test-case-name e999_f42_c01
-	
-	# Similar to the last command, except this time the 'reference' 
-	# data is downloaded instead. Also, where possible, the
-	# 'short-form' command line options are used.
-
-	python -m tools.minio pull --reference -c path/to/config.xml
-	-n e999_f42_c02
-	
-	# Pull the 'reference' data from MinIO as it was on April first
-	# 2024 at midnight (timezone UTC/GMT)
-	
-	python -m tools.minio pull --reference -c path/to/config.xml \
-		-n e999_f42_c03 --timestamp 2024-04-01T00:00
-	
-	# Pull the 'latest' 'case' data from MinIO. By default, the 
-	# timestamp in the config is used to get a snapshot of the data.
-
-	python -m tools.minio pull --case -c path/to/config.xml \
-	-n e999_f42_c04 --latest
-
-	# Pull the 'case' data to the directory './foo/bar' instead of
-	# the default location.
-
-	python -m tools.minio pull --case --config path/to/config.xml \
-		-n e999_f42_c02 --local-path ./foo/bar
-\end{verbatim}
-
+\newline
+Print command line help
+\newline
+\command{python -m tools.minio pull ---help}
+\newline
+\newline
+Pull the 'case' data from test case 'e999\_f42\_c01\_case1' in the config 'path/to/config.xml' to your computer. By default, the data will be stored in the directory configured in the 'config.xml' file. Usually this is'./data/cases'. The same location is used by the testbench to store case data. 
+\newline
+\command{python -m tools.minio pull ---case ---config path/to/config.xml ---test-case-name e999\_f42\_c01}
+\newline
+\newline
+Similar to the last command, except this time the 'reference' data is downloaded instead. Also, where possible, the 'short-form' command line options are used.
+\newline
+\command{python -m tools.minio pull ---reference -c path/to/config.xml -n e999\_f42\_c02}
+\newline
+\newline
+Pull the 'reference' data from MinIO as it was on April first 2024 at midnight (timezone UTC/GMT)
+\newline
+\command{python -m tools.minio pull ---reference -c path/to/config.xml -n e999\_f42\_c03 ---timestamp 2024-04-01T00:00}
+\newline
+\newline
+Pull the latest 'case' data from MinIO. By default, the timestamp in the config is used to get a snapshot of the data.
+\newline
+\command{python -m tools.minio pull ---case -c path/to/config.xml -n e999\_f42\_c04 ---latest}
+\newline
+\newline
+Pull the 'case' data to the directory './foo/bar' instead of the default location.
+\newline
+\command{python -m tools.minio pull ---case ---config path/to/config.xml -n e999\_f42\_c02 ---local-path ./foo/bar}
+\newline
+\newline
 \textbf{Note:}
 \begin{itemize}
 	\item The 'config', 'test-case-name' and one of 'case' or 'reference' command line arguments are mandatory. All the other arguments are optional. Use the 'help' argument for a complete list.
@@ -304,36 +297,31 @@ The following figure shows a complete session of a 'push' command. Note that Min
 \end{figure}
 
 Examples:
-\begin{verbatim}
-	# Print command line help menu for the 'push' command.
-	python -m tools.minio push --help
-	
-	# Compare the local directory (configured in the config file, 
-	# usually under './data/cases/') to the data in MinIO. Plan 
-	# only 'updates' of files that already exist in MinIO (default 
-	# behavior). If there are changed files, attach the JIRA issue
-	# id 'JIRA-123' to the updated files.
-	python -m tools.minio push --case --config path/to/config.xml \
-		--test-case-name e999_f42_c01 --issue-id JIRA-123
-	
-	# Similar to the last command, except the 'reference' data is
-	# updated. Also, where possible, the 'short-form' command line
-	# options are used.
-	python -m tools.minio push --reference -c path/to/config.xml \
-		-n e999_f42_c02 --issue-id JIRA-123
-	
-	# Override the configured 'default' local path (usually 
-	# './data/cases/<test_case_name>') with './foo/bar'
-	python -m tools.minio push --reference -c path/to/config.xml \
-		-n e999_f42_c03 --local-path ./foo/bar --issue-id JIRA-123
-	
-	# Explicitly allow 'create' and 'remove' operations in MinIO. 
-	# Useful for adding new test cases, or cleaning up unnecessary 
-	# files.
-	python -m tools.minio push --case -c path/to/config.xml \ 
-		-n e999_f42_c04 --allow-create-and-delete --issue-id JIRA-123
-\end{verbatim}
-\newpage
+\newline
+Print command line help menu for the 'push' command.
+\newline
+\command{python -m tools.minio push ---help}
+\newline
+\newline
+Compare the local directory (configured in the config file, usually under './data/cases/') to the data in MinIO. Plan only 'updates' of files that already exist in MinIO (default behavior). If there are changed files, attach the JIRA issue id 'JIRA-123' to the updated files.
+\newline
+\command{python -m tools.minio push ---case ---config path/to/config.xml ---test-case-name e999\_f42\_c01 ---issue-id JIRA-123}
+\newline
+\newline
+Similar to the last command, except the 'reference' data is updated. Also, where possible, the 'short-form' command line options are used.
+\newline
+\command{python -m tools.minio push ---reference -c path/to/config.xml -n e999\_f42\_c02 ---issue-id JIRA-123}
+\newline
+\newline
+Override the configured 'default' local path (usually './data/cases/<test\_case\_name>') with './foo/bar'
+\newline
+\command{python -m tools.minio push ---reference -c path/to/config.xml -n e999\_f42\_c03 ---local-path ./foo/bar ---issue-id JIRA-123}
+\newline
+\newline
+Explicitly allow 'create' and 'remove' operations in MinIO. Useful for adding new test cases, or cleaning up unnecessary files.
+\newline
+\command{python -m tools.minio push ---case -c path/to/config.xml -n e999\_f42\_c04 ---allow-create-and-delete ---issue-id JIRA-123}
+
 \textbf{Note:}
 \begin{itemize}
 	\item The 'config', 'test-case-name', one of 'case' or 'reference' and 'issue-id' command line arguments are mandatory. All the other arguments are optional. Use the 'help' argument for a complete list.
@@ -345,7 +333,7 @@ Examples:
 \subsection{Update-references}
 The update-references command is very similar to the push command. These are the most important differences:
 \begin{itemize}
-	\item It is not necessary to pass the '--case' or '--reference' command line option because update-references only ever updates the reference data of a test case.
+	\item It is not necessary to pass the '\--\--case' or '\--\--reference' command line option because update-references only ever updates the reference data of a test case.
 	\item The 'reference' data in MinIO is compared to the local 'case' data of the test case.
 	\item Only file updates are allowed. It is not possible to create or remove files in MinIO using this command.
 \end{itemize}
@@ -358,29 +346,28 @@ You may wonder why it is useful to compare the local 'case' data to the 'referen
 \end{itemize}
 The testbench can be used for the first three steps of the workflow above. The last step may require some manual steps to verify that the output files are suitable to be used as reference data. The idea behind the 'update-references' command is that updating the references very often boils down to uploading new versions of the same output files. Files are rarely created and removed from the references. Use 'update-references' only when references for an existing test case need to be updated. If you need to create new files or remove existing files from the references in MinIO, use 'push' instead.
 Examples:
-\begin{verbatim}
-	# Print help message for update-references command.
-	python -m tools.minio update-references --help
-	
-	# Compares the local 'case' directory to the 'references' in 
-	# MinIO.
-	python -m tools.minio update-references \ 
-	--config path/to/config.xml \
-	--test-case-name e999_f42_c01 \
-	--issue-id JIRA-123
-	
-	# Override local directory to use './foo/bar' instead of the 
-	# default 'case' data directory.
-	python -m tools.minio update-references -c path/to/config.xml \
-	-n e999_f42_c01 --local-path ./foo/bar --issue-id JIRA-123
-\end{verbatim}
+
+Print help message for update-references command.
+\newline
+\command{python -m tools.minio update-references ---help}
+\newline
+\newline
+Compares the local 'case' directory to the 'references' in MinIO.
+\newline
+\command{python -m tools.minio update-references ---config path/to/config.xml ---test-case-name e999\_f42\_c01 ---issue-id JIRA-123}
+\newline
+\newline
+Override local directory to use './foo/bar' instead of the default 'case' data directory.
+\newline
+\command{python -m tools.minio update-references -c path/to/config.xml -n e999\_f42\_c01 ---local-path ./foo/bar ---issue-id JIRA-123}
+\newline
 
 \section{Dealing with conflicts}
 While working with the MinIO tool, you may run into 'conflicts'. Conflicts can happen while using any of the commands 'pull', 'push' or 'update-references'. The MinIO tool can detect the conflicts by comparing the 'version timestamp' of the test case in the config with the upload timestamp of the files in MinIO. The MinIO tool expects the version timestamp in the config to be ahead of upload timestamps of all of the files in MinIO (belonging to the test case). If any of the files in MinIO has a timestamp later than the version timestamp in the config, the MinIO tool reports it as a conflict.
 
 Conflicts indicate that some other person has updated the data in MinIO. This other person may also have updated the version timestamp in the config, but these changes are not yet reflected in your branch. If these changes have been merged to main already, then your branch is stale and you can solve this yourself by either rebasing your branch on the main branch (or merging the main branch in your branch). If not, then there are multiple people updating the data of a single test case at the same time, and you should discuss who merges their changes first.
 
-The '--issue-id' command line argument has been made mandatory to make it easier to find out who has updated the test case data and why. The tool has no way of verifying that the Jira issue id actually exists in our issue tracker. Please always enter a valid Jira issue id. Updating the case or reference data should always be a task that has a corresponding issue in Jira.
+The '\--\--issue-id' command line argument has been made mandatory to make it easier to find out who has updated the test case data and why. The tool has no way of verifying that the Jira issue id actually exists in our issue tracker. Please always enter a valid Jira issue id. Updating the case or reference data should always be a task that has a corresponding issue in Jira.
 
 The following figure shows an example of a situation where there are conflicts. Notice that the MinIO tool shows the Jira issue id of each conflicting file.
 \begin{figure}[h]
@@ -409,10 +396,10 @@ At the time of writing, you can only pass a single config file and a single test
 	-n "${arg}" --issue-id JIRA-123 --batch
 	done
 \end{verbatim}
-When conflicts are detected in batch mode, the default option is to abort the operation. You can combine the \texttt{--batch} flag with the \texttt{--force} flag to force the MinIO tool to continue anyway after a conflict. But please make sure you're not interfering with another person's work when you're doing this.
+When conflicts are detected in batch mode, the default option is to abort the operation. You can combine the \texttt{---batch} flag with the \texttt{---force} flag to force the MinIO tool to continue anyway after a conflict. But please make sure you're not interfering with another person's work when you're doing this.
 
 \subsection{Terminal colors}
-By default, the MinIO tool uses ANSI terminal color codes to add color to the output of the tool. Powershell and most Linux graphical terminals support rendering colored text. It seems Windows \texttt{cmd.exe} terminal does not support it by default, and the color codes will be printed to the output verbatim. If you want to turn off the colors, add the \texttt{--no-color} command line switch.
+By default, the MinIO tool uses ANSI terminal color codes to add color to the output of the tool. Powershell and most Linux graphical terminals support rendering colored text. It seems Windows \texttt{cmd.exe} terminal does not support it by default, and the color codes will be printed to the output verbatim. If you want to turn off the colors, add the \texttt{---no-color} command line switch.
 
 \subsection{Dealing with testbench config files with 'includes'}
 There are many testbench config files that contain an <include/> XML element, which contains a relative path to a different XML file. This tells the XML parser to find the specified file and include it verbatim, replacing the include tag. The MinIO tool is aware of these includes, and it is able to find and update the version timestamps of test cases that are found in included files. Sometimes, two different testbench config files (say, \texttt{config\_lnx.xml} and \texttt{config\_win.xml}) both have an include element pointing to the same XML file that contains some test cases (say \texttt{test\_cases.xml}). After updating the version timestamp of a test case in the included file (\texttt{test\_cases.xml}), the test case is updated in both testbench configs that included that file (\texttt{config\_lnx.xml} and \texttt{config\_win.xml}). This is confusing, because the location of the case/reference data is sometimes determined in the testbench config (not the included file). In essence, the data for the test case is stored in different places, but they share the same version timestamp. This is mostly used to store separate versions of the test case data for different platforms (Windows and Linux), because the data may be slightly different. Usually, when test case data needs to be updated, both the Windows and Linux versions need to be updated anyway so it should not be a big problem. It is just something to keep in mind.
