@@ -1531,7 +1531,7 @@ contains
       ! Allow laterals from old ext, even when new structures file is present (but only when *no* [Lateral]s were in new extforce file).
       if (num_lat_ini_blocks == 0 .and. numlatsg > 0) then
          call realloc(balat, numlatsg, keepExisting=.false., fill=0d0)
-         call realloc(qplat, [max(1, kmx], numlatsg/), keepExisting=.false., fill=0d0)
+         call realloc(qplat, [max(1, kmx), numlatsg], keepExisting=.false., fill=0d0)
          call realloc(apply_transport, numlatsg, fill=0)
          call realloc(lat_ids, numlatsg, keepExisting=.false., fill='')
 
