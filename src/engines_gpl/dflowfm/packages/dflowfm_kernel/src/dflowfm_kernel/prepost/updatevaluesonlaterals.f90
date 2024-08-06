@@ -45,7 +45,7 @@ subroutine updateValuesOnLaterals(tim1, timestep)
    double precision, intent(in) :: tim1 !< Current (new) time
    double precision, intent(in) :: timestep !< Timestep is the difference between tim1 and the last update time
 
-   integer :: k1, i_lat, i_layer, i_node
+   integer :: k1, i, i_lat, i_layer, i_node
    double precision, allocatable :: qLatRealCumTmp(:), qLatRealMPI(:)
 
    ! If current time has not reached the history output start time yet, do not update
@@ -55,13 +55,18 @@ subroutine updateValuesOnLaterals(tim1, timestep)
 
    ! Compute realized discharge
    qLatReal = 0d0
-   do i_lat = 1, numlatsg
-      do k1 = n1latsg(i_lat), n2latsg(i_lat)
+   ! sum over 3rd dimension of qqlat
+   do i = 1, numlatsg
+      do k1 = n1latsg(i), n2latsg(i)
          i_node = nnlat(k1)
          if (i_node > 0) then
             if (.not. is_ghost_node(i_node)) then
-               do i_layer = 1, num_layers
-                  qLatReal(i_lat) = qLatReal(i_lat) + qqLat(i_layer, i_lat, i_node)
+               ! sum over 2nd dimension of qqlat
+               do i_lat = 1, numlatsg
+                  ! sum over 1st dimension of qqlat
+                  do i_layer = 1, num_layers
+                     qLatReal(i) = qLatReal(i) + qqLat(i_layer, i_lat, i_node)
+                  end do
                end do
             end if
          end if

@@ -175,7 +175,7 @@
        if (numlatsg > 0) then
           ! First accumulate all lateral discharges per grid cell
           ! qqlat may have been computed in flow_run_sometimesteps already but only for
-          ! laterals with apply_transort(i_lat) > 0
+          ! laterals with apply_transport(i_lat) > 0
           do i_lat = 1, numlatsg
              if (apply_transport(i_lat) == 0) then
                 qqlat(1:num_layers, i_lat, 1:ndx) = 0._dp
