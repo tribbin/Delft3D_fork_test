@@ -43,6 +43,7 @@ subroutine dfpartit ( ipown, icom, mmax, nmax, gdp )
 !
 !!--declarations----------------------------------------------------------------
     use globaldata
+    use properties, only: prop_get_integers
     use dfparall
     !
     implicit none
@@ -67,33 +68,37 @@ subroutine dfpartit ( ipown, icom, mmax, nmax, gdp )
 !
 ! Local variables
 !
-    integer, dimension(:), pointer :: iweig
-    integer, pointer            :: lundia
-    integer                     :: i      ! loop counter
-    integer                     :: icnt   ! auxiliary integer to count weights
-    integer, dimension(10)      :: idign  ! auxiliary integer indicating digit in number
-    integer                     :: ilen   ! auxiliary integer indicating string length
-    integer                     :: ipos   ! auxiliary integer indicating position of digit in number
-    integer                     :: istat  ! status code of allocation
-    integer                     :: iw     ! auxiliary integer indicating actual speed of processor
-    integer, dimension(2,nproc) :: iwork  ! work array with the following meaning:
-                                          !    iwork(1,i) = number of i-th part to be created
-                                          !    iwork(2,i) = size of i-th part to be created
-    integer                     :: j      ! auxiliary integer indicating j-th processor
-    integer                     :: k      ! auxiliary integer indicating ASCII code of digit
-    integer                     :: l      ! loop counter
-    integer                     :: luntmp ! temporary file unit number
-    integer                     :: m      ! current M-index of point in computational row
-    integer                     :: n      ! current N-index of point in computational column
-    integer, external           :: newlun
-    integer(kind=8)             :: nactp  ! total number of active gridpoints
-    integer(kind=8)             :: npcum  ! cumulative number of gridpoints
-    logical                     :: ex     ! Help flag = TRUE when file is found
-    character(18)               :: filspp ! file name for list of processor speeds
-    character(256)              :: txt1   ! auxiliary text string
-    character(256)              :: txt2   ! auxiliary text string
-    integer(kind=8)             :: tmp
-    integer(kind=8)             :: tmpsum
+    integer               :: dirmax         !< length of dimension to be partitioned
+    integer, pointer      :: iweig(:)       !< partitioning weights
+    integer, pointer      :: lundia         !< unit number of diagnostic output file
+    integer               :: i              !< loop counter
+    integer               :: icnt           !< auxiliary integer to count weights
+    integer               :: idign(10)      !< auxiliary integer indicating digit in number
+    integer               :: ilen           !< auxiliary integer indicating string length
+    integer               :: ipos           !< auxiliary integer indicating position of digit in number
+    integer               :: istat          !< status code of allocation
+    integer               :: iw             !< auxiliary integer indicating actual speed of processor
+    integer               :: iwork(2,nproc) !< work array with the following meaning:
+                                            !     iwork(1,i) = number of i-th part to be created
+                                            !     iwork(2,i) = size of i-th part to be created
+    integer               :: j              !< auxiliary integer indicating j-th processor
+    integer               :: k              !< auxiliary integer indicating ASCII code of digit
+    integer               :: l              !< loop counter
+    integer               :: luntmp         !< temporary file unit number
+    integer               :: m              !< current M-index of point in computational row
+    integer               :: n              !< current N-index of point in computational column
+    integer(kind=8)       :: nactp          !< total number of active gridpoints
+    integer(kind=8)       :: npcum          !< cumulative number of gridpoints
+    integer               :: partlowerbnd   !< lower bound of the considered partition
+    logical               :: ex             !< Help flag = TRUE when file is found
+    logical               :: partbnd_read   !< Success flag for reading the PartBnd keyword from mdf-file
+    character(1)          :: dirstr         !< string naming the partitioning direction
+    character(18)         :: filspp         !< file name for list of processor speeds
+    character(256)        :: txt1           !< auxiliary text string
+    character(256)        :: txt2           !< auxiliary text string
+    integer(kind=8)       :: tmp            
+    integer(kind=8)       :: tmpsum         
+    integer               :: partbnd(nproc) !< upper bounds of each partition
 !
 !! executable statements -------------------------------------------------------
 !
@@ -164,18 +169,71 @@ subroutine dfpartit ( ipown, icom, mmax, nmax, gdp )
     !
     if ( mmax > nmax ) then
        idir = 2
+       dirstr = 'M'
+       dirmax = mmax
     else
        idir = 1
+       dirstr = 'N'
+       dirmax = nmax
     endif
-    ! 
-    ! check for cutting through smallest dimension
-    !    if ( mmax > nmax ) then
-    !       idir = 1
-    !    else
-    !       idir = 2
-    !    endif
-    ! 
-    if (max(mmax,nmax)/nproc < 4) then
+    !
+    ! check if partition boundaries have been specified
+    !
+    partbnd = 0
+    call prop_get_integers(gdp%mdfile_ptr,'*','PartBnd',partbnd,nproc,partbnd_read,valuesfirst=.true.)
+    if (partbnd_read) then
+       ! user specified partition boundaries
+       ! check partition 1
+       if (partbnd(1) < 4) then
+          write(txt1,'(3a,i0,a,i0,a)') 'Partition 1 must be at least 4 cells wide! PartBnd defines it now as ',dirstr,' = 1 to ',partbnd(1),' hence ',max(0,partbnd(1)),' wide'
+          call prterr(lundia, 'U021', trim(txt1))
+          call d3stop(1, gdp)
+       endif
+       ! check partitions 2 to nproc
+       do i = 2, nproc
+          if (partbnd(i) < partbnd(i-1) + 4) then
+             write(txt1,'(a,i0,3a,i0,a,i0,a,i0,a)') 'Partition ',i,' must be at least 4 cells wide! PartBnd defines it now as ',dirstr,' = ',partbnd(i-1)+1,' to ',partbnd(i),' hence ',max(0,partbnd(i)-partbnd(i-1)),' wide'
+             call prterr(lundia, 'U021', trim(txt1))
+             call d3stop(1, gdp)
+          endif
+       enddo
+       ! check partition nproc
+       if (partbnd(nproc) /= dirmax) then
+          write(txt1,'(3a,i0,a,i0)') 'The last partition boundary index should equal ',dirstr,'MAX: ',partbnd(nproc),' /= ',dirmax
+          call prterr(lundia, 'U021', trim(txt1))
+          call d3stop(1, gdp)
+       endif
+       !
+       ! stripwise partitioning as specified by user
+       !
+       if (idir == 1) then ! N
+          partlowerbnd = 1
+          do i = 1, nproc
+             do n = partlowerbnd, partbnd(i)
+                do m = 1, mmax
+                   if ( icom(m,n) /= 0 ) then
+                      ipown(m,n) = i
+                   endif
+                enddo
+             enddo
+             partlowerbnd = partbnd(i)+1
+          enddo
+       else ! M
+          partlowerbnd = 1
+          do i = 1, nproc
+             do m = partlowerbnd, partbnd(i)
+                do n = 1, nmax
+                   if ( icom(m,n) /= 0 ) then
+                      ipown(m,n) = i
+                   endif
+                enddo
+             enddo
+             partlowerbnd = partbnd(i)+1
+          enddo
+       endif
+       !
+       return
+    elseif (max(mmax,nmax)/nproc < 4) then
        write(txt1,'(a,i0,a)') 'Domain is too small to divide in ', nproc, ' partitions'
        call prterr(lundia, 'U021', trim(txt1))
        write(lundia,'(10x,a)') '"max(mmax,nmax) / num_partitions" must be greater than 3'
