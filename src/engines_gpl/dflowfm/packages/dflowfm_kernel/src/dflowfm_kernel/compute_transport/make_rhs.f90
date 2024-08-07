@@ -68,7 +68,8 @@ subroutine make_rhs(NUMCONST, thetavert, Ndkx, Lnkx, kmx, vol1, kbot, ktop, Lbot
 
    double precision, parameter :: dtol = 1d-8
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("make_rhs", ithndl)
 
    dt_loc = dts

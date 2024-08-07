@@ -46,7 +46,8 @@ subroutine get_jaupdatehorflux(nsubsteps, limtyp, jaupdate, jaupdatehorflux)
    integer :: kk1L, kk2L
    integer :: kk1R, kk2R
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("get_jaupdatehorflux", ithndl)
 
    if (nsubsteps == 1) then

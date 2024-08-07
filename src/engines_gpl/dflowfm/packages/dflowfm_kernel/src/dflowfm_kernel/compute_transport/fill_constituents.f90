@@ -66,7 +66,8 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    double precision, allocatable, dimension(:, :) :: qin_over_laterals
    double precision, allocatable, dimension(:, :) :: qout_over_laterals
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("fill_constituents", ithndl)
 
    const_sour = 0d0

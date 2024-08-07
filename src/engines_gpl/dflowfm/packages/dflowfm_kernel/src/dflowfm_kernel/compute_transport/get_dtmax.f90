@@ -59,7 +59,8 @@ subroutine get_dtmax()
 
    double precision, parameter :: dtmax_default = 1d4
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("get_dtmax", ithndl)
 
    dtmin_transp = huge(1d0)

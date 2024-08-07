@@ -63,7 +63,8 @@ subroutine solve_2D(NUMCONST, Ndkx, Lnkx, vol1, kbot, ktop, Lbot, Ltop, sumhorfl
 
    integer :: j, k
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("solve_2D", ithndl)
 
    thetavert = 0d0

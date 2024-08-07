@@ -73,7 +73,8 @@ subroutine comp_fluxver(NUMCONST, limtyp, thetavert, Ndkx, kmx, zws, qw, kbot, k
 
    double precision, parameter :: DTOL = 1d-8
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl = 0
+   
    if (timon) call timstrt("comp_fluxver", ithndl)
 
    if (sum(1d0 - thetavert(1:NUMCONST)) < DTOL) goto 1234 ! nothing to do

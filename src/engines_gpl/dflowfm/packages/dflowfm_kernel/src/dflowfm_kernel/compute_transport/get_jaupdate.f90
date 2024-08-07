@@ -46,7 +46,8 @@ subroutine get_jaupdate(istep, nsubsteps, Ndxi, Ndx, ndeltasteps, jaupdate)
    integer :: kk
    integer :: num
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("get_jaupdate", ithndl)
 
    jaupdate = 0

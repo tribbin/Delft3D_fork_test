@@ -90,7 +90,8 @@ subroutine solve_vertical(NUMCONST, ISED1, ISEDN, limtyp, thetavert, Ndkx, Lnkx,
 
    double precision, parameter :: dtol = 1d-8
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("solve_vertical", ithndl)
 
    dt_loc = dts

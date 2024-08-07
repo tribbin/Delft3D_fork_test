@@ -94,7 +94,8 @@ subroutine comp_fluxhor3D(NUMCONST, limtyp, Ndkx, Lnkx, u1, q1, au, sqi, vol1, k
    integer :: number_limited_links
    double precision :: flux_max_limit
 
-   integer(4) ithndl / 0 /
+   integer(4) :: ithndl =  0
+   
    if (timon) call timstrt("comp_fluxhor3D", ithndl)
 
    dt_loc = dts

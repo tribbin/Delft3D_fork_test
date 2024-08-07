@@ -99,8 +99,8 @@ subroutine update_constituents(jarhoonly)
    integer :: istep
    integer :: numstepssync
 
-   integer(4) ithndl / 0 /
-
+   integer(4) :: ithndl =  0
+   
    if (NUMCONST == 0) return ! nothing to do
    if (timon) call timstrt("update_constituents", ithndl)
 
