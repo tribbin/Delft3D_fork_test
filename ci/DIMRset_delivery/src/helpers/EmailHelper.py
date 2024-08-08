@@ -134,6 +134,9 @@ class EmailHelper(object):
         current_dir = os.path.dirname(__file__)
         path_to_output_folder = os.path.join(current_dir, RELATIVE_PATH_TO_OUTPUT_FOLDER)
         path_to_email_template = os.path.join(path_to_output_folder, f"DIMRset_{self.__dimr_version}.html")
+        
+        if not os.path.exists(path_to_output_folder):
+            os.makedirs(path_to_output_folder)
 
         with open(path_to_email_template, 'w+') as file:
             file.write(self.__template)
