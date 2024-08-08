@@ -1,6 +1,6 @@
 @ echo off
 
-set dimrdir=p:\d-hydro\dimrset\latest
+set dimrdir=\\directory.intra\PROJECT\d-hydro\dimrset\latest
 
 call %dimrdir%\x64\bin\run_dimr.bat dimr_config.xml
 
