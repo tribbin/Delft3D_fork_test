@@ -366,9 +366,13 @@ subroutine dimpro(lunmd     ,lundia    ,error     ,nrrec     ,lsts      , &
        nflmod = 'generic'
        write (lundia, '(2a)') '*** MESSAGE COSUMO config file: ', trim(gdp%gdnfl%infile)
        !
+       ! SkipUniqueId read for backward compatibility
        skipuniqueid = .false.
        call prop_get(gdp%mdfile_ptr, '*', 'SkipUniqueId', skipuniqueid)
        add_uniqueid = .not.skipuniqueid
+       !
+       ! Read preferred keyword
+       call prop_get(gdp%mdfile_ptr, '*', 'AddUniqueId', add_uniqueid)
        !
        call prop_get(gdp%mdfile_ptr, '*', 'NfTimeout', nf_timeout)
        if (nf_timeout < huge(nf_timeout)) then
