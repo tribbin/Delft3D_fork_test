@@ -34,6 +34,7 @@ module dfm_merge
    use netcdf
    use netcdf_utils
    use dfm_params
+   use m_string_utils, only: progress
    implicit none
 
 ! TODO: re-use the definitions below from original source: unstruc_netcdf
@@ -2902,27 +2903,5 @@ contains
 
    end subroutine dfm_order_by_partition
 
-   subroutine progress(prefix, j)
-      implicit none
-      character(len=*), intent(in) :: prefix
-      integer(kind=4), intent(in) :: j
-      integer(kind=4) :: k
-      character(len=27) :: bar
-
-      bar = "???% |                    |"
-      write (unit=bar(1:3), fmt="(i3)") j
-      do k = 1, ceiling(j / 5.0)
-         bar(6 + k:6 + k) = "*"
-      end do
-      ! print the progress bar.
-      if (j == 100) then
-         write (unit=6, fmt="(a1,a16,a27)") char(13), prefix, bar
-      else
-         write (unit=6, fmt="(a1,a16,a27)", advance='no') char(13), prefix, bar
-      end if
-
-      flush (6)
-      return
-   end subroutine progress
 end module dfm_merge
 

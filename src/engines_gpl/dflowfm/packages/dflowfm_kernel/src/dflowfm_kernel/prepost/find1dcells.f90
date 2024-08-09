@@ -39,22 +39,37 @@
       use m_flowgeom, only: xz, yz, ba
       use gridoperations
       use MessageHandling
+      use omp_lib
+
       implicit none
 
       integer :: K1, K2, K3, L, N, NC1, NC2
       integer :: i, ierr, k, kcell
-
+      integer, dimension(:), allocatable :: NC1_array, NC2_array
       logical :: Lisnew
-
+      integer :: temp_threads
       integer :: ierror
 
       ierror = 1
 
       nump1d2d = nump
 
+      allocate (NC1_array(NUML1D), NC2_array(NUML1D))
+      temp_threads = omp_get_max_threads() !> Save old number of threads
+      call omp_set_num_threads(OMP_GET_NUM_PROCS()) !> Set number of threads to max for this O(N^2) operation
+      !$OMP PARALLEL DO 
+      do L = 1, NUML1D
+         if (KN(1, L) /= 0 .and. kn(3, L) /= 1 .and. kn(3, L) /= 6) then
+            call INCELLS(Xk(KN(1, L)), Yk(KN(1, L)), NC1_array(L))
+            call INCELLS(Xk(KN(2, L)), Yk(KN(2, L)), NC2_array(L))
+         end if
+      end do
+      !$OMP END PARALLEL DO 
+      call omp_set_num_threads(temp_threads)
+      
 !     BEGIN COPY from flow_geominit
       KC = 2 ! ONDERSCHEID 1d EN 2d NETNODES
-
+      
       do L = 1, NUML
          K1 = KN(1, L); K2 = KN(2, L); K3 = KN(3, L)
          if (K3 >= 1 .and. K3 <= 7) then
@@ -63,17 +78,15 @@
       end do
 
       do L = 1, NUML1D
-
          K1 = KN(1, L); K2 = KN(2, L)
          if (k1 == 0) cycle
-
          NC1 = 0; NC2 = 0
          if (kn(3, L) /= 1 .and. kn(3, L) /= 6) then !These link types are allowed to have no 2D cells
             if (NMK(K1) == 1) then
-               call INCELLS(XK(K1), YK(K1), NC1) ! IS INSIDE 2D CELLS()
+               NC1 = NC1_array(L) ! IS INSIDE 2D CELLS()
             end if
             if (NMK(K2) == 1) then
-               call INCELLS(XK(K2), YK(K2), NC2)
+               NC2 = NC2_array(L) ! IS INSIDE 2D CELLS()
             end if
             if (NC1 == 0 .and. NC2 == 0) then
                call mess(LEVEL_WARN, '1D2D link without valid 2D flowcell detected, discarding!')
@@ -162,35 +175,6 @@
             end if
          end if
       end do
-
-!      do L=1,numL1d
-!         k1 = kn(1,L)
-!         k2 = kn(2,L)
-!         nc1 = kc(k1)
-!         nc2 = kc(k2)
-!         if ( nc1.lt.0 ) then
-!            kcell = -nc1
-!            N = netcell(kcell)%N + 1
-!            if ( N.gt.2 ) then
-!               call realloc(netcell(kcell)%nod, N, stat=ierr, keepExisting=.true., fill=0)
-!               call realloc(netcell(kcell)%lin, N, stat=ierr, keepExisting=.true., fill=0)
-!            end if
-!            netcell(kcell)%N      = N
-!            netcell(kcell)%nod(N) = k2
-!            netcell(kcell)%lin(N) = L
-!         end if
-!         if ( nc2.lt.0 ) then
-!            kcell = -nc2
-!            N = netcell(kcell)%N + 1
-!            if ( N.gt.2 ) then
-!               call realloc(netcell(kcell)%nod, N, stat=ierr, keepExisting=.true., fill=0)
-!               call realloc(netcell(kcell)%lin, N, stat=ierr, keepExisting=.true., fill=0)
-!            end if
-!            netcell(kcell)%N      = N
-!            netcell(kcell)%nod(N) = k1
-!            netcell(kcell)%lin(N) = L
-!         end if
-!      end do
 
       do k = 1, numk
          if (kc(k) < 0) then ! 1d cell associated with net node k
