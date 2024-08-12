@@ -3,7 +3,7 @@ import os
 from helpers.SshClient import SshClient
 from lib.Atlassian import Atlassian
 from lib.TeamCity import TeamCity
-from settings.general_settings import NETWORK_BASE_PATH, H6_ADDRESS
+from settings.general_settings import NETWORK_BASE_PATH, LINUX_ADDRESS
 
 
 class PreconditionsHelper(object):
@@ -55,7 +55,7 @@ class PreconditionsHelper(object):
     def __check_ssh_connection_to_linux(self) -> None:
         print("Checking if ssh connection to Linux can be made...")
         try:
-            self.__ssh_client.test_connection(address=H6_ADDRESS)
-            print(f"Successfully created and closed a ssh connection to {H6_ADDRESS}.")
+            self.__ssh_client.test_connection(address=LINUX_ADDRESS)
+            print(f"Successfully created and closed a ssh connection to {LINUX_ADDRESS}.")
         except Exception as e:
-            raise AssertionError(f"Could not establish ssh connection to {H6_ADDRESS}:\n{e}")
+            raise AssertionError(f"Could not establish ssh connection to {LINUX_ADDRESS}:\n{e}")

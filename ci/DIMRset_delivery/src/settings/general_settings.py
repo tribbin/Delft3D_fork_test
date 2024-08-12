@@ -2,7 +2,7 @@
 NETWORK_BASE_PATH = "p:\\d-hydro\\dimrset\\weekly\\"
 
 # Address to Linux
-H6_ADDRESS = "h7"
+LINUX_ADDRESS = "h7"
 
 # Filename of the Excelsheet containing an overview of the DIMR versions.
 VERSIONS_EXCEL_FILENAME = "versions_overview.xlsx"

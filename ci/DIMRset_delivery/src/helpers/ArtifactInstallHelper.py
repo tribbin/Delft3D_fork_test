@@ -4,7 +4,7 @@ from typing import List
 
 from helpers.SshClient import SshClient
 from lib.TeamCity import TeamCity
-from settings.general_settings import NETWORK_BASE_PATH, H6_ADDRESS
+from settings.general_settings import NETWORK_BASE_PATH, LINUX_ADDRESS
 from settings.teamcity_settings import DIMR_COLLETOR_RELEASE_SIGNED_BUILD_TYPE_ID
 from settings.teamcity_settings import NAME_OF_DIMR_RELEASE_SIGNED_LINUX_ARTIFACT
 from settings.teamcity_settings import NAME_OF_DIMR_RELEASE_SIGNED_WINDOWS_ARTIFACT
@@ -45,7 +45,7 @@ class ArtifactInstallHelper(object):
 
     def install_dimr_on_linux(self) -> None:
         """ Installs DIMR on the Linux machine via SSH. """
-        print(f"Installing DIMR on {H6_ADDRESS} via SSH...")
+        print(f"Installing DIMR on {LINUX_ADDRESS} via SSH...")
 
         # setup the command
         command = f"cd /p/d-hydro/dimrset/weekly/{self.__full_dimr_version}/lnx64/bin;"
@@ -60,8 +60,8 @@ class ArtifactInstallHelper(object):
         command += f"ln -s weekly/{self.__full_dimr_version} latest;"
 
         # execute command
-        self.__ssh_client.execute(address=H6_ADDRESS, command=command)
-        print(f"Successfully installed DIMR on {H6_ADDRESS}.")
+        self.__ssh_client.execute(address=LINUX_ADDRESS, command=command)
+        print(f"Successfully installed DIMR on {LINUX_ADDRESS}.")
 
 
     def __download_and_unpack_dimr_artifacts(self, artifacts_to_download: List[str], build_id: str) -> None:
@@ -75,7 +75,7 @@ class ArtifactInstallHelper(object):
         file_path = f"{NETWORK_BASE_PATH}{self.__full_dimr_version}"
         if not os.path.exists(f"{file_path}"):
             command = f"mkdir /p/d-hydro/dimrset/weekly/{self.__full_dimr_version}"
-            self.__ssh_client.execute(address=H6_ADDRESS, command=command)  # via SSH due to permission issues on P:\
+            self.__ssh_client.execute(address=LINUX_ADDRESS, command=command)  # via SSH due to permission issues on P:\
 
         for artifact_to_download in artifacts_to_download:
             print(f"Downloading {artifact_to_download}...")
