@@ -60,6 +60,7 @@ contains
       use timers, only: timstop, timstrt
       use m_lateral_helper_fuctions, only: prepare_lateral_mask
       use fm_external_forcings_utils, only: get_tracername, get_sedfracname
+      use fm_location_types, only: UNC_LOC_S, UNC_LOC_U, UNC_LOC_CN
 
       integer, intent(inout) :: iresult !< integer error code, is preserved in case earlier errors occur.
 
@@ -127,7 +128,7 @@ contains
                   cycle
                end if
 
-               success = timespaceinitialfield(xu, yu, frcu, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, frcu, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
                if (success) then
                   call set_friction_type_values()
                end if
@@ -143,7 +144,7 @@ contains
                      cftrtfac = 1d0
                   end if
 
-                  success = timespaceinitialfield(xu, yu, cftrtfac, lnx, filename, filetype, method, operand, transformcoef, 1)
+                  success = timespaceinitialfield(xu, yu, cftrtfac, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
                   if (success) then
                      jacftrtfac = 1
                   end if
@@ -152,7 +153,7 @@ contains
             else if (qid == 'linearfrictioncoefficient') then
 
                jafrculin = 1
-               success = timespaceinitialfield(xu, yu, frculin, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, frculin, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
 
             else if (qid == 'internaltidesfrictioncoefficient') then
                if (jaFrcInternalTides2D /= 1) then ! not added yet
@@ -168,7 +169,7 @@ contains
 
                   jaFrcInternalTides2D = 1
                end if
-               success = timespaceinitialfield(xz, yz, frcInternalTides2D, Ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, frcInternalTides2D, Ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
             else if (qid == 'horizontaleddyviscositycoefficient') then
 
@@ -180,7 +181,7 @@ contains
                   javiusp = 1
                end if
 
-               success = timespaceinitialfield(xu, yu, viusp, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, viusp, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
 
             else if (qid == 'horizontaleddydiffusivitycoefficient') then
 
@@ -192,7 +193,7 @@ contains
                   jadiusp = 1
                end if
 
-               success = timespaceinitialfield(xu, yu, diusp, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, diusp, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
 
             else if (qid == 'windstresscoefficient') then
 
@@ -205,7 +206,7 @@ contains
                end if
 
                iCdtyp = 1 ! only 1 coeff
-               success = timespaceinitialfield(xu, yu, Cdwusp, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, Cdwusp, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
 
             else if (qid == 'windspeedfactor') then
 
@@ -217,7 +218,7 @@ contains
                end if
 
                ja_wind_speed_factor = 1
-               success = timespaceinitialfield(xu, yu, wind_speed_factor, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, wind_speed_factor, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
 
             else if (qid == 'solarradiationfactor') then
 
@@ -229,7 +230,7 @@ contains
                end if
 
                ja_solar_radiation_factor = 1
-               success = timespaceinitialfield(xz, yz, solar_radiation_factor, ndx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xz, yz, solar_radiation_factor, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
 
             else if (qid == 'secchidepth') then
 
@@ -241,7 +242,7 @@ contains
                   jaSecchisp = 1
                end if
 
-               success = timespaceinitialfield(xz, yz, Secchisp, ndx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xz, yz, Secchisp, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
 
             else if (qid == 'advectiontype') then
 
@@ -272,7 +273,7 @@ contains
                   mask(:) = 1
                end select
 
-               success = timespaceinitialfield(xz, yz, s1, ndx, filename, filetype, method, operand, transformcoef, 2, mask)
+               success = timespaceinitialfield(xz, yz, s1, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S, mask)
 
             else if (qid == 'initialvelocity') then ! both ucx and ucy component from map file in one QUANTITY
 
@@ -281,11 +282,11 @@ contains
                else
                   call realloc(uxini, lnx, fill=dmiss)
                   qid = 'initialvelocityx'
-                  success = timespaceinitialfield(xu, yu, uxini, lnx, filename, filetype, method, operand, transformcoef, 1)
+                  success = timespaceinitialfield(xu, yu, uxini, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
                   if (success) then
                      call realloc(uyini, lnx, fill=dmiss)
                      qid = 'initialvelocityy'
-                     success = timespaceinitialfield(xu, yu, uyini, lnx, filename, filetype, method, operand, transformcoef, 1)
+                     success = timespaceinitialfield(xu, yu, uyini, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
                      if (success) then
                         inivel = 1
                      end if
@@ -295,7 +296,7 @@ contains
             else if (qid == 'initialvelocityx') then
 
                call realloc(uxini, lnx, fill=dmiss)
-               success = timespaceinitialfield(xu, yu, uxini, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, uxini, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
                if (success) then
                   inivelx = 1
                   if (inively == 1) then
@@ -306,7 +307,7 @@ contains
             else if (qid == 'initialvelocityy') then
 
                call realloc(uyini, lnx, fill=dmiss)
-               success = timespaceinitialfield(xu, yu, uyini, lnx, filename, filetype, method, operand, transformcoef, 1)
+               success = timespaceinitialfield(xu, yu, uyini, lnx, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
                if (success) then
                   inively = 1
                   if (inivelx == 1) then
@@ -321,7 +322,7 @@ contains
                   call aerr('h_unsat(ndx)', ierr, ndx)
                   h_unsat = -999d0
                end if
-               success = timespaceinitialfield(xz, yz, h_unsat, ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, h_unsat, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                where (h_unsat == -999d0) h_unsat = 0d0
                if (qid == 'interceptionlayerthickness') then
                   jaintercept2D = 1
@@ -329,7 +330,7 @@ contains
 
             else if (qid == 'infiltrationcapacity') then
                if (infiltrationmodel == DFM_HYD_INFILT_CONST) then ! NOTE: old ext file: mm/day (iniFieldFile assumes mm/hr)
-                  success = timespaceinitialfield(xz, yz, infiltcap, ndx, filename, filetype, method, operand, transformcoef, 1)
+                  success = timespaceinitialfield(xz, yz, infiltcap, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                   infiltcap = infiltcap * 1d-3 / (24d0 * 3600d0) ! mm/day => m/s
                else
                   write (msgbuf, '(a,i0,a)') 'flow_initexternalforcings: quantity '//trim(qid)//' requires ''InfiltrationModel = ', DFM_HYD_INFILT_CONST, ''' in MDU. Skipping file '''//trim(filename)//'''.'
@@ -338,7 +339,7 @@ contains
 
             else if (qid == '__bathymetry__') then ! this is for the D-Flow FM User interface!!!
 
-               success = timespaceinitialfield(xk, yk, zk, numk, filename, filetype, method, operand, transformcoef, 3)
+               success = timespaceinitialfield(xk, yk, zk, numk, filename, filetype, method, operand, transformcoef, UNC_LOC_CN)
 
             else if (index(qid, 'bedlevel') > 0) then ! to suppress error message while actually doing this in geominit
 
@@ -361,7 +362,7 @@ contains
                   if (qid(16:16) == '9') isednum = 9
 
                   sedh(1:ndx) = sed(isednum, 1:ndx)
-                  success = timespaceinitialfield(xz, yz, sedh, ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, sedh, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                   if (success) then
                      do kk = 1, ndx
                         if (sedh(kk) /= dmiss) then
@@ -379,7 +380,7 @@ contains
 
                if (jasal > 0) then
                   sah = dmiss
-                  success = timespaceinitialfield(xz, yz, sah, ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, sah, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                   if (success) then
                      call initialfield2Dto3D(sah, sa1, transformcoef(13), transformcoef(14))
                   end if
@@ -394,7 +395,7 @@ contains
                      call aerr('satop(ndx)', ierr, ndx)
                      satop = dmiss
                   end if
-                  success = timespaceinitialfield(xz, yz, satop, ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, satop, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                   if (success) then
                      inisal2D = 2; uniformsalinityabovez = transformcoef(3)
                   end if
@@ -410,7 +411,7 @@ contains
                      call aerr('sabot(ndx)', ierr, ndx)
                      sabot = dmiss
                   end if
-                  success = timespaceinitialfield(xz, yz, sabot, ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, sabot, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                   if (success .and. transformcoef(3) /= dmiss) then
                      inisal2D = 3; uniformsalinitybelowz = transformcoef(4)
                   end if
@@ -420,7 +421,7 @@ contains
 
             else if (jatem > 0 .and. qid == 'initialtemperature') then
 
-               success = timespaceinitialfield(xz, yz, tem1, ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, tem1, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                if (success) then
                   initem2D = 1
                end if
@@ -435,11 +436,11 @@ contains
 
             else if (janudge > 0 .and. qid == 'nudgetime') then
 
-               success = timespaceinitialfield(xz, yz, nudge_time, ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, nudge_time, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
             else if (janudge > 0 .and. qid == 'nudgerate') then
 
-               success = timespaceinitialfield(xz, yz, nudge_rate, ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, nudge_rate, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
             else if (stm_included .and. qid(1:14) == 'initialsedfrac') then
                call get_sedfracname(qid, sfnam, qidnam)
@@ -461,7 +462,7 @@ contains
                      end do
                   end do
 
-                  success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
                   if (success) then
                      do kk = 1, Ndx
@@ -552,7 +553,7 @@ contains
                   end do
                else
                   ! will only fill 2D part of viuh
-                  success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                   if (success) then
                      do kk = 1, Ndx
                         if (viuh(kk) /= dmiss) then
@@ -606,7 +607,7 @@ contains
                end do
 
                ! will only fill 2D part of viuh
-               success = timespaceinitialfield(xz, yz, viuh, Ndxi, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, viuh, Ndxi, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
                if (success) then
                   do kk = 1, Ndxi
@@ -640,7 +641,7 @@ contains
                   call aerr('stemdiam(ndx)', ierr, ndx)
                   stemdiam = dmiss
                end if
-               success = timespaceinitialfield(xz, yz, stemdiam, ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, stemdiam, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
             else if (qid == 'stemdensity') then
 
@@ -649,7 +650,7 @@ contains
                   call aerr('stemdens(ndx)', ierr, ndx)
                   stemdens = dmiss
                end if
-               success = timespaceinitialfield(xz, yz, stemdens, ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, stemdens, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
             else if (qid == 'stemheight') then
 
@@ -658,7 +659,7 @@ contains
                   call aerr('stemheight(ndx)', ierr, ndx)
                   stemheight = dmiss
                end if
-               success = timespaceinitialfield(xz, yz, stemheight, ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, stemheight, ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
                if (stemheightstd > 0d0) then
                   do k = 1, ndx
@@ -669,36 +670,36 @@ contains
                end if
             else if (qid == 'groundlayerthickness') then
 
-               success = timespaceinitialfield(xu, yu, grounlay, Lnx1D, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xu, yu, grounlay, Lnx1D, filename, filetype, method, operand, transformcoef, UNC_LOC_U)
                if (success) jagrounlay = 1
 
             else if (.not. stm_included .and. qid == 'erodablelayerthicknessgrainsize1' .and. mxgr >= 1) then
 
                if (jaceneqtr == 1) then
-                  success = timespaceinitialfield(xz, yz, grainlayerthickness(1, 1), ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, grainlayerthickness(1, 1), ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                else
                   mx = size(grainlay, 2)
-                  success = timespaceinitialfield(xk, yk, grainlayerthickness(1, 1), mx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xk, yk, grainlayerthickness(1, 1), mx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                end if
                jagrainlayerthicknessspecified = 1
 
             else if (.not. stm_included .and. qid == 'erodablelayerthicknessgrainsize2' .and. mxgr >= 2) then
 
                if (jaceneqtr == 1) then
-                  success = timespaceinitialfield(xz, yz, grainlayerthickness(1, 2), ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, grainlayerthickness(1, 2), ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                else
                   mx = size(grainlay, 2)
-                  success = timespaceinitialfield(xk, yk, grainlayerthickness(1, 2), mx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xk, yk, grainlayerthickness(1, 2), mx, filename, filetype, method, operand, transformcoef, UNC_LOC_CN)
                end if
                jagrainlayerthicknessspecified = 1
 
             else if (.not. stm_included .and. qid == 'erodablelayerthicknessgrainsize3' .and. mxgr >= 3) then
 
                if (jaceneqtr == 1) then
-                  success = timespaceinitialfield(xz, yz, grainlayerthickness(1, 3), ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, grainlayerthickness(1, 3), ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                else
                   mx = size(grainlay, 2)
-                  success = timespaceinitialfield(xk, yk, grainlayerthickness(1, 3), mx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xk, yk, grainlayerthickness(1, 3), mx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
                end if
                jagrainlayerthicknessspecified = 1
 
@@ -1155,7 +1156,7 @@ contains
                   call realloc(viuh, Ndkx, keepExisting=.false., Fill=dmiss)
 
                   ! will only fill 2D part of viuh
-                  success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, 2)
+                  success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
                   if (success) then
                      do kk = 1, Ndxi

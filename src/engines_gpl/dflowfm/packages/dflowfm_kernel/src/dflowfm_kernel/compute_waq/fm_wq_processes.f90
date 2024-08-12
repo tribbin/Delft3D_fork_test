@@ -917,6 +917,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
    use m_fm_wq_processes
    use timers
    use unstruc_files, only: resolvePath
+   use fm_location_types, only : UNC_LOC_S
 
    implicit none
    integer, intent(out) :: iresult
@@ -996,7 +997,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
                end do
 
                ! will only fill 2D part of viuh
-               success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
                if (success) then
                   do kk = 1, Ndxi
@@ -1032,7 +1033,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
                end do
 
                ! will only fill 2D part of viuh
-               success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
                if (success) then
                   do kk = 1, Ndxi
@@ -1095,7 +1096,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
                call realloc(viuh, Ndkx, keepExisting=.false., fill=dmiss)
 
                ! will only fill 2D part of viuh
-               success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, 2)
+               success = timespaceinitialfield(xz, yz, viuh, Ndx, filename, filetype, method, operand, transformcoef, UNC_LOC_S)
 
                if (success) then
                   do kk = 1, Ndxi

@@ -6047,6 +6047,7 @@ contains
       use unstruc_model, only: getoutputdir
       use system_utils, only: FILESEP
       use m_arcinfo
+      use fm_location_types, only: UNC_LOC_S, UNC_LOC_U, UNC_LOC_CN
 
       implicit none
 
@@ -6070,7 +6071,7 @@ contains
       character(1), intent(in) :: operand ! override, add
       double precision, intent(in) :: transformcoef(:) !< Transformation coefficients
       integer, intent(in) :: iprimpos ! only needed for averaging, position of primitive variables in network
-      ! 1 = u point, cellfacemid, 2 = zeta point, cell centre, 3 = netnode
+      ! UNC_LOC_U = u point, cellfacemid, UNC_LOC_S = zeta point, cell centre, UNC_LOC_CN = netnode
 
       double precision, allocatable :: zh(:)
       integer :: ierr
@@ -6190,7 +6191,7 @@ contains
                nummin = int(transformcoef(8))
             end if
 
-            if (iprimpos == 1) then ! primitime position = velocitypoint, cellfacemid
+            if (iprimpos == UNC_LOC_U) then ! primitime position = velocitypoint, cellfacemid
                n6 = 4
                allocate (xx(n6, lnx), yy(n6, lnx), nnn(lnx))
                do L = 1, lnx
@@ -6205,7 +6206,7 @@ contains
                   yy(4, L) = yk(kn(2, Lk))
                end do
                nnn = 4 ! array nnn
-            else if (iprimpos == 2) then ! primitime position = waterlevelpoint, cell centre
+            else if (iprimpos == UNC_LOC_S) then ! primitime position = waterlevelpoint, cell centre
                n6 = maxval(netcell%n)
                if (jsferic == 1) then
                   n6 = n6 + 2 ! safety at poles
@@ -6219,7 +6220,7 @@ contains
                   call get_cellpolygon(n, n6, nnn(n), rcel, xx(1, n), yy(1, n), LnnL, Lorg, zz)
                end do
                deallocate (LnnL, Lorg)
-            else if (iprimpos == 3) then ! primitime position = netnode, cell corner
+            else if (iprimpos == UNC_LOC_CN) then ! primitime position = netnode, cell corner
 
                n6 = 3 * maxval(nmk) ! 2: safe upper bound , 3 : even safer!
                allocate (xx(n6, numk), yy(n6, numk), nnn(numk), xxx(n6), yyy(n6))

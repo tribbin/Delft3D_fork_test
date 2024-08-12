@@ -1599,9 +1599,13 @@ contains
       call setup(iresult)
       if (iresult == DFM_NOERR) then
          call init_new(md_extfile_new, iresult)
+      end if
+      if (iresult == DFM_NOERR) then
          call init_old(iresult)
       end if
-      call finalize()
+      if (iresult == DFM_NOERR) then
+         call finalize()
+      end if
 
    end function flow_initexternalforcings
 
@@ -2673,7 +2677,7 @@ contains
       use m_cell_geometry, only: ndx
       use m_alloc, only: aerr
       use precision_basics, only: hp
-      
+
       real(kind=hp), intent(in) :: default_value !< default atmospheric pressure value
       integer :: status
 

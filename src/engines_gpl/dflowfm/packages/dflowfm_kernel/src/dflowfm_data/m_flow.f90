@@ -328,12 +328,12 @@ module m_flow ! flow arrays-999
    double precision, allocatable :: frcu_bkp(:) !< Backup of friction coefficient set by initial fields {"location": "edge", "shape": ["lnx"]}
    double precision, allocatable :: cfclval(:) !< array for calibration factor for friction coefficients
    double precision, allocatable :: cftrt(:, :) !< array for friction coefficients due to trachytopes
-   double precision, allocatable :: cftrtfac(:) !< array for optional multiplication factor for trachytopes's returned roughness values
+   double precision, allocatable, target :: cftrtfac(:) !< array for optional multiplication factor for trachytopes's returned roughness values
    integer :: jacftrtfac !< Whether or not (1/0) a multiplication factor field was specified for trachytopes's Chezy roughness values.
    double precision, allocatable :: czu(:) !< array for chezy friction at flow links {"location": "edge", "shape": ["lnx"]}
-   double precision, allocatable :: frculin(:) !< friction coefficient set by initial fields ( todo mag later ook single real worden)
+   double precision, allocatable, target :: frculin(:) !< friction coefficient set by initial fields ( todo mag later ook single real worden)
    integer, allocatable :: ifrcutp(:) !< friction coefficient type   initial fields ( todo mag later ook single real worden)
-   double precision, allocatable :: Cdwusp(:) !< Wind friction coefficient at u point set by initial fields ( todo mag later ook single real worden)
+   double precision, allocatable, target :: Cdwusp(:) !< Wind friction coefficient at u point set by initial fields ( todo mag later ook single real worden)
    double precision, allocatable :: wind_speed_factor(:) !< wind speed multiplication factor
    double precision, allocatable :: solar_radiation_factor(:) !< solar radiation multiplication factor
    double precision, allocatable :: z0ucur(:) !< current related roughness, moved from waves, always needed
@@ -341,7 +341,7 @@ module m_flow ! flow arrays-999
 
    double precision, allocatable :: frcuroofs(:) !< temp
 
-   double precision, allocatable :: frcInternalTides2D(:) !< internal tides friction coefficient gamma, tau/rho = - gamma u.grad h grad h
+   double precision, allocatable, target :: frcInternalTides2D(:) !< internal tides friction coefficient gamma, tau/rho = - gamma u.grad h grad h
 
    double precision, allocatable :: wavfu(:) !< wave force u point
    double precision, allocatable :: wavfv(:) !< wave force u point
