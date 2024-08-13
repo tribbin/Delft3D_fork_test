@@ -31,7 +31,7 @@
 !
 
       subroutine ATPPAR(X, Y, M1, N1, M2, N2, &
-                        ATP, A, B, C, D, E, JDLA)
+                        ATP, A, B, C, D, E)
          use m_grid, not1 => xc, not2 => yc
          use M_GRIDSETTINGS
          use m_orthosettings
@@ -42,7 +42,6 @@
          double precision :: dg2rd
          integer :: i
          integer :: j
-         integer :: jdla
          integer :: m1
          integer :: m2
          integer :: n1
@@ -113,7 +112,7 @@
          end do
 
 !     sommmen
-         call SOMDIST(X, Y, A, B, C, D, M1, N1, M2, N2)
+         call SOMDIST(A, B, C, D, M1, N1, M2, N2)
 
 !     normeren
 

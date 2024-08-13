@@ -32,6 +32,8 @@
 #include "config.h"
 #endif
 
+#define no_warning_unused_variable(x) associate( x => x ); end associate
+
 module bmi
    use iso_c_binding
    use unstruc_api
@@ -101,14 +103,16 @@ contains
 !> Returns a string array of the model's input variable names as "long variable names" from the CSDMS Standard Names.
 !! TODO: not implemented yet.
    subroutine get_input_var_names(names) bind(C, name="get_input_var_names")
-      character(kind=c_char), dimension(MAXNAMES), intent(out) :: names(*)
+      character(kind=c_char), dimension(MAXNAMES), intent(out) :: names(:)
       !type(c_ptr), dimension(:) :: names
+      no_warning_unused_variable(names)
    end subroutine get_input_var_names
 
 !> Returns a string array of the model's output variable names as "long variable names" from the CSDMS Standard Names.
 !! TODO: not implemented yet.
    subroutine get_output_var_names(names) bind(C, name="get_output_var_names")
-      character(kind=c_char), dimension(MAXNAMES), intent(out) :: names(*)
+      character(kind=c_char), dimension(MAXNAMES), intent(out) :: names(:)
+      no_warning_unused_variable(names)
    end subroutine get_output_var_names
 
 !> Returns a static attribute (i.e. an attribute that does not change
@@ -269,7 +273,6 @@ contains
       use MessageHandling
       use iso_c_binding
       type(c_funptr), value :: c_msg_callback !< Set a callback that will be called with new messages
-      integer :: ierr !< Result status, ionc_noerr if successful.
       call set_logger(c_msg_callback)
       call mess(LEVEL_WARN, "callback initialized")
    end subroutine set_logger_c_callback
@@ -433,6 +436,7 @@ contains
    subroutine update_until(t) bind(C, name="update_until")
       use iso_c_binding, only: c_double
       real(c_double), intent(in) :: t
+      no_warning_unused_variable(t)
       ! Calls update(t-tnow)
    end subroutine update_until
 
@@ -501,7 +505,8 @@ contains
 
    subroutine get_time_units(unit) bind(C, name="get_time_units")
       ! returns unit string for model time, e.g. 'days since 1970-01-01'
-      character(kind=c_char), intent(in) :: unit(*)
+      character(kind=c_char), intent(in) :: unit(:)
+      no_warning_unused_variable(unit)
    end subroutine get_time_units
 
    subroutine get_n_attributes(n) bind(C, name="get_n_attributes")
@@ -525,7 +530,7 @@ contains
       name = 'some attribute name'
       c_att_name = string_to_char_array(trim(name), len(trim(name)))
       ! get name of attribute i
-
+      no_warning_unused_variable(i)
    end subroutine get_attribute_name
 
    subroutine get_attribute_type(c_att_name, c_type) bind(C, name="get_attribute_type")
@@ -700,8 +705,10 @@ contains
 
    subroutine get_var_names(names) bind(C, name="get_var_names")
       use iso_c_binding, only: c_char, c_ptr
-      character(kind=c_char), dimension(MAXNAMES), intent(out) :: names(*)
+      character(kind=c_char), dimension(MAXNAMES), intent(out) :: names(:)
 
+      no_warning_unused_variable(names)
+      
       ! I can't get this to work.....
 
       ! http://stackoverflow.com/questions/9686532/arrays-of-strings-in-fortran-c-bridges-using-iso-c-binding
@@ -796,8 +803,10 @@ contains
    end subroutine get_var_location
 
    subroutine get_var_role(c_var_name, role) bind(C, name="get_var_role")
-      character(kind=c_char), intent(in) :: c_var_name(*)
-      character(kind=c_char), intent(out) :: role(*)
+      character(kind=c_char), intent(in) :: c_var_name(:)
+      character(kind=c_char), intent(out) :: role(:)
+      no_warning_unused_variable(c_var_name)
+      no_warning_unused_variable(role)
       ! Roles:
       ! BMI_INPUT
       ! BMI_OUTPUT
@@ -805,8 +814,10 @@ contains
    end subroutine get_var_role
 
    subroutine get_var_units(c_var_name, unit) bind(C, name="get_var_units")
-      character(kind=c_char), intent(in) :: c_var_name(*)
-      character(kind=c_char), intent(out) :: unit(*)
+      character(kind=c_char), intent(in) :: c_var_name(:)
+      character(kind=c_char), intent(out) :: unit(:)
+      no_warning_unused_variable(c_var_name)
+      no_warning_unused_variable(unit)
    end subroutine get_var_units
 
 !> Returns the rank of a variable, i.e., its dimensionality.
@@ -1335,6 +1346,12 @@ contains
 
       ! Store the name
       var_name = char_array_to_string(c_var_name, strlen(c_var_name))
+      no_warning_unused_variable(x_0d_char_ptr)
+      no_warning_unused_variable(x_3d_int_ptr)
+      no_warning_unused_variable(x_0d_float_ptr)
+      no_warning_unused_variable(x_1d_float_ptr)
+      no_warning_unused_variable(x_2d_float_ptr)
+      no_warning_unused_variable(x_3d_float_ptr)
 
       include "bmi_set_var.inc"
 
@@ -1614,6 +1631,14 @@ contains
 
       ! The fortran name of the attribute name
       character(len=strlen(c_var_name)) :: var_name
+      no_warning_unused_variable(x_0d_double_ptr)
+      no_warning_unused_variable(x_3d_double_ptr)
+      no_warning_unused_variable(x_0d_int_ptr)
+      no_warning_unused_variable(x_3d_int_ptr)
+      no_warning_unused_variable(x_0d_float_ptr)
+      no_warning_unused_variable(x_1d_float_ptr)
+      no_warning_unused_variable(x_2d_float_ptr)
+      no_warning_unused_variable(x_3d_float_ptr)
 
       ! Store the name
       var_name = char_array_to_string(c_var_name, strlen(c_var_name))

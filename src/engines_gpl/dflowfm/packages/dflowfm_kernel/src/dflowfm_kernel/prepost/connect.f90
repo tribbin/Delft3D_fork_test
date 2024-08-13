@@ -30,12 +30,12 @@
 !
 !
 
-  subroutine CONNECT(K1, K2, LFAC, A0, R00)
+  subroutine CONNECT(K1, K2, LFAC, R00)
      use m_netw
      use gridoperations
      implicit none
      integer :: K1, K2, LFAC
-     double precision :: A0, R00
+     double precision :: R00
 
      double precision :: ag
      double precision :: cfl

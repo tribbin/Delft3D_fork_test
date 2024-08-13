@@ -405,9 +405,9 @@ subroutine IFormEditUser(IFINIT,IFEXIT,FMUSER)
   ! takes two arguments which have specific meanings on entry and exit :
 end subroutine IFormEditUser
 
-subroutine FMUSER (IFIELD,IEXITK)
+subroutine FMUSER (IFIELD)
   integer IFIELD ! Field number
-  integer IEXITK ! 'Exit' key
+  !integer IEXITK ! 'Exit' key, not used right now.
   ! On entry, IFIELD specifies the field in which the user has just pressed an 'exit' key
   ! (which may have been a next/previous field key). IEXITK specifies the control key
   ! number of that key. It will be set to one of the following values on entry :

@@ -30,10 +30,10 @@
 !
 !
 
- subroutine carrier(ndx, time1)
+ subroutine carrier(time1)
     implicit none
     double precision :: time1
-    integer :: ndx
+
     double precision :: J0(100), J1(100), A1(100), A3(100), ahh
     double precision :: h0, T0, s, etinbr, dc, tol, etabr, etain, a, a2
     double precision :: omega, sg, osg, osg2, rl0, c, dt, t, uold, u, x, xster, hh, uu, xx

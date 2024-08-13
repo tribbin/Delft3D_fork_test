@@ -38,7 +38,7 @@ contains
    module subroutine init_old(iresult)
 
       use m_flowtimes, only: handle_extra, irefdate, tunit, tstart_user, tim1fld, ti_mba
-      use m_flowgeom, only: lnx, ndx, xz, yz, xu, yu, iadv, ibot, ndxi, lnx1d, grounlay, jagrounlay, kcs, ln
+      use m_flowgeom, only: lnx, ndx, xz, yz, xu, yu, iadv, ibot, ndxi, lnx1d, grounlay, jagrounlay, kcs
       use m_inquire_flowgeom, only: IFLTP_1D, IFLTP_ALL
       use m_netw, only: xk, yk, zk, numk, numl
       use unstruc_model, only: md_extfile_dir, md_inifieldfile, md_extfile
@@ -246,11 +246,11 @@ contains
 
             else if (qid == 'advectiontype') then
 
-               success = timespaceinitialfield_int(xu, yu, iadv, lnx, filename, filetype, method, operand, transformcoef)
+               success = timespaceinitialfield_int(xu, yu, iadv, lnx, filename, filetype, operand, transformcoef)
 
             else if (qid == 'ibedlevtype') then ! Local override of bottomleveltype
 
-               success = timespaceinitialfield_int(xu, yu, ibot, lnx, filename, filetype, method, operand, transformcoef)
+               success = timespaceinitialfield_int(xu, yu, ibot, lnx, filename, filetype, operand, transformcoef)
 
             else if (qid(1:17) == 'initialwaterlevel') then
                if (len_trim(md_inifieldfile) > 0) then
@@ -1045,7 +1045,7 @@ contains
 
             else if (jaoldstr > 0 .and. qid == 'gateloweredgelevel') then
 
-               call selectelset_internal_links(xz, yz, ndx, ln, lnx, keg(ngate + 1:numl), numg, LOCTP_POLYLINE_FILE, filename)
+               call selectelset_internal_links(lnx, keg(ngate + 1:numl), numg, LOCTP_POLYLINE_FILE, filename)
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), numg, ' nr of gate links'; call msg_flush()
 
@@ -1057,7 +1057,7 @@ contains
 
             else if (jaoldstr > 0 .and. qid == 'damlevel') then
 
-               call selectelset_internal_links(xz, yz, ndx, ln, lnx, ked(ncdam + 1:numl), numd, LOCTP_POLYLINE_FILE, filename)
+               call selectelset_internal_links(lnx, ked(ncdam + 1:numl), numd, LOCTP_POLYLINE_FILE, filename)
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), numd, ' nr of dam level cells'; call msg_flush()
 
@@ -1069,7 +1069,7 @@ contains
 
             else if (jaoldstr > 0 .and. qid == 'generalstructure') then
 
-               call selectelset_internal_links(xz, yz, ndx, ln, lnx, kegen(ncgen + 1:numl), numgen, LOCTP_POLYLINE_FILE, filename, sortLinks=1)
+               call selectelset_internal_links(lnx, kegen(ncgen + 1:numl), numgen, LOCTP_POLYLINE_FILE, filename, sortLinks=1)
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), numgen, ' nr of general structure cells'; call msg_flush()
 
@@ -1082,9 +1082,9 @@ contains
             else if (jaoldstr > 0 .and. (qid == 'pump1D' .or. qid == 'pump')) then
 
                if (qid == 'pump1D') then
-                  call selectelset_internal_links(xz, yz, ndx, ln, lnx1D, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_1D, sortLinks=1)
+                  call selectelset_internal_links(lnx1D, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_1D, sortLinks=1)
                else
-                  call selectelset_internal_links(xz, yz, ndx, ln, lnx, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_ALL, sortLinks=1)
+                  call selectelset_internal_links(lnx, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_ALL, sortLinks=1)
                end if
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), npum, ' nr of pump links'; call msg_flush()
@@ -1097,7 +1097,7 @@ contains
 
             else if (jaoldstr > 0 .and. qid == 'checkvalve') then
 
-               call selectelset_internal_links(xz, yz, ndx, ln, lnx, keklep(nklep + 1:numl), numklep, LOCTP_POLYLINE_FILE, filename)
+               call selectelset_internal_links(lnx, keklep(nklep + 1:numl), numklep, LOCTP_POLYLINE_FILE, filename)
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), numklep, ' nr of checkvalves '; call msg_flush()
 
@@ -1106,7 +1106,7 @@ contains
 
             else if (jaoldstr > 0 .and. qid == 'valve1D') then
 
-               call selectelset_internal_links(xz, yz, ndx, ln, lnx1D, kevalv(nvalv + 1:numl), numvalv, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_1D)
+               call selectelset_internal_links(lnx1D, kevalv(nvalv + 1:numl), numvalv, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_1D)
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), numvalv, ' nr of valves '; call msg_flush()
 

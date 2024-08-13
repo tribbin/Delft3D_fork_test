@@ -146,7 +146,7 @@
                MODE = NWHAT
                return
             else
-               call CHOICES(MODE, NUM, NWHAT, KEY)
+               call CHOICES(NUM, NWHAT, KEY)
             end if
          else if (KEY >= 577) then ! Alt+letter switches edit mode.
             call selecteditmode(newmode, key)
@@ -307,7 +307,7 @@
                else if (KPP /= 0) then
                   call SAVENET()
                   call TEKNODE(KPP, NCOLDN)
-                  call netmodfld(xp, yp, zpp, kpp)
+                  call netmodfld(xp, yp, kpp)
                   NPUT = 0
                   kpp = 0
                   KEY = 3
@@ -321,7 +321,7 @@
                else if (KPP /= 0) then
                   call SAVENET()
                   call TEKNODE(KPP, NCOLDN)
-                  call netrotfld(xp, yp, zpp, kpp)
+                  call netrotfld(xp, yp, kpp)
                   NPUT = 0
                   kpp = 0
                   KEY = 3
@@ -491,7 +491,7 @@
             JADD = 4
             if (KP /= 0) then
                call TEKNODE(KP, 0)
-               call ONELINE(KP, 99999d0)
+               call ONELINE(KP)
             end if
          else if (KEY == 84 .or. KEY == 84 + 32) then ! T-key
 !        thin dam mode

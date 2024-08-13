@@ -93,7 +93,7 @@
 
          if (Z == DMISS) cycle ! SPvdP: structured sample data may comprise missing values
 
-         call tek1sample(x, y, z, met, rc, hrc, i, i)
+         call tek1sample(x, y, z, met, hrc, i)
 
       end do
 
@@ -131,13 +131,13 @@
             if (z == dmiss) cycle
             x = x0 + dxa * (m - 1)
             y = y0 + dya * (n - 1)
-            call tek1sample(x, y, z, met, rc, hrc, m, n)
+            call tek1sample(x, y, z, met, hrc, m)
 
          end do
       end do
    end subroutine TEKarc
 
-   subroutine tek1sample(x, y, z, met, rc, hrc, m, n)
+   subroutine tek1sample(x, y, z, met, hrc, m)
       use unstruc_colors
       use unstruc_display
       use m_arcinfo
@@ -145,7 +145,7 @@
       implicit none
       
       double precision :: x, y, z, rc, hrc
-      integer :: met, m, n, ndraw, ncol
+      integer :: met, m, ndraw, ncol
       
       logical, external :: inview
 

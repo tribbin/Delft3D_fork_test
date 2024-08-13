@@ -30,12 +30,11 @@
 !
 !
 
-  subroutine ONELINE(K, RD) ! TWEE LIJNTJES WORDEN 1
+  subroutine ONELINE(K) ! TWEE LIJNTJES WORDEN 1
      use m_netw
      use gridoperations
      implicit none
      integer :: K
-     double precision :: RD
 
      double precision :: a0
      double precision :: ag

@@ -175,7 +175,7 @@
                    nodemode == 7 .or. nodemode == 8) then ! numbers
                   call setcol(1)
                   if (netwhat == 2 .or. netwhat == 15) then ! cell numbers or domain numbers
-                     call dhitext(int(rlin(k)), xzw(k) + RCIR, yzw(k) - RCIR, yzw(k))
+                     call dhitext(int(rlin(k)), xzw(k) + RCIR, yzw(k) - RCIR)
                   else
                      call dhtext(dble(rlin(k)), xzw(k) + RCIR, yzw(k) - RCIR, yzw(k))
                   end if

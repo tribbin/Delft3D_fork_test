@@ -51,7 +51,6 @@
          integer :: k1
          integer :: k2
          integer :: l
-         integer :: maxexp
          integer :: maxopt
          integer :: nwhat
          double precision :: rd
@@ -76,7 +75,7 @@
 10       continue
          NWHAT = ICHANGE
          call SHOWREAL('UNIFORM VALUE = ', A)
-         call MENUV3(NWHAT, OPTION, MAXOPT, EXP, MAXEXP)
+         call MENUV3(NWHAT, OPTION, MAXOPT)
          call IWINCLOSE(1)
          if (NWHAT == 0) then
             KEY = 0

@@ -256,7 +256,7 @@ contains
 !> calculate_advection_subgrid
       subroutine calculate_advection_subgrid()
 
-         call getucxucynoweirs(upstream_cell, ucx_up, ucy_up, ifixedweirscheme)
+         call getucxucynoweirs(upstream_cell, ucx_up, ucy_up)
          u_in = ucx_up * csu(link) + ucy_up * snu(link)
          call calculate_vhei_and_eup()
          call calculate_advection_block_subgrid_and_Rajaratnam()
@@ -388,7 +388,7 @@ contains
          end if
          dte0 = weirdte(nfw)
          dtefri = 0.0d0
-         call enloss(ag, d1, energy_height_upstream, hkru_in, hov, qunit, qvolk, toest, vov, &
+         call enloss(ag, d1, energy_height_upstream, hkru_in, qunit, qvolk, toest, vov, &
                      energy_height_downstream, wsbov, wsben, weirdte(nfw), dtefri, iadv(link), crestlxw(nfw), &
                      taludlxw(nfw), taludrxw(nfw), vegxw(nfw), testfixedweirs)
          weirdte(nfw) = (1d0 - waquaweirthetaw) * weirdte(nfw) + waquaweirthetaw * dte0

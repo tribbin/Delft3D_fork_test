@@ -76,7 +76,7 @@
                KEY = 3
                return
             else
-               call CHOICES(MODE, NUM, NWHAT, KEY)
+               call CHOICES(NUM, NWHAT, KEY)
             end if
          else if (KEY == 21) then
 !        INS KEY

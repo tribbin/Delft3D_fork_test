@@ -30,7 +30,7 @@
 !
 !
 
- subroutine step_reduce_transport_morpho(key)
+ subroutine step_reduce_transport_morpho()
     use m_flow
     use m_flowgeom
     use m_sediment, only: stm_included
@@ -58,8 +58,6 @@
 
     integer :: ndraw
     common / DRAWTHIS / ndraw(50)
-
-    integer :: key
 
     numnodneg = 0
     if (wrwaqon .and. allocated(qsrcwaq)) then

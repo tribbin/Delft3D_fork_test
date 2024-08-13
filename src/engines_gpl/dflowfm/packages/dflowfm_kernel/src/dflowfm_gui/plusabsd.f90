@@ -42,7 +42,7 @@
          double precision :: XK(NUMK), YK(NUMK), ZK(NUMK), EA(NUMK)
          double precision :: XI, YI, ZI, DA, AF, RD
 
-         integer :: ichange, inhul, ja, k, maxexp, maxopt, nwhat
+         integer :: ichange, inhul, ja, k, maxopt, nwhat
          double precision, save :: A = 1d0
 
          JA = 0
@@ -63,7 +63,7 @@
 10       continue
          NWHAT = ICHANGE
          call SHOWREAL('UNIFORM VALUE = ', A)
-         call MENUV3(NWHAT, OPTION, MAXOPT, EXP, MAXEXP)
+         call MENUV3(NWHAT, OPTION, MAXOPT)
          call IWINCLOSE(1)
          if (NWHAT == 0) then
             KEY = 0

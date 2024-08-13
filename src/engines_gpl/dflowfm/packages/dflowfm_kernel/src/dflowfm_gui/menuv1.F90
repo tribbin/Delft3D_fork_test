@@ -36,7 +36,6 @@
 
       implicit none
       integer :: NUM, NWHAT
-      integer :: maxexp
       integer :: maxopt
       integer, parameter :: MAXOP = 64
       character * 40 OPTION(MAXOP), exp(MAXOP)
@@ -266,11 +265,11 @@
          call FIELDOPT(NFLD)
          NWHAT = 4
          if (NFLD == 22) then
-            call MENUV2(NWHAT, OPTION, MAXOPT, EXP, MAXEXP)
+            call MENUV2(NWHAT, OPTION, MAXOPT)
             NFLD = NFO
          end if
       else
-         call MENUV2(NWHAT, OPTION, MAXOPT, EXP, MAXEXP)
+         call MENUV2(NWHAT, OPTION, MAXOPT)
       end if
 
       return

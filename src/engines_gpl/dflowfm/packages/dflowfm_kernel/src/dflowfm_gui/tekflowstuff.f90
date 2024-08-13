@@ -281,7 +281,7 @@
        call tekarcuv(vfac, ndraw(13))
     else if (ndraw(13) == 8) then ! show arc wind
        call setcol(221)
-       call tekspw(vfac, ndraw(13))
+       call tekspw(vfac)
     else if (ndraw(13) == 9) then ! show primitive velocity u1
        call setcol(2)
        do LL = 1, lnx

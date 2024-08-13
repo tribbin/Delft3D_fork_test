@@ -172,9 +172,9 @@
             IYS = NPOS(2) + IH + 6
             call InStringXYDef(IXS, IYS, ' => ', 0, LOOKUP, LEN)
             if (JATAB == 0) then
-               call SEARC2(NAHEAD, NLEVEL, HLPTXT, NUMTXT, LOOKUP, NUMCHC, JOFND)
+               call SEARC2(NAHEAD, HLPTXT, NUMTXT, LOOKUP, NUMCHC, JOFND)
             else
-               call SEARC2(NAHEAD, NLEVEL, KEYWRD, NUMKEY, LOOKUP, NUMCHC, JOFND)
+               call SEARC2(NAHEAD, KEYWRD, NUMKEY, LOOKUP, NUMCHC, JOFND)
             end if
             call IWinSelect(NUMWNB)
             call ITEXTCOLOURN(HLPFOR, HLPBCK)

@@ -535,7 +535,7 @@ subroutine weirtheo(j12)
       gateheight = 9d9
 
       call weirtheory(zupstream, zdownstream, crestheight, zcrestperfect, zminsub, zcrest, &
-                      qweirana, uupstream, ucrest, udownstream, regime, qfree, gateheight)
+                      qweirana, uupstream, ucrest, udownstream, regime, qfree)
 
       qrajaratnam = zdownstream * sqrt(2d0 * ag * (max(0d0, zupstream - zdownstream)))
 

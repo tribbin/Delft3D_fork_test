@@ -145,7 +145,7 @@
                 end if
                 if (linkmode == 2 .or. linkmode == 6 .or. linkmode == 7 .or. linkmode == 8) then
                    if (NDRAW(29) == 12 .or. NDRAW(29) == 29 .or. NDRAW(29) == 33 .or. NDRAW(29) == 35 .or. NDRAW(29) == 36) then
-                      call DHITEXT(int(zl), xCL, yCL, zCL)
+                      call DHITEXT(int(zl), xCL, yCL)
                    else
                       call dhtext(zl, xCL, yCL, zCL)
                    end if

@@ -847,7 +847,7 @@ contains
    !> Construct target mask array for later ec_addtimespacerelation/timespaceinitialfield calls.
    subroutine construct_target_mask(mask, target_num_points, target_mask_file, target_location_type, invert_mask, ierr)
       use fm_location_types
-      use m_flowgeom, only: ndx, lnx, xz, yz, kcs, ln
+      use m_flowgeom, only: ndx, lnx, xz, yz, kcs
       use timespace_parameters, only: LOCTP_POLYGON_FILE
       use timespace, only: selectelset_internal_nodes, selectelset_internal_links
       use dfm_error, only: DFM_NOTIMPLEMENTED, DFM_NOERR
@@ -876,7 +876,7 @@ contains
                                             target_mask_file)
          case (UNC_LOC_U)
             ! in: no link pre-mask, all flow links, out: mask: all masked flow links.
-            call selectelset_internal_links(xz, yz, ndx, ln, lnx, selected_points, number_of_selected_points, LOCTP_POLYGON_FILE, &
+            call selectelset_internal_links(lnx, selected_points, number_of_selected_points, LOCTP_POLYGON_FILE, &
                                             target_mask_file)
          case default
             ierr = DFM_NOTIMPLEMENTED

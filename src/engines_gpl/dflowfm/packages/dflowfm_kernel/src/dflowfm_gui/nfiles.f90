@@ -30,7 +30,7 @@
 !
 !
 
-   subroutine NFILES(MODE, NUM, NWHAT, KEY)
+   subroutine NFILES(NUM, NWHAT, KEY)
 !  grid lijst
 !  NUM = 0, GELUKT, NUM = 1, NIET GELUKT
       use m_netw
@@ -58,7 +58,7 @@
       use m_setucxcuy_leastsquare, only: reconst2nd
 
       implicit none
-      integer :: MODE, NUM, NWHAT, KEY
+      integer :: NUM, NWHAT, KEY
       integer :: ja, ierr
       integer :: mlan
       integer :: midp

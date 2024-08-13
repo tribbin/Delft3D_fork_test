@@ -66,7 +66,7 @@
        if (RNOD(K) /= dmiss) then
           if (MET == 2 .or. MET >= 6) then
              if (NDRAW(8) == 2 .or. NDRAW(8) == 3 .or. NDRAW(8) == 5) then
-                call DHITEXT(int(RNOD(K)), X, Y, Z)
+                call DHITEXT(int(RNOD(K)), X, Y)
              else if (MET == 4) then
                 do N = 1, NMK(K)
                    L = NOD(K)%LIN(N)
@@ -75,7 +75,7 @@
                    X = 0.5d0 * (XK(K1) + 0.5d0 * XK(K2))
                    Y = 0.5d0 * (YK(K1) + 0.5d0 * YK(K2))
                    Z = 0.5d0 * (ZK(K1) + 0.5d0 * ZK(K2))
-                   call DHITEXT(L, X, Y, Z)
+                   call DHITEXT(L, X, Y)
                 end do
              else
                 call dHTEXT(dble(RNOD(K)), X, Y, Z)

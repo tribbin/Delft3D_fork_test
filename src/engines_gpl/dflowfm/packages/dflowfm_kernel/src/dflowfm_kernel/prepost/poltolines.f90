@@ -66,7 +66,7 @@
            call SETPOINT(XPL(K + 1), YPL(K + 1), ZP, K2)
         end if
         RML = DLENGTH(K1, K2)
-        call CONNECT(K1, K2, LFAC, AEL, RML)
+        call CONNECT(K1, K2, LFAC, RML)
      end do
      return
   end subroutine POLTOLINES

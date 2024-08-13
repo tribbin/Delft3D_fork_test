@@ -123,7 +123,7 @@ end subroutine stoppetsc
 
 !> allocate arrays for petsc matrix construction,
 !>   and get sparsity pattern in RCS format
-subroutine ini_petsc(Ndx, Ndxi, ierror)
+subroutine ini_petsc(Ndx, ierror)
    use m_reduce
    use m_partitioninfo
    use petsc
@@ -134,7 +134,6 @@ subroutine ini_petsc(Ndx, Ndxi, ierror)
    implicit none
 
    integer, intent(in) :: Ndx !< number of cells
-   integer, intent(in) :: Ndxi !< number of non-boundary cells
    integer, intent(out) :: ierror !< error (1) or not (0)
 
    integer, dimension(:), allocatable :: mask

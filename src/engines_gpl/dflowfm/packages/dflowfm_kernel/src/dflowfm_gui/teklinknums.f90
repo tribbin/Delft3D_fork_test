@@ -67,7 +67,7 @@
                  YP = 0.5d0 * (YK(K1) + YK(K2))
                  ZP = 0.5d0 * (ZK(K1) + ZK(K2))
                  if (NDRAW(7) == 2 .or. NDRAW(7) == 3 .or. (NDRAW(7) >= 10 .and. ndraw(7) /= 16 .and. ndraw(7) /= 17 .and. ndraw(7) /= 18)) then
-                    call DHITEXT(int(VV), XP, YP, ZP)
+                    call DHITEXT(int(VV), XP, YP)
                  else
                     call DHTEXT(VV, XP, YP, ZP)
                  end if

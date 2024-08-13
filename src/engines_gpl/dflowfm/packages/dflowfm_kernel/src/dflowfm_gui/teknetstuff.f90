@@ -46,7 +46,7 @@
 
       if (NDRAW(8) >= 2) call TEKNODEVALS(NDRAW(19))
 
-      call TEKNET(NCOLDN, key)
+      call TEKNET(key)
 
       call TEKPREVIOUSNET(NCOLRN)
 

@@ -723,7 +723,7 @@ contains
                continue
             end if
             if (len_trim(envval) > 0) then
-               ierr_ = unc_meta_fill_placeholders(trim(unc_meta_fromenv_atts(iatt)), envval)
+               ierr_ = unc_meta_fill_placeholders(envval)
                ierr_ = nf90_put_att(ncid, nf90_global, trim(unc_meta_fromenv_atts(iatt)), trim(envval))
                if (ierr_ /= nf90_noerr) then
                   call mess(LEVEL_WARN, 'While adding metadata from environment variable '//trim(envvar)//': error while putting into output file, error code:', ierr_)
@@ -742,11 +742,10 @@ contains
 !!  * ${dfm_program_name}: "D-Flow FM"
 !!
 !! NOTE: this function is an implementation of the netcdf_utils::ncu_apply_to_att interface.
-   function unc_meta_fill_placeholders(attname, valuetext) result(ierr)
+   function unc_meta_fill_placeholders(valuetext) result(ierr)
       use dfm_error
       use dflowfm_version_module, only: product_name
 
-      character(len=*), intent(in) :: attname !< attribute name
       character(len=:), allocatable, intent(inout) :: valuetext !< attribute value text, placeholders will be replaced in-place.
       integer :: ierr !< Result status (DFM_NOERR if successful)
 

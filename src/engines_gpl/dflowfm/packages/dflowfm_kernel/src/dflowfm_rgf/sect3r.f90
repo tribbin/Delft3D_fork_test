@@ -31,7 +31,7 @@
 !
 
 !>    compute the intersection of two splines
-      subroutine SECT3R(XI, YI, XJ, YJ, mmax, nmax, imax, CRP, &
+      subroutine SECT3R(XI, YI, XJ, YJ, imax, CRP, &
                         NUMPI, NUMPJ, NUMCRO, TIV, TJV, XP, YP)
 
          use m_missing
@@ -42,7 +42,6 @@
 !     BEPAAL HET SNYPUNT VAN DE 2 SPLINES NR I EN J      USE DIMENS
 
          integer, intent(in) :: imax !< array size
-         integer, intent(in) :: mmax, nmax !< unused
          integer, intent(in) :: numpi !< number of control points of first spline
          integer, intent(in) :: numpj !< number of control points of second spline
 

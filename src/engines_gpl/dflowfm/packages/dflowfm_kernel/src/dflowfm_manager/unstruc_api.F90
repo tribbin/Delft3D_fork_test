@@ -138,7 +138,7 @@ contains
          L1 = index(rec, '=') + 1
          read (rec(L1:), *, err=888) NUM, NWHAT
          MODE = 1; KEY = 3
-         call CHOICES(MODE, NUM, NWHAT, KEY)
+         call CHOICES(NUM, NWHAT, KEY)
       end if
 
       if (index(rec, 'START PARAMETERS') > 0) then ! specify new model with only few parameters changed through readmdufile

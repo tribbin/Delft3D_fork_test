@@ -30,7 +30,7 @@
 !
 !
 
-      subroutine MENUV2(NWHAT, OPTION, MAXOPT, EXP, MAXEXP)
+      subroutine MENUV2(NWHAT, OPTION, MAXOPT)
          use unstruc_files
          use m_devices
          implicit none
@@ -39,14 +39,13 @@
          integer :: infocursor
          integer :: ja, IXP, IYP
          integer :: key
-         integer :: maxexp
          integer :: maxop
          integer :: maxopt
          integer :: nlevel
          integer :: nstart
          integer :: nwhat
          parameter(MAXOP=64)
-         character * 40 OPTION(MAXOP), exp(MAXOP), WRDKEY
+         character * 40 OPTION(MAXOP), WRDKEY
          common / HELPNOW / WRDKEY, NLEVEL
 !     Keuzemenu verticaal
 !

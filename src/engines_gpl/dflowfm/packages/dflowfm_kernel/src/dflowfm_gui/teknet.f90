@@ -30,7 +30,7 @@
 !
 !
 
-      subroutine TEKNET(NCOL, ja)
+      subroutine TEKNET(ja)
 
          use m_netw
          use unstruc_colors
@@ -38,7 +38,7 @@
          use unstruc_display
 
          implicit none
-         integer :: ncol, ja
+         integer :: ja
 
          integer :: k, LMOD
          integer :: k1

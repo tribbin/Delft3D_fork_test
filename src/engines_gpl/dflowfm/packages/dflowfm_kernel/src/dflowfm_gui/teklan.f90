@@ -88,7 +88,7 @@
         do K = 1, MXLAN
            if (inview(xlan(k), ylan(k))) then
               RH = 0
-              call DHITEXT(K, XLAN(K), YLAN(K), RH)
+              call DHITEXT(K, XLAN(K), YLAN(K))
            end if
         end do
      end if

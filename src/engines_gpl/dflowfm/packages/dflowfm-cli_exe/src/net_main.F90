@@ -298,7 +298,7 @@ program unstruc
       end if
 
       if (len_trim(md_ident) > 0) then ! partitionmduparse
-         call partition_from_commandline(md_netfile, md_Ndomains, md_jacontiguous, md_icgsolver, md_pmethod, md_dryptsfile, md_encfile, md_genpolygon, md_partugrid, md_partseed)
+         call partition_from_commandline(md_netfile, md_Ndomains, md_jacontiguous, md_icgsolver, md_pmethod, md_genpolygon, md_partugrid, md_partseed)
          L = index(md_netfile, '_net') - 1
          md_mdu = md_ident
          if (len_trim(md_restartfile) > 0) then ! If there is a restart file
@@ -346,7 +346,7 @@ program unstruc
             call generatePartitionMDUFile(trim(md_ident)//'.mdu', trim(md_mdu)//'_'//sdmn_loc//'.mdu')
          end do
       else
-         call partition_from_commandline(md_netfile, md_ndomains, md_jacontiguous, md_icgsolver, md_pmethod, md_dryptsfile, md_encfile, md_genpolygon, md_partugrid, md_partseed)
+         call partition_from_commandline(md_netfile, md_ndomains, md_jacontiguous, md_icgsolver, md_pmethod, md_genpolygon, md_partugrid, md_partseed)
       end if
 
       goto 1234 !      stop
@@ -367,7 +367,7 @@ program unstruc
    if (md_cutcells == 1) then
       n12 = 3
       call findcells(0)
-      call cutcell_list(n12, '*.cut', 5, 0)
+      call cutcell_list(n12, 0)
       call unc_write_net('out_net.nc')
    end if
 

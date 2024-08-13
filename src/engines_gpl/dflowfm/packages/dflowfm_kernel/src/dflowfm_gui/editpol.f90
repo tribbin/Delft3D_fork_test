@@ -111,7 +111,7 @@
                MP = 0
             end if
          end if
-         call CHOICES(MODE, NUM, NWHAT, KEY)
+         call CHOICES(NUM, NWHAT, KEY)
       else if (KEY >= 577) then ! Alt+letter switches edit mode.
          call selecteditmode(newmode, key)
          if (newmode > 0 .and. newmode /= mode) then
@@ -197,7 +197,7 @@
          else if (NPUT == 44 .or. NPUT == 45) then
 !           Merge two polylines, click two end points.
             call ISPOI1(XPL, YPL, NPL, XP, YP, MP)
-            if (mp /= 0 .and. .not. ispolystartend(xpl, ypl, npl, maxpol, mp)) then
+            if (mp /= 0 .and. .not. ispolystartend(xpl, npl, maxpol, mp)) then
                ! Clicked point was not an end point, discard it.
                mp = 0
             end if
@@ -467,7 +467,7 @@
 
       else if (kmx > 0 .and. iturbulencemodel == 3 .and. KEY == 75 + 32) then ! k for kinetic + 0.01
 
-         call DROPk(XP, YP, 1)
+         call DROPk(XP, YP)
          key = 3
 
       else if (KEY == 84 + 32) then ! t add (to) tracer

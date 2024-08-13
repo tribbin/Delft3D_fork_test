@@ -89,7 +89,7 @@
                 if (nodemode == 2 .or. nodemode >= 6) then
                    call isocol(zn, ncol)
                    if (nodewhat == 15 .or. nodewhat == 16 .or. nodewhat == 17 .or. nodewhat == 25) then
-                      call DHITEXT(int(zn), xz(k), yz(k), bl(k))
+                      call DHITEXT(int(zn), xz(k), yz(k))
                    else
                       call dhtext(zn, xz(k), yz(k), bl(k))
                    end if

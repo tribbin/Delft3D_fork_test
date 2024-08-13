@@ -172,7 +172,7 @@ subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old ce
                   exit
                end if
                node_ptr => inifield_ptr%child_nodes(i)%node_ptr
-               call readIniFieldProvider(md_inifieldfile, node_ptr, groupname, qid, filename, filetype, method, iLocType, operand, transformcoef, ja, varname) !,smask, maxSearchRadius)
+               call readIniFieldProvider(md_inifieldfile, node_ptr, groupname, qid, filename, filetype, method, iLocType, operand, transformcoef, ja, varname)
                i = i + 1
                if (.not. strcmpi(groupname, 'Initial')) then
                   cycle

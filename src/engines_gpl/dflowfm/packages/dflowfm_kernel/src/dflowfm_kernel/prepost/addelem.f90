@@ -30,10 +30,10 @@
 !
 !
 
-  subroutine ADDELEM(K1, K2, JA)
+  subroutine ADDELEM(K1, K2)
      use M_AFMETING
      implicit none
-     integer :: K1, K2, JA
+     integer :: K1, K2
 
      double precision :: a0
      double precision :: ag
@@ -60,6 +60,6 @@
         A0 = 1e6 * RWIDTH * RTHICK
      end if
      R0 = DLENGTH(K1, K2)
-     call CONNECT(K1, K2, 1, A0, R0)
+     call CONNECT(K1, K2, 1, R0)
      return
   end subroutine ADDELEM

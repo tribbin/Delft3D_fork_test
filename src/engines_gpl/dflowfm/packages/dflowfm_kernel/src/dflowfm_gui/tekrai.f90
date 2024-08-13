@@ -30,7 +30,7 @@
 !
 !
 
- subroutine tekrai(nsiz, ja)
+ subroutine tekrai(nsiz)
 
     use unstruc_colors
     use m_netw
@@ -48,7 +48,7 @@
 
     implicit none
 
-    integer :: nsiz, ja
+    integer :: nsiz
 
     double precision :: xx2, zz
     integer :: k1, k2, n1, n2
@@ -479,7 +479,7 @@
                 uu = ucx(k)
                 ww = 0.5d0 * (ww1(k) + ww1(k - 1))
                 yp(1) = 0.5d0 * (zws(k) + zws(k - 1))
-                call arrowsxyzfac(xp(1), yp(1), uu, ww, VFAC, 0, zfac)
+                call arrowsxyzfac(xp(1), yp(1), uu, ww, VFAC, zfac)
 
              end do
 
@@ -491,12 +491,12 @@
     end if
 
     if (NDRAW(2) >= 1) then
-       call tekrailinesbathy(31, 0, 1) ! bl
+       call tekrailinesbathy(31, 1) ! bl
     end if
 
     if (jased > 0 .and. jased < 4) then
        do j = 1, mxgr
-          call tekrailinesbathy(15, 0, 1 + j) ! grainlay 1,2 etc
+          call tekrailinesbathy(15, 1 + j) ! grainlay 1,2 etc
        end do
     end if
 
@@ -547,7 +547,7 @@
        call lnabs(xmx, 0d0)
        !call htext( 1d0, xmx, 1d0)
     else if (md_IDENT == 'carrier') then
-       call carrier(ndx, time1 - tstart_user)
+       call carrier(time1 - tstart_user)
     else if (md_IDENT(1:6) == 'drybed') then
        call drybed(time1 - tstart_user)
     else if (md_IDENT(1:6) == 'wetbed') then

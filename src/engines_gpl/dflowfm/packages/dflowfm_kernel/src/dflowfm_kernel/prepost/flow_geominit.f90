@@ -216,7 +216,7 @@
     call delete_dry_points_and_areas()
 
 ! also disabled isolated cells due to cutcells and store masks
-    call cutcell_list(6, 'dum', 3, 1)
+    call cutcell_list(6, 1)
 
     if (strip_mesh > 0) then
        if (numl1d > 0) then
@@ -1017,7 +1017,7 @@
     fnam = '*.cut'
     n12 = 4
     allocate (kfs(ndx)); kfs = 0
-    call cutcell_list(n12, '*.cut', 5, 2) ! trim(fnam))        ! CUT CELLS, N12 = 4, flag cells to be cut in kfs, prior to setlinktocenter/CORNERweights calls below
+    call cutcell_list(n12, 2) ! CUT CELLS, N12 = 4, flag cells to be cut in kfs, prior to setlinktocenter/CORNERweights calls below
 
     call setcentertolinkorientations()
 
@@ -1058,7 +1058,7 @@
     if (numlimdt_baorg > 0) then ! if prev_numlimdt(k) > numlimdt_baorg then ba(k) = baorg(k) in cutcell
        call reanumlimdt()
     end if
-    call cutcell_list(n12, '*.cut', 5, 3) ! trim(fnam))       ! CUT CELLS, N12 = 5, WU AND BA ADAPTATION
+    call cutcell_list(n12, 3)  ! CUT CELLS, N12 = 5, WU AND BA ADAPTATION
     numlimdt = 0
 ! deallocate(kfs) ; allocate(kfs(ndx)) ! SPvdP: removed, since (1) uninitialized and (2) kfs needed in "setlinktocenterweights" later
 

@@ -241,7 +241,7 @@ contains
          node_ptr => inifield_ptr%child_nodes(i)%node_ptr
       !! Step 1: Read each block
          call readIniFieldProvider(inifilename, node_ptr, groupname, qid, filename, filetype, method, &
-                                   iloctype, operand, transformcoef, ja, varname) !,smask, maxSearchRadius)
+                                   iloctype, operand, transformcoef, ja, varname)
          if (ja == 1) then
             call resolvePath(filename, basedir)
             ib = ib + 1
@@ -315,7 +315,7 @@ contains
                   success = timespaceinitialfield(x_loc, y_loc, target_array, num_items, filename, filetype, method, operand, &
                                                   transformcoef, target_location_type, kcsini) ! zie meteo module
                else if (associated(target_array_integer)) then
-                  success = timespaceinitialfield_int(x_loc, y_loc, iadv, num_items, filename, filetype, method, operand, transformcoef)
+                  success = timespaceinitialfield_int(x_loc, y_loc, iadv, num_items, filename, filetype, operand, transformcoef)
                else
                end if
             end if
@@ -355,8 +355,8 @@ contains
 
 !> Reads all key values for a data provider from an IniFieldFile block.
 !! All returned values will typically be used for a call to timespaceinitialfield().
-   subroutine readIniFieldProvider(inifilename, node_ptr, groupname, quantity, filename, filetype, method, iloctype, operand, &
-                                   transformcoef, ja, varname)
+   subroutine readIniFieldProvider(inifilename, node_ptr, groupname, quantity, filename, filetype, method, &
+                                   iloctype, operand, transformcoef, ja, varname)
       use timespace_parameters
       use m_ec_interpolationsettings, only: RCEL_DEFAULT
       use m_lateral, only: ILATTP_1D, ILATTP_2D, ILATTP_ALL
@@ -1495,7 +1495,7 @@ contains
       use m_flowgeom, only: ndxi, ndx, bl
       use timespace_parameters, only: FIELD1D
       use m_wind, only: jaevap
-      use timespace, only: timespaceinitialfield, timespaceinitialfield_int
+      use timespace, only: timespaceinitialfield
       use m_lateral_helper_fuctions, only: prepare_lateral_mask
       ! use network_data
       use m_hydrology_data, only: infiltcap, DFM_HYD_INFILT_CONST, &

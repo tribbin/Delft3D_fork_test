@@ -189,7 +189,7 @@
     if (ti_xls > 0) then
        if (tim >= time_xls) then
           call wrihistek(tim) ! wrihis xls
-          call wribal(tim)
+          call wribal()
           time_xls = tim + ti_xls
        end if
     end if
