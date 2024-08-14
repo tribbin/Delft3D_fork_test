@@ -326,7 +326,7 @@ class NetcdfComparer(IComparer):
                         + os.path.join(left_path, filename)
                     )
                     raise Exception(error_msg)
-            return results
+        return results
 
 
 def search_time_variable(nc_root, var_name):
