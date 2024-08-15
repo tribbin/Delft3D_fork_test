@@ -82,8 +82,9 @@ please pick the `requirements.txt` file for your platform to install the depende
 
 Notice that there's separate `requirements.txt` and `dev-requirements.txt` files. 
 The `dev-requirements.txt` files not only contain the dependencies needed to run the testbench,
-but also tools that help with development of the testbench code. This includes `pytest`, to run
-the unit tests of testbench code, but also linters and auto-formatters.
+but also tools that help with development of the testbench code. You can read more about
+the differences between the normal and development dependencies 
+[in this section](#why-separate-the-dependencies-from-development-dependencies).
 
 Linux: (Choose between dev or non-dev dependencies)
 ```bash
