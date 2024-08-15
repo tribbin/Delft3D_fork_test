@@ -181,7 +181,7 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>-- --partition:ndomains=4:icgsolver=6</argument>
+            <argument>--partition:ndomains=4:icgsolver=6</argument>
             <argument>t01.mdu</argument>
           </arguments>
         </program>
@@ -207,8 +207,8 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>-- --partition:ndomains=4:icgsolver=6</argument>
             <argument>westerscheldt.mdu</argument>
+            <argument>--partition:ndomains=4:icgsolver=6</argument>
           </arguments>
         </program>
         <program ref="dimr" seq="2">
