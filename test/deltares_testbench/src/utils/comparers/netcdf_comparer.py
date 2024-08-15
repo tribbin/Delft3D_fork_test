@@ -127,11 +127,7 @@ class NetcdfComparer(IComparer):
                                     )
                                 row_id = np.argmax(diff_arr[:, column_id])
                             else:
-                                # Compare ALL locations.
-                                if cf_role_time_series_vars.__len__() == 0:
-                                    cf_role_time_series_var = None
-                                else:
-                                    cf_role_time_series_var = "not None"
+
                                 i_max = np.argmax(diff_arr)
                                 column_id = i_max % diff_arr.shape[1]
                                 row_id = int(i_max / diff_arr.shape[1])  # diff_arr.shape = (nrows, ncolumns)
@@ -235,7 +231,7 @@ class NetcdfComparer(IComparer):
                                 time_var = search_time_variable(left_nc_root, variable_name)
                                 self.check_time_variable_found(time_var, variable_name)
 
-                                if cf_role_time_series_var is not None:
+                                if cf_role_time_series_vars.__len__() > 0:
                                     plot_location = self.determine_plot_location(
                                         left_nc_root, observation_type, column_id
                                     )
@@ -248,7 +244,7 @@ class NetcdfComparer(IComparer):
                                         time_var,
                                         plot_location,
                                     )
-                                elif cf_role_time_series_var is None:
+                                elif cf_role_time_series_vars.__len__() == 0:
                                     self.create_2d_plot(
                                         time_var,
                                         row_id,
