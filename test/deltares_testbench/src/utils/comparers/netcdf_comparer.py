@@ -274,15 +274,16 @@ class NetcdfComparer(IComparer):
                                 result.error = True
                     results.append((testcase_name, file_check, param_new, result))
 
-                if matchnumber == 0:
-                    error_msg = (
-                        "No match for parameter name "
-                        + parameter_name
-                        + " in file "
-                        + os.path.join(left_path, filename)
-                    )
-                    raise Exception(error_msg)
+                self.check_match_for_parameter_name(matchnumber, parameter_name, left_path, filename)
         return results
+
+    def check_match_for_parameter_name(
+        self, matchnumber: int, parameter_name: str, left_path: str, filename: str
+    ) -> None:
+        """Ceck if a valid matchnumber is found, otherwise raise exception."""
+        if matchnumber == 0:
+            error_msg = f"No match for parameter name {parameter_name} in file {os.path.join(left_path, filename)}"
+            raise Exception(error_msg)
 
     def check_time_variable_found(self, time_var: nc.Dataset, variable_name: str) -> None:
         """Check if the time variable is not None."""
