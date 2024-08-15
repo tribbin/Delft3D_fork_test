@@ -16,6 +16,7 @@ import numpy as np
 import src.utils.plot_differences as plot
 from src.config.file_check import FileCheck
 from src.config.parameter import Parameter
+from src.utils.comparers.comparison_2d_array_result import Comparison2DArrayResult
 from src.utils.comparers.comparison_result import ComparisonResult
 from src.utils.comparers.i_comparer import IComparer
 from src.utils.logging.i_logger import ILogger
@@ -81,69 +82,35 @@ class NetcdfComparer(IComparer):
 
                         elif left_nc_var.ndim == 2:
                             # 2D array
-                            diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
-
-                            parameter_location = param_new.location
                             # Search for the variable name which has cf_role 'timeseries_id'.
                             # - If it can be found: it is more like a history file, with stations. Plot the time series for the station with the largest deviation.
                             # - If it cannot be found: it is more like a map-file. Create a 2D plot of the point in time with
                             cf_role_time_series_vars = search_times_series_id(left_nc_root)
-                            location_types = "empty"
+
                             if cf_role_time_series_vars.__len__() > 0:
                                 observation_type = cf_role_time_series_vars[0]
                             else:
                                 observation_type = parameter_name
 
-                            if hasattr(left_nc_var, "coordinates"):
-                                location_types = left_nc_var.coordinates.split(" ")
-                                for cf_role_time_series_var in cf_role_time_series_vars:
-                                    for location_type in location_types:
-                                        if location_type == cf_role_time_series_var:
-                                            observation_type = (
-                                                location_type  # observation point, cross-section, source_sink, etc
-                                            )
-                                            break
-
-                            parameter_location_found = False
-                            if parameter_location is not None:
-                                for cf_role_time_series_var in cf_role_time_series_vars:
-                                    if cf_role_time_series_var is not None:
-                                        location_var = left_nc_root.variables[cf_role_time_series_var]
-                                        location_var_values = [
-                                            b"".join(x).strip().decode("utf-8").strip("\x00") for x in location_var[:]
-                                        ]
-                                        if parameter_location in location_var_values:
-                                            parameter_location_found = True
-                                            column_id = location_var_values.index(parameter_location)
-                                    else:
-                                        parameter_location_found = True
-                                        column_id = 0
-                                if not parameter_location_found:
-                                    raise KeyError(
-                                        "Cannot find parameter location "
-                                        + parameter_location
-                                        + " for variable "
-                                        + variable_name
-                                    )
-                                row_id = np.argmax(diff_arr[:, column_id])
-                            else:
-                                i_max = np.argmax(diff_arr)
-                                column_id = i_max % diff_arr.shape[1]
-                                row_id = int(i_max / diff_arr.shape[1])  # diff_arr.shape = (nrows, ncolumns)
-
-                            # This overrides the default min/max of all ref values.
-                            min_ref_value = np.min(left_nc_var[:, column_id])
-                            max_ref_value = np.max(left_nc_var[:, column_id])
-
-                            plot_ref_val = left_nc_var[:, column_id]
-                            plot_cmp_val = right_nc_var[:, column_id]
-
-                            result.maxAbsDiff = diff_arr[row_id, column_id]
-                            result.maxAbsDiffCoordinates = (row_id, column_id)
-                            result.maxAbsDiffValues = (
-                                left_nc_var[row_id, column_id],
-                                right_nc_var[row_id, column_id],
+                            result_2d_array = self.compare_2d_arrays(
+                                left_nc_var,
+                                right_nc_var,
+                                left_nc_root,
+                                param_new,
+                                variable_name,
+                                cf_role_time_series_vars,
                             )
+
+                            result.maxAbsDiff = result_2d_array.max_abs_diff
+                            result.maxAbsDiffCoordinates = result_2d_array.max_abs_diff_coordinates
+                            result.maxAbsDiffValues = result_2d_array.max_abs_diff_values
+                            min_ref_value = result_2d_array.min_ref_value
+                            max_ref_value = result_2d_array.max_ref_value
+                            plot_ref_val = result_2d_array.plot_ref_val
+                            plot_cmp_val = result_2d_array.plot_cmp_val
+                            observation_type = result_2d_array.observation_type
+                            row_id = result_2d_array.row_id
+                            column_id = result_2d_array.column_id
 
                         else:
                             diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
@@ -274,6 +241,68 @@ class NetcdfComparer(IComparer):
         max_abs_diff_values = (left_nc_var[i_max], right_nc_var[i_max])
         return max_abs_diff, max_abs_diff_coordinates, max_abs_diff_values
 
+    def compare_2d_arrays(
+        self,
+        left_nc_var: nc.Dataset,
+        right_nc_var: nc.Dataset,
+        left_nc_root,
+        param_new: Parameter,
+        variable_name: str,
+        cf_role_time_series_vars,
+    ):
+        result = Comparison2DArrayResult()
+        # 2D array
+        diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
+
+        parameter_location = param_new.location
+
+        if hasattr(left_nc_var, "coordinates"):
+            location_types = left_nc_var.coordinates.split(" ")
+            for variable in cf_role_time_series_vars:
+                for location_type in location_types:
+                    if location_type == variable:
+                        result.observation_type = location_type  # observation point, cross-section, source_sink, etc
+                        break
+
+        parameter_location_found = False
+        if parameter_location is not None:
+            for variable in cf_role_time_series_vars:
+                if variable is not None:
+                    location_var = left_nc_root.variables[variable]
+                    location_var_values = [b"".join(x).strip().decode("utf-8").strip("\x00") for x in location_var[:]]
+                    if parameter_location in location_var_values:
+                        parameter_location_found = True
+                        column_id = location_var_values.index(parameter_location)
+                else:
+                    parameter_location_found = True
+                    column_id = 0
+            if not parameter_location_found:
+                raise KeyError(
+                    "Cannot find parameter location " + parameter_location + " for variable " + variable_name
+                )
+            row_id = int(np.argmax(diff_arr[:, column_id]))
+        else:
+            i_max = np.argmax(diff_arr)
+            column_id = i_max % diff_arr.shape[1]
+            row_id = int(i_max / diff_arr.shape[1])  # diff_arr.shape = (nrows, ncolumns)
+
+        # This overrides the default min/max of all ref values.
+        result.min_ref_value = np.min(left_nc_var[:, column_id])
+        result.max_ref_value = np.max(left_nc_var[:, column_id])
+
+        result.plot_ref_val = left_nc_var[:, column_id]
+        result.plot_cmp_val = right_nc_var[:, column_id]
+
+        result.max_abs_diff = diff_arr[row_id, column_id]
+        result.max_abs_diff_coordinates = (row_id, column_id)
+        result.max_abs_diff_values = (
+            left_nc_var[row_id, column_id],
+            right_nc_var[row_id, column_id],
+        )
+        result.row_id = row_id
+        result.column_id = column_id
+        return result
+
     def check_match_for_parameter_name(
         self, matchnumber: int, parameter_name: str, left_path: str, filename: str
     ) -> None:
@@ -400,7 +429,7 @@ def search_time_variable(nc_root, var_name):
     return None
 
 
-def search_times_series_id(nc_root):
+def search_times_series_id(nc_root) -> List:
     """Return variable key if `cf_role == timeseries_id`, otherwise `None`."""
     keys = []
     for key, value in nc_root.variables.items():
