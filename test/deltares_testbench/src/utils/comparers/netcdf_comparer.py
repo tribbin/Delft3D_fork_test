@@ -86,11 +86,6 @@ class NetcdfComparer(IComparer):
                             # - If it cannot be found: it is more like a map-file. Create a 2D plot of the point in time with
                             cf_role_time_series_vars = search_times_series_id(left_nc_root)
 
-                            if cf_role_time_series_vars.__len__() > 0:
-                                observation_type = cf_role_time_series_vars[0]
-                            else:
-                                observation_type = parameter_name
-
                             result_2d_array = self.compare_2d_arrays(
                                 left_nc_var,
                                 right_nc_var,
@@ -98,7 +93,6 @@ class NetcdfComparer(IComparer):
                                 param_new,
                                 variable_name,
                                 cf_role_time_series_vars,
-
                             )
 
                             result.maxAbsDiff = result_2d_array.max_abs_diff
@@ -106,17 +100,17 @@ class NetcdfComparer(IComparer):
                             result.maxAbsDiffValues = result_2d_array.max_abs_diff_values
                             min_ref_value = result_2d_array.min_ref_value
                             max_ref_value = result_2d_array.max_ref_value
-                            observation_type = result_2d_array.observation_type
                             row_id = result_2d_array.row_id
                             column_id = result_2d_array.column_id
-                            
+
                             if cf_role_time_series_vars.__len__() == 0:
+                                observation_type = parameter_name
                                 plot_ref_val = left_nc_var[row_id, :]
                                 plot_cmp_val = right_nc_var[row_id, :]
                             else:
                                 plot_ref_val = left_nc_var[:, column_id]
                                 plot_cmp_val = right_nc_var[:, column_id]
-
+                                observation_type = self.get_observation_type(left_nc_var, cf_role_time_series_vars)
                         else:
                             result.maxAbsDiff, result.maxAbsDiffCoordinates, result.maxAbsDiffValues = (
                                 self.compare_nd_arrays(left_nc_var, right_nc_var)
@@ -303,37 +297,9 @@ class NetcdfComparer(IComparer):
         # 2D array
         diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
 
-        parameter_location = param_new.location
-
-        if hasattr(left_nc_var, "coordinates"):
-            location_types = left_nc_var.coordinates.split(" ")
-            for variable in cf_role_time_series_vars:
-                for location_type in location_types:
-                    if location_type == variable:
-                        result.observation_type = location_type  # observation point, cross-section, source_sink, etc
-                        break
-
-        parameter_location_found = False
-        if parameter_location is not None:
-            for variable in cf_role_time_series_vars:
-                if variable is not None:
-                    location_var = left_nc_root.variables[variable]
-                    location_var_values = [b"".join(x).strip().decode("utf-8").strip("\x00") for x in location_var[:]]
-                    if parameter_location in location_var_values:
-                        parameter_location_found = True
-                        column_id = location_var_values.index(parameter_location)
-                else:
-                    parameter_location_found = True
-                    column_id = 0
-            if not parameter_location_found:
-                raise KeyError(
-                    "Cannot find parameter location " + parameter_location + " for variable " + variable_name
-                )
-            row_id = int(np.argmax(diff_arr[:, column_id]))
-        else:
-            i_max = np.argmax(diff_arr)
-            column_id = i_max % diff_arr.shape[1]
-            row_id = int(i_max / diff_arr.shape[1])  # diff_arr.shape = (nrows, ncolumns)
+        column_id, row_id = self.find_column_and_row_id(
+            param_new.location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
+        )
 
         # This overrides the default min/max of all ref values.
         result.min_ref_value = np.min(left_nc_var[:, column_id])
@@ -356,6 +322,44 @@ class NetcdfComparer(IComparer):
         if matchnumber == 0:
             error_msg = f"No match for parameter name {parameter_name} in file {os.path.join(left_path, filename)}"
             raise Exception(error_msg)
+
+    def get_observation_type(self, left_nc_var, cf_role_time_series_vars):
+        if hasattr(left_nc_var, "coordinates"):
+            location_types = left_nc_var.coordinates.split(" ")
+            for variable in cf_role_time_series_vars:
+                for location_type in location_types:
+                    if location_type == variable:
+                        return location_type
+        return cf_role_time_series_vars[0]
+
+    def find_column_and_row_id(
+        self, parameter_location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
+    ):
+        parameter_location_found = False
+        column_id = None
+        row_id = None
+
+        if parameter_location is not None:
+            for variable in cf_role_time_series_vars:
+                if variable is not None:
+                    location_var = left_nc_root.variables[variable]
+                    location_var_values = [b"".join(x).strip().decode("utf-8").strip("\x00") for x in location_var[:]]
+                    if parameter_location in location_var_values:
+                        parameter_location_found = True
+                        column_id = location_var_values.index(parameter_location)
+                else:
+                    parameter_location_found = True
+                    column_id = 0
+
+            if not parameter_location_found:
+                raise KeyError(f"Cannot find parameter location {parameter_location} for variable {variable_name}")
+            row_id = int(np.argmax(diff_arr[:, column_id]))
+        else:
+            i_max = np.argmax(diff_arr)
+            column_id = i_max % diff_arr.shape[1]
+            row_id = int(i_max / diff_arr.shape[1])  # diff_arr.shape = (nrows, ncolumns)
+
+        return column_id, row_id
 
     def check_time_variable_found(self, time_var: nc.Dataset, variable_name: str) -> None:
         """Check if the time variable is not None."""
