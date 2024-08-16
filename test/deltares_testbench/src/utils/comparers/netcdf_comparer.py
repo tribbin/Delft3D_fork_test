@@ -133,15 +133,7 @@ class NetcdfComparer(IComparer):
                         max_ref_value = 0.0
                         min_ref_value = 0.0
 
-                    # Make the absolute difference in maxDiff relative, by dividing by (max_ref_value-min_ref_value).
-                    if result.maxAbsDiff < 2 * sys.float_info.epsilon:
-                        # No difference found, so relative difference is set to 0.
-                        result.maxRelDiff = 0.0
-                    elif max_ref_value - min_ref_value < 2 * sys.float_info.epsilon:
-                        # Very small difference found, so the denominator will be very small, so set relative difference to maximum.
-                        result.maxRelDiff = 1.0
-                    else:
-                        result.maxRelDiff = min(1.0, result.maxAbsDiff / (max_ref_value - min_ref_value))
+                    result.maxRelDiff = self.get_max_rel_diff(result.maxAbsDiff, min_ref_value, max_ref_value)
 
                     # Now we know the absolute and relative error, we can see whether the tolerance is exceeded (or test is in error).
                     result.isToleranceExceeded(
@@ -172,6 +164,17 @@ class NetcdfComparer(IComparer):
 
                 self.check_match_for_parameter_name(matchnumber, parameter_name, left_path, filename)
         return results
+
+    def get_max_rel_diff(self, maxAbsDiff, min_ref_value, max_ref_value):
+        # Make the absolute difference in maxDiff relative, by dividing by (max_ref_value-min_ref_value).
+        if maxAbsDiff < 2 * sys.float_info.epsilon:
+            # No difference found, so relative difference is set to 0.
+            return 0.0
+        elif max_ref_value - min_ref_value < 2 * sys.float_info.epsilon:
+            # Very small difference found, so the denominator will be very small, so set relative difference to maximum.
+            return 1.0
+        else:
+            return min(1.0, maxAbsDiff / (max_ref_value - min_ref_value))
 
     def plot_2d_array(
         self,
