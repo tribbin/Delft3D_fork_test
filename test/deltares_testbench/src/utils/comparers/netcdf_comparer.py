@@ -190,7 +190,7 @@ class NetcdfComparer(IComparer):
         # 2D array
         diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
 
-        column_id, row_id = self.find_column_and_row_id(
+        column_id, row_id = self.get_column_and_row_id(
             param_new.location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
         )
 
@@ -409,7 +409,7 @@ class NetcdfComparer(IComparer):
         else:
             return min(1.0, max_abs_diff / (max_ref_value - min_ref_value))
 
-    def find_column_and_row_id(
+    def get_column_and_row_id(
         self,
         parameter_location: str,
         cf_role_time_series_vars: List[str],
