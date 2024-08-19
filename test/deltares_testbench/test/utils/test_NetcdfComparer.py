@@ -46,9 +46,9 @@ class TestNetcdfComparer:
         assert not resultstruc.passed
         assert not resultstruc.error
         assert resultstruc.result == "NOK"
-        assert pytest.approx(resultstruc.maxAbsDiff) == 0.01983249918399
-        assert resultstruc.maxAbsDiffCoordinates == (1, 0)
-        assert pytest.approx(resultstruc.maxRelDiff) == 0.21672465466549
+        assert pytest.approx(resultstruc.max_abs_diff) == 0.01983249918399
+        assert resultstruc.max_abs_diff_coordinates == (1, 0)
+        assert pytest.approx(resultstruc.max_rel_diff) == 0.21672465466549
 
     def test_time_independent_compare(self) -> None:
         fc = FileCheck()

@@ -89,7 +89,7 @@ class NetcdfComparer(IComparer):
 
             # http://docs.scipy.org/doc/numpy/reference/generated/numpy.argmax.html
             if left_nc_var.ndim == 1:
-                result.maxAbsDiff, result.maxAbsDiffCoordinates, result.maxAbsDiffValues = self.compare_1d_arrays(
+                result.max_abs_diff, result.max_abs_diff_coordinates, result.max_abs_diff_values = self.compare_1d_arrays(
                     left_nc_var, right_nc_var
                 )
 
@@ -108,9 +108,9 @@ class NetcdfComparer(IComparer):
                     cf_role_time_series_vars,
                 )
 
-                result.maxAbsDiff = result_2d_array.max_abs_diff
-                result.maxAbsDiffCoordinates = result_2d_array.max_abs_diff_coordinates
-                result.maxAbsDiffValues = result_2d_array.max_abs_diff_values
+                result.max_abs_diff = result_2d_array.max_abs_diff
+                result.max_abs_diff_coordinates = result_2d_array.max_abs_diff_coordinates
+                result.max_abs_diff_values = result_2d_array.max_abs_diff_values
                 min_ref_value = result_2d_array.min_ref_value
                 max_ref_value = result_2d_array.max_ref_value
                 row_id = result_2d_array.row_id
@@ -125,7 +125,7 @@ class NetcdfComparer(IComparer):
                     plot_cmp_val = right_nc_var[:, column_id]
                     observation_type = self.get_observation_type(left_nc_var, cf_role_time_series_vars)
             else:
-                result.maxAbsDiff, result.maxAbsDiffCoordinates, result.maxAbsDiffValues = self.compare_nd_arrays(
+                result.max_abs_diff, result.max_abs_diff_coordinates, result.max_abs_diff_values = self.compare_nd_arrays(
                     left_nc_var, right_nc_var
                 )
 
@@ -141,14 +141,14 @@ class NetcdfComparer(IComparer):
         if np.ma.is_masked(
             min_ref_value
         ):  # if min_ref_value has no value (it is a  _FillValue) then the test is OK (presumed)
-            result.maxAbsDiff = 0.0
-            result.maxAbsDiffValues = 0.0
+            result.max_abs_diff = 0.0
+            result.max_abs_diff_values = 0.0
             max_ref_value = 0.0
             min_ref_value = 0.0
 
-        result.maxRelDiff = self.get_max_rel_diff(result.maxAbsDiff, min_ref_value, max_ref_value)
+        result.max_rel_diff = self.get_max_rel_diff(result.max_abs_diff, min_ref_value, max_ref_value)
 
-        result.isToleranceExceeded(
+        result.is_tolerance_exceeded(
             parameter.tolerance_absolute,
             parameter.tolerance_relative,
         )
