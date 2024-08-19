@@ -1,10 +1,12 @@
 @ echo off
 
 setlocal enabledelayedexpansion
-rem Default arguments
+rem Default arguments.
+rem No default value means that the option is a flag that is either on or off.
+rem A variable that can have arguments requires a default value (can be "")
 set config=all
 set build=
-set vs=
+set vs=""
 set coverage=
 set build_type=Debug
 set keep_build=
