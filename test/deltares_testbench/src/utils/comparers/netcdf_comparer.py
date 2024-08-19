@@ -3,9 +3,7 @@
 Copyright (C)  Stichting Deltares, 2024
 """
 
-import copy
 import os
-import re
 import sys
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
@@ -35,135 +33,155 @@ class NetcdfComparer(IComparer):
     ) -> List[Tuple[str, FileCheck, Parameter, ComparisonResult]]:
         """Compare two netCDF files, according to the configuration in file_check."""
         results = []
-        local_error = False
         # For each parameter for this file:
         for parameters in file_check.parameters.values():
             for parameter in parameters:
-                local_error = False
-                result = ComparisonResult(error=local_error)
-
-                min_ref_value = sys.float_info.max
-                max_ref_value = sys.float_info.min
-
-                plot_ref_val = np.array([])
-                plot_cmp_val = np.array([])
-
                 left_nc_root = self.open_netcdf_file(left_path, file_check.name)
                 right_nc_root = self.open_netcdf_file(right_path, file_check.name)
 
                 matchnumber = 0
                 for variable_name in left_nc_root.variables.keys():
-                    if re.match(f"^{parameter.name}$", variable_name) is None:
+                    if variable_name != parameter.name:
                         continue
-                    try:
-                        param_new: Parameter = copy.deepcopy(parameter)
-                        param_new.name = variable_name
-                        logger.debug(f"Checking parameter: {variable_name}")
-                        matchnumber = matchnumber + 1
-                        left_nc_var = left_nc_root.variables[variable_name]
-                        right_nc_var = right_nc_root.variables[variable_name]
-                        self.check_for_dimension_equality(left_nc_var, right_nc_var, variable_name)
-
-                        min_ref_value = float(np.min(left_nc_var[:]))
-                        max_ref_value = float(np.max(left_nc_var[:]))
-
-                        # http://docs.scipy.org/doc/numpy/reference/generated/numpy.argmax.html
-                        if left_nc_var.ndim == 1:
-                            result.maxAbsDiff, result.maxAbsDiffCoordinates, result.maxAbsDiffValues = (
-                                self.compare_1d_arrays(left_nc_var, right_nc_var)
-                            )
-
-                            plot_ref_val = left_nc_var[:]
-                            plot_cmp_val = right_nc_var[:]
-
-                        elif left_nc_var.ndim == 2:
-                            # 2D array
-                            # Search for the variable name which has cf_role 'timeseries_id'.
-                            cf_role_time_series_vars = search_times_series_id(left_nc_root)
-
-                            result_2d_array = self.compare_2d_arrays(
-                                left_nc_var,
-                                right_nc_var,
-                                left_nc_root,
-                                param_new.location,
-                                variable_name,
-                                cf_role_time_series_vars,
-                            )
-
-                            result.maxAbsDiff = result_2d_array.max_abs_diff
-                            result.maxAbsDiffCoordinates = result_2d_array.max_abs_diff_coordinates
-                            result.maxAbsDiffValues = result_2d_array.max_abs_diff_values
-                            min_ref_value = result_2d_array.min_ref_value
-                            max_ref_value = result_2d_array.max_ref_value
-                            row_id = result_2d_array.row_id
-                            column_id = result_2d_array.column_id
-
-                            # - If variable name which has cf_role 'timeseries_id' cannot be found: it is more like a
-                            #   map-file. Create a 2D plot of the point in time with
-                            # - If variable name which has cf_role 'timeseries_id' can be found: it is more like a
-                            #   history file, with stations. Plot the time series for the station with the largest
-                            #   deviation.
-                            if cf_role_time_series_vars.__len__() == 0:
-                                observation_type = parameter.name
-                                plot_ref_val = left_nc_var[row_id, :]
-                                plot_cmp_val = right_nc_var[row_id, :]
-                            else:
-                                plot_ref_val = left_nc_var[:, column_id]
-                                plot_cmp_val = right_nc_var[:, column_id]
-                                observation_type = self.get_observation_type(left_nc_var, cf_role_time_series_vars)
-                        else:
-                            result.maxAbsDiff, result.maxAbsDiffCoordinates, result.maxAbsDiffValues = (
-                                self.compare_nd_arrays(left_nc_var, right_nc_var)
-                            )
-
-                    except RuntimeError as e:
-                        logger.error(str(e))
-                        result.error = True
-
-                    except Exception as e:
-                        logger.error(f"Could not find parameter: {variable_name}, in file: {file_check.name}")
-                        logger.error(str(e))
-                        result.error = True
-
-                    if np.ma.is_masked(
-                        min_ref_value
-                    ):  # if min_ref_value has no value (it is a  _FillValue) then the test is OK (presumed)
-                        result.maxAbsDiff = 0.0
-                        result.maxAbsDiffValues = 0.0
-                        max_ref_value = 0.0
-                        min_ref_value = 0.0
-
-                    result.maxRelDiff = self.get_max_rel_diff(result.maxAbsDiff, min_ref_value, max_ref_value)
-
-                    # Now we know the absolute and relative error, we can see whether the tolerance is exceeded (or test is in error).
-                    result.isToleranceExceeded(
-                        param_new.tolerance_absolute,
-                        param_new.tolerance_relative,
+                    matchnumber = matchnumber + 1
+                    result = self.compare_nc_variable(
+                        right_path,
+                        file_check.name,
+                        testcase_name,
+                        logger,
+                        parameter,
+                        left_nc_root,
+                        right_nc_root,
+                        variable_name,
                     )
-
-                    if result.result == "NOK":
-                        if left_nc_var.ndim == 1:
-                            logger.info(f"Plotting of 1d-array not yet supported, variable name: {variable_name}")
-                        if left_nc_var.ndim == 2:
-                            result.error = self.plot_2d_array(
-                                logger,
-                                testcase_name,
-                                variable_name,
-                                plot_ref_val,
-                                plot_cmp_val,
-                                cf_role_time_series_vars,
-                                left_nc_root,
-                                left_nc_var,
-                                row_id,
-                                column_id,
-                                right_path,
-                                param_new.tolerance_absolute,
-                                observation_type,
-                            )
-                    results.append((testcase_name, file_check, param_new, result))
+                    results.append((testcase_name, file_check, parameter, result))
 
                 self.check_match_for_parameter_name(matchnumber, parameter.name, left_path, file_check.name)
         return results
+
+    def compare_nc_variable(
+        self,
+        right_path: str,
+        file_check_name: str,
+        testcase_name: str,
+        logger: ILogger,
+        parameter: Parameter,
+        left_nc_root: nc.Dataset,
+        right_nc_root: nc.Dataset,
+        variable_name: str,
+    ) -> ComparisonResult:
+        """
+        Compare a specified variable between two NetCDF datasets and evaluates the differences.
+
+        Compare a specified variable between two NetCDF datasets and evaluates the differences based on absolute and
+        relative tolerances. The function supports 1D, 2D, and n-dimensional arrays.
+        """
+        result = ComparisonResult()
+        try:
+            logger.debug(f"Checking parameter: {variable_name}")
+
+            left_nc_var = left_nc_root.variables[variable_name]
+            right_nc_var = right_nc_root.variables[variable_name]
+            self.check_for_dimension_equality(left_nc_var, right_nc_var, variable_name)
+
+            min_ref_value = float(np.min(left_nc_var[:]))
+            max_ref_value = float(np.max(left_nc_var[:]))
+
+            # http://docs.scipy.org/doc/numpy/reference/generated/numpy.argmax.html
+            if left_nc_var.ndim == 1:
+                result.maxAbsDiff, result.maxAbsDiffCoordinates, result.maxAbsDiffValues = self.compare_1d_arrays(
+                    left_nc_var, right_nc_var
+                )
+
+                plot_ref_val = left_nc_var[:]
+                plot_cmp_val = right_nc_var[:]
+
+            elif left_nc_var.ndim == 2:
+                # 2D array
+                # Search for the variable name which has cf_role 'timeseries_id'.
+                cf_role_time_series_vars = search_times_series_id(left_nc_root)
+
+                result_2d_array = self.compare_2d_arrays(
+                    left_nc_var,
+                    right_nc_var,
+                    left_nc_root,
+                    parameter.location,
+                    variable_name,
+                    cf_role_time_series_vars,
+                )
+
+                result.maxAbsDiff = result_2d_array.max_abs_diff
+                result.maxAbsDiffCoordinates = result_2d_array.max_abs_diff_coordinates
+                result.maxAbsDiffValues = result_2d_array.max_abs_diff_values
+                min_ref_value = result_2d_array.min_ref_value
+                max_ref_value = result_2d_array.max_ref_value
+                row_id = result_2d_array.row_id
+                column_id = result_2d_array.column_id
+
+                # - If variable name which has cf_role 'timeseries_id' cannot be found: it is more like a
+                #   map-file. Create a 2D plot of the point in time with
+                # - If variable name which has cf_role 'timeseries_id' can be found: it is more like a
+                #   history file, with stations. Plot the time series for the station with the largest
+                #   deviation.
+                if cf_role_time_series_vars.__len__() == 0:
+                    observation_type = parameter.name
+                    plot_ref_val = left_nc_var[row_id, :]
+                    plot_cmp_val = right_nc_var[row_id, :]
+                else:
+                    plot_ref_val = left_nc_var[:, column_id]
+                    plot_cmp_val = right_nc_var[:, column_id]
+                    observation_type = self.get_observation_type(left_nc_var, cf_role_time_series_vars)
+            else:
+                result.maxAbsDiff, result.maxAbsDiffCoordinates, result.maxAbsDiffValues = self.compare_nd_arrays(
+                    left_nc_var, right_nc_var
+                )
+
+        except RuntimeError as e:
+            logger.error(str(e))
+            result.error = True
+
+        except Exception as e:
+            logger.error(f"Could not find parameter: {variable_name}, in file: {file_check_name}")
+            logger.error(str(e))
+            result.error = True
+
+        if np.ma.is_masked(
+            min_ref_value
+        ):  # if min_ref_value has no value (it is a  _FillValue) then the test is OK (presumed)
+            result.maxAbsDiff = 0.0
+            result.maxAbsDiffValues = 0.0
+            max_ref_value = 0.0
+            min_ref_value = 0.0
+
+        result.maxRelDiff = self.get_max_rel_diff(result.maxAbsDiff, min_ref_value, max_ref_value)
+
+        # Now we know the absolute and relative error, we can see whether the tolerance is exceeded (or test is in error).
+        result.isToleranceExceeded(
+            parameter.tolerance_absolute,
+            parameter.tolerance_relative,
+        )
+
+        if result.result == "NOK":
+            if left_nc_var.ndim == 1:
+                logger.info(f"Plotting of 1d-array not yet supported, variable name: {variable_name}")
+            if left_nc_var.ndim == 2:
+                result.error = self.plot_2d_array(
+                    logger,
+                    testcase_name,
+                    variable_name,
+                    plot_ref_val,
+                    plot_cmp_val,
+                    cf_role_time_series_vars,
+                    left_nc_root,
+                    left_nc_var,
+                    row_id,
+                    column_id,
+                    right_path,
+                    parameter.tolerance_absolute,
+                    observation_type,
+                )
+
+        return result
 
     def compare_1d_arrays(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable):
         """Compare two 1D arrays datasets and returns the maximum absolute difference."""
