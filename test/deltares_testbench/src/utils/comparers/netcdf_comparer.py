@@ -8,12 +8,11 @@ import os
 import re
 import sys
 from datetime import datetime, timedelta
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import netCDF4 as nc
 import numpy as np
 
-from typing import Any
 import src.utils.plot_differences as plot
 from src.config.file_check import FileCheck
 from src.config.parameter import Parameter
@@ -86,7 +85,7 @@ class NetcdfComparer(IComparer):
                                 left_nc_var,
                                 right_nc_var,
                                 left_nc_root,
-                                param_new,
+                                param_new.location,
                                 variable_name,
                                 cf_role_time_series_vars,
                             )
@@ -180,7 +179,7 @@ class NetcdfComparer(IComparer):
         left_nc_var: nc.Variable,
         right_nc_var: nc.Variable,
         left_nc_root: nc.Dataset,
-        param_new: Parameter,
+        parameter_location: Optional[str],
         variable_name: str,
         cf_role_time_series_vars: List[str],
     ) -> Comparison2DArrayResult:
@@ -190,7 +189,7 @@ class NetcdfComparer(IComparer):
         diff_arr = self.get_difference(left_nc_var, right_nc_var)
 
         column_id, row_id = self.get_column_and_row_id(
-            param_new.location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
+            parameter_location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
         )
 
         # This overrides the default min/max of all ref values.
@@ -404,7 +403,7 @@ class NetcdfComparer(IComparer):
 
     def get_column_and_row_id(
         self,
-        parameter_location: str,
+        parameter_location: Optional[str],
         cf_role_time_series_vars: List[str],
         left_nc_root: nc.Dataset,
         diff_arr: np.ndarray,
