@@ -207,7 +207,7 @@ class NetcdfComparer(IComparer):
         result.column_id = column_id
         return result
 
-    def get_difference(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable) -> nc.ndarray:
+    def get_difference(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable) -> np.ndarray:
         """Calculate the absolute difference between two NetCDF variables."""
         return np.abs(left_nc_var[:] - right_nc_var[:])
 
@@ -415,7 +415,7 @@ class NetcdfComparer(IComparer):
         column_id = 0
         row_id = 0
 
-        if parameter_location != "":
+        if parameter_location is not None:
             for variable in cf_role_time_series_vars:
                 if variable is not None:
                     location_var = left_nc_root.variables[variable]
