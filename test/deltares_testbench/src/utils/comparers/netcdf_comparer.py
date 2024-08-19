@@ -167,22 +167,125 @@ class NetcdfComparer(IComparer):
                 self.check_match_for_parameter_name(matchnumber, parameter.name, left_path, file_check.name)
         return results
 
-    def get_max_rel_diff(self, max_abs_diff: float, min_ref_value: float, max_ref_value: float) -> float:
-        """
-        Calculate the maximum relative difference.
+    def compare_1d_arrays(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable):
+        """Compare two 1D arrays datasets and returns the maximum absolute difference."""
+        diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
+        i_max = np.argmax(diff_arr)
+        max_abs_diff = float(diff_arr[i_max])
+        max_abs_diff_coordinates = (i_max,)
+        max_abs_diff_values = (left_nc_var[i_max], right_nc_var[i_max])
+        return max_abs_diff, max_abs_diff_coordinates, max_abs_diff_values
 
-        This method converts an absolute difference into a relative difference by dividing it by the difference between
-        the maximum and minimum reference values. It handles edge cases where the differences are very small.
+    def compare_2d_arrays(
+        self,
+        left_nc_var: nc.Variable,
+        right_nc_var: nc.Variable,
+        left_nc_root: nc.Dataset,
+        param_new: Parameter,
+        variable_name: str,
+        cf_role_time_series_vars: List[str],
+    ) -> Comparison2DArrayResult:
+        """Compare two 2D arrays datasets and returns the comparison result."""
+        result = Comparison2DArrayResult()
+        # 2D array
+        diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
+
+        column_id, row_id = self.find_column_and_row_id(
+            param_new.location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
+        )
+
+        # This overrides the default min/max of all ref values.
+        result.min_ref_value = np.min(left_nc_var[:, column_id])
+        result.max_ref_value = np.max(left_nc_var[:, column_id])
+
+        result.max_abs_diff = diff_arr[row_id, column_id]
+        result.max_abs_diff_coordinates = (row_id, column_id)
+        result.max_abs_diff_values = (
+            left_nc_var[row_id, column_id],
+            right_nc_var[row_id, column_id],
+        )
+        result.row_id = row_id
+        result.column_id = column_id
+        return result
+
+    def compare_nd_arrays(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable):
         """
-        # Make the absolute difference in maxDiff relative, by dividing by (max_ref_value-min_ref_value).
-        if max_abs_diff < 2 * sys.float_info.epsilon:
-            # No difference found, so relative difference is set to 0.
-            return 0.0
-        elif max_ref_value - min_ref_value < 2 * sys.float_info.epsilon:
-            # Very small difference found, so the denominator will be very small, so set relative difference to maximum.
-            return 1.0
-        else:
-            return min(1.0, max_abs_diff / (max_ref_value - min_ref_value))
+        Compare two n-dimensional arrays and find the maximum absolute difference.
+
+        This method computes the absolute differences between corresponding elements
+        of two n-dimensional arrays, identifies the maximum absolute difference, and
+        returns the value of this difference along with its coordinates and the values
+        at these coordinates in the original arrays.
+        """
+        diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
+        i_max = np.argmax(diff_arr)
+
+        # Determine block sizes
+        block_sizes = [1]
+        for n in reversed(diff_arr.shape):
+            block_sizes.append(block_sizes[-1] * n)
+        block_sizes.pop()  # Last block size is irrelevant.
+        block_sizes.reverse()
+
+        # Determine coordinates of maximum deviation
+        coordinates = []
+        remainder = i_max
+        for size in block_sizes:
+            coordinates.append(remainder // size)
+            remainder %= size
+
+        maxdiff = diff_arr
+        left_at_maxdiff = left_nc_var
+        right_at_maxdiff = right_nc_var
+        try:
+            for c in coordinates:
+                maxdiff = maxdiff[c]
+                left_at_maxdiff = left_at_maxdiff[c]
+                right_at_maxdiff = right_at_maxdiff[c]
+        except Exception as e:
+            error_msg = (
+                "Mismatch dimensions: len maxdiff and coordinates: " + str(len(maxdiff)) + " , " + str(len(coordinates))
+            )
+            raise RuntimeError(error_msg, e)
+
+        max_abs_diff = float(maxdiff)
+        max_abs_diff_coordinates = tuple(coordinates)
+        max_abs_diff_values = (
+            left_at_maxdiff,
+            right_at_maxdiff,
+        )
+        return max_abs_diff, max_abs_diff_coordinates, max_abs_diff_values
+
+    def plot_2d(
+        self,
+        testcase_name: str,
+        variable_name: str,
+        plot_ref_val: np.ndarray,
+        plot_cmp_val: np.ndarray,
+        right_path: str,
+        left_nc_root: nc.Dataset,
+        left_nc_var: nc.Variable,
+        tolerance_absolute: float,
+        subtitle: str,
+    ) -> None:
+        """Plot a 2D graph."""
+        # search coordinates
+        coords = left_nc_var.coordinates.split()
+        x_coords = left_nc_root.variables[coords[0]][:]
+        y_coords = left_nc_root.variables[coords[1]][:]
+
+        plot.PlotDifferencesMap(
+            right_path,
+            x_coords,
+            y_coords,
+            plot_ref_val,
+            plot_cmp_val,
+            tolerance_absolute,
+            testcase_name,
+            variable_name,
+            subtitle,
+            "netcdf",
+        )
 
     def plot_2d_array(
         self,
@@ -235,102 +338,49 @@ class NetcdfComparer(IComparer):
             return True
         return False
 
-    def compare_nd_arrays(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable):
-        """
-        Compare two n-dimensional arrays and find the maximum absolute difference.
-
-        This method computes the absolute differences between corresponding elements
-        of two n-dimensional arrays, identifies the maximum absolute difference, and
-        returns the value of this difference along with its coordinates and the values
-        at these coordinates in the original arrays.
-        """
-        diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
-        i_max = np.argmax(diff_arr)
-
-        # Determine block sizes
-        block_sizes = [1]
-        for n in reversed(diff_arr.shape):
-            block_sizes.append(block_sizes[-1] * n)
-        block_sizes.pop()  # Last block size is irrelevant.
-        block_sizes.reverse()
-
-        # Determine coordinates of maximum deviation
-        coordinates = []
-        remainder = i_max
-        for size in block_sizes:
-            coordinates.append(remainder // size)
-            remainder %= size
-
-        maxdiff = diff_arr
-        left_at_maxdiff = left_nc_var
-        right_at_maxdiff = right_nc_var
-        try:
-            for c in coordinates:
-                maxdiff = maxdiff[c]
-                left_at_maxdiff = left_at_maxdiff[c]
-                right_at_maxdiff = right_at_maxdiff[c]
-        except Exception as e:
-            error_msg = (
-                "Mismatch dimensions: len maxdiff and coordinates: " + str(len(maxdiff)) + " , " + str(len(coordinates))
-            )
-            raise RuntimeError(error_msg, e)
-
-        max_abs_diff = float(maxdiff)
-        max_abs_diff_coordinates = tuple(coordinates)
-        max_abs_diff_values = (
-            left_at_maxdiff,
-            right_at_maxdiff,
-        )
-        return max_abs_diff, max_abs_diff_coordinates, max_abs_diff_values
-
-    def compare_1d_arrays(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable):
-        """Compare two 1D arrays datasets and returns the maximum absolute difference."""
-        diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
-        i_max = np.argmax(diff_arr)
-        max_abs_diff = float(diff_arr[i_max])
-        max_abs_diff_coordinates = (i_max,)
-        max_abs_diff_values = (left_nc_var[i_max], right_nc_var[i_max])
-        return max_abs_diff, max_abs_diff_coordinates, max_abs_diff_values
-
-    def compare_2d_arrays(
+    def plot_time_series(
         self,
-        left_nc_var: nc.Variable,
-        right_nc_var: nc.Variable,
-        left_nc_root: nc.Dataset,
-        param_new: Parameter,
+        testcase_name: str,
         variable_name: str,
-        cf_role_time_series_vars: List[str],
-    ) -> Comparison2DArrayResult:
-        """Compare two 2D arrays datasets and returns the comparison result."""
-        result = Comparison2DArrayResult()
-        # 2D array
-        diff_arr = np.abs(left_nc_var[:] - right_nc_var[:])
-
-        column_id, row_id = self.find_column_and_row_id(
-            param_new.location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
-        )
-
-        # This overrides the default min/max of all ref values.
-        result.min_ref_value = np.min(left_nc_var[:, column_id])
-        result.max_ref_value = np.max(left_nc_var[:, column_id])
-
-        result.max_abs_diff = diff_arr[row_id, column_id]
-        result.max_abs_diff_coordinates = (row_id, column_id)
-        result.max_abs_diff_values = (
-            left_nc_var[row_id, column_id],
-            right_nc_var[row_id, column_id],
-        )
-        result.row_id = row_id
-        result.column_id = column_id
-        return result
-
-    def check_match_for_parameter_name(
-        self, matchnumber: int, parameter_name: str, left_path: str, filename: str
+        plot_ref_val: np.ndarray,
+        plot_cmp_val: np.ndarray,
+        right_path: str,
+        time_var: nc.Dataset,
+        plot_location: str,
     ) -> None:
-        """Ceck if a valid matchnumber is found, otherwise raise exception."""
-        if matchnumber == 0:
-            error_msg = f"No match for parameter name {parameter_name} in file {os.path.join(left_path, filename)}"
-            raise Exception(error_msg)
+        """Plot a time series graph."""
+        unit_txt = "".join(time_var.units).strip()
+        start_datetime, delta = interpret_time_unit(unit_txt)
+        datetime_series = [start_datetime + int(t_i) * delta for t_i in time_var[:]]
+
+        plot.PlotDifferencesTimeSeries(
+            right_path,
+            datetime_series,
+            plot_ref_val,
+            plot_cmp_val,
+            testcase_name,
+            variable_name,
+            plot_location,
+            "netcdf",
+        )
+
+    def determine_plot_location(self, left_nc_root: nc.Dataset, observation_type: str, column_id: int) -> str:
+        """Determine location name, needed when no location is specified otherwise it is equal to parameter_location."""
+        plot_location = left_nc_root.variables[observation_type][column_id][:]
+        plot_location = b"".join(filter(None, plot_location)).decode("utf-8").strip()
+        if plot_location == "":
+            plot_location = "model_wide"
+        return str(plot_location)
+
+    def get_plot_subtitle(self, time_var: nc.Variable, row_id: int) -> str:
+        """Compute datetime for which we are making a plot / scalar field."""
+        unit_txt = "".join(time_var.units).strip()
+        start_datetime, delta = interpret_time_unit(unit_txt)
+
+        plot_datetime = start_datetime + delta * int(time_var[row_id])
+
+        subtitle = datetime.strftime(plot_datetime, "%Y%m%d_%H%M%S")
+        return subtitle
 
     def get_observation_type(self, left_nc_var: nc.Variable, cf_role_time_series_vars: List[str]) -> str:
         """Determine the observation type based on the coordinates attribute of the NetCDF variable."""
@@ -341,6 +391,23 @@ class NetcdfComparer(IComparer):
                     if location_type == variable:
                         return str(location_type)
         return str(cf_role_time_series_vars[0])
+
+    def get_max_rel_diff(self, max_abs_diff: float, min_ref_value: float, max_ref_value: float) -> float:
+        """
+        Calculate the maximum relative difference.
+
+        This method converts an absolute difference into a relative difference by dividing it by the difference between
+        the maximum and minimum reference values. It handles edge cases where the differences are very small.
+        """
+        # Make the absolute difference in maxDiff relative, by dividing by (max_ref_value-min_ref_value).
+        if max_abs_diff < 2 * sys.float_info.epsilon:
+            # No difference found, so relative difference is set to 0.
+            return 0.0
+        elif max_ref_value - min_ref_value < 2 * sys.float_info.epsilon:
+            # Very small difference found, so the denominator will be very small, so set relative difference to maximum.
+            return 1.0
+        else:
+            return min(1.0, max_abs_diff / (max_ref_value - min_ref_value))
 
     def find_column_and_row_id(
         self,
@@ -377,6 +444,23 @@ class NetcdfComparer(IComparer):
 
         return column_id, row_id
 
+    def open_netcdf_file(self, path: str, filename: str) -> nc.Dataset:
+        """Open NetCDF file and return netCDF dataset."""
+        try:
+            nc_root = nc.Dataset(os.path.join(path, filename), "r", format="NETCDF4_CLASSIC")
+        except Exception as e:
+            error_msg = f"Cannot open netcdf file {os.path.join(path, filename)}"
+            raise RuntimeError(error_msg, e) from e
+        return nc_root
+
+    def check_match_for_parameter_name(
+        self, matchnumber: int, parameter_name: str, left_path: str, filename: str
+    ) -> None:
+        """Ceck if a valid matchnumber is found, otherwise raise exception."""
+        if matchnumber == 0:
+            error_msg = f"No match for parameter name {parameter_name} in file {os.path.join(left_path, filename)}"
+            raise Exception(error_msg)
+
     def check_for_dimension_equality(
         self, left_nc_var: nc.Variable, right_nc_var: nc.Variable, variable_name: str
     ) -> None:
@@ -386,90 +470,6 @@ class NetcdfComparer(IComparer):
                 f"Shapes of parameter {variable_name} not compatible. Shape of reference: "
                 + f"{left_nc_var.shape}. Shape of run data: {right_nc_var.shape}"
             )
-
-    def plot_time_series(
-        self,
-        testcase_name: str,
-        variable_name: str,
-        plot_ref_val: np.ndarray,
-        plot_cmp_val: np.ndarray,
-        right_path: str,
-        time_var: nc.Dataset,
-        plot_location: str,
-    ) -> None:
-        """Plot a time series graph."""
-        unit_txt = "".join(time_var.units).strip()
-        start_datetime, delta = interpret_time_unit(unit_txt)
-        datetime_series = [start_datetime + int(t_i) * delta for t_i in time_var[:]]
-
-        plot.PlotDifferencesTimeSeries(
-            right_path,
-            datetime_series,
-            plot_ref_val,
-            plot_cmp_val,
-            testcase_name,
-            variable_name,
-            plot_location,
-            "netcdf",
-        )
-
-    def determine_plot_location(self, left_nc_root: nc.Dataset, observation_type: str, column_id: int) -> str:
-        """Determine location name, needed when no location is specified otherwise it is equal to parameter_location."""
-        plot_location = left_nc_root.variables[observation_type][column_id][:]
-        plot_location = b"".join(filter(None, plot_location)).decode("utf-8").strip()
-        if plot_location == "":
-            plot_location = "model_wide"
-        return str(plot_location)
-
-    def plot_2d(
-        self,
-        testcase_name: str,
-        variable_name: str,
-        plot_ref_val: np.ndarray,
-        plot_cmp_val: np.ndarray,
-        right_path: str,
-        left_nc_root: nc.Dataset,
-        left_nc_var: nc.Variable,
-        tolerance_absolute: float,
-        subtitle: str,
-    ) -> None:
-        """Plot a 2D graph."""
-        # search coordinates
-        coords = left_nc_var.coordinates.split()
-        x_coords = left_nc_root.variables[coords[0]][:]
-        y_coords = left_nc_root.variables[coords[1]][:]
-
-        plot.PlotDifferencesMap(
-            right_path,
-            x_coords,
-            y_coords,
-            plot_ref_val,
-            plot_cmp_val,
-            tolerance_absolute,
-            testcase_name,
-            variable_name,
-            subtitle,
-            "netcdf",
-        )
-
-    def get_plot_subtitle(self, time_var: nc.Variable, row_id: int) -> str:
-        """Compute datetime for which we are making a plot / scalar field."""
-        unit_txt = "".join(time_var.units).strip()
-        start_datetime, delta = interpret_time_unit(unit_txt)
-
-        plot_datetime = start_datetime + delta * int(time_var[row_id])
-
-        subtitle = datetime.strftime(plot_datetime, "%Y%m%d_%H%M%S")
-        return subtitle
-
-    def open_netcdf_file(self, path: str, filename: str) -> nc.Dataset:
-        """Open NetCDF file and return netCDF dataset."""
-        try:
-            nc_root = nc.Dataset(os.path.join(path, filename), "r", format="NETCDF4_CLASSIC")
-        except Exception as e:
-            error_msg = f"Cannot open netcdf file {os.path.join(path, filename)}"
-            raise RuntimeError(error_msg, e) from e
-        return nc_root
 
 
 def search_time_variable(nc_root: nc.Dataset, var_name: str) -> nc.Variable:
