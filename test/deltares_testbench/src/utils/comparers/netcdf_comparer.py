@@ -97,8 +97,6 @@ class NetcdfComparer(IComparer):
                 plot_cmp_val = right_nc_var[:]
 
             elif left_nc_var.ndim == 2:
-                # 2D array
-                # Search for the variable name which has cf_role 'timeseries_id'.
                 cf_role_time_series_vars = search_times_series_id(left_nc_root)
 
                 result_2d_array = self.compare_2d_arrays(
@@ -118,11 +116,6 @@ class NetcdfComparer(IComparer):
                 row_id = result_2d_array.row_id
                 column_id = result_2d_array.column_id
 
-                # - If variable name which has cf_role 'timeseries_id' cannot be found: it is more like a
-                #   map-file. Create a 2D plot of the point in time with
-                # - If variable name which has cf_role 'timeseries_id' can be found: it is more like a
-                #   history file, with stations. Plot the time series for the station with the largest
-                #   deviation.
                 if cf_role_time_series_vars.__len__() == 0:
                     observation_type = parameter.name
                     plot_ref_val = left_nc_var[row_id, :]
@@ -155,7 +148,6 @@ class NetcdfComparer(IComparer):
 
         result.maxRelDiff = self.get_max_rel_diff(result.maxAbsDiff, min_ref_value, max_ref_value)
 
-        # Now we know the absolute and relative error, we can see whether the tolerance is exceeded (or test is in error).
         result.isToleranceExceeded(
             parameter.tolerance_absolute,
             parameter.tolerance_relative,
@@ -210,7 +202,6 @@ class NetcdfComparer(IComparer):
             parameter_location, cf_role_time_series_vars, left_nc_root, diff_arr, variable_name
         )
 
-        # This overrides the default min/max of all ref values.
         result.min_ref_value = np.min(left_nc_var[:, column_id])
         result.max_ref_value = np.max(left_nc_var[:, column_id])
 
@@ -275,7 +266,6 @@ class NetcdfComparer(IComparer):
         subtitle: str,
     ) -> None:
         """Plot a 2D graph."""
-        # search coordinates
         coords = left_nc_var.coordinates.split()
         x_coords = left_nc_root.variables[coords[0]][:]
         y_coords = left_nc_root.variables[coords[1]][:]
@@ -411,10 +401,8 @@ class NetcdfComparer(IComparer):
         """
         # Make the absolute difference in maxDiff relative, by dividing by (max_ref_value-min_ref_value).
         if max_abs_diff < 2 * sys.float_info.epsilon:
-            # No difference found, so relative difference is set to 0.
             return 0.0
         elif max_ref_value - min_ref_value < 2 * sys.float_info.epsilon:
-            # Very small difference found, so the denominator will be very small, so set relative difference to maximum.
             return 1.0
         else:
             return min(1.0, max_abs_diff / (max_ref_value - min_ref_value))
@@ -450,7 +438,7 @@ class NetcdfComparer(IComparer):
         else:
             i_max = np.argmax(diff_arr)
             column_id = int(i_max % diff_arr.shape[1])
-            row_id = int(i_max / diff_arr.shape[1])  # diff_arr.shape = (nrows, ncolumns)
+            row_id = int(i_max / diff_arr.shape[1])
 
         return column_id, row_id
 
@@ -535,21 +523,7 @@ def interpret_time_unit(time_description: str):
     try:
         words = time_description.lower().strip().split(" ")
 
-        # Deduce timedelta
-        if "millisecond" in words[0]:
-            delta = timedelta(milliseconds=1)
-        elif "second" in words[0]:
-            delta = timedelta(seconds=1)
-        elif "minute" in words[0]:
-            delta = timedelta(minutes=1)
-        elif "hour" in words[0]:
-            delta = timedelta(hours=1)
-        elif "day" in words[0]:
-            delta = timedelta(days=1)
-        elif "week" in words[0]:
-            delta = timedelta(weeks=1)
-        else:
-            raise ValueError(f"Can not infer timedelta from: {words[0]}")
+        delta = get_time_delta(words)
 
         # Deduce start_datetime
         date_split = words[2].split("-")
@@ -577,3 +551,21 @@ def interpret_time_unit(time_description: str):
         ) from e
 
     return start_datetime, delta
+
+def get_time_delta(words: list[str]) -> timedelta:
+    """Get the timedelta."""
+    if "millisecond" in words[0]:
+        delta = timedelta(milliseconds=1)
+    elif "second" in words[0]:
+        delta = timedelta(seconds=1)
+    elif "minute" in words[0]:
+        delta = timedelta(minutes=1)
+    elif "hour" in words[0]:
+        delta = timedelta(hours=1)
+    elif "day" in words[0]:
+        delta = timedelta(days=1)
+    elif "week" in words[0]:
+        delta = timedelta(weeks=1)
+    else:
+        raise ValueError(f"Can not infer timedelta from: {words[0]}")
+    return delta
