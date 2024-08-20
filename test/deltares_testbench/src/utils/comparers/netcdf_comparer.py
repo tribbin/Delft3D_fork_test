@@ -39,11 +39,11 @@ class NetcdfComparer(IComparer):
         for parameters in file_check.parameters.values():
             for parameter in parameters:
 
-                matchnumber = 0
+                found_parameter_in_file = False
                 for variable_name in left_nc_root.variables.keys():
                     if variable_name != parameter.name:
                         continue
-                    matchnumber = matchnumber + 1
+                    found_parameter_in_file = True
                     result = self.compare_nc_variable(
                         right_path,
                         file_check.name,
@@ -56,7 +56,7 @@ class NetcdfComparer(IComparer):
                     )
                     results.append((testcase_name, file_check, parameter, result))
 
-                self.check_match_for_parameter_name(matchnumber, parameter.name, left_path, file_check.name)
+                self.check_match_for_parameter_name(found_parameter_in_file, parameter.name, left_path, file_check.name)
         return results
 
     def compare_nc_variable(
@@ -470,10 +470,10 @@ class NetcdfComparer(IComparer):
         return nc_root
 
     def check_match_for_parameter_name(
-        self, matchnumber: int, parameter_name: str, left_path: str, filename: str
+        self, found_parameter_in_file: bool, parameter_name: str, left_path: str, filename: str
     ) -> None:
         """Ceck if a valid matchnumber is found, otherwise raise exception."""
-        if matchnumber == 0:
+        if found_parameter_in_file == False:
             error_msg = f"No match for parameter name {parameter_name} in file {os.path.join(left_path, filename)}"
             raise AttributeError(error_msg)
 
