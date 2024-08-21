@@ -586,7 +586,7 @@ contains
                                 trim(wqbotnames(i))//' (3D)', '', unit_string, UNC_LOC_STATION, nc_dim_ids=station_nc_dims_3D_center, nc_attributes=atts)
 
          output_config_set%configs(idx_wqbot3D_stations(i))%input_value = &
-            output_config_set%configs(IDX_HIS_WQBOT_ABSTRACT)%input_value
+            output_config_set%configs(IDX_HIS_WQBOT3D_ABSTRACT)%input_value
       end do
    end subroutine add_station_wqbot3D_configs
 
@@ -2726,7 +2726,7 @@ contains
          if (numwqbots > 0) then
             call add_station_wqbot_configs(output_config_set, idx_wqbot_stations)
             call add_station_wqbot_output_items(output_set, output_config_set, idx_wqbot_stations)
-            if (model_is_3D() .and. wqbot3d_output == 1) then
+            if (model_is_3D()) then
                call add_station_wqbot3D_configs(output_config_set, idx_wqbot3D_stations)
                call add_station_wqbot3D_output_items(output_set, output_config_set, idx_wqbot3D_stations)
             end if

@@ -2354,7 +2354,7 @@ contains
       call prop_get_string(md_ptr, 'processes', 'StatisticsFile', md_sttfile, success)
       call prop_get_double(md_ptr, 'processes', 'ThetaVertical', md_thetav_waq, success)
       call prop_get_integer(md_ptr, 'processes', 'ProcessFluxIntegration', md_flux_int, success)
-      call prop_get_integer(md_ptr, 'processes', 'Wriwaqbot3Doutput', md_wqbot3D_output, success)
+      call prop_get_integer(md_ptr, 'output', 'Wrihis_wqbot3d', md_wqbot3D_output, success)
       call prop_get_double(md_ptr, 'processes', 'VolumeDryThreshold', waq_vol_dry_thr)
       call prop_get_double(md_ptr, 'processes', 'DepthDryThreshold', waq_dep_dry_thr)
       call prop_get_integer(md_ptr, 'processes', 'SubstanceDensityCoupling', JaSubstancedensitycoupling)
