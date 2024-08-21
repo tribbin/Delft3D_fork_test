@@ -483,7 +483,7 @@ class NetcdfComparer(IComparer):
         self, found_parameter_in_file: bool, parameter_name: str, left_path: str, filename: str
     ) -> None:
         """Ceck if a valid matchnumber is found, otherwise raise exception."""
-        if found_parameter_in_file == False:
+        if not found_parameter_in_file:
             error_msg = f"No match for parameter name {parameter_name} in file {os.path.join(left_path, filename)}"
             raise AttributeError(error_msg)
 
