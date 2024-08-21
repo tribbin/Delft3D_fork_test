@@ -158,9 +158,7 @@ class NetcdfComparer(IComparer):
                     plot_values = PlotValues(left_nc_var[:, array_index.column], right_nc_var[:, array_index.column])
                     observation_type = self.get_observation_type(left_nc_var, cf_role_time_series_vars)
             else:
-                result.max_abs_diff, result.max_abs_diff_coordinates, result.max_abs_diff_values = (
-                    self.compare_nd_arrays(left_nc_var, right_nc_var)
-                )
+                result = self.compare_nd_arrays(left_nc_var, right_nc_var)
 
         except RuntimeError as e:
             logger.error(str(e))
@@ -231,7 +229,7 @@ class NetcdfComparer(IComparer):
         )
         return result
 
-    def compare_nd_arrays(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable):
+    def compare_nd_arrays(self, left_nc_var: nc.Variable, right_nc_var: nc.Variable) -> ComparisonResult:
         """
         Compare two n-dimensional arrays and find the maximum absolute difference.
 
@@ -240,6 +238,7 @@ class NetcdfComparer(IComparer):
         returns the value of this difference along with its coordinates and the values
         at these coordinates in the original arrays.
         """
+        result = ComparisonResult()
         diff_arr = self.get_difference(left_nc_var, right_nc_var)
         i_max = np.argmax(diff_arr)
         print(type(i_max))
@@ -261,13 +260,13 @@ class NetcdfComparer(IComparer):
             )
             raise RuntimeError(error_msg, e) from e
 
-        max_abs_diff = float(maxdiff)
-        max_abs_diff_coordinates = tuple(coordinates)
-        max_abs_diff_values = (
+        result.max_abs_diff = float(maxdiff)
+        result.max_abs_diff_coordinates = tuple(coordinates)
+        result.max_abs_diff_values = (
             left_at_maxdiff,
             right_at_maxdiff,
         )
-        return max_abs_diff, max_abs_diff_coordinates, max_abs_diff_values
+        return result
 
     def plot_2d(
         self,
