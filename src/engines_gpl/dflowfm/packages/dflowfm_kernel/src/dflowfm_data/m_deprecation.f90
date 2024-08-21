@@ -40,14 +40,14 @@ contains
 
    end subroutine reallocate_deprecated_keyword_list
 
-   !> Retrieve a deprecated keyword from the set, or a deprecated_keyword with empty strings if it is not found.
+   !> Retrieve a deprecated keyword from the set, or an undefined deprecated keyword if not found.
    function get_keyword(chapter, key, set, deprecation_level) result(res)
       use string_module, only: strcmpi
       character(len=*), intent(in) :: chapter !< chapter name
       character(len=*), intent(in) :: key !< keyword name
       type(deprecated_keyword_set), intent(in) :: set !< keyword set in which to check whether it is deprecated or not
       integer, optional, intent(in) :: deprecation_level !< which level to check (DEPRECATED or OBSOLETE)
-      type(deprecated_keyword) :: res !< deprecated keyword if found, otherwise a deprecated keyword with empty strings
+      type(deprecated_keyword) :: res !< deprecated keyword if found, otherwise a deprecated keyword with deprecation_level UNDEFINED
 
       integer :: i
 
@@ -78,7 +78,7 @@ contains
       type(deprecated_keyword) :: keyword
 
       keyword = get_keyword(chapter, key, set, DEPRECATED)
-      res = len_trim(keyword%key) /= 0
+      res = keyword%deprecation_level /= UNDEFINED
    end function is_deprecated
 
    !> Check if a keyword is obsolete and cannot be used anymore.
@@ -91,12 +91,12 @@ contains
       type(deprecated_keyword) :: keyword
 
       keyword = get_keyword(chapter, key, set, OBSOLETE)
-      res = len_trim(keyword%key) /= 0
+      res = keyword%deprecation_level /= UNDEFINED
    end function is_obsolete
 
    !> Retrieve optional additional information for a keyword.
    subroutine print_additional_keyword_information(chapter, key, set, prefix)
-      use unstruc_messages, only: LEVEL_WARN, mess
+      use unstruc_messages, only: LEVEL_INFO, mess
       character(len=*), intent(in) :: chapter !< chapter name
       character(len=*), intent(in) :: key !< keyword name
       character(len=*), intent(in) :: prefix !< Message string prefix
@@ -107,7 +107,7 @@ contains
 
       keyword = get_keyword(chapter, key, set, OBSOLETE)
       if (len_trim(keyword%additional_information) /= 0) then
-         call mess(LEVEL_WARN, prefix//': keyword ['//trim(chapter)//'] '//trim(key)//': '//keyword%additional_information)
+         call mess(LEVEL_INFO, prefix//': keyword ['//trim(chapter)//'] '//trim(key)//': '//keyword%additional_information)
       end if
    end subroutine print_additional_keyword_information
 
