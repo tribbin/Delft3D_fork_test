@@ -176,7 +176,12 @@ class NetcdfComparer(IComparer):
         testcase_name: str,
         logger: ILogger,
     ) -> List[Tuple[str, FileCheck, Parameter, ComparisonResult]]:
-        """Compare two netCDF files, according to the configuration in file_check."""
+        """
+        Compare two netCDF files, according to the configuration in file_check.
+
+        The left file is the compare and the right is the reference file. The method returns a list of comparison result
+        for all parameters that are in the filecheck.
+        """
         results = []
         left_nc_root = self.open_netcdf_file(left_path, file_check.name)
         right_nc_root = self.open_netcdf_file(right_path, file_check.name)
@@ -215,10 +220,10 @@ class NetcdfComparer(IComparer):
         variable_name: str,
     ) -> ComparisonResult:
         """
-        Compare a specified variable between two NetCDF datasets and evaluates the differences.
+        Compare variable for an n-dimensional array.
 
         Compare a specified variable between two NetCDF datasets and evaluates the differences based on absolute and
-        relative tolerances. The function supports 1D, 2D, and n-dimensional arrays.
+        relative tolerances. The function is intended for n-dimensional arrays.
         """
         result = ComparisonResult()
         plot_data = PlotData(testcase_name, variable_name, right_path)
