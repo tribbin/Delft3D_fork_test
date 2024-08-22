@@ -388,7 +388,7 @@ subroutine zfin(isym, nlat, nlon, m, z, i3, wzfin)
    integer, intent(inout) :: isym, nlat, nlon, m, i3
    real(dp), dimension(:), intent(inout) :: z, wzfin
    
-   integer :: imid, lim, mmax, labc, iw1, iw2, iw3, iw4, ihold, i1, i2, i4
+   integer :: imid, lim, mmax, labc, iw1, iw2, iw3, iw4
    
    imid = (nlat + 1) / 2
    lim = nlat * imid
@@ -777,7 +777,7 @@ subroutine alin1(isym, nlat, m, p, imid, i3, pz, p1, a, b, c)
    integer, intent(inout) :: isym, nlat, m, imid, i3
    real(dp), intent(inout) :: p(imid, nlat, 3), pz(imid, 1), p1(imid, 1), a(1), b(1), c(1)
    
-   integer :: ihold, i1, i2, i4, mp1, i, np1, ns, nstrt, nstp
+   integer :: ihold, i1, i2, i, np1, ns, nstrt, nstp
    save i1, i2
    
    ihold = i1

@@ -740,10 +740,10 @@ contains
       character(len=1000) :: charbuf = ' '
       character(len=255) :: tmpstr, fnam, bnam
       double precision, allocatable :: tmpdouble(:)
-      integer :: ibuf, ifil, mptfile, warn
-      integer :: i, n, j, je, iostat, readerr, ierror
+      integer :: ibuf, ifil
+      integer :: i, n, iostat, readerr, ierror
       integer :: jadum
-      real(hp) :: ti_rst_array(3), ti_map_array(3), ti_his_array(3), acc, ti_wav_array(3), ti_waq_array(3), ti_classmap_array(3), ti_st_array(3), ti_com_array(3)
+      real(hp) :: ti_rst_array(3), ti_map_array(3), ti_his_array(3), ti_wav_array(3), ti_waq_array(3), ti_classmap_array(3), ti_st_array(3), ti_com_array(3)
       character(len=200), dimension(:), allocatable :: fnames
       double precision, external :: densfm
       double precision :: tim

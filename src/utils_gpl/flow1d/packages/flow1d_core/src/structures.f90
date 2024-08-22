@@ -236,8 +236,6 @@ module m_1d_structures
       ! Local variables
       integer              :: i
 
-      type(t_structure), pointer       :: pstru
-
       ! Program code
       sts%Count = sts%Count+1
       i = sts%Count
