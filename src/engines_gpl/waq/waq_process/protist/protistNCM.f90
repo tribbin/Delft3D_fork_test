@@ -474,14 +474,14 @@ contains
                         fl (prInc + 5) = prot_array%dPreySi(iPrey)
                     end do
 
-                    if (ieee_is_nan(protC)) call write_warning( 'ERROR: in ProtistNCM, NaN in protC in segment:', iseg )
-                    if (ieee_is_nan(Cfix))  call write_warning( 'ERROR: in ProtistNCM, NaN in Cfix in segment:', iseg )
-                    if (ieee_is_nan(totR))  call write_warning( 'ERROR: in ProtistNCM, NaN in totR in segment:', iseg )
-                    if (ieee_is_nan(mrt))   call write_warning( 'ERROR: in ProtistNCM, NaN in mrt in segment:', iseg )
-                    if (ieee_is_nan(NC))    call write_warning( 'ERROR: in ProtistNCM, NaN in NC in segment:', iseg )
-                    if (ieee_is_nan(PC))    call write_warning( 'ERROR: in ProtistNCM, NaN in PC in segment:', iseg )
-                    if (ieee_is_nan(ChlC))  call write_warning( 'ERROR: in ProtistNCM, NaN in ChlC in segment:', iseg )
-                    if (ieee_is_nan(ingC))  call write_warning( 'ERROR: in ProtistNCM, NaN in ingC in segment:', iseg )
+                    if (.not. ieee_is_finite(protC)) call write_warning('ERROR: in ProtistNCM, NaN/Inf in protC in segment:', iseg)
+                    if (.not. ieee_is_finite(Cfix))  call write_warning('ERROR: in ProtistNCM, NaN/Inf in Cfix in segment:', iseg)
+                    if (.not. ieee_is_finite(totR))  call write_warning('ERROR: in ProtistNCM, NaN/Inf in totR in segment:', iseg)
+                    if (.not. ieee_is_finite(mrt))   call write_warning('ERROR: in ProtistNCM, NaN/Inf in mrt in segment:', iseg)
+                    if (.not. ieee_is_finite(NC))    call write_warning('ERROR: in ProtistNCM, NaN/Inf in NC in segment:', iseg)
+                    if (.not. ieee_is_finite(PC))    call write_warning('ERROR: in ProtistNCM, NaN/Inf in PC in segment:', iseg)
+                    if (.not. ieee_is_finite(ChlC))  call write_warning('ERROR: in ProtistNCM, NaN/Inf in ChlC in segment:', iseg)
+                    if (.not. ieee_is_finite(ingC))  call write_warning('ERROR: in ProtistNCM, NaN/Inf in ingC in segment:', iseg)
 
                 enddo speciesLoop ! end loop over species
 

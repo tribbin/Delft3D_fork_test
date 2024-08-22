@@ -379,14 +379,14 @@ contains
                     fl (spInc + 21) = dAutChl
                     fl (spInc + 22) = dDetChl
 
-                    if (ieee_is_nan(protC)) call write_warning( 'ERROR: in ProtistDiat, NaN in protC in segment:', iseg )
-                    if (ieee_is_nan(Cfix))  call write_warning( 'ERROR: in ProtistDiat, NaN in Cfix in segment:', iseg )
-                    if (ieee_is_nan(totR))  call write_warning( 'ERROR: in ProtistDiat, NaN in totR in segment:', iseg )
-                    if (ieee_is_nan(mrt))   call write_warning( 'ERROR: in ProtistDiat, NaN in mrt in segment:', iseg )
-                    if (ieee_is_nan(NC))    call write_warning( 'ERROR: in ProtistDiat, NaN in NC in segment:', iseg )
-                    if (ieee_is_nan(PC))    call write_warning( 'ERROR: in ProtistDiat, NaN in PC in segment:', iseg )
-                    if (ieee_is_nan(ChlC))  call write_warning( 'ERROR: in ProtistDiat, NaN in ChlC in segment:', iseg )
-                    if (ieee_is_nan(SC))    call write_warning( 'ERROR: in ProtistDiat, NaN in SC in segment:', iseg )
+                    if (.not. ieee_is_finite(protC)) call write_warning('ERROR: in ProtistDiat, NaN/Inf in protC in segment:', iseg)
+                    if (.not. ieee_is_finite(Cfix))  call write_warning('ERROR: in ProtistDiat, NaN/Inf in Cfix in segment:', iseg)
+                    if (.not. ieee_is_finite(totR))  call write_warning('ERROR: in ProtistDiat, NaN/Inf in totR in segment:', iseg)
+                    if (.not. ieee_is_finite(mrt))   call write_warning('ERROR: in ProtistDiat, NaN/Inf in mrt in segment:', iseg)
+                    if (.not. ieee_is_finite(NC))    call write_warning('ERROR: in ProtistDiat, NaN/Inf in NC in segment:', iseg)
+                    if (.not. ieee_is_finite(PC))    call write_warning('ERROR: in ProtistDiat, NaN/Inf in PC in segment:', iseg)
+                    if (.not. ieee_is_finite(ChlC))  call write_warning('ERROR: in ProtistDiat, NaN/Inf in ChlC in segment:', iseg)
+                    if (.not. ieee_is_finite(SC))    call write_warning('ERROR: in ProtistDiat, NaN/Inf in SC in segment:', iseg)
 
                 enddo speciesLoop ! end loop over species
 

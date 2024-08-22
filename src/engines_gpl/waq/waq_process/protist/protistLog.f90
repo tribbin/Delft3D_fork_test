@@ -49,7 +49,7 @@ contains
             call write_log_message( string_out )
 
             if ( message_counter == max_counter ) then
-                call write_log_message( "Maximum number of warnings from PROTIST reached" )
+                call write_log_message( "Maximum number of messages from PROTIST reached" )
             endif
         endif
     end subroutine write_warning
