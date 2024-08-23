@@ -41,7 +41,7 @@ add_library(${fortrangis_library_name} ${fortrangis_sources})
 target_include_directories(${fortrangis_library_name} PRIVATE ${src_path}/include)
 
 # Add dependencies
-target_link_libraries(${fortrangis_library_name} PRIVATE ${fortranc_library_name})
+target_link_libraries(${fortrangis_library_name} PRIVATE ${fortranc_library_name} no_compiler_warnings)
 
 # Add dependencies of underlying 3rd party libraries
 # Use target_link_libraries with INTERFACE to propagate all these dependencies
