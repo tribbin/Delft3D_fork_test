@@ -33,15 +33,13 @@ contains
 
         ! Close all open file_unit_list files
         do i = 1, num_files
-            write(88,*) i, file_unit_list(i)
-            inquire (unit = file_unit_list(i), opened = unitop)
-            if (unitop .and. file_unit_list(i) /= 88) then
-                close (unit = file_unit_list(i))
+            if (file_unit_list(i) /= -1) then
+                inquire (unit = file_unit_list(i), opened = unitop)
+                if (unitop) then
+                    close (unit = file_unit_list(i))
+                end if
             end if
         end do
-
-        write(88,*) 'Done', num_files
-        write(88,*) file_unit_list(1:num_files)
 
         if (timon) then
             call timstop(ithndl)
