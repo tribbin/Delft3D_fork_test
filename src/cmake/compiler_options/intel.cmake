@@ -2,28 +2,6 @@
 enable_language (Fortran)
 set(src_root_dir ${CMAKE_SOURCE_DIR}/..)
 
-add_library(all_compiler_warnings INTERFACE)
-set(windows_all_warning_flags /stand /warn:all)
-set(linux_all_warning_flags "SHELL:-stand" "SHELL:-warn all")
-target_compile_options(all_compiler_warnings INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:$<IF:$<BOOL:${WIN32}>,${windows_all_warning_flags},${linux_all_warning_flags}>>")
-
-add_library(compiler_warnings_as_errors INTERFACE)
-set(windows_warning_error_flag /warn:errors /warn:stderrors)
-set(linux_warning_error_flag "SHELL:-warn errors" "SHELL:-warn stderrors")
-target_compile_options(compiler_warnings_as_errors INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:$<IF:$<BOOL:${WIN32}>,${windows_warning_error_flag},${linux_warning_error_flag}>>")
-
-add_library(limit_compiler_warnings INTERFACE)
-# Disable warning 5462, global name too long. The compiler limit of 90 characters is too restrictive, see https://community.intel.com/t5/Intel-Fortran-Compiler/Many-quot-Global-name-too-long-quot-warnings/td-p/1505843
-# Disable warning 5268, allow text longer than 132 characters
-set(windows_disabled_warning_flags /Qdiag-disable:5462 /Qdiag-disable:5268)
-set(linux_disabled_warning_flags "SHELL:-diag-disable 5462" "SHELL:-diag-disable 5268")
-target_compile_options(limit_compiler_warnings INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:$<IF:$<BOOL:${WIN32}>,${windows_disabled_warning_flags},${linux_disabled_warning_flags}>>")
-
-add_library(no_compiler_warnings INTERFACE)
-set(windows_no_warning_flags /warn:none)
-set(linux_no_warning_flags "SHELL:-warn none")
-target_compile_options(no_compiler_warnings INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:$<IF:$<BOOL:${WIN32}>,${windows_no_warning_flags},${linux_no_warning_flags}>>")
-
 if (WIN32)
     # Set global Fortran compiler flags that apply for each Fortran project
     # Disable diagnostic indicating that ifort is deprecated (10448)
@@ -83,12 +61,18 @@ if (UNIX)
     # On Linux preprocessing is on by default, but the flag is inserted for
     # at least one C file as well (netCDF). Use a neutral flag to avoid problems
     # Disable diagnostic indicating that ifort is deprecated (10448)
-    set(CMAKE_CXX_FLAGS_RELEASE                  "-O2 -fPIC")
-    set(CMAKE_C_FLAGS_RELEASE                    "-O2 -fPIC")
-    set(CMAKE_CXX_FLAGS_DEBUG                    "-g -O0 -fPIC")
-    set(CMAKE_C_FLAGS_DEBUG                      "-g -O0 -fPIC")
-    set(CMAKE_Fortran_FLAGS_RELEASE              "-O2 -fPIC -diag-disable 10448")
-    set(CMAKE_Fortran_FLAGS_DEBUG                "-g -O0 -fPIC -diag-disable 10448")
+    set(CMAKE_CXX_FLAGS                          "-fPIC")
+    set(CMAKE_CXX_FLAGS_DEBUG                    "-g -O0")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO           "-g -O2")
+    set(CMAKE_CXX_FLAGS_RELEASE                  "-O2")
+    set(CMAKE_C_FLAGS                            "-fPIC")
+    set(CMAKE_C_FLAGS_DEBUG                      "-g -O0")
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO             "-g -O2")
+    set(CMAKE_C_FLAGS_RELEASE                    "-O2")
+    set(CMAKE_Fortran_FLAGS                      "-fPIC -diag-disable 10448")
+    set(CMAKE_Fortran_FLAGS_RELEASE              "-O2")
+    set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO       "-g -O2")
+    set(CMAKE_Fortran_FLAGS_DEBUG                "-g -O0")
     set(fortran_standard_flag                    "-std")
 
     set(cpp_compiler_flags                       "-std=c++17")

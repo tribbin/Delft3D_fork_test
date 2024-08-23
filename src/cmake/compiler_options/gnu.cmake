@@ -6,22 +6,6 @@ if (WIN32)
     message(FATAL_ERROR "GNU compilers are not supported on Windows. CMake will exit.")
 endif(WIN32)
 
-add_library(all_compiler_warnings INTERFACE)
-set(all_warning_flags "-Wall" "-pedantic")
-target_compile_options(all_compiler_warnings INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:${all_warning_flags}>")
-
-add_library(compiler_warnings_as_errors INTERFACE)
-set(warning_error_flag "-Werror")
-target_compile_options(compiler_warnings_as_errors INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:${warning_error_flag}>")
-
-add_library(limit_compiler_warnings INTERFACE)
-set(disabled_warning_flags "")
-target_compile_options(limit_compiler_warnings INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:${disabled_warning_flags}>")
-
-add_library(no_compiler_warnings INTERFACE)
-set(no_warning_flags "-w")
-target_compile_options(no_compiler_warnings INTERFACE "$<$<COMPILE_LANGUAGE:Fortran>:${no_warning_flags}>")
-
 if (UNIX)
     # Set optional flags:
     message(STATUS "Setting Fortran compiler flags in Unix")

@@ -30,3 +30,5 @@ include_directories(${source_path}/include)
 # Recursively look for CMakeLists.txt in subdirs.
 add_subdirectory("${source_path}/include" include)
 add_subdirectory("${source_path}/libmetis" libmetis)
+
+target_link_libraries(metis PRIVATE no_compiler_warnings)

@@ -62,7 +62,7 @@ if(UNIX)
     # these calls create special `PkgConfig::<MODULE>` variables
     pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
 
-    target_link_libraries(${executable_name}
+    target_link_libraries(${executable_name} PRIVATE
          PkgConfig::NETCDF
          netcdff)
 
