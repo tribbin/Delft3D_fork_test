@@ -22,6 +22,7 @@ for dir in */; do
 			-e PATH=$PATH \
 			-e LD_LIBRARY_PATH=$LD_LIBRARY_PATH \
 			-e FI_PROVIDER_PATH=/opt/intel/mpi/libfabric/lib/prov \
+			-e I_MPI_FABRICS=shm \
 			--shm-size 8G \
 			$IMAGE
 		echo "##teamcity[testFinished name='$dir']"
