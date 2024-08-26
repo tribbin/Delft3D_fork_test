@@ -4,6 +4,7 @@ Copyright (C)  Stichting Deltares, 2024
 """
 
 import os
+import re
 import sys
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
@@ -190,7 +191,7 @@ class NetcdfComparer(IComparer):
             for parameter in parameters:
                 found_parameter_in_file = False
                 for variable_name in left_nc_root.variables.keys():
-                    if variable_name != parameter.name:
+                    if re.match(f"^{parameter.name}$", variable_name) is None:
                         continue
                     found_parameter_in_file = True
                     result = self.compare_nc_variable(
