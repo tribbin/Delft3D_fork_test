@@ -92,7 +92,7 @@ contains
         integer(kind = int_wp) :: ito   !< From- and to cell indices
         integer(kind = int_wp) :: iseg  !< Current segment
         integer(kind = int_wp) :: iq    !< Current edge
-
+        real(kind = real_wp)   :: tmp_real_wp 
         integer(kind = int_wp) :: ithandl = 0
         if (timon) call timstrt ("dlwqm5", ithandl)
 
@@ -178,11 +178,13 @@ contains
 
             if (ifrom > 0) then
                 if (ito  > 0) then
-                    maxi(ifrom) = max(maxi(ifrom), concvt(ito))
-                    mini(ifrom) = min(mini(ifrom), concvt(ito))
+                    tmp_real_wp = concvt(ito)
+                    maxi(ifrom) = max(maxi(ifrom), tmp_real_wp)
+                    mini(ifrom) = min(mini(ifrom), tmp_real_wp)
                 else
-                    maxi(ifrom) = max(maxi(ifrom), bound(isys, -ito))
-                    mini(ifrom) = min(mini(ifrom), bound(isys, -ito))
+                    tmp_real_wp = bound(isys, -ito)
+                    maxi(ifrom) = max(maxi(ifrom), tmp_real_wp)
+                    mini(ifrom) = min(mini(ifrom), tmp_real_wp)
                 end if
 
                 l1(ifrom) = l1(ifrom) + real(idt) * max(0.0, -flux(iq))
@@ -191,11 +193,13 @@ contains
 
             if (ito   > 0) then
                 if (ifrom > 0) then
-                    maxi(ito) = max(maxi(ito), concvt(ifrom))
-                    mini(ito) = min(mini(ito), concvt(ifrom))
+                    tmp_real_wp = concvt(ifrom)
+                    maxi(ito) = max(maxi(ito), tmp_real_wp)
+                    mini(ito) = min(mini(ito), tmp_real_wp)
                 else
-                    maxi(ito) = max(maxi(ito), bound(isys, -ifrom))
-                    mini(ito) = min(mini(ito), bound(isys, -ifrom))
+                    tmp_real_wp = bound(isys, -ifrom)
+                    maxi(ito) = max(maxi(ito), tmp_real_wp)
+                    mini(ito) = min(mini(ito), tmp_real_wp)
                 end if
 
                 l1(ito) = l1(ito) + real(idt) * max(0.0, flux(iq))

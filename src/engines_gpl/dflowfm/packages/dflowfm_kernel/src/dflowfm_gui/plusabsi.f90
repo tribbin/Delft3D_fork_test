@@ -41,7 +41,7 @@
          double precision XK(NUMK), YK(NUMK), ZK(NUMK), XI, YI, ZI
          integer KN(3, NUML)
          integer, intent(inout) :: kndefault !< Default uniform value (e.g. kn3typ), will be changed too at call site when user changes it in the dialog.
-         character * 40 OPTION(MAXOP), exp(MAXOP)
+         character(len=40) OPTION(MAXOP), exp(MAXOP)
 
          double precision :: af
          integer :: ia

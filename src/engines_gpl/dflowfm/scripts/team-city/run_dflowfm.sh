@@ -52,49 +52,8 @@ function set_omp_threads {
     fi
 }
 
-
-
-while [[ $# -ge 1 ]]
-do
-key="$1"
-shift
-case $key in
-    -h|--help)
-    print_usage_info
-    ;;
-    --)
-    dfmoptions=$*
-    break       # exit loop, all remaining options to dflowfm executable
-    ;;
-    *)
-    dfmoptions="$key $*"
-    break       # exit loop, $key+all remaining options to dflowfm executable
-    ;;
-esac
-done
-
-scriptdirname=`readlink \-f \$0`
-scriptdir=`dirname $scriptdirname`
-export D3D_HOME=$scriptdir/..
-export LD_LIBRARY_PATH=$D3D_HOME/lib:$LD_LIBRARY_PATH
-
-
-
-# On Deltares systems only:
-if [ -f "/opt/apps/deltares/.nl" ]; then
-    # Try the following module load
-    module load intelmpi/21.2.0 &>/dev/null
-
-    # If not defined yet: Define I_MPI_FABRICS and FI_PROVIDER with proper values for Deltares systems
-    [ ! -z "$I_MPI_FABRICS" ] && echo "I_MPI_FABRICS is already defined" || export I_MPI_FABRICS=shm
-    [ ! -z "$FI_PROVIDER" ] && echo "FI_PROVIDER is already defined" || export FI_PROVIDER=tcp
-fi
-
-
-
-#
 # Analyse the options
-#
+
 while [[ $# -ge 1 ]]
 do
 key="$1"
@@ -117,16 +76,30 @@ case $key in
         userspefile=none
     fi
     ;;
-    --)
-    dfmoptions=$*
-    break       # exit loop, all remaining options to dflowfm executable
-    ;;
     *)
-    dfmoptions="$key $*"
-    break       # exit loop, $key+all remaining options to dflowfm executable
+    dfmoptions="$dfmoptions $key"
     ;;
 esac
 done
+
+scriptdirname=`readlink \-f \$0`
+scriptdir=`dirname $scriptdirname`
+export D3D_HOME=$scriptdir/..
+export LD_LIBRARY_PATH=$D3D_HOME/lib:$LD_LIBRARY_PATH
+
+
+# On Deltares systems only:
+if [ -f "/opt/apps/deltares/.nl" ]; then
+    # Try the following module load
+    module load intelmpi/21.2.0 &>/dev/null
+
+    # If not defined yet: Define I_MPI_FABRICS and FI_PROVIDER with proper values for Deltares systems
+    [ ! -z "$I_MPI_FABRICS" ] && echo "I_MPI_FABRICS is already defined" || export I_MPI_FABRICS=shm
+    [ ! -z "$FI_PROVIDER" ] && echo "FI_PROVIDER is already defined" || export FI_PROVIDER=tcp
+fi
+
+
+# Fill in default options
 
 if [ ! "$userprocfile" == "" ]
     then

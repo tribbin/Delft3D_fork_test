@@ -59,7 +59,7 @@
       integer :: numparactual
       integer :: jins_old ! netcell administration out of date if jins changes
       integer :: iselect, minp
-      character * 128 select(3)
+      character(len=128) select(3)
 
       integer, parameter :: NUMPAR = 22, NUMFLD = 2 * NUMPAR
       integer IX(NUMFLD), IY(NUMFLD), IS(NUMFLD), IT(NUMFLD)

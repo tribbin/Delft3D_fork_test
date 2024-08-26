@@ -3382,7 +3382,7 @@ contains
          dtab, rlslat, rlslon, rlat, rlong, potent
       double precision :: elmnts(6), can(maxdat), san(maxdat)
       double precision :: cansum(0:3, 2:3), sansum(0:3, 2:3)
-      character * 80 record
+      character(len=80) record
       logical permnt
       double precision, save :: FACTORIAL(0:6)
 

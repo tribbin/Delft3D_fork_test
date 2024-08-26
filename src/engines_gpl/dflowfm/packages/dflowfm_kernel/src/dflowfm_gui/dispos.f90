@@ -40,7 +40,7 @@
          common / HOWTOVIEW / JVIEW, JAV, XYZ ! 1,2,3 OF 4
          common / LOCATORA / XLC, YLC, XA, YA, JMOUSE, JASHOW
          common / dispfor / xyform, zform, disform
-         character * 7 xyform, zform, disform
+         character(len=7) xyform, zform, disform
          character POSITI * 25
 
          POSITI = 'X,Y:         ,         '

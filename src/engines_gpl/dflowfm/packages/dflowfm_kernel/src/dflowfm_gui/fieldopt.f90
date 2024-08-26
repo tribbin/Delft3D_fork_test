@@ -36,7 +36,7 @@
          integer :: nfld
          integer, parameter :: MAXOP = 64
          integer :: nwhat2, maxopt, i
-         character * 40 OPTION(MAXOP), exp(MAXOP), FIELDOP
+         character(len=40) OPTION(MAXOP), exp(MAXOP), FIELDOP
          exp(1) = 'MENU 10                                 '
          exp(2) = 'GRID EDIT OPTIONS                       '
          MAXOPT = 22

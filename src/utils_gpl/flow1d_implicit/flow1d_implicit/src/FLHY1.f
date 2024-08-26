@@ -163,12 +163,12 @@ c
       integer      errr  ,i ,j ,ie  ,nrerr, igr ,nsk ,nlc ,lastcod
       integer      usrord(1),
      &             uindex(3)
-      character*16 grnamm          ,grnamh          ,grnamd         ,
+      character(len=16) grnamm, grnamh, grnamd,
      &             name
-      character*16 nameel(nentri),quanel(nentri),unitel(nentri),
+      character(len=16) nameel(nentri),quanel(nentri),unitel(nentri),
      &             nameac(nentri+1)
-      character*64 descel(nentri)
-      character*8  txt
+      character(len=64) descel(nentri)
+      character(len=8)  txt
       logical      llog   ,new   ,newuit
 c
 c     Declaration of external functions

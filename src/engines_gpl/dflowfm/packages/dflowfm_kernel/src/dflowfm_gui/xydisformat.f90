@@ -60,7 +60,7 @@
          common / DEPMAX / VMAX, VMIN, DV, VAL(256), NCOLS(256), NV, NIS, NIE, JAAUTO
 
          common / DISPFOR / XYFORM, ZFORM, DISFORM
-         character * 7 XYFORM, ZFORM, DISFORM
+         character(len=7) XYFORM, ZFORM, DISFORM
 
          common / LOCATORA / XLC, YLC, XA, YA, JMOUSE, JASHOW
 

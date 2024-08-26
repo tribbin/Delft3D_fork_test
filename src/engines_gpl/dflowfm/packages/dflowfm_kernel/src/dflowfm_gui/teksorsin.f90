@@ -39,7 +39,7 @@ subroutine teksorsin() ! teksrc
    common / DRAWTHIS / ndraw(50)
    integer :: ndraw
    integer :: n, k, n2, ncol
-   character*40 :: tex
+   character(len=40) :: tex
    double precision :: xp, yp
    logical inview
 

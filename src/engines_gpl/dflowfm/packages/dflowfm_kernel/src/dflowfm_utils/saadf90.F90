@@ -3028,7 +3028,7 @@ end function hfun
 
 function betfun(side, x, y, z)
    double precision :: betfun, x, y, z
-   character * 2 side
+   character(len=2) side
    no_warning_unused_dummy_argument(side)
    no_warning_unused_dummy_argument(x)
    no_warning_unused_dummy_argument(y)
@@ -3039,7 +3039,7 @@ end function betfun
 
 function gamfun(side, x, y, z)
    double precision :: gamfun, x, y, z
-   character * 2 side
+   character(len=2) side
    no_warning_unused_dummy_argument(x)
    no_warning_unused_dummy_argument(y)
    no_warning_unused_dummy_argument(z)
@@ -7874,7 +7874,7 @@ subroutine fdaddbc(nx, ny, nz, a, ja, ia, iau, rhs, al, h)
 !
 !     local variables
 !
-   character * 2 side
+   character(len=2) side
    integer i, j, k, kx, ky, kz, node, nbr, ly, uy, lx, ux
    double precision :: coeff, ctr, hhalf, x, y, z
    double precision :: afun, bfun, cfun, dfun, efun, ffun, gfun, hfun

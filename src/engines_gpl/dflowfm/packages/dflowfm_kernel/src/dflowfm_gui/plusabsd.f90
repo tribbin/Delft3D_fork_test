@@ -37,7 +37,7 @@
 
          implicit none
          integer, parameter :: MAXOP = 64
-         character*40 :: OPTION(MAXOP), exp(MAXOP)
+         character(len=40) :: OPTION(MAXOP), exp(MAXOP)
          integer :: NUMK, KEY
          double precision :: XK(NUMK), YK(NUMK), ZK(NUMK), EA(NUMK)
          double precision :: XI, YI, ZI, DA, AF, RD

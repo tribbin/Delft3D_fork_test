@@ -122,7 +122,7 @@ module m_readstructures
       implicit none
       
       type(t_network), intent(inout) :: network              !< Network pointer
-      character*(*), intent(in)      :: structureFile        !< Name of the structure file
+      character(len=*), intent(in)      :: structureFile        !< Name of the structure file
 
       logical                                                :: success, success1
       type(tree_data), pointer                               :: md_ptr 

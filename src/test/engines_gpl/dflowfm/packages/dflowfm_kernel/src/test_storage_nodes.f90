@@ -53,7 +53,6 @@ subroutine test_storage_nodes_nodeID_table
     !
     ! Locals
     integer, parameter                           :: N_StorageNodes = 1
-    integer                                      :: i
     integer                                      :: istat
     double precision                             :: reftable(3,2)
     character(len=40), dimension(N_StorageNodes) :: refids

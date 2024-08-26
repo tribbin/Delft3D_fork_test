@@ -126,11 +126,11 @@ c
       integer       nelwqi, mcell, i, nrerr
       parameter     (nelwqi=9)
       integer       ord(5), uindex(3), ibuf(1),itim0(2)
-      character*16  elwqi(nelwqi)
-      character*16  grnamd, grnamw
-      character*16  namdes(2)
-      character*64  desdes(2)
-      character*8   txt
+      character(len=16)  elwqi(nelwqi)
+      character(len=16)  grnamd, grnamw
+      character(len=16)  namdes(2)
+      character(len=64)  desdes(2)
+      character(len=8)   txt
       double  precision  dtag
 c
 c     Include sobek error code file

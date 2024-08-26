@@ -163,8 +163,8 @@
          SL = TI - TIO
          SM = TJ - TJO
 
-         TI = max(0.0, min(TIMX, TI))
-         TJ = max(0.0, min(TJMX, TJ))
+         TI = max(0.0d0, min(TIMX, TI))
+         TJ = max(0.0d0, min(TJMX, TJ))
 
          call SPLINE(XI, NUMPI, XI2)
          call SPLINE(YI, NUMPI, YI2)
@@ -184,10 +184,10 @@
          if (SM > 0. .and. SM < 1.) then
             TJJ = 0.5 * TJJ
          end if
-         TI1 = max(0.0, min(TIMX, TI - TII / 2))
-         TI2 = max(0.0, min(TIMX, TI + TII / 2))
-         TJ1 = max(0.0, min(TJMX, TJ - TJJ / 2))
-         TJ2 = max(0.0, min(TJMX, TJ + TJJ / 2))
+         TI1 = max(0.0d0, min(TIMX, TI - TII / 2))
+         TI2 = max(0.0d0, min(TIMX, TI + TII / 2))
+         TJ1 = max(0.0d0, min(TJMX, TJ - TJJ / 2))
+         TJ2 = max(0.0d0, min(TJMX, TJ + TJJ / 2))
          TII = TI2 - TI1
          TJJ = TJ2 - TJ1
 
@@ -225,8 +225,8 @@
             TI = TI1 + SL * TII
             TJ = TJ1 + SM * TJJ
 
-            TI = max(0.0, min(TIMX, TI))
-            TJ = max(0.0, min(TJMX, TJ))
+            TI = max(0.0d0, min(TIMX, TI))
+            TJ = max(0.0d0, min(TJMX, TJ))
 
             if (JACROS == 1) then !ZOLANG IE NOG KRUIST WORDT UITPRODUCT BEPAALD
                NUMCRO = 1

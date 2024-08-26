@@ -130,7 +130,7 @@ module test_time_module
       subroutine test_date2mjd2date()
          implicit none
          logical       :: success_
-         real(kind=hp) :: expected_mjd, refdate_mjd, second
+         real(kind=hp) :: expected_mjd, refdate_mjd
          integer       :: refdate, returndate, returntime
          
          refdate = 20221101

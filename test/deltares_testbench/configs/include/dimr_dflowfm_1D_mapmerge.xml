@@ -4,8 +4,8 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>-- --partition:ndomains=2:contiguous=0</argument>
             <argument>FlowFM_slope1Ddrop_true.mdu</argument>
+            <argument>--partition:ndomains=2:contiguous=0</argument>
           </arguments>
         </program>
         <program ref="dimr2" seq="2">
@@ -90,9 +90,9 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>-- --partition:ugrid=1:icgsolver=6</argument>
-            <argument>manual_part_np3_multipleholes.pol</argument>
             <argument>dflow1d.mdu</argument>
+            <argument>--partition:ugrid=1:icgsolver=6</argument>
+            <argument>manual_part_np3_multipleholes.pol</argument>
           </arguments>
         </program>
         <program ref="dimr" seq="2">
@@ -166,8 +166,8 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>-- --partition:ndomains=2:contiguous=0</argument>
             <argument>tst.mdu</argument>
+            <argument>--partition:ndomains=2:contiguous=0</argument>
           </arguments>
         </program>
         <program ref="dimr2" seq="2">
@@ -203,8 +203,8 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>--partition:ugrid=1:ndomains=4:contiguous=0</argument>
             <argument>planar1d.mdu</argument>
+            <argument>--partition:ugrid=1:ndomains=4:contiguous=0</argument>
           </arguments>
         </program>
         <program ref="dimr4" seq="2">
@@ -242,8 +242,8 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>-- --partition:ndomains=2:contiguous=0</argument>
             <argument>1D2D.mdu</argument>
+            <argument>--partition:ndomains=2:contiguous=0</argument>
           </arguments>
         </program>
         <program ref="dimr2" seq="2">
@@ -280,9 +280,9 @@
       <programs>
         <program ref="dflowfm" seq="1">
           <arguments>
-            <argument>-- --partition:ugrid=1:icgsolver=6</argument>
-            <argument>part_np2_multipleholes_R_1.pol</argument>
             <argument>FM_model.mdu</argument>
+            <argument>part_np2_multipleholes_R_1.pol</argument>
+            <argument>--partition:ugrid=1:icgsolver=6</argument>
           </arguments>
         </program>
         <program ref="dimr2" seq="2">

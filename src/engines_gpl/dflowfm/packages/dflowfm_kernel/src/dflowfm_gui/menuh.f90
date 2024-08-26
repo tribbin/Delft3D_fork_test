@@ -45,8 +45,8 @@
          integer :: maxopt
          integer :: nlevel
          parameter(MAXOP=20)
-         character * 10 OPTION(MAXOP)
-         character WRDKEY * 40
+         character(len=10) OPTION(MAXOP)
+         character(len=40) WRDKEY
          common / HELPNOW / WRDKEY, NLEVEL
 !
 !     Keuzemenu horizontaal

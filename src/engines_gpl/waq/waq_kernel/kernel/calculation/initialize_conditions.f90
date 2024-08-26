@@ -97,9 +97,9 @@ contains
 
         REAL(kind = real_wp) :: RDUMMY(1)
         LOGICAL       LDUMMY, UPDATR
-        CHARACTER*200 FINAM
+        CHARACTER(len=200) FINAM
         INTEGER(kind = int_wp) :: SENDBUF(3)
-        CHARACTER*4   cext                          ! inital conditions file extention
+        CHARACTER(len=4)   cext                          ! inital conditions file extention
 
         INTEGER(kind = int_wp) :: IERRIO, new_lun
 
@@ -579,13 +579,13 @@ contains
                 IWASTE(*), NRFTOT(*), NRHARM(*), file_unit_list   (*), &
                 IKNMRK(*), INWTYP(*)
         INTEGER(kind = int_wp) :: GRDSEG(num_cells + num_cells_bottom, num_grids)
-        CHARACTER*40 MODID (4), BNDNAM(*), WSTNAM(*)
-        CHARACTER*20 SYSID (*), DUMPID(*), BNDID (*), BNDTYP(*), &
+        CHARACTER(len=40) MODID (4), BNDNAM(*), WSTNAM(*)
+        CHARACTER(len=20) SYSID (*), DUMPID(*), BNDID (*), BNDTYP(*), &
                 WASTID(*), WSTTYP(*), CONAME(*), PANAME(*), &
                 FUNAME(*), SFNAME(*), DINAME(*), VENAME(*), &
                 DANAM (*), RANAM (*)
         real(kind = real_wp) :: DISP  (*), ALENG (*), CONST (*), PARAM (*)
-        CHARACTER*40  FILLER
+        CHARACTER(len=40)  FILLER
         type(GridPointerColl), intent(inout) :: GridPs     !< definitions of the grids
         type(delwaq_data), intent(inout) :: dlwqd      !< derived type for persistent storage
         integer(kind = int_wp) :: dmpbal(*)  !< indicates if dump area is included in the balance
@@ -826,8 +826,8 @@ contains
                 proref(*), prvpnt(*)
         REAL(kind = real_wp) :: DEFAUL(*), STOCHI(*), DSTO(*), &
                 VSTO(*)
-        CHARACTER*(*) LCH
-        CHARACTER*10  PRONAM(*)
+        CHARACTER(len=*) LCH
+        CHARACTER(len=10) PRONAM(*)
         !
         !     Local declarations
         INTEGER(kind = int_wp) :: NIPMSD, NPROCD, NOLOCD, NFLUXD, NODEFD, &
@@ -1090,11 +1090,11 @@ contains
         integer(kind = int_wp) :: lunwro, lurep, num_output_files, num_output_variables_extra, output_buffer_len, num_substances_transported, &
                 ierr, num_substances_total
         integer(kind = int_wp) :: ioutps(7, *), iopoin(*), file_unit_list(*)
-        character*(*) lch, file_name_list(*)
-        character*20  ounam(*)
-        character*100 ousnm(*), sysnm(*)
-        character*40  ouuni(*), syuni(*)
-        character*60  oudsc(*), sydsc(*)
+        character(len=*) lch, file_name_list(*)
+        character(len=20)  ounam(*)
+        character(len=100) ousnm(*), sysnm(*)
+        character(len=40)  ouuni(*), syuni(*)
+        character(len=60)  oudsc(*), sydsc(*)
 
         ! local declarations
         integer(kind = int_wp), parameter :: luoff = 18

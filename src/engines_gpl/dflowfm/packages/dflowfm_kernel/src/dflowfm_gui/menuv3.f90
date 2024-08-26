@@ -45,7 +45,7 @@
          integer :: nstart
          integer :: nwhat
          parameter(MAXOP=64)
-         character * 40 OPTION(MAXOP), WRDKEY
+         character(len=40) OPTION(MAXOP), WRDKEY
          common / HELPNOW / WRDKEY, NLEVEL
 !     Keuzemenu verticaal
 !

@@ -144,7 +144,7 @@
 
       implicit none
       
-      double precision :: x, y, z, rc, hrc
+      double precision :: x, y, z, hrc
       integer :: met, m, ndraw, ncol
       
       logical, external :: inview

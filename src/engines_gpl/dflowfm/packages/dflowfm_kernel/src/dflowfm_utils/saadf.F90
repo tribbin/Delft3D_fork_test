@@ -2018,7 +2018,7 @@ subroutine errpr(n, y, y1, iout, msg)
 
    integer, intent(in) :: n, iout
    real(dp), intent(in) :: y(*), y1(*)
-   character*6, intent(in) :: msg
+   character(len=6), intent(in) :: msg
 
    real(dp) :: t
    integer :: k

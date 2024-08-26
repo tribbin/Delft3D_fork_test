@@ -38,7 +38,7 @@
       integer :: NUM, NWHAT
       integer :: maxopt
       integer, parameter :: MAXOP = 64
-      character * 40 OPTION(MAXOP), exp(MAXOP)
+      character(len=40) OPTION(MAXOP), exp(MAXOP)
       integer :: MODE, NFLD, NFO
       integer :: jdemo
       common / MODENOW / MODE, NFLD

@@ -646,7 +646,7 @@ contains
       use m_transport, only: itemp, constituents
 
       integer :: n, NN, K, kb, kt
-      character*40 :: tex
+      character(len=40) :: tex
       double precision :: znod, temb, temt
       logical inview
 
