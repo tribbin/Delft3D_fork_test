@@ -38,7 +38,6 @@
         <!--
         The order is important. Start with the following programs:
             command_prompt
-            svn
             mpi
         -->
         <program name="command_prompt">
@@ -46,9 +45,6 @@
             <arguments>
                 <argument>/C</argument>
             </arguments>
-        </program>
-        <program name="svn">
-            <path>thirdparty\svn\win64\svn.exe</path>
         </program>
         <program name="dimr" ignoreStandardError="true" ignoreReturnValue="true" logOutputToFile="true" programStringRemoveQuotes="true">
             <location ref="reference_engines" type="reference">
@@ -104,10 +100,6 @@
             <maxRunTime>60.0</maxRunTime> <!-- seconds -->
         </testCase>
         <testCase name="postproc">
-            <programs>
-                <program ref="dfmoutput">
-                </program>
-            </programs>
             <location ref="reference_results" type="reference">
                 <from>win64</from>
             </location>
@@ -118,6 +110,6 @@
         </testCase>
     </defaultTestCases>
 
-  <xi:include href="../include/dimr_dflowfm_parallel_win64.xml"/>
+  <xi:include href="../include/dimr_dflowfm_parallel.xml"/>
 
 </deltaresTestbench_v3>

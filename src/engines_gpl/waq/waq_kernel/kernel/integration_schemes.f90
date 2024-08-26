@@ -89,7 +89,7 @@ contains
 
         ! input structure for boot-file
         integer(kind=int_wp), save :: file_unit_list(NUM_FILES)
-        character*(FILE_NAME_LEN), save :: file_name_list(NUM_FILES)
+        character(len=FILE_NAME_LEN), save :: file_name_list(NUM_FILES)
         integer(kind=int_wp), save :: filtype(NUM_FILES)
         character(:), allocatable, save :: runid
 
@@ -97,7 +97,7 @@ contains
         integer(kind=int_wp) :: idummy, ierr2
         real(kind=real_wp) :: rdummy
         character :: cdummy
-        character*2 :: c2
+        character(len=2) :: c2
 
         integer(kind=int_wp), save :: ithndl = 0
 

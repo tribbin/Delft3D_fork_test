@@ -684,7 +684,7 @@ end function ionc_add_global_attributes_dll
 ! Make functions pure so they can be used as input arguments.
 integer(c_int) pure function strlen(char_array)
  character(c_char), intent(in) :: char_array(MAXSTRLEN)
- integer :: inull, i
+ integer :: i
  strlen = 0
  do i = 1, size(char_array)
     if (char_array(i) .eq. C_NULL_CHAR) then
@@ -790,7 +790,7 @@ function ionc_write_1d_network_nodes_v1_dll(ioncid,networkid, c_nodesX, c_nodesY
    type(c_ptr),             intent(in)    :: c_nodesX, c_nodesY
    type(c_ptr),             intent(in)    :: c_ids, c_longnames
    double precision, pointer              :: nodesX(:), nodesY(:)
-   integer                                :: ierr, i
+   integer                                :: ierr
    character(kind=c_char, len=ug_idsLen),pointer               :: ids(:)
    character(kind=c_char, len=ug_idsLongNamesLen),pointer      :: longnames(:)
 
@@ -815,7 +815,7 @@ function ionc_put_1d_network_branches_v1_dll(ioncid,networkid, c_sourcenodeid, c
   double precision, pointer          :: branchlengths(:)
   character(kind=c_char, len=ug_idsLen),pointer               :: ids(:)
   character(kind=c_char, len=ug_idsLongNamesLen),pointer      :: longnames(:)
-  integer ::ierr,i
+  integer ::ierr
 
   call c_f_pointer(c_sourcenodeid, sourcenodeid, (/ nBranches /))
   call c_f_pointer(c_targetnodeid, targetnodeid, (/ nBranches /))
@@ -971,7 +971,7 @@ function ionc_read_1d_network_nodes_v1_dll(ioncid, networkid, c_nodesX, c_nodesY
   character(kind=c_char, len=ug_idsLen),pointer               :: ids(:)
   character(kind=c_char, len=ug_idsLongNamesLen),pointer      :: longnames(:)
 
-  integer                               :: ierr,i
+  integer                               :: ierr
 
   call c_f_pointer(c_nodesX, nodesX, (/ nNodes /))
   call c_f_pointer(c_nodesY, nodesY, (/ nNodes /))
@@ -990,7 +990,7 @@ function ionc_get_1d_network_branches_v1_dll(ioncid, networkid, c_sourcenodeid, 
   type(c_ptr),  intent(inout)           :: c_ids, c_longnames
   integer,pointer                       :: sourcenodeid(:), targetnodeid(:),nbranchgeometrypoints(:)
   double precision ,pointer             :: branchlengths(:)
-  integer                               :: ierr, i, nBranches
+  integer                               :: ierr, nBranches
   character(kind=c_char, len=ug_idsLen),pointer               :: ids(:)
   character(kind=c_char, len=ug_idsLongNamesLen),pointer      :: longnames(:)
 
@@ -1181,7 +1181,7 @@ function ionc_put_1d_mesh_discretisation_points_v2_dll(ioncid, meshid, c_branchi
   double precision,pointer            :: coordy(:)
   character(len=8)                    :: varnameids
   character(len=15)                   :: varnamelongnames
-  integer                             :: ierr,i
+  integer                             :: ierr
   character(kind=c_char, len=ug_idsLen),pointer               :: ids(:)
   character(kind=c_char, len=ug_idsLongNamesLen),pointer      :: longnames(:)
 
@@ -1454,7 +1454,7 @@ function ionc_put_mesh_contact_v1_dll(ioncid, contactsmesh, c_mesh1indexes, c_me
    type(c_ptr), intent(in)                                     :: c_mesh1indexes, c_mesh2indexes, c_contacttype
    type(c_ptr),  intent(in)                                    :: c_ids, c_longnames
    integer,pointer                                             :: mesh1indexes(:), mesh2indexes(:), contacttype(:)
-   integer                                                     :: ierr,i
+   integer                                                     :: ierr
    character(kind=c_char, len=ug_idsLen),pointer               :: ids(:)
    character(kind=c_char, len=ug_idsLongNamesLen),pointer      :: longnames(:)
 
@@ -1511,7 +1511,7 @@ function ionc_get_mesh_contact_v1_dll(ioncid, contactsmesh, c_mesh1indexes, c_me
    type(c_ptr), intent(inout)            :: c_mesh1indexes, c_mesh2indexes, c_contacttype
    integer,    pointer                   :: mesh1indexes(:), mesh2indexes(:), contacttype(:)
    type(c_ptr),  intent(inout)           :: c_ids, c_longnames
-   integer                               :: ierr, i
+   integer                               :: ierr
    character(kind=c_char, len=ug_idsLen),pointer               :: ids(:)
    character(kind=c_char, len=ug_idsLongNamesLen),pointer      :: longnames(:)
 
@@ -1731,7 +1731,7 @@ function ionc_get_meshgeom_dim_dll(ioncid, meshid, networkid, c_meshgeomdim) res
    integer, intent(in)                         :: meshid, networkid
    type(c_t_ug_meshgeomdim), intent(inout)     :: c_meshgeomdim
    type(t_ug_meshgeom)                         :: meshgeom
-   integer                                     :: ierr, startIndex
+   integer                                     :: ierr
 
    ierr = ionc_get_meshgeom(ioncid, meshid, networkid, meshgeom)
 

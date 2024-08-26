@@ -35,15 +35,15 @@ program waqpb_import
 
     include 'data_ff.inc'
 
-    character*1  :: c1
-    character*10 :: c10, c10b, c10a
-    character*20 :: c20
-    character*30 :: grp
-    character*50 :: c50
-    character*10 :: initialConfgId
-    character*50 :: initialConfgName
-    character*80 :: pdffil, procesnaam
-    character*255:: argument
+    character(len=1)  :: c1
+    character(len=10) :: c10, c10b, c10a
+    character(len=20) :: c20
+    character(len=30) :: grp
+    character(len=50) :: c50
+    character(len=10) :: initialConfgId
+    character(len=50) :: initialConfgName
+    character(len=80) :: pdffil, procesnaam
+    character(len=255):: argument
     real      :: value
     integer   :: jndex , naanta, iaanta, iproc , i     , ihulp , &
                 noffse, ihulp2, ihulp3, ihulp4, nprocl, &
@@ -84,9 +84,9 @@ program waqpb_import
 
     nitem = 0
     nfort = 0
-    num_processes_activated = 0
+    nproc = 0
     ninpu = 0
-    num_output_files = 0
+    noutp = 0
     noutf = 0
     nstoc = 0
     ndisp = 0
@@ -100,7 +100,7 @@ program waqpb_import
         call readdb(io_inp, io_mes)
         ! Store R1 in relational way
         ncnpr = 0
-        do iproc = 1,num_processes_activated
+        do iproc = 1,nproc
         do iconf = 1,nconf
             if ( conpro(iconf,iproc) ) then
                 ncnpr = ncnpr+1
@@ -111,9 +111,9 @@ program waqpb_import
         enddo
         ! Remove primary   table  P4
         ! Remove secondary tables R4 till R8
-        num_processes_activated = 0
+        nproc = 0
         ninpu = 0
-        num_output_files = 0
+        noutp = 0
         noutf = 0
         nstoc = 0
         ndisp = 0
@@ -167,13 +167,13 @@ program waqpb_import
             error stop
         endif
 
-        if ( num_processes_activated+1 > nprocm ) stop 'DIMENSION NPROCM'
+        if ( nproc+1 > nprocm ) stop 'DIMENSION NPROCM'
         call validate_names([c10a], io_mes) ! process Fortran name
-        num_processes_activated = num_processes_activated + 1
-        procid(num_processes_activated) = c10
-        procnm(num_processes_activated) = c50
-        procfo(num_processes_activated) = c10a
-        procco(num_processes_activated) = jndex
+        nproc = nproc + 1
+        procid(nproc) = c10
+        procnm(nproc) = c50
+        procfo(nproc) = c10a
+        procco(nproc) = jndex
 
         call upd_p3 ( c10a , newtab , io_mes )
 
@@ -203,7 +203,7 @@ program waqpb_import
                 stop 'DIMENSION NINPUM'
             endif
 
-            inpupr(ninpu) = procid(num_processes_activated)
+            inpupr(ninpu) = procid(nproc)
             inpuit(ninpu) = itemid(iitem)
             inpunm(ninpu) = iaanta
             inpudo(ninpu) = c1
@@ -250,7 +250,7 @@ program waqpb_import
                 stop 'DIMENSION NINPUM'
             endif
 
-            inpupr(ninpu) = procid(num_processes_activated)
+            inpupr(ninpu) = procid(nproc)
             inpuit(ninpu) = itemid(iitem)
             inpunm(ninpu) = iaanta + ihulp
             inpudo(ninpu) = c1
@@ -291,14 +291,14 @@ program waqpb_import
 
             value = -999.
             call upd_p2 ( c10, c50, value, 1, newtab, grp, io_mes, iitem, c20, .false. )
-            num_output_files = num_output_files + 1
-            if ( num_output_files > noutpm ) stop 'DIMENSION NOUTPM'
-            outppr(num_output_files) = procid(num_processes_activated)
-            outpit(num_output_files) = itemid(iitem)
-            outpnm(num_output_files) = iaanta
-            outpdo(num_output_files) = c1
+            noutp = noutp + 1
+            if ( noutp > noutpm ) stop 'DIMENSION NOUTPM'
+            outppr(noutp) = procid(nproc)
+            outpit(noutp) = itemid(iitem)
+            outpnm(noutp) = iaanta
+            outpdo(noutp) = c1
             ! Switch to decide segment/exchange!
-            outpsx(num_output_files) = 1
+            outpsx(noutp) = 1
         enddo
 
         ! output items on exchange level
@@ -320,14 +320,14 @@ program waqpb_import
 
             value = -999.
             call upd_p2 ( c10, c50, value, 2, newtab, grp, io_mes, iitem, c20, .false. )
-            num_output_files = num_output_files + 1
-            if ( num_output_files > noutpm ) stop 'DIMENSION NOUTPM'
-            outppr(num_output_files) = procid(num_processes_activated)
-            outpit(num_output_files) = itemid(iitem)
-            outpnm(num_output_files) = iaanta + ihulp
-            outpdo(num_output_files) = c1
+            noutp = noutp + 1
+            if ( noutp > noutpm ) stop 'DIMENSION NOUTPM'
+            outppr(noutp) = procid(nproc)
+            outpit(noutp) = itemid(iitem)
+            outpnm(noutp) = iaanta + ihulp
+            outpdo(noutp) = c1
             ! Switch to decide segment/exchange!
-            outpsx(num_output_files) = 0
+            outpsx(noutp) = 0
         enddo
 
         ! fluxes
@@ -352,7 +352,7 @@ program waqpb_import
             call upd_p2 ( c10, c50, value, 1, newtab, grp, io_mes, iitem, c20, .false. )
             noutf = noutf + 1
             if ( noutf > noutfm ) stop 'DIMENSION NOUTFM'
-            outfpr(noutf) = procid(num_processes_activated)
+            outfpr(noutf) = procid(nproc)
             outffl(noutf) = c10
             outfnm(noutf) = iaanta
             outfdo(noutf) = c1
@@ -575,9 +575,9 @@ subroutine cratab (grp, newtab, initialConfgId, initialConfgName)
 
     use m_string_utils
 
-    character*30 :: grp
-    character*10  :: initialConfgId
-    character*50  :: initialConfgName
+    character(len=30) :: grp
+    character(len=10) :: initialConfgId
+    character(len=50) :: initialConfgName
     include 'data_ff.inc'
     integer  :: iitem , iproc, icnpr, iconf
     logical  :: newtab
@@ -595,7 +595,7 @@ subroutine cratab (grp, newtab, initialConfgId, initialConfgName)
       ! Table R1
       ! include all processes in Dummy configuration
 
-      do iproc = 1,num_processes_activated
+      do iproc = 1,nproc
           conpro(1,iproc) = .true.
       enddo
 
@@ -617,14 +617,14 @@ subroutine cratab (grp, newtab, initialConfgId, initialConfgName)
     ! UPDATE TABLES
     ! Recreate Table R1
 
-      do iproc = 1,num_processes_activated
+      do iproc = 1,nproc
         do iconf = 1,nconf
             conpro(iconf,iproc) = .false.
         end do
       end do
 
       do icnpr = 1,ncnpr
-          iproc = index_in_array(r1_pid(icnpr)(:10),procid(:num_processes_activated))
+          iproc = index_in_array(r1_pid(icnpr)(:10),procid(:nproc))
           iconf = index_in_array(r1_cid(icnpr)(:10),confid(:nconf))
           if (iconf <= 0) stop 'BUG CRATAB'
           if (iproc > 0) conpro(iconf,iproc) = .true.
