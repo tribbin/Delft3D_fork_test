@@ -102,59 +102,57 @@ contains
 
 !> Fills a string array with the model's input variable names as "long variable names" from the CSDMS Standard Names.
 !! NOTE: not implemented yet, will return a DFM_NOTIMPLEMENTED error.
-function get_input_var_names(names) bind(C, name="get_input_var_names") result(c_istat)
-   type(c_ptr), dimension(:), intent(out) :: names   !< Array of C-pointers, will contain pointers to C-compatible strings upon return.
-   integer(c_int)                         :: c_istat !< Integer status code indicating success (zero) or failure (nonzero)
+   function get_input_var_names(names) bind(C, name="get_input_var_names") result(c_istat)
+      type(c_ptr), dimension(:), intent(out) :: names !< Array of C-pointers, will contain pointers to C-compatible strings upon return.
+      integer(c_int) :: c_istat !< Integer status code indicating success (zero) or failure (nonzero)
 
-   integer :: i_var, var_count
-   character(kind=c_char, len=1), dimension(:,:), pointer :: cnames
-   character(len=MAXSTRLEN) :: fname
+      integer :: i_var, var_count
+      character(kind=c_char, len=1), dimension(:, :), pointer :: cnames
+      character(len=MAXSTRLEN) :: fname
 
-   c_istat = DFM_NOTIMPLEMENTED
-   return
+      c_istat = DFM_NOTIMPLEMENTED
+      return
 
-   ! NOTE: code below is working example code for returning a BMI 2.0
-   ! compliant array of names.
+      ! NOTE: code below is working example code for returning a BMI 2.0
+      ! compliant array of names.
 
-   var_count = 1
+      var_count = 1
 
-   allocate(cnames(MAXSTRLEN, var_count))
-   do i_var = 1,var_count
-      fname = 'test_get_input_var_names' ! TODO: UNST-7403: implement this.
-      cnames(:,i_var) = string_to_char_array(trim(fname), len(trim(fname)))
-      names(i_var) = c_loc(cnames(:,i_var))
-   end do
+      allocate (cnames(MAXSTRLEN, var_count))
+      do i_var = 1, var_count
+         fname = 'test_get_input_var_names' ! TODO: UNST-7403: implement this.
+         cnames(:, i_var) = string_to_char_array(trim(fname), len(trim(fname)))
+         names(i_var) = c_loc(cnames(:, i_var))
+      end do
 
-end function get_input_var_names
-
+   end function get_input_var_names
 
 !> Returns a string array of the model's output variable names as "long variable names" from the CSDMS Standard Names.
 !! NOTE: not implemented yet, will return a DFM_NOTIMPLEMENTED error.
-subroutine get_output_var_names(names) bind(C, name="get_output_var_names")
-   type(c_ptr), dimension(:), intent(out) :: names   !< Array of C-pointers, will contain pointers to C-compatible strings upon return.
-   integer(c_int)                         :: c_istat !< Integer status code indicating success (zero) or failure (nonzero)
+   subroutine get_output_var_names(names) bind(C, name="get_output_var_names")
+      type(c_ptr), dimension(:), intent(out) :: names !< Array of C-pointers, will contain pointers to C-compatible strings upon return.
+      integer(c_int) :: c_istat !< Integer status code indicating success (zero) or failure (nonzero)
 
-   integer :: i_var, var_count
-   character(kind=c_char, len=1), dimension(:,:), pointer :: cnames
-   character(len=MAXSTRLEN) :: fname
+      integer :: i_var, var_count
+      character(kind=c_char, len=1), dimension(:, :), pointer :: cnames
+      character(len=MAXSTRLEN) :: fname
 
-   c_istat = DFM_NOTIMPLEMENTED
-   return
+      c_istat = DFM_NOTIMPLEMENTED
+      return
 
-   ! NOTE: code below is working example code for returning a BMI 2.0
-   ! compliant array of names.
+      ! NOTE: code below is working example code for returning a BMI 2.0
+      ! compliant array of names.
 
-   var_count = 1
+      var_count = 1
 
-   allocate(cnames(MAXSTRLEN, var_count))
-   do i_var = 1,var_count
-      fname = 'test_get_output_var_names' ! TODO: UNST-7403: implement this.
-      cnames(:,i_var) = string_to_char_array(trim(fname), len(trim(fname)))
-      names(i_var) = c_loc(cnames(:,i_var))
-   end do
+      allocate (cnames(MAXSTRLEN, var_count))
+      do i_var = 1, var_count
+         fname = 'test_get_output_var_names' ! TODO: UNST-7403: implement this.
+         cnames(:, i_var) = string_to_char_array(trim(fname), len(trim(fname)))
+         names(i_var) = c_loc(cnames(:, i_var))
+      end do
 
-end subroutine get_output_var_names
-
+   end subroutine get_output_var_names
 
 !> Returns a static attribute (i.e. an attribute that does not change
 !! from one model application to the next) of the model (as a string)
@@ -742,8 +740,7 @@ end subroutine get_output_var_names
       end select
       c_var_name = string_to_char_array(trim(var_name), len(trim(var_name)))
 
-subroutine get_var_type(c_var_name, c_type)  bind(C, name="get_var_type")
-   !DEC$ ATTRIBUTES DLLEXPORT :: get_var_type
+   end subroutine get_var_name
 
    subroutine get_var_type(c_var_name, c_type) bind(C, name="get_var_type")
       !DEC$ ATTRIBUTES DLLEXPORT :: get_var_type
@@ -2313,7 +2310,7 @@ subroutine get_var_type(c_var_name, c_type)  bind(C, name="get_var_type")
    !> Returns the c_ptr for a variable on a lateral location
    function get_pointer_to_lateral_variable(item_name, field_name) result(c_lateral_pointer)
       use m_laterals, only: qplat, nnlat, n1latsg, outgoing_lat_concentration, incoming_lat_concentration, apply_transport, &
-                           lateral_volume_per_layer, num_layers
+                            lateral_volume_per_layer, num_layers
       use m_flow, only: s1
       use string_module, only: str_token
 
