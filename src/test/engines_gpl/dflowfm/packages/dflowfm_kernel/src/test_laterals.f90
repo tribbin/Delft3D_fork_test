@@ -57,8 +57,6 @@ subroutine test_add_lateral_load_and_sink()
    use m_transportdata, only: numconst
    use m_flowgeom, only: ndxi
    
-   real(kind=dp), allocatable, dimension(:,:,:)   :: discharge_in                !< Lateral discharge going into the model (source)
-   real(kind=dp), allocatable, dimension(:,:,:)   :: discharge_out               !< Lateral discharge extracted out of the model (sink)
    real(kind=dp), allocatable, dimension(:,:)   :: transport_load              !< Load being transported into domain
    real(kind=dp), allocatable, dimension(:,:)   :: transport_sink              !< sink term due to transport into domain
 
@@ -69,10 +67,6 @@ subroutine test_add_lateral_load_and_sink()
    integer :: i_cell, i_const, i_lateral  ! loop counters
    integer :: i_node
    
-   allocate(discharge_in(1,numlatsg,ndxi),stat=iostat)
-   call aerr('discharge_in',iostat,numlatsg*ndxi,'test_add_lateral_load_and_sink')
-   allocate(discharge_out(1,numlatsg,ndxi),stat=iostat)
-   call aerr('discharge_out',iostat,numlatsg*ndxi,'test_add_lateral_load_and_sink')
    allocate(transport_load(numconst,ndxi),stat=iostat)
    call aerr('transport_load',iostat,numconst*ndxi,'test_add_lateral_load_and_sink')
    allocate(transport_sink(numconst,ndxi),stat=iostat)
@@ -86,7 +80,7 @@ subroutine test_add_lateral_load_and_sink()
 
    ! first check that no discharge means no added transport
    qqlat(:,:,:) = 0._dp
-   call add_lateral_load_and_sink(transport_load, transport_sink, discharge_in, discharge_out, vol1, tolerance)
+   call add_lateral_load_and_sink(transport_load, transport_sink, vol1, tolerance)
 
    call assert_comparable(sum(transport_load), 0._dp, tolerance, "lateral_laod value expected to be zero for qplat=0")
    call assert_comparable(sum(transport_sink), 0._dp, tolerance, "lateral_sink value expected to be zero for qplat=0")
@@ -96,7 +90,7 @@ subroutine test_add_lateral_load_and_sink()
    do i_node = n1latsg(i_lateral), n2latsg(i_lateral)
       qqlat(1,i_lateral,nnlat(i_node)) = 5._dp
    end do 
-   call add_lateral_load_and_sink(transport_load, transport_sink, discharge_in, discharge_out, vol1, tolerance)
+   call add_lateral_load_and_sink(transport_load, transport_sink, vol1, tolerance)
 
    do i_const = 1,numconst
       do i_cell=1,ndxi
@@ -115,7 +109,7 @@ subroutine test_add_lateral_load_and_sink()
    end do 
    ! copy values of transport_load
    ref_load(:,:) = transport_load(:,:)
-   call add_lateral_load_and_sink(transport_load,transport_sink,discharge_in,discharge_out,vol1,tolerance)
+   call add_lateral_load_and_sink(transport_load,transport_sink,vol1,tolerance)
    ! check that transport_load was not changed
    call assert_comparable(sum(transport_load), sum(ref_load), tolerance, "transport_load should not change")
    do i_const = 1,numconst
