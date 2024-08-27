@@ -57,7 +57,7 @@ subroutine generateTotalVolumeTable(volume, surface, storage, deadstorage, wl_de
    double precision, dimension(:),  intent(  out)     :: surface        !< Aggregated areas per level
    double precision, dimension(:),  intent(  out)     :: storage        !< Aggregated storage per level (=volume - deadstorage)
    double precision, dimension(:),  intent(  out)     :: deadstorage    !< Aggregated dead storage per level
-   double precision, dimension(:),  intent(  out)     :: wl_deadstorage  !< Minimal waterlevel 
+   double precision, dimension(:),  intent(in   )     :: wl_deadstorage  !< Dead storage waterlevel on each grid point
    type(T_voltable), dimension(:),  intent(in   )     :: voltb           !< Volume tables on grid points
    double precision,                intent(in   )     :: bedlevel        !< Bed level of the model
    double precision,                intent(in   )     :: increment       !< Requested increment

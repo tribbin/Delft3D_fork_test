@@ -263,8 +263,8 @@ function ionc_get_node_coordinates_dll(ioncid, meshid, c_xptr, c_yptr, nnode) re
 !DEC$ ATTRIBUTES DLLEXPORT :: ionc_get_node_coordinates_dll
    integer(kind=c_int), intent(in)  :: ioncid !< The IONC data set id.
    integer(kind=c_int), intent(in)  :: meshid !< The mesh id in the specified data set.
-   type(c_ptr),         intent(out) :: c_xptr !< Pointer to array for x-coordinates
-   type(c_ptr),         intent(out) :: c_yptr !< Pointer to array for y-coordinates
+   type(c_ptr),         intent(in)  :: c_xptr !< Pointer to an existing array for x-coordinates
+   type(c_ptr),         intent(in)  :: c_yptr !< Pointer to an existing array for y-coordinates
    integer(kind=c_int), intent(in)  :: nnode  !< The number of nodes in the mesh. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    integer(kind=c_int)              :: ierr   !< Result status, ionc_noerr if successful.
 
@@ -282,8 +282,8 @@ function ionc_put_node_coordinates_dll(ioncid, meshid, c_xptr, c_yptr, nnode) re
 !DEC$ ATTRIBUTES DLLEXPORT :: ionc_put_node_coordinates_dll
    integer(kind=c_int), intent(in)  :: ioncid !< The IONC data set id.
    integer(kind=c_int), intent(in)  :: meshid !< The mesh id in the specified data set.
-   type(c_ptr),         intent(out) :: c_xptr !< Pointer to array containing x-coordinates
-   type(c_ptr),         intent(out) :: c_yptr !< Pointer to array containing y-coordinates
+   type(c_ptr),         intent(in)  :: c_xptr !< Pointer to an existing array containing x-coordinates
+   type(c_ptr),         intent(in)  :: c_yptr !< Pointer to an existing array containing y-coordinates
    integer(kind=c_int), intent(in)  :: nnode  !< The number of nodes in the mesh. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    integer(kind=c_int)              :: ierr   !< Result status, ionc_noerr if successful.
 
@@ -302,7 +302,7 @@ function ionc_get_edge_faces_dll(ioncid, meshid, c_edge_faces_ptr, nedge, fillva
    integer(kind=c_int), intent(in)    :: ioncid      !< The IONC data set id.
    integer(kind=c_int), intent(in)    :: start_index !< The requested start index
    integer(kind=c_int), intent(in)    :: meshid       !< The mesh id in the specified data set.
-   type(c_ptr),         intent(  out) :: c_edge_faces_ptr !< Pointer to array for the edge-node connectivity table.
+   type(c_ptr),         intent(in)    :: c_edge_faces_ptr !< Pointer to an existing array for the edge-node connectivity table.
    integer(kind=c_int), intent(in)    :: nedge   !< The number of edges in the mesh.
    integer(kind=c_int)                :: fillvalue    !< Scalar for getting the fill value parameter for the requested variable.
    integer(kind=c_int)                :: ierr    !< Result status, ionc_noerr if successful.
@@ -321,7 +321,7 @@ function ionc_get_edge_nodes_dll(ioncid, meshid, c_edge_nodes_ptr, nedge, start_
    integer(kind=c_int), intent(in)    :: ioncid  !< The IONC data set id.
    integer(kind=c_int), intent(in)    :: start_index !< The requested start index
    integer(kind=c_int), intent(in)    :: meshid  !< The mesh id in the specified data set.
-   type(c_ptr),         intent(  out) :: c_edge_nodes_ptr !< Pointer to array for the edge-node connectivity table.
+   type(c_ptr),         intent(in)    :: c_edge_nodes_ptr !< Pointer to array for the edge-node connectivity table.
    integer(kind=c_int), intent(in)    :: nedge  !< The number of edges in the mesh.
    integer(kind=c_int)                :: ierr    !< Result status, ionc_noerr if successful.
 
@@ -339,7 +339,7 @@ function ionc_get_face_edges_dll(ioncid, meshid, c_face_edges_ptr, nface, nmax_f
 !DEC$ ATTRIBUTES DLLEXPORT :: ionc_get_face_edges_dll
    integer(kind=c_int), intent(in)    :: ioncid  !< The IONC data set id.
    integer(kind=c_int), intent(in)    :: meshid  !< The mesh id in the specified data set.
-   type(c_ptr),         intent(  out) :: c_face_edges_ptr !< Pointer to array for the face-edge connectivity table.
+   type(c_ptr),         intent(in)    :: c_face_edges_ptr !< Pointer to an existing array for the face-edge connectivity table.
    integer(kind=c_int), intent(in)    :: nface  !< The number of faces in the mesh. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    integer(kind=c_int), intent(in)    :: nmax_face_edges  !< The maximum number of edges per face in the mesh. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    integer(kind=c_int)                :: fillvalue    !< Scalar for getting the fill value parameter for the requested variable.
@@ -360,7 +360,7 @@ function ionc_get_face_nodes_dll(ioncid, meshid, c_face_nodes_ptr, nface, nmaxfa
 !DEC$ ATTRIBUTES DLLEXPORT :: ionc_get_face_nodes_dll
    integer(kind=c_int), intent(in)    :: ioncid             !< The IONC data set id.
    integer(kind=c_int), intent(in)    :: meshid             !< The mesh id in the specified data set.
-   type(c_ptr),         intent(  out) :: c_face_nodes_ptr   !< Pointer to array for the face-node connectivity table.
+   type(c_ptr),         intent(in)    :: c_face_nodes_ptr   !< Pointer to an existing array for the face-node connectivity table.
    integer(kind=c_int), intent(in)    :: nface              !< The number of faces in the mesh. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    integer(kind=c_int), intent(in)    :: nmaxfacenodes      !< The maximum number of nodes per face in the mesh. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    integer(kind=c_int)                :: fillvalue          !< Scalar for getting the fill value parameter for the requested variable.
@@ -447,7 +447,7 @@ function ionc_inq_varids_dll(ioncid, meshid, iloctype, c_varids_ptr, nmaxvar) re
    integer(kind=c_int),             intent(in)    :: ioncid   !< The IONC data set id.
    integer(kind=c_int),             intent(in)    :: meshid   !< The mesh id in the specified data set.
    integer(kind=c_int),             intent(in)    :: iloctype !< The topological location on which to select data (UGRID-compliant, so UG_LOC_FACE/EDGE/NODE/ALL2D).
-   type(c_ptr),                     intent(  out) :: c_varids_ptr !< Pointer to array for the variable ids.
+   type(c_ptr),                     intent(in)    :: c_varids_ptr !< Pointer to an existing array for the variable ids.
    integer(kind=c_int),             intent(in)    :: nmaxvar  !< The number of variables in the target array. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    integer(kind=c_int)                            :: ierr    !< Result status, ionc_noerr if successful.
 
@@ -552,7 +552,7 @@ function ionc_get_var_1D_EightByteReal_dll(ioncid, meshid, iloctype, c_varname, 
    integer,                intent(in)    :: meshid    !< The mesh id in the specified data set.
    integer,                intent(in)    :: iloctype  !< The topological location on which to select data (UGRID-compliant, so UG_LOC_FACE/EDGE/NODE/ALL2D).
    character(kind=c_char), intent(in)    :: c_varname(MAXSTRLEN)   !< The name of the variable to be found. Should be without any "meshnd_" prefix.
-   type(c_ptr),            intent(  out) :: c_values_ptr !< Pointer to array for the values.
+   type(c_ptr),            intent(in)    :: c_values_ptr !< Pointer to an existing array for the values.
    integer,                intent(in)    :: nval      !< The number of values in the target array. TODO: AvD: remove this somehow, now only required to call c_f_pointer
    real(c_double),         intent(out)   :: c_fillvalue  !< Scalar for getting the fill value parameter for the requested variable.
    integer                               :: ierr      !< Result status, ionc_noerr if successful.
