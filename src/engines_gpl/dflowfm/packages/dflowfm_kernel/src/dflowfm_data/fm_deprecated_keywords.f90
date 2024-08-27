@@ -22,7 +22,7 @@ contains
       deprecated_ext_keywords%count = 0
 
       call add_deprecated_keyword(deprecated_mdu_keywords, 'processes', 'dtmassbalance', DEPRECATED)
-      call add_deprecated_keyword(deprecated_mdu_keywords, 'processes', 'wriwaqbot3doutput', OBSOLETE, 'Use [Output] wrihis_waqbot3d and wrimap_waqbot3d instead.')
+      call add_deprecated_keyword(deprecated_mdu_keywords, 'processes', 'wriwaqbot3doutput', OBSOLETE, 'Remove it or use [Output] wrihis_waqbot3d and wrimap_waqbot3d instead.')
       call add_deprecated_keyword(deprecated_mdu_keywords, 'geometry', 'bathymetryfile', OBSOLETE)
       call add_deprecated_keyword(deprecated_mdu_keywords, 'geometry', 'bedlevelfile', OBSOLETE)
       call add_deprecated_keyword(deprecated_mdu_keywords, 'geometry', 'botlevuni', OBSOLETE)
