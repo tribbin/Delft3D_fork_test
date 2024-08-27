@@ -33,18 +33,11 @@ module test_lateral
 
    contains
 !
-!
 !==============================================================================
 !   
 subroutine tests_lateral()
-   ! initialization of global state variables for all tests in this module
-   call setup_testcase()
 
    call test(test_add_lateral_load_and_sink, 'Test computation of constituents sinks and sources due to laterals.')
-
-   ! deallocation of global state variables
-   call finish_testcase()
-
    call test(test_get_lateral_volume_per_layer, 'Test computation of water volume per layer in laterals.')
    call test(test_distribute_lateral_discharge, 'Test the distribution of lateral discharge per layer per lateral,' // &
                                                 ' which is retrieved from BMI, to per layer per lateral per cell.')
@@ -67,6 +60,9 @@ subroutine test_add_lateral_load_and_sink()
    integer :: i_cell, i_const, i_lateral  ! loop counters
    integer :: i_node
    
+   ! initialization and allocation of global state variables
+   call setup_testcase()
+
    allocate(transport_load(numconst,ndxi),stat=iostat)
    call aerr('transport_load',iostat,numconst*ndxi,'test_add_lateral_load_and_sink')
    allocate(transport_sink(numconst,ndxi),stat=iostat)
@@ -122,6 +118,9 @@ subroutine test_add_lateral_load_and_sink()
 
    deallocate (transport_load)
    deallocate (transport_sink)
+
+   ! deallocation of global state variables
+   call finish_testcase()
 
 end subroutine test_add_lateral_load_and_sink
 !
