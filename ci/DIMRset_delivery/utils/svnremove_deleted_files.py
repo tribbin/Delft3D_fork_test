@@ -31,10 +31,10 @@ olddir = rootdir / Path(args.__dict__["targetdir"]).resolve()
 newdir = rootdir / Path(args.__dict__["sourcedir"]).resolve()
 
 if not olddir.is_dir():
-   print("ERROR: target directory does not exist: " + olddir)
+   print("ERROR: target directory does not exist: " + str(olddir))
    exit(1)
 if not newdir.is_dir():
-   print("ERROR: source directory does not exist: " + newdir)
+   print("ERROR: source directory does not exist: " + str(newdir))
    exit(1)
 
 for p in olddir.glob("**/*"):
