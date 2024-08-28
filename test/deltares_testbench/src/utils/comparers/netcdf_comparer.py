@@ -560,11 +560,7 @@ class NetcdfComparer(IComparer):
 
     def _open_netcdf_file(self, path: str, filename: str) -> nc.Dataset:
         """Open NetCDF file and return netCDF dataset."""
-        try:
-            nc_root = nc.Dataset(os.path.join(path, filename), "r", format="NETCDF4_CLASSIC")
-        except Exception as e:
-            error_msg = f"Cannot open netcdf file {os.path.join(path, filename)}"
-            raise RuntimeError(error_msg, e) from e
+        nc_root = nc.Dataset(os.path.join(path, filename), "r", format="NETCDF4_CLASSIC")
         return nc_root
 
     def _check_match_for_parameter_name(
