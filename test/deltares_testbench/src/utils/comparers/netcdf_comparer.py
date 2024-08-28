@@ -206,7 +206,10 @@ class NetcdfComparer(IComparer):
                     )
                     results.append((testcase_name, file_check, parameter, result))
 
-                self._check_match_for_parameter_name(found_parameter_in_file, parameter.name, left_path, file_check.name)
+                if not found_parameter_in_file:
+                    error_msg = f"No match for parameter name {parameter.name} in file \
+                        {os.path.join(left_path, file_check.name)}"
+                    raise AttributeError(error_msg)
         return results
 
     def _compare_nc_variable(
@@ -561,14 +564,6 @@ class NetcdfComparer(IComparer):
         """Open NetCDF file and return netCDF dataset."""
         nc_root = nc.Dataset(os.path.join(path, filename), "r", format="NETCDF4_CLASSIC")
         return nc_root
-
-    def _check_match_for_parameter_name(
-        self, found_parameter_in_file: bool, parameter_name: str, left_path: str, filename: str
-    ) -> None:
-        """Ceck if a valid matchnumber is found, otherwise raise exception."""
-        if not found_parameter_in_file:
-            error_msg = f"No match for parameter name {parameter_name} in file {os.path.join(left_path, filename)}"
-            raise AttributeError(error_msg)
 
     def _check_for_dimension_equality(self, nc_var: NetCdfVariable, variable_name: str) -> None:
         """Check dimension equility and raises exception if not correct."""
