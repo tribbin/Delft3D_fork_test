@@ -39,22 +39,24 @@
  character (len=8), intent(in)  :: refdat                                 !< reference date
  integer,           intent(out) :: iyear, imonth, iday, ihour, imin, isec !< Actual date, split up in year/month, etc.
 
- integer :: jul0, iyear0, imonth0, iday0
+ integer :: jul0, iyear0, imonth0, iday0, timsec_int
  double precision :: tnr, tsec
  integer :: ndag
 
+ ! Round to seconds/integer to avoid precision issues and ensure datestamps like 20240828_003000 instead of 20240828_002960.
+ timsec_int = nint(timsec)
 
  read(refdat(1:4),*) iyear0
  read(refdat(5:6),*) imonth0
  read(refdat(7:8),*) iday0
 
  jul0  = julday(imonth0,iday0,iyear0)
- tnr   = timsec / 3600d0
+ tnr   = timsec_int / 3600d0
  ndag  = tnr / 24d0
 
  call caldat(jul0+ndag,imonth,iday,iyear) 
 
- tsec  =  timsec - ndag*24d0*3600d0
+ tsec  =  timsec_int - ndag*24d0*3600d0
  ihour =   tsec/3600d0
  imin  =  (tsec - ihour*3600d0)/60d0
  isec  =  nint(tsec - ihour*3600d0 - imin*60d0)
