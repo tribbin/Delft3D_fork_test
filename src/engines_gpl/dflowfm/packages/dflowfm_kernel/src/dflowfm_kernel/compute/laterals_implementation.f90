@@ -103,21 +103,25 @@ contains
       integer :: i_layer
       integer :: iostat
 
-      real(kind=dp), dimension(:), allocatable :: total_volume
+      real(kind=dp), allocatable, dimension(:) :: total_volume
+      real(kind=dp), allocatable, dimension(:, :, :) :: total_concentration
 
       allocate (total_volume(num_layers), stat=iostat)
       call aerr('total_volume', iostat, num_layers, 'average_concentrations_for_laterals')
+      allocate (total_concentration(num_layers, numconst, numlatsg), stat=iostat)
+      call aerr('total_concentration', iostat, num_layers*numconst*numlatsg, 'average_concentrations_for_laterals')
 
       do ilat = 1, numlatsg
          total_volume = 0.0_dp
+         total_concentration = 0.0_dp
          do k1 = n1latsg(ilat), n2latsg(ilat)
             i_node = nnlat(k1)
             if (i_node > 0) then
                if (kmx < 1) then
                   total_volume = total_volume + cell_volume(i_node)
                   do iconst = 1, numconst
-                     outgoing_lat_concentration(1, iconst, ilat) = outgoing_lat_concentration(1, iconst, ilat) + &
-                                                                   dt * cell_volume(i_node) * constituents(iconst, i_node)
+                     total_concentration(1, iconst, ilat) = total_concentration(1, iconst, ilat) + &
+                                                            dt * cell_volume(i_node) * constituents(iconst, i_node)
                   end do
                else
                   i_layer = kmx - kmxn(i_node) + 1 ! initialize i_layer to the index of first active bottom layer of base node(i_node)
@@ -125,8 +129,8 @@ contains
                   do k = kb, kt ! loop over active layers under base node(i_node)
                      total_volume(i_layer) = total_volume(i_layer) + cell_volume(k)
                      do iconst = 1, numconst
-                        outgoing_lat_concentration(i_layer, iconst, ilat) = outgoing_lat_concentration(i_layer, iconst, ilat) + &
-                                                                            dt * cell_volume(k) * constituents(iconst, k)
+                        total_concentration(i_layer, iconst, ilat) = total_concentration(i_layer, iconst, ilat) + &
+                                                                     dt * cell_volume(k) * constituents(iconst, k)
                      end do
                      i_layer = i_layer + 1
                   end do
@@ -135,7 +139,8 @@ contains
          end do
          do i_layer = 1, num_layers
             if (total_volume(i_layer) > 0) then
-               outgoing_lat_concentration(i_layer, :, ilat) = outgoing_lat_concentration(i_layer, :, ilat) / total_volume(i_layer)
+               total_concentration(i_layer, :, ilat) = total_concentration(i_layer, :, ilat) / total_volume(i_layer)
+               outgoing_lat_concentration(i_layer, :, ilat) = outgoing_lat_concentration(i_layer, :, ilat) + total_concentration(i_layer, :, ilat)
             else
                outgoing_lat_concentration(i_layer, :, ilat) = 0.0_dp
             end if
@@ -143,6 +148,7 @@ contains
       end do
 
       deallocate (total_volume)
+      deallocate (total_concentration)
 
    end subroutine average_concentrations_for_laterals
 
