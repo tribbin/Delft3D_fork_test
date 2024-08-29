@@ -812,9 +812,7 @@ subroutine unc_write_his(tim) ! wrihis
             end do
          end if
          ! Write time-independent geometry variables for different structure types
-         ierr = unc_put_his_structure_static_vars(ihisfile, ST_PUMP, jahispump, npumpsg, 'line', number_of_pump_nodes(), id_strlendim, &
-                                                  id_pumpdim, id_pump_id, id_pumpgeom_node_count, id_pumpgeom_node_coordx, id_pumpgeom_node_coordy, &
-                                                  id_poly_xmid=id_pump_xmid, id_poly_ymid=id_pump_ymid)
+         ierr = unc_put_his_structure_static_vars(ihisfile, ST_PUMP, jahispump, npumpsg, 'line', id_poly_xmid=id_pump_xmid, id_poly_ymid=id_pump_ymid)
          if (timon) call timstop(handle_extra(63))
       end if
    end if
@@ -1083,27 +1081,25 @@ contains
    end subroutine get_prefix_and_name_from_struc_type_id
 
    !> Write ('put') the static variables for a single structure type.
-   function unc_put_his_structure_static_vars(ncid, struc_type_id, output_enabled, count, geom_type, ngeom_node, id_strlendim, &
-                                              id_strdim, id_strid, id_geom_node_count, id_geom_coordx, id_geom_coordy, &
-                                              add_latlon, id_geom_coordlon, id_geom_coordlat, id_poly_xmid, id_poly_ymid) result(ierr)
+   function unc_put_his_structure_static_vars(ncid, struc_type_id, output_enabled, count, geom_type, id_poly_xmid, id_poly_ymid) result(ierr)
 
       integer, intent(in) :: ncid !< NetCDF id of already open dataset
       integer, intent(in) :: struc_type_id !< The id of the type of the structure (e.g. ST_CULVERT)
       integer, intent(in) :: output_enabled !< Whether or not (1/0) this structure's output must be written.
       integer, intent(in) :: count !< Number of structures for this structure_type
       character(len=*), intent(in) :: geom_type !< Geometry type, one of: 'point', 'line', 'polygon' (or 'none')
-      integer, intent(in) :: ngeom_node !< Total number of geometry nodes for this structure_type
-      integer, intent(in) :: id_strlendim !< Already created NetCDF dimension id for max string length of the character Ids.
-      integer, intent(in) :: id_strdim !< NetCDF dimension id created for this structure type
-      integer, intent(in) :: id_strid !< NetCDF variable id created for the character Ids of the structures of this type
-      integer, optional, intent(in) :: id_geom_node_count !< NetCDF variable id created for the node count of the structures of this type
-      integer, optional, intent(in) :: id_geom_coordx !< NetCDF variable id created for the node x coordinates for all structures of this type
-      integer, optional, intent(in) :: id_geom_coordy !< NetCDF variable id created for the node y coordinates for all structures of this type
-      logical, optional, intent(in) :: add_latlon !< Whether or not to add extra lon/lat coordinates for the nodes
+      !integer, intent(in) :: ngeom_node !< Total number of geometry nodes for this structure_type
+      !integer, intent(in) :: id_strlendim !< Already created NetCDF dimension id for max string length of the character Ids.
+      !integer, intent(in) :: id_strdim !< NetCDF dimension id created for this structure type
+      !integer, intent(in) :: id_strid !< NetCDF variable id created for the character Ids of the structures of this type
+      !integer, optional, intent(in) :: id_geom_node_count !< NetCDF variable id created for the node count of the structures of this type
+      !integer, optional, intent(in) :: id_geom_coordx !< NetCDF variable id created for the node x coordinates for all structures of this type
+      !integer, optional, intent(in) :: id_geom_coordy !< NetCDF variable id created for the node y coordinates for all structures of this type
+      !logical, optional, intent(in) :: add_latlon !< Whether or not to add extra lon/lat coordinates for the nodes
       !< (only applicable when the coordx/y variables contain projected coordinates,
       !< and requires id_node_lon/lat to be passed as well).
-      integer, optional, intent(in) :: id_geom_coordlon !< NetCDF variable id created for the node longitude coordinates for all structures of this type
-      integer, optional, intent(in) :: id_geom_coordlat !< NetCDF variable id created for the node latitude  coordinates for all structures of this type
+      !integer, optional, intent(in) :: id_geom_coordlon !< NetCDF variable id created for the node longitude coordinates for all structures of this type
+      !integer, optional, intent(in) :: id_geom_coordlat !< NetCDF variable id created for the node latitude  coordinates for all structures of this type
       integer, optional, intent(in) :: id_poly_xmid !< NetCDF variable id created for the x-coordinate of the structure's polyline midpoint
       integer, optional, intent(in) :: id_poly_ymid !< NetCDF variable id created for the y-coordinate of the structure's polyline midpoint
 

@@ -46,7 +46,6 @@ contains
    !> allocate the arrays for laterals on 3d/BMI
    module subroutine initialize_lateraldata(numconst)
       use m_flow, only: kmx
-      use m_flowgeom, only: ndx
       use m_alloc, only: realloc
 
       integer, intent(in) :: numconst !< number of constitiuents

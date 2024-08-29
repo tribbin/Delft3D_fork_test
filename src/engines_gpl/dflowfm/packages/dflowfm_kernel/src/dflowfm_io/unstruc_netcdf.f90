@@ -12834,11 +12834,10 @@ contains
    end subroutine md5_net_file
 
 !> Assigns the information, that has been read from a restart file and stored in array1, to a 2D array2.
-   subroutine assign_restart_data_to_local_array(array1, array2, iloc, kmx, loccount, jamergedmap, iloc_own, write_only_bottom_layer, target_shift)
+   subroutine assign_restart_data_to_local_array(array1, array2, iloc, loccount, jamergedmap, iloc_own, write_only_bottom_layer, target_shift)
       double precision, allocatable, intent(in) :: array1(:) !< Array that contains information read from a restart file
       double precision, allocatable, intent(inout) :: array2(:, :) !< Target 2D array
       integer, intent(in) :: iloc !< Index of one dimension of the 2D array
-      integer, intent(in) :: kmx !< Number of layers
       integer, intent(in) :: loccount !< Spatial count in file to read (e.g. ndxi_own)
       integer, intent(in) :: jamergedmap !< Whether input is from a merged map file (i.e. needs shifting or not) (1/0)
       integer, intent(in) :: iloc_own(:) !< Mapping array from the unique own (i.e. non-ghost) nodes/links to the actual ndxi/lnx numbering. Should be filled from index 1:loccount (e.g. 1:ndxi_own).
@@ -13750,7 +13749,7 @@ contains
          if (ierr /= nf90_noerr) then
             call mess(LEVEL_WARN, 'unc_read_map_or_rst: cannot read variable sa1 from the specified restart file. Skip reading this variable.')
          else
-            call assign_restart_data_to_local_array(sa1, constituents, isalt, kmx, um%ndxi_own, um%jamergedmap, um%inode_own)
+            call assign_restart_data_to_local_array(sa1, constituents, isalt, um%ndxi_own, um%jamergedmap, um%inode_own)
          end if
       end if
 
@@ -13768,7 +13767,7 @@ contains
          if (ierr /= nf90_noerr) then
             call mess(LEVEL_WARN, 'unc_read_map_or_rst: cannot read variable tem1 from the specified restart file. Skip reading this variable.')
          else
-            call assign_restart_data_to_local_array(tem1, constituents, itemp, kmx, um%ndxi_own, um%jamergedmap, um%inode_own)
+            call assign_restart_data_to_local_array(tem1, constituents, itemp, um%ndxi_own, um%jamergedmap, um%inode_own)
          end if
       end if
 
@@ -13792,7 +13791,7 @@ contains
             if (ierr /= nf90_noerr) then
                call mess(LEVEL_WARN, 'unc_read_map_or_rst: cannot read variable '''//trim(tmpstr)//''' from the specified restart file. Skip reading this variable.')
             else
-               call assign_restart_data_to_local_array(tmpvar1D, constituents, iconst, kmx, um%ndxi_own, um%jamergedmap, um%inode_own)
+               call assign_restart_data_to_local_array(tmpvar1D, constituents, iconst, um%ndxi_own, um%jamergedmap, um%inode_own)
             end if !ierr
          end do !iconst
       end if !ITRA1
@@ -13818,7 +13817,7 @@ contains
             if (ierr /= nf90_noerr) then
                call mess(LEVEL_WARN, 'unc_read_map_or_rst: cannot read variable '''//trim(tmpstr1)//''' from the specified restart file. Skip reading this variable.')
             else
-               call assign_restart_data_to_local_array(tmpvar1D, wqbot, iwqbot, kmx, um%ndxi_own, um%jamergedmap, um%inode_own,.not. is_wq_bot_3d)
+               call assign_restart_data_to_local_array(tmpvar1D, wqbot, iwqbot, um%ndxi_own, um%jamergedmap, um%inode_own,.not. is_wq_bot_3d)
             end if
          end do
       end if
@@ -18346,7 +18345,7 @@ contains
             call mess(LEVEL_WARN, 'unc_read_map_or_rst: cannot read variable '''//trim(tmpstr)//trim(stradd)//''' from the specified restart file. Skip reading this variable.')
             call check_error(ierr, const_names(i), LEVEL_WARN)
          else
-            call assign_restart_data_to_local_array(tmpvar1D, var, i, kmx, kcount, um%jamergedmap, um%inode_own, .false., target_shift)
+            call assign_restart_data_to_local_array(tmpvar1D, var, i, kcount, um%jamergedmap, um%inode_own, .false., target_shift)
          end if
       end do
 
