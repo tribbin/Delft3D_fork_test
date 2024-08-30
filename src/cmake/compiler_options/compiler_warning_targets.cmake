@@ -28,7 +28,7 @@ target_compile_options(limit_compiler_warnings INTERFACE
 add_library(no_compiler_warnings INTERFACE)
 set(intel_fortran_windows_no_warning_flags /warn:none)
 set(intel_fortran_linux_no_warning_flags "SHELL:-warn none")
-set(linux_no_warning_flags -w0)
+set(linux_no_warning_flags -w)
 set(windows_no_warning_flags /W0)
 target_compile_options(no_compiler_warnings INTERFACE
                        "$<$<AND:$<COMPILE_LANGUAGE:Fortran>,$<Fortran_COMPILER_ID:Intel,IntelLLVM>>:$<IF:$<BOOL:${WIN32}>,${intel_fortran_windows_no_warning_flags},${intel_fortran_linux_no_warning_flags}>>"
