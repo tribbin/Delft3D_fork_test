@@ -462,7 +462,7 @@ subroutine fill_valobs()
                      valobs(i, IPNT_TKIN + klay - 1) = turkin1(L)
                      valobs(i, IPNT_TEPS + klay - 1) = tureps1(L)
                   end if
-                  if (jaRichardsononoutput > 0) then
+                  if (idensform > 0 .and. jaRichardsononoutput > 0) then
                      valobs(i, IPNT_RICH + klay - 1) = rich(L)
                   end if
                end do

@@ -2500,7 +2500,7 @@ contains
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_TAU), temp_pointer)
                end if
             end if
-            if (jaRichardsononoutput > 0) then
+            if (idensform > 0 .and. jaRichardsononoutput > 0) then
                temp_pointer(1:(kmx + 1) * ntot) => valobs(1:ntot, IPNT_RICH:IPNT_RICH + kmx)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_RICH), temp_pointer)
             end if
