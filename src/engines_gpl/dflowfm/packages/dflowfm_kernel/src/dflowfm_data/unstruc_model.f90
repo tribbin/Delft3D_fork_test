@@ -42,6 +42,7 @@ module unstruc_model
    use m_fm_icecover, only: ice_mapout
    use netcdf, only: nf90_double
    use m_deprecation
+   use m_start_parameters
    implicit none
 
    !> The version number of the MDU File format: d.dd, [config_major].[config_minor], e.g., 1.03
@@ -94,9 +95,6 @@ module unstruc_model
    ! History File1D2DLinkVersion:
    ! 1.00 (2019-12-04): Initial version.
 
-   integer, parameter :: MD_NOAUTOSTART = 0 !< Do not autostart (nor stop) this model.
-   integer, parameter :: MD_AUTOSTART = 1 !< Autostart this model and then idle.
-   integer, parameter :: MD_AUTOSTARTSTOP = 2 !< Autostart this model and then exit (batchmode)
 
    type(tree_data), pointer, public :: md_ptr !< Unstruc Model Data in tree_data
 
@@ -185,7 +183,6 @@ module unstruc_model
    double precision :: md_dt_waqproc = 0d0 !< processes time step
    double precision :: md_dt_waqbal = 0d0 !< mass balance output time step (old)
    integer :: md_flux_int = 1 !< process fluxes integration option (1: WAQ, 2: D-Flow FM)
-   integer :: md_wqbot3D_output = 0 !< write 3D wqbot output
 
    ! TODO: reading for trachytopes is still within rdtrt, below was added for partitioning (when no initialization)
    character(len=4) :: md_trtrfile = ' ' !< Variable that stores information if trachytopes are used ('Y') or not ('N')
@@ -209,7 +206,6 @@ module unstruc_model
    character(len=200) :: md_snapshotdir = ' ' !< Directory where hardcopy snapshots should be saved.
                                                  !! Created if non-existent.
 
-   integer :: md_jaAutoStart = MD_NOAUTOSTART !< Autostart simulation after loading or not.
    integer :: md_input_specific = 0 !< use (0: no, 1: yes) specific hardcoded input.
    integer :: md_snapshot_seqnr = 0 !< Sequence number of last snapshot file written.
 !   partitioning command line options
@@ -515,6 +511,7 @@ contains
             end do
             deallocate (fnames)
             if (.not. newculverts .and. nlongculverts > 0) then
+               call setnodadm(0)
                call finalizeLongCulvertsInNetwork()
             end if
          end if
@@ -721,7 +718,7 @@ contains
       use m_sediment
       use m_waves, only: hwavuni, twavuni, phiwavuni
       use m_sedtrails_data, only: sedtrails_analysis
-      use unstruc_display, only: jaGUI
+      use m_gui
       use m_output_config, only: scan_input_tree
       use fm_statistical_output, only: config_set_his, config_set_map, config_set_clm
       use m_read_statistical_output, only: read_output_parameter_toggle
@@ -729,6 +726,7 @@ contains
       use m_deprecation, only: check_file_tree_for_deprecated_keywords
       use precision
       use m_map_his_precision
+      use m_qnerror
 
       character(*), intent(in) :: filename !< Name of file to be read (the MDU file must be in current working directory).
       integer, intent(out) :: istat !< Return status (0=success)
@@ -740,10 +738,10 @@ contains
       character(len=1000) :: charbuf = ' '
       character(len=255) :: tmpstr, fnam, bnam
       double precision, allocatable :: tmpdouble(:)
-      integer :: ibuf, ifil, mptfile, warn
-      integer :: i, n, j, je, iostat, readerr, ierror
+      integer :: ibuf, ifil
+      integer :: i, n, iostat, readerr, ierror
       integer :: jadum
-      real(hp) :: ti_rst_array(3), ti_map_array(3), ti_his_array(3), acc, ti_wav_array(3), ti_waq_array(3), ti_classmap_array(3), ti_st_array(3), ti_com_array(3)
+      real(hp) :: ti_rst_array(3), ti_map_array(3), ti_his_array(3), ti_wav_array(3), ti_waq_array(3), ti_classmap_array(3), ti_st_array(3), ti_com_array(3)
       character(len=200), dimension(:), allocatable :: fnames
       double precision, external :: densfm
       double precision :: tim
@@ -1944,7 +1942,14 @@ contains
       call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_discharge', jahisdischarge, success)
       call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_heat_fluxes', jahisheatflux, success, alternative_key='Wrihis_heatflux')
       call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_runupgauge', jahisrunupgauge, success)
-      call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_wqbot', jahiswaqbot, success)
+      call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_wqbot', jahiswqbot, success)
+      call read_output_parameter_toggle(md_ptr, 'output', 'wrihis_wqbot3d', jahiswqbot3d, success)
+      if (kmx == 0 .and. jahiswqbot3d == 1) then
+         jahiswqbot3d = 0
+         write (msgbuf, '(a)') 'MDU setting "wrihis_wqbot3d = 1" asks to write 3D water quality bottom quantities to the history output, ' &
+            //'but this is ignored since the simulation is 2D.'
+         call warn_flush()
+      end if
       call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_constituents', jahistracers, success)
       call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_crs_flow', jahiscrs_flow, success)
       call read_output_parameter_toggle(md_ptr, 'output', 'Wrihis_crs_constituents', jahiscrs_constituents, success)
@@ -2086,6 +2091,13 @@ contains
       call prop_get_integer(md_ptr, 'output', 'Wrimap_every_dt', jaeverydt, success)
       call prop_get_integer(md_ptr, 'output', 'Wrimap_NearField', jamapNearField, success)
       call prop_get_integer(md_ptr, 'output', 'Wrimap_ice', jamapice, success)
+      call prop_get_integer(md_ptr, 'output', 'wrimap_wqbot3d', jamapwqbot3d, success)
+      if (kmx == 0 .and. jamapwqbot3d == 1) then
+         jamapwqbot3d = 0
+         write (msgbuf, '(a)') 'MDU setting "wrimap_wqbot3d = 1" asks to write 3D water quality bottom quantities to the map output, ' &
+            //'but this is ignored since the simulation is 2D.'
+         call warn_flush()
+      end if
 
       ! Output
       ! [output] OutputDir was read earlier already.
@@ -2189,7 +2201,7 @@ contains
       charbuf = ' '
       call prop_get_string(md_ptr, 'output', 'TimeSplitInterval', charbuf, success)
       if (success) then
-         read (charbuf, *, iostat=iostat), ibuf, ti_split_unit
+         read (charbuf, *, iostat=iostat) ibuf, ti_split_unit
          if (iostat == 0) then
             ti_split = dble(ibuf)
             select case (ti_split_unit)
@@ -2357,7 +2369,6 @@ contains
       call prop_get_string(md_ptr, 'processes', 'StatisticsFile', md_sttfile, success)
       call prop_get_double(md_ptr, 'processes', 'ThetaVertical', md_thetav_waq, success)
       call prop_get_integer(md_ptr, 'processes', 'ProcessFluxIntegration', md_flux_int, success)
-      call prop_get_integer(md_ptr, 'processes', 'Wriwaqbot3Doutput', md_wqbot3D_output, success)
       call prop_get_double(md_ptr, 'processes', 'VolumeDryThreshold', waq_vol_dry_thr)
       call prop_get_double(md_ptr, 'processes', 'DepthDryThreshold', waq_dep_dry_thr)
       call prop_get_integer(md_ptr, 'processes', 'SubstanceDensityCoupling', JaSubstancedensitycoupling)
@@ -3753,7 +3764,7 @@ contains
 
       call prop_set(prop_ptr, 'output', 'TimingsInterval', ti_timings, 'Timings statistics output interval')
       helptxt = ' '
-      write (helptxt, '(i0,a1,a1)'), int(ti_split), ' ', ti_split_unit
+      write (helptxt, '(i0,a1,a1)') int(ti_split), ' ', ti_split_unit
       call prop_set(prop_ptr, 'output', 'TimeSplitInterval', trim(helptxt), 'Time splitting interval, after which a new output file is started. value+unit, e.g. ''1 M'', valid units: Y,M,D,h,m,s.')
 
       write (helptxt, "('Map file format ')")
@@ -3811,6 +3822,9 @@ contains
       end if
       if (jamapice > 0 .or. writeall) then
          call prop_set(prop_ptr, 'output', 'Wrimap_ice', jamapice, 'Write output to map file for ice cover, 0=no (default), 1=yes')
+      end if
+      if (jamapwqbot3d > 0 .or. writeall) then
+         call prop_set(prop_ptr, 'output', 'wrimap_wqbot3d', jamapwqbot3d, 'Write output to map file for waqbot3d, 0=no (default), 1=yes')
       end if
       if (writeall .or. epswetout /= 0.1d0) then
          call prop_set(prop_ptr, 'output', 'Wrimap_wet_waterdepth_threshold', epswetout, 'Waterdepth threshold above which a grid point counts as ''wet''. Used for Wrimap_time_water_on_ground.')
@@ -3879,7 +3893,6 @@ contains
       call prop_set_double(prop_ptr, 'processes', 'ThetaVertical', md_thetav_waq, 'theta vertical for waq')
       call prop_set_double(prop_ptr, 'processes', 'DtProcesses', md_dt_waqproc, 'waq processes time step')
       call prop_set_integer(prop_ptr, 'processes', 'ProcessFluxIntegration', md_flux_int, 'Process fluxes integration option (1: WAQ, 2: D-Flow FM)')
-      call prop_set_integer(prop_ptr, 'processes', 'Wriwaqbot3Doutput', md_wqbot3D_output, 'Write 3D water quality bottom variables (1: yes, 0: no)')
       call prop_set_double(prop_ptr, 'processes', 'VolumeDryThreshold', waq_vol_dry_thr, 'Volume below which segments are marked as dry. (m3)')
       call prop_set_double(prop_ptr, 'processes', 'DepthDryThreshold', waq_dep_dry_thr, 'Water depth below which segments are marked as dry. (m)')
       call prop_set(prop_ptr, 'processes', 'SubstanceDensityCoupling', jaSubstancedensitycoupling, 'Substance density coupling (1: yes, 0: no). It only functions correctly when all substances are sediments.')

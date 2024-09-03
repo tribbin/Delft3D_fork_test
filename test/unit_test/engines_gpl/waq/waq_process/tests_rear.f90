@@ -31,11 +31,11 @@ program tests_rear
 
     implicit none
     character(len=200) :: cmd_arg
-    integer :: iargc, getarg
+    integer :: iargc
     real(kind=real_wp), parameter :: tolerance = 0.0001
 
     ! Administrative arrays and variables
-    integer, parameter :: num_process_parameters = 27
+    integer, parameter :: num_process_parameters = 28
     integer, parameter :: num_cells = 2                  ! Tests concern two cells: one at the surface, one not
     integer, parameter :: noflux = 1
     integer, parameter :: num_exchanges_u_dir = 0
@@ -75,6 +75,8 @@ program tests_rear
 
         call test(test_rear_simple, 'Simple reaeration formulae')
     endif
+    
+    continue
 
     contains
 
@@ -106,9 +108,9 @@ program tests_rear
         enddo
 
         ! Correct for the output parameters - two cells, so both take two elements
-        ipoint(27) = ipoint(27) + 1
-        increm(26) = 1
+        ipoint(28) = ipoint(28) + 1
         increm(27) = 1
+        increm(28) = 1
 
         iknmrk(1) = 11   ! Surface, active
         iknmrk(2) = 21   ! Below the surface, active
@@ -145,10 +147,13 @@ program tests_rear
         process_space_real(23) =       120.100      ! coefD2Oxy  x fresh water coefficient2 for Schmidt nr Oxy            (-)
         process_space_real(24) =       3.78180      ! coefD3Oxy  x fresh water coefficient3 for Schmidt nr Oxy            (-)
         process_space_real(25) =      0.476080E-01  ! coefD4Oxy  x fresh water coefficient4 for Schmidt nr Oxy            (-)
+        process_space_real(26) =       0.00000      ! coefD5Oxy  x fresh water coefficient5 for Schmidt nr Oxy            (-)
 
         ! Output
-        process_space_real(26) =      -999.0        ! KLREAR       reaeration coefficient                                 (m/d)
-        process_space_real(27) =      -999.0        ! SATPEC       percentage of saturation                               (-)
+        process_space_real(27) =      -999.0        ! KLREAR       reaeration coefficient cell 1                          (m/d)
+        process_space_real(28) =      -999.0        ! KLREAR       reaeration coefficient cell 2                          (m/d)
+        process_space_real(29) =      -999.0        ! SATPEC       percentage of saturation cell 1                        (-)
+        process_space_real(30) =      -999.0        ! SATPEC       percentage of saturation cell 2                        (-)
 
     end subroutine fill_process_space_real_defaults
 
@@ -195,10 +200,10 @@ program tests_rear
 
             ! Check the values
 
-            call assert_comparable(process_space_real(26), expected_rear(ifrear),  tolerance, 'Reaeration coefficient at surface')
-            call assert_comparable(process_space_real(27), -999.0_real_wp, tolerance, 'Reaeration coefficient below surface')
-            call assert_comparable(process_space_real(28), expected_satur(ifrear), tolerance, 'Saturation percentage at surface')
-            call assert_comparable(process_space_real(29), expected_satur(ifrear), tolerance, 'Saturation percentage below surface')
+            call assert_comparable(process_space_real(27), expected_rear(ifrear),  tolerance, 'Reaeration coefficient at surface')
+            call assert_comparable(process_space_real(28), -999.0_real_wp, tolerance, 'Reaeration coefficient below surface')
+            call assert_comparable(process_space_real(29), expected_satur(ifrear), tolerance, 'Saturation percentage at surface')
+            call assert_comparable(process_space_real(30), expected_satur(ifrear), tolerance, 'Saturation percentage below surface')
         enddo
 
     end subroutine test_rear_simple

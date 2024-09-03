@@ -131,9 +131,9 @@ def push_tool(args: argparse.Namespace) -> None:
     path_type: PathType = args.path_type
     local_path = Path(args.local_path) if args.local_path else None
 
-    cases = {}
+    cases: dict[str, list[str]] = {}
     if args.test_case_name:
-        cases[args.test_case_name] = args.config
+        cases[args.test_case_name] = [args.config]
     elif args.test_case_file:
         cases = config.CaseListReader().read_cases_from_file(args.test_case_file)
 
@@ -157,9 +157,9 @@ def pull_tool(args: argparse.Namespace) -> None:
     if args.timestamp and not latest:
         timestamp = datetime.fromisoformat(args.timestamp).replace(tzinfo=timezone.utc)
 
-    cases = {}
+    cases: dict[str, list[str]] = {}
     if args.test_case_name:
-        cases[args.test_case_name] = args.config
+        cases[args.test_case_name] = [args.config]
     elif args.test_case_file:
         cases = config.CaseListReader().read_cases_from_file(args.test_case_file)
 
@@ -178,9 +178,9 @@ def update_references_tool(args: argparse.Namespace) -> None:
     tool = make_minio_tool(args)
     local_path = Path(args.local_path) if args.local_path else None
 
-    cases = {}
+    cases: dict[str, list[str]] = {}
     if args.test_case_name:
-        cases[args.test_case_name] = args.config
+        cases[args.test_case_name] = [args.config]
     elif args.test_case_file:
         cases = config.CaseListReader().read_cases_from_file(args.test_case_file)
 

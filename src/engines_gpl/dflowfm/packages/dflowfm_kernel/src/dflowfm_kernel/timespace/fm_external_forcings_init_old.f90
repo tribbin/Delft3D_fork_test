@@ -61,6 +61,7 @@ contains
       use m_lateral_helper_fuctions, only: prepare_lateral_mask
       use fm_external_forcings_utils, only: get_tracername, get_sedfracname
       use fm_location_types, only: UNC_LOC_S, UNC_LOC_U, UNC_LOC_CN
+      use m_qnerror
 
       integer, intent(inout) :: iresult !< integer error code, is preserved in case earlier errors occur.
 
@@ -1371,7 +1372,7 @@ contains
       integer, intent(inout) :: iresult !< integer error code, is preserved in case earlier errors occur.
 
       integer :: ierr
-      integer :: k, L, LF, KB, KBI, N, K2, ja, method, filetype0
+      integer :: k, L, LF, KB, KBI, N, ja, method, filetype0
       integer :: k1, l1, l2
       character(len=256) :: filename, filename0
       character(len=64) :: varname

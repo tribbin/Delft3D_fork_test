@@ -638,7 +638,7 @@ module Output
 
     Implicit none
 
-    Integer iEvent, iNode, iKind, iNr, iMap, iLoc, iSlt, iKKl, i, j, Itmstp, IRRRunoffSub
+    Integer iEvent, iNode, iKind, iNr, iMap, iLoc, iSlt, iKKl, j, Itmstp, IRRRunoffSub
     Integer iPlv, iPlv2, iPlv3, iplv4, ipTyp, iPOpp
     Integer iOW, Ibnd, IRwzi, iPluv
     Integer NodeUp, NodeDown, kind, inr2, idum
@@ -763,8 +763,8 @@ module Output
                RSLMAP2_ovh(6,ILOC,1) =  RKWEL /timeSettings%timestepSize
                RSLMAP2_ovh(7,ILOC,1) =  VBO(INR)/timeSettings%timestepSize
                RSLMAP2_ovh(8,ILOC,1) =  RzEPOT(INR)/timeSettings%timestepSize
-               RSLMAP2_ovh(9,ILOC,1) =  MAX (0.0, QINB(INR)/timeSettings%timestepSize)
-               RSLMAP2_ovh(10,ILOC,1) =  MAX (0.0, -1*QINB(INR)/timeSettings%timestepSize)
+               RSLMAP2_ovh(9,ILOC,1) =  MAX (0.0d0, QINB(INR)/timeSettings%timestepSize)
+               RSLMAP2_ovh(10,ILOC,1) =  MAX (0.0d0, -1*QINB(INR)/timeSettings%timestepSize)
 !  April 2004: even kwel in mm/day toevoegen
 !!!               RSLMAP2_ovh(20,ILOC,1) = (Kwel(inr)-WegZg(inr)) * 86400 * 1000.
 
@@ -1332,7 +1332,7 @@ module Output
                PLVBPC(IPLV,3,Ievent) = MAX (PLVBPC(IPLV,3,Ievent), 0.0)
 
                PLVQOU(IPLV,1,Ievent) = MAX (PLVQOU(IPLV,1,Ievent), RINRI) !* timeSettings%timestepSize)
-               PLVQOU(IPLV,2,Ievent) = MAX (PLVQOU(IPLV,2,Ievent), RINFD) !* timeSettings%timestepSize)
+               PLVQOU(IPLV,2,Ievent) = MAX (PLVQOU(IPLV,2,Ievent), real(RINFD)) !* timeSettings%timestepSize)
                PLVQOU(IPLV,3,Ievent) = MAX (PLVQOU(IPLV,3,Ievent), RINFA) !* timeSettings%timestepSize)
                PLVQOU(IPLV,4,Ievent) = MAX (PLVQOU(IPLV,4,Ievent), RRAIN /timeSettings%timestepSize)
                PLVQOU(IPLV,5,Ievent) = MAX (PLVQOU(IPLV,5,Ievent), REVAPT/timeSettings%timestepSize)
@@ -2548,7 +2548,7 @@ module Output
       IF (ISLCMP .ne. 0) THEN
 !         IMAP = 9
          DO INOD = 1, NCNODE
-            SLTMXC(INOD) = MAX (SLTMXC(INOD), RSLMAP9_slt(1,INOD,1) )
+            SLTMXC(INOD) = MAX (SLTMXC(INOD), real(RSLMAP9_slt(1,INOD,1), kind(1.0d0)) )
 !           RSLMAP9_slt(1,INOD,1) = MAX (RSLMAP9_slt(1,INOD,1), RSLMAP9_slt(1,INOD,1))
             if (idebug .ne. 0)  WRITE(IDEBUG,*) ' sltmxc(inod) ', inod, sltmxc(inod)
          ENDDO
@@ -2593,7 +2593,7 @@ module Output
         OVMQOU(IOVH,4,Ievent) = MAX (OVMQOU(IOVH,4,Ievent), VO(IOVH)/timeSettings%timestepSize )
         OVMQOU(IOVH,5,Ievent) = MAX (OVMQOU(IOVH,5,Ievent), INO(IOVH)/timeSettings%timestepSize )
         RKWEL = (KWEL(IOVH)-WEGZG(IOVH) ) *AreaGwComp(IOVH)* timeSettings%timestepSize
-        OVMQOU(IOVH,6,Ievent) = MAX (OVMQOU(IOVH,6,Ievent), RKWEL/timeSettings%timestepSize )
+        OVMQOU(IOVH,6,Ievent) = MAX (OVMQOU(IOVH,6,Ievent), real(RKWEL/timeSettings%timestepSize, kind(1.0d0)) )
         OVMQOU(IOVH,7,Ievent) = MAX (OVMQOU(IOVH,7,Ievent), VBO(IOVH)/timeSettings%timestepSize )
         OVMQOU(IOVH,8,Ievent) = MAX (OVMQOU(IOVH,8,Ievent), RzEPOT(IOVH)/timeSettings%timestepSize )
         OVMQOU(IOVH,9,Ievent) = MAX (OVMQOU(IOVH,9,Ievent), QINB(IOVH)/timeSettings%timestepSize )
@@ -2608,9 +2608,9 @@ module Output
            GwExC (IOVH,4,Ievent) = 0.0
         Endif
         IF (GWL(IOVH) .GE. MAXGWL2(IOVH)) THEN
-           RHelp = Max (0.0, Gwl(iovh) - MaxGwl2(iovh))
+           RHelp = Max (0.0d0, Gwl(iovh) - MaxGwl2(iovh))
            If (CumGroundwaterExceedanceOption .eq. 1) RHelp = Rhelp * RHelp
-           GWEXC (IOVH,4,Ievent) = Max (GWEXC (IOVH,4,Ievent), Rhelp)
+           GWEXC (IOVH,4,Ievent) = Max (GWEXC (IOVH,4,Ievent), real(Rhelp, kind(1.0d0)))
         ENDIF
       ENDDO
 
@@ -2643,7 +2643,7 @@ module Output
 
       DO IOW  = 1,NCOW
          OWMLVL(IOW,Ievent,1) = MAX (OWMLVL(IOW,Ievent,1), LVLOW(IOW))
-         OWMLVL(IOW,Ievent,2) = MAX (OWMLVL(IOW,Ievent,2), VOLOW(IOW)+ActualExtraBergendVolume(iow) )
+         OWMLVL(IOW,Ievent,2) = MAX (OWMLVL(IOW,Ievent,2), real(VOLOW(IOW)+ActualExtraBergendVolume(iow)) )
          OWMLVL(IOW,Ievent,3) = MAX (OWMLVL(IOW,Ievent,3), ROW(IOW)/timeSettings%timestepSize)
          OWMLVL(IOW,Ievent,4) = MAX (OWMLVL(IOW,Ievent,4), VOW(IOW)/timeSettings%timestepSize)
          OWMLVL(IOW,Ievent,5) = MAX (OWMLVL(IOW,Ievent,5), KWOW(IOW)/timeSettings%timestepSize)
@@ -3812,7 +3812,7 @@ module Output
 ! Character(Len=40)                :: DateString
   Character(Len=40), pointer, dimension(:)  :: locationid
   integer                             nitem, refdate, reftime, ipos, j, ikind
-  Character(Len=40)                   Id, VariableName
+  Character(Len=40)                   VariableName
   Character(Len=80)                   LongVariableName
   Character(Len=7)                    AggregationVar
   double precision, dimension(:), allocatable       :: X1Coor, X2Coor, Y1Coor, Y2Coor
@@ -4856,7 +4856,7 @@ module Output
 !c       storage land in mm
          RSLMAP2_ovh(13,ILOC,1) =  BOLND(INR) / AreaOH(INR) * 1000.
          RSLMAP2_ovh(14,ILOC,1) =  BOBD(INR)
-         RSLMAP2_ovh(16,ILOC,1) =  Max (0.0, GWL(INR)-MaxGwl2(INR))
+         RSLMAP2_ovh(16,ILOC,1) =  Max (0.0d0, GWL(INR)-MaxGwl2(INR))
 !        unsaturated zone
          RSLMAP2_ovh(18,ILOC,1) =  0.0
          RSLMAP2_ovh(19,ILOC,1) =  0.0
@@ -4998,7 +4998,7 @@ module Output
 ! Ievent = event number
 ! Itmstp = timestep
 
-   Integer Ievent, Lasttm, iout1
+   Integer Ievent, Lasttm
    Real    DefaultT0OutputValue
    Character(len=32) RestartVersion
 

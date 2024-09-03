@@ -398,10 +398,10 @@ module m_ec_converter
                connection%converterPtr%indexWeight => weight
                weight%indices = ec_undef_int
                select case (instancePtr%coordsystem)
-                  case (EC_COORDS_SFERIC)
-                     jsferic = 1
-                  case (EC_COORDS_CARTESIAN)
-                     jsferic = 0
+               case (EC_COORDS_SFERIC)
+                  jsferic = 1
+               case (EC_COORDS_CARTESIAN)
+                  jsferic = 0
                end select
                call nearest_neighbour(n_points, targetElementSet%x, targetElementSet%y,  targetElementSet%mask, &
                     weight%indices(1,:), ec_undef_hp, &
@@ -1532,7 +1532,7 @@ module m_ec_converter
          real(hp)              , intent(in) :: zmin, zmax
          integer               , intent(out):: ndxmin, ndxmax
 
-         real(hp) :: wt, minz, maxz, dz
+         real(hp) :: wt, dz
          integer  :: ndx
          ndxmin = size(zpos)
          ndxmax = 1
@@ -1572,7 +1572,7 @@ module m_ec_converter
          type(tEcConnection), intent(inout) :: connection !< access to Converter and Items
          real(hp),            intent(in)    :: timesteps  !< convert to this number of timesteps past the kernel's reference date
          !
-         integer  :: i, k, j          !< loop counters
+         integer  :: i, k          !< loop counters
          real(hp) :: wL, wR           !< left and right weights
          integer  :: kL, kR           !<
          integer  :: maxlay_tgt       !< size of ElementSet of the TARGET in third dimension (if relevant), a.k.a kmx
@@ -1874,8 +1874,6 @@ module m_ec_converter
          integer, intent(in) :: maxlay_src, kLR
          real(kind=hp), intent(out) :: ww
          integer, intent(out) :: idx1, idx2
-
-         integer :: kkl
 
          if ((sigmak - sigma(1)) * (sigmak - sigma(maxlay_src)) >= 0) then      ! beyond the range of source levels
             if (abs(sigmak - sigma(1)) < abs(sigmak - sigma(maxlay_src))) then  ! closer to sigma(1) (avoiding the assumption sigma(1) is the lowest)
@@ -2312,7 +2310,7 @@ module m_ec_converter
 
       !> Cyclic interpolation of two scalars, based on periodicity of 360 (degrees)
       !! Sort data in monotonically increasing order and rotate over smallest angle
-      elemental function cyclic_interpolation(var1, var2, weight1, weight2)
+      function cyclic_interpolation(var1, var2, weight1, weight2)
          real(hp), intent(in) :: var1                !< First input argument for in interpolation functions using a scalar weight value
          real(hp), intent(in) :: var2                !< Second input argument for in interpolation functions using a scalar weight value
          real(hp), intent(in) :: weight1             !< Value for weighing two variables: 'weight1' holds for var1
@@ -2653,8 +2651,8 @@ module m_ec_converter
          type(tEcItem), pointer :: sourceItem !< source Item
          type(tEcItem), pointer :: targetItem !< target item
          integer :: n_layers, n_cols, n_rows, n_points, mp, np, kp, dkp, k_inc
-         type(tEcItem), pointer  :: windxPtr   ! pointer to item for windx
-         type(tEcItem), pointer  :: windyPtr   ! pointer to item for windy
+         type(tEcItem), pointer  :: windxPtr ! pointer to item for windx
+         type(tEcItem), pointer  :: windyPtr ! pointer to item for windy
          type(tEcItem), pointer  :: wavedirPtr ! pointer to item for wave direction
          type(tEcItem), pointer  :: wavehgtPtr ! pointer to item for wave height
          logical :: has_x_wind, has_y_wind
@@ -2690,7 +2688,7 @@ module m_ec_converter
          real(hp) :: phase0          ! harmonics: current phase offset angle (in radians)
          integer  :: n_phase_rows    ! harmonics: number of phase rows
          integer  :: n_phase_cols    ! harmonics: number of phase columns
-         integer  :: index1d         ! harmonics: 1d array index.
+         
          real(hp) :: targetvalcos    ! help variables for wave direction interpolation
          real(hp) :: targetvalsin
 
@@ -2702,7 +2700,6 @@ module m_ec_converter
          integer                        :: nrow, ncol
          integer, dimension(2)          :: idx
 
-         integer                        :: istat
          !
          PI = atan(1.d0)*4.d0
          success = .false.
@@ -2724,21 +2721,21 @@ module m_ec_converter
          waveheightT1 => null()
          has_wave_direction = .false.
          !
-         do i=1, connection%nSourceItems
-           if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='eastward_wind') then
-              windxPtr => connection%SourceItemsPtr(i)%ptr
-           endif
-           if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='northward_wind') then
-              windyPtr => connection%SourceItemsPtr(i)%ptr
-           endif
-           if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='grid_eastward_wind' .or. connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='x_wind') then
-              windxPtr => connection%SourceItemsPtr(i)%ptr
-              has_x_wind = .True.
-           endif
-           if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='grid_northward_wind' .or. connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='y_wind') then
-              windyPtr => connection%SourceItemsPtr(i)%ptr
-              has_y_wind = .True.
-           endif
+          do i=1, connection%nSourceItems
+            if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='eastward_wind') then
+               windxPtr => connection%SourceItemsPtr(i)%ptr
+            endif
+            if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='northward_wind') then
+               windyPtr => connection%SourceItemsPtr(i)%ptr
+            endif
+            if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='grid_eastward_wind' .or. connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='x_wind') then
+               windxPtr => connection%SourceItemsPtr(i)%ptr
+               has_x_wind = .True.
+            endif
+            if (connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='grid_northward_wind' .or. connection%SourceItemsPtr(i)%ptr%quantityPtr%name=='y_wind') then
+               windyPtr => connection%SourceItemsPtr(i)%ptr
+               has_y_wind = .True.
+            endif
            !
            ! Check presence fields
            if (trim(connection%SourceItemsPtr(i)%ptr%quantityPtr%name)=='sea_surface_wave_from_direction') then
@@ -3126,13 +3123,13 @@ module m_ec_converter
                                        end do
                                     end do
                                  else
-                                    do jj=0,1
-                                       do ii=0,1
-                                          sourcevals(1+ii,1+jj,1+kk,1) = s2D_T0(mp+ii, np+jj)
-                                          sourcevals(1+ii,1+jj,1+kk,2) = s2D_T1(mp+ii, np+jj)
-                                       end do
+                                 do jj=0,1
+                                    do ii=0,1
+                                       sourcevals(1+ii,1+jj,1+kk,1) = s2D_T0(mp+ii, np+jj)
+                                       sourcevals(1+ii,1+jj,1+kk,2) = s2D_T1(mp+ii, np+jj)
                                     end do
-                                 end if
+                                 end do
+                              end if
                               end if
 
                               if (connection%converterPtr%operandType == operand_replace) then
@@ -3175,15 +3172,15 @@ module m_ec_converter
                                     end if
                                  else
                                     targetValues(j) = targetValues(j) + a0 * sourcevals(1, 1, 1, 1) * indexWeight%weightFactors(1,j)
-                                    targetValues(j) = targetValues(j) + a1 * sourcevals(1, 1, 1, 2) * indexWeight%weightFactors(1,j)
-                                    targetValues(j) = targetValues(j) + a0 * sourcevals(2, 1, 1, 1) * indexWeight%weightFactors(2,j)
-                                    targetValues(j) = targetValues(j) + a1 * sourcevals(2, 1, 1, 2) * indexWeight%weightFactors(2,j)
-                                    targetValues(j) = targetValues(j) + a0 * sourcevals(2, 2, 1, 1) * indexWeight%weightFactors(3,j)
-                                    targetValues(j) = targetValues(j) + a1 * sourcevals(2, 2, 1, 2) * indexWeight%weightFactors(3,j)
-                                    targetValues(j) = targetValues(j) + a0 * sourcevals(1, 2, 1, 1) * indexWeight%weightFactors(4,j)
-                                    targetValues(j) = targetValues(j) + a1 * sourcevals(1, 2, 1, 2) * indexWeight%weightFactors(4,j)        !  1                 2
-                                    if (allocated(x_extrapolate)) x_extrapolate(j)=targetElementSet%x(j)                      ! x_extrapolate is a copy of the x with missing points marked by ec_undef_hp
-                                 end if
+                                 targetValues(j) = targetValues(j) + a1 * sourcevals(1, 1, 1, 2) * indexWeight%weightFactors(1,j)
+                                 targetValues(j) = targetValues(j) + a0 * sourcevals(2, 1, 1, 1) * indexWeight%weightFactors(2,j)
+                                 targetValues(j) = targetValues(j) + a1 * sourcevals(2, 1, 1, 2) * indexWeight%weightFactors(2,j)
+                                 targetValues(j) = targetValues(j) + a0 * sourcevals(2, 2, 1, 1) * indexWeight%weightFactors(3,j)
+                                 targetValues(j) = targetValues(j) + a1 * sourcevals(2, 2, 1, 2) * indexWeight%weightFactors(3,j)
+                                 targetValues(j) = targetValues(j) + a0 * sourcevals(1, 2, 1, 1) * indexWeight%weightFactors(4,j)
+                                 targetValues(j) = targetValues(j) + a1 * sourcevals(1, 2, 1, 2) * indexWeight%weightFactors(4,j)        !  1                 2
+                                 if (allocated(x_extrapolate)) x_extrapolate(j)=targetElementSet%x(j)                      ! x_extrapolate is a copy of the x with missing points marked by ec_undef_hp
+                              end if
                               end if
                            end if   ! 2D or 3D sources
                         end do      ! points j
@@ -3281,7 +3278,6 @@ module m_ec_converter
                call setECMessage("ERROR: ec_converter::ecConverterNetcdf: Unsupported interpolation type requested.")
                return
          end select
-         
          success = .true.
       end function ecConverterNetcdf
 

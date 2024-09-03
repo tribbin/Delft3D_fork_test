@@ -3819,7 +3819,7 @@ IMPLICIT NONE
            If (CrestLvl .gt. -999.) then
                CALL RR_INTERP (NVAL, VolumeArrayUp, PeilArrayUp, MinVolOw, CrestLvl, idum)
            Endif
-           MaxVolChk = max (0.0, VolOw0(iow) - MinVolOw + Tqin * timeSettings%timestepSize) / TimeSettings%timestepSize
+           MaxVolChk = max (0.0d0, VolOw0(iow) - MinVolOw + Tqin * timeSettings%timestepSize) / TimeSettings%timestepSize
            if (idebug .ne. 0) write(idebug,*) ' Tqin iow MaxVolChkflow ', Tqin, MaxVolChk
            StrucFlow = min (StrucFlow, MaxVolChk)
            SimpleVolumeCheck = .true.
@@ -3834,7 +3834,7 @@ IMPLICIT NONE
            If (CrestLvl .gt. -999.) then
                CALL RR_INTERP (NVAL, VolumeArrayDown, PeilArrayDown, MinVolOw, CrestLvl, idum)
            Endif
-           MaxVolChk = -1. * max (0.0, VolOw0(iowd)-MinVolOw + Tqin * timeSettings%timestepSize) / TimeSettings%timestepSize
+           MaxVolChk = -1. * max (0.0d0, VolOw0(iowd)-MinVolOw + Tqin * timeSettings%timestepSize) / TimeSettings%timestepSize
            if (idebug .ne. 0) write(idebug,*) ' Tqin iowd MaxVolChkFlow', Tqin, MaxVolChk
            StrucFlow = max (StrucFlow, MaxVolChk)
            SimpleVolumeCheck = .true.

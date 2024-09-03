@@ -709,8 +709,8 @@
             READ(STRING(POS1+1:),*) UserCoefKSat
          ELSEIF (STRING(1:POS1-1) .EQ. 'USERFACTVRZ')  THEN
             READ(STRING(POS1+1:),*) UserFactVRZ
-            UserFactVRZ = min (UserFactVRZ, 1.0)
-            UserFactVRZ = max (UserFactVRZ, 0.0)
+            UserFactVRZ = min (UserFactVRZ, 1.0d0)
+            UserFactVRZ = max (UserFactVRZ, 0.0d0)
          ELSEIF (STRING(1:POS1-1) .EQ. 'CAPSIMPLUSFLAG')  THEN
             READ(STRING(POS1+1:),*) CapsimPlusFlag    ! 1 = initial, 2 = initial and final
          ELSEIF (STRING(1:POS1-1) .EQ. 'EVAPORATIONYEAR')  THEN
