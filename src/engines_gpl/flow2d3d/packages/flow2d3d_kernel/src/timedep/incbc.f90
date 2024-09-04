@@ -346,7 +346,9 @@ subroutine incbc(lundia    ,timnow    ,zmodel    ,nmax      ,mmax      , &
     !
     ! calculate zavg for each total discharge boundary ... if any
     !
-    if (gdp%gdbcdat%global_num_qtot_bnd>0) then
+
+    if (gdp%gdbcdat%global_num_qtot_bnd>0 .or. &
+        gdp%gdbcdat%global_num_qh_bnd>0) then    
        !
        ! calculate zavg, using cwidth
        !
@@ -458,12 +460,9 @@ subroutine incbc(lundia    ,timnow    ,zmodel    ,nmax      ,mmax      , &
        do n1 = 1, nto
           zavg(n1) = qtfrct(n1)/cwidth(n1)
        enddo
-    endif
     !
     ! calculate qtfrac and qtfrct for all total discharge boundaries and QH boundaries ... if any
     !
-    if (gdp%gdbcdat%global_num_qtot_bnd>0 .or. &
-       gdp%gdbcdat%global_num_qh_bnd>0) then
        !
        ! initialize
        !
