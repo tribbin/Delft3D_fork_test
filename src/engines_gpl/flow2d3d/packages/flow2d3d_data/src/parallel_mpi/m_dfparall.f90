@@ -69,6 +69,8 @@ module m_dfparall
     ! Local variables
     !
     integer, pointer      :: iweig(:)       !< partitioning weights
+    integer, pointer      :: lundia         !< unit number of diagnostic output file
+    integer               :: istat          !< status code of allocation
     integer               :: i              !< loop counter
     integer               :: icnt           !< auxiliary integer to count weights
     integer               :: iwork(2,nproc) !< work array with the following meaning:
@@ -80,10 +82,29 @@ module m_dfparall
     integer(kind=8)       :: npcum          !< cumulative number of gridpoints
 
     integer(kind=8)       :: tmp            
-    integer(kind=8)       :: tmpsum             
+    integer(kind=8)       :: tmpsum   
+    !
+    lundia => gdp%gdinout%lundia
+    !
+    ! allocate and initialize array IWEIG
+    !
+    allocate (gdp%gdparall%iweig(nproc), stat = istat)
+    if (istat /= 0) then
+       call prterr(lundia, 'U021', 'dfpartit: memory alloc error')
+       call d3stop(1, gdp)
+    endif
+    !
+    iweig => gdp%gdparall%iweig
+    !
+    iweig = 100
+    do i = 1, nproc
+       iweig(i) = 100
+    enddo
     !
     ! determine number of active points and set ipown to 1 in these points
     !
+    !Array `ipown` is initially set to 1 for all active cells in the whole domain (i.e., in all future partitions).
+    !In `dfstrip` it will be filled with the right partition number. At this point it is a mask.
     nactp = 0
     do m = 1, mmax
        do n = 1, nmax
@@ -125,13 +146,6 @@ module m_dfparall
     
     !>Manual partitioning of domain.
     subroutine manual_partitioning(ierr, lundia, ipown, icom, mmax, nmax, partbnd)
-    
-    !
-    ! Local parameters
-    !
-    logical, parameter :: LORB = .false. !< logical indicating which partition method will be carried out:
-                                         !! true, in case of ORB
-                                         !! false, in case of stripwise manner
     !
     ! Global variables
     !
@@ -162,12 +176,10 @@ module m_dfparall
     !
     ! determine direction of cutting
     !
-    if ( mmax > nmax ) then
-       idir = 2
+    if (idir==2) then
        dirstr = 'M'
        dirmax = mmax
-    else
-       idir = 1
+    elseif (idir==1) then
        dirstr = 'N'
        dirmax = nmax
     endif
@@ -254,10 +266,7 @@ module m_dfparall
     ! Local variables
     !
     integer               :: ierr           !< error flag (0=OK, 1=error)
-    integer, pointer      :: iweig(:)       !< partitioning weights
     integer, pointer      :: lundia         !< unit number of diagnostic output file
-    integer               :: i              !< loop counter
-    integer               :: istat          !< status code of allocation
     logical               :: partbnd_read   !< Success flag for reading the PartBnd keyword from mdf-file
     character(256)        :: txt1           !< auxiliary text string
     integer               :: partbnd(nproc) !< upper bounds of each partition
@@ -266,20 +275,13 @@ module m_dfparall
     !
     lundia => gdp%gdinout%lundia
     !
-    ! allocate and initialize array IWEIG
+    ! determine direction of cutting (`idir` is global)
     !
-    allocate (gdp%gdparall%iweig(nproc), stat = istat)
-    if (istat /= 0) then
-       call prterr(lundia, 'U021', 'dfpartit: memory alloc error')
-       call d3stop(1, gdp)
+    if ( mmax > nmax ) then
+       idir = 2
+    else
+       idir = 1
     endif
-    !
-    iweig => gdp%gdparall%iweig
-    !
-    iweig = 100
-    do i = 1, nproc
-       iweig(i) = 100
-    enddo
     !
     ! check if partition boundaries have been specified
     !
@@ -294,7 +296,8 @@ module m_dfparall
     elseif (partbnd_read) then
         call manual_partitioning(ierr, lundia, ipown, icom, mmax, nmax, partbnd)
     else
-        call automatic_partitioning(ipown, icom, mmax, nmax, gdp)    
+        call automatic_partitioning(ipown, icom, mmax, nmax, gdp) 
+        ierr=0 !errors in `automatic_partitioning` are dealt inside that subroutine. If we are here, there are no errors.
     endif
     
     if (ierr /= 0) then
