@@ -30,24 +30,22 @@ object TriggerMatrix : BuildType({
         param("teamcity_user", "svc_dimr_trigger")
         password("teamcity_pass", "credentialsJSON:15cc6665-e900-4360-8942-00e654f6acfe")
         param("matrix_list", "first,second")
-        param("git_head", "dummy")
+        param("git_head", "dummy_value")
     }
 
     steps {
+
+        python {
+            scriptContent = """
+                if "merge_request" in "%teamcity.build.branch%":
+                    print("##teamcity[setParameter name='git_head' value='refs/%teamcity.build.branch%/head']")
+                else:
+                    print("##teamcity[setParameter name='git_head' value='refs/%teamcity.build.branch%']")
+            """.trimIndent()
+        }
+
         script {
             id = "Start Linux Testbench"
-
-            val git_head: String
-            val merge_regex = "^merge-requests/".toRegex()
-
-            if (merge_regex.containsMatchIn("%teamcity.build.branch%")) {
-                git_head = "refs/%teamcity.build.branch%/head"
-            } else {
-                git_head = "refs/%teamcity.build.branch%"
-            }
-
-            print("test123")
-            print("##teamcity[setParameter name='git_head' value=$git_head]")
 
             scriptContent = """
                 curl -u %teamcity_user%:%teamcity_pass% \
