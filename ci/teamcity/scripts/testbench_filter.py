@@ -34,7 +34,7 @@ if __name__ == "__main__":
     
     branch_config_dict = csv_to_dict(csv_table_path)
     done = False
-    for key, value in branch_config_dict:
+    for key, value in branch_config_dict.items():
         if key == branch_name:
             matrix_list = ",".join(filter_config(branch_config_dict, branch_name))
             print(f"##teamcity[setParameter name='matrix_list' value='{matrix_list}']")
