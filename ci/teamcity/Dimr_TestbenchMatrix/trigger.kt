@@ -133,7 +133,7 @@ object trigger : BuildType({
                 filterSourceBranch = """
                     -:refs/heads/none/*
                     +:*
-                """
+                """.trimIndent()
                 ignoreDrafts = true
             }
         }
