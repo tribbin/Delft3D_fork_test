@@ -31,23 +31,37 @@ object Trigger : BuildType({
         password("teamcity_pass", "credentialsJSON:15cc6665-e900-4360-8942-00e654f6acfe")
         param("matrix_list", "first,second")
         param("git_head", "dummy_value")
+        param("testbench_table", "ci/teamcity/Dimr_TestbenchMatrix/dimr_testbench_table.csv")
     }
 
     steps {
 
         python {
+            name = "Determine Git head"
             command = script {
                 content="""
                 if "merge_request" in "%teamcity.build.branch%":
+                    branch_name = "%teamcity.pullRequest.source.branch%".split("/")[0]
                     print("##teamcity[setParameter name='git_head' value='refs/%teamcity.build.branch%/head']")
+                    print(f"##teamcity[setParameter name='branch_name' value='{branch_name}']")
                 else:
+                    branch_name = "%teamcity.build.branch%".split("/")[0]
                     print("##teamcity[setParameter name='git_head' value='refs/heads/%teamcity.build.branch%']")
+                    print(f"##teamcity[setParameter name='branch_name' value='{branch_name}']")
                 """.trimIndent()
             }
         }
 
+        python {
+            name = "Filter Testbench xmls"
+            command = file {
+                filename = "ci/teamcity/scripts/testbench_filter.py"
+                scriptArguments = "%branch_name% %testbench_table%"
+            }
+        }
+
         script {
-            id = "Start Linux Testbench"
+            name = "Start Linux Testbench"
 
             scriptContent = """
                 curl -u %teamcity_user%:%teamcity_pass% \
