@@ -96,10 +96,7 @@ module m_dfparall
     !
     iweig => gdp%gdparall%iweig
     !
-    iweig = 100
-    do i = 1, nproc
-       iweig(i) = 100
-    enddo
+    iweig(:) = 100
     !
     ! determine number of active points and set ipown to 1 in these points
     !
