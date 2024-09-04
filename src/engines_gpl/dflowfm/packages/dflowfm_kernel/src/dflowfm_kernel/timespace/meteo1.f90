@@ -5932,6 +5932,8 @@ contains
 
       select case (loc_spec_type)
       case (LOCTP_POLYGON_FILE)
+         call savepol() ! save state
+         call delpol() ! clear state
          ! Fill npl, xpl, ypl from file
          call oldfil(minp, loc_file)
          call reapol(minp, 0)
@@ -5985,6 +5987,9 @@ contains
                end if
             end if
          end do
+      end if
+      if (loc_spec_type == LOCTP_POLYGON_FILE) then
+         call restorepol() ! restore state 
       end if
    end subroutine selectelset_internal_nodes
 
@@ -6067,7 +6072,7 @@ contains
       double precision, intent(in) :: transformcoef(:) !< Transformation coefficients
       integer, intent(in) :: iprimpos ! only needed for averaging, position of primitive variables in network
       ! 1 = u point, cellfacemid, 2 = zeta point, cell centre, 3 = netnode
-      integer, intent(in), optional :: kcc(1:nx)
+      integer, intent(in), optional :: kcc(nx)
 
       double precision, allocatable :: zh(:)
       integer :: ierr
