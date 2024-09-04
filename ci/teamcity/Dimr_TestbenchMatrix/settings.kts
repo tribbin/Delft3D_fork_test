@@ -41,7 +41,7 @@ object TriggerMatrix : BuildType({
                 if "merge_request" in "%teamcity.build.branch%":
                     print("##teamcity[setParameter name='git_head' value='refs/%teamcity.build.branch%/head']")
                 else:
-                    print("##teamcity[setParameter name='git_head' value='refs/%teamcity.build.branch%']")
+                    print("##teamcity[setParameter name='git_head' value='refs/heads/%teamcity.build.branch%']")
                 """.trimIndent()
             }
         }
