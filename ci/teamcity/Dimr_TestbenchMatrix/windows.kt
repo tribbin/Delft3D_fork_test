@@ -7,7 +7,7 @@ import jetbrains.buildServer.configs.kotlin.triggers.VcsTrigger
 import jetbrains.buildServer.configs.kotlin.triggers.vcs
 import jetbrains.buildServer.configs.kotlin.buildSteps.script
 
-import trigger
+import trigger.trigger
 
 object windows : BuildType({
     name = "Windows"
