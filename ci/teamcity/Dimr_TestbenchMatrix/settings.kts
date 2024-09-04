@@ -15,6 +15,8 @@ project {
     buildType(TriggerMatrix)
     buildType(Windows)
     buildType(Linux)
+
+    buildTypesOrder = arrayListOf(TriggerMatrix, Linux, Windows)
 }
 
 object TriggerMatrix : BuildType({
