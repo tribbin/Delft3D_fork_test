@@ -25,11 +25,12 @@ def filter_config(data, branch_name):
 
 branch_name = sys.argv[1]
 csv_table_path = sys.argv[2]
+parameter_name = sys.argv[3]
 
 if __name__ == "__main__":
     # Check if the container_id argument is provided
-    if len(sys.argv) != 3:
-        print("Usage: python script.py <branch_name> <csv_table_file_path>")
+    if len(sys.argv) != 4:
+        print("Usage: python script.py <branch_name> <csv_table_file_path> <parameter_name>")
         sys.exit(1)
     
     branch_config_dict = csv_to_dict(csv_table_path)
@@ -42,4 +43,4 @@ if __name__ == "__main__":
 
     if not done:
         matrix_list = ",".join(branch_config_dict["config"])
-        print(f"##teamcity[setParameter name='matrix_list' value='{matrix_list}']")
+        print(f"##teamcity[setParameter name='{parameter_name}' value='{matrix_list}']")
