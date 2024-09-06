@@ -1,4 +1,4 @@
-subroutine compute_wave_number_in_single_precision(water_depth, period, wave_number)
+subroutine compute_wave_number(water_depth, period, wave_number)
 !----- GPL ---------------------------------------------------------------------
 !                                                                               
 !  Copyright (C)  Stichting Deltares, 2011-2024.                                
@@ -49,13 +49,15 @@ subroutine compute_wave_number_in_single_precision(water_depth, period, wave_num
 !!--pseudo code and references--------------------------------------------------
 ! NONE
 !!--declarations----------------------------------------------------------------
+    use precision
+   
     implicit none
 !
 ! Global variables
 !
-    real, intent(in   ) :: water_depth !< Water height
-    real, intent(  out) :: wave_number  !< Approximation of wave number
-    real, intent(in   ) :: period       !< Period    
+    real(hp), intent(in   ) :: water_depth !< Water height
+    real(hp), intent(  out) :: wave_number  !< Approximation of wave number
+    real(hp), intent(in   ) :: period       !< Period    
 !
 ! Local parameters
 !
@@ -90,6 +92,5 @@ subroutine compute_wave_number_in_single_precision(water_depth, period, wave_num
     numerator   = 1.0D0 + omega*(a1 + omega*(a2 + omega*(a3 + omega*(a4 + omega*(a5 + omega*a6)))))
     denominator = 1.0D0 + omega*(b1 + omega*(b2 + omega*(b3 + omega*(b4 +             omega*a6))))
     
-    wave_number_double_precision = sqrt(omega*numerator/denominator)/dble(water_depth)
-    wave_number = real(wave_number_double_precision)
-end subroutine compute_wave_number_in_single_precision
+    wave_number = sqrt(omega*numerator/denominator)/dble(water_depth)
+end subroutine compute_wave_number

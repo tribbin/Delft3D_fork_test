@@ -225,7 +225,7 @@ contains
          end if
 
          typestr = ' '
-         call prop_get_string(str_ptr, '', 'type', typestr, success)
+         call prop_get(str_ptr, '', 'type', typestr, success)
          if (.not. success .or. .not. strcmpi(typestr, 'longCulvert')) then
             cycle
          end if
@@ -287,14 +287,14 @@ contains
             if (.not. success) then
                call SetMessage(LEVEL_ERROR, 'width not found for long culvert: '//st_id)
             end if
-            call prop_get_string(str_ptr, '', 'width', typestr)
+            call prop_get(str_ptr, '', 'width', typestr)
             call prop_set(block_ptr, '', 'width', trim(typestr))
 
             call prop_get(str_ptr, '', 'height', longculverts(nlongculverts)%height, success)
             if (.not. success) then
                call SetMessage(LEVEL_ERROR, 'height not found for long culvert: '//st_id)
             end if
-            call prop_get_string(str_ptr, '', 'height', typestr)
+            call prop_get(str_ptr, '', 'height', typestr)
             call prop_set(block_ptr, '', 'height', trim(typestr))
 
             call prop_set(block_ptr, '', 'closed', 'yes')
@@ -313,7 +313,7 @@ contains
                call SetMessage(LEVEL_ERROR, 'frictionValue not found for long culvert: '//st_id)
             end if
 
-            call prop_get_string(str_ptr, '', 'frictionValue', typestr)
+            call prop_get(str_ptr, '', 'frictionValue', typestr)
             call prop_set(block_ptr, '', 'frictionValue', trim(typestr))
 
             call get_value_or_addto_forcinglist(str_ptr, 'valveRelativeOpening', longculverts(nlongculverts)%valve_relative_opening, st_id, &
@@ -343,13 +343,13 @@ contains
          longculvertindex2 = 0
          do j = 1, tree_num_nodes(strs_ptr) !> check all structure file blocks
             str_ptr_2 => strs_ptr%CHILD_NODES(j)%node_ptr
-            call prop_get_string(str_ptr_2, '', 'type', typestr, success)
+            call prop_get(str_ptr_2, '', 'type', typestr, success)
             if (success .and. strcmpi(typestr, 'longCulvert')) then
                longculvertindex2 = longculvertindex2 + 1
                if (longculvertindex2 == i) then
                   numcoords = size(longculverts(i)%xcoords)
                   call tree_remove_child_by_name(str_ptr_2, 'xCoordinates', istart)
-                  call prop_set_doubles(str_ptr_2, '', 'xCoordinates', xpl(npl:npl + numcoords - 1), '')
+                  call prop_set(str_ptr_2, '', 'xCoordinates', xpl(npl:npl + numcoords - 1), '')
                   npl = npl + numcoords + 1
                   exit
                end if
@@ -374,7 +374,7 @@ contains
             cycle
          end if
          typestr = ' '
-         call prop_get_string(str_ptr, '', 'type', typestr, success)
+         call prop_get(str_ptr, '', 'type', typestr, success)
          if (.not. success .or. .not. strcmpi(typestr, 'longCulvert')) then
             cycle
          end if
@@ -475,7 +475,7 @@ contains
          end if
 
          typestr = ' '
-         call prop_get_string(str_ptr, '', 'type', typestr, success)
+         call prop_get(str_ptr, '', 'type', typestr, success)
          if (.not. success .or. .not. strcmpi(typestr, 'longCulvert')) then
             cycle
          end if

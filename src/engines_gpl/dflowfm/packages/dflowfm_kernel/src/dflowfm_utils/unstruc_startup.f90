@@ -253,35 +253,35 @@ contains
       call get_req_integer(ini_ptr, 'screen', 'NTXCOLS', NTXCOLS)
       call get_req_integer(ini_ptr, 'screen', 'NTXROWS', NTXROWS)
 
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLDG', NCOLDG)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLRG', NCOLRG)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLDN', NCOLDN)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLRN', NCOLRN)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLNN', NCOLNN)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLSP', NCOLSP)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLLN', NCOLLN)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLTX', NCOLTX)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLPL', NCOLPL)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLCRS', NCOLCRS)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLTHD', NCOLTHD)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLFXW', NCOLFXW)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLMH', NCOLMH)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLWARN1', NCOLWARN1)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLWARN2', NCOLWARN2)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLHL', NCOLHL)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NCOLANA', NCOLANA)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLDG', NCOLDG)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLRG', NCOLRG)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLDN', NCOLDN)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLRN', NCOLRN)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLNN', NCOLNN)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLSP', NCOLSP)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLLN', NCOLLN)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLTX', NCOLTX)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLPL', NCOLPL)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLCRS', NCOLCRS)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLTHD', NCOLTHD)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLFXW', NCOLFXW)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLMH', NCOLMH)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLWARN1', NCOLWARN1)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLWARN2', NCOLWARN2)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLHL', NCOLHL)
+      call prop_get(ini_ptr, 'grafcol', 'NCOLANA', NCOLANA)
 
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLVEC', KLVEC)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLAXS', KLAXS)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLSCL', KLSCL)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLTEX', KLTEX)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLFRA', KLFRA)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLOBS', KLOBS)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLSAM', KLSAM)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLZM', KLZM)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLANK', KLANK)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLPROF', KLPROF)
-      call prop_get_integer(ini_ptr, 'grafcol', 'KLSRC', KLSRC)
+      call prop_get(ini_ptr, 'grafcol', 'KLVEC', KLVEC)
+      call prop_get(ini_ptr, 'grafcol', 'KLAXS', KLAXS)
+      call prop_get(ini_ptr, 'grafcol', 'KLSCL', KLSCL)
+      call prop_get(ini_ptr, 'grafcol', 'KLTEX', KLTEX)
+      call prop_get(ini_ptr, 'grafcol', 'KLFRA', KLFRA)
+      call prop_get(ini_ptr, 'grafcol', 'KLOBS', KLOBS)
+      call prop_get(ini_ptr, 'grafcol', 'KLSAM', KLSAM)
+      call prop_get(ini_ptr, 'grafcol', 'KLZM', KLZM)
+      call prop_get(ini_ptr, 'grafcol', 'KLANK', KLANK)
+      call prop_get(ini_ptr, 'grafcol', 'KLPROF', KLPROF)
+      call prop_get(ini_ptr, 'grafcol', 'KLSRC', KLSRC)
 
       ! Cursor speed (in graphic mode)
       LIMTEL = 200
@@ -308,7 +308,7 @@ contains
       CROSHRSZ = .01 ! size of crosshair cursor relative to screen size
 
       ! Color scheme isolines
-      call prop_get_string(ini_ptr, 'isocol', 'COLTABFILE', coltabfile)
+      call prop_get(ini_ptr, 'isocol', 'COLTABFILE', coltabfile)
       inquire (file=trim(coltabfile), exist=jawel)
       if (.not. jawel) then
          coltabfile = 'ISOCOLOUR.hls'
@@ -322,8 +322,8 @@ contains
       call get_req_double(ini_ptr, 'isocol', 'VMAX', VMAX)
       NIS = 46 !INDEX FIRST ISOLINE COLOUR <1, 250>
       NIE = 224 !INDEX LAST  ISOLINE COLOUR <NIS+NV, 254>
-      call prop_get_integer(ini_ptr, 'isocol', 'NIS', NIS)
-      call prop_get_integer(ini_ptr, 'isocol', 'NIE', NIE)
+      call prop_get(ini_ptr, 'isocol', 'NIS', NIS)
+      call prop_get(ini_ptr, 'isocol', 'NIE', NIE)
 
       DV = VMAX - VMIN
       do I = 1, NV
@@ -341,7 +341,7 @@ contains
       ! 9:cgm ,12: hpgl2)
       ! (and windows only: 10 print manager, 11 windows metafile)
 
-      call prop_get_integers(ini_ptr, 'hardcopyoptions', 'IHCOPTS', IHCOPTS, size(ihcopts))
+      call prop_get(ini_ptr, 'hardcopyoptions', 'IHCOPTS', IHCOPTS, size(ihcopts))
       NUMHCOPTS = 0
       ! Determine actual number of HC-options read.
       do
@@ -354,11 +354,11 @@ contains
          numhcopts = numhcopts + 1
       end do
 
-      call prop_get_integer(ini_ptr, 'display', 'NTEK', NTEK)
-      call prop_get_integer(ini_ptr, 'display', 'PLOTTOFILE', plottofile)
-      call prop_get_integer(ini_ptr, 'display', 'JADATETIME', jadatetime)
+      call prop_get(ini_ptr, 'display', 'NTEK', NTEK)
+      call prop_get(ini_ptr, 'display', 'PLOTTOFILE', plottofile)
+      call prop_get(ini_ptr, 'display', 'JADATETIME', jadatetime)
       jaopengl_loc = -1 ! unset
-      call prop_get_integer(ini_ptr, 'display', 'JAOPENGL', jaopengl_loc)
+      call prop_get(ini_ptr, 'display', 'JAOPENGL', jaopengl_loc)
       if (jaopengl_loc /= -1) then
          call iset_jaopengl(jaopengl_loc)
       end if
@@ -368,7 +368,7 @@ contains
       end if
       VFAC = 1
       NVEC = 1
-      call prop_get_double(ini_ptr, 'display', 'VFAC', vfac)
+      call prop_get(ini_ptr, 'display', 'VFAC', vfac)
 
       ! Old or new file names
       IFLTYP = 1 ! 0, OLD FILENAMES TELMCRGF.*, RGFLANDB.*
@@ -409,15 +409,15 @@ contains
       NREDP = 255
       NGREENP = 255
       NBLUEP = 200
-      call prop_get_integer(ini_ptr, 'grafcol', 'NREDS', NREDS)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NGREENS', NGREENS)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NBLUES', NBLUES)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NREDP', NREDP)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NGREENP', NGREENP)
-      call prop_get_integer(ini_ptr, 'grafcol', 'NBLUEP', NBLUEP)
+      call prop_get(ini_ptr, 'grafcol', 'NREDS', NREDS)
+      call prop_get(ini_ptr, 'grafcol', 'NGREENS', NGREENS)
+      call prop_get(ini_ptr, 'grafcol', 'NBLUES', NBLUES)
+      call prop_get(ini_ptr, 'grafcol', 'NREDP', NREDP)
+      call prop_get(ini_ptr, 'grafcol', 'NGREENP', NGREENP)
+      call prop_get(ini_ptr, 'grafcol', 'NBLUEP', NBLUEP)
       call IGRPALETTERGB(0, NREDS, NGREENS, NBLUES)
 
-      call prop_get_integer(ini_ptr, 'display', 'JAFULLBOTTOMLINE', jafullbottomline)
+      call prop_get(ini_ptr, 'display', 'JAFULLBOTTOMLINE', jafullbottomline)
 
       rgbvalues(:, :) = 0
       rgbvalues(1:4, 1) = (/210, 3, 3, 3/)
@@ -469,7 +469,7 @@ contains
       ! Reset again
       rgbvalues(:, :) = 0
       ! And override with colors from inifile.
-      call prop_get_integers(ini_ptr, 'grafcol', 'rgbvalues', rgbvalues, size(rgbvalues))
+      call prop_get(ini_ptr, 'grafcol', 'rgbvalues', rgbvalues, size(rgbvalues))
       k = 1
       do
          if (rgbvalues(1, k) == 0) then
@@ -497,8 +497,8 @@ contains
       SCALESIZE = 0.5d0
 
       maxarctiler = 0; maxsamarcr = 0
-      call prop_get_integer(ini_ptr, 'ARCINFOSAMPLES', 'MAXARCTILE', maxarctiler)
-      call prop_get_integer(ini_ptr, 'ARCINFOSAMPLES', 'MAXSAMARC', maxsamarcr)
+      call prop_get(ini_ptr, 'ARCINFOSAMPLES', 'MAXARCTILE', maxarctiler)
+      call prop_get(ini_ptr, 'ARCINFOSAMPLES', 'MAXSAMARC', maxsamarcr)
 
       if (maxarctiler > 0) then
          maxarctile = maxarctiler * maxarctiler

@@ -83,7 +83,7 @@ subroutine register_polygon(name, pol_ptr, idcount, totpoints, &
     ! Create the polygon's ID
     !
     id = 0
-    call prop_get_integer(polygon_ptr, '*', trim(areatp)//'id', id)
+    call prop_get(polygon_ptr, '*', trim(areatp)//'id', id)
     if (id == 0) then
        idcount = idcount + 1
        !

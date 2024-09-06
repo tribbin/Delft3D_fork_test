@@ -170,26 +170,26 @@ module m_1d_networkreader_rr
         logical                                :: success
 
 
-        call  prop_get_string(md_ptr, 'node', 'id', nodeId, success)
+        call  prop_get(md_ptr, 'node', 'id', nodeId, success)
 
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Node ID')
         endif
 
-        call prop_get_string(md_ptr, 'node', 'name', nodeName, success)
+        call prop_get(md_ptr, 'node', 'name', nodeName, success)
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Node name')
         endif
 
 
-        call prop_get_integer(md_ptr, 'node', 'type', nodeType, success)
+        call prop_get(md_ptr, 'node', 'type', nodeType, success)
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Node type')
         endif
 
 
-        call prop_get_double(md_ptr, 'node', 'x', x, success)
-        if (success) call prop_get_double(md_ptr, 'node', 'y', y, success)
+        call prop_get(md_ptr, 'node', 'x', x, success)
+        if (success) call prop_get(md_ptr, 'node', 'y', y, success)
 
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Node '''//trim(nodeId)//'''')
@@ -272,25 +272,25 @@ module m_1d_networkreader_rr
 
         pbr =>brs%branch(brs%Count)
 
-        call  prop_get_string(md_ptr, 'branch', 'id', branchId, success)
+        call  prop_get(md_ptr, 'branch', 'id', branchId, success)
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Branch ID')
         endif
 
-        call  prop_get_string(md_ptr, 'branch', 'name', branchName, success)
+        call  prop_get(md_ptr, 'branch', 'name', branchName, success)
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Branch ID')
         endif
 
-        call  prop_get_integer(md_ptr, 'branch', 'brType', branchType, success)
+        call  prop_get(md_ptr, 'branch', 'brType', branchType, success)
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Branch branch type')
         endif
         
-        call  prop_get_string(md_ptr, 'branch', 'fromnode', begNodeId, success)
+        call  prop_get(md_ptr, 'branch', 'fromnode', begNodeId, success)
         
        
-        if (success) call  prop_get_string(md_ptr, 'branch', 'tonode', endNodeId, success)
+        if (success) call  prop_get(md_ptr, 'branch', 'tonode', endNodeId, success)
 
         if (.not. success) then
             call SetMessage(LEVEL_FATAL, 'Error Reading Branch '''//trim(branchId)//'''')

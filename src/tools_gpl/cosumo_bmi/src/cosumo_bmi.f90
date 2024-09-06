@@ -315,6 +315,7 @@ end subroutine get_var
 subroutine set_var(c_var_name, var_ptr) bind(C, name="set_var")
     !DEC$ ATTRIBUTES DLLEXPORT :: set_var
     use iso_c_binding, only: c_double, c_char, c_loc, c_f_pointer
+    use string_module, only: str_tolower
     !
     ! Parameters
     character(kind=c_char), intent(in) :: c_var_name(*)

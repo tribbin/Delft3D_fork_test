@@ -103,8 +103,8 @@ module m_laterals
 
    !> allocate the arrays for laterals on 3d/BMI
    interface initialize_lateraldata
-      module subroutine initialize_lateraldata(numconst)
-         integer, intent(in) :: numconst !< number of constitiuents
+      module subroutine initialize_lateraldata(num_const)
+         integer, intent(in) :: num_const !< number of constitiuents
       end subroutine initialize_lateraldata
    end interface initialize_lateraldata
 
@@ -118,8 +118,8 @@ module m_laterals
    !! In average_concentrations_for_laterals, the concentrations*timestep are aggregated in outgoing_lat_concentration.
    !! While in finish_outgoing_lat_concentration, the average over time is actually computed.
    interface average_concentrations_for_laterals
-      module subroutine average_concentrations_for_laterals(numconst, kmx, kmxn, cell_volume, constituents, dt)
-         integer, intent(in) :: numconst !< Number or constituents.
+      module subroutine average_concentrations_for_laterals(num_const, kmx, kmxn, cell_volume, constituents, dt)
+         integer, intent(in) :: num_const !< Number or constituents.
          integer, intent(in) :: kmx !< Number of layers (0 means 2D computation).
          integer, dimension(:), intent(in) :: kmxn !< Maximum number of vertical cells per base node n.
          real(kind=dp), dimension(:), intent(in) :: cell_volume !< Volume of water in computational cells.

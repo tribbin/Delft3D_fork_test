@@ -279,7 +279,7 @@ subroutine rdtrt(lundia    ,error     ,lftrto    ,dt        , &
     ! Read value of Trtrou, default NO
     !
     chulp = 'N'
-    call prop_get_string(mdfile_ptr, '*','Trtrou',chulp)
+    call prop_get(mdfile_ptr, '*','Trtrou',chulp)
     !
     ! set LFTRTO to TRUE if CHULP = Y/y
     !
@@ -387,7 +387,7 @@ subroutine rdtrt(lundia    ,error     ,lftrto    ,dt        , &
     !
     filtmp = ' '
     keyw   = 'Trtdef'
-    call prop_get_string(mdfile_ptr, '*',keyw,filtmp)
+    call prop_get(mdfile_ptr, '*',keyw,filtmp)
     md_ttdfile = filtmp
     !
     txtput1 = keyw
@@ -931,7 +931,7 @@ subroutine rdtrt(lundia    ,error     ,lftrto    ,dt        , &
         else
             keyw   = 'Trt'//char(116+jdir)    ! 'Trtu' or 'Trtv'
         end if
-        call prop_get_string(mdfile_ptr, '*',keyw,filtmp)
+        call prop_get(mdfile_ptr, '*',keyw,filtmp)
         !
         txtput1 = keyw
         write (msgtmp, '(a,a,a)') txtput1,': ',trim(filtmp)
@@ -981,7 +981,7 @@ subroutine rdtrt(lundia    ,error     ,lftrto    ,dt        , &
         else
             keyw   = 'TrtCl'//char(116+jdir)    ! 'TrtClu' or 'TrtClv'
         end if
-        call prop_get_string(mdfile_ptr, '*',keyw,filtmp)
+        call prop_get(mdfile_ptr, '*',keyw,filtmp)
         !
         txtput1 = keyw
         write (msgtmp, '(a,a,a)') txtput1,': ',trim(filtmp)
@@ -1840,7 +1840,7 @@ subroutine dimtrt(lundia    ,error     ,gdtrachy   ,mdfile_ptr , &
     ! Read value of Trtrou, default NO
     !
     chulp = 'N'
-    call prop_get_string(mdfile_ptr, '*','Trtrou',chulp)
+    call prop_get(mdfile_ptr, '*','Trtrou',chulp)
     !
     ! set LFTRTO to TRUE if CHULP = Y/y
     !
@@ -1856,7 +1856,7 @@ subroutine dimtrt(lundia    ,error     ,gdtrachy   ,mdfile_ptr , &
     !
     filtmp = ' '
     keyw   = 'Trtdef'
-    call prop_get_string(mdfile_ptr, '*',keyw,filtmp)
+    call prop_get(mdfile_ptr, '*',keyw,filtmp)
     !
     ! keyword not found ?
     !
@@ -1927,7 +1927,7 @@ subroutine dimtrt(lundia    ,error     ,gdtrachy   ,mdfile_ptr , &
            else
                keyw = 'Trt'//char(116+jdir)    ! 'Trtu' or 'Trtv'
            end if
-           call prop_get_string(mdfile_ptr, '*',keyw,filtmp)
+           call prop_get(mdfile_ptr, '*',keyw,filtmp)
            !
            ! keyword not found ?
            !

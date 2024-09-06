@@ -486,15 +486,15 @@ module m_flowparameters
    integer :: jahistaucurrent !< Write bed shear stress to his file, 0: no, 1: yes
    integer :: jahisvelocity !< Write velocity magnitude to his file, 0: no, 1: yes
    integer :: jahisdischarge !< Write discharge magnitude to his file, 0: no, 1: yes
-   integer :: jahisrunupgauge !< Write runupgauge to his file, 0: no, 1: yes
+   integer :: jahisrunupgauge !< Write runupgauge       to his file, 0: no, 1: yes
    integer :: jahiswqbot !< Write wqbot to his file, 0: no, 1: yes
    integer :: jahiswqbot3d !< Write wqbot3d to his file, 0: no, 1: yes
-   integer :: jahistracers !< Write tracers to his file, 0: no, 1: yes
-   integer :: jahiscrs_flow !< Write crs_flow to his file, 0: no, 1: yes
+   integer :: jahistracers !< Write tracers          to his file, 0: no, 1: yes
+   integer :: jahiscrs_flow !< Write crs_flow         to his file, 0: no, 1: yes
    integer :: jahiscrs_constituents !< Write crs_constituents to his file, 0: no, 1: yes
-   integer :: jahiscrs_sediment !< Write crs_sediment to his file, 0: no, 1: yes
-   integer :: jahisdred !< Write dred to his file, 0: no, 1: yes
-   integer :: jahiswaq !< Write Water Quality to his file, 0: no, 1: yes
+   integer :: jahiscrs_sediment !< Write crs_sediment     to his file, 0: no, 1: yes
+   integer :: jahisdred !< Write dred             to his file, 0: no, 1: yes
+   integer :: jahiswaq !< Write Water Quality    to his file, 0: no, 1: yes
    ! His output structure keywords
    integer :: jahiscgen !< Write structure parameters to his file, 0: n0, 1: yes
    integer :: jahispump !< Write pump      parameters to his file, 0: n0, 1: yes
@@ -560,8 +560,8 @@ module m_flowparameters
    integer :: jamapwav_phiwav !< output waves to map file for variable phiwav, 0: no, 1: yes
    integer :: jamapwav_sxwav !< output waves to map file for variable sxwav,  0: no, 1: yes
    integer :: jamapwav_sywav !< output waves to map file for variable sywav,  0: no, 1: yes
-   integer :: jamapwav_sxbwav !< output waves to map file for variable sxbwav, 0: no, 1: yes
-   integer :: jamapwav_sybwav !< output waves to map file for variable sybwav, 0: no, 1: yes
+ integer                           :: jamapwav_sbxwav           !< output waves to map file for variable sxbwav, 0: no, 1: yes
+ integer                           :: jamapwav_sbywav           !< output waves to map file for variable sybwav, 0: no, 1: yes
    integer :: jamapwav_mxwav !< output waves to map file for variable mxwav,  0: no, 1: yes
    integer :: jamapwav_mywav !< output waves to map file for variable mywav,  0: no, 1: yes
    integer :: jamapwav_dsurf !< output waves to map file for variable dsurf,  0: no, 1: yes

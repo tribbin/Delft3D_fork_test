@@ -522,7 +522,7 @@ end subroutine calculate_fetch_values
 
 !> get phiwav values
 subroutine get_phiwav_values()
-   use m_sediment, only: phiwav
+use m_waves, only : phiwav
    use m_flowgeom
    use m_flow
    use m_sferic, only: pi
@@ -548,7 +548,7 @@ end subroutine get_phiwav_values
 
 !> copy values to boundary nodes
 subroutine copy_values_to_boundary_nodes()
-   use m_sediment, only: phiwav, rlabda
+   use m_waves, only : phiwav, rlabda
    use m_flowgeom
    use m_flow
    use m_waves, only: uorb, twav, hwav
