@@ -60,6 +60,7 @@ contains
       integer :: temp_threads
       integer :: ierror
       integer :: nump1d
+      integer :: nump1d2d_firstpass
       ierror = 1
 
       allocate (nc1_array(NUML1D), nc2_array(NUML1D))
@@ -88,24 +89,24 @@ contains
             KC(k1) = 1; KC(k2) = 1
          end if
       end do
-   
-   nump1d = size(meshgeom1d%nodebranchidx) !< Old number of nodes contained in meshgeom1d
-     if (.not. associated(meshgeom1d%nodeidx)) then ! assume that the nodes were put at the front in order during network reading.
-        allocate (meshgeom1d%nodeidx(nump1d))
-        meshgeom1d%nodeidx = [1:nump1d] 
-     end if
-     allocate (meshgeom1d%nodeidx_inverse(size(kc)))
-     do i = 1,nump1d
-       meshgeom1d%nodeidx_inverse(meshgeom1d%nodeidx(i)) = i !Use KC0 as inverse mapping array for branch nodes
-     end do
-      
-      nump1d2d = nump
-      do i = 1,2
+
+      nump1d = size(meshgeom1d%nodebranchidx) !< Old number of nodes contained in meshgeom1d
+      if (.not. associated(meshgeom1d%nodeidx)) then ! assume that the nodes were put at the front in order during network reading.
+         allocate (meshgeom1d%nodeidx(nump1d))
+         meshgeom1d%nodeidx = [1:nump1d]
+      end if
+      allocate (meshgeom1d%nodeidx_inverse(size(kc)))
+      do i = 1, nump1d
+         meshgeom1d%nodeidx_inverse(meshgeom1d%nodeidx(i)) = i !Use KC0 as inverse mapping array for branch nodes
+      end do
+
+      do i = 1, 2
+         nump1d2d = nump
          do L = 1, NUML1D
             k1 = KN(1, L); k2 = KN(2, L)
             if (k1 == 0) cycle
-            nc1 = set_N(L,k1,nc1_array)
-            nc2 = set_N(L,k2,nc2_array)
+            nc1 = set_N(L, k1, nc1_array)
+            nc2 = set_N(L, k2, nc2_array)
             if (nc1 /= 0 .and. nc1 == nc2) then !Both net nodes inside 2D cell, but assume that the first is then the 1D net node.
                nc1 = 0
             end if
@@ -113,7 +114,11 @@ contains
             call set_lne(nc1, k1, L, 1, nump1d2d)
             call set_lne(nc2, k2, L, 2, nump1d2d)
          end do
+         if (i == 1) then
+            nump1d2d_firstpass = nump1d2d
+         end if
       end do
+      nump1d2d = nump1d2d_firstpass + nump1d2d - nump !Total number of cells from both passes
 
 !     END COPY from flow_geominit
 
@@ -195,22 +200,31 @@ contains
       integer, intent(in) :: L !< index in LNE array to set
       integer, intent(in) :: i_lne !< index specifying if the left node (1) or right node (2) in LNE array is to be set
       integer, intent(inout) :: nump1d2d !< 1D netnode counter (starts at nump)
-
+      logical :: branches_first
       integer :: k_inv, next_index
+
+      branches_first = .true.
       if (NC == 0) then
          k_inv = meshgeom1d%nodeidx_inverse(k)
          next_index = nump1d2d - nump + 1
-         !> Nodes need to be found in the correct order. This is why we do 2 passes.
-         if (meshgeom1d%nodebranchidx(k_inv) == meshgeom1d%nodebranchidx(next_index) .and. comparereal(meshgeom1d%nodeoffsets(k_inv),meshgeom1d%nodeoffsets(next_index),1d-6)==0) then
-            if (is_new_1D_cell(K, l)) then ! NIEUWE 1d CELL
-               nump1d2d = nump1d2d + 1
-               KC(K) = -nump1d2d ! MARKEREN ALS OUD
-               LNE(i_lne, L) = -abs(KC(K)) ! NEW 1D CELL flag 1D links through negative lne ref
-               LNN(L) = LNN(L) + 1
-            else if (KC(K) /= 1) then
-               LNE(i_lne, L) = -abs(KC(K)) ! NEW 1D CELL flag 1D links through negative lne ref
-               LNN(L) = LNN(L) + 1
+         if (next_index <= size(meshgeom1d%nodebranchidx)) then
+            if (meshgeom1d%nodebranchidx(k_inv) == meshgeom1d%nodebranchidx(next_index) .and. &
+                comparereal(meshgeom1d%nodeoffsets(k_inv), meshgeom1d%nodeoffsets(next_index), 1d-6) == 0) then
+               branches_first = .true.
+            else
+               branches_first = .false.
             end if
+         end if
+
+         !> Nodes need to be found in the correct order. This is why we do 2 passes.
+         if (is_new_1D_cell(K, l) .and. branches_first) then ! NIEUWE 1d CELL
+            nump1d2d = nump1d2d + 1
+            KC(K) = -nump1d2d ! MARKEREN ALS OUD
+            LNE(i_lne, L) = -abs(KC(K)) ! NEW 1D CELL flag 1D links through negative lne ref
+            LNN(L) = LNN(L) + 1
+         else if (KC(K) /= 1) then
+            LNE(i_lne, L) = -abs(KC(K)) ! NEW 1D CELL flag 1D links through negative lne ref
+            LNN(L) = LNN(L) + 1
          end if
       else
          LNE(i_lne, L) = NC ! ALREADY EXISTING 2D CELL
@@ -218,19 +232,19 @@ contains
       end if
 
    end subroutine set_lne
-   
-   integer pure function set_N(L,K,NC_array)
-   integer, intent(in) :: L !< current link
-   integer, dimension(:), intent(in) :: NC_array
-   integer, intent(in) :: K !< node (attached to link)
-   
-         set_N = 0
-         if (kn(3, L) /= 1 .and. kn(3, L) /= 6) then !These link types are allowed to have no 2D cells
-            if (NMK(K) == 1) then
-               set_N = NC_array(L) ! IS INSIDE 2D CELLS()
-            end if
+
+   integer pure function set_N(L, K, NC_array)
+      integer, intent(in) :: L !< current link
+      integer, dimension(:), intent(in) :: NC_array
+      integer, intent(in) :: K !< node (attached to link)
+
+      set_N = 0
+      if (kn(3, L) /= 1 .and. kn(3, L) /= 6) then !These link types are allowed to have no 2D cells
+         if (NMK(K) == 1) then
+            set_N = NC_array(L) ! IS INSIDE 2D CELLS()
          end if
-         
+      end if
+
    end function set_N
-   
+
 end module
