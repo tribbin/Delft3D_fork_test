@@ -100,7 +100,7 @@ contains
          meshgeom1d%nodeidx_inverse(meshgeom1d%nodeidx(i)) = i !Use KC0 as inverse mapping array for branch nodes
       end do
 
-      do i = 1, 2
+      do i = 1, 2 ! Two passes, first we skip all the links that don't fit the branch order.
          nump1d2d = nump
          do L = 1, NUML1D
             k1 = KN(1, L); k2 = KN(2, L)
@@ -180,6 +180,7 @@ contains
       return
    end subroutine find1dcells
 
+   !> check if the node is touched in the permutation array, has enough links and is type 1 or 6
    logical function is_new_1D_cell(k, l)
       integer, intent(in) :: k !>  netnode number
       integer, intent(in) :: l !>  netlink number
@@ -193,6 +194,7 @@ contains
       end if
    end function is_new_1D_cell
 
+   !> Check for a new cell and set the LNE array. Will skip any cell that doesn't match the branch order + chainage sequence.
    subroutine set_lne(NC, K, L, i_lne, nump1d2d)
       use precision_basics, only: comparereal
       integer, intent(in) :: NC !< 2D cell number
@@ -215,7 +217,6 @@ contains
                branches_first = .false.
             end if
          end if
-
          !> Nodes need to be found in the correct order. This is why we do 2 passes.
          if (is_new_1D_cell(K, l) .and. branches_first) then ! NIEUWE 1d CELL
             nump1d2d = nump1d2d + 1
@@ -233,6 +234,7 @@ contains
 
    end subroutine set_lne
 
+   !> if the link is not type 1 or 6, checks the previously filled NC_array for the 2D cell value
    integer pure function set_N(L, K, NC_array)
       integer, intent(in) :: L !< current link
       integer, dimension(:), intent(in) :: NC_array
