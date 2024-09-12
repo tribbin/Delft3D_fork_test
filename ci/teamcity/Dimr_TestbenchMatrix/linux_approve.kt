@@ -27,6 +27,7 @@ object LinuxApprove : BuildType({
             name = "Approve Release"
 
             conditions {
+                equals("dep.${Linux.id}.teamcity.build.triggeredBy.username", "%dep.${Trigger.id}.teamcity_user%")
                 endsWith("dep.${Trigger.id}.teamcity.build.triggeredBy", "Release")
             }
             scriptContent = """

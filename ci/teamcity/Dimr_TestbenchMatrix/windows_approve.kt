@@ -27,6 +27,7 @@ object WindowsApprove : BuildType({
             name = "Approve Release"
 
             conditions {
+                equals("dep.${Windows.id}.teamcity.build.triggeredBy.username", "%dep.${Trigger.id}.teamcity_user%")
                 endsWith("dep.${Trigger.id}.teamcity.build.triggeredBy", "Release")
             }
             scriptContent = """
