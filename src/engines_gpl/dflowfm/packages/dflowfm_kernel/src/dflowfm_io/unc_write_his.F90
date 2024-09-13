@@ -985,12 +985,14 @@ contains
       structure_names = [(trimexact(network%sts%struct(network%sts%orificeIndices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numOrifices)]
       call unc_put_his_structure_names(ihisfile, jahisorif, id_orifgen_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, jahispump, id_pump_id, pump_ids)
+      structure_names = [(pump_ids(i), integer :: i=1, npumpsg)]
+      call unc_put_his_structure_names(ihisfile, jahispump, id_pump_id, structure_names)
       call unc_put_his_structure_mid_points(ihisfile, ST_PUMP, jahispump, npumpsg, 'line', number_of_pump_nodes(), &
                                             id_pumpdim, id_pumpgeom_node_count, id_pumpgeom_node_coordx, id_pumpgeom_node_coordy, &
                                             id_poly_xmid=id_pump_xmid, id_poly_ymid=id_pump_ymid)
 
-      call unc_put_his_structure_names(ihisfile, jahisgate, id_gate_id, gate_ids)
+      structure_names = [(gate_ids(i), integer :: i=1, ngatesg)]
+      call unc_put_his_structure_names(ihisfile, jahisgate, id_gate_id, structure_names)
 
       if (jaoldstr == 1) then
          structure_names = [(cgen_ids(i), integer :: i=1, ncgensg)]
@@ -1004,7 +1006,8 @@ contains
       structure_names = [(trimexact(network%sts%struct(network%sts%uniweirIndices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numuniweirs)]
       call unc_put_his_structure_names(ihisfile, jahisuniweir, id_uniweir_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, jahisdambreak, id_dambreak_id, dambreak_ids)
+      structure_names = [(dambreak_ids(i), integer :: i=1, ndambreaksignals)]
+      call unc_put_his_structure_names(ihisfile, jahisdambreak, id_dambreak_id, structure_names)
 
       structure_names = [(trimexact(network%sts%struct(network%sts%culvertIndices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numCulverts)]
       call unc_put_his_structure_names(ihisfile, jahisculv, id_culvert_id, structure_names)
@@ -1012,24 +1015,32 @@ contains
       structure_names = [(trimexact(network%sts%struct(network%sts%bridgeIndices(i))%id, strlen_netcdf), integer :: i=1, network%sts%numBridges)]
       call unc_put_his_structure_names(ihisfile, jahisbridge, id_bridge_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, jahiscmpstru, id_cmpstru_id, network%cmps%compound(1:network%cmps%count)%id)
+      structure_names = [(network%cmps%compound(i)%id, integer :: i=1, network%cmps%count)]
+      call unc_put_his_structure_names(ihisfile, jahiscmpstru, id_cmpstru_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, jahislongculv, id_longculvert_id, longculverts(1:nlongculverts)%id)
+      structure_names = [(longculverts(i)%id, integer :: i=1, nlongculverts)]
+      call unc_put_his_structure_names(ihisfile, jahislongculv, id_longculvert_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, jahiscdam, id_cdam_id, cdam_ids)
+      structure_names = [(cdam_ids(i), integer :: i=1, ncdamsg)]
+      call unc_put_his_structure_names(ihisfile, jahiscdam, id_cdam_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, 1, id_statname, namobs(1:numobs + nummovobs))
+      structure_names = [(namobs(i), integer :: i=1, numobs + nummovobs)]
+      call unc_put_his_structure_names(ihisfile, 1, id_statname, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, 1, id_crs_id, crs(1:ncrs)%name)
+      structure_names = [(crs(i)%name, integer :: i=1, ncrs)]
+      call unc_put_his_structure_names(ihisfile, 1, id_crs_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, 1, id_rugname, rug(1:num_rugs)%name)
+      structure_names = [(rug(i)%name, integer :: i=1, num_rugs)]
+      call unc_put_his_structure_names(ihisfile, 1, id_rugname, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, jahissourcesink, id_srcname, srcname(1:numsrc))
+      structure_names = [(srcname(i), integer :: i=1, numsrc)]
+      call unc_put_his_structure_names(ihisfile, jahissourcesink, id_srcname, structure_names)
 
       structure_names = [(cgen_ids(gate2cgen(i)), integer :: i=1, ngategen)]
       call unc_put_his_structure_names(ihisfile, jahisgate, id_gategen_id, structure_names)
 
-      call unc_put_his_structure_names(ihisfile, jahislateral, id_lat_id, lat_ids(1:numlatsg))
+      structure_names = [(lat_ids(i), integer :: i=1, numlatsg)]
+      call unc_put_his_structure_names(ihisfile, jahislateral, id_lat_id, structure_names)
    end subroutine unc_put_his_structure_static_vars
 
    !> Write ('put') the static variables for a single structure type.
