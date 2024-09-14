@@ -75,10 +75,10 @@ contains
 
       success = .true.
 
-      if (allocated(patm)) then
-         ! To prevent any pressure jumps at the boundary, set (initial) patm in interior to PavBnd.
+      if (allocated(patm) .and. PavBnd > 0d0) then
+         ! To prevent any pressure jumps at the boundary, set (initial) patm in interior to PavBnd, if PavBnd is provided by the user.
          ! May of course be overridden later by spatially varying patm values.
-         patm = PavBnd
+         patm(:) = PavBnd
       end if
 
       call retrieve_icecover(time_in_seconds)

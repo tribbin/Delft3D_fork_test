@@ -1090,6 +1090,23 @@
        allocate (sam0(ndkx), sam1(ndkx), same(ndkx)); sam0 = 0; sam1 = 0; same = 0
     end if
 
+    if (ja_computed_airdensity == 1) then
+       if (allocated(patm)) deallocate (patm)
+       allocate (patm(ndx), stat=ierr)
+       call aerr('patm(ndx)', ierr, ndx)
+       patm(:) = 0d0
+       
+       if (allocated(tair)) deallocate (tair)
+       allocate (tair(ndx), stat=ierr)
+       call aerr('tair(ndx)', ierr, ndx)
+       tair(:) = 0d0
+       
+       if (allocated(rhum)) deallocate (rhum)
+       allocate (rhum(ndx), stat=ierr)
+       call aerr('rhum(ndx)', ierr, ndx)
+       rhum(:) = 0d0
+    end if
+    
     if (jatem > 0) then
        if (allocated(tem1)) deallocate (tem1)
        allocate (tem1(ndkx), stat=ierr)
@@ -1119,7 +1136,6 @@
              call aerr('tbed(ndx)', ierr, ndx)
              tbed = temini
           end if
-
        end if
 
        if ((jamapheatflux > 0 .or. jahisheatflux > 0) .and. jatem > 1) then

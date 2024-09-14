@@ -58,7 +58,7 @@ contains
 !! IFS documentation, part IV, section 12.6
    subroutine get_airdensity(p, T, T_dewpoint, air_density, ierror)
       use m_alloc, only: aerr
-      use MessageHandling, only: mess, LEVEL_WARN
+      use MessageHandling, only: mess, LEVEL_ERROR
 
       real(kind=hp), intent(in) :: p(:) !< total atmospheric pressure (Pa)
       real(kind=hp), intent(in) :: T(:) !< temperature [degrees_Celsius]
@@ -78,7 +78,7 @@ contains
       ierror = 0
       nelem = size(air_density)
       if (nelem /= size(p) .or. nelem /= size(T)) then
-         call mess(LEVEL_WARN, 'Size of arrays do no match, computation of airdensity is not possible.')
+         call mess(LEVEL_ERROR, 'Size of arrays do no match, computation of airdensity is not possible.')
          ierror = 1
          return
       end if
