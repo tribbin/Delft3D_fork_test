@@ -75,10 +75,9 @@ contains
       integer :: nelem !< number of elements in array
       integer :: ierr !< error code
 
-      ierror = 0
       nelem = size(air_density)
       if (nelem /= size(p) .or. nelem /= size(T)) then
-         call mess(LEVEL_ERROR, 'Size of arrays do no match, computation of airdensity is not possible.')
+         call mess(LEVEL_ERROR, 'Programming error, please report: Size of arrays in airdensity::get_airdensity do no match, computation of air density is not possible.')
          ierror = 1
          return
       end if
@@ -108,6 +107,8 @@ contains
       deallocate (T_virtual)
       deallocate (T_kelvin)
       deallocate (Td_kelvin)
+
+      ierror = 0
 
    contains
 

@@ -38,6 +38,7 @@ contains
    subroutine tests_compute_airdensity
       call test(test_get_airdensity, 'Test computation of varying air density.')
       call test(test_get_airdensity_exact, 'Test computation of varying air density in full precision.')
+      call test(test_check_arraysizes, 'Test error message for arrays of unequal length.')
    end subroutine tests_compute_airdensity
 !
 !==============================================================================
@@ -94,5 +95,33 @@ contains
       end do
 
    end subroutine test_get_airdensity_exact
+!
+!==============================================================================
+!> tests error handling for input arrays of unequal length
+   subroutine test_check_arraysizes
+      use unstruc_messages, only: threshold_abort, LEVEL_FATAL, LEVEL_ERROR
+      use MessageHandling, only: getMaxErrorLevel
+
+      real(kind=hp) :: p(2) !< total atmospheric pressure [Pa]
+      real(kind=hp) :: T(3) !< temperature [Celcius]
+      real(kind=hp) :: Td(4) !< temperature [Celcius]
+      real(kind=hp) :: rhoair(3) !< air density [kg m-1]
+      integer :: ierr !< error flag
+      integer :: threshold_abort_current !< Present/current treshold for abort
+
+      p = 0._hp
+      T = 20.0_hp
+      Td = 3.0_hp
+
+      ! Temporarily set the abort threshold to LEVEL_FATAL.
+      threshold_abort_current = threshold_abort
+      threshold_abort = LEVEL_FATAL
+
+      call get_airdensity(p, T, Td, rhoair, ierr)
+      call assert_equal(getMaxErrorLevel(), LEVEL_ERROR, 'Arrays of unequal size were not detected.')
+
+      threshold_abort = threshold_abort_current
+
+   end subroutine test_check_arraysizes
 
 end module test_airdensity
