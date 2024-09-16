@@ -84,7 +84,7 @@ contains
          call get_timespace_value_by_item_array_consider_success_value(item_atmosphericpressure, patm, time_in_seconds)
          call get_timespace_value_by_item_array_consider_success_value(item_airtemperature, tair, time_in_seconds)
          call get_timespace_value_by_item_array_consider_success_value(item_humidity, rhum, time_in_seconds)
-         call get_airdensity(patm, tair, rhum, airdensity, ierr)
+         call get_airdensity(patm, tair, rhum, airdensity, iresult)
       end if
 
       if (update_wind_stress_each_time_step == 0) then ! Update wind in set_external_forcing (each user timestep)
