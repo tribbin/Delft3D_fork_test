@@ -27,9 +27,6 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
  subroutine setextforcechkadvec()
     use m_flow
     use m_flowparameters, only: trshcorio
@@ -196,7 +193,6 @@
        end if
     end if
 
-! JRE
     if (jawave == 4) then ! wave forcing from XBeach
        if (lwave == 1) then
           if (kmx == 0) then
@@ -307,14 +303,12 @@
           call getcz(hu(LL), frcu(LL), ifrcutp(LL), czusf(LL), LL) ! calculating chezy coefficient on the flow links
        end do
 
-       !
        if (kmx < 2) then
-          call links_to_centers(czssf, czusf) ! converting chezy cofficient to the flow nodes
+          call links_to_centers(czssf, czusf) ! converting chezy coefficient to the flow nodes
           if (spirbeta > 0.0d0) then
              call get_spiralforce()
           end if
        else
-          !call links_to_centers( czssf, czusf )
           call get_spiral3d() ! compute equivalent secondary flow intensity
        end if
     end if
@@ -323,7 +317,7 @@
        call add_InternalTidesFrictionForces()
     end if
 
-    if (chkadvd > 0) then ! niet droogtrekken door advectie, stress of wind (allen in adve)
+    if (chkadvd > 0) then ! avoid drying from advection, stress or wind (all within adve)
 
        if (kmx == 0) then
 
@@ -334,11 +328,11 @@
 
                 if (hs(k1) < 0.5d0 * hs(k2)) then
                    if (adve(L) < 0 .and. hs(k1) < chkadvd) then
-                      adve(L) = adve(L) * hs(k1) / chkadvd ! ; nochkadv = nochkadv + 1
+                      adve(L) = adve(L) * hs(k1) / chkadvd
                    end if
                 else if (hs(k2) < 0.5d0 * hs(k1)) then
                    if (adve(L) > 0 .and. hs(k2) < chkadvd) then
-                      adve(L) = adve(L) * hs(k2) / chkadvd ! ; nochkadv = nochkadv + 1
+                      adve(L) = adve(L) * hs(k2) / chkadvd
                    end if
                 end if
              end if
@@ -354,13 +348,13 @@
                 if (hs(k1) < 0.5d0 * hs(k2)) then
                    do L = Lb, Lt
                       if (adve(L) < 0 .and. hs(k1) < chkadvd) then
-                         adve(L) = adve(L) * hs(k1) / chkadvd ! ; nochkadv = nochkadv + 1
+                         adve(L) = adve(L) * hs(k1) / chkadvd
                       end if
                    end do
                 else if (hs(k2) < 0.5d0 * hs(k1)) then
                    do L = Lb, Lt
                       if (adve(L) > 0 .and. hs(k2) < chkadvd) then
-                         adve(L) = adve(L) * hs(k2) / chkadvd ! ; nochkadv = nochkadv + 1
+                         adve(L) = adve(L) * hs(k2) / chkadvd
                       end if
                    end do
                 end if
