@@ -2380,8 +2380,9 @@ contains
       end if
 
       if (ja_computed_airdensity == 1) then
-         if (.not. ((japatm == 1) .and. tair_available .and. dewpoint_available)) then
-            call mess(LEVEL_ERROR, 'Quantities airpressure, airtemperature and dewpoint are expected in ext-file in combination with keyword computedAirdensity in mdu-file.')
+         if (.not. ((japatm == 1) .and. tair_available .and. dewpoint_available .and. &
+             (item_atmosphericpressure /= ec_undef_int) .and. (item_airtemperature /= ec_undef_int) .and. (item_humidity /= ec_undef_int))) then
+            call mess(LEVEL_ERROR, 'Quantities airpressure, airtemperature and dewpoint are expected, as separate quantities (e.g., QUANTITY = airpressure), in ext-file in combination with keyword computedAirdensity in mdu-file.')
          else
             if (ja_airdensity == 1) then
                call mess(LEVEL_ERROR, 'Quantity airdensity in ext-file is unexpected in combination with keyword computedAirdensity = 1 in mdu-file.')
