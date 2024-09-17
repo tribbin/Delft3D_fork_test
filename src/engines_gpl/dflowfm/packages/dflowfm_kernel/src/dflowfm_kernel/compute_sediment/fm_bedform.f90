@@ -57,6 +57,7 @@ contains
       use m_flowtimes
       use m_waves
       use m_get_kbot_ktop
+      use m_get_cz
       !
       implicit none
       !
@@ -298,6 +299,7 @@ contains
       use unstruc_files, only: mdia
       use m_alloc
       use message_module
+      use m_get_Lbot_Ltop
       !
       implicit none
       !

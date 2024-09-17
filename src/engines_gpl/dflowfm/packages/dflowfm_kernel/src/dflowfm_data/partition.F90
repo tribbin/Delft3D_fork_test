@@ -232,19 +232,6 @@ module m_partitioninfo
    double precision, allocatable :: reducebuf(:) !< work array for mpi-reduce
    integer :: nreducebuf !< size of work array 'reducebuf'
 
-!! we need interfaces to getkbotktop and getLbotLtop for the function pointers
-! interface
-!    subroutine getkbotktop(n,kb,kt)
-!      integer :: n, kb, kt
-!    end subroutine getkbotktop
-! end interface
-!
-! interface
-!    subroutine getLbotLtop(n,Lb,Lt)
-!      integer :: n, Lb, Lt
-!    end subroutine getLbotLtop
-! end interface
-
 !   for test solver:  Schwarz method with Robin-Robin coupling
    integer :: nbndint ! number of interface links
    integer, allocatable :: kbndint(:, :) ! interface administration, similar to kbndz, etc., dim(3,nbndint)
@@ -6682,42 +6669,6 @@ subroutine update_ghostboundvals(itype, NDIM, N, var, jacheck, ierror)
 
    return
 end subroutine update_ghostboundvals
-
-! =================================================================================================
-! =================================================================================================
-subroutine fill_reduce_buffer(vals, nvals)
-   use m_partitioninfo
-   implicit none
-   integer :: i
-   integer, intent(in) :: nvals
-   double precision, dimension(1:nvals) :: vals
-
-   if (jampi == 0) then
-      return
-   end if
-
-   do i = 1, nvals
-      reducebuf(nreducebuf + i) = vals(i)
-   end do
-   nreducebuf = nreducebuf + nvals
-
-end subroutine fill_reduce_buffer
-
-! =================================================================================================
-! =================================================================================================
-subroutine subsitute_reduce_buffer(vals, nvals)
-   use m_partitioninfo
-   implicit none
-   integer :: i
-   integer, intent(in) :: nvals
-   double precision, dimension(1:nvals) :: vals
-
-   nreducebuf = nreducebuf - nvals
-   do i = 1, nvals
-      vals(i) = reducebuf(nreducebuf + i)
-   end do
-
-end subroutine subsitute_reduce_buffer
 
 ! =================================================================================================
 ! =================================================================================================

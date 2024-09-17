@@ -77,6 +77,9 @@ contains
       use m_qnerror
       use string_module, only: str_lower
       use m_delpol
+      use m_set_kbot_ktop
+      use m_ini_sferic
+      use m_volsur
 
       implicit none
 
@@ -610,6 +613,7 @@ contains
       use iso_varying_string, only: len_trim
       use m_samples, only: NS, restoresam, savesam
       use MessageHandling, only: LEVEL_WARN, mess
+      use m_reasam
 
       implicit none
 
@@ -771,6 +775,8 @@ contains
       use iso_varying_string, only: len_trim, index
       use m_setucxcuy_leastsquare, only: reconst2nd
       use dfm_error
+      use m_set_bobs
+      use m_flow_obsinit
 
       implicit none
 
@@ -846,6 +852,7 @@ contains
    subroutine initialize_values_at_normal_velocity_boundaries()
       use fm_external_forcings_data, only: nbndn, kbndn, zbndn
       use m_flow, only: u1
+      use m_get_Lbot_Ltop
 
       implicit none
 
@@ -1055,6 +1062,7 @@ contains
       use m_flowparameters, only: jasal
       use m_flow, only: kmx, ndkx, sa1
       use fm_external_forcings_data, only: success
+      use m_set_kbot_ktop
 
       implicit none
 
@@ -1197,6 +1205,7 @@ contains
       use m_flow, only: kmx, u1
       use m_flowparameters, only: inivel
       use m_flowgeom, only: lnx
+      use m_get_Lbot_Ltop
 
       implicit none
 
@@ -1450,6 +1459,7 @@ contains
       use m_flowparameters, only: jasal, jatem
       use m_flowgeom, only: ln, lnx, lnxi
       use m_flow, only: sa1, q1, tem1
+      use m_get_Lbot_Ltop
 
       implicit none
 
@@ -1578,6 +1588,10 @@ contains
       use m_dminmax
       use m_get_kbot_ktop
       use m_wripol
+      use m_set_kbot_ktop
+      use m_ini_sferic
+      use m_set_bobs
+      use m_get_czz0
 
       implicit none
 

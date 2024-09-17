@@ -53,6 +53,7 @@ subroutine update_verticalprofiles()
    use m_sferic
    use m_missing
    use m_get_kbot_ktop
+   use m_get_Lbot_Ltop
 
    implicit none
 

@@ -39,6 +39,8 @@ contains
       use m_locatora
       use m_dproject
       use m_inflowcell
+      use m_disdis
+      use m_set_col
 
       integer :: ma
       integer :: na

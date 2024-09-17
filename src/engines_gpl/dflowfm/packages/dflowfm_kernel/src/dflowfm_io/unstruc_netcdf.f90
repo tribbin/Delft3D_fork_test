@@ -1400,7 +1400,10 @@ contains
       use m_save_ugrid_state
       use fm_location_types
       use m_get_kbot_ktop
-
+      use m_get_layer_indices
+      use m_get_layer_indices_l_max
+      use m_get_Lbot_Ltop_max
+      
       implicit none
 
       integer, intent(in) :: ncid
@@ -1694,6 +1697,9 @@ contains
       use m_missing
       use fm_location_types
       use m_get_kbot_ktop
+      use m_get_layer_indices
+      use m_get_layer_indices_l_max
+      use m_get_Lbot_Ltop_max
       implicit none
       integer, intent(in) :: ncid
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
@@ -2810,6 +2816,7 @@ contains
       use m_missing
       use m_flowparameters !only jafullgridoutput
       use m_get_kbot_ktop
+      use m_get_layer_indices
 
       integer, intent(in) :: imapfile
       integer, intent(in) :: jaseparate
@@ -2955,6 +2962,10 @@ contains
       use m_gettaus
       use m_gettauswave
       use m_get_kbot_ktop
+      use m_get_layer_indices
+      use m_get_layer_indices_l_max
+      use m_get_Lbot_Ltop_max
+      use m_reconstruct_ucz
 
       integer, intent(in) :: irstfile
       real(kind=hp), intent(in) :: tim
@@ -5241,6 +5252,14 @@ contains
       use m_gettaus
       use m_gettauswave
       use m_get_kbot_ktop
+      use m_get_Lbot_Ltop
+      use m_get_layer_indices
+      use m_get_layer_indices_l_max
+      use m_get_Lbot_Ltop_max
+      use m_reconstruct_ucz
+      use m_reconstruct_sed_transports
+      use m_get_ucx_ucy_eul_mag
+      use m_get_cz
 
       implicit none
 
@@ -8065,6 +8084,13 @@ contains
       use m_gettaus
       use m_gettauswave
       use m_get_kbot_ktop
+      use m_get_layer_indices
+      use m_get_layer_indices_l_max
+      use m_get_Lbot_Ltop_max
+      use m_reconstruct_ucz
+      use m_reconstruct_sed_transports
+      use m_get_ucx_ucy_eul_mag
+      use m_get_cz
 
       implicit none
 
@@ -11382,6 +11408,7 @@ contains
       use m_sferic, only: jsferic, jasfer3D, rd2dg, ra
       use m_flowgeom, only: xz, yz
       use geometry_module, only: normaloutchk
+      use m_dlinedis2
 
       real(kind=hp), intent(out) :: xtt(:, :) !< array with x-contour points of momentum control volume surrounding each net/flow link
       real(kind=hp), intent(out) :: ytt(:, :) !< array with y-contour points of momentum control volume surrounding each net/flow link
@@ -11522,6 +11549,7 @@ contains
       use m_save_ugrid_state
       use gridoperations
       use fm_location_types
+      use m_set_nod_adm
 
       implicit none
 
@@ -12631,8 +12659,6 @@ contains
       integer, intent(out) :: numl_read !< Number of new netlinks read from file.
       integer, intent(out) :: ierr !< Return status (NetCDF operations)
 
-      logical :: stringsequalinsens
-
       character(len=:), allocatable :: coordsyscheck
       integer, dimension(:), allocatable :: kn3read
       integer, dimension(:), allocatable :: kn1read
@@ -12745,7 +12771,7 @@ contains
 
       coordsyscheck = ''
       ierr = ncu_get_att(inetfile, id_netnodex, 'standard_name', coordsyscheck)
-      if (stringsequalinsens(coordsyscheck, 'longitude')) then
+      if (strcmpi(coordsyscheck, 'longitude')) then
          jsferic = 1
       else
          jsferic = 0
@@ -12909,6 +12935,9 @@ contains
       use dfm_error
       use fm_location_types
       use m_get_kbot_ktop
+      use m_get_layer_indices
+      use m_get_layer_indices_l_max
+      use m_get_Lbot_Ltop_max
       
       integer, intent(in) :: ncid !< Open NetCDF data set
       character(len=*), intent(in) :: varname !< Variable name in file.
@@ -13088,6 +13117,7 @@ contains
       use m_fixedweirs, only: weirdte, nfxwL
       use fm_location_types
       use m_gettaus
+      use m_set_kbot_ktop
 
       character(len=*), intent(in) :: filename !< Name of NetCDF file.
       integer, intent(out) :: ierr !< Return status (NetCDF operations)
@@ -18423,6 +18453,7 @@ contains
 
       use m_missing, only: dmiss
       use m_get_kbot_ktop
+      use m_get_layer_indices
 
       double precision, allocatable, intent(in) :: data_values(:) !< array for information at flow nodes {"location": "face", "shape": ["ndkx"]}
       integer, intent(in) :: flow_node_index1 !< start index (1:ndx) for transfer of data from vector to matrix format

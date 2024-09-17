@@ -77,6 +77,7 @@ contains
       use m_fm_morstatistics, only: morstats, morstatt0
       use m_tables, only: interpolate
       use Timers
+      use m_reconstruct_sed_transports
 
       implicit none
 
@@ -291,6 +292,7 @@ contains
       use m_transport, only: fluxhortot, ised1, constituents, numconst
       use m_fm_erosed, only: aks, e_scrn, e_scrt, fixfac, kfsed, lsed, l_suscor, rca, suscorfac, sus, tratyp
       use m_partitioninfo, only: jampi, itype_u, update_ghosts
+      use m_get_Lbot_Ltop
 
       implicit none
 
@@ -978,6 +980,7 @@ contains
       use m_transport, only: fluxhortot, ised1, sinksetot, sinkftot
       use unstruc_files, only: mdia
       use m_get_kbot_ktop
+      use m_get_Lbot_Ltop
 
       implicit none
 
@@ -1642,6 +1645,7 @@ contains
       use m_flowgeom, only: lnx, wu_mor
       use m_fm_erosed, only: e_ssn, lsed, e_scrn
       use m_transport, only: fluxhortot, ISED1
+      use m_get_Lbot_Ltop
 
       implicit none
 

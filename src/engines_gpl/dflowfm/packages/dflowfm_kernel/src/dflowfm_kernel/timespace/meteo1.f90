@@ -6057,6 +6057,7 @@ contains
       use fm_location_types, only: UNC_LOC_S, UNC_LOC_U, UNC_LOC_CN
       use m_reapol
       use m_delsam
+      use m_reasam
 
       implicit none
 

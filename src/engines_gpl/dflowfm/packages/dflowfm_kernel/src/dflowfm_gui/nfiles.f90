@@ -65,6 +65,7 @@
       use m_getint
       use m_wripol
       use m_wrisam
+      use m_reasam
 
       implicit none
       integer :: NUM, NWHAT, KEY

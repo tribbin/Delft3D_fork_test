@@ -40,6 +40,9 @@ contains
       use m_timlin
       use m_dproject
       use m_getkey2
+      use m_disdis
+      use m_dispos
+      use m_givekey
 
       double precision :: dpx
       double precision, save :: f = 1d0

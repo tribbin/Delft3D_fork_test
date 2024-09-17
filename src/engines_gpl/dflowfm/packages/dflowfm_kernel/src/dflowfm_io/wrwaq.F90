@@ -2101,6 +2101,7 @@ contains
       use m_flowgeom
       use m_flow
       use wrwaq
+      use m_get_Lbot_Ltop_max
 
       implicit none
 
@@ -2559,6 +2560,7 @@ contains
       use m_flowgeom
       use m_flow
       use wrwaq
+      use m_get_Lbot_Ltop_max
       implicit none
       !
       !           Global variables
@@ -2659,6 +2661,7 @@ contains
       use m_flowgeom
       use m_flow
       use wrwaq
+      use m_get_ucx_ucy_eul_mag
       implicit none
       !
       !           Global variables
@@ -2976,6 +2979,7 @@ contains
       use m_flowgeom
       use m_flow
       use wrwaq
+      use m_get_Lbot_Ltop_max
       implicit none
       !
       !           Global variables
@@ -3044,6 +3048,7 @@ contains
       use m_flowgeom
       use m_flow
       use wrwaq
+      use m_get_Lbot_Ltop_max
       implicit none
       !
       !           Global variables

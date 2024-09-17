@@ -43,6 +43,7 @@
      use m_statistics
      use m_depmax
      use m_cconstants
+     use m_makenetnodescoding
      
      implicit none
 

@@ -84,6 +84,11 @@
       use m_delpol
       use m_delsam
       use m_copynetboundstopol
+      use m_makenetnodescoding
+      use m_set_nod_adm
+      use m_draw_nu
+      use m_set_bobs
+      use m_interpdivers
 
       implicit none
       integer :: ja, n12, ikey, mnx

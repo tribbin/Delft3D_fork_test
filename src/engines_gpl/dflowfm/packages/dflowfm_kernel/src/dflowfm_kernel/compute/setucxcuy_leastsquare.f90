@@ -286,6 +286,7 @@ contains
       use m_flow
       use m_flowgeom
       use m_netw
+      use m_get_Lbot_Ltop
 
       implicit none
       integer :: i, j, k1, k2, L, L1, L2, L3, m
@@ -568,6 +569,7 @@ contains
       use m_flow
       use m_flowgeom
       use m_get_kbot_ktop
+      use m_get_Lbot_Ltop
 
       implicit none
       integer, intent(in) :: kk, k

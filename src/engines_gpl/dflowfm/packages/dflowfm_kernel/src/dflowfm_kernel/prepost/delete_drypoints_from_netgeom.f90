@@ -43,6 +43,7 @@ subroutine delete_drypoints_from_netgeom(dryptsfilelist, jaconfirm, jinside)
    use m_delpol
    use m_reapol
    use m_delsam
+   use m_reasam
    implicit none
 
    character(*), intent(inout) :: dryptsfilelist !< List of file names to process for deleting dry parts. (Supported formats: .xyz, .pol)

@@ -48,6 +48,12 @@ subroutine fill_valobs()
    use m_gettaus
    use m_gettauswave
    use m_get_kbot_ktop
+   use m_get_Lbot_Ltop
+   use m_get_layer_indices
+   use m_get_layer_indices_l_max
+   use m_reconstruct_ucz
+   use m_get_ucx_ucy_eul_mag
+   use m_get_link1
 
    implicit none
 

@@ -1,6 +1,8 @@
 import jetbrains.buildServer.configs.kotlin.*
 
-import testbench.*
+import build.*
+import test.*
+import deploy.*
 
 version = "2024.03"
 
@@ -8,11 +10,10 @@ project {
 
     description = "contact: BlackOps (black-ops@deltares.nl)"
 
-    template(LinuxTestTemplate)
+    subProject(Build)
+    subProject(Test)
+    subProject(Deploy)
 
-    buildType(LinuxAll)
-    buildType(LinuxFm)
-
-    buildTypesOrder = arrayListOf(LinuxAll, LinuxFm)
+    subProjectsOrder = arrayListOf(Build, Test, Deploy)
 
 }
