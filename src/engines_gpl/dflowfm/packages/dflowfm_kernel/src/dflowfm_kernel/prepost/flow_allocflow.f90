@@ -1123,9 +1123,9 @@
           if (allocated(tair)) deallocate (tair, rhum, clou)
           allocate (tair(ndx), rhum(ndx), clou(ndx), stat=ierr)
           call aerr('tair(ndx), rhum(ndx), clou(ndx)', ierr, 3 * ndx)
-          tair = backgroundairtemperature
-          rhum = backgroundhumidity
-          clou = backgroundcloudiness
+          tair = BACKGROUND_AIRTEMPERATURE
+          rhum = BACKGROUND_HUMIDITY
+          clou = BACKGROUND_CLOUDINESS
           if (allocated(qrad)) deallocate (qrad)
           allocate (qrad(ndx), stat=ierr)
           call aerr('qrad(ndx)', ierr, ndx)
