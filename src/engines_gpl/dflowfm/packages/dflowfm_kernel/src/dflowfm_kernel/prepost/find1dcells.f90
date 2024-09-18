@@ -52,9 +52,9 @@ contains
 #endif
       implicit none
 
-      integer :: k1, k2, k3, L, N, left_node, right_node, new_node
+      integer :: k1, k2, k3, L, N, left_cell, right_cell, new_cell
       integer :: i, ierr, k, kcell
-      integer, dimension(:), allocatable :: left_2D_nodes, right_2D_nodes
+      integer, dimension(:), allocatable :: left_2D_cells, right_2D_cells
       logical :: Lisnew
       integer :: temp_threads
       integer :: ierror
@@ -63,7 +63,7 @@ contains
       logical :: preserve_branch_order
       ierror = 1
 
-      allocate (left_2D_nodes(NUML1D), right_2D_nodes(NUML1D))
+      allocate (left_2D_cells(NUML1D), right_2D_cells(NUML1D))
 #ifdef _OPENMP
       temp_threads = omp_get_max_threads() !> Save old number of threads
       call omp_set_num_threads(OMP_GET_NUM_PROCS()) !> Set number of threads to max for this O(N^2) operation
@@ -71,8 +71,8 @@ contains
       !$OMP PARALLEL DO
       do L = 1, NUML1D
          if (KN(1, L) /= 0 .and. kn(3, L) /= IFLTP_1D .and. kn(3, L) /= 6) then
-            call INCELLS(Xk(KN(1, L)), Yk(KN(1, L)), left_2D_nodes(L))
-            call INCELLS(Xk(KN(2, L)), Yk(KN(2, L)), right_2D_nodes(L))
+            call INCELLS(Xk(KN(1, L)), Yk(KN(1, L)), left_2D_cells(L))
+            call INCELLS(Xk(KN(2, L)), Yk(KN(2, L)), right_2D_cells(L))
          end if
       end do
       !$OMP END PARALLEL DO
@@ -103,8 +103,8 @@ contains
 
       nump1d2d = nump !> start from 2D cells
       !> two passes, second one in case branch order cannot be preserved.
-      call construct_lne_array(lne, nump1d2d, left_2D_nodes, right_2D_nodes, preserve_branch_order=.true.)
-      call construct_lne_array(lne, nump1d2d, left_2D_nodes, right_2D_nodes, preserve_branch_order=.false.)
+      call construct_lne_array(lne, nump1d2d, left_2D_cells, right_2D_cells, preserve_branch_order=.true.)
+      call construct_lne_array(lne, nump1d2d, left_2D_cells, right_2D_cells, preserve_branch_order=.false.)
 
 !     fill 1D netcell administration and set cell centers
       call realloc(xzw, nump1d2d)
@@ -121,12 +121,12 @@ contains
 
       do k = 1, numk
          if (kc(k) < 0) then ! 1d cell
-            new_node = -kc(k) ! cell number
-            N = netcell(new_node)%N
+            new_cell = -kc(k) ! cell number
+            N = netcell(new_cell)%N
 !           check if this node is new in this cell
             Lisnew = .true.
             do i = 1, N
-               if (netcell(new_node)%nod(i) == k) then
+               if (netcell(new_cell)%nod(i) == k) then
                   Lisnew = .false.
                   exit
                end if
@@ -134,11 +134,11 @@ contains
             if (Lisnew) then ! new node for this cell
                N = N + 1
                if (N > 1) then
-                  call realloc(netcell(new_node)%NOD, N, stat=ierr, keepExisting=.true., fill=0)
-                  call realloc(netcell(new_node)%LIN, N, stat=ierr, keepExisting=.true., fill=0)
+                  call realloc(netcell(new_cell)%NOD, N, stat=ierr, keepExisting=.true., fill=0)
+                  call realloc(netcell(new_cell)%LIN, N, stat=ierr, keepExisting=.true., fill=0)
                end if
-               netcell(new_node)%N = N
-               netcell(new_node)%nod(N) = k
+               netcell(new_cell)%N = N
+               netcell(new_cell)%nod(N) = k
             end if
          end if
       end do
@@ -178,15 +178,15 @@ contains
       end if
    end function is_new_1D_cell
 
-   !> Check for a new cell and set the global LNE array that administrates link-node connectivity.
+   !> Check for a new cell and set the global LNE array that administrates link-cell connectivity.
    !  Will skip any cell that doesn't match the branch order + chainage sequence.
    subroutine set_lne(LNE, NC, K, L, i_lne, nump1d2d, preserve_branch_order)
       use precision_basics, only: comparereal
-      integer, dimension(:, :), intent(inout) :: LNE !< link-node connectivity array, shape (2,numlinks). left and right node that a netlink connects.
+      integer, dimension(:, :), intent(inout) :: LNE !< link-cell connectivity array, shape (2,numlinks). left and right cell that a netlink connects.
       integer, intent(in) :: NC !< 2D cell number
       integer, intent(in) :: K !< new node number
       integer, intent(in) :: L !< index in LNE array to set
-      integer, intent(in) :: i_lne !< index specifying if the left node (1) or right node (2) in LNE array is to be set
+      integer, intent(in) :: i_lne !< index specifying if the left cell (1) or right cell (2) in LNE array is to be set
       integer, intent(inout) :: nump1d2d !< 1D netnode counter (starts at nump)
       logical, intent(in) :: preserve_branch_order !< flag specifying whether branch order must be preserved
       logical :: branches_first
@@ -223,42 +223,42 @@ contains
 
    end subroutine set_lne
 
-   !> if the link is not type 1 or 6, checks the previously filled node_array for the 2D cell value
-   integer pure function get_2D_node(L, K, node_array)
+   !> if the link is not type 1 or 6, checks the previously filled cell_array for the 2D cell value
+   integer pure function get_2D_cell(L, K, cell_array)
       integer, intent(in) :: L !< current link
-      integer, dimension(:), intent(in) :: node_array !< array of previously found 2D nodes.
+      integer, dimension(:), intent(in) :: cell_array !< array of previously found 2D cells.
       integer, intent(in) :: K !< node (attached to link)
 
-      get_2D_node = 0
+      get_2D_cell = 0
       if (kn(3, L) /= IFLTP_1D .and. kn(3, L) /= 6) then !These link types are allowed to have no 2D cells
          if (NMK(K) == 1) then
-            get_2D_node = node_array(L)
+            get_2D_cell = cell_array(L)
          end if
       end if
 
-   end function get_2D_node
+   end function get_2D_cell
 
-   !> Loop through all netlinks and fill the link-node connectivity array.
-   subroutine construct_lne_array(lne, nump1d2d, left_2D_nodes, right_2D_nodes, preserve_branch_order)
-      integer, dimension(:, :), intent(inout) :: lne !< link-node connectivity array, shape (2,numlinks). left and right node that a netlink connects.
+   !> Loop through all netlinks and fill the link-cell connectivity array.
+   subroutine construct_lne_array(lne, nump1d2d, left_2D_cells, right_2D_cells, preserve_branch_order)
+      integer, dimension(:, :), intent(inout) :: lne !< link-cell connectivity array, shape (2,numlinks). left and right cell that a netlink connects.
       integer, intent(out) :: nump1d2d !> total number of nodes, 2D nodes (nump) + 1D nodes (nump1d)
-      integer, dimension(:), intent(in) :: left_2D_nodes !< 2D-node numbers belonging to the left side of the lne array. 0 if not a 2D node.
-      integer, dimension(:), intent(in) :: right_2D_nodes !< 2D-node numbers belonging to the right side of the lne array. 0 if not a 2D node.
+      integer, dimension(:), intent(in) :: left_2D_cells !< 2D-cell numbers belonging to the left side of the lne array. 0 if not a 2D cell.
+      integer, dimension(:), intent(in) :: right_2D_cells !< 2D-cell numbers belonging to the right side of the lne array. 0 if not a 2D cell.
       logical, intent(in) :: preserve_branch_order !< whether the 1D nodes need to be found in the branch order or not.
 
-      integer :: L, k1, k2, left_node, right_node
+      integer :: L, k1, k2, left_cell, right_cell
 
       do L = 1, NUML1D
          k1 = KN(1, L); k2 = KN(2, L)
          if (k1 == 0) cycle
-         left_node = get_2D_node(L, k1, left_2D_nodes)
-         right_node = get_2D_node(L, k2, right_2D_nodes)
-         if (left_node /= 0 .and. left_node == right_node) then !Both net nodes inside 2D cell, but assume that the first is then the 1D net node.
-            left_node = 0
+         left_cell = get_2D_cell(L, k1, left_2D_cells)
+         right_cell = get_2D_cell(L, k2, right_2D_cells)
+         if (left_cell /= 0 .and. left_cell == right_cell) then !Both net nodes inside 2D cell, but assume that the first is then the 1D net node.
+            left_cell = 0
          end if
          LNN(L) = 0
-         call set_lne(lne, left_node, k1, L, 1, nump1d2d, preserve_branch_order)
-         call set_lne(lne, right_node, k2, L, 2, nump1d2d, preserve_branch_order)
+         call set_lne(lne, left_cell, k1, L, 1, nump1d2d, preserve_branch_order)
+         call set_lne(lne, right_cell, k2, L, 2, nump1d2d, preserve_branch_order)
       end do
 
    end subroutine construct_lne_array
