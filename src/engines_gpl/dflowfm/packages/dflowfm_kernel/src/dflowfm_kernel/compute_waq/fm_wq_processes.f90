@@ -52,7 +52,7 @@ subroutine fm_wq_processes_ini_sub()
 
    ! Other
    integer(4) :: nosys_eho, notot_eho, nocons_eho
-   integer(4) :: i
+   integer(4) :: i, unused_variable_should_break_build
 
    integer :: janew, iex, ierr
    integer :: kk, k, kb, kt, ktmax, kdum
