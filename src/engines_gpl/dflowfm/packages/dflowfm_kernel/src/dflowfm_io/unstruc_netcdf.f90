@@ -6679,21 +6679,7 @@ contains
 
       if (kmx > 0) then
          if (jamapviu > 0) then
-            ! For all flowlinks and layers add user defined part (viusp(LL) or vicouv) to modeled part (viu(LL)).
-            ! Values for inactive layers are set to missing in function unc_put_var_map.
-            call realloc(work1d, lnkx, keepExisting=.false.)
-            do LL = 1, lnx
-               if (javiusp == 1) then ! If horizontal eddy viscosity is spatially varying.
-                  vicc = viusp(LL)
-               else
-                  vicc = vicouv
-               end if
-               call getLbotLtopmax(LL, Lb, Lt)
-               do L = Lb, Lt
-                  work1d(L) = viu(L) + vicc
-               end do
-            end do
-            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_viu, iLocU, work1d, jabndnd=jabndnd_)
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_viu, iLocU, vicLu, jabndnd=jabndnd_)
          end if
 
          if (jamapdiu > 0) then
@@ -6701,7 +6687,7 @@ contains
             ! Values for inactive layers are set to missing in function unc_put_var_map.
             call realloc(work1d, lnkx, keepExisting=.false.)
             do LL = 1, lnx
-               if (jadiusp == 1) then ! If horizontal eddy viscosity is spatially varying.
+               if (jadiusp == 1) then ! If horizontal eddy diffusivity is spatially varying.
                   dicc = diusp(LL)
                else
                   dicc = dicouv
@@ -6717,24 +6703,14 @@ contains
 
       if (kmx == 0) then
          if (jamapviu > 0) then
-            ! For all flowlinks add user defined part (viusp(LL) or vicouv) to modeled part (viu(LL)).
-            call realloc(work1d, lnx, keepExisting=.false.)
-            do LL = 1, lnx
-               if (javiusp == 1) then ! If horizontal eddy viscosity is spatially varying.
-                  vicc = viusp(LL)
-               else
-                  vicc = vicouv
-               end if
-               work1d(LL) = viu(LL) + vicc
-            end do
-            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_viu, iLocU, work1d, jabndnd=jabndnd_)
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_viu, iLocU, vicLu, jabndnd=jabndnd_)
          end if
 
          if (jamapdiu > 0) then
             ! For all flowlinks add user defined part (diusp(LL) or dicouv) to modeled part (viu(LL)/0.7).
             call realloc(work1d, lnx, keepExisting=.false.)
             do LL = 1, lnx
-               if (jadiusp == 1) then ! If horizontal eddy viscosity is spatially varying.
+               if (jadiusp == 1) then ! If horizontal eddy diffusivity is spatially varying.
                   dicc = diusp(LL)
                else
                   dicc = dicouv
@@ -10038,13 +10014,8 @@ contains
                   work1(:, LL) = dmiss ! For proper fill values in z-model runs.
                   call getLbotLtopmax(LL, Lb, Ltx)
                   call getlayerindicesLmax(LL, nlaybL, nrlayLx)
-                  if (javiusp == 1) then ! user specified part
-                     vicc = viusp(LL)
-                  else
-                     vicc = vicouv
-                  end if
                   do L = Lb, Ltx
-                     work1(L - Lb + nlaybL, LL) = viu(L) + vicc
+                     work1(L - Lb + nlaybL, LL) = vicLu(L)
                   end do
                end do
                ierr = nf90_put_var(imapfile, id_viu(iid), work1(1:kmx, 1:lnx), start=(/1, 1, itim/), count=(/kmx, lnx, 1/))

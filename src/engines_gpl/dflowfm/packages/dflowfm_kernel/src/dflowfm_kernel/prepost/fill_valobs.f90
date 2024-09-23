@@ -49,6 +49,7 @@ subroutine fill_valobs()
    use m_gettauswave
    use m_get_kbot_ktop
    use m_get_Lbot_Ltop
+   use m_get_Lbot_Ltop_max
    use m_get_layer_indices
    use m_get_layer_indices_l_max
    use m_reconstruct_ucz
@@ -132,6 +133,21 @@ subroutine fill_valobs()
    if (jahistur > 0) then
       if (.not. allocated(vius)) then
          allocate (vius(ndkx))
+         ! Set initial value of horizontal viscosity to user-defined value
+         if (javiusp == 1) then ! Spatially varying horizontal eddy viscosity
+            if (model_is_3D()) then
+               do LL = 1, lnx
+                  call getLbotLtopmax(LL, Lb, Lt)
+                  do L = Lb, Lt
+                     vicLu(L) = viusp(LL)
+                  end do
+               end do
+            else
+               vicLu(:) = viusp(:)
+            end if
+         else
+            vicLu(:) = vicouv
+         end if
       end if
       call links_to_centers(vius, vicLu)
    end if
