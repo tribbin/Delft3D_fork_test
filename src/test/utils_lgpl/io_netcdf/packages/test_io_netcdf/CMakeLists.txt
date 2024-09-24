@@ -21,7 +21,6 @@ if (WIN32)
     target_link_directories(${executable_name} PRIVATE
                             "${checkout_src_root}/third_party_open/netcdf/${netcdf_version}/lib")
 
-    oss_include_libraries(${executable_name} oss_dependencies)
     target_link_libraries(${executable_name} ${oss_dependencies} "netcdf.lib")
 endif(WIN32)
 

@@ -168,7 +168,6 @@ if (UNIX)
                             waq_utils_f
                             interacter_stub)
 
-    oss_include_libraries(${library_name} oss_dependencies)
     target_link_libraries(${library_name} PRIVATE ${oss_dependencies}
          PkgConfig::PETSC
          uuid
@@ -222,7 +221,6 @@ if (WIN32)
         set(oss_dependencies ${oss_dependencies} interacter_stub)
     endif()
 
-    oss_include_libraries(${library_name} oss_dependencies)
     target_link_libraries(${library_name} PRIVATE
                           ${oss_dependencies}
     )
