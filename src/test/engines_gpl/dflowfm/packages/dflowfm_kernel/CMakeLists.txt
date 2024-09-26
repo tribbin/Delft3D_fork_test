@@ -51,8 +51,6 @@ if(UNIX)
                             waq_utils_f
                             dflowfm_kernel)
 
-    oss_include_libraries(${executable_name} oss_dependencies)
-
     message(STATUS "netcdf lib dir is ${NETCDF_LIBRARY_DIRS}")
     target_link_directories(${executable_name} PRIVATE ${NETCDF_LIBRARY_DIRS})
 
@@ -112,7 +110,6 @@ target_link_directories(${executable_name} PRIVATE
                         "${checkout_src_root}/third_party_open/pthreads/bin/x64"
                         "${checkout_src_root}/third_party_open/Tecplot/lib/x64")
 
-oss_include_libraries(${executable_name}   oss_dependencies)
 target_link_libraries(${executable_name} ${oss_dependencies}
                           "comctl32.lib"
                           "wsock32.lib"

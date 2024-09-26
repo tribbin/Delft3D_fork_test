@@ -6,10 +6,8 @@ set(executable_name test_deltares_common)
 add_executable(${executable_name} ${source})
 
 set(oss_dependencies deltares_common  ftnunit)
-oss_include_libraries(${executable_name} oss_dependencies)
 
-target_link_libraries(${executable_name}  deltares_common 
-                                          ftnunit)
+target_link_libraries(${executable_name}  ${oss_dependencies})
 
 if(UNIX)
     set_property(TARGET ${executable_name} PROPERTY LINKER_LANGUAGE Fortran)

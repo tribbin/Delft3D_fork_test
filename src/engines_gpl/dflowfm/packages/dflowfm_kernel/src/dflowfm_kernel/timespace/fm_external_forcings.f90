@@ -709,7 +709,7 @@ contains
             ! todo: read multiple quantities
             call prop_get(node_ptr, '', 'quantity', quantity, property_ok)
             if (.not. property_ok) then
-               call qnerror('Expected property', 'quantity', ' for boundary definition')
+               call qnerror('Expected property', 'quantity', 'for boundary definition')
             end if
 
             group_ok = group_ok .and. property_ok
@@ -725,7 +725,7 @@ contains
             if (property_ok) then
                call resolvePath(location_file, basedir)
             else
-               call qnerror('Expected property', 'locationFile', ' for boundary definition')
+               call qnerror('Expected property', 'locationFile', 'for boundary definition')
             end if
 
             group_ok = group_ok .and. property_ok
@@ -734,7 +734,7 @@ contains
             if (property_ok) then
                call resolvePath(forcing_file, basedir)
             else
-               call qnerror('Expected property', 'forcingFile', ' for boundary definition')
+               call qnerror('Expected property', 'forcingFile', 'for boundary definition')
             end if
 
             group_ok = group_ok .and. property_ok
@@ -1294,12 +1294,14 @@ contains
             valuestring = location_file(1:L)//'.tim'
             inquire (file=valuestring, exist=file_exists)
             if (.not. file_exists) then
-               call mess(LEVEL_WARN, 'Files '''//trim(valuestring)//''' and file '''//trim(location_file(1:L)//'_0001.tim')//''' do not exist.')
+               call mess(LEVEL_ERROR, 'Files '''//trim(valuestring)//''' and file '''//trim(location_file(1:L)//'_0001.tim')//''' do not exist.')
+               success = .false.
+               return
             end if
          end if
 
       else
-         ! TODO: AvD: error msg?
+         call mess(LEVEL_ERROR, trim(objtype)//' '''//trim(objid)//''', '//paramname//' could not be read.')
          success = .false.
       end if
 
@@ -1320,7 +1322,7 @@ contains
             else
                success = .false.
                write (msgbuf, '(a)') 'Unknown quantity '''//trim(qid)//'''.'
-               call warn_flush()
+               call err_flush()
                return
             end if
 
