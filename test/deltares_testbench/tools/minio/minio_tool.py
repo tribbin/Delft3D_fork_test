@@ -4,7 +4,7 @@ import shutil
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
-from typing import ClassVar, Dict, List, Mapping, Optional, TextIO, Tuple
+from typing import ClassVar, Dict, Iterator, List, Mapping, Optional, TextIO, Tuple
 
 from minio.commonconfig import Tags
 from s3_path_wrangler.paths import S3Path
@@ -69,12 +69,13 @@ class MinioTool:
         self._prompt = prompt
         self._tags = tags
         self._color = color
+        self._config_dir = Path("configs")
 
     def push(
         self,
         name_filter: str,
         path_type: PathType,
-        config_filter: Optional[str] = None,
+        config_glob: Optional[str] = None,
         local_dir: Optional[Path] = None,
         allow_create_and_delete: bool = False,
     ) -> None:
@@ -93,14 +94,14 @@ class MinioTool:
         path_type : PathType
             If set to `PathType.INPUT`, case data is uploaded.
             If set to `PathType.REFERENCE`, reference data is uploaded.
-        config_filter : Optional[str], optional
+        config_glob : Optional[str], optional
             This will limit the search and action of the indexed configurations.
             It will only include the configurations that match the filter
             to the indexed path of the configuration to run actions on.
         local_dir : Optional[Path], optional
             Path to the local directory containing files to upload to MinIO.
             If not set, use the local path from the test bench config.
-        allow_create_and_delete: bool, optional
+        allow_create_and_delete : bool, optional
             This parameter can be used to not only update, but also allow the
             creation and removal of files in the MinIO object repository.
             Defaults to `False`.
@@ -111,7 +112,7 @@ class MinioTool:
             Raised when the test case can not be found in the config, or unsupported
             parameters are passed.
         """
-        test_case, configs = self.__get_test_case(name_filter, path_type, config_filter)
+        test_case, configs = self.__get_test_case(name_filter, path_type, config_glob)
         default_dir, minio_prefix = test_case.get_default_dir_and_prefix(path_type)
         local_dir = local_dir or default_dir
         self.__print_locations(test_case, local_dir, minio_prefix)
@@ -125,7 +126,7 @@ class MinioTool:
         self.__update_configs(test_case.name, configs)
 
     def update_references(
-        self, name_filter: str, local_dir: Optional[Path] = None, config_filter: Optional[str] = None
+        self, name_filter: str, config_glob: Optional[str] = None, local_dir: Optional[Path] = None
     ) -> None:
         """Upload local files to MinIO and update the timestamp in the testbench config.
 
@@ -148,7 +149,7 @@ class MinioTool:
         local_dir : Optional[Path], optional
             Path to the local directory containing files to upload to MinIO.
             If not set, use the local 'cases' path from the test bench config.
-        config_filter : Optional[str], optional
+        config_glob : Optional[str], optional
             This will limit the search and action of the indexed configurations.
             It will only include the configurations that match the filter
             to the indexed path of the configuration to run actions on.
@@ -159,7 +160,7 @@ class MinioTool:
             Raised when the test case can not be found in the config, or unsupported
             parameters are passed.
         """
-        test_case, configs = self.__get_test_case(name_filter, PathType.REFERENCE, config_filter)
+        test_case, configs = self.__get_test_case(name_filter, PathType.REFERENCE, config_glob)
         local_dir = local_dir or test_case.case_dir
         minio_prefix = test_case.reference_prefix
         self.__print_locations(test_case, local_dir, minio_prefix)
@@ -176,7 +177,7 @@ class MinioTool:
         self,
         name_filter: str,
         path_type: PathType,
-        config_filter: Optional[str] = None,
+        config_glob: Optional[str] = None,
         local_dir: Optional[Path] = None,
         timestamp: Optional[datetime] = None,
         latest: bool = False,
@@ -199,7 +200,7 @@ class MinioTool:
         path_type : PathType
             If set to `PathType.INPUT`, case data is downloaded.
             If set to `PathType.REFERENCE`, reference data is downloaded.
-        config_filter : Optional[str], optional
+        config_glob : Optional[str], optional
             This will limit the search and action of the indexed configurations.
             It will only include the configurations that match the filter
             to the indexed path of the configuration to run actions on.
@@ -221,7 +222,7 @@ class MinioTool:
         MinioToolError
             Raised when test case can't be found or if invalid arguments are passed.
         """
-        test_case, _ = self.__get_test_case(name_filter, path_type, config_filter)
+        test_case, _ = self.__get_test_case(name_filter, path_type, config_glob)
         default_dir, minio_prefix = test_case.get_default_dir_and_prefix(path_type)
         local_dir = local_dir or default_dir
         self.__print_locations(test_case, local_dir, minio_prefix)
@@ -317,11 +318,11 @@ class MinioTool:
         self._rewinder.download(minio_prefix.bucket, minio_prefix.key, local_dir, rewind_timestamp)
 
     def __get_test_case(
-        self, test_case_name: str, path_type: PathType, config_filter: Optional[str] = None
+        self, test_case_name: str, path_type: PathType, config_glob: Optional[str] = None
     ) -> Tuple[TestCaseData, List[Path]]:
         """Get the TestCaseData from the first occurence of the testcase.
 
-        The testcase needs to match the config_filter and the test_case_name filter.
+        The testcase needs to match the config_glob and the test_case_name filter.
 
         Parameters
         ----------
@@ -332,7 +333,7 @@ class MinioTool:
         path_type : PathType
             If set to `PathType.INPUT`, case data is downloaded.
             If set to `PathType.REFERENCE`, reference data is downloaded.
-        config_filter : Optional[str], optional
+        config_glob : Optional[str], optional
             This will limit the search and action of the indexed configurations.
             It will only include the configurations that match the filter
             to the indexed path of the configuration to run actions on.
@@ -344,27 +345,29 @@ class MinioTool:
             will be returned. Together with a list of xml configur file Paths that contain
             the same testcase by name and have equal paths to the case/reference dir.
         """
-        test_cases = []
-        configs = []
-        test_case_data_locations = []
-        for config, test_case_list in self._indexed_configs.items():
-            for test_case in test_case_list:
-                if test_case_name in test_case.name and (config_filter or "") in str(config):
-                    configs.append(config)
-                    test_case_data_locations.append(str(test_case.get_default_dir_and_prefix(path_type)[0]))
-                    if test_case not in test_cases:
-                        test_cases.append(test_case)
+        matches = {
+            config: matching_cases
+            for config, cases in self._indexed_configs.items()
+            if (config_glob is None or config.match(config_glob))
+            and (matching_cases := [c for c in cases if test_case_name in c.name])
+        }
 
-        if not test_cases:
+        if not matches:
             raise MinioToolError(f"The name `{test_case_name}` does not match any test cases")
 
-        if self.__has_duplicates(configs):
-            suggestions = ", ".join(case.name for case in itertools.islice(test_cases, 3))
+        # Each config can have at most one 'matching' test case, or else an error is raised.
+        if config := next(self.__configs_with_multiple_matches(matches), None):
+            suggestions = ", ".join(case.name for case in itertools.islice(matches[config], 3))
             raise MinioToolError(
-                f"The name `{test_case_name}` matches multiple test cases within a configuration. Suggestions: `{suggestions}`"
+                f"The name `{test_case_name}` matches multiple test cases within config file `{config}`.\n"
+                f"Suggestions: `{suggestions}`"
             )
 
-        if len(configs) > 1:
+        # Each config has exactly one matching test-case.
+        configs: tuple[Path]
+        test_cases: tuple[TestCaseData]
+        configs, test_cases = zip(*((config, cases[0]) for config, cases in matches.items()))
+        if len(test_cases) > 1:
             print(
                 "\n".join(
                     [
@@ -375,7 +378,9 @@ class MinioTool:
                     ]
                 )
             )
-            if not all(location == test_case_data_locations[0] for location in test_case_data_locations):
+
+            default_dir = test_cases[0].get_default_dir_and_prefix(path_type)[0]
+            if not all(case.get_default_dir_and_prefix(path_type)[0] == default_dir for case in test_cases[1:]):
                 raise MinioToolError("When using multiple configurations the case/reference path needs to be equal.")
             if not self._prompt.yes_no("Do you wish to continue?"):
                 raise MinioToolError(
@@ -383,7 +388,11 @@ class MinioTool:
                     + "Response to update all question was: [no]."
                 )
 
-        return test_cases[0], configs
+        return test_cases[0], list(configs)
+
+    @staticmethod
+    def __configs_with_multiple_matches(matches: dict[Path, list[TestCaseData]]) -> Iterator[Path]:
+        return (config for config, matching_cases in matches.items() if len(matching_cases) > 1)
 
     def __print_conflicts(self, conflicts: List[VersionPair], prefix: S3Path, timestamp: datetime) -> None:
         """Print information about the detected `conflicts` to the standard output."""
@@ -455,12 +464,3 @@ class MinioTool:
             buffer.seek(0)
             with open(path, "w") as out_handle:
                 shutil.copyfileobj(fsrc=buffer, fdst=out_handle)
-
-    def __has_duplicates(self, lst: List[Path]) -> bool:
-        """Check if a list contains duplicates."""
-        seen = set()
-        for value in lst:
-            if str(value) in seen:
-                return True
-            seen.add(str(value))
-        return False

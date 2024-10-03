@@ -93,7 +93,19 @@ def make_minio_tool(namespace: argparse.Namespace) -> MinioTool:
             "Argument [--config] provided with [--test-case-file]. These arguments are not compatible."
             + "Write your config filter with the testcase name(s) in the test case file, using a `,` seperator."
         )
-    indexer = config.ConfigIndexer(namespace.config)
+
+    # Configure logging
+    logger = logging.getLogger("minio")
+    logger.addHandler(logging.StreamHandler(sys.stdout))
+    logger.setLevel(namespace.log_level or os.environ.get("LOG_LEVEL", "INFO"))
+
+    if namespace.config is None:
+        logger.info("Indexing configs in directory `configs`. Parsing testcases and creating a Dict for processing.")
+        indexer = config.ConfigIndexer(logger=logger)
+    else:
+        logger.info(f"Reading test cases from file: {namespace.config}")
+        indexer = config.ConfigIndexer(configs=[Path(namespace.config)], logger=logger)
+
     prompter: prompt.Prompt = (
         prompt.InteractivePrompt() if namespace.interactive else prompt.DefaultPrompt(force_yes=namespace.force)
     )
@@ -106,11 +118,6 @@ def make_minio_tool(namespace: argparse.Namespace) -> MinioTool:
         tags["jira-issue-id"] = issue_id
     color_output: bool = namespace.color_output
 
-    # Configure logging
-    logger = logging.getLogger("minio")
-    logger.addHandler(logging.StreamHandler(sys.stdout))
-    logger.setLevel(namespace.log_level or os.environ.get("LOG_LEVEL", "INFO"))
-
     minio_client = Minio(
         endpoint="s3.deltares.nl",
         credentials=CredentialHandler().get_credentials(),
@@ -118,7 +125,7 @@ def make_minio_tool(namespace: argparse.Namespace) -> MinioTool:
     return MinioTool(
         rewinder=Rewinder(minio_client, logger),  # type: ignore
         test_case_writer=TestBenchConfigWriter(),
-        indexed_configs=indexer.indexed_configs,
+        indexed_configs=indexer.index_configs(),
         prompt=prompter,
         tags=tags,
         color=color_output,
@@ -135,12 +142,12 @@ def push_tool(args: argparse.Namespace) -> None:
     if args.test_case_name:
         cases[args.test_case_name] = [args.config]
     elif args.test_case_file:
-        cases = config.CaseListReader().read_cases_from_file(args.test_case_file)
+        cases = config.CaseListReader().read_cases_from_file(Path(args.test_case_file))
 
     try:
-        for case, config_filters in cases.items():
-            for config_filter in config_filters:
-                tool.push(case, path_type, config_filter, local_path, args.allow_create_and_delete)
+        for case, config_globs in cases.items():
+            for config_glob in config_globs:
+                tool.push(case, path_type, config_glob, local_path, args.allow_create_and_delete)
     except S3Error as exc:
         raise MinioToolError(f"{exc.code}: {exc.message}", ErrorCode.AUTH) from exc
     except MinioException as exc:
@@ -161,12 +168,12 @@ def pull_tool(args: argparse.Namespace) -> None:
     if args.test_case_name:
         cases[args.test_case_name] = [args.config]
     elif args.test_case_file:
-        cases = config.CaseListReader().read_cases_from_file(args.test_case_file)
+        cases = config.CaseListReader().read_cases_from_file(Path(args.test_case_file))
 
     try:
-        for case, config_filters in cases.items():
-            for config_filter in config_filters:
-                tool.pull(case, path_type, config_filter, local_path, timestamp, latest)
+        for case, config_globs in cases.items():
+            for config_glob in config_globs:
+                tool.pull(case, path_type, config_glob, local_path, timestamp, latest)
     except S3Error as exc:
         raise MinioToolError(f"{exc.code}: {exc.message}", ErrorCode.AUTH) from exc
     except MinioException as exc:
@@ -182,12 +189,12 @@ def update_references_tool(args: argparse.Namespace) -> None:
     if args.test_case_name:
         cases[args.test_case_name] = [args.config]
     elif args.test_case_file:
-        cases = config.CaseListReader().read_cases_from_file(args.test_case_file)
+        cases = config.CaseListReader().read_cases_from_file(Path(args.test_case_file))
 
     try:
-        for case, config_filters in cases.items():
-            for config_filter in config_filters:
-                tool.update_references(case, local_path, config_filter)
+        for case, config_globs in cases.items():
+            for config_glob in config_globs:
+                tool.update_references(case, config_glob, local_path)
     except S3Error as exc:
         raise MinioToolError(f"{exc.code}: {exc.message}", ErrorCode.AUTH) from exc
     except MinioException as exc:

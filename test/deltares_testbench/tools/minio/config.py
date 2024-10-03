@@ -1,5 +1,6 @@
 import abc
 import io
+import logging
 import re
 from collections import defaultdict
 from dataclasses import dataclass
@@ -83,56 +84,53 @@ class TestCaseData:
         return S3Path.from_bucket(abs_path.bucket) / utils.resolve_relative(abs_path.key)
 
 
-@dataclass
 class ConfigIndexer:
     """Index the configuration specified or the config folders xml files."""
 
-    def __init__(self, config: Optional[str] = None) -> None:
-        print("Indexing configs, parsing testcases and creating a Dict for processing.")
-        self.__indexed_configs: Dict[Path, List[TestCaseData]] = {}
-        config_folder = Path("configs")
-        xml_files = config_folder.rglob("*.xml")
-        config = config if isinstance(config, str) else ""
-        for xml in xml_files:
-            if config in str(xml):
-                test_cases = self._extract_test_cases_from_xml(xml)
-                if test_cases:
-                    self.__indexed_configs[xml] = test_cases
+    def __init__(
+        self,
+        configs: Optional[Iterable[Path]] = None,
+        logger: Optional[logging.Logger] = None,
+    ) -> None:
+        self._logger = logger or logging.getLogger(__name__)
+        self._configs = configs or Path("configs").rglob("*.xml")
 
-    def _extract_test_cases_from_xml(self, xml: Path) -> Optional[List[TestCaseData]]:
-        """Return test case data defined within the provided XML file.
+    def index_configs(self) -> Dict[Path, List[TestCaseData]]:
+        """Return an index of the test cases.
 
-        Parameters
-        ----------
-        xml : Path
-            Path to the xml file to extract testcasedata from.
+        The test cases are indexed by config file.
 
         Returns
         -------
-        Optional[List[TestCaseData]]
-            The list of testcasedata objects that were parsed from the xml configuration file.
+        dict[Path, list[TestCaseData]]
+            The computed index. Only contains configs that include test cases.
         """
+        result: dict[Path, list[TestCaseData]] = {}
+        for xml in self._configs:
+            test_cases = list(self._extract_test_cases_from_xml(xml))
+            if test_cases:
+                result[xml] = test_cases
+
+        return result
+
+    def _extract_test_cases_from_xml(self, xml: Path) -> Iterable[TestCaseData]:
+        """Return test case data defined within the provided XML file."""
+        # Crude check to see if the XML file is a deltares testbench config.
         with open(xml, "r") as file:
-            if any(re.search(r"<deltaresTestbench_v3", line) for line in file):
-                try:
-                    config_loader = TestBenchConfigLoader(xml)
-                    return list(config_loader.get_test_cases())
-                except Exception as exception:
-                    print(f"Skip xml: {xml} due to error in parsing.\n{exception}")
-        return None
+            if not any(re.search(r"<deltaresTestbench_v3", line) for line in file):
+                return []  # Not a test bench config.
 
-    @property
-    def configs(self) -> List[Path]:
-        """Return the list of configs in the config folder that contained the root element."""
-        return list(self.__indexed_configs.keys())
-
-    @property
-    def indexed_configs(self) -> Dict[Path, List[TestCaseData]]:
-        """Return a list of the indexed configs and the testcases they contain."""
-        return self.__indexed_configs
+        try:
+            config_loader = TestBenchConfigLoader(xml)
+            return config_loader.get_test_cases()
+        except Exception:
+            self._logger.exception(f"Skip xml: {xml} due to error in parsing.")
+            return []
 
 
 class TestCaseLoader(abc.ABC):
+    """Loads test cases."""
+
     __test__: ClassVar[bool] = False
 
     @abc.abstractmethod
@@ -310,7 +308,7 @@ class TestBenchConfigWriter(TestCaseWriter):
 
 
 class CaseListReader:
-    def read_cases_from_file(self, path: str) -> defaultdict[str, List[str]]:
+    def read_cases_from_file(self, path: Path) -> defaultdict[str, list[str]]:
         """Parse test cases from a text file.
 
         Reads a csv file in the format `testcase, config`
@@ -328,24 +326,18 @@ class CaseListReader:
         defaultdict[str, List[str]]
             A dictionary that couples a testcase string to one
             or multiple configurations filters.
-            example: {e02_f01_c001_example_case: [lnx64, win64]}
+            example: {e02_f01_c001_example_case: [*_lnx64.xml, *_win64.xml]}
         """
-        file_path = Path(path)
-        if not file_path.is_file():
-            assert f"File: {file_path} does not exist."
         parsed_file_cases: defaultdict[str, list[str]] = defaultdict(list)
 
-        with open(file_path) as file:
-            lines = file.readlines()
-            for line in lines:
+        with open(path, "r") as file:
+            for line in file:
                 if self.__line_is_comment(line):
                     continue
-                case_filter, *xml_filter = line.split(",")
-                config_value = xml_filter[0].strip() if xml_filter else ""
-                # Convert filter to Path object and back to string to be platform unspecific when path is provided.
-                if "/" in config_value:
-                    config_value = str(Path(config_value))
-                parsed_file_cases[case_filter].append(config_value)
+                case_filter, *xml_globs = (s.strip() for s in line.split(","))
+                # If glob is missing or empty (in case of trailing comma on line): Match all configs.
+                xml_glob = (xml_globs[0] or "*") if xml_globs else "*"
+                parsed_file_cases[case_filter].append(xml_glob)
         return parsed_file_cases
 
     def __line_is_comment(self, line: str) -> bool:

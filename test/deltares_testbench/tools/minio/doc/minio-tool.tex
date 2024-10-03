@@ -153,7 +153,7 @@ The \href{https://git.deltares.nl/oss/delft3d/-/tree/main/test/deltares_testbenc
 	\item Where to find the 'case' and 'reference' data.
 \end{itemize}
 
-The 'case' data of a test case is the input data. The 'reference' data contains the expected output of the test case. The actual output of the programs under test may deviate from the reference output, but only up to some preconfigured tolerance value. The case/reference data can be quite large. Over 100 megabytes for a single test case is not that uncommon. The case and reference data is to big to be stored with the delft3d source code in git. Therefore this data is stored in the MinIO artifact repository hosted by deltares. MinIO has the added benefit of versioning data by timestamp and md5 hashing together with being made for large file storage. The MinIO tool was created to simplify managing the data in the MinIO artifact repository. The testbench config files now support test case data versioning by supplying a version timestamp to each test case. The configuration of a single test case looks like this:
+The 'case' data of a test case is the input data. The 'reference' data contains the expected output of the test case. The actual output of the programs under test may deviate from the reference output, but only up to some preconfigured tolerance value. The case/reference data can be quite large. Over 100 megabytes for a single test case is not that uncommon. The case and reference data is too large to be stored with the delft3d source code in git. Therefore this data is stored in the MinIO artifact repository hosted by deltares. MinIO has the added benefit of versioning data by timestamp and md5 hashing together with being made for large file storage. The MinIO tool was created to simplify managing the data in the MinIO artifact repository. The testbench config files now support test case data versioning by supplying a version timestamp to each test case. The configuration of a single test case looks like this:
 
 \begin{lstlisting}[language=XML]
 <testCase name="e02_f003_c041_thacker1d_squares" ref="dflowfm_default">
@@ -380,9 +380,14 @@ Required:
 
 \subsection{Case csv file}
 \label{ssec:casefile}
-The MinIO tool also allows for the use of a test case file specification in a comma seperated value file.
-The definition is as follows you provide a testcase and optionally a xml configuration filter separated by a comma. Commentary is allowed and prefixed with a "\#"
+The MinIO tool also allows for the use of a test case file specification in comma seperated values format.
+The definition is as follows: You provide a testcase and optionally a xml configuration filter separated by a comma. Commentary is allowed and prefixed with a "\#"
+If provided, the xml configuration filter can be one of two things:
 \newline
+\begin{itemize}
+	\item A path to the config relative to the current working directory.
+	\item A glob-style pattern. The pattern syntax is documented \href{https://docs.python.org/3/library/fnmatch.html#module-fnmatch}{in the Python documentation}.
+\end{itemize}
 \textbf{Example:}
 \begin{verbatim}
 # List the testcases and Optional xml configuration filter.
@@ -390,7 +395,8 @@ The definition is as follows you provide a testcase and optionally a xml configu
 # `,` Comments can be place in the list file with the prefix `#`
 # Use the linux configurations associated with the testcase to 
 # run the [push, pull, update_references] command on.
-e112_f01_c11_waardenburg, lnx64
+e112_f01_c11_waardenburg, *_lnx64*
+e112_f01_c11_waardenburg, *_win64*
 # Strict xml filter allowing only 1 xml to match
 e112_f01_c11_waardenburg, configs/singularity/dimr/dimr_smoke_test_lnx64.xml
 # Update all configurations the data waardenburg is used in. 
