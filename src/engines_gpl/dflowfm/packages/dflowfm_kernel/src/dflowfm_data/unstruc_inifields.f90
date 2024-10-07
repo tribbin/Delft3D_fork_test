@@ -428,7 +428,7 @@ contains
          goto 888
       end if
       filetype = convert_file_type_string_to_integer(dataFileType)
-      if (filetype < 0) then
+      if (filetype == FILE_TYPE_UNKNOWN) then
          write (msgbuf, '(5a)') 'Wrong block in file ''', trim(inifilename), ''': [', trim(groupname), '] for quantity=' &
             //trim(quantity)//'. Field ''dataFileType'' has invalid value '''//trim(dataFileType)//'''. Ignoring this block.'
          call warn_flush()
