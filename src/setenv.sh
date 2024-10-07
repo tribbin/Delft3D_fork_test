@@ -23,7 +23,7 @@ if [[ "$1" == intel24* ]]; then
      module load intel/2024.2.0
      module load intelmpi/2021.13.0
      #module load netcdf/4.9.2_4.6.1_intel2023.1.0 # NetCDF 4 enddef calls sometimes return error -38
-     module load netcdf/v4.7.4_4.5.3_intel2023.1.0
+     module load netcdf/4.7.4_4.5.3_intel2023.1.0
      module load gdal/3.6.3_intel2023.1.0_standalone
      module load proj/9.2.0_intel2024.0.0
      module load tiff/4.5.0rc3_intel2024.0.0
@@ -52,7 +52,7 @@ else
      module load intel/2023.1.0
      module load intelmpi/2021.10.0
      #module load netcdf/4.9.2_4.6.1_intel2023.1.0 # NetCDF 4 enddef calls sometimes return error -38
-     module load netcdf/v4.7.4_4.5.3_intel2023.1.0
+     module load netcdf/4.7.4_4.5.3_intel2023.1.0
      module load gdal/3.6.3_intel2023.1.0
      module load patchelf/0.17.2_intel2023.1.0
      module load ninja/1.11.1_native
