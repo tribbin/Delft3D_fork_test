@@ -2314,6 +2314,7 @@ contains
       use m_laterals, only: initialize_lateraldata
       use m_get_kbot_ktop
       use m_get_prof_1D
+      use mathconsts, only: pi
 
       integer :: j, k, ierr, l, n, itp, kk, k1, k2, kb, kt, nstor, i, ja
       integer :: imba, needextramba, needextrambar
@@ -2383,8 +2384,8 @@ contains
       end if
 
       if (ja_computed_airdensity == 1) then
-         if ( (japatm /= 1) .or. .not. tair_available .or. .not. dewpoint_available .or. &
-            (item_atmosphericpressure == ec_undef_int) .or. (item_airtemperature == ec_undef_int) .or. (item_humidity == ec_undef_int) ) then
+         if ((japatm /= 1) .or. .not. tair_available .or. .not. dewpoint_available .or. &
+             (item_atmosphericpressure == ec_undef_int) .or. (item_airtemperature == ec_undef_int) .or. (item_humidity == ec_undef_int)) then
             call mess(LEVEL_ERROR, 'Quantities airpressure, airtemperature and dewpoint are expected, as separate quantities (e.g., QUANTITY = airpressure), in ext-file in combination with keyword computedAirdensity in mdu-file.')
          else
             if (ja_airdensity == 1) then
@@ -2471,6 +2472,9 @@ contains
          if (allocated(stemdiam) .and. allocated(stemdens)) then
             do k = 1, ndx
                if (stemdens(k) > 0d0) then
+                  if ((pi * (stemdiam(k) / 2)**2) > (1 / stemdens(k))) then
+                     call mess(LEVEL_ERROR, 'The area covered by a plant or pile (based on the quantity "stemdiameter") is larger than the typical area of it (calculated as the reciprocal of the quantity "stemdensity").')
+                  end if
                   rnveg(k) = stemdens(k)
                   diaveg(k) = stemdiam(k)
                end if
