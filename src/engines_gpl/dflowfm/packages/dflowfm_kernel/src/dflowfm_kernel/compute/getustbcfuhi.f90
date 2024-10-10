@@ -123,8 +123,7 @@
          if (jawave > 0 .and. .not. flowwithoutwaves) then
             ! get ustar wave squared, fw and wavedirection cosines based upon Swart, ustokes
             call getustwav(LL, z00, fw, ustw2, csw, snw, Dfu, Dfuc, deltau, costu, uorbu)
-            !
-            if (jawaveStokes >= 1) then ! ustokes correction at bed
+            if (jawaveStokes > 0) then
                umod = sqrt((u1Lb - ustokes(Lb)) * (u1Lb - ustokes(Lb)) + (v(Lb) - vstokes(Lb)) * (v(Lb) - vstokes(Lb)))
             end if
          end if
@@ -220,7 +219,7 @@
                if (stm_included) wblt(LL) = deltau
                !
                ! Streaming below deltau with linear distribution
-               if (jawavestreaming == 1 .and. deltau > 1d-7) then ! Streaming below deltau with linear distribution
+               if (jawavestreaming > 0 .and. deltau > 1d-7) then ! Streaming below deltau with linear distribution
                   Dfu0 = Dfuc ! (m/s2)
                   do L = Lb, Ltop(LL)
                      if (hu(L) <= deltau) then
@@ -260,18 +259,14 @@
             z0urou(LL) = z0ucur(LL) ! morfo, bedforms, trachytopes
          end if
 
-         if (jawave > 0 .and. jawaveStokes >= 1 .and. .not. flowWithoutWaves) then ! Ustokes correction at bed
-            adve(Lb) = adve(Lb) - cfuhi3D * ustokes(Lb)
-         end if
-
       else if (ifrctyp == 10) then ! Hydraulically smooth, glass etc
          nit = 0
          u1Lb = u1(Lb)
          umod = sqrt(u1Lb * u1Lb + v(Lb) * v(Lb))
-         if (jawave > 0) then
+         if (jawave > 0 .and. .not. flowwithoutwaves) then
             call getustwav(LL, z00, fw, ustw2, csw, snw, Dfu, Dfuc, deltau, costu, uorbu) ! get ustar wave squared, fw and wavedirection cosines based upon Swart, ustokes
-            !
-            if (jawaveStokes >= 1) then
+            ! strictly, not necessary as ust==0 for jawavestokes==0
+            if (jawavestokes > 0) then
                umod = sqrt((u1Lb - ustokes(Lb)) * (u1Lb - ustokes(Lb)) + (v(Lb) - vstokes(Lb)) * (v(Lb) - vstokes(Lb))) ! was ustokes(LL)
             end if
          end if

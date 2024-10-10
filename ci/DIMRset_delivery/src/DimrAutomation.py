@@ -43,6 +43,7 @@ class DimrAutomation(object):
         self.__ssh_client = ssh_client
         self.__git_client = git_client
 
+        self.__branch_name = None
         self.__kernel_versions = None
         self.__dimr_version = None
 
@@ -76,6 +77,8 @@ class DimrAutomation(object):
         """
         extractor = KernelVersionExtractor(teamcity=self.__teamcity)
 
+        self.__branch_name = extractor.get_branch_name()
+
         self.__kernel_versions = extractor.get_latest_kernel_versions()
         extractor.assert_all_versions_have_been_extracted()
 
@@ -97,6 +100,7 @@ class DimrAutomation(object):
             teamcity=self.__teamcity,
             ssh_client=self.__ssh_client,
             dimr_version=self.__dimr_version,
+            branch_name=self.__branch_name,
         )
         helper.download_artifacts_to_network_drive()
         helper.install_dimr_on_linux()

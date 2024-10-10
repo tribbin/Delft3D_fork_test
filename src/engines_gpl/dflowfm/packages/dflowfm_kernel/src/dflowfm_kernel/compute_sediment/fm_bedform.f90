@@ -296,7 +296,6 @@ contains
       use m_flowgeom, only: ndxi, lnxi, ndx, lnx, wcx1, wcx2, wcy1, wcy2, ln, wu, nd, ba
       use m_flow, only: hs, hu, u1, v, kmx
       use m_flowparameters, only: epshu, epshs
-      use unstruc_files, only: mdia
       use m_alloc
       use message_module
       use m_get_Lbot_Ltop
@@ -1012,6 +1011,8 @@ contains
 
       implicit none
 
+      integer, parameter :: BFNSUBSTEPS=1
+      
       double precision, dimension(1, ndx), intent(inout) :: thevar !< variable to be tranported
       double precision, dimension(lnx), intent(in) :: qadv
       double precision, dimension(lnx), intent(in) :: uadv
@@ -1020,7 +1021,7 @@ contains
       integer, intent(in) :: limityp !< limiter type (>0) or upwind (0)
       integer, intent(out) :: ierror !< error (1) or not (0)
 
-      double precision :: dvoli, dumd
+      double precision :: dvoli
       integer :: k1, k2
 
       double precision, dimension(:, :), allocatable :: fluxhorbf ! horizontal fluxes
@@ -1049,12 +1050,11 @@ contains
       integer :: k, L
 
       ierror = 1
-      dumd = 0d0
 
 !  allocate
-      call realloc(jabfupdate, ndx, keepExisting=.true., fill=1)
+      call realloc(jabfupdate, ndx, keepExisting=.true., fill=1) !Mask array for the 2D part, true for all.
       call realloc(jabfhorupdate, lnx, keepExisting=.true., fill=1)
-      call realloc(nbfdeltasteps, ndx, keepExisting=.true., fill=1)
+      call realloc(nbfdeltasteps, ndx, keepExisting=.true., fill=1) !It is only used if NSUBSTEPS>1, which is not the case.
       call realloc(bfsq, ndx, keepExisting=.true., fill=0d0)
       call realloc(bfsqu, ndx, keepExisting=.true., fill=0d0)
       call realloc(bfsqi, ndx, keepExisting=.true., fill=0d0)
@@ -1098,7 +1098,7 @@ contains
 
 !  compute horizontal fluxes, explicit part
       call comp_dxiAu()
-      call comp_fluxhor3D(1, limityp, Ndx, Lnx, uadv, qadv, bfsqi, ba, kbot, Lbot, Ltop, kmxn, kmxL, thevar, difsedubf, sigdifibf, dumd, jabfupdate, jabfhorupdate, nbfdeltasteps, (/1/), fluxhorbf, dumx, dumy, 1, dxiAu)
+      call comp_fluxhor3D(1, limityp, Ndx, Lnx, uadv, qadv, bfsqi, ba, kbot, Lbot, Ltop, kmxn, kmxL, thevar, difsedubf, sigdifibf, dumL, BFNSUBSTEPS, jabfhorupdate, nbfdeltasteps, (/1/), fluxhorbf, dumx, dumy, 1, dxiAu)
       call comp_sumhorflux(1, 0, Lnkx, Ndkx, Lbot, Ltop, fluxhorbf, bfsumhorflux)
       call solve_2D(1, Ndx, ba, kbot, ktop, bfsumhorflux, fluxverbf, const_sourbf, const_sinkbf, 1, jabfupdate, nbfdeltasteps, thevar, rhsbf)
       ierror = 0

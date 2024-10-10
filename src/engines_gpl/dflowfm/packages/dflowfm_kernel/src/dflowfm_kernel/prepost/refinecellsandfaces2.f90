@@ -32,6 +32,8 @@
 
 !> refine cells by splitting links
 subroutine refinecellsandfaces2()
+   use m_confrm
+   use m_change_samples_refine_param
    use m_netw
    use m_samples
    use m_samples_refine
@@ -431,7 +433,6 @@ contains
       use m_netw
       use m_samples
       use m_ec_interpolationsettings
-      use m_physcoef, only: ag
       use m_missing
 
       implicit none
@@ -936,6 +937,7 @@ contains
 !> refine the cells, based on a cell and link refinement mask
    subroutine refine_cells(jarefine, jalink, linkbrother, ierror)
 
+      use m_comp_middle_latitude
       use geometry_module, only: getcircumcenter
       use m_find_common_node
       use m_new_link
@@ -1353,6 +1355,7 @@ contains
 !> find the brother links
 !>    hanging nodes are assumed to have two consecutive brother links
    subroutine find_linkbrothers(linkbrother)
+      use m_comp_middle_latitude
       use m_netw
       use m_sferic
       use geometry_module, only: dbdistance

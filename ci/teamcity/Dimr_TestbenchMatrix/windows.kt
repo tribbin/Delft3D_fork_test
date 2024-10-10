@@ -54,6 +54,20 @@ object Windows : BuildType({
         }
     }
 
+    dependencies {
+        dependency(Trigger) {
+            snapshot {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+            }
+
+            artifacts {
+                id = "TRIGGER_2"
+                artifactRules = "this.txt => stuff"
+                cleanDestination = true
+            }
+        }
+    }
+
     requirements {
         startsWith("teamcity.agent.jvm.os.name", "Windows 1")
     }

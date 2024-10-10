@@ -52,13 +52,21 @@ class KernelVersionExtractor(object):
         error += ', '.join(missing_kernel_versions)
         raise AssertionError(error)
 
+    def get_branch_name(self) -> str:
+        """ Returns the branch name from the latest release collector build. """
+        latest_dimr_collector_build_info = self.__teamcity.get_build_info_for_latest_build_for_build_type_id(
+            build_type_id=DIMR_COLLECTOR_RELEASE_BUILD_TYPE_ID)
+        branch_name_property = next((prop for prop in latest_dimr_collector_build_info['resultingProperties']['property'] 
+                        if prop['name'] == 'teamcity.build.branch'), None)
+        self.__branch_name = branch_name_property['value']
+        return self.__branch_name
+
     def get_dimr_version(self) -> str:
         """ Extracts and returns the DIMR version that requires automated release. """
         if self.__kernel_versions is None:
             raise AssertionError("Could not extract the DIMR version: the kernel versions have not yet been extracted")
         self.__dimr_version = self.__kernel_versions["DIMRset_ver"]
         return self.__dimr_version
-
 
     def __extract_kernel_versions(self, build_info: Dict[str, Any]) -> Dict[str, str]:
         """

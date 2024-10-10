@@ -1,4 +1,5 @@
 import difflib
+import logging
 import textwrap
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -15,7 +16,7 @@ from src.config.test_case_config import TestCaseConfig
 from src.config.test_case_path import TestCasePath
 from src.config.types.path_type import PathType
 from src.utils.xml_config_parser import XmlConfigParser
-from tools.minio.config import CaseListReader, TestBenchConfigLoader, TestBenchConfigWriter, TestCaseData
+from tools.minio.config import CaseListReader, ConfigIndexer, TestBenchConfigLoader, TestBenchConfigWriter, TestCaseData
 
 
 def make_location(
@@ -128,6 +129,79 @@ class TestTestCaseData:
         # Assert
         assert default_dir == test_case.case_dir if path_type == PathType.INPUT else test_case.reference_dir
         assert prefix == test_case.case_prefix if path_type == PathType.INPUT else test_case.reference_prefix
+
+
+class TestConfigIndexer:
+    @staticmethod
+    def create_test_case(name: str) -> TestCaseData:
+        return TestCaseData(
+            name="foo",
+            case_dir=Path(f"./data/cases/{name}"),
+            reference_dir=Path(f"./data/references/{name}"),
+            case_prefix=S3Path(f"s3://dsc-testbench/cases/{name}"),
+            reference_prefix=S3Path(f"s3://dsc-testbench/references/lnx64/{name}"),
+        )
+
+    def test_index_configs__use_default_configs_dir_glob(self, mocker: MockerFixture, fs: FakeFilesystem) -> None:
+        # Arrange
+        fs.create_file(Path("configs/foo/my_config.xml"), contents="<deltaresTestbench_v3 />")
+        fs.create_file(Path("configs/foo/my_second_config.xml"), contents="<deltaresTestbench_v3 />")
+        fs.create_file(Path("configs/hidden_config.xml"), contents="<deltaresTestbench_v3 />")
+        fs.create_file(Path("configs/something_else.txt"), contents="<deltaresTestbench_v3 />")
+        indexer = ConfigIndexer()
+        config_loader = mocker.patch("tools.minio.config.TestBenchConfigLoader")
+        config_loader.return_value.get_test_cases.return_value = [self.create_test_case("foo")]
+
+        # Act
+        result = indexer.index_configs()
+
+        # Assert
+        assert Path("configs/foo/my_config.xml") in result
+        assert Path("configs/foo/my_second_config.xml") in result
+        assert Path("configs/hidden_config.xml") in result
+        assert Path("configs/something_else.txt") not in result
+
+    def test_index_configs__skip_configs_that_lack_testbench_tag(
+        self, mocker: MockerFixture, fs: FakeFilesystem
+    ) -> None:
+        # Arrange
+        path = Path("configs/foo/my_config.xml")
+        fs.create_file(path, contents="<foo />")
+        indexer = ConfigIndexer(configs=[path])
+        config_loader = mocker.patch("tools.minio.config.TestBenchConfigLoader")
+        config_loader.return_value.get_test_cases.return_value = [self.create_test_case("foo")]
+
+        # Act
+        result = indexer.index_configs()
+
+        # Assert
+        assert path not in result
+        config_loader.return_value.get_test_cases.assert_not_called()
+
+    def test_index_configs__exception_raised_during_loading__log_exception(
+        self, mocker: MockerFixture, fs: FakeFilesystem
+    ) -> None:
+        # Arrange
+        logger = mocker.Mock(spec=logging.Logger)
+        fs.create_file(Path("configs/good_config.xml"), contents="<deltaresTestbench_v3 />")
+        fs.create_file(Path("configs/bad_config.xml"), contents="<deltaresTestbench_v3 />")
+        indexer = ConfigIndexer(
+            configs=[Path("configs/good_config.xml"), Path("configs/bad_config.xml")],  # Order is important.
+            logger=logger,
+        )
+        config_loader = mocker.patch("tools.minio.config.TestBenchConfigLoader")
+        config_loader.return_value.get_test_cases.side_effect = [
+            [self.create_test_case("foo")],
+            RuntimeError(">:("),
+        ]
+
+        # Act
+        result = indexer.index_configs()
+
+        # Assert
+        assert Path("configs/good_config.xml") in result
+        logger.exception.assert_called_once()
+        assert str(Path("configs/bad_config.xml")) in logger.exception.call_args.args[0]
 
 
 class TestTestBenchConfigLoader:
@@ -479,13 +553,17 @@ class TestCaseListReader:
         content_list = {
             "test1": ["lnx"],
             "test2": [""],
-            "test3": [str(Path("config/config"))],
-            "test4": [str(Path("config/config.xml")), "this.xml"],
+            "test3": ["config/config"],
+            "test4": ["config/config.xml", "this.xml"],
             "test5": ["config.xml"],
         }
         content = "\n".join([f"{key}, {value[0]}" for key, value in content_list.items()])
-        content += "\ntest4, this.xml"
+        content += "\ntest4, that.xml"
         file_path = local_dir / "this.txt"
         fs.create_file(file_path, contents=content)
-        result = CaseListReader().read_cases_from_file(str(file_path))
-        assert result == content_list
+        result = CaseListReader().read_cases_from_file(file_path)
+        assert result["test1"] == ["lnx"]
+        assert result["test2"] == ["*"]
+        assert result["test3"] == ["config/config"]
+        assert result["test4"] == ["config/config.xml", "that.xml"]
+        assert result["test5"] == ["config.xml"]

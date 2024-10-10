@@ -253,7 +253,7 @@ class TeamCity(object):
         if pinned == "true" or pinned == "false":
             pinned_locator = f",pinned:{pinned}"
 
-        endpoint = f"{self.__rest_uri}builds?locator=defaultFilter:false,buildType:{build_type_id},count:{limit}{status_locator}{pinned_locator}"
+        endpoint = f"{self.__rest_uri}builds?locator=defaultFilter:false,status:SUCCESS,buildType:{build_type_id},count:{limit}{status_locator}{pinned_locator}"
 
         result = requests.get(
             url=endpoint, headers=self.__default_headers, auth=self.__auth

@@ -13,7 +13,7 @@ from settings.teamcity_settings import NAME_OF_DIMR_RELEASE_SIGNED_WINDOWS_ARTIF
 class ArtifactInstallHelper(object):
     """ Class responsible for downloading, unpacking and installing the DIMR artifacts. """
 
-    def __init__(self, teamcity: TeamCity, ssh_client: SshClient, dimr_version: str):
+    def __init__(self, teamcity: TeamCity, ssh_client: SshClient, dimr_version: str, branch_name: str):
         """
         Creates a new instance of ArtifactInstallHelper.
 
@@ -25,6 +25,7 @@ class ArtifactInstallHelper(object):
         self.__teamcity = teamcity
         self.__ssh_client = ssh_client
         self.__dimr_version = dimr_version
+        self.__branch_name = branch_name
 
     def download_artifacts_to_network_drive(self) -> None:
         """ Downloads the DIMR artifacts to the network drive. """
@@ -52,12 +53,13 @@ class ArtifactInstallHelper(object):
         command += "./libtool_install.sh;"
         command += "cd /p/d-hydro/dimrset/weekly;"
         command += f"chgrp -R dl_acl_dsc {self.__dimr_version}/;"
-        command += "rm latest;"
-        command += f"ln -s {self.__dimr_version} latest;"
         command += f"chmod -R a+x,a-s {self.__dimr_version}/;"
-        command += "cd /p/d-hydro/dimrset;"
-        command += "rm latest;"
-        command += f"ln -s weekly/{self.__dimr_version} latest;"
+        if self.__branch_name == 'main':
+            command += "unlink latest;"
+            command += f"ln -s {self.__dimr_version} latest;" 
+            command += "cd /p/d-hydro/dimrset;"
+            command += "unlink latest;"
+            command += f"ln -s weekly/{self.__dimr_version} latest;"
 
         # execute command
         self.__ssh_client.execute(address=LINUX_ADDRESS, command=command)

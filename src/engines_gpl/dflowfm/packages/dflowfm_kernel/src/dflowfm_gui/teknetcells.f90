@@ -31,13 +31,20 @@
 !
 
    subroutine teknetcells(netwhat, jahalt, jacol)
+      use m_minmxnetcells
+      use m_isosmoothnet
+      use m_isocol
+      use m_copynetcellstonetnodes
+      use m_drcirc
+      use m_dhtext
+      use m_dhitext
+      use m_arrowsxy
       use m_netw
       use m_flowgeom
       use unstruc_display
       use m_missing
       use m_partitioninfo
       use m_alloc
-      use unstruc_model, only: md_netfile
       use unstruc_messages
       use m_sferic, only: jsferic, dg2rd
       use gridoperations

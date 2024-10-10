@@ -5682,7 +5682,7 @@ contains
 
          deallocate (xs, ys, kcs)
 
-      elseif (filetype == node_id) then
+      elseif (filetype == NODE_ID) then
 
          ierr = findlink_by_nodeid(filename, m)
          if (m <= 0) then
@@ -6741,33 +6741,33 @@ contains
       integer, intent(out) :: ec_filetype
       !
       select case (filetype)
-      case (uniform) ! 1
+      case (UNIFORM) ! 1
          ec_filetype = provFile_uniform
-      case (unimagdir) ! 2
+      case (UNIMAGDIR) ! 2
          ec_filetype = provFile_unimagdir
-      case (svwp) ! 3
+      case (SVWP) ! 3
          ec_filetype = provFile_svwp
-      case (arcinfo) ! 4
+      case (ARCINFO) ! 4
          ec_filetype = provFile_arcinfo
-      case (spiderweb) ! 5
+      case (SPIDERWEB) ! 5
          ec_filetype = provFile_spiderweb
-      case (curvi) ! 6
+      case (CURVI) ! 6
          ec_filetype = provFile_curvi
-      case (triangulation) ! 7
+      case (TRIANGULATION) ! 7
          ec_filetype = provFile_samples
-      case (triangulationmagdir) ! 8
+      case (TRIANGULATIONMAGDIR) ! 8
          ec_filetype = provFile_triangulationmagdir
-      case (poly_tim) ! 9
+      case (POLY_TIM) ! 9
          ec_filetype = provFile_poly_tim
-      case (ncgrid, ncwave) ! 11, 14
+      case (NCGRID, NCWAVE) ! 11, 14
          ec_filetype = provFile_netcdf
-      case (ncflow) ! 12
+      case (NCFLOW) ! 12
          ec_filetype = provFile_undefined ! only used for timespaceinitialfield, no EC yet.
-      case (bcascii) ! 17
+      case (BCASCII) ! 17
          ec_filetype = provFile_bc
-      case (node_id) ! -1
+      case (NODE_ID) ! 20
          ec_filetype = provFile_bc
-      case (fourier) ! 101
+      case (FOURIER) ! 101
          ec_filetype = provFile_fourier
       case default
          ec_filetype = provFile_undefined
