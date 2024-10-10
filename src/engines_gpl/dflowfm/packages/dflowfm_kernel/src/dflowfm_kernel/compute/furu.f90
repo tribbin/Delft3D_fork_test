@@ -165,7 +165,7 @@
                 if (modind < 9) then
                    frL = cfwavhi(L) * hypot(u1L - ustokes(L), v(L) - vstokes(L))
                 elseif (modind == 9) then
-                   frL = cfhi_vanrijn(L) * hypot(u1L - ustokes(L), v(L) - vstokes(L)) ! g/ca**2/h/rho
+                   frL = cfhi_vanrijn(L) * hypot(u1L - ustokes(L), v(L) - vstokes(L))
                 elseif (modind == 10) then ! Ruessink 2003
                    uorbL = .5d0 * (uorb(k1) + uorb(k2))
                    frL = cfuhi(L) * sqrt((u1L - ustokes(L))**2 + (v(L) - vstokes(L))**2 + (1.16d0 * uorbL * fsqrtt)**2)
