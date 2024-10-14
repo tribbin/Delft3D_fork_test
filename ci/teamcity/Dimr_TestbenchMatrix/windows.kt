@@ -18,17 +18,19 @@ object Windows : BuildType({
 
     val filePath = "${DslContext.baseDir}/dimr_testbench_table.csv"
     val lines = File(filePath).readLines()
-    val windowsLines = lines.filter({ line -> line.contains("win64")})
+    val windowsLines = lines.filter { line -> line.contains("win64")}
     val configs = windowsLines.map { line ->
         line.split(",")[1]
     }
+    val linesForAll = linuxLines.filter { line -> line.split(",")[2] == "TRUE" }
+    val selectedConfigs = linesForAll.map { line -> line.split(",")[1] }
 
     vcs {
         root(DslContext.settingsRoot)
     }
 
     params {
-        select("configfile", configs.joinToString(","),
+        select("configfile", selectedConfigs.joinToString(","),
             allowMultiple = true,
             options = configs,
             display = ParameterDisplay.PROMPT
