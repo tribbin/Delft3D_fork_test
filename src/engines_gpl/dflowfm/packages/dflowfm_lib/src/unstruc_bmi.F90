@@ -1961,7 +1961,7 @@ contains
          end if
 
          select case (field_name)
-         case ("crest_level", "CrestLevel", "crestLevel")
+         case ("crestlevel")
             if (is_in_network) then
                x = get_crest_level_c_loc(network%sts%struct(item_index))
             else
@@ -1981,12 +1981,12 @@ contains
          end if
 
          select case (field_name)
-         case ("gateLowerEdgeLevel")
+         case ("gateloweredgelevel")
             if (is_in_network) then
                x = get_gate_lower_edge_level_c_loc(network%sts%struct(item_index))
             end if
             return
-         case ("crest_level", "CrestLevel", "crestLevel")
+         case ("crestlevel")
             if (is_in_network) then
                x = get_crest_level_c_loc(network%sts%struct(item_index))
             end if
@@ -2000,16 +2000,16 @@ contains
             return
          end if
          select case (field_name)
-         case ("sill_level", "CrestLevel")
+         case ("crestlevel")
             x = c_loc(zcgen((item_index - 1) * 3 + 1))
             return
-         case ("door_height", "GateHeight")
+         case ("gateheight")
             x = c_loc(generalstruc(item_index)%gatedoorheight)
             return
-         case ("lower_edge_level", "GateLowerEdgeLevel")
+         case ("gateloweredgelevel")
             x = c_loc(zcgen((item_index - 1) * 3 + 2))
             return
-         case ("opening_width", "GateOpeningWidth")
+         case ("gateopeningwidth")
             x = c_loc(zcgen((item_index - 1) * 3 + 3))
             return
          case ("horizontal_opening_direction", "GateOpeningHorizontalDirection")
@@ -2025,14 +2025,14 @@ contains
          end if
 
          select case (field_name)
-         case ("CrestLevel", "crestLevel")
+         case ("crestlevel")
             if (is_in_network) then
                x = get_crest_level_c_loc(network%sts%struct(item_index))
             else
                x = c_loc(zcgen((item_index - 1) * 3 + 1))
             end if
             return
-         case ("GateHeight", "gateHeight")
+         case ("gateheight")
             if (is_in_network) then
                x = get_gate_door_height_c_loc(network%sts%struct(item_index))
             else
@@ -2040,14 +2040,14 @@ contains
             end if
 
             return
-         case ("GateLowerEdgeLevel", "gateLowerEdgeLevel")
+         case ("gateloweredgelevel")
             if (is_in_network) then
                x = get_gate_lower_edge_level_c_loc(network%sts%struct(item_index))
             else
                x = c_loc(zcgen((item_index - 1) * 3 + 2))
             end if
             return
-         case ("GateOpeningWidth", "gateOpeningWidth")
+         case ("gateopeningwidth")
             if (is_in_network) then
                x = get_gate_opening_width_c_loc(network%sts%struct(item_index))
             else
@@ -2067,7 +2067,7 @@ contains
          end if
 
          select case (field_name)
-         case ("valveOpeningHeight")
+         case ("valveopeningheight")
             if (is_in_network) then
                x = get_valve_opening_height_c_loc(network%sts%struct(item_index))
             end if
@@ -2082,14 +2082,14 @@ contains
          end if
 
          select case (field_name)
-         case ("valveRelativeOpening")
+         case ("valverelativeopening")
             x = get_valve_relative_opening_c_loc(longculverts(item_index))
             return
          end select
 
          ! SOURCE-SINKS
       case ("sourcesinks")
-         if (item_name == "COSUMO") then
+         if (item_name == "cosumo") then
             select case (field_name)
             case ("nf_q_source")
                if (.not. associated(nf_q_source)) then
