@@ -2240,12 +2240,14 @@ contains
       end if
 
       call prop_get(md_ptr, 'output', 'EulerVelocities', jaeulervel)
-      if ((jawave < 3 .or. flowWithoutWaves) .and. jaeulervel == 1) then
-         call mess(LEVEL_WARN, '''EulerVelocities'' is not compatible with the selected Wavemodelnr. ''EulerVelocities'' is set to 0.')
-         jaeulervel = 0
-      else if (jaeulervel == 1 .and. jawavestokes == 0) then
-         call mess(LEVEL_WARN, '''EulerVelocities'' is set to 0, because 3Dstokesprofile is set to 0.')
-         jaeulervel = 0
+      if (jaeulervel == 1) then
+         if (jawave < 3 .or. flowWithoutWaves) then
+            call mess(LEVEL_WARN, '''EulerVelocities'' is not compatible with the selected Wavemodelnr. ''EulerVelocities'' is set to 0.')
+            jaeulervel = 0
+         else if (jawavestokes == 0) then
+            call mess(LEVEL_WARN, '''EulerVelocities'' is set to 0, because 3Dstokesprofile is set to 0.')
+            jaeulervel = 0
+         end if
       end if
       !
       if (jawave == 4) then ! not for Delta Shell

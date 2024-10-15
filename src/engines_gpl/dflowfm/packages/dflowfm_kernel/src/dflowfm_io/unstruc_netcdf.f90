@@ -6169,11 +6169,11 @@ contains
                   if (jamapsigwav == 0) then
                      ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_rms_height', 'RMS wave height', 'm', jabndnd=jabndnd_) ! not CF
                   else
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_wave_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
                   end if
                end if
                if (jamapwav_twav > 0 .and. allocated(twav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'tp', '', 'Peak wave period', 's')
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'tp', 'sea_surface_wave_period_at_variance_spectral_density_maximu', 'Peak wave period', 's')
                end if
                if (jamapwav_phiwav > 0 .and. allocated(phiwav)) then
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, nc_precision, UNC_LOC_S, 'thetamean', 'sea_surface_wave_from_direction', 'Wave from direction', 'deg from N')
@@ -6184,15 +6184,15 @@ contains
                if (jamapsigwav == 0) then
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_rms_height', 'RMS wave height', 'm', jabndnd=jabndnd_) ! not CF
                else
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_wave_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
                end if
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, nc_precision, UNC_LOC_S, 'thetamean', 'sea_surface_wave_from_direction', 'Wave from direction', 'deg from N', jabndnd=jabndnd_) ! not CF
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'twav', 'sea_surface_wave_period', 'Wave period', 's') ! not CF
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, nc_precision, UNC_LOC_S, 'thetamean', 'sea_surface_wave_from_direction', 'Wave from direction', 'deg from N', jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'twav', 'sea_surface_wave_period_at_variance_spectral_density_maximum', 'Wave peak period', 's') ! we assume working with the peak period in all our formulations
                ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_uorb, nc_precision, UNC_LOC_S, 'uorb', 'sea_surface_wave_orbital_velocity', 'Wave orbital velocity', 'm s-1', jabndnd=jabndnd_) ! not CF
                !
                if (jawavestokes > 0) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokes, nc_precision, iLocS, 'ust_cc', 'sea_surface_x_stokes_drift', 'Stokes drift, x-component', 'm s-1', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokes, nc_precision, iLocS, 'vst_cc', 'sea_surface_y_stokes_drift', 'Stokes drift, y-component', 'm s-1', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokes, nc_precision, iLocS, 'ust_cc', 'sea_surface_wave_stokes_drift_x_velocity', 'Stokes drift, x-component', 'm s-1', jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokes, nc_precision, iLocS, 'vst_cc', 'sea_surface_wave_stokes_drift_y_velocity', 'Stokes drift, y-component', 'm s-1', jabndnd=jabndnd_)
 
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokeslink, nc_precision, iLocU, 'ustokes', '', 'Stokes drift, n-component', 'm s-1', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokeslink, nc_precision, iLocU, 'vstokes', '', 'Stokes drift, t-component', 'm s-1', jabndnd=jabndnd_) ! not CF
@@ -6201,33 +6201,33 @@ contains
                ! Then wave model dependent:
                if ((jawave == 3 .or. jawave == 4 .or. jawave == 7) .and. jawaveforces > 0) then
                   ! Report wave forces depth-integrated in flow cell center for easier comparison with other models/observations
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fx, nc_precision, UNC_LOC_S, 'Fx', 'sea_surface_x_wave_force', 'Wave force, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fy, nc_precision, UNC_LOC_S, 'Fy', 'sea_surface_y_wave_force', 'Wave force, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fx, nc_precision, UNC_LOC_S, 'Fx', 'sea_surface_wave_x_force', 'Wave force, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fy, nc_precision, UNC_LOC_S, 'Fy', 'sea_surface_wave_y_force', 'Wave force, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
                   ! Report wave forces depth-dependent in flow links, ie where they are applied
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fxlink, nc_precision, iLocU, 'wavfu', '', 'Wave force at velocity point, n-component', 'N m-2', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fylink, nc_precision, iLocU, 'wavfv', '', 'Wave force at velocity point, t-component', 'N m-2', jabndnd=jabndnd_) ! not CF
 
                   if (kmx > 0) then
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, nc_precision, UNC_LOC_S, 'sxwav', 'sea_surface_x_wave_force_surface', 'Surface layer wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, nc_precision, UNC_LOC_S, 'sywav', 'sea_surface_y_wave_force_surface', 'Surface layer wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, nc_precision, UNC_LOC_S, 'sxbwav', 'sea_surface_x_wave_force_body', 'Water body wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, nc_precision, UNC_LOC_S, 'sybwav', 'sea_surface_y_wave_force_body', 'Water body wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, nc_precision, UNC_LOC_S, 'sxwav', 'sea_surface_wave_x_force_surface', 'Surface layer wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, nc_precision, UNC_LOC_S, 'sywav', 'sea_surface_wave_y_force_surface', 'Surface layer wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, nc_precision, UNC_LOC_S, 'sxbwav', 'sea_surface_wave_x_force_body', 'Water body wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, nc_precision, UNC_LOC_S, 'sybwav', 'sea_surface_wave_y_force_body', 'Water body wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
                   end if
                end if
 
                if (jawave == 4) then
                   ierr = nf90_def_dim(mapids%ncid, 'ntheta', ntheta, mapids%id_tsp%id_ntheta)
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_E, nc_precision, UNC_LOC_S, 'E', 'sea_surface_bulk_wave_energy', 'Wave energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_E, nc_precision, UNC_LOC_S, 'E', 'sea_surface_wave_bulk_energy', 'Wave energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
                   if (roller > 0) then
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_R, nc_precision, UNC_LOC_S, 'R', 'sea_surface_bulk_roller_energy', 'Roller energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_DR, nc_precision, UNC_LOC_S, 'DR', 'sea_surface_bulk_roller_dissipation', 'Roller energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_R, nc_precision, UNC_LOC_S, 'R', 'sea_surface_wave_bulk_roller_energy', 'Roller energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_DR, nc_precision, UNC_LOC_S, 'DR', 'sea_surface_wave_bulk_roller_dissipation', 'Roller energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
                   end if
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_D, nc_precision, UNC_LOC_S, 'D', 'sea_surface_wave_breaking_dissipation', 'Wave breaking energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Df, nc_precision, UNC_LOC_S, 'Df', 'sea_surface_wave_bottom_dissipation', 'Wave bottom energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
 
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxx, nc_precision, UNC_LOC_S, 'Sxx', '', 'Radiation stress, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Syy, nc_precision, UNC_LOC_S, 'Syy', '', 'Radiation stress, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxy, nc_precision, UNC_LOC_S, 'Sxy', 'sea_surface_wave_radiation_stress_NE', 'Radiation stress, xy-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxx, nc_precision, UNC_LOC_S, 'Sxx', 'sea_surface_wave_xx_radiation_stress', 'Radiation stress, x-component', 'N m-2', jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Syy, nc_precision, UNC_LOC_S, 'Syy', 'sea_surface_wave_yy_radiation_stress', 'Radiation stress, y-component', 'N m-2', jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxy, nc_precision, UNC_LOC_S, 'Sxy', 'sea_surface_wave_xy_radiation_stress', 'Radiation stress, xy-component', 'N m-2', jabndnd=jabndnd_)
 
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cwav, nc_precision, UNC_LOC_S, 'cwav', 'sea_surface_wave_phase_celerity', 'Sea_surface_wave_phase_celerity', 'm s-1', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cgwav, nc_precision, UNC_LOC_S, 'cgwav', 'sea_surface_wave_group_celerity', 'Sea_surface_wave_group_celerity', 'm s-1', jabndnd=jabndnd_) ! not CF
