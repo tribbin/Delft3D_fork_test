@@ -73,6 +73,11 @@ object Trigger : BuildType({
         script {
             name = "Start Linux Testbench"
 
+            conditions {
+                doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
+                doesNotEqual("branch_name", "none")
+            }
+
             scriptContent = """
                 curl --fail --silent --show-error \
                      -u %teamcity_user%:%teamcity_pass% \
@@ -104,13 +109,17 @@ object Trigger : BuildType({
         script {
             name = "Start Windows Testbench"
 
+            conditions {
+                doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
+                doesNotEqual("branch_name", "none")
+            }
+            
             scriptContent = """
-                exit 1
                 curl --fail --silent --show-error \
                      -u %teamcity_user%:%teamcity_pass% \
                      -X POST \
                      -H "Content-Type: application/xml" \
-                     -d '<build branchName="%teamcity.build.branch%">
+                     -d '<build branchName="%teamcity.build.branch%" replace="true">
                             <buildType id="${Windows.id}"/>
                             <revisions>
                                 <revision version="%build.vcs.number%" vcsBranchName="%git_head%">
@@ -120,6 +129,9 @@ object Trigger : BuildType({
                             <properties>
                                 <property name="configfile" value="%matrix_list_windows%"/>
                             </properties>
+                            <snapshot-dependencies>
+                                <build id="%teamcity.build.id%" buildTypeId="%system.teamcity.buildType.id%"/>
+                            </snapshot-dependencies>
                          </build>' \
                      "%teamcity.serverUrl%/app/rest/buildQueue"
                 if (test $? -ne 0)
