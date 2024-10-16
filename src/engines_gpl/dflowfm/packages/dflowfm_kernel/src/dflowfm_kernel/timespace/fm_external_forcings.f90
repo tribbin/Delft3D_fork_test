@@ -623,7 +623,7 @@ contains
    subroutine read_location_files_from_boundary_blocks(filename, nx, kce, num_bc_ini_blocks, &
                                                        numz, numu, nums, numtm, numsd, numt, numuxy, numn, num1d2d, numqh, numw, numtr, numsf)
       use properties
-      use timespace
+      use timespace, only: NODE_ID, POLY_TIM
       use tree_data_types
       use tree_structures
       use messageHandling
@@ -716,10 +716,10 @@ contains
 
             call prop_get(node_ptr, '', 'nodeId', location_file, property_ok)
             if (property_ok) then
-               filetype = node_id
+               filetype = NODE_ID
             else
                call prop_get(node_ptr, '', 'locationFile', location_file, property_ok)
-               filetype = poly_tim
+               filetype = POLY_TIM
             end if
 
             if (property_ok) then
