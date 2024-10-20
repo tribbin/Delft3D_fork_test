@@ -45,11 +45,6 @@ module m_turbulence
    double precision :: sigtke, sigtkei
    double precision :: sigeps, sigepsi
    double precision :: sigrho
-   double precision :: sigsal
-   double precision :: sigtem
-   double precision :: sigtracer
-
-   !                                    c1e    = c2e-vonkar**2/(sigeps*sqrt(cmukep))
 
    double precision :: c1t
    double precision :: c2t
@@ -150,9 +145,6 @@ contains
       sigtke = 1.0d0; sigtkei = 1d0 / sigtke
       sigeps = 1.3d0; sigepsi = 1d0 / sigeps
       sigrho = 0.7d0 ! bouyancy
-      sigsal = Schmidt_number_salinity
-      sigtem = Prandtl_number_temperature
-      sigtracer = Schmidt_number_tracer
 
       cmukep = 0.09d0
       sqcmukep = sqrt(cmukep)

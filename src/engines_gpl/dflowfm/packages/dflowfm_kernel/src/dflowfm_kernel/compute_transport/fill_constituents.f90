@@ -38,7 +38,8 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    use m_wind, only: heatsrc
    use m_physcoef, only: dicouv, dicoww, difmolsal, difmoltem, difmoltracer, Jaallowcoolingbelowzero, ag, vonkar
    use m_nudge, only: nudge_rate, nudge_tem, nudge_sal
-   use m_turbulence, only: sigsal, sigtem, sigtracer, sigdifi, sigsed, wsf
+   use m_turbulence, only: sigdifi, sigsed, wsf
+   use m_physcoef, only: Schmidt_number_salinity, Prandtl_number_temperature, Schmidt_number_tracer
    use fm_external_forcings_data, only: wstracers, numsrc, ksrc, qsrc, ccsrc
    use m_sediment, only: sed, sedtra, stm_included, stmpar, jased, mxgr, ws
    use m_mass_balance_areas, only: jamba, mbadefdomain, mbafluxheat, mbafluxsorsin
@@ -64,8 +65,8 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    double precision :: spir_ce, spir_be, spir_e, alength_a, time_a, alpha, fcoriocof, qsrck, qsrckk, dzss
 
    double precision :: Trefi
-   integer(4) :: ithndl =  0
-   
+   integer(4) :: ithndl = 0
+
    if (timon) call timstrt("fill_constituents", ithndl)
 
    const_sour = 0d0
@@ -111,7 +112,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
       end if
       if (dicoww >= 0d0) then
          difsedw(ISALT) = dicoww + difmolsal
-         sigdifi(ISALT) = 1d0 / sigsal
+         sigdifi(ISALT) = 1d0 / Schmidt_number_salinity
       end if
    end if
 
@@ -121,7 +122,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
       end if
       if (dicoww >= 0d0) then
          difsedw(ITEMP) = dicoww + difmoltem
-         sigdifi(ITEMP) = 1d0 / sigtem
+         sigdifi(ITEMP) = 1d0 / Prandtl_number_temperature
       end if
    end if
 
@@ -148,7 +149,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
          difsedu(jtra) = difmoltracer
          if (dicoww >= 0d0) then
             difsedw(jtra) = dicoww + difmoltracer
-            sigdifi(jtra) = 1d0 / sigtracer
+            sigdifi(jtra) = 1d0 / Schmidt_number_tracer
          end if
          wsf(jtra) = wstracers(jtra - ITRA1 + 1)
       end do
