@@ -38,8 +38,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    use m_wind, only: heatsrc
    use m_physcoef, only: dicouv, dicoww, difmolsal, difmoltem, difmoltracer, Jaallowcoolingbelowzero, ag, vonkar
    use m_nudge, only: nudge_rate, nudge_tem, nudge_sal
-   use m_turbulence, only: sigdifi, sigsed, wsf
-   use m_physcoef, only: Schmidt_number_salinity, Prandtl_number_temperature, Schmidt_number_tracer
+   use m_turbulence, only: Schmidt_number_salinity, Prandtl_number_temperature, Schmidt_number_tracer, sigdifi, sigsed, wsf
    use fm_external_forcings_data, only: wstracers, numsrc, ksrc, qsrc, ccsrc
    use m_sediment, only: sed, sedtra, stm_included, stmpar, jased, mxgr, ws
    use m_mass_balance_areas, only: jamba, mbadefdomain, mbafluxheat, mbafluxsorsin

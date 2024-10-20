@@ -109,10 +109,6 @@ module m_physcoef
    double precision :: vicouv !< constant horizontal eddy viscosity   (m2/s) mom
    double precision :: dicouv !< constant horizontal eddy diffusivity (m2/s) sal, sed
 
-   double precision :: Schmidt_number_salinity = 0.7d0 !< Turbulent Schmidt number for salinity
-   double precision :: Prandtl_number_temperature = 0.7d0 !< Turbulent Prandtl number for temperature
-   double precision :: Schmidt_number_tracer = 1.0d0 !< Turbulent Schmidt number for tracers
-
    double precision :: Elder !< add Elder viscosity
    double precision :: Smagorinsky !< add Smagorinsky Cs coefficient, vic = vic + (Cs*dx)**2 * S
    double precision :: viuchk !< if < 0.5 then eddy viscosity cell peclet check viu<viuchk*dx*dx/dt

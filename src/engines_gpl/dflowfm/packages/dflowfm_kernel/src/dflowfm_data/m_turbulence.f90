@@ -122,6 +122,9 @@ module m_turbulence
 
    double precision, allocatable :: rhou(:) ! density at flow links   (kg/m3)
 
+   double precision :: Schmidt_number_salinity = 0.7d0 !< Turbulent Schmidt number for salinity
+   double precision :: Prandtl_number_temperature = 0.7d0 !< Turbulent Prandtl number for temperature
+   double precision :: Schmidt_number_tracer = 1.0d0 !< Turbulent Schmidt number for tracers
    double precision, allocatable :: sigsed(:) ! prandtl schmidt per sediment fraction
    double precision, allocatable :: sigdifi(:) ! inverse prandtl schmidt nrs
    double precision, allocatable :: wsf(:) ! fall velocities of all numconst constituents
