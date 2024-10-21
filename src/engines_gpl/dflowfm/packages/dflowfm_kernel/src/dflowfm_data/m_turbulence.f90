@@ -124,9 +124,9 @@ module m_turbulence
 
    real(kind=dp), allocatable :: rhou(:) ! density at flow links   (kg/m3)
 
-   real(kind=dp) :: Schmidt_number_salinity = 0.7d0 !< Turbulent Schmidt number for salinity
-   real(kind=dp) :: Prandtl_number_temperature = 0.7d0 !< Turbulent Prandtl number for temperature
-   real(kind=dp) :: Schmidt_number_tracer = 1.0d0 !< Turbulent Schmidt number for tracers
+   real(kind=dp) :: Schmidt_number_salinity = 0.7_dp !< Turbulent Schmidt number for salinity
+   real(kind=dp) :: Prandtl_number_temperature = 0.7_dp !< Turbulent Prandtl number for temperature
+   real(kind=dp) :: Schmidt_number_tracer = 1.0_dp !< Turbulent Schmidt number for tracers
    real(kind=dp), allocatable :: sigsed(:) ! prandtl schmidt per sediment fraction
    real(kind=dp), allocatable :: sigdifi(:) ! inverse prandtl schmidt nrs
    real(kind=dp), allocatable :: wsf(:) ! fall velocities of all numconst constituents
@@ -146,39 +146,39 @@ contains
       use m_physcoef
 
 ! Coefficients of k-e model:
-      sigdif = 1d0
-      sigtke = 1.0d0; sigtkei = 1d0 / sigtke
-      sigeps = 1.3d0; sigepsi = 1d0 / sigeps
-      sigrho = 0.7d0 ! bouyancy
+      sigdif = 1.0_dp
+      sigtke = 1.0_dp; sigtkei = 1.0_dp / sigtke
+      sigeps = 1.3_dp; sigepsi = 1.0_dp / sigeps
+      sigrho = 0.7_dp ! bouyancy
 
-      cmukep = 0.09d0
+      cmukep = 0.09_dp
       sqcmukep = sqrt(cmukep)
-      sqcmukepi = 1.d0 / sqcmukep
+      sqcmukepi = 1.0_dp / sqcmukep
 
-      cde = cmukep**0.75d0
-      cewall = cmukep**0.75d0 / vonkar ! 0.4769d0  !        0.09**0.75/0.41  ! /vonkar
-      c2e = 1.92d0
-      c1e = 1.44d0
+      cde = cmukep**0.75_dp
+      cewall = cmukep**0.75_dp / vonkar ! 0.4769_dp  !        0.09**0.75/0.41  ! /vonkar
+      c2e = 1.92_dp
+      c1e = 1.44_dp
       c1e = c2e - vonkar**2 / (sigeps * sqcmukep)
 
-      c1t = (1d0 - c1e) * cmukep
-      c2t = 1d0 - c2e
-      c3tsta = 1d0 * cmukep
-      c3tuns = (1d0 - c1e) * cmukep
+      c1t = (1.0_dp - c1e) * cmukep
+      c2t = 1.0_dp - c2e
+      c3tsta = 1.0_dp * cmukep
+      c3tuns = (1.0_dp - c1e) * cmukep
 
       coefn2 = -ag / (sigrho * rhomean)
 
-      skmy = 1.96d0
-      a1ph = 0.92d0
-      a2 = 0.74d0
-      b1 = 16.6d0
-      b2 = 10.1d0
-      c1 = 0.08d0
-      e1 = 1.80d0
-      e2 = 1.33d0
+      skmy = 1.96_dp
+      a1ph = 0.92_dp
+      a2 = 0.74_dp
+      b1 = 16.6_dp
+      b2 = 10.1_dp
+      c1 = 0.08_dp
+      e1 = 1.80_dp
+      e2 = 1.33_dp
 !e2     = e1-1+vonkar**2*b1**0.6667/skmy = 1.358, not 1.33?
-      ghmin = -0.280d0
-      ghmax = 0.0233d0
+      ghmin = -0.280_dp
+      ghmax = 0.0233_dp
    end subroutine default_turbulence
 
 end module m_turbulence

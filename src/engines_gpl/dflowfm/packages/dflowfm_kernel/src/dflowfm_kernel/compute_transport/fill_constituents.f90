@@ -61,7 +61,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    integer :: iconst, kk, kkk, k, kb, kt, n, kk2, imba, jamba_src
    integer :: jsed ! counter for suspended sediment fractions
    integer :: jtra ! counter for tracers
-   real(kind=dp), parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: dtol = 1e-8_dp
    real(kind=dp) :: spir_ce, spir_be, spir_e, alength_a, time_a, alpha, fcoriocof, qsrck, qsrckk, dzss
 
    real(kind=dp) :: Trefi
@@ -69,8 +69,8 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 
    if (timon) call timstrt("fill_constituents", ithndl)
 
-   const_sour = 0d0
-   const_sink = 0d0
+   const_sour = 0.0_dp
+   const_sink = 0.0_dp
 
    do k = 1, Ndkx
 
@@ -94,7 +94,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
                   do jsed = 1, mxgr
                      iconst = ISED1 + jsed - 1
                      call getkbotktop(k, kb, kt)
-                     constituents(iconst, kb:kt) = 0d0
+                     constituents(iconst, kb:kt) = 0.0_dp
                   end do
                end if
             end do
@@ -102,43 +102,43 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
       end if
    end if
 
-   difsedu = 0d0; difsedw = 0d0; sigdifi = 0d0
+   difsedu = 0.0_dp; difsedw = 0.0_dp; sigdifi = 0.0_dp
 
 !  diffusion coefficients
 
    if (ISALT /= 0) then
-      if (dicouv >= 0d0) then
+      if (dicouv >= 0.0_dp) then
          difsedu(ISALT) = difmolsal
       end if
-      if (dicoww >= 0d0) then
+      if (dicoww >= 0.0_dp) then
          difsedw(ISALT) = dicoww + difmolsal
-         sigdifi(ISALT) = 1d0 / Schmidt_number_salinity
+         sigdifi(ISALT) = 1.0_dp / Schmidt_number_salinity
       end if
    end if
 
    if (ITEMP /= 0) then
-      if (dicouv >= 0d0) then
+      if (dicouv >= 0.0_dp) then
          difsedu(ITEMP) = difmoltem
       end if
-      if (dicoww >= 0d0) then
+      if (dicoww >= 0.0_dp) then
          difsedw(ITEMP) = dicoww + difmoltem
-         sigdifi(ITEMP) = 1d0 / Prandtl_number_temperature
+         sigdifi(ITEMP) = 1.0_dp / Prandtl_number_temperature
       end if
    end if
 
    if (jasecflow > 0 .and. jaequili == 0 .and. kmx == 0) then
-      difsedu(ISPIR) = 0d0
-      difsedw(ISPIR) = 0d0 !dicoww + difmoltem
-      sigdifi(ISPIR) = 0d0 !/sigspi
+      difsedu(ISPIR) = 0.0_dp
+      difsedw(ISPIR) = 0.0_dp !dicoww + difmoltem
+      sigdifi(ISPIR) = 0.0_dp !/sigspi
    end if
 
    if (ISED1 /= 0) then
       do jsed = 1, mxgr
          iconst = ISED1 + jsed - 1
-         if (dicouv >= 0d0) difsedu(iconst) = 0d0
-         if (dicoww >= 0d0) then
+         if (dicouv >= 0.0_dp) difsedu(iconst) = 0.0_dp
+         if (dicoww >= 0.0_dp) then
             difsedw(iconst) = dicoww
-            sigdifi(iconst) = 1d0 / sigsed(jsed)
+            sigdifi(iconst) = 1.0_dp / sigsed(jsed)
          end if
          if (jased < 4) wsf(iconst) = ws(jsed)
       end do
@@ -147,9 +147,9 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    if (ITRA1 > 0) then
       do jtra = ITRA1, ITRAN
          difsedu(jtra) = difmoltracer
-         if (dicoww >= 0d0) then
+         if (dicoww >= 0.0_dp) then
             difsedw(jtra) = dicoww + difmoltracer
-            sigdifi(jtra) = 1d0 / Schmidt_number_tracer
+            sigdifi(jtra) = 1.0_dp / Schmidt_number_tracer
          end if
          wsf(jtra) = wstracers(jtra - ITRA1 + 1)
       end do
@@ -164,7 +164,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
    do kk = 1, Ndx
 
 !     nudging
-      Trefi = 0d0
+      Trefi = 0.0_dp
       if (janudge == 1 .and. jas == 1) then
 !        get reference time
          Trefi = nudge_rate(kk)
@@ -172,17 +172,17 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 
       call getkbotktop(kk, kb, kt)
       do k = kb, kt
-         dvoli = 1d0 / max(vol1(k), dtol)
-         if (testdryflood == 2) dvoli = 1d0 / max(vol1(k), epshu * ba(kk) / max(kt - kb + 1, 1))
+         dvoli = 1.0_dp / max(vol1(k), dtol)
+         if (testdryflood == 2) dvoli = 1.0_dp / max(vol1(k), epshu * ba(kk) / max(kt - kb + 1, 1))
 
 !        temperature
          if (jatem > 1) then
             if (Jaallowcoolingbelowzero == 0) then ! default behaviour since 2017
                ! no cooling below 0 degrees
-               if (heatsrc(k) > 0d0) then
+               if (heatsrc(k) > 0.0_dp) then
                   const_sour(ITEMP, k) = heatsrc(k) * dvoli
-               else if (heatsrc(k) < 0d0) then
-                  const_sink(ITEMP, k) = -heatsrc(k) * dvoli / max(constituents(itemp, k), 0.001d0)
+               else if (heatsrc(k) < 0.0_dp) then
+                  const_sink(ITEMP, k) = -heatsrc(k) * dvoli / max(constituents(itemp, k), 0.001_dp)
                end if
             else ! allowing cooling below 0 degrees
                const_sour(ITEMP, k) = heatsrc(k) * dvoli
@@ -190,7 +190,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
          end if
 
 !        nudging
-         if (Trefi > 0d0) then
+         if (Trefi > 0.0_dp) then
             if (ITEMP > 0 .and. nudge_tem(k) /= DMISS) then
                const_sour(ITEMP, k) = const_sour(ITEMP, k) + nudge_tem(k) * Trefi
                const_sink(ITEMP, k) = const_sink(ITEMP, k) + Trefi
@@ -213,20 +213,20 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 
 !     spiral flow source term
       if (jasecflow > 0 .and. jaequili == 0 .and. kmx == 0) then
-         if (spirucm(kk) < 1d-3 .or. hs(kk) < epshu) then
-            ! const_sour(ISPIR,kk) = 0d0
-            ! const_sink(ISPIR,kk) = 0d0
+         if (spirucm(kk) < 1e-3_dp .or. hs(kk) < epshu) then
+            ! const_sour(ISPIR,kk) = 0.0_dp
+            ! const_sink(ISPIR,kk) = 0.0_dp
          else
             fcoriocof = fcorio; if (icorio > 0 .and. jsferic == 1) fcoriocof = fcoris(kk)
-            alpha = sqrt(ag) / vonkar / max(czssf(kk), 20.0d0)
-            spir_ce = fcorio * hs(kk) * 0.5d0
+            alpha = sqrt(ag) / vonkar / max(czssf(kk), 20.0_dp)
+            spir_ce = fcorio * hs(kk) * 0.5_dp
             spir_be = hs(kk) * spircrv(kk) * spirucm(kk)
             spir_e = spir_be - spir_ce
-            alength_a = (1.0d0 - 2.0d0 * alpha) * hs(kk) / (2.0d0 * vonkar * vonkar * alpha) !TO DO: this term should be expanded to prevent negative alength_a for alpha > 0.5
+            alength_a = (1.0_dp - 2.0_dp * alpha) * hs(kk) / (2.0_dp * vonkar * vonkar * alpha) !TO DO: this term should be expanded to prevent negative alength_a for alpha > 0.5
             time_a = alength_a / spirucm(kk)
             !const_sour(ISPIR,kk) =  ( spir_e - spirint(kk) ) / time_a !* dvoli    ! S=(I_eq - I)/Ta
             const_sour(ISPIR, kk) = const_sour(ISPIR, kk) + spir_e / time_a
-            const_sink(ISPIR, kk) = const_sink(ISPIR, kk) + 1d0 / time_a
+            const_sink(ISPIR, kk) = const_sink(ISPIR, kk) + 1.0_dp / time_a
          end if
       end if
 
@@ -259,9 +259,9 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
          if (imba > 0) then
             call getkbotktop(kk, kb, kt)
             do k = kb, kt
-               if (heatsrc(k) > 0d0) then
+               if (heatsrc(k) > 0.0_dp) then
                   mbafluxheat(1, imba) = mbafluxheat(1, imba) + heatsrc(k) * dts
-               else if (heatsrc(k) < 0d0) then
+               else if (heatsrc(k) < 0.0_dp) then
                   mbafluxheat(2, imba) = mbafluxheat(2, imba) - heatsrc(k) * dts
                end if
             end do
@@ -297,7 +297,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 
       if (kk > 0) then ! FROM Point
          do k = ksrc(2, n), ksrc(3, n)
-            dvoli = 1d0 / max(vol1(k), dtol)
+            dvoli = 1.0_dp / max(vol1(k), dtol)
             if (kmx > 0) then
                dzss = zws(ksrc(3, n)) - zws(ksrc(2, n) - 1)
                if (dzss > epshs) then
@@ -316,7 +316,7 @@ subroutine fill_constituents(jas) ! if jas == 1 do sources
 
       if (kk2 > 0) then ! TO Point
          do k = ksrc(5, n), ksrc(6, n)
-            dvoli = 1d0 / max(vol1(k), dtol)
+            dvoli = 1.0_dp / max(vol1(k), dtol)
             if (kmx > 0) then
                dzss = zws(ksrc(6, n)) - zws(ksrc(5, n) - 1)
                if (dzss > epshs) then

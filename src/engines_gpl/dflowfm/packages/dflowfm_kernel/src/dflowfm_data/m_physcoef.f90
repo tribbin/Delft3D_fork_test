@@ -27,39 +27,6 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
-!----- AGPL --------------------------------------------------------------------
-!
-!  This file is part of Delft3D (D-Flow Flexible Mesh component).
-!
-!  Delft3D is free software: you can redistribute it and/or modify
-!  it under the terms of the GNU Affero General Public License as
-!  published by the Free Software Foundation version 3.
-!
-!  Delft3D  is distributed in the hope that it will be useful,
-!  but WITHOUT ANY WARRANTY; without even the implied warranty of
-!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-!  GNU Affero General Public License for more details.
-!
-!  You should have received a copy of the GNU Affero General Public License
-!  along with Delft3D.  If not, see <http://www.gnu.org/licenses/>.
-!
-!  contact: delft3d.support@deltares.nl
-!  Stichting Deltares
-!  P.O. Box 177
-!  2600 MH Delft, The Netherlands
-!
-!  All indications and logos of, and references to, "Delft3D",
-!  "D-Flow Flexible Mesh" and "Deltares" are registered trademarks of Stichting
-!  Deltares, and remain the property of Stichting Deltares. All rights reserved.
-!
-!-------------------------------------------------------------------------------
-
-!
-!
-
 !> @file modules.f90
 !! Modules with global data.
 !! call default_*() routines upon program startup and when loading a new MDU.
@@ -137,10 +104,10 @@ module m_physcoef
    real(kind=dp) :: viskinair !< kinematic  viscosity
    real(kind=dp) :: backgroundwatertemperature !< background water temp (C)
    real(kind=dp) :: backgroundsalinity !< background salinity (ppt)
-   real(kind=dp), parameter :: BACKGROUND_AIR_PRESSURE = 101325d0 !< background air pressure (Pa)
-   real(kind=dp), parameter :: BACKGROUND_AIR_TEMPERATURE = 20d0 !< background air temperature (degrees Celsius)
-   real(kind=dp), parameter :: BACKGROUND_CLOUDINESS = 50d0 !< (%) cloudiness for non-specified points
-   real(kind=dp), parameter :: BACKGROUND_HUMIDITY = 50d0 !< (%) relative humidity for non-specified points
+   real(kind=dp), parameter :: BACKGROUND_AIR_PRESSURE = 101325.0_dp !< background air pressure (Pa)
+   real(kind=dp), parameter :: BACKGROUND_AIR_TEMPERATURE = 20.0_dp !< background air temperature (degrees Celsius)
+   real(kind=dp), parameter :: BACKGROUND_CLOUDINESS = 50.0_dp !< (%) cloudiness for non-specified points
+   real(kind=dp), parameter :: BACKGROUND_HUMIDITY = 50.0_dp !< (%) relative humidity for non-specified points
    real(kind=dp) :: secchidepth !< (m) secchidepth
    real(kind=dp) :: secchidepth2 !< (m) secchidepth2
    real(kind=dp) :: secchidepth2fraction !< (m) fraction of total absorbed by profile 2
@@ -160,14 +127,14 @@ module m_physcoef
 
    real(kind=dp) :: Stanton !< coeff for convective  heat flux, if negative , take wind Cd
    real(kind=dp) :: Dalton !< coeff for evaporative heat flux, if negative , take wind Cd
-   real(kind=dp) :: Tempmax = -999d0 !< limit
-   real(kind=dp) :: Tempmin = 0d0 !< limit
+   real(kind=dp) :: Tempmax = -999.0_dp !< limit
+   real(kind=dp) :: Tempmin = 0.0_dp !< limit
    integer :: Jaallowcoolingbelowzero = 0 !< Allow cooling below 0 degrees C (0=default since 2017)
-   real(kind=dp) :: Salimax = -999d0 !< limit
-   real(kind=dp) :: Salimin = 0d0 !< limit
-   real(kind=dp) :: epshstem = 0.001d0 !< only compute heatflx + evap if depth > trsh
-   real(kind=dp) :: surftempsmofac = 0.0d0 !< surface temperature smoothing factor 0-1d05
-   real(kind=dp) :: Soiltempthick = 0.0d0 !< if soil buffer desired make thick > 0, e.g. 0.2 m
+   real(kind=dp) :: Salimax = -999.0_dp !< limit
+   real(kind=dp) :: Salimin = 0.0_dp !< limit
+   real(kind=dp) :: epshstem = 0.001_dp !< only compute heatflx + evap if depth > trsh
+   real(kind=dp) :: surftempsmofac = 0.0_dp !< surface temperature smoothing factor (0 - 10^5)
+   real(kind=dp) :: Soiltempthick = 0.0_dp !< if soil buffer desired make thick > 0, e.g. 0.2 m
 
    integer :: Jadelvappos !< only positive forced evaporation fluxes
 
@@ -181,54 +148,54 @@ module m_physcoef
 contains
 !> Sets ALL (scalar) variables in this module to their default values.
    subroutine default_physcoef()
-      ag = 9.81d0 ! 10.0      ! (m/s2)
+      ag = 9.81_dp ! 10.0      ! (m/s2)
       sag = sqrt(ag)
-      vonkar = 0.41d0 ! von Karman constant ()
-      vonkarw = 0.40d0 ! von Karman constant for wind ()
-      ee = exp(1d0) ! natural e ()
-      ee9 = 9d0 * ee !
-      frcuni = 0.023d0 ! 60.    ! 6      ! 66     ! uniform friction coeff
-      frcuni1D = 0.023d0 ! 60.    ! 6      ! 66     ! uniform friction coeff
-      frcuni1D2D = 0.023d0 ! 60.    ! 6      ! 66     ! uniform friction coeff
-      frcuni1Dgrounlay = 0.05d0 ! 60.    ! 6      ! 66     ! uniform friction coeff
-      frcmax = 0d0
+      vonkar = 0.41_dp ! von Karman constant ()
+      vonkarw = 0.40_dp ! von Karman constant for wind ()
+      ee = exp(1.0_dp) ! natural e ()
+      ee9 = 9.0_dp * ee !
+      frcuni = 0.023_dp ! 60.    ! 6      ! 66     ! uniform friction coeff
+      frcuni1D = 0.023_dp ! 60.    ! 6      ! 66     ! uniform friction coeff
+      frcuni1D2D = 0.023_dp ! 60.    ! 6      ! 66     ! uniform friction coeff
+      frcuni1Dgrounlay = 0.05_dp ! 60.    ! 6      ! 66     ! uniform friction coeff
+      frcmax = 0.0_dp
       ifrctypuni = 1 ! 0=chezy, 1=manning, 2=white colebrook (D3D), 3=white colebrook (WAQUA)
-      frcunilin = 0d0 !
-      umodlin = 1.d0 ! linear friction umod , ifrctyp 4,5,6
-      wall_ks = 0.0d0 ! vertical wall nIKURADSE ROUGHNESSs (m)
-      vicouv = 0.1d0 ! constant horizontal eddy viscosity (m2/s) mom
-      dicouv = 0.1d0 ! constant horizontal eddy diffusivity (m2/s) sal, sed
+      frcunilin = 0.0_dp !
+      umodlin = 1.0_dp ! linear friction umod , ifrctyp 4,5,6
+      wall_ks = 0.0_dp ! vertical wall nIKURADSE ROUGHNESSs (m)
+      vicouv = 0.1_dp ! constant horizontal eddy viscosity (m2/s) mom
+      dicouv = 0.1_dp ! constant horizontal eddy diffusivity (m2/s) sal, sed
 
-      Elder = 0d0 ! add Elder viscosity
-      Smagorinsky = 0.2d0 ! add Smagorinsky Cs coefficient, vic = vic + (Cs*dx)**2 * S
-      viuchk = 0.24 ! if < 0.5 then eddy viscosity cell check viu<viuchk*dx*dx/dt
+      Elder = 0.0_dp ! add Elder viscosity
+      Smagorinsky = 0.2_dp ! add Smagorinsky Cs coefficient, vic = vic + (Cs*dx)**2 * S
+      viuchk = 0.24_dp ! if < 0.5 then eddy viscosity cell check viu<viuchk*dx*dx/dt
 
-      vicoww = 1d-6 ! 5d-5   !                 ! background vertical eddy viscosity (m2/s)
-      dicoww = 1d-6 ! 5d-5   !                 ! background vertical eddy diffusivity (m2/s)
+      vicoww = 1e-6_dp ! background vertical eddy viscosity (m2/s)
+      dicoww = 1e-6_dp ! background vertical eddy diffusivity (m2/s)
 
-      rhomean = 1000d0 ! mean ambient rho ! (kg/m3)
+      rhomean = 1000.0_dp ! mean ambient rho ! (kg/m3)
       rhog = ag * rhomean
-      c9of1 = 9d0 ! vonkar/log(c9of1 + dzb / z0)
+      c9of1 = 9.0_dp ! vonkar/log(c9of1 + dzb / z0)
 
-      backgroundwatertemperature = 20d0 ! background water temp (degC)
-      backgroundsalinity = 30d0 ! background salinity (ppt), in eq of state, if salinity not computed
-      secchidepth = 1d0 !< (m) secchidepth
-      secchidepth2 = 0d0 !< (m) secchidepth2
-      secchidepth2fraction = 0d0 !< (m) fraction of total absorbed by profile 2
+      backgroundwatertemperature = 20.0_dp ! background water temp (degC)
+      backgroundsalinity = 30.0_dp ! background salinity (ppt), in eq of state, if salinity not computed
+      secchidepth = 1.0_dp !< (m) secchidepth
+      secchidepth2 = 0.0_dp !< (m) secchidepth2
+      secchidepth2fraction = 0.0_dp !< (m) fraction of total absorbed by profile 2
 
       ! Molecular diffusivity coefficients:
-      viskin = 1.d-6 ! kinematic  viscosity water in keps model
-      vismol = 4.d0 / (20.d0 + backgroundwatertemperature) * 1d-5 ! Van Rijn, 1993, from iniphys.f90
-      viskinair = 1.5d-5 ! kinematic  viscosity air
-      difmolsal = viskin / 700d0 ! molecular diffusivity of salinity
-      difmoltem = viskin / 6.7d0 !           diffusivity of temperature
-      difmolsed = 0d0
-      difmoltracer = 0d0
+      viskin = 1e-6_dp ! kinematic  viscosity water in keps model
+      vismol = 4.0_dp / (20.0_dp + backgroundwatertemperature) * 1e-5_dp ! Van Rijn, 1993, from iniphys.f90
+      viskinair = 1.5e-5_dp ! kinematic  viscosity air
+      difmolsal = viskin / 700.0_dp ! molecular diffusivity of salinity
+      difmoltem = viskin / 6.7_dp !           diffusivity of temperature
+      difmolsed = 0.0_dp
+      difmoltracer = 0.0_dp
 
-      vicwminb = 0d-7 ! was 0d0, minimum viscosity in production terms shear and buoyancy
-      xlozmidov = 0d0 ! Ozmidov length scale
+      vicwminb = 0.0_dp ! was 0.0_dp, minimum viscosity in production terms shear and buoyancy
+      xlozmidov = 0.0_dp ! Ozmidov length scale
 
-      alph0 = 0.698d0 ! =Eckart density parameters
+      alph0 = 0.698_dp ! =Eckart density parameters
 
       idensform = 2 !< 0 = no, 1 = Eckart, 2 = UNESCO
       limiterhordif = 2 !< 0=No, 1=Horizontal gradient densitylimiter, 2=Finite volume
@@ -238,13 +205,13 @@ contains
 
       Jadelvappos = 0 !< only positive forced evaporation fluxes
 
-      tetav = 0.55d0 !< vertical teta transport
-      tetavkeps = 0.55d0 !< vertical teta k-eps
-      tetavmom = 0.55d0 !< vertical teta momentum
+      tetav = 0.55_dp !< vertical teta transport
+      tetavkeps = 0.55_dp !< vertical teta k-eps
+      tetavmom = 0.55_dp !< vertical teta momentum
 
-      locsaltlev = 1d0 !< salinity level for case of lock exchange
-      locsaltmin = 5d0 !< minimum salinity for case of lock exchange
-      locsaltmax = 10d0 !< maximum salinity for case of lock exchange
+      locsaltlev = 1.0_dp !< salinity level for case of lock exchange
+      locsaltmin = 5.0_dp !< minimum salinity for case of lock exchange
+      locsaltmax = 10.0_dp !< maximum salinity for case of lock exchange
 
       NFEntrainmentMomentum = 0
 
