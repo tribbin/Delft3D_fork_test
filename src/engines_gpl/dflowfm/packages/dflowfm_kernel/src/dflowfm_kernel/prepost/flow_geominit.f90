@@ -1031,8 +1031,6 @@
 
     call setcentertolinkorientations()
 
-    ! call setlinktocenterweights()
-
     call setcornertolinkorientations()
 
     call setlinktocornerweights()
@@ -1219,7 +1217,7 @@
     call setwallorientations()
 
     call allocate_linktocenterweights()
-    call setlinktocenterweights()
+    call set_linktocenterweights()
 
 !-------------------------------------------------- CELL CORNER RELATED -----------------------------------------------
 

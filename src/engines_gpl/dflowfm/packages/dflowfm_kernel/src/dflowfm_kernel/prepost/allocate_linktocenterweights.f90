@@ -29,7 +29,8 @@
 
 !
 !
- subroutine allocate_linktocenterweights() ! allocate center related linkxy weights
+!> Allocate center related link weights in x and y direction
+ subroutine allocate_linktocenterweights()  
 
     use m_flowgeom
     use m_alloc

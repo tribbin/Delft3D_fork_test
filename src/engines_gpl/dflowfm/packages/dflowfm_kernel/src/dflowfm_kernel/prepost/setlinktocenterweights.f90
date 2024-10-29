@@ -29,7 +29,8 @@
 
 !
 !
- subroutine setlinktocenterweights() ! set center related linkxy weights
+!> Set center related link weights in x and y direction
+ subroutine set_linktocenterweights()  
 
     use m_flow
     use m_netw
