@@ -29,32 +29,6 @@
 
 !
 !
- subroutine allocate_linktocenterweights() ! allocate center related linkxy weights
-
-    use m_flowgeom
-    use m_alloc
-
-    implicit none
-
-    integer :: ierr
-
-    if (allocated(wcx1)) deallocate (wcx1, wcy1, wcx2, wcy2)
-    if (allocated(wcL)) deallocate (wcL)
-
-    allocate (wcx1(lnx), stat=ierr); 
-    call aerr('wcx1(lnx)', ierr, lnx)
-    allocate (wcy1(lnx), stat=ierr); 
-    call aerr('wcy1(lnx)', ierr, lnx)
-    allocate (wcx2(lnx), stat=ierr); 
-    call aerr('wcx2(lnx)', ierr, lnx)
-    allocate (wcy2(lnx), stat=ierr); 
-    call aerr('wcy2(lnx)', ierr, lnx)
-    allocate (wcL(2, Lnx), stat=ierr); 
-    call aerr('wcL  (2,Lnx)', ierr, 2 * Lnx)
-
- end subroutine allocate_linktocenterweights
-
-
  subroutine setlinktocenterweights() ! set center related linkxy weights
 
     use m_flow
