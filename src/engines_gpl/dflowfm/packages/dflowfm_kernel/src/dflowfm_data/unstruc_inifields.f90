@@ -225,7 +225,6 @@ contains
       real(kind=dp), pointer, dimension(:) :: target_array, x_loc, y_loc
       real(kind=dp), pointer, dimension(:, :) :: target_array_3d
       integer, pointer, dimension(:) :: target_array_integer
-      integer, dimension(:), pointer :: pkbot, pktop
       integer, dimension(:), allocatable :: mask
       real(kind=dp) :: factor
 
@@ -323,14 +322,12 @@ contains
 
                call reallocP(target_array, ndkx, keepExisting=.false., fill=dmiss)
                kx = 1
-               pkbot => kbot
-               pktop => ktop
                if (allocated(mask)) deallocate (mask)
                allocate (mask(ndx), source=1)
                ec_item = ec_undef_int
                call setzcs()
                success = ec_addtimespacerelation(qid, xz(1:ndx), yz(1:ndx), mask, kx, filename, &
-                                                 filetype, method, operand, z=zcs, pkbot=pkbot, pktop=pktop, &
+                                                 filetype, method, operand, z=zcs, pkbot=kbot, pktop=ktop, &
                                                  varname=varname, tgt_item1=ec_item)
                success = success .and. ec_gettimespacevalue_by_itemID(ecInstancePtr, ec_item, irefdate, tzone, &
                tunit, tstart_user, target_array)

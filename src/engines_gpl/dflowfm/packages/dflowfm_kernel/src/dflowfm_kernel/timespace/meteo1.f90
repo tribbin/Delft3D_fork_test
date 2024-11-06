@@ -7272,8 +7272,8 @@ contains
       real(hp), dimension(:), optional, intent(in), target :: z !< FM's array of z/sigma coordinates
       real(hp), dimension(:), optional, pointer :: pzmin !< FM's array of minimal z coordinate
       real(hp), dimension(:), optional, pointer :: pzmax !< FM's array of maximum z coordinate
-      integer, dimension(:), optional, pointer :: pkbot
-      integer, dimension(:), optional, pointer :: pktop
+      integer, dimension(:), intent(in), optional, pointer :: pkbot
+      integer, dimension(:), intent(in), optional, pointer :: pktop
       integer, optional, intent(in) :: targetIndex !< target position or rank of (complete!) vector in target array
       character(len=*), optional, intent(in) :: forcingfile !< file containing the forcing data for pli-file 'filename'
       character(len=*), optional, intent(in) :: srcmaskfile !< file containing mask applicable to the arcinfo source data
