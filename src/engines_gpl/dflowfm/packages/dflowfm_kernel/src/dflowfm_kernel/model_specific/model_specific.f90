@@ -43,6 +43,7 @@
 
 !> Print model-specific text strings on screen, based on current solution state.
 subroutine textflowspecific()
+   use m_settextsizefac
    use m_ictext
    use unstruc_model, only: md_ident
    use m_flowgeom
@@ -54,9 +55,8 @@ subroutine textflowspecific()
    use m_statistics
    use m_monitoring_crosssections
    use time_module, only: seconds_to_datetimestring
+   use m_znod
    implicit none
-
-   double precision, external :: znod
 
    character(len=140) :: tex
    double precision :: QCURV, QRECT
@@ -665,6 +665,7 @@ subroutine gatetheo()
 end subroutine gatetheo
 
 subroutine poiseuille(init)
+   use m_settextsizefac
    use m_rcirc
    use m_netw
    use m_flowgeom

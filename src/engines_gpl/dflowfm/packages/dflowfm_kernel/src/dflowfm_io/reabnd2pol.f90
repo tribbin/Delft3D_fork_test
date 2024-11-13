@@ -30,6 +30,12 @@
 !
 !
 
+module m_reabnd2pol
+
+implicit none
+
+contains
+
  subroutine reabnd2pol(mbnd, mbca) ! convert d3d boundaryes stuf to model independent
     use m_grid
     use m_polygon
@@ -103,3 +109,5 @@
 
     return
  end subroutine reabnd2pol
+
+end module m_reabnd2pol

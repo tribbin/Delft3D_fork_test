@@ -31,6 +31,7 @@
 !
 
 subroutine droptracer(xp, yp, dval)
+   use m_tekflowstuff
    use m_transport
    use m_flowgeom
    use m_flow, only: kmxn, kbot

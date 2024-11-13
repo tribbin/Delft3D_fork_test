@@ -30,7 +30,16 @@
 !
 !
 
+module m_tekprofs
+
+implicit none
+
+contains
+
   subroutine tekprofs() ! and initialise some turb pars
+     use m_tekprofpoint
+     use m_tekfn
+     use m_setwor
      use m_getvminmax
      use m_fullscreen
      use m_flow
@@ -440,3 +449,5 @@
      call tekprofpoint()
 
   end subroutine tekprofs
+
+end module m_tekprofs

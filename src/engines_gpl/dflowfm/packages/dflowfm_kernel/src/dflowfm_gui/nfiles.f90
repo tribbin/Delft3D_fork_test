@@ -74,6 +74,9 @@ contains
       use m_change_kml_parameters
       use m_filemenu
       use m_loadbitmap
+      use m_reablu
+      use m_reabl
+      use m_readadcircnet
 
       integer :: NUM, NWHAT, KEY
       integer :: ja, ierr

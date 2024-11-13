@@ -31,6 +31,7 @@
 !
 
 subroutine setdt()
+   use m_tekcflmx
    use m_partitioninfo
    use m_flowparameters, only: jawave, flow_solver, FLOW_SOLVER_SRE
    use m_xbeach_data, only: swave, instat

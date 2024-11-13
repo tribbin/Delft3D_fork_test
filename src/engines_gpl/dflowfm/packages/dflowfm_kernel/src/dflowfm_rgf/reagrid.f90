@@ -42,6 +42,9 @@
       !! Next line should be mmax, nmax
       !! That ends the header, start reading coordinates in the usual fashion.
       subroutine REAgrid(Mrgf, FILNAM, ja)
+         use m_reacrs
+         use m_reabot
+         use m_reabnd2pol
          use M_SFERIC
          use m_grid
          use M_MISSING, notinuse => xymis ! AvD: temp

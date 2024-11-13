@@ -32,6 +32,8 @@
 
 !> delete cell by merging all its nodes and update administration
 module m_kill_cell
+use m_teknode
+
    implicit none
 contains
    subroutine killcell(xp, yp)

@@ -6819,6 +6819,8 @@ contains
    function fm_ext_force_name_to_ec_item(trname, sfname, waqinput, qidname, &
                                          itemPtr1, itemPtr2, itemPtr3, itemPtr4, &
                                          dataPtr1, dataPtr2, dataPtr3, dataPtr4) result(success)
+      use m_find_name, only: find_name
+
       logical :: success
       character(len=*), intent(in) :: trname, sfname, waqinput
 
@@ -6829,7 +6831,6 @@ contains
 
       ! for tracers:
       integer :: itrac, isf, ifun, isfun
-      integer, external :: findname
 
       success = .true.
 
@@ -7098,22 +7099,22 @@ contains
          dataPtr1 => uorbwav
       case ('tracerbnd')
          ! get tracer (boundary) number
-         itrac = findname(numtracers, trnames, trname)
+         itrac = find_name(trnames, trname)
          itemPtr1 => item_tracerbnd(itrac)
          dataPtr1 => bndtr(itrac)%z
       case ('sedfracbnd')
          ! get sediment fraction (boundary) number
-         isf = findname(numfracs, sfnames, sfname)
+         isf = find_name(sfnames, sfname)
          itemPtr1 => item_sedfracbnd(isf)
          dataPtr1 => bndsf(isf)%z
       case ('waqfunction')
          ! get sediment fraction (boundary) number
-         ifun = findname(num_time_functions, funame, waqinput)
+         ifun = find_name(funame, waqinput)
          itemPtr1 => item_waqfun(ifun)
          dataPtr1 => funinp(ifun, :)
       case ('waqsegmentfunction')
          ! get sediment fraction (boundary) number
-         isfun = findname(nosfunext, sfunname, waqinput)
+         isfun = find_name(sfunname, waqinput)
          itemPtr1 => item_waqsfun(isfun)
          dataPtr1 => sfuninp(isfun, :)
       case ('initialtracer')
@@ -7271,8 +7272,8 @@ contains
       real(hp), dimension(:), optional, intent(in), target :: z !< FM's array of z/sigma coordinates
       real(hp), dimension(:), optional, pointer :: pzmin !< FM's array of minimal z coordinate
       real(hp), dimension(:), optional, pointer :: pzmax !< FM's array of maximum z coordinate
-      integer, dimension(:), optional, pointer :: pkbot
-      integer, dimension(:), optional, pointer :: pktop
+      integer, dimension(:), intent(in), optional, pointer :: pkbot
+      integer, dimension(:), intent(in), optional, pointer :: pktop
       integer, optional, intent(in) :: targetIndex !< target position or rank of (complete!) vector in target array
       character(len=*), optional, intent(in) :: forcingfile !< file containing the forcing data for pli-file 'filename'
       character(len=*), optional, intent(in) :: srcmaskfile !< file containing mask applicable to the arcinfo source data
@@ -7331,7 +7332,6 @@ contains
       logical :: quiet_
       character(len=NAMTRACLEN) :: trname, sfname, qidname
       character(len=20) :: waqinput
-      integer, external :: findname
       type(tEcMask) :: srcmask
       integer :: itargetMaskSelect !< 1:targetMaskSelect='i' or absent, 0:targetMaskSelect='o'
       logical :: exist, opened, withCharnock, withStress

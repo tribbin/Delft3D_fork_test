@@ -31,6 +31,9 @@
 !
 
 module m_ndisplay
+use m_textparameters
+use m_setwy
+
 
 implicit none
 
