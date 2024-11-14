@@ -67,7 +67,7 @@ contains
       use m_flow
       use m_flowtimes
       use m_sferic
-      use unstruc_model, only: md_netfile, md_input_specific, md_restartfile
+      use unstruc_model, only: md_netfile, md_input_specific, md_restartfile, md_obsfile
       use m_reduce, only: nodtot, lintot
       use m_transport
       use dfm_error
@@ -89,6 +89,8 @@ contains
       use m_set_kbot_ktop
       use m_ini_sferic
       use m_volsur
+      use m_meteo, only: initialize_ec_module
+      use m_observations, only: read_moving_stations
 
       implicit none
 
@@ -159,6 +161,8 @@ contains
 
       call setkbotktop(1) ! prior to correctblforzlayerpoints, setting kbot
 
+      call initialize_ec_module()
+
       call mess(LEVEL_INFO, 'Start initializing external forcings...')
       call timstrt('Initialise external forcings', handle_iniext)
       error = flow_initexternalforcings() ! this is the general hook-up to wind and boundary conditions
@@ -169,6 +173,9 @@ contains
          return
       end if
       call mess(LEVEL_INFO, 'Done initializing external forcings.')
+      
+      ! it has to be called after EC module initialization
+      call read_moving_stations(md_obsfile)
 
       call set_ihorvic_related_to_horizontal_viscosity()
       call redimension_summ_arrays_in_crs()

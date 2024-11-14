@@ -1684,8 +1684,6 @@ contains
       inivelx = 0
       inively = 0
 
-      call initialize_ec_module()
-
       ! First initialize new-style StructureFile quantities.
       if (.not. flow_init_structurecontrol()) then
          iresult = DFM_EXTFORCERROR

@@ -55,7 +55,7 @@ contains
       use m_sferic, only: jsferic
       use m_fm_icecover, only: ja_ice_area_fraction_read, ja_ice_thickness_read, fm_ice_activate_by_ext_forces
       use m_laterals, only: numlatsg, ILATTP_1D, ILATTP_2D, ILATTP_ALL, kclat, nlatnd, nnlat, n1latsg, n2latsg, initialize_lateraldata
-      use unstruc_files, only: basename, resolvepath
+      use unstruc_files, only: resolvepath, basename
       use m_ec_spatial_extrapolation, only: init_spatial_extrapolation
       use unstruc_inifields, only: set_friction_type_values
       use timers, only: timstop, timstrt
@@ -65,7 +65,7 @@ contains
       use m_qnerror
       use m_delpol
       use m_get_kbot_ktop
-      use m_observations, only: addobservation
+      use m_observations, only: nummovobs, addobservation
       use unstruc_inifields, only: initialfield2Dto3D
       use m_find_name, only: find_name
 
