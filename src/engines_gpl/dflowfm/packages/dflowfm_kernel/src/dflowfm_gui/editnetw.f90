@@ -31,6 +31,10 @@
 !
 
 module m_editnetw
+use m_viewcycle
+use m_typevalue
+use m_teknode
+use m_selecteditmode
 use m_kcir
 use m_highlight_nodesnlinks
 

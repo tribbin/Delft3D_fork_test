@@ -30,35 +30,25 @@
 !
 !
 
- subroutine initialfield2Dto3D(v2D, v3D, tr13, tr14)
-    use m_flowgeom
-    use m_flow
-    use m_missing
-    use timespace
+module m_advec_data
+   use m_solver
 
-    implicit none
+   integer :: jaoutput = 1 !< output matrices to file (1) or not (0)
 
-    double precision, intent(inout) :: v2D(*), v3D(*)
-    double precision, intent(in) :: tr13, tr14
-    double precision :: zb, zt, zz
-    integer :: n, k, kb, kt
-    !character(len=1), intent(in)    :: operand !< Operand type, valid values: 'O', 'A', '+', '*', 'X', 'N'.
+   type(tsolver) :: solver_advec
 
-    zb = -1d9; if (tr13 /= dmiss) zb = tr13
-    zt = 1d9; if (tr14 /= dmiss) zt = tr14
-    do n = 1, ndx
-       if (v2D(n) /= dmiss) then
-          if (kmx == 0) then
-             call operate(v3D(n), v2D(n), operand)
-          else
-             kb = kbot(n); kt = ktop(n)
-             do k = kb, kt
-                zz = 0.5d0 * (zws(k) + zws(k - 1))
-                if (zz > zb .and. zz < zt) then
-                   call operate(v3D(k), v2D(n), operand)
-                end if
-             end do
-          end if
-       end if
-    end do
- end subroutine initialfield2Dto3D
+   integer, dimension(:), allocatable :: iI, jI
+   double precision, dimension(:), allocatable :: aI !< interpolation and projection matrix in CRS format
+
+   integer, dimension(:), allocatable :: iR, jR
+   double precision, dimension(:), allocatable :: aR !< reconstruction matrix in CRS format
+
+   integer, dimension(:), allocatable :: iC, jC
+   double precision, dimension(:), allocatable :: aC !< collocated discretization matrix in CRS format
+
+   integer, dimension(:), allocatable :: iW, jW
+   double precision, dimension(:), allocatable :: aW !< work matrix in RCS format
+   integer, dimension(:), allocatable :: iwork
+
+   double precision, dimension(:, :), allocatable :: dfluxfac !< flux(L) = dfluxfac(1,L) * something(ln(1,L)) + dfluxfac(2,L) * something(ln(2,L)), positive from ln(1,L) to ln(2,L)
+end module m_advec_data

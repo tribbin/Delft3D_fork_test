@@ -30,6 +30,12 @@
 !
 !
 
+module m_furu_structures
+
+implicit none
+
+contains
+
  subroutine furu_structures()
     use m_flow
     use m_flowgeom
@@ -201,3 +207,5 @@
     end do
 
  end subroutine furu_structures
+
+end module m_furu_structures

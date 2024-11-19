@@ -69,6 +69,7 @@
 ! subroutines from net.F90
 !----------------------------------------------------------------------
 module m_choices
+use m_zerowaterdepth
 use m_plusabs_flow
 use m_plusabsi
 use m_plusabsd

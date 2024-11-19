@@ -18,7 +18,7 @@ object Trigger : BuildType({
     }
 
     params {
-        param("testbench_table", "ci/teamcity/Dimr_TestbenchMatrix/dimr_testbench_table.csv")
+        param("testbench_table", "ci/teamcity/Dimr_TestbenchMatrix/vars/dimr_testbench_table.csv")
     
         param("teamcity_user", "svc_dimr_trigger")
         password("teamcity_pass", "credentialsJSON:15cc6665-e900-4360-8942-00e654f6acfe")
@@ -66,6 +66,8 @@ object Trigger : BuildType({
             conditions {
                 doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
                 doesNotEqual("branch_name", "none")
+                doesNotEqual("branch_name", "qp")
+                doesNotEqual("branch_name", "d3d4")
             }
 
             scriptContent = """
@@ -76,7 +78,7 @@ object Trigger : BuildType({
                      -d '<build branchName="%teamcity.build.branch%" replace="true">
                             <buildType id="${Linux.id}"/>
                             <revisions>
-                                <revision version="%build.vcs.number%" vcsBranchName="%teamcity.build.vcs.branch.Delft3dGitlab%">
+                                <revision version="%build.vcs.number%" vcsBranchName="%teamcity.build.branch%">
                                     <vcs-root-instance vcs-root-id="DslContext.settingsRoot"/>
                                 </revision>
                             </revisions>
@@ -102,6 +104,8 @@ object Trigger : BuildType({
             conditions {
                 doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
                 doesNotEqual("branch_name", "none")
+                doesNotEqual("branch_name", "qp")
+                doesNotEqual("branch_name", "d3d4")
             }
             
             scriptContent = """
@@ -112,7 +116,7 @@ object Trigger : BuildType({
                      -d '<build branchName="%teamcity.build.branch%" replace="true">
                             <buildType id="${Windows.id}"/>
                             <revisions>
-                                <revision version="%build.vcs.number%" vcsBranchName="%teamcity.build.vcs.branch.Delft3dGitlab%">
+                                <revision version="%build.vcs.number%" vcsBranchName="%teamcity.build.branch%">
                                     <vcs-root-instance vcs-root-id="DslContext.settingsRoot"/>
                                 </revision>
                             </revisions>

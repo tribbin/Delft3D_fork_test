@@ -30,7 +30,7 @@
 !
 !
 
-module m_filter
+module m_filter_data
    use m_solver
 
    type(tsolver) :: solver_filter
@@ -59,4 +59,4 @@ module m_filter
    character(len=LENFILNAM) :: FNAM
    integer, dimension(:), allocatable :: num
    integer, dimension(:), allocatable :: dum
-end module m_filter
+end module m_filter_data
