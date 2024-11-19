@@ -26,7 +26,7 @@ class FolderIndex:
                     calculated.add(component)
 
         component = list(calculated)[0] if len(calculated) == 1 else None
-        self.changes_with_component.append(f"{component or "all"} : {changed_file_path}")
+        self.changes_with_component.append(f"{component or 'all'} : {changed_file_path}")
         return component or "all"
 
     def get_scope(self, json_dict_path: str, file_changes_list: List[str]) -> str:
