@@ -142,7 +142,7 @@ contains
                 end if
                 alfa = 1d0
                 if (sxrL < -shL(n)) then
-                   alfa = (SxrR - -shL(n)) / dx2d
+                   alfa = (SxrR - (-shL(n))) / dx2d
                 else if (sxrR > shL(n)) then
                    alfa = (shL(n) - sxRL) / dx2d
                 end if
