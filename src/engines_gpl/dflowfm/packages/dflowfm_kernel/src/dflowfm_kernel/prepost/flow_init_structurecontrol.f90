@@ -32,6 +32,7 @@
 
 !> Initializes controllers that force structures.
 function flow_init_structurecontrol() result(status)
+   use m_togeneral, only: togeneral
    use dfm_error
    use m_hash_search
    use m_alloc

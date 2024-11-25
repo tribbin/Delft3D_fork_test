@@ -30,7 +30,18 @@
 !
 !
 
+module m_tauwave
+
+implicit none
+
+private
+
+public :: tauwave
+
+contains
+
    subroutine tauwave()
+      use m_getymxpar, only: getymxpar
       use m_sferic
       use m_flowparameters
       use m_flow, only: rhomean, ag, hu, jaconveyance2D, u1, v, frcu, ifrcutp, z0urou, cfuhi, ifrctypuni, frcuni, taubxu, taubu
@@ -230,3 +241,5 @@
       end do
       !
    end subroutine tauwave
+
+end module m_tauwave

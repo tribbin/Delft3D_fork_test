@@ -32,6 +32,8 @@
 
 !> derefine mesh
 module m_derefine_mesh
+use m_teknode
+
    implicit none
 contains
    subroutine derefine_mesh(xp, yp, Lconfirm)

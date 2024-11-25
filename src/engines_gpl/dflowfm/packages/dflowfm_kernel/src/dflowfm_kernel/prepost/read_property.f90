@@ -27,22 +27,22 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
-!> Reads a key=value entry from a property block and tries to interpret the value.
-!! The (single!) property block should come from an already-parsed .ini file.
-!! The string value is always returned, if found, and an attempt is also made to
-!! parse it into a scalar double, or alternatively to check whether it is an existing file.
 module m_read_property
    implicit none
    private
+
    public :: read_property
+
 contains
+
+   !> Reads a key=value entry from a property block and tries to interpret the value.
+   !! The (single!) property block should come from an already-parsed .ini file.
+   !! The string value is always returned, if found, and an attempt is also made to
+   !! parse it into a scalar double, or alternatively to check whether it is an existing file.
    subroutine read_property(prop_ptr, key, strvalue, dblvalue, is_double, typeandid, success)
       use properties
       use unstruc_messages
-      type(TREE_DATA), pointer :: prop_ptr !< Property tree as read from a single .ini block
+      type(TREE_DATA), pointer, intent(in) :: prop_ptr !< Property tree as read from a single .ini block
       character(len=*), intent(in) :: key !< Property key that should be read.
       character(len=*), intent(inout) :: strvalue !< Returned string value for requested property key.
       double precision, intent(inout) :: dblvalue !< Returned scalar double value for requested property key, IF possible.

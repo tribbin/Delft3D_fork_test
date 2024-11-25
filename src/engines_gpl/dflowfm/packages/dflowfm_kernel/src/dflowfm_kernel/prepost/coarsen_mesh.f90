@@ -31,6 +31,8 @@
 !
 
 module m_coarsen_mesh
+use m_teknode
+
    implicit none
 contains
 !> coarsen the net

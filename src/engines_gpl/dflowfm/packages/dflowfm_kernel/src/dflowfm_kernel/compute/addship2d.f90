@@ -30,7 +30,18 @@
 !
 !
 
+module m_addship2d
+
+implicit none
+
+private
+
+public :: addship2D
+
+contains
+
  subroutine addship2D(japerim)
+    use m_addlinkship2d, only: addlinkship2D
     use precision, only: dp
     use m_ship
     use m_flowgeom
@@ -185,3 +196,5 @@
     end if
 
  end subroutine addship2D
+
+end module m_addship2d

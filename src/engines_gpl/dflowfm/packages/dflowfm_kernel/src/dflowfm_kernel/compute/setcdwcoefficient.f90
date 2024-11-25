@@ -30,6 +30,18 @@
 !
 !
 
+module m_setcdwcoefficient
+use m_getwavenr, only: getwavenr
+
+
+implicit none
+
+private
+
+public :: setcdwcoefficient
+
+contains
+
  subroutine setcdwcoefficient(uwi, cd10, L)
     use m_wind
     use m_flow, only: ag, hs, jaCdwusp, Cdwusp
@@ -181,3 +193,5 @@
        end if
     end if
  end subroutine setcdwcoefficient
+
+end module m_setcdwcoefficient

@@ -43,6 +43,7 @@
 !> Reads and writes unstructured net/flow data in netCDF format.
 module unstruc_netcdf
 
+   use m_reconstruct_cc_stokesdrift, only: reconstruct_cc_stokesdrift
    use precision
    use netcdf
    use unstruc_messages
