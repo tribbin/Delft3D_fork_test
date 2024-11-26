@@ -27,7 +27,7 @@
 !
 !-------------------------------------------------------------------------------
 
-!> This module holds data used for observation stations that are used to monitor flow data at fixed and 
+!> This module holds data used for observation stations that are used to monitor flow data at fixed and
 !! moving points in the domain.
 !! In arrays: (1:numobs = normal or fixed observation stations, numobs+1:numobs+nummovobs = moving observation stations)
 module m_observations_data
@@ -259,6 +259,6 @@ module m_observations_data
    integer :: IPNT_FIXFAC1
    integer :: IPNT_HIDEXP1
    integer :: IPNT_MFLUFF1
-   
+
 end module m_observations_data
 

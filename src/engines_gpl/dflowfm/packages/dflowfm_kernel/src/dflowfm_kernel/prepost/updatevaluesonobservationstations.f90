@@ -43,7 +43,7 @@ subroutine updateValuesOnObservationStations()
       return
    end if
    valobs_last_update_time = time1
-   
+
    call fill_valobs()
 
    if (jampi == 1) then

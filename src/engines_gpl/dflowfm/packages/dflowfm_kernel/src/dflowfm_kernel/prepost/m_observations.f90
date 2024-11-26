@@ -39,19 +39,19 @@ module m_observations
    use precision, only: dp
 
    implicit none
-   
+
    integer, parameter, private :: capacity_ = 1 !< Nr of additionally allocated elements when lists are full
    integer, private :: iUniq_ = 1
    character(len=*), parameter, private :: defaultName_ = 'Obs'
-   
+
    interface
       module subroutine read_moving_stations(obs_filenames)
-         character(len=*), intent(in) :: obs_filenames !< File containing names of observation files. 
+         character(len=*), intent(in) :: obs_filenames !< File containing names of observation files.
       end subroutine read_moving_stations
-    end interface
-   
-    public :: read_moving_stations
-    
+   end interface
+
+   public :: read_moving_stations
+
 contains
 
 !> (re)initialize valobs and set pointers for observation stations
