@@ -36,37 +36,30 @@
 subroutine thindams_on_netgeom()
    use m_crspath_on_netgeom, only: crspath_on_netgeom
    use m_thindams, only: thd, nthd, crspath_on_singlelink
-   use network_data
-   use unstruc_messages
-   use m_alloc
-   use kdtree2Factory
-   use m_wall_clock_time
-   use m_delpol
-   use m_find_crossed_links_kdtree2
-   use m_get_link_neighboring_cell_coords
-   use m_append_crspath_to_pol
+   use network_data, only: numl, kn, npl, xpl, ypl, xk, yk, kn
+   use unstruc_messages, only: mess, LEVEL_INFO
+   use m_alloc, only: realloc
+   use kdtree2Factory, only: treeglob
+   use m_wall_clock_time, only: wall_clock_time
+   use m_delpol, only: delpol
+   use m_find_crossed_links_kdtree2, only: find_crossed_links_kdtree2
+   use m_get_link_neighboring_cell_coords, only: get_link_neighboringcellcoords
+   use m_append_crspath_to_pol, only: appendCRSPathToPol
    use unstruc_caching, only: cache_retrieved, cache_thin_dams, copy_cached_thin_dams
+   use precision, only: dp
+   
    implicit none
 
-   double precision, dimension(:), allocatable :: dSL
+   real(kind=dp), dimension(:), allocatable :: dSL
    integer, dimension(:), allocatable :: iLink, ipol, idum
-
-   double precision :: xza, yza, xzb, yzb
-
-   double precision :: t0, t1
-
+   real(kind=dp) :: xza, yza, xzb, yzb
+   real(kind=dp) :: t0, t1
    character(len=128) :: mesg
-
    integer :: ierror ! error (1) or not (0)
-
    integer :: numcrossedLinks
-
    integer :: isactive
-
    integer :: ic, iL, L, LL, NPL_prev
-
    integer :: jakdtree = 1 ! use kdtree (1) or not (0)
-
    logical :: cache_success = .false.
 
    if (nthd == 0) return
@@ -141,7 +134,7 @@ subroutine thindams_on_netgeom()
          call wall_clock_time(t1)
          write (mesg, "('thin dams with kdtree2, elapsed time: ', G15.5, 's.')") t1 - t0
          call mess(LEVEL_INFO, trim(mesg))
-      end if ! if ( jakdtree.eq.1 ) then
+      end if ! if (jakdtree == 1) then
 
       if (jakdtree == 0) then ! no kdtree, or kdtree gave error
          call wall_clock_time(t0)
@@ -157,7 +150,7 @@ subroutine thindams_on_netgeom()
          call wall_clock_time(t1)
          write (mesg, "('thin dams without kdtree2, elapsed time: ', G15.5)") t1 - t0
          call mess(LEVEL_INFO, trim(mesg))
-      end if ! if ( jakdtree.eq.0 ) then
+      end if ! if (jakdtree == 0) then
 
       ierror = 0
 
@@ -166,7 +159,7 @@ subroutine thindams_on_netgeom()
       call cache_thin_dams(thd)
 
    end if ! if (cache_success) then
-   
+
    return
 
 end subroutine thindams_on_netgeom
