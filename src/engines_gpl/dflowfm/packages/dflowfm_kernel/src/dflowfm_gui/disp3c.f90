@@ -40,6 +40,7 @@ implicit none
 contains
 
       subroutine DISP3C(X, Y, Z, NCL, N, RCIR, NCOL)
+  use precision, only: dp
          use m_cir
          use M_MISSING
          use m_halt2
@@ -50,9 +51,9 @@ contains
          integer :: istart
          integer :: n
          integer :: ncol
-         double precision :: rcir
+         real(kind=dp) :: rcir
 !     LAAT EEN TWEEDIMENSIONALE FUNCTIE ZIEN MET CIRKELS EN KLEUREN
-         double precision X(N), Y(N), Z(N)
+         real(kind=dp) X(N), Y(N), Z(N)
          integer NCL(N), ja, jacol
 
          if (N <= 0) return

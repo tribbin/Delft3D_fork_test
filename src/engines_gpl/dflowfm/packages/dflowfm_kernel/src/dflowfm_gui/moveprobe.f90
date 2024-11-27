@@ -41,16 +41,17 @@ implicit none
 contains
 
       subroutine moveprobe(idir, kk, xp, yp)
+  use precision, only: dp
          use m_flowgeom, only: ln, nd, csu, snu
          use network_data, only: xzw, yzw
 
          integer, intent(in) :: idir !< direction (see keys on keypad)
          integer, intent(inout) :: kk !< probed flownode number
-         double precision, intent(inout) :: xp, yp !< probed flownode coordinates
+         real(kind=dp), intent(inout) :: xp, yp !< probed flownode coordinates
 
-         double precision :: csdir, sndir !< direction vector components
-         double precision :: dum
-         double precision :: dmaxinprod
+         real(kind=dp) :: csdir, sndir !< direction vector components
+         real(kind=dp) :: dum
+         real(kind=dp) :: dmaxinprod
 
          integer :: i, L, knext
 

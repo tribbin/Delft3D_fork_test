@@ -37,6 +37,7 @@ contains
 ! updates zk value at specified net node index using diven delta
 ! TODO: extend it to multiple indices
 subroutine update_land_nodes(node_index, new_zk)
+  use precision, only: dp
    use network_data, only: xk, yk, zk
    use m_polygon, only: npl
    use m_flowgeom, only: ndx
@@ -46,11 +47,11 @@ subroutine update_land_nodes(node_index, new_zk)
    use m_movabs
 
    integer, intent(in) :: node_index
-   double precision, intent(in) :: new_zk
+   real(kind=dp), intent(in) :: new_zk
 
    ! locals
    integer :: k, ncol, j
-   double precision :: old_zk
+   real(kind=dp) :: old_zk
 
    if (ndx == 0) return
 

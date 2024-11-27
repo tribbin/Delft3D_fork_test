@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine comp_subheights(is, Lorient, num, xs, ys, ncs, ics, t, nsubL, nsubR, hL, hR)
+  use precision, only: dp
    use m_splines
    use m_spline2curvi
 
@@ -46,19 +47,19 @@ subroutine comp_subheights(is, Lorient, num, xs, ys, ncs, ics, t, nsubL, nsubR, 
    integer, intent(in) :: is !< center spline number
    logical, intent(in) :: Lorient !< orientation of cross spline
    integer, intent(in) :: num !< number of control points in cross spline (should be 2)
-   double precision, dimension(num), intent(in) :: xs, ys !< coordinates of cross spline control points
+   real(kind=dp), dimension(num), intent(in) :: xs, ys !< coordinates of cross spline control points
    integer, intent(in) :: ncs !< number of splines crossing the cross spline
    integer, dimension(ncs), intent(in) :: ics !< spline numbers of splines that cross the cross spline
-   double precision, dimension(ncs), intent(in) :: t !< cross spline coordinates of the crossings
+   real(kind=dp), dimension(ncs), intent(in) :: t !< cross spline coordinates of the crossings
 
    integer, intent(out) :: nsubL, nsubR !< number of subintervals left and right of the center spline
-   double precision, dimension(Nsubmax), intent(inout) :: hL, hR !< subinterval heights left and right of center spline
+   real(kind=dp), dimension(Nsubmax), intent(inout) :: hL, hR !< subinterval heights left and right of center spline
 
    integer :: k, kk, kL, kR, ks, kkL, kkR, Ndum
 
-   double precision, dimension(Nsubmax) :: hdum
+   real(kind=dp), dimension(Nsubmax) :: hdum
 
-   double precision, external :: splinelength_int
+   real(kind=dp), external :: splinelength_int
 
    hL = 0d0
    hR = 0d0

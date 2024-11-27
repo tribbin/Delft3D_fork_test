@@ -42,13 +42,14 @@ contains
 
 !> fill rho of one column
 subroutine setrhokk(kk) 
+  use precision, only: dp
    use m_flow, only: rho, density_is_pressure_dependent, kmxn
    use m_get_kbot_ktop
 
    integer :: kk
    integer :: kb, kt, k
 
-   double precision :: p0
+   real(kind=dp) :: p0
 
    call getkbotktop(kk, kb, kt)
    if (kt < kb) return
@@ -71,7 +72,8 @@ subroutine setrhokk(kk)
 end subroutine setrhokk
 
 !> set density in a cell
-double precision function setrho(cell, p0)
+real(kind=dp) function setrho(cell, p0)
+  use precision, only: dp
 
    use m_flow
    use m_sediment
@@ -84,12 +86,12 @@ double precision function setrho(cell, p0)
    implicit none
 
    integer, intent(in) :: cell !< cell number
-   double precision, intent(inout) :: p0 !< in as cell ceiling pressure, out as cell floorpressure (pascal)
-   double precision :: rhok !< in as previous density, reduces required nr of iterations
-   double precision, parameter :: rhom_min = 990d0 !< lower limit of rhom [kg/m3]
-   double precision, parameter :: rhom_max = 1250d0 !< upper limit of rhom [kg/m3]
+   real(kind=dp), intent(inout) :: p0 !< in as cell ceiling pressure, out as cell floorpressure (pascal)
+   real(kind=dp) :: rhok !< in as previous density, reduces required nr of iterations
+   real(kind=dp), parameter :: rhom_min = 990d0 !< lower limit of rhom [kg/m3]
+   real(kind=dp), parameter :: rhom_max = 1250d0 !< upper limit of rhom [kg/m3]
    integer :: i
-   double precision :: sal, temp, p1, dzz
+   real(kind=dp) :: sal, temp, p1, dzz
 
    call getsaltemk(cell, sal, temp)
 
@@ -113,15 +115,16 @@ double precision function setrho(cell, p0)
 
 end function setrho
 
-double precision function setrhofixedp(k, p0)
+real(kind=dp) function setrhofixedp(k, p0)
+  use precision, only: dp
    use m_densfm, only: densfm
 
    implicit none
 
    integer, intent(in) :: k !< cell number
-   double precision, intent(in) :: p0 !< some given pressure
+   real(kind=dp), intent(in) :: p0 !< some given pressure
 
-   double precision :: sal, temp
+   real(kind=dp) :: sal, temp
 
    call getsaltemk(k, sal, temp)
 
@@ -132,12 +135,13 @@ double precision function setrhofixedp(k, p0)
 end function setrhofixedp
 
 subroutine getsaltemk(k, sal, temp)
+  use precision, only: dp
    use m_flow
    use m_transport
 
    implicit none
    integer :: k
-   double precision :: sal, temp
+   real(kind=dp) :: sal, temp
 
    if (jasal > 0) then
       saL = max(0d0, constituents(isalt, k))
@@ -154,6 +158,7 @@ end subroutine getsaltemk
 
 !> Adds the effect of sediment on the density of a cell
 subroutine add_sediment_effect_to_density(rho, cell)
+  use precision, only: dp
    use m_sediment, only: jased, jaseddenscoupling, jasubstancedensitycoupling, mxgr, rhosed, sed, stmpar, stm_included
    use m_transport, only: constituents, ised1, itra1, itran
    use m_turbulence, only: rhowat
@@ -163,12 +168,12 @@ subroutine add_sediment_effect_to_density(rho, cell)
 
    implicit none
 
-   double precision, intent(inout) :: rho !< density in a cell [kg/m3]
+   real(kind=dp), intent(inout) :: rho !< density in a cell [kg/m3]
    integer, intent(in) :: cell !< cell index
-   double precision, parameter :: rhom_min = 990d0 !< lower limit of rhom [kg/m3]
-   double precision, parameter :: rhom_max = 1250d0 !< upper limit of rhom [kg/m3]
-   double precision, parameter :: SEDIMENT_DENSITY = 2600d0 !< default/typical sediment density [kg/m3]
-   double precision :: rhom !< density in a cell [kg/m3] before adding sediment effects
+   real(kind=dp), parameter :: rhom_min = 990d0 !< lower limit of rhom [kg/m3]
+   real(kind=dp), parameter :: rhom_max = 1250d0 !< upper limit of rhom [kg/m3]
+   real(kind=dp), parameter :: SEDIMENT_DENSITY = 2600d0 !< default/typical sediment density [kg/m3]
+   real(kind=dp) :: rhom !< density in a cell [kg/m3] before adding sediment effects
    integer :: i, lsed !< loop indices
 
    if (jased > 0 .and. stm_included) then

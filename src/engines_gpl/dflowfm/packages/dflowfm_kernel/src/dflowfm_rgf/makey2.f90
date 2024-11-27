@@ -31,11 +31,12 @@
 !
 
       subroutine MAKEY2(XR, YR, XO, YO, MMAX, NMAX) ! Voor tekenen bij JSFERIC SUBROUTINE MAKEY2
+  use precision, only: dp
          use M_SFERIC
          use M_MISSING
          implicit none
          integer :: mmax, nmax
-         double precision :: XR(MMAX, NMAX), YR(MMAX, NMAX), &
+         real(kind=dp) :: XR(MMAX, NMAX), YR(MMAX, NMAX), &
             XO(MMAX, NMAX), YO(MMAX, NMAX), FI2
          integer :: i, j
 

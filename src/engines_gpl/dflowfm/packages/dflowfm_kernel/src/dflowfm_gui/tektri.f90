@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine TEKTRI(XL, YL, NCOL)
+  use precision, only: dp
          use m_set_col
          use m_movabs
          use m_lnabs
          implicit none
          integer :: ncol
-         double precision :: XL(3), YL(3)
+         real(kind=dp) :: XL(3), YL(3)
          call SETCOL(NCOL)
          call MOVABS(XL(1), YL(1))
          call LNABS(XL(2), YL(2))

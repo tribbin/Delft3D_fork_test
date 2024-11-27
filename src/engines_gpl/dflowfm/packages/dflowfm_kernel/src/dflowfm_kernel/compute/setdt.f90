@@ -44,6 +44,7 @@ public :: setdt
 contains
 
 subroutine setdt()
+  use precision, only: dp
    use m_tekcflmx
    use m_partitioninfo
    use m_flowparameters, only: jawave, flow_solver, FLOW_SOLVER_SRE
@@ -57,7 +58,7 @@ subroutine setdt()
    use m_mormerge
    implicit none
 
-   double precision :: dtsc_loc
+   real(kind=dp) :: dtsc_loc
    integer :: nsteps
    integer :: jareduced
 

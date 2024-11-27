@@ -39,15 +39,16 @@ implicit none
 contains
 
 subroutine getucmag(N, ucxi, ucyi, ucmago)
+  use precision, only: dp
    use m_flowgeom, only: ndx
    use m_flow, only: kmx
    use m_get_kbot_ktop
 
    implicit none
    integer, intent(in) :: N !< Length of cell arrays (probably ndkx)
-   double precision, intent(in) :: ucxi(N) !< Input array containing cell centered x-velocities.
-   double precision, intent(in) :: ucyi(N) !< Input array containing cell centered y-velocities.
-   double precision, intent(out) :: ucmago(N) !< Output array containing cell centered velocity magnitudes.
+   real(kind=dp), intent(in) :: ucxi(N) !< Input array containing cell centered x-velocities.
+   real(kind=dp), intent(in) :: ucyi(N) !< Input array containing cell centered y-velocities.
+   real(kind=dp), intent(out) :: ucmago(N) !< Output array containing cell centered velocity magnitudes.
 
    integer :: kk, k, kb, kt
 

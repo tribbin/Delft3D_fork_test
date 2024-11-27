@@ -36,7 +36,8 @@ implicit none
 
 contains
 
- double precision function horvic3(n12, L) ! horizontal viscosity term, out of face normal and tang comp's
+ real(kind=dp) function horvic3(n12, L) ! horizontal viscosity term, out of face normal and tang comp's
+  use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_missing
@@ -48,15 +49,15 @@ contains
     ! locals
     integer :: LL, LLL, LLLL ! for links LL,
     integer :: k12, k1, k2, k3, k4 ! relevant node, 1 or 2
-    double precision :: cs, sn, csL, snL, vicl
-    double precision :: txx, tyy
-    double precision :: uuk1, vvk1, uuk2, vvk2, uuk3, uuk4, dux, duy, dvx, tuu, tvv
+    real(kind=dp) :: cs, sn, csL, snL, vicl
+    real(kind=dp) :: txx, tyy
+    real(kind=dp) :: uuk1, vvk1, uuk2, vvk2, uuk3, uuk4, dux, duy, dvx, tuu, tvv
 
-    double precision :: txx_k12, tyy_k12
+    real(kind=dp) :: txx_k12, tyy_k12
 
     integer :: ik1, ik2, in3, in4
 
-    double precision, external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
+    real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
 
     horvic3 = 0d0
     csL = csu(L); snL = snu(L)

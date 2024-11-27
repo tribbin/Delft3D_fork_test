@@ -37,10 +37,11 @@ implicit none
 contains
 
 subroutine inidensconstants()
+  use precision, only: dp
    use m_physcoef
 
    implicit none
-   double precision :: temp
+   real(kind=dp) :: temp
 
    temp = backgroundwatertemperature
    cp0 = 5890.0d0 + 38.00d0 * temp - 0.3750d0 * temp * temp

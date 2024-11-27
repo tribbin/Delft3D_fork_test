@@ -44,22 +44,23 @@ contains
 !! advect the cell center velocities (dimension: m4/s2)
 !! leaving the cell = +
 subroutine QucPeripiaczekteta(n12, L, ai, ae, volu, iad) 
+  use precision, only: dp
    use m_flow 
    use m_flowgeom
    use m_flowtimes 
    use m_sferic
 
    integer :: n12, L, iad !< for link L,
-   double precision ai, ae, volu
+   real(kind=dp) ai, ae, volu
 
    ! locals
    integer :: LL, LLL, LLLL ! for links LL,
    integer :: k12, ja ! relevant node, 1 or 2, L/R
-   double precision :: cs, sn, ucin, cfl, tet, ucinx, uciny
+   real(kind=dp) :: cs, sn, ucin, cfl, tet, ucinx, uciny
 
    integer :: nn12
 
-   double precision, external :: lin2nodx, lin2nody, nod2linx, nod2liny
+   real(kind=dp), external :: lin2nodx, lin2nody, nod2linx, nod2liny
 
    ai = 0d0; ae = 0d0
    cs = csu(L)

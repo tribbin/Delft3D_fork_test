@@ -34,6 +34,7 @@ module m_ecrrea
 contains
       !> read from rfg grid file
       subroutine ECRREA(X, MMAX, NMAX, MC, NC, MRGF, HALF)
+  use precision, only: dp
          use m_readyy
          use m_qn_read_error
          use m_qn_eof_error
@@ -43,9 +44,9 @@ contains
          integer, intent(in) :: MMAX, NMAX !< array sizes
          integer, intent(in) :: mc, nc !< grid size
          integer, intent(in) :: mrgf !< grid-file unit number
-         double precision, intent(in) :: half !< progress bar length, 0:half, 0.5:full
-         double precision :: X(MMAX, NMAX)
-         double precision :: af
+         real(kind=dp), intent(in) :: half !< progress bar length, 0:half, 0.5:full
+         real(kind=dp) :: X(MMAX, NMAX)
+         real(kind=dp) :: af
          integer :: i, j
 
          do J = 1, NC

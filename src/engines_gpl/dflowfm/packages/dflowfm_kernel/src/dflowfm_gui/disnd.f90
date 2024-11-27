@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine DISND(NN, netorflow) ! print net or flow node values
+  use precision, only: dp
     use m_devices, only: iws
     use m_flowgeom, only: xz, yz
     use network_data, only: rnod, netcell, xk, yk, nump
@@ -51,7 +52,7 @@ contains
     character(len=8) :: nodetype
     character(len=23) :: idtext
 
-    double precision :: x, y, val
+    real(kind=dp) :: x, y, val
 
     if (netorflow == 0) then
        nodetype = 'NET NODE'

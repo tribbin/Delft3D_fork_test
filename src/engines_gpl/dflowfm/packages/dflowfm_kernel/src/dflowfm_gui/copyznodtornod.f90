@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine copyznodtornod() ! for smooth plotting only
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_netw
@@ -44,7 +45,7 @@ contains
 
     integer :: k, kk, kkk, n, nn, ierr, ja
     real, allocatable, save :: rn(:)
-    double precision :: znn
+    real(kind=dp) :: znn
 
     ja = 0
     if (.not. allocated(rn)) then

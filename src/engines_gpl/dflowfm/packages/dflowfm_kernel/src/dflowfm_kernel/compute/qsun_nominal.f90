@@ -37,13 +37,14 @@ implicit none
 contains
 
 subroutine qsun_nominal(rlon, rlat, timhr, qs)
+  use precision, only: dp
    use m_sferic
    use m_flowtimes, only: timjan, tzone
    implicit none
 
-   double precision :: rlat, rlon, timhr, qs
+   real(kind=dp) :: rlat, rlon, timhr, qs
 
-   double precision :: decln, w0, w1, d, e, tm, snh
+   real(kind=dp) :: decln, w0, w1, d, e, tm, snh
 
    ! Calculate sine of the angle of the sun above the horizon: SNH
    ! d is the declination angle

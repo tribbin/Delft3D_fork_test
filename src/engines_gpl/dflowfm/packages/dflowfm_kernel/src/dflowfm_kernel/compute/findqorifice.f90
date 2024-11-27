@@ -37,23 +37,24 @@ implicit none
 contains
 
 subroutine findqorifice(gateheight, crestheight, h1, h3, q, h2, hg, regime, num, qcrit) ! bepaal q en hoogte h2 achter schuif, waterstand links = h1, rechts= h4, schuif = a, alles tov bodem
+  use precision, only: dp
    use m_qorifdif
    use m_getq1
    use m_getq2
    use m_getq3
    implicit none
-   double precision :: gateheight ! gate height above crest
-   double precision :: crestheight ! crest height above bed
-   double precision :: h1 ! upstream waterheight above crest
-   double precision :: h3 ! downstream waterheight above crest
-   double precision :: q ! flux m3/s                                    (out)
-   double precision :: h2 ! pressure height above crest       after gate (out)
-   double precision :: hg ! vena contracta height above crest after gate (out)
-   double precision :: qcrit ! critical discharge m2/s                      (out)
+   real(kind=dp) :: gateheight ! gate height above crest
+   real(kind=dp) :: crestheight ! crest height above bed
+   real(kind=dp) :: h1 ! upstream waterheight above crest
+   real(kind=dp) :: h3 ! downstream waterheight above crest
+   real(kind=dp) :: q ! flux m3/s                                    (out)
+   real(kind=dp) :: h2 ! pressure height above crest       after gate (out)
+   real(kind=dp) :: hg ! vena contracta height above crest after gate (out)
+   real(kind=dp) :: qcrit ! critical discharge m2/s                      (out)
    character(len=*) :: regime !                                              (out)
-   double precision :: g, ha, hb, qa, qb, qc, hc, a, d, qda, qdb, qdc, hgc
+   real(kind=dp) :: g, ha, hb, qa, qb, qc, hc, a, d, qda, qdb, qdc, hgc
    integer :: num, k, nummin
-   double precision :: qf, hgf, h2f, qer, qermin
+   real(kind=dp) :: qf, hgf, h2f, qer, qermin
    g = 9.81 ! h1 = waterhoogte bovenstrooms
    h3 = min(h3, h1 - 0.0001) ! hg = gateheight * contractie = effectieve keeldoorsnee
    d = crestheight

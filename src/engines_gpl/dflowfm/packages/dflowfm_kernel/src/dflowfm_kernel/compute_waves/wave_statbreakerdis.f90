@@ -41,6 +41,7 @@ public :: wave_statbreakerdis
 contains
 
 subroutine wave_statbreakerdis(h, hrms, tp, k, D)
+  use precision, only: dp
    !
    ! Baldock
    !
@@ -49,13 +50,13 @@ subroutine wave_statbreakerdis(h, hrms, tp, k, D)
 
    implicit none
 
-   double precision, intent(in) :: h
-   double precision, intent(in) :: hrms
-   double precision, intent(in) :: tp
-   double precision, intent(in) :: k
-   double precision, intent(out) :: D
+   real(kind=dp), intent(in) :: h
+   real(kind=dp), intent(in) :: hrms
+   real(kind=dp), intent(in) :: tp
+   real(kind=dp), intent(in) :: k
+   real(kind=dp), intent(out) :: D
 
-   double precision :: alpha, Hb
+   real(kind=dp) :: alpha, Hb
 
    alpha = 1d0 ! can be slope dependent, see work of Bertin et al
 

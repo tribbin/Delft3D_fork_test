@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine ISOSCALE2() !   tekenen legenda
+  use precision, only: dp
      use m_arrows
      use m_isoscaleunit
      use unstruc_colors
@@ -52,19 +53,19 @@ contains
      use m_fbox_nop
      use m_set_col
 
-     double precision :: hic
+     real(kind=dp) :: hic
      integer :: i, j
      integer :: INC
-     double precision :: vfac2
-     double precision :: wi
-     double precision :: wic
-     double precision :: xleg
-     double precision :: xsc1
-     double precision :: xsc2
-     double precision :: yleg
-     double precision :: ysc1
-     double precision :: ysc2
-     double precision :: yt
+     real(kind=dp) :: vfac2
+     real(kind=dp) :: wi
+     real(kind=dp) :: wic
+     real(kind=dp) :: xleg
+     real(kind=dp) :: xsc1
+     real(kind=dp) :: xsc2
+     real(kind=dp) :: yleg
+     real(kind=dp) :: ysc1
+     real(kind=dp) :: ysc2
+     real(kind=dp) :: yt
      character TEXT2 * 10, FMT * 7
      character(LEN=8) :: TEX
      character(LEN=32) :: MINTEX, MAXTEX

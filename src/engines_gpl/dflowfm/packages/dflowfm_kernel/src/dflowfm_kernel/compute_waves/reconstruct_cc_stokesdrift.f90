@@ -41,6 +41,7 @@ public :: reconstruct_cc_stokesdrift
 contains
 
  subroutine reconstruct_cc_stokesdrift(ndkx, ust_x, ust_y)
+  use precision, only: dp
     use m_flowgeom, only: lnx, ln, wcx1, wcx2, wcy1, wcy2
     use m_flow, only: kmx
     use m_waves, only: ustokes
@@ -50,11 +51,11 @@ contains
 
     ! Input variables
     integer, intent(in) :: ndkx
-    double precision, dimension(ndkx), intent(out) :: ust_x, ust_y
+    real(kind=dp), dimension(ndkx), intent(out) :: ust_x, ust_y
 
     ! Local variables
     integer :: L, LL, Lb, Lt, k1, k2
-    double precision :: ustL
+    real(kind=dp) :: ustL
 
     ust_x = 0d0; ust_y = 0d0
 

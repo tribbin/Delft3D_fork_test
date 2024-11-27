@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine CHANGEGRIDPARAMETERS()
+  use precision, only: dp
          use m_grid, only: mc, mmax, nmax, nc
          use m_gridsettings
          use m_sferic
@@ -59,7 +60,7 @@ contains
 !
          integer :: ip, ir, il, iw, ixp, iyp, ih, i, ifexit, ifinit, key
          integer :: nbut, imp, inp, k
-         double precision :: phi
+         real(kind=dp) :: phi
 
          NLEVEL = 3
          OPTION(1) = 'M-REFINEMENT FACTOR                     '

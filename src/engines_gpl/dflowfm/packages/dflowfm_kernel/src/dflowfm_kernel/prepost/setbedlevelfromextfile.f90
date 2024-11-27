@@ -31,6 +31,7 @@
 !
 
 subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old cell centre bottom level file
+  use precision, only: dp
    use timespace_data
    use timespace
    use unstruc_model
@@ -63,7 +64,7 @@ subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old ce
    character(len=256) :: filename
    character(len=64) :: varname
 ! character(len=1)   :: operand
-! double precision   :: transformcoef(25) !< Transform coefficients a+b*x
+! real(kind=dp)   :: transformcoef(25) !< Transform coefficients a+b*x
 
    type(tree_data), pointer :: inifield_ptr !< tree of inifield-file's [Initial] or [Parameter] blocks
    type(tree_data), pointer :: node_ptr

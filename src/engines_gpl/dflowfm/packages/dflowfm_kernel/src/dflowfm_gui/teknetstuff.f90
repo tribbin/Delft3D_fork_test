@@ -41,6 +41,7 @@ implicit none
 contains
 
    subroutine TEKNETSTUFF(key)
+  use precision, only: dp
       use m_teknetcells
       use m_teknet
       use m_teklinkvals
@@ -51,7 +52,7 @@ contains
       use m_drawthis
       use m_gtext
       implicit none
-      double precision :: XP, YP
+      real(kind=dp) :: XP, YP
       integer :: key, K1, K2
 
       if (NDRAW(7) >= 2) call TEKLINKVALS(NDRAW(11))

@@ -41,6 +41,7 @@ public :: cutcells
 contains
 
   subroutine CUTCELLS(n12)
+  use precision, only: dp
      use m_crosslinkpoly, only: crosslinkpoly
      use m_netw
      use gridoperations
@@ -54,7 +55,7 @@ contains
      integer, allocatable :: KNP(:), KNEW(:)
      integer :: KK(4)
 
-     double precision :: XM, YM
+     real(kind=dp) :: XM, YM
 
      call READYY('CUTCELLS', 0d0)
 

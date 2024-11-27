@@ -37,13 +37,14 @@ implicit none
 contains
 
  subroutine tekspw(vfac)
+  use precision, only: dp
     use m_arrowsxy
     use m_flowgeom
     use m_spiderweb
     use m_wind
     use m_set_col
     implicit none
-    double precision :: vfac, shft
+    real(kind=dp) :: vfac, shft
 
     integer :: mx, nx, i, j, L
 

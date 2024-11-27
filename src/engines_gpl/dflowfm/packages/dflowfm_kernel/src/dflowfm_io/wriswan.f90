@@ -41,6 +41,7 @@ public :: WRIswan
 contains
 
       subroutine WRIswan(MNET, filnam)
+  use precision, only: dp
 
          use m_netw
          use m_polygon
@@ -54,7 +55,7 @@ contains
          integer :: MNET
          character(len=*) :: filnam
 
-         double precision :: xz2, yz2, dl, xn, yn, sl, sm, crp, xcr, ycr
+         real(kind=dp) :: xz2, yz2, dl, xn, yn, sl, sm, crp, xcr, ycr
          integer :: k, L, n, kk, ja, k1, k3, k4, jacros, lin
 
          call savepol()

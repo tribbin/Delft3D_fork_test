@@ -48,6 +48,7 @@ implicit none
 contains
 
  subroutine tekrai(nsiz)
+  use precision, only: dp
 
     use m_setwor_rai
     use m_setwor
@@ -91,23 +92,23 @@ contains
 
     integer :: nsiz
 
-    double precision :: xx2, zz
+    real(kind=dp) :: xx2, zz
     integer :: k1, k2, n1, n2
-    double precision :: uu, ww
-    double precision :: zfac, zgaten
+    real(kind=dp) :: uu, ww
+    real(kind=dp) :: zfac, zgaten
     integer :: l, k, kk, j, kplotorg, n, ncol
-    double precision :: doorh
+    real(kind=dp) :: doorh
     integer :: ng
-    double precision :: zz1, zz2, xz1, xz2
-    double precision :: xmn, xmx, ymx, zmx, zmx2, bot, top, xx, yy, bup, xxu, zzu
-    double precision :: xp(4), yp(4), zp(4), xxmn, xxmx, zn, dlay, dl, xp1, yp1, qsrck
+    real(kind=dp) :: zz1, zz2, xz1, xz2
+    real(kind=dp) :: xmn, xmx, ymx, zmx, zmx2, bot, top, xx, yy, bup, xxu, zzu
+    real(kind=dp) :: xp(4), yp(4), zp(4), xxmn, xxmx, zn, dlay, dl, xp1, yp1, qsrck
     integer :: mx, kb, kt, Lb, Lt, LL, kplotfrombedorsurfacesav, ierror, numcrossedlinks, japol = 0
 
-    double precision, allocatable :: plotlin2(:)
+    real(kind=dp), allocatable :: plotlin2(:)
     integer, allocatable :: ip(:), ip2(:)
 
     integer, allocatable :: iLink(:), iPol(:)
-    double precision, allocatable :: dSL(:)
+    real(kind=dp), allocatable :: dSL(:)
 
     if (ndx < 1) return
 

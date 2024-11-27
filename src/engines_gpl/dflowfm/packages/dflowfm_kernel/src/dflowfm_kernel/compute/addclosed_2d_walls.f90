@@ -41,6 +41,7 @@ public :: addclosed_2D_walls
 contains
 
  subroutine addclosed_2D_walls()
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_missing
@@ -48,7 +49,7 @@ contains
     implicit none
 
     integer :: n, k1
-    double precision :: bl1, aa1, hh1
+    real(kind=dp) :: bl1, aa1, hh1
 
     do n = 1, mxwalls
        k1 = walls(1, n)

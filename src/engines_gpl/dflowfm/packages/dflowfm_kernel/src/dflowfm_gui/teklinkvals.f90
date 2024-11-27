@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine TEKLINKVALS(MET)
+  use precision, only: dp
      use m_isocol2
      use m_drcirc
      use m_dmovabs
@@ -59,15 +60,15 @@ contains
 
      implicit none
      integer :: MET
-     double precision :: d
+     real(kind=dp) :: d
      integer :: k1
      integer :: k2
      integer :: l
      integer :: ncol, key
-     double precision :: rd
-     double precision :: vv
-     double precision XD, YD, ZD, DX, DY, DZ, XX1, YY1, ZZ1, XX2, YY2, ZZ2, X3, Y3, Z3
-     double precision :: X(4), Y(4), Z(4)
+     real(kind=dp) :: rd
+     real(kind=dp) :: vv
+     real(kind=dp) XD, YD, ZD, DX, DY, DZ, XX1, YY1, ZZ1, XX2, YY2, ZZ2, X3, Y3, Z3
+     real(kind=dp) :: X(4), Y(4), Z(4)
 
      D = 0.5d0 * GETRCIR() !
      if (MET >= 3) then

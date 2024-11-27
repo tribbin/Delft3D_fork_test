@@ -41,10 +41,11 @@ public :: reaobs2stat
 contains
 
  subroutine reaobs2stat(mobs, mout) ! convert d3d obs file to model independent
+  use precision, only: dp
     use m_grid
     implicit none
     integer :: mobs, mout
-    double precision :: xce, yce
+    real(kind=dp) :: xce, yce
     character(len=132) :: rec
     character(len=20) :: name
     integer :: m, n

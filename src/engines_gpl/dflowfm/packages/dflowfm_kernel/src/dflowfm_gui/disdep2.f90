@@ -37,10 +37,11 @@ implicit none
 contains
 
       subroutine DISDEP2(DEP)
+  use precision, only: dp
          use m_devices, only: iws
          use m_ktext
 
-         double precision :: dep
+         real(kind=dp) :: dep
          character DISTAN * 23
 
          DISTAN = 'D2:                    '

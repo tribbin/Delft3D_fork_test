@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine NETLINKVALS(MET)
+  use precision, only: dp
 
      use m_makepdf
      use m_dhitext
@@ -56,17 +57,17 @@ contains
      
      integer :: MET
      integer :: jacftrt
-     double precision :: fsp
+     real(kind=dp) :: fsp
      integer :: k1, k2, L, jaxz, kL, kR
      integer :: i
-     double precision :: rd
-     double precision :: rek
-     double precision :: sp
-     double precision :: v
-     double precision :: X3, Y3, X4, Y4
-     double precision :: xd, YD, ZD
-     double precision :: areaL, areaR, xc, yc, aa
-     double precision, external :: topo_info
+     real(kind=dp) :: rd
+     real(kind=dp) :: rek
+     real(kind=dp) :: sp
+     real(kind=dp) :: v
+     real(kind=dp) :: X3, Y3, X4, Y4
+     real(kind=dp) :: xd, YD, ZD
+     real(kind=dp) :: areaL, areaR, xc, yc, aa
+     real(kind=dp), external :: topo_info
 
      if (MET == 1) return
 

@@ -37,11 +37,12 @@ implicit none
 contains
 
       subroutine CIR(R)
+  use precision, only: dp
          use unstruc_opengl
          use m_colnow
          use m_krec5
          implicit none
-         double precision :: r, Hr
+         real(kind=dp) :: r, Hr
 
          if (r == 0d0) return
          if (InOpenGLRendering) then

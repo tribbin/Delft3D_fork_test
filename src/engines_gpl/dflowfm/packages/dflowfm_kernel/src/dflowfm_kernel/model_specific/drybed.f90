@@ -43,15 +43,16 @@ public :: drybed
 contains
 
  subroutine drybed(time)
+  use precision, only: dp
     use m_movabs
     use m_lnabs
 
-    double precision :: time
+    real(kind=dp) :: time
     
-    double precision :: xm, xmx, h0, dxw
+    real(kind=dp) :: xm, xmx, h0, dxw
     integer, parameter :: mmax = 601 !  3000
-    double precision :: s(0:mmax), u(0:mmax), xx(0:mmax)
-    double precision :: g, t, cw, xl, xr, sa, ua, x
+    real(kind=dp) :: s(0:mmax), u(0:mmax), xx(0:mmax)
+    real(kind=dp) :: g, t, cw, xl, xr, sa, ua, x
     integer :: m
 
     g = 9.81 ! 10.0

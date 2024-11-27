@@ -37,7 +37,8 @@ public :: tabellenboek
 
 contains
 
-double precision function tabellenboek(d1, eweir, qunit, qvolk)
+real(kind=dp) function tabellenboek(d1, eweir, qunit, qvolk)
+  use precision, only: dp
 !-------------------------------------------------------------------------------
 !!--description-----------------------------------------------------------------
 !

@@ -39,13 +39,14 @@ contains
   ! =================================================================================================
   ! =================================================================================================
   subroutine pillar_upd()
+  use precision, only: dp
      use fm_external_forcings_data, only: Cpil
      use m_flowgeom, only: lnx, ln, dx
      use m_flow, only: u1, v, advi
      use m_flowparameters, only: japillar
      implicit none
      integer :: L, k1, k2
-     double precision :: CpilL, uv
+     real(kind=dp) :: CpilL, uv
 
      if (japillar == 1) then
         do L = 1, lnx

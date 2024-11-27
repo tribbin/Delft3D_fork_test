@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine tekrailines(ncol, jaall, ITYP)
+  use precision, only: dp
     use m_flowgeom
     use M_FLOW
     use m_flowtimes
@@ -53,7 +54,7 @@ contains
     implicit none
     integer :: ncol, jaall, ITYP
     integer :: L, k1, k2
-    double precision :: zz1, zz2, xz1, xz2
+    real(kind=dp) :: zz1, zz2, xz1, xz2
     integer :: ja
 
     call setcol(ncol)

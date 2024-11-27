@@ -37,11 +37,12 @@ implicit none
 contains
 
       subroutine DISVAL(M, N, DEP)
+  use precision, only: dp
          use m_devices, only: iws
          use m_drawthis
          use m_ktext
 
-         double precision :: dep
+         real(kind=dp) :: dep
          integer :: m
          integer :: n
          character DISTAN * 23

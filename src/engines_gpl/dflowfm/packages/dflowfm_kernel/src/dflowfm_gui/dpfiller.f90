@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine DPFILLER(X, Y, Z, N, NCOL, NCOLR)
+  use precision, only: dp
          use m_three_two
          use m_pfiller
 
@@ -44,9 +45,9 @@ contains
          integer :: n
          integer :: ncol
          integer :: ncolr
-         double precision :: zz
-         double precision X(N), Y(N), Z(N)
-         double precision :: XX(100), YY(100)
+         real(kind=dp) :: zz
+         real(kind=dp) X(N), Y(N), Z(N)
+         real(kind=dp) :: XX(100), YY(100)
          do K = 1, N
             call DRIETWEE(X(K), Y(K), Z(K), XX(K), YY(K), ZZ)
          end do

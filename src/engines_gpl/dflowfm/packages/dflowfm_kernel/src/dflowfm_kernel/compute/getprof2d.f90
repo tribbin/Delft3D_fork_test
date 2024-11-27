@@ -33,15 +33,16 @@ module m_get_prof2d
    implicit none
 contains
  subroutine getprof2D(hpr, wu2, dz, ai, frcn, ifrctyp, wid, ar, aconv, jaconv, beta, deltaa, hyr)
+  use precision, only: dp
     use m_flow, only: slotw2D
     use m_get_cz
 
-    double precision, intent(in) :: hpr, wu2, dz, ai, frcn
-    double precision, intent(out) :: wid, ar, aconv ! aconv = (a/conv)**2
+    real(kind=dp), intent(in) :: hpr, wu2, dz, ai, frcn
+    real(kind=dp), intent(out) :: wid, ar, aconv ! aconv = (a/conv)**2
     integer, intent(in) :: ifrctyp, jaconv
-    double precision :: d83 = 2.666666d0, d16 = 0.166666d0, d23 = 0.666666d0, d43 = 1.333333d0
-    double precision :: hp2, Cz, cman, per, hyr, hav, conv, beta, deltaa
-    double precision :: d38 = 0.375d0, d311 = 0.27272727d0, hpr83, hp283
+    real(kind=dp) :: d83 = 2.666666d0, d16 = 0.166666d0, d23 = 0.666666d0, d43 = 1.333333d0
+    real(kind=dp) :: hp2, Cz, cman, per, hyr, hav, conv, beta, deltaa
+    real(kind=dp) :: d38 = 0.375d0, d311 = 0.27272727d0, hpr83, hp283
     integer :: jac, L
 
     ! for jaconv >= 1, this routine gets conveyance, but without friction surface to horizontal plane surface ratio influence on conveyance

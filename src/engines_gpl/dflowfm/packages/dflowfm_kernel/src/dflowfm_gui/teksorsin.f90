@@ -37,6 +37,7 @@ implicit none
 contains
 
 subroutine teksorsin() ! teksrc
+  use precision, only: dp
    use m_settextsizefac
    use fm_external_forcings_data
    use unstruc_display, only: klsrc
@@ -49,7 +50,7 @@ subroutine teksorsin() ! teksrc
    implicit none
    integer :: n, k, n2, ncol
    character(len=40) :: tex
-   double precision :: xp, yp
+   real(kind=dp) :: xp, yp
 
    if (ndraw(41) <= 1 .or. numsrc == 0) return
 

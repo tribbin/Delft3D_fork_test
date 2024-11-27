@@ -41,12 +41,13 @@ public :: soulsby
 contains
 
 subroutine soulsby(tsig, uorbu, z00, fw)
+  use precision, only: dp
    use m_sferic, only: pi
 
    implicit none
-   double precision, intent(in) :: tsig, uorbu, z00
-   double precision, intent(out) :: fw
-   double precision :: a
+   real(kind=dp), intent(in) :: tsig, uorbu, z00
+   real(kind=dp), intent(out) :: fw
+   real(kind=dp) :: a
 
    a = uorbu * tsig / 2d0 / pi
    if (a > 0d0) then

@@ -33,11 +33,12 @@ module m_inview2
      implicit none
 contains
   logical function INVIEW2(X, Y, XX, YY)
+  use precision, only: dp
      use M_MISSING
      use m_wearelt
      use m_dproject
      
-     double precision :: x, y, xx, yy
+     real(kind=dp) :: x, y, xx, yy
 
      ! ZIT IK IN ZOOMGEBIED? NULLEN EN DEFAULTS NIET, IN WERELDCOORD
 

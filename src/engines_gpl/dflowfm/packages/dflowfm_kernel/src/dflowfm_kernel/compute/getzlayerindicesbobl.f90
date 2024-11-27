@@ -33,11 +33,12 @@ module m_get_zlayer_indices_bobL
    implicit none
 contains
  subroutine getzlayerindicesbobL(n, nlayb, nrlay, bobL)
+  use precision, only: dp
     use m_flow
 
     integer :: n, nlayb, nrlay
     integer :: k, Ltn, mx ! layerdistribution indexes
-    double precision :: bobL
+    real(kind=dp) :: bobL
 
     Ltn = laydefnr(n)
     mx = laymx(Ltn)

@@ -33,6 +33,7 @@ module m_refine
    implicit none
 contains
       subroutine REFINE(M1, N1, M2, N2, NUM)
+  use precision, only: dp
          use m_grid, only: ijyes, nc, mc, mmax, mnmax, nmax, xc, yc
          use m_gridsettings, only: mfac, nfac
          use messagehandling, only: LEVEL_DEBUG, mess
@@ -42,7 +43,7 @@ contains
          use m_isitu
 
          integer :: m1, n1, m2, n2, num
-         double precision, allocatable :: XI2(:, :), XJ2(:, :), YI2(:, :), YJ2(:, :), XR(:, :), YR(:, :), XRH(:, :), YRH(:, :)
+         real(kind=dp), allocatable :: XI2(:, :), XJ2(:, :), YI2(:, :), YJ2(:, :), XR(:, :), YR(:, :), XRH(:, :), YRH(:, :)
          integer :: NRM, NRN, MCR, NCR
 
          call mess(LEVEL_DEBUG, 'INTERPOLATION')

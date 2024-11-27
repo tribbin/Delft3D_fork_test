@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine getvanrijnwci(LL, umod, u2dh, taubpuLL, z0urouL)
+  use precision, only: dp
     use m_flow
     use m_bedform
     use m_flowgeom
@@ -46,17 +47,17 @@ contains
     implicit none
 
     integer, intent(in) :: LL
-    double precision, intent(in) :: umod
-    double precision, intent(in) :: u2dh
-    double precision, intent(out) :: taubpuLL
-    double precision, intent(out) :: z0urouL
+    real(kind=dp), intent(in) :: umod
+    real(kind=dp), intent(in) :: u2dh
+    real(kind=dp), intent(out) :: taubpuLL
+    real(kind=dp), intent(out) :: z0urouL
 
     ! Locals
     integer :: k1, k2, Lb
-    double precision :: hrmsu, tpu, rlabdau, rr, t1, u11, a11, raih, rmax, uon, uoff
-    double precision :: cosk1, cosk2, sink1, sink2, cphi, sphi, ac1, ac2
-    double precision :: phi, gamma, ksc, ka, ca, uwbih, rksru, rksmru, uratio
-    double precision :: waveps, huLL, uuu, vvv, umax, uorbhs, csw, snw, abscos
+    real(kind=dp) :: hrmsu, tpu, rlabdau, rr, t1, u11, a11, raih, rmax, uon, uoff
+    real(kind=dp) :: cosk1, cosk2, sink1, sink2, cphi, sphi, ac1, ac2
+    real(kind=dp) :: phi, gamma, ksc, ka, ca, uwbih, rksru, rksmru, uratio
+    real(kind=dp) :: waveps, huLL, uuu, vvv, umax, uorbhs, csw, snw, abscos
 
     if (hu(LL) <= epshu) then ! safety
        taubpuLL = 0d0

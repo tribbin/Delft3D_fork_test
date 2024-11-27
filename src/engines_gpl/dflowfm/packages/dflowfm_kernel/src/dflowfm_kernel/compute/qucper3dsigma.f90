@@ -44,24 +44,25 @@ public :: qucper3dsigma
 !! advect the cell center velocities (dimension: m4/s2)
 !! leaving the cell = +
  subroutine QucPer3Dsigma(n12, LL, Lb, Lt, cs, sn, quk1) 
+  use precision, only: dp
     use m_flow 
     use m_flowgeom 
     use m_sferic
     implicit none
 
     integer, intent(in) :: n12, LL, Lb, Lt !< working for basis link LL
-    double precision, intent(in) :: cs, sn
-    double precision, intent(out) :: quk1(3, Lt - Lb + 1) !
+    real(kind=dp), intent(in) :: cs, sn
+    real(kind=dp), intent(out) :: quk1(3, Lt - Lb + 1) !
 
     ! locals
     integer :: La, LLL, LLLL, Lb2, Lt2, Lk ! for links LL,
     integer :: k12, Lkin ! relevant node, 1 or 2, L/R
-    double precision :: ucin ! velocity surplus
+    real(kind=dp) :: ucin ! velocity surplus
 
-    double precision :: ucinx, uciny
+    real(kind=dp) :: ucinx, uciny
     integer :: nn12
 
-    double precision, external :: lin2nodx, lin2nody, nod2linx, nod2liny
+    real(kind=dp), external :: lin2nodx, lin2nody, nod2linx, nod2liny
 
     Quk1 = 0d0
 

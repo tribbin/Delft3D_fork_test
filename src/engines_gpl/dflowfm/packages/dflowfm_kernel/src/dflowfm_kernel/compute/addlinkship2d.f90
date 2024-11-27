@@ -41,6 +41,7 @@ public :: addlinkship2D
 contains
 
  subroutine addlinkship2D(L, japerim) ! but substract, nested Newton
+  use precision, only: dp
     use m_ship
     use m_flowgeom
     use m_flow
@@ -49,7 +50,7 @@ contains
     integer :: L, japerim
 
     integer :: k1, k2, k3, k4
-    double precision :: BL1, BL2, b21, wu2, ai, wid1, wid2, hpr1, hpr2, dx1, dx2, ar1, ar2
+    real(kind=dp) :: BL1, BL2, b21, wu2, ai, wid1, wid2, hpr1, hpr2, dx1, dx2, ar1, ar2
     k1 = ln(1, L); k2 = ln(2, L)
     k3 = lncn(1, L); k4 = lncn(2, L)
     if (zspc(k3) /= 0d0 .or. zspc(k4) /= 0d0) then

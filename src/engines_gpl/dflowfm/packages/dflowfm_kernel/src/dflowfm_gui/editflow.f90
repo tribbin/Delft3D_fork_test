@@ -48,6 +48,7 @@ implicit none
 contains
 
      subroutine EDITflow(MODE, KEY, NL)
+  use precision, only: dp
         use m_disnd
         use m_netw
         use m_flow
@@ -81,10 +82,10 @@ contains
         integer :: num
         integer :: numb
         integer :: nwhat
-        double precision :: xp, yp, zp
+        real(kind=dp) :: xp, yp, zp
 
         integer :: i, Nin, Nout, ierror
-        double precision, dimension(:), allocatable :: xin, yin, xout, yout ! testing, for snappol
+        real(kind=dp), dimension(:), allocatable :: xin, yin, xout, yout ! testing, for snappol
         integer, dimension(:), allocatable :: ipoLout ! testing, for snappol
 
         character TEX * 26

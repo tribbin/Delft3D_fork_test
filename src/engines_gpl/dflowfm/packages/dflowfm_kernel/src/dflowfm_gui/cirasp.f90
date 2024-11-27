@@ -37,9 +37,10 @@ implicit none
 contains
 
    subroutine CIRasp(R)
+  use precision, only: dp
       use unstruc_opengl
       implicit none
-      double precision :: R
+      real(kind=dp) :: R
 
       if (R == 0d0) return
       if (InOpenGLRendering) then

@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine tektransport1D(tim)
+  use precision, only: dp
     use m_sferic
     use m_statistics
     use m_flowgeom
@@ -45,8 +46,8 @@ contains
     use m_movabs
     use m_lnabs
     implicit none
-    double precision :: tim
-    double precision :: cwave, period, omeg, wlen, rk, phi, xx, yy, dif
+    real(kind=dp) :: tim
+    real(kind=dp) :: cwave, period, omeg, wlen, rk, phi, xx, yy, dif
     integer :: k
 
     cwave = 60d0 * sqrt(10d0 * 1d-4) ! chezy

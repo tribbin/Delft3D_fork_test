@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine comp_samplegradi(IDIR, i, j, grad, Sn, DareaL, DareaR)
+  use precision, only: dp
    use m_comp_grad
    use m_samples, only: MXSAM, MYSAM
    use m_samples_refine
@@ -46,9 +47,9 @@ subroutine comp_samplegradi(IDIR, i, j, grad, Sn, DareaL, DareaR)
 
    integer, intent(in) :: IDIR !< 0: (j=constant), 1: (i=constant) edge
    integer, intent(in) :: i, j !< edge indices
-   double precision, dimension(2), intent(out) :: grad !< edge-based gradient vector
-   double precision, dimension(2), intent(out) :: Sn !< edge surface vector (for divergence)
-   double precision, intent(out) :: DareaL, DareaR !< contribution to control volume area (for divergence)
+   real(kind=dp), dimension(2), intent(out) :: grad !< edge-based gradient vector
+   real(kind=dp), dimension(2), intent(out) :: Sn !< edge surface vector (for divergence)
+   real(kind=dp), intent(out) :: DareaL, DareaR !< contribution to control volume area (for divergence)
 
    integer :: ip0, ip1, ip0L, ip0R, ip1L, ip1R
 

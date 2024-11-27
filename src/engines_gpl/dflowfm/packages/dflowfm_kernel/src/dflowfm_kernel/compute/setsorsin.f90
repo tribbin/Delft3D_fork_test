@@ -42,6 +42,7 @@ contains
 
  !> Compute and set source and sink values for the 'intake-outfall' structures.
  subroutine setsorsin()
+  use precision, only: dp
     use m_flow
     use m_flowtimes, only: dts
     use m_transport, only: NUMCONST, constituents
@@ -50,8 +51,8 @@ contains
     use m_get_kbot_ktop
 
     integer :: n, kk, k, kb, kt, kk2, ku, numvals, L
-    double precision :: qsrck, qsrckk, dzss
-    double precision :: frac = 0.5d0 ! cell volume fraction that can at most be extracted in one step
+    real(kind=dp) :: qsrck, qsrckk, dzss
+    real(kind=dp) :: frac = 0.5d0 ! cell volume fraction that can at most be extracted in one step
 
     srsn = 0d0; vcsrc = 0d0
     do n = 1, numsrc

@@ -39,6 +39,7 @@ contains
       subroutine TEKGPT(X, Y, mmax, nmax, MC, NC, &
                         MP, NP, NCOL, RD1)
 !     TEKEN GRIDLIJNEN UITKOMEND OP DIT PUNT
+        use precision, only: dp
          use m_setxor
          use m_isocol
          use m_cir
@@ -50,9 +51,9 @@ contains
          use m_ptabs
          implicit none
          integer :: mmax, nmax, mc, nc, mp, np, ncol
-         double precision :: X(MMAX, NMAX), Y(MMAX, NMAX), RD1(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX), RD1(MMAX, NMAX)
 
-         double precision :: XP, YP
+         real(kind=dp) :: XP, YP
          integer :: MPU, MPD, NPU, NPD, ncolcir
          XP = X(MP, NP)
          if (XP == XYMIS) return

@@ -41,6 +41,7 @@ public :: curvilineargridinpolygon
 contains
 
       subroutine curvilinearGRIDinpolygon()
+  use precision, only: dp
          use m_accumulatedistance, only: accumulatedistance
          use m_rcirc
          use M_POLYGON
@@ -56,9 +57,9 @@ contains
          use m_qnerror
          use m_increase_grid
 
-         double precision :: atpfo
-         double precision :: dpok1
-         double precision :: ff
+         real(kind=dp) :: atpfo
+         real(kind=dp) :: dpok1
+         real(kind=dp) :: ff
          integer :: ierr
          integer :: jam
          integer :: jan
@@ -76,12 +77,12 @@ contains
          integer :: npo
          integer :: nr
 
-         double precision, allocatable :: XH(:, :), YH(:, :)
+         real(kind=dp), allocatable :: XH(:, :), YH(:, :)
 
-         double precision, allocatable :: XPA(:), YPA(:), DPA(:)
-         double precision, allocatable :: XPO(:), YPO(:), DPO(:)
+         real(kind=dp), allocatable :: XPA(:), YPA(:), DPA(:)
+         real(kind=dp), allocatable :: XPO(:), YPO(:), DPO(:)
 
-         double precision :: TXO, DXO, PRIN
+         real(kind=dp) :: TXO, DXO, PRIN
          integer :: MNX, MAXP
          integer :: npc(5)
          integer :: ierror

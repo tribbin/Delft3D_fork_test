@@ -41,6 +41,7 @@ public :: sedmor_write_stats
 contains
 
    subroutine sedmor_write_stats(tim)
+  use precision, only: dp
       use m_sediment, only: stm_included, stmpar
       use m_flowparameters, only: eps10
       use m_flowtimes, only: ti_sed, ti_seds, ti_sede, tstop_user, time_sed
@@ -49,9 +50,9 @@ contains
 
       implicit none
 
-      double precision, intent(in) :: tim
+      real(kind=dp), intent(in) :: tim
       integer :: ierr
-      double precision :: tem_dif
+      real(kind=dp) :: tem_dif
 
       if (.not. stm_included) return
       if (.not. stmpar%morpar%moroutput%morstats) return

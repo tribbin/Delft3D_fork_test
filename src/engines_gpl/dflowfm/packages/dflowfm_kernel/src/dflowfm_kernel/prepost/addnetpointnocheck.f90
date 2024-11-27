@@ -41,9 +41,10 @@ public :: addnetpointnocheck
 contains
 
   subroutine addnetpointnocheck(XP, YP, ZP, K1)
+  use precision, only: dp
      use m_netw
 
-     double precision :: xp, yp, ZP
+     real(kind=dp) :: xp, yp, ZP
      integer :: k1
      
      numk = numk + 1

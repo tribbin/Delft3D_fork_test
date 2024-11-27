@@ -41,6 +41,7 @@ public :: setucxucyucxuucyu
 contains
 
  subroutine setucxucyucxuucyu()
+  use precision, only: dp
     use m_setuc1d, only: setuc1d
     use m_flowgeom
     use m_flow
@@ -55,12 +56,12 @@ contains
     logical :: make2dh
     integer :: L, KK, k1, k2, k, Lb, Lt, LL, nn, n, kt, kb, kbk, k2k
     integer :: itpbn, newucxq = 0
-    double precision :: uu, vv, uucx, uucy, wcxu, wcyu, cs, sn, hul, dzz, uin, duxdn, duydn
-    double precision :: dischcorrection
-    double precision :: uinx, uiny, u1L
+    real(kind=dp) :: uu, vv, uucx, uucy, wcxu, wcyu, cs, sn, hul, dzz, uin, duxdn, duydn
+    real(kind=dp) :: dischcorrection
+    real(kind=dp) :: uinx, uiny, u1L
 
-    double precision, external :: nod2linx, nod2liny
-    double precision, external :: lin2nodx, lin2nody
+    real(kind=dp), external :: nod2linx, nod2liny
+    real(kind=dp), external :: lin2nodx, lin2nody
 
     if (iperot /= -1) then
        ucxq = 0d0; ucyq = 0d0 ! zero arrays

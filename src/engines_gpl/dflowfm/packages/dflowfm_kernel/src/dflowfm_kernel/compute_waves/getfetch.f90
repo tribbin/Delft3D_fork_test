@@ -41,6 +41,7 @@ public :: getfetch
 contains
 
 subroutine getfetch(k, U10, FetchL, FetchD) !and windspeed
+  use precision, only: dp
    use m_flow, only: Hs, Wx, Wy
    use m_waves, only: fetch, nwf, fetdp
    use m_sferic, only: twopi
@@ -48,10 +49,10 @@ subroutine getfetch(k, U10, FetchL, FetchD) !and windspeed
    implicit none
 
    integer :: k
-   double precision :: U10, FetchL, FetchD
+   real(kind=dp) :: U10, FetchL, FetchD
 
    integer :: L, nw1, nw2
-   double precision :: alfa1, alfa2, dir
+   real(kind=dp) :: alfa1, alfa2, dir
 
    FetchL = 0d0; FetchD = 0d0
 

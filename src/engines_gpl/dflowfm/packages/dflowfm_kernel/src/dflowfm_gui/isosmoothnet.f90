@@ -37,13 +37,14 @@ implicit none
 contains
 
  subroutine isosmoothnet(k) ! smooth isolines in net cells
+  use precision, only: dp
     use m_isofil
     use m_netw, only: netcell, rnod, xk, yk
 
     integer :: k
 
     integer :: nn4, n, inode
-    double precision :: xx(10), yy(10), zz(10)
+    real(kind=dp) :: xx(10), yy(10), zz(10)
 
     nn4 = size(netcell(k)%nod)
     do n = 1, nn4

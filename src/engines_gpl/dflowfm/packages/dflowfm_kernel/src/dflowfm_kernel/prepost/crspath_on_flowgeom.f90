@@ -41,6 +41,7 @@ contains
 !!
 !! \see crspath_on_netgeom, crosssections_on_flowgeom, fixedweirs_on_flowgeom
 subroutine crspath_on_flowgeom(path, includeghosts, jalinklist, numlinks, linklist, jaloc3, zork)
+  use precision, only: dp
    use m_crspath
    use m_flowgeom
    use network_data
@@ -63,9 +64,9 @@ subroutine crspath_on_flowgeom(path, includeghosts, jalinklist, numlinks, linkli
 
    integer :: jaghost, idmn_ghost
 
-   double precision :: x1, y1, x2, y2, xn, yn
+   real(kind=dp) :: x1, y1, x2, y2, xn, yn
 
-   double precision, allocatable :: dpl(:)
+   real(kind=dp), allocatable :: dpl(:)
 
    path%lnx = 0 ! Reset link administration for this path.
 

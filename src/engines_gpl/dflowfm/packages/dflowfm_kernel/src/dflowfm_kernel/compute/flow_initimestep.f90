@@ -51,6 +51,7 @@ implicit none
 contains
 
  subroutine flow_initimestep(jazws0, set_hu, use_u1, iresult)
+   use precision, only: dp
     use m_bathyupdate, only: bathyupdate
     use m_advecdriver, only: advecdriver
     use timers
@@ -75,7 +76,7 @@ contains
     logical, intent(in) :: use_u1 !< Flag for using `u1` (.true.) or `u0` (.false.) in computing `taubxu` in subroutine `settaubxu_nowave`
     integer, intent(out) :: iresult !< Error status, DFM_NOERR==0 if succesful.
     integer :: ierror
-    double precision, parameter :: MMPHR_TO_MPS = 1d-3 / 3600d0
+    real(kind=dp), parameter :: MMPHR_TO_MPS = 1d-3 / 3600d0
 
     iresult = DFM_GENERICERROR
 

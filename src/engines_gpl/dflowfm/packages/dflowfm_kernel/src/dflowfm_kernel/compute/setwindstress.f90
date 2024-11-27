@@ -41,14 +41,15 @@ public :: setwindstress
 contains
 
  subroutine setwindstress()
+  use precision, only: dp
     use m_setcdwcoefficient, only: setcdwcoefficient
     use m_flowgeom
     use m_flow
     use m_wind
     use m_fm_icecover, only: fm_ice_drag_effect, ice_modify_winddrag, ICE_WINDDRAG_NONE, ice_af
     implicit none
-    double precision :: uwi, cdw, tuwi, roro, wxL, wyL, uL, vL, uxL, uyL, ust, ust2, tau, z0w, roa, row
-    double precision :: local_ice_af
+    real(kind=dp) :: uwi, cdw, tuwi, roro, wxL, wyL, uL, vL, uxL, uyL, ust, ust2, tau, z0w, roa, row
+    real(kind=dp) :: local_ice_af
     integer :: L, numwav, k ! windstuff
 
     windxav = 0d0

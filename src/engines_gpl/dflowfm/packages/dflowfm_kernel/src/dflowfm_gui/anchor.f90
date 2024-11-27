@@ -36,6 +36,7 @@ use m_setxor
    implicit none
 contains
    subroutine ANCHOR(X, Y)
+  use precision, only: dp
       use unstruc_colors
       use m_flow, only: nplot
       use m_GlobalParameters, only: INDTP_ALL
@@ -48,7 +49,7 @@ contains
       integer :: ma
       integer :: na
       integer :: k
-      double precision :: x, y, xx, yy
+      real(kind=dp) :: x, y, xx, yy
       real :: xr, yr
       !    VEEG OUDE CROSS UIT EN ZET NIEUWE
 

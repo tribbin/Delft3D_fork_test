@@ -33,15 +33,16 @@ module m_bilinxy
    implicit none
 contains
       subroutine BILINXY(X, Y, XZ, YZ, XP, YP, XP2, YP2, INI)
+  use precision, only: dp
          use m_qnerror
          use m_lubksb
 
-         double precision :: c
+         real(kind=dp) :: c
          integer :: i
          integer :: ini
          integer :: japarallel
-         double precision, save :: A(4, 4), BX(4), BY(4)
-         double precision :: X(4), Y(4), XZ(4), YZ(4), XP, YP, XP2, YP2
+         real(kind=dp), save :: A(4, 4), BX(4), BY(4)
+         real(kind=dp) :: X(4), Y(4), XZ(4), YZ(4), XP, YP, XP2, YP2
          integer, save :: INX(4)
          ! (Zi = AXi + BYi + CXiYi + Di ,i=1,4)
          ! Coefficienten in A, rechterlid in B, opl met LU-decompositie

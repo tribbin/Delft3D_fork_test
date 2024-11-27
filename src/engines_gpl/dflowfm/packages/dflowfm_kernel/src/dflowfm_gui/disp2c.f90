@@ -36,6 +36,7 @@ module m_disp2c
 contains
 !
       subroutine DISP2C(X, Y, N, RCIR, NCOL)
+  use precision, only: dp
          use m_missing
          use m_jgrline8
          use m_set_col
@@ -43,7 +44,7 @@ contains
          use m_movabs
 
          integer :: n, ncol
-         double precision :: X(N), Y(N), rcir
+         real(kind=dp) :: X(N), Y(N), rcir
 
          integer :: i, istart, in
 !     LAAT EEN TWEEDIMENSIONALE FUNCTIE ZIEN MET CIRKELS

@@ -38,13 +38,14 @@ implicit none
 contains
 
       subroutine BOX(XB1, YB1, XB2, YB2)
+  use precision, only: dp
          use m_movabs
          use m_lnabs
          implicit none
-         double precision :: xb1
-         double precision :: xb2
-         double precision :: yb1
-         double precision :: yb2
+         real(kind=dp) :: xb1
+         real(kind=dp) :: xb2
+         real(kind=dp) :: yb1
+         real(kind=dp) :: yb2
          call MOVABS(XB1, YB1)
          call LNABS(XB2, YB1)
          call LNABS(XB2, YB2)

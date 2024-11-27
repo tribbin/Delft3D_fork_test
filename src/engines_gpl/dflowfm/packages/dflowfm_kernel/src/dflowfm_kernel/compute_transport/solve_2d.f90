@@ -42,6 +42,7 @@ public :: solve_2d
 contains
 
 subroutine solve_2D(NUMCONST, Ndkx, vol1, kbot, ktop, sumhorflux, fluxver, source, sink, nsubsteps, jaupdate, ndeltasteps, sed, rhs)
+  use precision, only: dp
    use m_make_rhs, only: make_rhs
    use m_flowgeom, only: Ndxi, Ndx! static mesh information
    use m_flowtimes, only: dts
@@ -51,22 +52,22 @@ subroutine solve_2D(NUMCONST, Ndkx, vol1, kbot, ktop, sumhorflux, fluxver, sourc
 
    integer, intent(in) :: NUMCONST !< number of transported quantities
    integer, intent(in) :: Ndkx !< total number of flownodes (dynamically changing)
-   double precision, dimension(Ndkx), intent(in) :: vol1 !< volumes
+   real(kind=dp), dimension(Ndkx), intent(in) :: vol1 !< volumes
    integer, dimension(Ndkx), intent(in) :: kbot !< flow-node based layer administration
    integer, dimension(Ndkx), intent(in) :: ktop !< flow-node based layer administration
-   double precision, dimension(NUMCONST, Ndkx), intent(inout) :: sumhorflux !< sum of horizontal fluxes
-   double precision, dimension(NUMCONST, Ndkx), intent(in) :: fluxver !< vertical fluxes
-   double precision, dimension(NUMCONST, Ndkx), intent(in) :: source !< sources
-   double precision, dimension(NUMCONST, Ndkx), intent(in) :: sink !< linearized sinks
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(inout) :: sumhorflux !< sum of horizontal fluxes
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: fluxver !< vertical fluxes
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: source !< sources
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: sink !< linearized sinks
    integer, intent(in) :: nsubsteps !< number of substeps
    integer, dimension(Ndx), intent(in) :: jaupdate !< update cell (1) or not (0)
    integer, dimension(Ndx), intent(in) :: ndeltasteps !< number of substeps between updates
-   double precision, dimension(NUMCONST, Ndkx), intent(inout) :: sed !< transported quantities
-   double precision, dimension(NUMCONST, Ndkx) :: rhs ! work array: right-hand side, dim(NUMCONST,Ndkx)
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(inout) :: sed !< transported quantities
+   real(kind=dp), dimension(NUMCONST, Ndkx) :: rhs ! work array: right-hand side, dim(NUMCONST,Ndkx)
 
-   double precision, dimension(NUMCONST) :: thetavert
+   real(kind=dp), dimension(NUMCONST) :: thetavert
 
-   double precision :: dt_loc
+   real(kind=dp) :: dt_loc
 
    integer :: j, k
 

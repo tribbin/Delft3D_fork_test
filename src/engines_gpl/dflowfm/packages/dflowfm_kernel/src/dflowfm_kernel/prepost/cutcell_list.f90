@@ -43,6 +43,7 @@ public :: cutcell_list
 contains
 
   subroutine cutcell_list(n12, jamasks)
+  use precision, only: dp
      use m_write_illegal_cells_to_pol, only: write_illegal_cells_to_pol
      use M_NETW
      use M_FLOWGEOM
@@ -63,7 +64,7 @@ contains
      integer, intent(in) :: n12 !< type of operation (1, 2, 3, 4, 5), see docs below.
      integer, intent(in) :: jamasks !< store masks and polygons (1), use stored masks and polygons (2), use stored masks masks and polygons and clear masks and polygons (3), do not use stored masks and polygons at all (0)
      logical JAWEL
-     double precision :: t0, t1
+     real(kind=dp) :: t0, t1
 
      integer N, MPOL, MLIST, KEY, JADEL, NN, L, K, NUMFIL, ierror
      character(LEN=132), allocatable :: FILIST(:)
@@ -310,6 +311,7 @@ contains
 
 !>   determine for each netlink if it is intersected by the polygon
      subroutine find_intersecting_polysections(numpols, pli, idxL, jdxL, pdxL)
+  use precision, only: dp
         use network_data
 !        use m_polygon
         use kdtree2Factory
@@ -327,9 +329,9 @@ contains
 
         type(kdtree_instance) :: kdtree
 
-        double precision, dimension(:), allocatable :: x, y
+        real(kind=dp), dimension(:), allocatable :: x, y
 
-        double precision, dimension(:), allocatable :: dsL
+        real(kind=dp), dimension(:), allocatable :: dsL
         integer, dimension(:), allocatable :: iLink, iPol
         integer, dimension(:), allocatable :: numcrossed
         integer, dimension(:), allocatable :: polynum
@@ -338,7 +340,7 @@ contains
         integer :: numcrossedlinks
         integer :: i, j, L, num
         integer :: ierror
-        double precision :: t0, t1
+        real(kind=dp) :: t0, t1
 
 !       count total number of polygon nodes, including missing and closures
         num = numpols - 1 ! missing values as seperators

@@ -41,13 +41,14 @@ public :: disable_higherorder_at_sorsin
 contains
 
    subroutine disable_higherorder_at_sorsin()
+  use precision, only: dp
       use m_flowgeom
       use fm_external_forcings_data, only: numsrc, ksrc
       use m_partitioninfo
       use m_alloc
       implicit none
 
-      double precision, dimension(:, :), allocatable :: dum
+      real(kind=dp), dimension(:, :), allocatable :: dum
 
       integer, dimension(:), allocatable :: imask
 

@@ -37,6 +37,7 @@ implicit none
 contains
 
 subroutine inifcori()
+  use precision, only: dp
    use m_flowgeom
    use m_flow
    use m_sferic
@@ -45,7 +46,7 @@ subroutine inifcori()
    use m_dbdistance_hk
    implicit none
    integer :: ierr, L, k, i, LL, LLL, LLLL, k1, k2, k3, n, j, mout
-   double precision :: beta, y0, dy, fcormin, fcormax, xx, yy
+   real(kind=dp) :: beta, y0, dy, fcormin, fcormax, xx, yy
 
    if (jsferic > 0 .or. jacorioconstant >= 1) then
       if (allocated(fcori)) then

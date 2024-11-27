@@ -41,6 +41,7 @@ public :: delnet
 contains
 
   subroutine DELNET(KEY, jacheckcells, JASAVE)
+  use precision, only: dp
      use m_confrm
      use m_netw
      use m_missing
@@ -61,7 +62,7 @@ contains
      integer, allocatable :: Lc2(:)
 ! delete grid
 
-     double precision :: XL, YL
+     real(kind=dp) :: XL, YL
 
      inhul = -1; inall = 1
 

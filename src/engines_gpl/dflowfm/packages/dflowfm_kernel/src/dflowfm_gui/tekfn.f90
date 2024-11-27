@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine TEKFN(NSC, NF, JW, X, Y, N, X1, X2, Y1, Y2, NCOL, TITLE, JAUTO, JP, DAG, kp1)
+  use precision, only: dp
          use m_setwindow
          use m_isofil
          use m_dispf2cir
@@ -54,10 +55,10 @@ contains
          use m_draw_text
          implicit none
          integer, parameter :: MX=366, NX=20
-         double precision :: dag
-         double precision :: dxh
-         double precision :: dyh
-         double precision :: fmx(NX)
+         real(kind=dp) :: dag
+         real(kind=dp) :: dxh
+         real(kind=dp) :: dyh
+         real(kind=dp) :: fmx(NX)
          integer :: i, kp
          integer, save :: ini = 0
          integer :: j
@@ -69,17 +70,17 @@ contains
          integer :: nf
          integer :: nsc
          integer :: kp1
-         double precision :: fx1, fx2, fy1, fy2
-         double precision :: x1
-         double precision :: x2
-         double precision :: xo(MX, NX)
-         double precision :: xtx
-         double precision :: y1
-         double precision :: y2
-         double precision :: yo(MX, NX)
-         double precision :: ytx, rcx, rcy
+         real(kind=dp) :: fx1, fx2, fy1, fy2
+         real(kind=dp) :: x1
+         real(kind=dp) :: x2
+         real(kind=dp) :: xo(MX, NX)
+         real(kind=dp) :: xtx
+         real(kind=dp) :: y1
+         real(kind=dp) :: y2
+         real(kind=dp) :: yo(MX, NX)
+         real(kind=dp) :: ytx, rcx, rcy
          character TITLE * (*), TEX * 16
-         double precision :: X(N), Y(N), XX(4), YY(4), ZZ(4)
+         real(kind=dp) :: X(N), Y(N), XX(4), YY(4), ZZ(4)
 
          ! NSC schermnr
          ! NF  functienr

@@ -38,11 +38,12 @@ implicit none
 contains
 
       subroutine TOWOR(NX, NY, X, Y)
+  use precision, only: dp
          implicit none
          integer :: nx
          integer :: ny
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
          real :: rx, ry
 !     GIVE WORLD COORDINATES OF SCREENCOORDINATES
          call IGRUNITSFROMPIXELS(NX, NY, rx, ry)

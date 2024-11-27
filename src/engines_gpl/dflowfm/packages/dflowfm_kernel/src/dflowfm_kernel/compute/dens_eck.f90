@@ -33,10 +33,11 @@ module m_dens_eck
    implicit none
 contains
  subroutine dens_eck(temp, sal, rholoc, rhods, rhodt)
+  use precision, only: dp
 
-    double precision, intent(in) :: temp, sal
-    double precision, intent(out) :: rholoc, rhods, rhodt
-    double precision :: cp0, clam, clam0, cp1, clam1, alph0, cp1ds, cp1dt, cladt, rhom, den
+    real(kind=dp), intent(in) :: temp, sal
+    real(kind=dp), intent(out) :: rholoc, rhods, rhodt
+    real(kind=dp) :: cp0, clam, clam0, cp1, clam1, alph0, cp1ds, cp1dt, cladt, rhom, den
     !
    !! Data statements
     !

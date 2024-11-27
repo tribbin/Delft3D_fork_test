@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine READADCIRCNET(MNET, JA, JADOORLADEN)
+  use precision, only: dp
 
          use m_confrm
          use m_netw
@@ -59,7 +60,7 @@ contains
          integer :: numln
          integer :: NOPE, NETA, itmp, NBOU, NVEL, NVELL, IBTYPE, NBVV, IBCONN
          integer :: jamergeweirnodes
-         double precision :: BARINHT, BARINCFSB, BARINCFSP
+         real(kind=dp) :: BARINHT, BARINCFSB, BARINCFSP
 
          character REC * 3320
 

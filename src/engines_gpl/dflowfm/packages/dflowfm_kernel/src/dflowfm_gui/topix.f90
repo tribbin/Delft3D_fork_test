@@ -33,11 +33,12 @@ module m_topix
     contains
     
       subroutine TOPIX(X, Y, NX, NY)
+  use precision, only: dp
          implicit none
          integer :: nx
          integer :: ny
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
 !     GIVE SCREEN COORDINATES OF WORLDCOORDINATES
          call IGRUNITSTOPIXELS(real(X), real(Y), NX, NY)
          return

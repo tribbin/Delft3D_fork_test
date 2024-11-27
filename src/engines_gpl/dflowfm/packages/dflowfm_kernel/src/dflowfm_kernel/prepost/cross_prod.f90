@@ -41,8 +41,9 @@ public :: cross_prod
 
 contains
 
-double precision function cross_prod(a, b)
-   double precision, dimension(2) :: a, b
+real(kind=dp) function cross_prod(a, b)
+  use precision, only: dp
+   real(kind=dp), dimension(2) :: a, b
 
    cross_prod = a(1) * b(2) - a(2) * b(1)
 

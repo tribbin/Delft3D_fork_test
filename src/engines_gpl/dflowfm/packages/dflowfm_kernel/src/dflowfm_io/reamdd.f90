@@ -41,15 +41,16 @@ public :: reamdd
 contains
 
       subroutine REAMDD(MMDD, RD1, MC, NC, JA)
+  use precision, only: dp
          use m_readyy
          use m_qn_read_error
          use m_qn_eof_error
          implicit none
 
          integer :: mmdd, mc, nc, ja
-         double precision :: RD1(MC, NC)
+         real(kind=dp) :: RD1(MC, NC)
          integer :: m, n
-         double precision :: af
+         real(kind=dp) :: af
 
          character REC * 132
          call READYY('Reading md-Dept File', 0d0)

@@ -41,7 +41,8 @@ public :: coarsening_info
 
 contains
 
-double precision function coarsening_info(k)
+real(kind=dp) function coarsening_info(k)
+  use precision, only: dp
 
    use m_netw
    use m_missing
@@ -56,11 +57,11 @@ double precision function coarsening_info(k)
    integer, dimension(NMAX) :: kdirect, kindirect
    integer, dimension(2, nmax) :: kne
 
-   double precision :: xc, yc
-   double precision :: area, area_tot, Darea
-   double precision :: funct
+   real(kind=dp) :: xc, yc
+   real(kind=dp) :: area, area_tot, Darea
+   real(kind=dp) :: funct
 
-   double precision :: area_opt = 1d5
+   real(kind=dp) :: area_opt = 1d5
 
    integer :: kk
 

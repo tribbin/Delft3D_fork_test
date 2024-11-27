@@ -36,7 +36,8 @@ implicit none
 
 contains
 
- double precision function zcorn(k) ! get various values at flow cell corners
+ real(kind=dp) function zcorn(k) ! get various values at flow cell corners
+  use precision, only: dp
     use m_flowgeom
     use m_drawthis
     implicit none

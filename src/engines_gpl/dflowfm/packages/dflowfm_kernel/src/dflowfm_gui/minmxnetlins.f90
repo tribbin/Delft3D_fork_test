@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine MINMXNETLINS()
+  use precision, only: dp
 
      use m_netw
      use m_missing, only: dmiss
@@ -47,15 +48,15 @@ contains
      integer :: k1
      integer :: k2
      integer :: l
-     double precision :: rd
-     double precision :: rmax
-     double precision :: rmin
-     double precision :: xp1
-     double precision :: xp2
-     double precision :: yp1
-     double precision :: yp2
-     double precision :: zp1
-     double precision :: zp2
+     real(kind=dp) :: rd
+     real(kind=dp) :: rmax
+     real(kind=dp) :: rmin
+     real(kind=dp) :: xp1
+     real(kind=dp) :: xp2
+     real(kind=dp) :: yp1
+     real(kind=dp) :: yp2
+     real(kind=dp) :: zp1
+     real(kind=dp) :: zp2
 
      if (JAAUTO > 0) then
         RMIN = 1.0d30

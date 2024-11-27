@@ -41,6 +41,7 @@ public :: droptracer
 contains
 
 subroutine droptracer(xp, yp, dval)
+  use precision, only: dp
    use m_add_tracer, only: add_tracer
    use m_tekflowstuff
    use m_transport
@@ -52,8 +53,8 @@ subroutine droptracer(xp, yp, dval)
 
    implicit none
 
-   double precision :: xp, yp !< point coordinates
-   double precision :: dval !< value
+   real(kind=dp) :: xp, yp !< point coordinates
+   real(kind=dp) :: dval !< value
 
    integer, dimension(:), allocatable :: icelllist
    integer :: Ncells

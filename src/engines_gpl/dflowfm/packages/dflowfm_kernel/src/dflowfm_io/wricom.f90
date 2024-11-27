@@ -41,6 +41,7 @@ public :: wricom
 contains
 
 subroutine wricom(tim)
+  use precision, only: dp
    use m_flow
    use m_flowtimes
    use m_observations_data
@@ -48,7 +49,7 @@ subroutine wricom(tim)
    use unstruc_model
    use unstruc_files, only: defaultFilename
    implicit none
-   double precision, intent(in) :: tim
+   real(kind=dp), intent(in) :: tim
 
    ! locals
 

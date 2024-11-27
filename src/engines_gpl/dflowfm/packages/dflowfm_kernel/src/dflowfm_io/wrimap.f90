@@ -32,6 +32,7 @@
 module m_wrimap
 contains
 subroutine wrimap(tim)
+  use precision, only: dp
    use m_flow, only: jamapbnd
    use m_flowtimes
    use unstruc_netcdf
@@ -42,12 +43,12 @@ subroutine wrimap(tim)
    use Timers
 
    implicit none
-   double precision, intent(in) :: tim
+   real(kind=dp), intent(in) :: tim
 
    ! locals
    integer :: ierr
    character(len=256) :: filnam
-   double precision, save :: curtime_split = 0d0 ! Current time-partition that the file writer has open.
+   real(kind=dp), save :: curtime_split = 0d0 ! Current time-partition that the file writer has open.
    integer :: ndx1d, ndims
    integer :: jabndnd
 

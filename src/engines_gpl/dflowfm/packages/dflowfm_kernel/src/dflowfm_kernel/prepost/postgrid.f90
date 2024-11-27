@@ -37,6 +37,7 @@ contains
 !> remove skewed cells and cells whose aspect ratio exceeds a prescibed value
 !> note: latter not implemented yet
 subroutine postgrid()
+  use precision, only: dp
 
    use m_grid
    use m_missing, only: dmiss, dxymis
@@ -47,11 +48,11 @@ subroutine postgrid()
    use m_tek_grid
 
    integer, dimension(mc) :: ifront
-   double precision :: dcos, dcosR, xn, yn
+   real(kind=dp) :: dcos, dcosR, xn, yn
    integer :: i, iL, iR, iRR, idum, iL0, iR0, j, ja, iter, numchanged
-   double precision, parameter :: dcosmax = 0.93969
-   double precision, parameter :: dtol = 1d-2
-   double precision, parameter :: dtolcos = 1d-2
+   real(kind=dp), parameter :: dcosmax = 0.93969
+   real(kind=dp), parameter :: dtol = 1d-2
+   real(kind=dp), parameter :: dtolcos = 1d-2
 
    call tekgrid(i)
 

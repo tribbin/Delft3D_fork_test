@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine tekflowlinks()
+  use precision, only: dp
     use m_setisoscale2is1
     use m_minmxlns
     use m_isosmoothflownode2
@@ -60,12 +61,12 @@ contains
     use m_zlin
     implicit none
     integer :: k, L, ja, k1, k2, ncol, linkmode
-    double precision :: zL
-    double precision :: xcl, ycl, zcl ! help only
-    double precision :: xx1, yy1, Zz1 ! help only
-    double precision :: xx2, yy2, Zz2 ! help only
-    double precision :: x3, y3, x4, y4 ! help only
-    double precision :: x(4), y(4), z(4), hw, cs, sn
+    real(kind=dp) :: zL
+    real(kind=dp) :: xcl, ycl, zcl ! help only
+    real(kind=dp) :: xx1, yy1, Zz1 ! help only
+    real(kind=dp) :: xx2, yy2, Zz2 ! help only
+    real(kind=dp) :: x3, y3, x4, y4 ! help only
+    real(kind=dp) :: x(4), y(4), z(4), hw, cs, sn
     real :: xr(4), yr(4)
 
     linkmode = ndraw(11)

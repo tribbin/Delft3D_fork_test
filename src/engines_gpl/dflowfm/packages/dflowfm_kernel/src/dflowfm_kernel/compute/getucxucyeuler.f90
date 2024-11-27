@@ -40,6 +40,7 @@ implicit none
 contains
 
 subroutine getucxucyeuler(N, ucxeu, ucyeu)
+  use precision, only: dp
    use m_flowgeom
    use m_flow
    use m_waves, only: ustokes ! available for all wave models
@@ -47,8 +48,8 @@ subroutine getucxucyeuler(N, ucxeu, ucyeu)
    implicit none
 
    integer, intent(in) :: N !< Length of cell arrays (probably ndkx)
-   double precision, intent(out) :: ucxeu(N) !< Target array in which to store Eulerian x-velocities
-   double precision, intent(out) :: ucyeu(N) !< Target array in which to store Eulerian y-velocities
+   real(kind=dp), intent(out) :: ucxeu(N) !< Target array in which to store Eulerian x-velocities
+   real(kind=dp), intent(out) :: ucyeu(N) !< Target array in which to store Eulerian y-velocities
 
    integer :: Lb, Lt, L, LL, k1, k2
 

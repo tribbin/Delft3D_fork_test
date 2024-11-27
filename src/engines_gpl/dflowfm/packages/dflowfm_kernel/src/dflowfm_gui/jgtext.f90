@@ -35,23 +35,24 @@ use m_getpos
    implicit none
 contains
   subroutine JGTEXT(TEX, X, Y, NCOL, WIC, HIC, JAHOOG) ! grafische tekst, grafische posities, met kleurblokjes ERONDER
+  use precision, only: dp
      use unstruc_colors
      use m_box_nop
      use m_fbox_nop
      use m_set_col
      use m_draw_text
 
-     double precision :: hic, WIC
+     real(kind=dp) :: hic, WIC
      integer :: jahoog
      integer :: ncol
-     double precision :: x
-     double precision :: xa
-     double precision :: xb
-     double precision :: xp
-     double precision :: y
-     double precision :: ya
-     double precision :: yb
-     double precision :: yp
+     real(kind=dp) :: x
+     real(kind=dp) :: xa
+     real(kind=dp) :: xb
+     real(kind=dp) :: xp
+     real(kind=dp) :: y
+     real(kind=dp) :: ya
+     real(kind=dp) :: yb
+     real(kind=dp) :: yp
      character TEX * (*)
 
      call SETCOL(KLTEX)

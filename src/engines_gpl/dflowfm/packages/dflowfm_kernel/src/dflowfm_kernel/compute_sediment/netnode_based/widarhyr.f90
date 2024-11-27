@@ -41,10 +41,11 @@ public :: widarhyr
 contains
 
 subroutine widarhyr(hpr, dz, wu2, wid, ar, hyr)
+  use precision, only: dp
    use m_flow, only: slotw2D
    implicit none
-   double precision :: hpr, dz, wu2, wid, ar, hyr
-   double precision :: per, hp2
+   real(kind=dp) :: hpr, dz, wu2, wid, ar, hyr
+   real(kind=dp) :: per, hp2
    if (dz / wu2 < 1d-3) then
       wid = wu2; wid = wid + slotw2D
       ar = wid * hpr

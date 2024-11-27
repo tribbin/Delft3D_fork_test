@@ -39,13 +39,14 @@ implicit none
 contains
 
 subroutine getsoulsbywci(modind, ustc2, ustw2, fw, cdrag, umod, abscos, taubpuLL, taubxuLL)
+  use precision, only: dp
    use m_physcoef, only: rhomean
    implicit none
    integer, intent(in) :: modind
-   double precision, intent(in) :: ustc2, ustw2, fw, cdrag, umod, abscos ! Cdrag = ag/C2, abscos = wav relative to link dir
-   double precision, intent(out) :: taubpuLL, taubxuLL
-   double precision :: ypar, ymxpar
-   double precision :: tauwav, taucur
+   real(kind=dp), intent(in) :: ustc2, ustw2, fw, cdrag, umod, abscos ! Cdrag = ag/C2, abscos = wav relative to link dir
+   real(kind=dp), intent(out) :: taubpuLL, taubxuLL
+   real(kind=dp) :: ypar, ymxpar
+   real(kind=dp) :: tauwav, taucur
 
    tauwav = ustw2 * rhomean
    taucur = ustc2 * rhomean

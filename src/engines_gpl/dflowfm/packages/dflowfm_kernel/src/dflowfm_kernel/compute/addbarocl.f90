@@ -41,6 +41,7 @@ public :: addbarocL, addbarocLorg, addbarocLrho_w
 contains
 
  subroutine addbarocL(LL, Lb, Lt)
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_flowtimes
@@ -49,8 +50,8 @@ contains
     integer, intent(in) :: LL, Lb, Lt
 
     integer :: L, k1, k2, k1t, k2t, k, kt, kz, ktz, insigpart, morelayersleft
-    double precision :: gradpu(kmxx), rhovol(kmxx), gr3
-    double precision :: rv1, rv2, gr1, gr2, rvk, grk, fzu, fzd, dzz, rhow0, rhow1
+    real(kind=dp) :: gradpu(kmxx), rhovol(kmxx), gr3
+    real(kind=dp) :: rv1, rv2, gr1, gr2, rvk, grk, fzu, fzd, dzz, rhow0, rhow1
 
     gradpu(1:Lt - Lb + 1) = 0d0
 
@@ -154,6 +155,7 @@ contains
  end subroutine addbarocL
 
  subroutine addbarocLrho_w(LL, Lb, Lt)
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_flowtimes
@@ -165,8 +167,8 @@ contains
     integer, intent(in) :: LL, Lb, Lt
 
     integer :: L, k1, k2, k1t, k2t, k, kt, kz, ktz, insigpart, morelayersleft, i
-    double precision :: gradpu(kmxx), rhovol(kmxx), gr3
-    double precision :: rv1, rv2, gr1, gr2, rvk, grk, saw0, saw1, tmw0, tmw1, fzu, fzd, dzz, rhow0, rhow1, pdb, p0d
+    real(kind=dp) :: gradpu(kmxx), rhovol(kmxx), gr3
+    real(kind=dp) :: rv1, rv2, gr1, gr2, rvk, grk, saw0, saw1, tmw0, tmw1, fzu, fzd, dzz, rhow0, rhow1, pdb, p0d
 
     gradpu(1:Lt - Lb + 1) = 0d0
 
@@ -319,6 +321,7 @@ contains
 ! $HeadURL: https://svn.oss.deltares.nl/repos/delft3d/trunk/src/engines_gpl/dflowfm/packages/dflowfm_kernel/src/dflowfm_kernel/compute/addbarocl.f90 $
 
  subroutine addbarocLorg(LL, Lb, Lt)
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_flowtimes
@@ -327,7 +330,7 @@ contains
     integer, intent(in) :: LL, Lb, Lt
 
     integer :: L, k1, k2, k1t, k2t
-    double precision :: gradpu(kmxx), rhovol(kmxx), gr3
+    real(kind=dp) :: gradpu(kmxx), rhovol(kmxx), gr3
 
     do L = Lb, Lt
        k1 = ln(1, L); k1t = k1
@@ -353,16 +356,17 @@ contains
  end subroutine addbarocLorg
 
  subroutine barocLtimeint(gradpu, rhovol, LL, Lb, Lt)
+  use precision, only: dp
     use m_flow
     use m_flowtimes
 
     implicit none
 
     integer :: LL, Lb, Lt
-    double precision :: gradpu(kmxx), rhovol(kmxx)
+    real(kind=dp) :: gradpu(kmxx), rhovol(kmxx)
 
     integer :: L
-    double precision :: barocL, ft
+    real(kind=dp) :: barocL, ft
 
     ! this last piece is identical to addbaroc2, that will be removed at some moment
     if (jabaroctimeint == 3) then ! original AB implementation

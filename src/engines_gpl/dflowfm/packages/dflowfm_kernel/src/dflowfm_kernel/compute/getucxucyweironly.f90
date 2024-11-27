@@ -39,6 +39,7 @@ implicit none
 contains
 
  subroutine getucxucyweironly(ku, ucxku, ucyku)
+  use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_sferic, only: jasfer3D
@@ -46,9 +47,9 @@ contains
 
     integer :: ku, LL, L, Ls, n12
 
-    double precision :: ucxku, ucyku, ww, ac1, huweir, hunoweir, wl, wlno, at, cs, sn, fac
+    real(kind=dp) :: ucxku, ucyku, ww, ac1, huweir, hunoweir, wl, wlno, at, cs, sn, fac
 
-    double precision, external :: lin2nodx, lin2nody
+    real(kind=dp), external :: lin2nodx, lin2nody
 
     ucxku = 0d0; ucyku = 0d0
     huweir = 0d0; hunoweir = 0d0; wl = 0d0; wlno = 0d0; at = 0d0

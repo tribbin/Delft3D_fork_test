@@ -41,16 +41,17 @@ public :: getcellcentergradients
 contains
 
 subroutine getcellcentergradients(hh, dhsdx, dhsdy)
+  use precision, only: dp
    use m_flow
    use m_flowgeom
 
    implicit none
 
-   double precision, intent(in), dimension(ndx) :: hh
-   double precision, intent(out), dimension(ndx) :: dhsdx, dhsdy
+   real(kind=dp), intent(in), dimension(ndx) :: hh
+   real(kind=dp), intent(out), dimension(ndx) :: dhsdx, dhsdy
 
    integer :: L, k1, k2, k, kb, ki
-   double precision :: hs1, hs2
+   real(kind=dp) :: hs1, hs2
 
    ! Tegeltjesdiepte approach is eenvoudiger en onnauwkeuriger, maar werkt altijd, ook met morfologie
    dhsdx = 0d0

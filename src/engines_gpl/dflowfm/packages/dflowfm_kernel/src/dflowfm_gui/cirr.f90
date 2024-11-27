@@ -35,13 +35,14 @@ module m_cirr
    implicit none
 contains
       subroutine CIRR(X, Y, NCOL)
+  use precision, only: dp
          use m_wearelt
          use m_set_col
          use m_movabs
 
          integer :: ncol
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
          call SETCOL(NCOL)
          call MOVABS(X, Y)
          call CIR(RCIR)

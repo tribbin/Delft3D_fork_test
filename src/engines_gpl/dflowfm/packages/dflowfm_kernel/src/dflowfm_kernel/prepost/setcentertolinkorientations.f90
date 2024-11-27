@@ -31,6 +31,7 @@
 ! 
 
  subroutine setcentertolinkorientations()
+  use precision, only: dp
     use m_flowgeom
     use network_data, only: xk, yk
     use m_sferic
@@ -41,14 +42,14 @@
 
     implicit none
 
-    double precision               :: xL, yL
+    real(kind=dp)               :: xL, yL
 
     integer                        :: i, k, k3, k4
     integer                        :: L
 
     integer                        :: ierr
 
-    double precision, parameter    :: dtol = 1d-8
+    real(kind=dp), parameter    :: dtol = 1d-8
 
     if ( allocated (csb) ) deallocate(csb)
     if ( allocated (snb) ) deallocate(snb)

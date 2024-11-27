@@ -38,6 +38,7 @@ public :: bermslopenudging
 contains
 
 subroutine bermslopenudging(error)
+  use precision, only: dp
    use m_sediment
    use m_fm_erosed
    use m_flow, only: hu, epshu
@@ -50,7 +51,7 @@ subroutine bermslopenudging(error)
 
    integer :: L, k1, k2
    integer :: lsd
-   double precision :: hwavu, slope, flx, frc, fixf, trmag_u, slpfac
+   real(kind=dp) :: hwavu, slope, flx, frc, fixf, trmag_u, slpfac
 
    error = .true.
    !
@@ -138,6 +139,7 @@ subroutine bermslopenudging(error)
 end subroutine bermslopenudging
 
 subroutine getfracfixfac(L, k1, k2, lsd, transp, frc, fixf)
+  use precision, only: dp
    use m_fm_erosed
    use m_flow, only: hu, epshu
    use m_flowgeom
@@ -145,8 +147,8 @@ subroutine getfracfixfac(L, k1, k2, lsd, transp, frc, fixf)
    implicit none
 
    integer, intent(in) :: L, k1, k2, lsd
-   double precision, intent(in) :: transp
-   double precision, intent(out) :: frc, fixf
+   real(kind=dp), intent(in) :: transp
+   real(kind=dp), intent(out) :: frc, fixf
 
    if (L > lnxi .and. hu(L) > epshu) then
       fixf = fixfac(k2, lsd)

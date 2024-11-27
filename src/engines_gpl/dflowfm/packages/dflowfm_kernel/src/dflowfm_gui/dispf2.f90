@@ -38,6 +38,7 @@ implicit none
 contains
 
       subroutine DISPF2(X, Y, N, NMAX, NCOL)
+  use precision, only: dp
          use m_set_col
          use m_movabs
          use m_lnabs
@@ -47,7 +48,7 @@ contains
          integer :: ncol
          integer :: nmax
 !     LAAT EENDIMENSIONALE FUNCTIE ZIEN
-         double precision :: X(NMAX), Y(NMAX)
+         real(kind=dp) :: X(NMAX), Y(NMAX)
          call SETCOL(NCOL)
          call MOVABS(X(1), Y(1))
          do I = 2, N

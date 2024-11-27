@@ -37,6 +37,7 @@ implicit none
 contains
 
 subroutine flgsareafm(formno, m, husb, velhght, zs, ds, dg, wstr)
+  use precision, only: dp
 !!--description-----------------------------------------------------------------
 ! NONE
 !!--pseudo code and references--------------------------------------------------
@@ -51,17 +52,17 @@ subroutine flgsareafm(formno, m, husb, velhght, zs, ds, dg, wstr)
 !
    integer, intent(in) :: formno
    integer, intent(in) :: m
-   double precision, intent(in) :: dg
-   double precision, intent(in) :: ds
-   double precision, intent(in) :: husb
-   double precision, intent(in) :: velhght
-   double precision, intent(in) :: wstr
-   double precision, intent(in) :: zs
+   real(kind=dp), intent(in) :: dg
+   real(kind=dp), intent(in) :: ds
+   real(kind=dp), intent(in) :: husb
+   real(kind=dp), intent(in) :: velhght
+   real(kind=dp), intent(in) :: wstr
+   real(kind=dp), intent(in) :: zs
 !
 !
 ! Local variables
 !
-   double precision :: hs1
+   real(kind=dp) :: hs1
 !
 !
 !! executable statements -------------------------------------------------------

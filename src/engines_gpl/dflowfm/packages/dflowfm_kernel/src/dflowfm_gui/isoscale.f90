@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine ISOSCALE() !   COPY OF ISOSCALE, DIRTY BUT QUICK
+  use precision, only: dp
      use unstruc_colors
      use m_isoscaleunit
      use m_flowgeom, only: ndx
@@ -55,18 +56,18 @@ contains
      use m_fbox_nop
      use m_set_col
 
-     double precision :: hic
+     real(kind=dp) :: hic
      integer :: i, j
      integer :: INC
-     double precision :: wi
-     double precision :: wic
-     double precision :: xleg
-     double precision :: xsc0
-     double precision :: xsc1
-     double precision :: xsc2
-     double precision :: yleg
-     double precision :: ysc1
-     double precision :: ysc2
+     real(kind=dp) :: wi
+     real(kind=dp) :: wic
+     real(kind=dp) :: xleg
+     real(kind=dp) :: xsc0
+     real(kind=dp) :: xsc1
+     real(kind=dp) :: xsc2
+     real(kind=dp) :: yleg
+     real(kind=dp) :: ysc1
+     real(kind=dp) :: ysc2
 
      character TEXT2 * 10, FMT * 7
      character(LEN=17) :: MINTEX, MAXTEX

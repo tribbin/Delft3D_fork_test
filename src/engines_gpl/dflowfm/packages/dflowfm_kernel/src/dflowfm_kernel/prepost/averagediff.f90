@@ -43,9 +43,10 @@ contains
       !> Computes the average segment size at polyline points.
       !! by averaging between left and right neighbouring points at each point.
       subroutine averageDiff(DPL, DDX, NPL)
+  use precision, only: dp
          integer :: npl !< Nr. of polyline points.
-         double precision, intent(in) :: DPL(NPL) !< Accumulated distance at each point
-         double precision, intent(out) :: DDX(NPL) !< Output average segment size.
+         real(kind=dp), intent(in) :: DPL(NPL) !< Accumulated distance at each point
+         real(kind=dp), intent(out) :: DDX(NPL) !< Output average segment size.
 
          integer :: n
 

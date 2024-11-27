@@ -38,13 +38,14 @@ implicit none
 contains
 
       subroutine plotklnup(L)
+  use precision, only: dp
          use m_dhtext
          use m_flowgeom
          use m_cirr
 
          integer, intent(in) :: L !< flowlink number
 
-         double precision :: sln1, sln2, sln3
+         real(kind=dp) :: sln1, sln2, sln3
          integer :: i, ip, k1, k2, kdum
 
          integer, dimension(3) :: icolor = (/31, 221, 31/)

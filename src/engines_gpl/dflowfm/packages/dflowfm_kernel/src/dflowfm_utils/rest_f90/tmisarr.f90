@@ -38,7 +38,7 @@
          integer :: mmax
          integer :: nmax
 
-         double precision :: H(NMAX, -1:MMAX + 1)
+         real(kind=dp) :: H(NMAX, -1:MMAX + 1)
          do I = -1, MMAX + 1
             do J = 1, NMAX
                H(J, I) = dmiss

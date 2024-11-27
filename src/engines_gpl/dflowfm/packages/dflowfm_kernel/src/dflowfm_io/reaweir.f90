@@ -41,6 +41,7 @@ public :: reaweir
 contains
 
       subroutine REAweir(MMDD, JA)
+  use precision, only: dp
          use m_missing
          use m_fixedweirs
          use M_GRID
@@ -51,7 +52,7 @@ contains
 
          integer :: mmdd, ja
          integer :: m, n, MOUT
-         double precision :: hu, hv, Du1, Du2, Dv1, Dv2
+         real(kind=dp) :: hu, hv, Du1, Du2, Dv1, Dv2
 
          character REC * 132
 

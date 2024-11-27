@@ -41,6 +41,7 @@ public :: closedefinedflownode
 contains
 
       subroutine CLOSEdefinedflownode(XP1, YP1, N1) !
+  use precision, only: dp
 
          use m_flowgeom
          use m_flow
@@ -49,8 +50,8 @@ contains
          use m_sferic, only: jsferic, jasfer3D
 
          integer :: n1
-         double precision :: XP1, YP1
-         double precision :: dismin, dis
+         real(kind=dp) :: XP1, YP1
+         real(kind=dp) :: dismin, dis
          integer :: n
 
          N1 = 0

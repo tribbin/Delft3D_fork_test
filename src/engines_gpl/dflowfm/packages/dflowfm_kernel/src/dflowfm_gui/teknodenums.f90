@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine TEKNODENUMS(MET, NCOL)
+  use precision, only: dp
     use m_dhtext
     use m_dhitext
     use M_MISSING
@@ -53,7 +54,7 @@ contains
     integer :: key
     integer :: l
     integer :: n
-    double precision X, Y, Z
+    real(kind=dp) X, Y, Z
     
     call SETCOL(NCOL)
     KMOD = max(1, NUMK / 100)

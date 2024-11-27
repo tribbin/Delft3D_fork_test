@@ -37,21 +37,22 @@ implicit none
 contains
 
 subroutine findqorifice12(gateheight, crestheight, h1, h2, q, hg, regime, num, qcrit) ! bepaal q en hg waterstand links = h1, rechts= h2
+  use precision, only: dp
    use m_getq3
    use m_qorifdif12
    implicit none
-   double precision :: gateheight ! gate height above crest
-   double precision :: crestheight ! crest height above bed
-   double precision :: h1 ! upstream waterheight above crest
-   double precision :: q ! flux m3/s                                    (out)
-   double precision :: h2 ! pressure height above crest       after gate (out)
-   double precision :: hg ! vena contracta height above crest after gate (out)
-   double precision :: qcrit ! critical discharge m2/s                      (out)
+   real(kind=dp) :: gateheight ! gate height above crest
+   real(kind=dp) :: crestheight ! crest height above bed
+   real(kind=dp) :: h1 ! upstream waterheight above crest
+   real(kind=dp) :: q ! flux m3/s                                    (out)
+   real(kind=dp) :: h2 ! pressure height above crest       after gate (out)
+   real(kind=dp) :: hg ! vena contracta height above crest after gate (out)
+   real(kind=dp) :: qcrit ! critical discharge m2/s                      (out)
    character(len=*) :: regime !                                              (out)
-   double precision :: g, ha, hb, hc, a, d, qda, qdb, qdc, hgb, hgc
+   real(kind=dp) :: g, ha, hb, hc, a, d, qda, qdb, qdc, hgb, hgc
    integer :: num, k
-   double precision :: cc
-   double precision :: aa, bb
+   real(kind=dp) :: cc
+   real(kind=dp) :: aa, bb
    g = 9.81 ! h1 = waterhoogte bovenstrooms
    h2 = min(h2, h1 - 0.0001) ! hg = gateheight * contractie = effectieve keeldoorsnee
    d = crestheight

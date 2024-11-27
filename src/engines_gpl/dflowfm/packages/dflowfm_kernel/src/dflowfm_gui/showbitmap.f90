@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine SHOWBITMAP(jainterpolate)
+  use precision, only: dp
          use m_rectangle
          use m_pixcount
          use M_WEARELT
@@ -53,15 +54,15 @@ contains
          integer :: k
          integer :: key
          integer :: nko
-         double precision :: xd
-         double precision :: xs
-         double precision :: xx
-         double precision :: xx2
-         double precision :: yd
-         double precision :: ys
-         double precision :: yy
-         double precision :: yy2
-         double precision :: zs
+         real(kind=dp) :: xd
+         real(kind=dp) :: xs
+         real(kind=dp) :: xx
+         real(kind=dp) :: xx2
+         real(kind=dp) :: yd
+         real(kind=dp) :: ys
+         real(kind=dp) :: yy
+         real(kind=dp) :: yy2
+         real(kind=dp) :: zs
          integer :: jainterpolate
 
          call IGRCOLOURMODEL(24)

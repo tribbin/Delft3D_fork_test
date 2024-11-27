@@ -42,12 +42,13 @@ implicit none
 contains
 
 pure function get_hpr_nostruc(L) result(hpr)
+  use precision, only: dp
    use m_flowgeom, only: bob, bob0
    use m_flow, only: hu, u1
    use m_flowparameters, only: changeVelocityAtStructures
    implicit none
    integer, intent(in) :: L !< Flow link number
-   double precision :: hpr !< Hydraulic radius for current water depth.
+   real(kind=dp) :: hpr !< Hydraulic radius for current water depth.
 
    hpr = hu(L)
    if (changeVelocityAtStructures) then

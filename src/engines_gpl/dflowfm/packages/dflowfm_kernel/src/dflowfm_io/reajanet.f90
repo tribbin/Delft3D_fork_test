@@ -41,6 +41,7 @@ public :: reajanet
 contains
 
       subroutine REAJANET(MNET, JA, JADOORLADEN)
+  use precision, only: dp
          use m_netw
          use gridoperations
          use m_set_nod_adm
@@ -57,7 +58,7 @@ contains
          integer :: n1
          integer :: numkn
          integer :: numln
-         double precision :: x10
+         real(kind=dp) :: x10
 
          character REC * 3320
 

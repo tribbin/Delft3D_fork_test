@@ -37,13 +37,14 @@ implicit none
 contains
 
 subroutine foresterpoint2(constituents, numconst, ndkx, itemp, vol, a, d, km, kmxx, kb, maxit, ip)
+  use precision, only: dp
    use m_flow, only: eps6, eps10
    implicit none
 
    integer :: numconst, ndkx, itemp, km, kmxx, kb, maxit, ip
-   double precision :: constituents(numconst, ndkx), vol(kmxx), a(km), d(km)
+   real(kind=dp) :: constituents(numconst, ndkx), vol(kmxx), a(km), d(km)
 
-   double precision :: dif
+   real(kind=dp) :: dif
    integer :: k, m, ja
 
    do k = 1, km

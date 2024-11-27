@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine minmxsam()
+  use precision, only: dp
 
     use m_samples, only: ns, xs, ys, zs
     use m_missing, only: dmiss
@@ -45,7 +46,7 @@ contains
     use m_paramtext
     use m_inview
 
-    double precision :: rmin, rmax
+    real(kind=dp) :: rmin, rmax
     character(len=256) :: buffer
     integer :: k, i
 
@@ -79,6 +80,7 @@ contains
  end subroutine minmxsam
 
  subroutine minmxarc()
+  use precision, only: dp
 
     use m_arcinfo
     use m_missing
@@ -89,7 +91,7 @@ contains
 
     implicit none
 
-    double precision :: rmin, rmax, x, y, z
+    real(kind=dp) :: rmin, rmax, x, y, z
     character(len=256) :: buffer
     integer :: m, n, i
 

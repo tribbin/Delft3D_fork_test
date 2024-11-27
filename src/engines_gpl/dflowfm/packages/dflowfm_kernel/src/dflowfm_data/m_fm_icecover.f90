@@ -467,7 +467,8 @@ contains
 !! let's see if we can make it gradually more modular and move functionality to the icecover_module.
    subroutine update_icecover()
 !!--declarations----------------------------------------------------------------
-      use m_flowgeom, only: ndx
+        use precision, only: dp
+        use m_flowgeom, only: ndx
       use m_flowtimes, only: dts
       use m_wind, only: tair, rain, jarain
       implicit none
@@ -479,7 +480,7 @@ contains
       ! Local variables
       !
       integer :: n
-      double precision :: conv_factor
+      real(kind=dp) :: conv_factor
 !
 !! executable statements -------------------------------------------------------
 !

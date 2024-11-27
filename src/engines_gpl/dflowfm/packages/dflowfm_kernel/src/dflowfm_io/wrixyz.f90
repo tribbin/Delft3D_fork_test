@@ -41,10 +41,11 @@ public :: WRIXYZ
 contains
 
       subroutine WRIXYZ(FILNAM, XS, YS, ZS, NS)
+  use precision, only: dp
          implicit none
          character(LEN=*) :: FILNAM
          integer :: NS
-         double precision :: XS(NS), YS(NS), ZS(NS)
+         real(kind=dp) :: XS(NS), YS(NS), ZS(NS)
          integer :: I, MOUT
 
          call NEWFIL(MOUT, FILNAM)

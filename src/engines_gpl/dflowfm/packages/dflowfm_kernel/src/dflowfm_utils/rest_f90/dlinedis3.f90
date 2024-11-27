@@ -33,16 +33,17 @@ module m_d_line_dis3
    implicit none
 contains
       subroutine dLINEDIS3(X3, Y3, X1, Y1, X2, Y2, JA, DIS, XN, YN, RLOUT) ! 3: SORRY
+  use precision, only: dp
          use geometry_module, only: getdx, getdy, dbdistance, sphertocart3D, Cart3Dtospher
          use m_missing, only: dmiss
          use m_sferic, only: jsferic, jasfer3D
 
          integer :: ja
-         double precision :: X1, Y1, X2, Y2, X3, Y3, DIS, XN, YN
-         double precision :: xx1, xx2, xx3, yy1, yy2, yy3, zz1, zz2, zz3, xxn, yyn, zzn
-         double precision :: R2, RL, X21, Y21, Z21, X31, Y31, Z31
+         real(kind=dp) :: X1, Y1, X2, Y2, X3, Y3, DIS, XN, YN
+         real(kind=dp) :: xx1, xx2, xx3, yy1, yy2, yy3, zz1, zz2, zz3, xxn, yyn, zzn
+         real(kind=dp) :: R2, RL, X21, Y21, Z21, X31, Y31, Z31
 
-         double precision :: RLout ! needed in orthogonalisenet/projection of boundary nodes
+         real(kind=dp) :: RLout ! needed in orthogonalisenet/projection of boundary nodes
          ! korste afstand tot lijnelement tussen eindpunten
          JA = 0
 

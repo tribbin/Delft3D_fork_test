@@ -40,7 +40,8 @@ public :: comp_cross_time_2
 
 contains
 
-double precision function comp_cross_time_2(x1, x3, x4, v1, v3, v4, dclear)
+real(kind=dp) function comp_cross_time_2(x1, x3, x4, v1, v3, v4, dclear)
+  use precision, only: dp
 
    use m_missing
    use geometry_module, only: dlinedis
@@ -50,17 +51,17 @@ double precision function comp_cross_time_2(x1, x3, x4, v1, v3, v4, dclear)
 
    implicit none
 
-   double precision, dimension(2) :: x1, x3, x4 !< coordinates
-   double precision, dimension(2) :: v1, v3, v4 !< velocities
-   double precision :: dclear !< clearance
+   real(kind=dp), dimension(2) :: x1, x3, x4 !< coordinates
+   real(kind=dp), dimension(2) :: v1, v3, v4 !< velocities
+   real(kind=dp) :: dclear !< clearance
 
-   double precision, dimension(2) :: xdum1, xdum2
-   double precision, dimension(4) :: x
-   double precision, dimension(5) :: coeffs
+   real(kind=dp), dimension(2) :: xdum1, xdum2
+   real(kind=dp), dimension(4) :: x
+   real(kind=dp), dimension(5) :: coeffs
 
-   double precision :: a, b, c, dnow, xc, yc, dteps, deps
+   real(kind=dp) :: a, b, c, dnow, xc, yc, dteps, deps
 
-   double precision :: t1, t2, DdDt
+   real(kind=dp) :: t1, t2, DdDt
 
    integer :: i, ja
 

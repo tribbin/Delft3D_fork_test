@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine comp_vel(mc, xc, yc, edgevel, vel)
+  use precision, only: dp
    use m_missing, only: dmiss, dxymis
    use m_sferic
    use m_spline2curvi, only: dtolLR
@@ -47,14 +48,14 @@ subroutine comp_vel(mc, xc, yc, edgevel, vel)
    implicit none
 
    integer, intent(in) :: mc !< number of grid points
-   double precision, dimension(mc), intent(in) :: xc, yc !< coordinates of grid points
-   double precision, dimension(mc - 1), intent(in) :: edgevel !< edge normal-velocity (spherical: coordinates in meters)
-   double precision, dimension(2, mc), intent(out) :: vel !< velocity vectors at grid points (spherical: spherical coordinates)
+   real(kind=dp), dimension(mc), intent(in) :: xc, yc !< coordinates of grid points
+   real(kind=dp), dimension(mc - 1), intent(in) :: edgevel !< edge normal-velocity (spherical: coordinates in meters)
+   real(kind=dp), dimension(2, mc), intent(out) :: vel !< velocity vectors at grid points (spherical: spherical coordinates)
    
-   double precision, dimension(2) :: nL, nR, vL, vR
-   double precision :: cosphi, vR_vL, Rai
+   real(kind=dp), dimension(2) :: nL, nR, vL, vR
+   real(kind=dp) :: cosphi, vR_vL, Rai
    integer :: i, iL, iR
-   double precision, parameter :: dtolcos = 1d-8 ! not the module variable
+   real(kind=dp), parameter :: dtolcos = 1d-8 ! not the module variable
 
    vel = DMISS
 

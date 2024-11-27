@@ -37,6 +37,7 @@ use m_kcir
    implicit none
 contains
       subroutine TEKnumnetcells(jatel)
+  use precision, only: dp
          use m_grid, only: ijyes, nc, mc, xc, yc
          use m_netw, only: nump, xzw, yzw
          use m_polygon
@@ -48,7 +49,7 @@ contains
          use m_inview
          
          integer :: i, j, n, jatel, in, k, im, jm, mxnum
-         double precision :: x, y, z
+         real(kind=dp) :: x, y, z
 
          call savepol()
 

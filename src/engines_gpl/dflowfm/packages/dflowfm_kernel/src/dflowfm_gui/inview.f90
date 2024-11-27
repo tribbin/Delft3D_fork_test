@@ -33,12 +33,13 @@ module m_inview
    implicit none
 contains
   logical function INVIEW(X, Y)
+  use precision, only: dp
      ! ZIT IK IN ZOOMGEBIED? NULLEN EN DEFAULTS NIET, IN WERELDCOORD inview3
      use m_wearelt
      use m_missing, only: xymis
      use m_dproject
 
-     double precision :: x, y, xx, yy
+     real(kind=dp) :: x, y, xx, yy
      
      INVIEW = .false.
      if (X /= XYMIS) then

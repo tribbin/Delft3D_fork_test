@@ -42,6 +42,7 @@ public :: adjust_bobs_on_dambreak_breach
 contains
 
 subroutine adjust_bobs_on_dambreak_breach(width, maxwidth, crl, startingLink, L1, L2, strucid)
+  use precision, only: dp
 
    use m_flowgeom
    use fm_external_forcings_data
@@ -50,9 +51,9 @@ subroutine adjust_bobs_on_dambreak_breach(width, maxwidth, crl, startingLink, L1
    implicit none
 
    ! input
-   double precision, intent(in) :: width !< new width of breach [m]
-   double precision, intent(in) :: maxwidth !< width of dambreak structure, i.e. maximum breach width [m]
-   double precision, intent(in) :: crl !< breached crest level [m+REF]
+   real(kind=dp), intent(in) :: width !< new width of breach [m]
+   real(kind=dp), intent(in) :: maxwidth !< width of dambreak structure, i.e. maximum breach width [m]
+   real(kind=dp), intent(in) :: crl !< breached crest level [m+REF]
    integer, intent(in) :: startingLink !< index of first link that breaches
    integer, intent(in) :: L1 !< last flow link on the "left"
    integer, intent(in) :: L2 !< last flow link on the "right"
@@ -61,13 +62,13 @@ subroutine adjust_bobs_on_dambreak_breach(width, maxwidth, crl, startingLink, L1
    ! local variables
    integer :: k !< index of the dambreak flow link (range L1 to L2)
    integer :: Lf !< index of flow link
-   double precision :: hremainder !< half of the remaining breach width [m]
-   double precision :: leftBreachWidth !< width of the breach on the "left" [m]
-   double precision :: leftfrac !< fraction of structure width on the "left" [-]
-   double precision :: leftside !< total dambreak structure width on the "left" [m]
-   double precision :: remainder !< remaining breach width [m]
-   double precision :: rightBreachWidth !< width of the breach on the "right" [m]
-   double precision :: rightside !< total dambreak structure width on the "right" [m]
+   real(kind=dp) :: hremainder !< half of the remaining breach width [m]
+   real(kind=dp) :: leftBreachWidth !< width of the breach on the "left" [m]
+   real(kind=dp) :: leftfrac !< fraction of structure width on the "left" [-]
+   real(kind=dp) :: leftside !< total dambreak structure width on the "left" [m]
+   real(kind=dp) :: remainder !< remaining breach width [m]
+   real(kind=dp) :: rightBreachWidth !< width of the breach on the "right" [m]
+   real(kind=dp) :: rightside !< total dambreak structure width on the "right" [m]
 
    ! process the breach at the starting link
    Lf = abs(kdambreak(3, startingLink))

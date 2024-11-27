@@ -33,13 +33,14 @@ module m_gtext
    implicit none
 contains
       subroutine GTEXT(TEX, X, Y, NCOL)
+  use precision, only: dp
          use m_colnow
          use m_set_col
          use m_draw_text
 
          integer :: ncol
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
 !     grafische text op grafische posities
          character TEX * (*)
          call SETCOL(NCOL)

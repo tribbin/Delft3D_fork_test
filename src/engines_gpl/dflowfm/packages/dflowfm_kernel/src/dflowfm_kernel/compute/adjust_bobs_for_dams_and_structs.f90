@@ -44,6 +44,7 @@ contains
 
  !> adjust bobs and iadvec for dams and structs
  subroutine adjust_bobs_for_dams_and_structs()
+  use precision, only: dp
     use m_alloc
     use m_flowgeom
     use m_flowparameters
@@ -57,7 +58,7 @@ contains
 
     implicit none
 
-    double precision :: zcdamn, minzcdamn, blmx
+    real(kind=dp) :: zcdamn, minzcdamn, blmx
     type(t_structure), pointer :: pstru
     type(t_compound), pointer :: pcompound
 

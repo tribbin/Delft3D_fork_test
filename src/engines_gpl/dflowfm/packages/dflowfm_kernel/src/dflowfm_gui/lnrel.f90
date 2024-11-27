@@ -38,8 +38,9 @@ implicit none
 contains
 
       subroutine LNREL(X, Y)
-         double precision :: x
-         double precision :: y
+  use precision, only: dp
+         real(kind=dp) :: x
+         real(kind=dp) :: y
          call IGRLINETOREL(real(X), real(Y))
       end
 

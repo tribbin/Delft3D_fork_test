@@ -41,24 +41,25 @@ public :: yzprofile
 contains
 
 subroutine yzprofile(hpr, ka, itp, area, width, japerim, frcn, ifrctyp, perim, cfhi)
+  use precision, only: dp
    use m_getseg1d
    use m_profiles, only: profiles1d
    use m_physcoef, only: ag
 
    integer :: ka, japerim, itp
-   double precision :: hpr ! hoogte in profiel
-   double precision :: area ! wet cross sectional area
-   double precision :: width ! width at water surface
-   double precision :: perim ! wet perimeter
-   double precision :: cfhi ! cfuhi(L)
+   real(kind=dp) :: hpr ! hoogte in profiel
+   real(kind=dp) :: area ! wet cross sectional area
+   real(kind=dp) :: width ! width at water surface
+   real(kind=dp) :: perim ! wet perimeter
+   real(kind=dp) :: cfhi ! cfuhi(L)
 
-   double precision :: wid ! wid of segment
-   double precision :: ar ! ar of segment
-   double precision :: conv, convall ! (sum of) conv
-   double precision :: hpr2 ! height in segment under consideration
-   double precision :: frcn ! user defined friction coefficient
-   double precision :: bl1, bl2, b21 ! bottom levels segment, b21, diff of bl1,bl2, always > 0
-   double precision :: wu2, ai, aconv, per
+   real(kind=dp) :: wid ! wid of segment
+   real(kind=dp) :: ar ! ar of segment
+   real(kind=dp) :: conv, convall ! (sum of) conv
+   real(kind=dp) :: hpr2 ! height in segment under consideration
+   real(kind=dp) :: frcn ! user defined friction coefficient
+   real(kind=dp) :: bl1, bl2, b21 ! bottom levels segment, b21, diff of bl1,bl2, always > 0
+   real(kind=dp) :: wu2, ai, aconv, per
    integer :: ifrctyp ! user defined frcition type
    integer :: k, numseg, jac
 

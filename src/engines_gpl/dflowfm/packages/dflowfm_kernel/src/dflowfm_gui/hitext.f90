@@ -33,13 +33,14 @@ module m_hi_text
    implicit none
 contains
       subroutine HITEXT(IVAL, X, Y)
+  use precision, only: dp
          use m_colnow
          use m_draw_text
 
          integer :: ival
          integer :: l
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
 !     INTEGER grafisch scherm in current color
          character TEX * 8
 

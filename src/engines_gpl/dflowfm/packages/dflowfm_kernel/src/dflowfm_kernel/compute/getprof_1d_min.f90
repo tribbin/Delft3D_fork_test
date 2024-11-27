@@ -35,18 +35,19 @@ use m_pipemin
    implicit none
 contains
 subroutine getprof_1D_min(L, hpr, area, width) ! pressurepipe
+  use precision, only: dp
    use m_flowgeom
    use unstruc_channel_flow
 
    integer :: L
-   double precision :: hpr ! hoogte in profiel
-   double precision :: area ! wet cross sectional area
-   double precision :: width ! width at water surface
+   real(kind=dp) :: hpr ! hoogte in profiel
+   real(kind=dp) :: area ! wet cross sectional area
+   real(kind=dp) :: width ! width at water surface
 
-   double precision :: profw ! width  of profile
-   double precision :: profh ! height of profile
-   double precision :: area2, width2 ! second prof i.c. interpolation
-   double precision :: alfa, hh
+   real(kind=dp) :: profw ! width  of profile
+   real(kind=dp) :: profh ! height of profile
+   real(kind=dp) :: area2, width2 ! second prof i.c. interpolation
+   real(kind=dp) :: alfa, hh
    integer :: LL, ka, kb, itp
 
    area = 0d0; width = 0d0

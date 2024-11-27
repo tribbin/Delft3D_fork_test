@@ -41,11 +41,12 @@ public :: einstein_garcia
 contains
 
 subroutine einstein_garcia(da, rs, dj1, dj2)
+  use precision, only: dp
    use m_einstein_garcia
 
-   double precision :: da, rs, dj1, dj2
+   real(kind=dp) :: da, rs, dj1, dj2
 
-   double precision :: aa, rsk, dj12, dj22
+   real(kind=dp) :: aa, rsk, dj12, dj22
    integer :: i1, i2, k
 
    if (da < 0.001d0) then

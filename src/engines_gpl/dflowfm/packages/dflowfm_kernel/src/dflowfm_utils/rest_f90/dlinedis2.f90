@@ -33,14 +33,15 @@ module m_dlinedis2
    implicit none
 contains
       subroutine dLINEDIS2(X3, Y3, X1, Y1, X2, Y2, JA, DIS, XN, YN, rl)
+  use precision, only: dp
          use m_sferic
          use geometry_module, only: getdx, getdy, dbdistance, sphertoCart3D, cart3Dtospher
          use m_missing, only: dmiss
 
          integer :: ja
-         double precision :: X1, Y1, X2, Y2, X3, Y3, DIS, XN, YN
-         double precision :: R2, RL, X21, Y21, Z21, X31, Y31, Z31
-         double precision :: xx1, xx2, xx3, yy1, yy2, yy3, zz1, zz2, zz3, xxn, yyn, zzn
+         real(kind=dp) :: X1, Y1, X2, Y2, X3, Y3, DIS, XN, YN
+         real(kind=dp) :: R2, RL, X21, Y21, Z21, X31, Y31, Z31
+         real(kind=dp) :: xx1, xx2, xx3, yy1, yy2, yy3, zz1, zz2, zz3, xxn, yyn, zzn
          !     korste afstand tot lijnelement
 
          JA = 0

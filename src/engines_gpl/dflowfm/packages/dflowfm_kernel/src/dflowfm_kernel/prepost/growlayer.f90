@@ -39,6 +39,7 @@ module m_grow_layer
 contains
 !> grow a gridlayer
 subroutine growlayer(mc, nc, mmax, nmax, idir, j, edgevel, dt, xc, yc, ifront, istop)
+  use precision, only: dp
 
    use m_missing, only: dmiss, dxymis
    use unstruc_display, only: ncolrg
@@ -58,35 +59,35 @@ subroutine growlayer(mc, nc, mmax, nmax, idir, j, edgevel, dt, xc, yc, ifront, i
    integer, intent(in) :: nmax !< array size
    integer, intent(in) :: idir !< grow direction, -1 or 1  (not used)
    integer, intent(in) :: j !< grid layer
-   double precision, dimension(mc - 1), intent(in) :: edgevel !< grid layer edge-height
-   double precision, intent(inout) :: dt !< time step
-   double precision, dimension(mmax, nmax), intent(inout) :: xc, yc !< coordinates of grid points
+   real(kind=dp), dimension(mc - 1), intent(in) :: edgevel !< grid layer edge-height
+   real(kind=dp), intent(inout) :: dt !< time step
+   real(kind=dp), dimension(mmax, nmax), intent(inout) :: xc, yc !< coordinates of grid points
    integer, dimension(mc), intent(inout) :: ifront !< active nodes (1) or not (0)
    integer, intent(out) :: istop !< stop (1) or not (0)
 
    integer, dimension(mc) :: ifrontold, ifrontnew
 
-   double precision, dimension(mc) :: xc1, yc1 !  active grid layer coordinates
-   double precision, dimension(2, mc) :: vel !  growth velocity vector at grid layer, per node
-!   double precision, dimension(mc-1)                     :: edgevel  !  edge normal-velocity
+   real(kind=dp), dimension(mc) :: xc1, yc1 !  active grid layer coordinates
+   real(kind=dp), dimension(2, mc) :: vel !  growth velocity vector at grid layer, per node
+!   real(kind=dp), dimension(mc-1)                     :: edgevel  !  edge normal-velocity
 
-   double precision, dimension(mc) :: dtmax !  maximum allowable grid layer growth time, per node
-   double precision, dimension(mc) :: dtmax_self !  maximum allowable grid layer growth time, per node
-   double precision, allocatable, dimension(:) :: dtmax2 !  maximum allowable grid layer growth time, per node
+   real(kind=dp), dimension(mc) :: dtmax !  maximum allowable grid layer growth time, per node
+   real(kind=dp), dimension(mc) :: dtmax_self !  maximum allowable grid layer growth time, per node
+   real(kind=dp), allocatable, dimension(:) :: dtmax2 !  maximum allowable grid layer growth time, per node
 
-   double precision :: dt_other !  maximum alloweble grid layer growth time; collision only
+   real(kind=dp) :: dt_other !  maximum alloweble grid layer growth time; collision only
 
    integer :: nf !< front dimension
    integer :: numf !< array size
-   double precision, allocatable, dimension(:) :: xf, yf !< front point coordinates
-   double precision, allocatable, dimension(:, :) :: velf !< front growth velocity vectors
+   real(kind=dp), allocatable, dimension(:) :: xf, yf !< front point coordinates
+   real(kind=dp), allocatable, dimension(:, :) :: velf !< front growth velocity vectors
    integer, allocatable, dimension(:, :) :: idxf !< (i,j)-indices of front points
 
-   double precision :: dt_loc, dt_tot
-   double precision :: dtolLR_bak, dhmax
+   real(kind=dp) :: dt_loc, dt_tot
+   real(kind=dp) :: dtolLR_bak, dhmax
    integer :: i, ii, iL, iR, ja3
-   double precision, parameter :: dtol = 1d-8
-   double precision, parameter :: dclearance = 5d2
+   real(kind=dp), parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: dclearance = 5d2
    logical :: Lalllines = .false. ! all gridlines (.true.) or not (.false.)
 
    integer, save :: numgrow = 0

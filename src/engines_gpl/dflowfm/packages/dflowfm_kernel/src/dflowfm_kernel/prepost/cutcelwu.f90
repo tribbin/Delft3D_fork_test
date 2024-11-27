@@ -41,6 +41,7 @@ public :: cutcelwu
 contains
 
 subroutine CUTCELWU(n12, jamasks, ipoly)
+  use precision, only: dp
    use m_crosslinkpoly, only: crosslinkpoly
    use m_tekpolygon
    use m_netw
@@ -63,12 +64,12 @@ subroutine CUTCELWU(n12, jamasks, ipoly)
    integer :: K, K1, K2, L, LL, N, NN, LF, IC, LLU, IN, KL
    integer, allocatable :: KNP(:)
 
-   double precision :: XM, YM, XXC(8), YYC(8), DAREA, DLENGTH, DLENMX
+   real(kind=dp) :: XM, YM, XXC(8), YYC(8), DAREA, DLENGTH, DLENMX
 
-   double precision, dimension(:), allocatable :: xmL, ymL ! intersection coordinates
+   real(kind=dp), dimension(:), allocatable :: xmL, ymL ! intersection coordinates
    integer, dimension(:), allocatable :: Lmask ! link mask
 
-   double precision :: cx, cy, R2search, Area, cof0
+   real(kind=dp) :: cx, cy, R2search, Area, cof0
    integer :: i, ip1, num, k_start, k_end, numsam
    integer :: jadelete
    integer :: jakdtree
@@ -76,7 +77,7 @@ subroutine CUTCELWU(n12, jamasks, ipoly)
 
    type(tpoly), dimension(:), allocatable :: pli_loc
 
-   double precision, parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: dtol = 1d-8
 
    jakdtree = 1
 

@@ -37,7 +37,8 @@ implicit none
 contains
 
  !> compute viscous flux balance of cell ln (n12,L) in coordinate frame of L
- double precision function horvic(n12, L) ! horizontal viscosity term
+ real(kind=dp) function horvic(n12, L) ! horizontal viscosity term
+  use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_missing
@@ -50,13 +51,13 @@ contains
     ! locals
     integer :: LL, LLL, LLLL ! for links LL,
     integer :: k12, k1, k2, k3, k4 ! relevant node, 1 or 2
-    double precision :: cs, sn, csL, snL
-    double precision :: duxdn, duydn, duxdt, duydt, txx, tyy, c11, c12, c22, vicl
+    real(kind=dp) :: cs, sn, csL, snL
+    real(kind=dp) :: duxdn, duydn, duxdt, duydt, txx, tyy, c11, c12, c22, vicl
 
-    double precision :: txx_k12, tyy_k12
+    real(kind=dp) :: txx_k12, tyy_k12
     integer :: ik1, ik2, in3, in4
 
-    double precision, external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
+    real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
 
     horvic = 0d0
     csL = csu(L); snL = snu(L)

@@ -39,6 +39,7 @@ implicit none
 contains
 
       subroutine DISP4C(X, Y, N)
+  use precision, only: dp
          use M_MISSING
          use m_halt2
          use m_movabs
@@ -49,7 +50,7 @@ contains
          integer :: key
          integer :: n
 !     LAAT EEN TWEEDIMENSIONALE FUNCTIE ZIEN MET CIRKELS
-         double precision :: X(N), Y(N)
+         real(kind=dp) :: X(N), Y(N)
 
          if (N <= 0) return
          ISTART = 0

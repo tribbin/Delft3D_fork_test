@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine tekprofs() ! and initialise some turb pars
+  use precision, only: dp
      use m_tekprofpoint
      use m_tekfn
      use m_setwor
@@ -65,13 +66,13 @@ contains
      implicit none
 
      integer :: ini = 0, kt, jaref
-     double precision :: ugem, viceld
+     real(kind=dp) :: ugem, viceld
      integer :: n, kb, km, km1, k, kk, ku, kku, Lb0, Lb, Lt, Lm1, L, LL, La
-     double precision :: zmin, zmax
-     double precision :: h0, b0, z00, zinc, cz, ustbref, ustwref, zint, z1, dz2, zz
-     double precision :: tkebot, tkesur, tkewin
-     double precision :: epsbot, epssur, dzkap, sqcf, ulx, sg, drhodz, rhomea, rhop0, prsappr
-     double precision :: VMAX2, VMIN2
+     real(kind=dp) :: zmin, zmax
+     real(kind=dp) :: h0, b0, z00, zinc, cz, ustbref, ustwref, zint, z1, dz2, zz
+     real(kind=dp) :: tkebot, tkesur, tkewin
+     real(kind=dp) :: epsbot, epssur, dzkap, sqcf, ulx, sg, drhodz, rhomea, rhop0, prsappr
+     real(kind=dp) :: VMAX2, VMIN2
      integer :: is, Ls, LLs, Lbs, Lts
      integer :: jabruv
 

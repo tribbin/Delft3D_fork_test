@@ -37,11 +37,12 @@ implicit none
 contains
 
      subroutine ISOCOL(VALC, NCOL)
+  use precision, only: dp
         use m_depmax
         use m_set_col
 
         integer :: i, ncol
-        double precision :: valc
+        real(kind=dp) :: valc
 
         do I = NV, 1, -1
            if (VALC >= VAL(I)) then

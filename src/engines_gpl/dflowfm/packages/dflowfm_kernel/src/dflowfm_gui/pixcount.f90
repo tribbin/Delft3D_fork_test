@@ -37,18 +37,19 @@ implicit none
 contains
 
  subroutine pixcount(xs, ys, zs, jatel)
+  use precision, only: dp
 
     use m_flowgeom
     use m_missing, only: jins, dmiss
     use geometry_module, only: pinpok
 
-    double precision :: xs, ys, zs
+    real(kind=dp) :: xs, ys, zs
     integer :: jatel
 
-    double precision :: xmn, xmx, ymn, ymx
+    real(kind=dp) :: xmn, xmx, ymn, ymx
     integer :: nn, k, in
     integer, allocatable, save :: itel(:)
-    double precision, allocatable, save :: ztel(:)
+    real(kind=dp), allocatable, save :: ztel(:)
 
     if (jatel == 1) then
        if (.not. allocated(itel)) then

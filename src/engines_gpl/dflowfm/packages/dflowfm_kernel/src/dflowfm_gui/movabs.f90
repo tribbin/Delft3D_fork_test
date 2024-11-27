@@ -34,10 +34,11 @@ module m_movabs
 contains
 !
       subroutine MOVABS(X, Y)
+  use precision, only: dp
          use unstruc_opengl, only: InOpenGLRendering, MoveTo
          use m_dproject
 
-         double precision :: x, y, xx, yy
+         real(kind=dp) :: x, y, xx, yy
 
          call DPROJECT(X, Y, XX, YY, 1)
          if (InOpenGLRendering) then

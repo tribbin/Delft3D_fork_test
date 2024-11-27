@@ -41,6 +41,7 @@ public :: volship
 contains
 
  subroutine volship() ! compute ship volume relative to fixed level 0d0
+  use precision, only: dp
     use m_ship
     use m_flowgeom
     use m_flow
@@ -48,7 +49,7 @@ contains
     implicit none
 
     integer :: L, k1, k2, k3, k4
-    double precision :: BL1, BL2, b21, wu2, ai, wid1, hpr1, dx1, dx2, ar1, slotsav
+    real(kind=dp) :: BL1, BL2, b21, wu2, ai, wid1, hpr1, dx1, dx2, ar1, slotsav
     slotsav = slotw2D; slotw2D = 0d0
     v1ship = 0d0
     do L = 1, lnx

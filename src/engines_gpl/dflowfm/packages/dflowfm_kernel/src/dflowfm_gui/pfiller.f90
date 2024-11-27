@@ -33,6 +33,7 @@ module m_pfiller
    implicit none
 contains
     subroutine PFILLER(X, Y, N_, NCOL, NCLR)
+  use precision, only: dp
        use unstruc_opengl, only: inopenglrendering
        use m_sferic, only: jsfertek
        use m_colnow
@@ -45,7 +46,7 @@ contains
        integer :: N_
        integer :: nclr
        integer :: ncol, i, n
-       double precision :: X(N_), Y(N_), xx, yy
+       real(kind=dp) :: X(N_), Y(N_), xx, yy
        integer, parameter :: NMAX = 128
        real xr(NMAX), yr(NMAX)
 

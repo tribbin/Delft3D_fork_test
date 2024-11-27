@@ -41,6 +41,7 @@ implicit none
 contains
 
       subroutine EDITGRIDBLOK(MODE, NFLD, KEY)
+  use precision, only: dp
          use m_choices
          use m_grid
          use unstruc_colors, only: ncolln, ncoldg, ncolrg
@@ -62,7 +63,7 @@ contains
          integer :: num, nwhat, numb, mp, np
          character TEX * 20
          integer :: m1b, n1b, m2b, n2b, ipt, ja, jonce, m, n, nput
-         double precision :: xp, yp
+         real(kind=dp) :: xp, yp
 
          TEX = ' '//FIELDOP(NFLD)
          WRDKEY = FIELDOP(NFLD)

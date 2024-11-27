@@ -64,14 +64,14 @@ contains
     implicit none
 
     integer :: k, i
-    double precision :: frac, tot, dtav
-    double precision :: f
-    double precision :: tstop
-    double precision :: tcpustep
-    double precision :: time_cpu
-    double precision :: tcpusol
-    double precision :: totalcomp
-    double precision :: timeloop
+    real(kind=dp) :: frac, tot, dtav
+    real(kind=dp) :: f
+    real(kind=dp) :: tstop
+    real(kind=dp) :: tcpustep
+    real(kind=dp) :: time_cpu
+    real(kind=dp) :: tcpusol
+    real(kind=dp) :: totalcomp
+    real(kind=dp) :: timeloop
 
     if (ndx == 0) then
        write (msgbuf, '(a)') 'Empty model, no flow cells found. No statistics to report.'; call msg_flush()

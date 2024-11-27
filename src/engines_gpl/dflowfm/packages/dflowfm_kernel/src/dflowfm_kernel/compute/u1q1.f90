@@ -41,6 +41,7 @@ public :: u1q1
 contains
 
  subroutine u1q1()
+  use precision, only: dp
     use m_flow ! substitute u1 and q1
     use m_flowgeom
     use m_flowtimes
@@ -52,9 +53,9 @@ contains
     implicit none
 
     integer :: L0, L, k1, k2, k01, k02, LL, k, n, nn, km, n1, n2, kb, kt, Lb, Lt, kmxLL, ng, istru
-    double precision :: zws0k
-    double precision :: wb, dsL, sqiuh, qwb, qsigma
-    double precision :: qwave
+    real(kind=dp) :: zws0k
+    real(kind=dp) :: wb, dsL, sqiuh, qwb, qsigma
+    real(kind=dp) :: qwave
     type(t_structure), pointer :: pstru
     integer :: ierror
 

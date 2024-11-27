@@ -31,6 +31,7 @@
 ! 
 
 module m_netstore
+  use precision, only: dp
    use network_data
    implicit none
 
@@ -44,7 +45,7 @@ module m_netstore
    type (tnod),      allocatable, dimension(:)   :: nod_st        ! dimension(maxnodes)
    type (tface),     allocatable, dimension(:)   :: netcell_st    ! dimension(maxcells)
 
-   double precision, allocatable, dimension(:)   :: xk_st, yk_st  ! dimension(maxnodes)
+   real(kind=dp), allocatable, dimension(:)   :: xk_st, yk_st  ! dimension(maxnodes)
    integer,          allocatable, dimension(:)   :: nmk_st        ! dimension(maxnodes)
    integer,          allocatable, dimension(:)   :: nb_st         ! dimension(maxnodes)
    integer,          allocatable, dimension(:)   :: lnn_st        ! dimension(maxlinks)

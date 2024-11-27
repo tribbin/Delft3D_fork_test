@@ -41,6 +41,7 @@ public :: setequilibriumsedimentbnds
 contains
 
 subroutine setequilibriumsedimentbnds(nbnd, n4, kbnd, kban, i01)
+  use precision, only: dp
    use m_getequilibriumtransportrates2, only: getequilibriumtransportrates2
    use m_flow
    use m_flowgeom
@@ -52,9 +53,9 @@ subroutine setequilibriumsedimentbnds(nbnd, n4, kbnd, kban, i01)
    integer :: nbnd, kban(2, nbnd), n4, kbnd(n4, nbnd), i01
 
    integer :: k, kb, ki, L, LL, Lb, Lt, j
-   double precision :: hsk
-   double precision :: seq(mxgr) !< sed equilibrium transport rate (kg/m/s) , dimension = mxgr
-   double precision :: wse(mxgr) !< effective fall velocity (m/s)           , dimension = mxgr, ws*crefa=wse*seq
+   real(kind=dp) :: hsk
+   real(kind=dp) :: seq(mxgr) !< sed equilibrium transport rate (kg/m/s) , dimension = mxgr
+   real(kind=dp) :: wse(mxgr) !< effective fall velocity (m/s)           , dimension = mxgr, ws*crefa=wse*seq
 
    do k = 1, nbnd ! set equilibrium boundary conditions for open flow bnds, types z and u
       kb = kbnd(1, k)

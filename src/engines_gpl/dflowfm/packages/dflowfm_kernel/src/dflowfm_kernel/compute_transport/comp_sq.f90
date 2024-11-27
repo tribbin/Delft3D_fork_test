@@ -41,6 +41,7 @@ public :: comp_sq
 contains
 
 subroutine comp_sq(Ndkx, Lnkx, kbot, ktop, Lbot, Ltop, q1, qw, sq)
+  use precision, only: dp
    use m_flowgeom, only: Ndx, Lnx, ln
    implicit none
 
@@ -50,11 +51,11 @@ subroutine comp_sq(Ndkx, Lnkx, kbot, ktop, Lbot, Ltop, q1, qw, sq)
    integer, dimension(Ndx), intent(in) :: ktop !< flow-node based layer administration
    integer, dimension(Lnx), intent(in) :: Lbot !< flow-link based layer administration
    integer, dimension(Lnx), intent(in) :: Ltop !< flow-link based layer administration
-   double precision, dimension(Lnkx), intent(in) :: q1 !< flow-field discharges
-   double precision, dimension(Ndkx), intent(in) :: qw !< flow-field vertical discharges
-   double precision, dimension(Ndkx), intent(out) :: sq !< flux balance (inward positive)
+   real(kind=dp), dimension(Lnkx), intent(in) :: q1 !< flow-field discharges
+   real(kind=dp), dimension(Ndkx), intent(in) :: qw !< flow-field vertical discharges
+   real(kind=dp), dimension(Ndkx), intent(out) :: sq !< flux balance (inward positive)
 
-   double precision :: sumsq
+   real(kind=dp) :: sumsq
    integer :: k1, k2, k, kk, L, LL
 
    sq = 0d0

@@ -40,13 +40,14 @@ public :: upwsal
 
 contains
 
- double precision function upwsal(L, k12) ! upwind salinity
+ real(kind=dp) function upwsal(L, k12) ! upwind salinity
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     implicit none
     integer :: L, k12
 
-    double precision :: cl, sl, rl, ql, qls
+    real(kind=dp) :: cl, sl, rl, ql, qls
     integer :: k, kk, LL, LLL, ku
 
     cl = csu(L); sl = snu(L)

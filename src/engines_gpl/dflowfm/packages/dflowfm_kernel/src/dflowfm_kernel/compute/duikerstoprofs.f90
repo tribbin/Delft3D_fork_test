@@ -39,6 +39,7 @@ implicit none
 contains
 
  subroutine duikerstoprofs()
+  use precision, only: dp
     use m_netw
     use m_flowgeom
     use m_flow
@@ -53,7 +54,7 @@ contains
     implicit none
 
     integer :: minp, Ls, Lf, n, k1, k2
-    double precision :: x1, y1, z1, x2, y2, z2, xc, yc, XLS, YLS, dum, w1, w2, h1, h2
+    real(kind=dp) :: x1, y1, z1, x2, y2, z2, xc, yc, XLS, YLS, dum, w1, w2, h1, h2
     logical :: jawel
 
     inquire (file=trim(md_pipefile), exist=jawel)

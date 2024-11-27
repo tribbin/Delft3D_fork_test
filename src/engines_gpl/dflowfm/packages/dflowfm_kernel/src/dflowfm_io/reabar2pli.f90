@@ -33,10 +33,11 @@ module m_read_bar2pli
    implicit none
 contains
  subroutine reabar2pli(mthd, mout) ! convert barrier v file to model independent, barv content =  m,n,sill depth
+  use precision, only: dp
     use m_grid, only: xc, yc
 
     integer :: mthd, mout
-    double precision :: dep
+    real(kind=dp) :: dep
     character(len=132) :: rec
     integer :: m, n
 

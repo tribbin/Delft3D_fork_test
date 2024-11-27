@@ -40,6 +40,7 @@ implicit none
 contains
 
  subroutine reabnd2pol(mbnd, mbca) ! convert d3d boundaryes stuf to model independent
+  use precision, only: dp
     use m_grid
     use m_polygon
     use M_MISSING
@@ -51,7 +52,7 @@ contains
     character(len=132) :: a(100)
     integer :: i, j
     integer :: kx, nra, kd, ku, kk, nr
-    double precision :: x1, x2, x3, x4
+    real(kind=dp) :: x1, x2, x3, x4
 
     allocate (ma(mmx), na(mmx), mb(mmx), nb(mmx))
 

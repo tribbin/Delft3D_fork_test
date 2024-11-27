@@ -53,30 +53,30 @@ use m_get_link1
 
 implicit none
 
-double precision, intent (in) :: timhr, qsno
+real(kind=dp), intent (in) :: timhr, qsno
 integer         , intent (in) :: n
 
 integer          :: k, kb, kt, k2, L, LL, j, j2, ncols
-double precision :: qsn, qsun, qsnom, presn, tairn, twatn, twatK, rhumn, cloun, windn
-double precision :: ce, ch, qwmx, qahu, tl, Qcon, Qeva, Qlong, pvtamx, pvtwmx, pvtahu, delvap
-double precision :: dexp, zlo, zup, explo, expup, ratio, rcpiba, qheat, atot
+real(kind=dp) :: qsn, qsun, qsnom, presn, tairn, twatn, twatK, rhumn, cloun, windn
+real(kind=dp) :: ce, ch, qwmx, qahu, tl, Qcon, Qeva, Qlong, pvtamx, pvtwmx, pvtahu, delvap
+real(kind=dp) :: dexp, zlo, zup, explo, expup, ratio, rcpiba, qheat, atot
 
-double precision :: w(20), Qfree, b, gred, wfree, Qfrcon, Qfreva, rhoa0, rhoa10
+real(kind=dp) :: w(20), Qfree, b, gred, wfree, Qfrcon, Qfreva, rhoa0, rhoa10
 
-double precision :: pr2=.49d0, xnuair=16d-6, cfree=0.14d0
+real(kind=dp) :: pr2=.49d0, xnuair=16d-6, cfree=0.14d0
 
-double precision :: rdry=287.05d-2 , rvap=461.495d-2 , evafac = 1d0
+real(kind=dp) :: rdry=287.05d-2 , rvap=461.495d-2 , evafac = 1d0
 
-double precision :: hlc, arn, wxL, wyL, bak2, twatb
+real(kind=dp) :: hlc, arn, wxL, wyL, bak2, twatb
 
-double precision :: qsunsoil, qwatsoil, watsoiltransfer, rdtsdz
+real(kind=dp) :: qsunsoil, qwatsoil, watsoiltransfer, rdtsdz
 
-double precision :: afrac                !< area fraction of ice cover (-)
-double precision :: Qlong_ice            !< coefficient for long wave radiation of ice (J m-2 s-1 K-4)
-double precision :: tsurf                !< surface temperature ... temperature of water, ice or snow depending on their presence (degC)
-double precision :: salinity             !< water salinity (ppt)
+real(kind=dp) :: afrac                !< area fraction of ice cover (-)
+real(kind=dp) :: Qlong_ice            !< coefficient for long wave radiation of ice (J m-2 s-1 K-4)
+real(kind=dp) :: tsurf                !< surface temperature ... temperature of water, ice or snow depending on their presence (degC)
+real(kind=dp) :: salinity             !< water salinity (ppt)
 
-double precision, parameter :: MIN_THICK = 0.001_fp !< threshold thickness for ice/snow to overrule the underlying layer (m)
+real(kind=dp), parameter :: MIN_THICK = 0.001_fp !< threshold thickness for ice/snow to overrule the underlying layer (m)
 
 if (ja_icecover /= ICECOVER_NONE) then
     afrac = 1d0 - ice_af(n)
@@ -426,8 +426,9 @@ endif
     contains
     
     !> function to compute saturation pressure of water vapour at a specified temperature
-    double precision function saturation_pressure(temp)
-    double precision :: temp !< temperature (degC)
+    real(kind=dp) function saturation_pressure(temp)
+  use precision, only: dp
+    real(kind=dp) :: temp !< temperature (degC)
     
     saturation_pressure = 10d0**((0.7859d0+0.03477d0*temp)/(1d0+0.00412d0*temp))
     ! 6.1121d0*exp( (18.678d0 - (temp/234.5d0))*(temp/(257.14d0+temp) ) )  ! Buck

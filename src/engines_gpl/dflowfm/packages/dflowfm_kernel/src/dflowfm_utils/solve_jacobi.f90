@@ -33,13 +33,14 @@ module m_solve_jacobi
    implicit none
 contains
  subroutine solve_jacobi(s1, ndx, itsol) ! uses both s0 and s1
+  use precision, only: dp
     use m_flowgeom, only: ln, kfs, nd
     use m_jacobi, only: bbi, db, itmxjac
     use m_reduce
 
-    double precision :: ds, rrn ! max error
+    real(kind=dp) :: ds, rrn ! max error
     integer :: L, n, ndx, itsol, nn, La, n1, n2, ni
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
 
     !$OMP PARALLEL DO                                          &
     !$OMP PRIVATE(n)

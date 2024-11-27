@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine RCIRC(X, Y)
+  use precision, only: dp
          use m_cir
          use m_wearelt
          use m_movabs
 
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
          call MOVABS(X, Y)
          call CIR(RCIR)
          return

@@ -37,14 +37,15 @@ implicit none
 contains
 
       subroutine DTEKTRI(X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3, NCOL, NCOLR)
+  use precision, only: dp
          use m_three_two
          use m_pfiller
 
          integer :: ncol
          integer :: ncolr
-         double precision :: zz
-         double precision :: XX(3), YY(3)
-         double precision X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3
+         real(kind=dp) :: zz
+         real(kind=dp) :: XX(3), YY(3)
+         real(kind=dp) X1, Y1, Z1, X2, Y2, Z2, X3, Y3, Z3
          call DRIETWEE(X1, Y1, Z1, XX(1), YY(1), ZZ)
          call DRIETWEE(X2, Y2, Z2, XX(2), YY(2), ZZ)
          call DRIETWEE(X3, Y3, Z3, XX(3), YY(3), ZZ)

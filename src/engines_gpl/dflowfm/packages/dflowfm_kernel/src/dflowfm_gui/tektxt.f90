@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine TEKTXT()
+  use precision, only: dp
          use m_wearelt
          use m_set_col
          use m_draw_text
@@ -51,7 +52,7 @@ contains
 !     REATXT
 !     ------------------------------------------------------------------
          parameter(maxtxt=2000)
-         double precision :: xtxt(maxtxt), ytxt(maxtxt), heitxt(maxtxt)
+         real(kind=dp) :: xtxt(maxtxt), ytxt(maxtxt), heitxt(maxtxt)
          integer symtxt(maxtxt), coltxt(maxtxt)
          character xytexts(maxtxt) * 120
 

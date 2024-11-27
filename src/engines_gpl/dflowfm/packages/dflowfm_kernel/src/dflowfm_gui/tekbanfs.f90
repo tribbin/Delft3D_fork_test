@@ -37,6 +37,7 @@ implicit none
 contains
 
 subroutine tekbanfs()
+  use precision, only: dp
    use m_isocol
    use m_dhtext
    use m_netw
@@ -47,10 +48,10 @@ subroutine tekbanfs()
    use m_get_equilibrium_transport_rates
    use m_set_col
    implicit none
-   double precision :: x, y, z, v, hsk
+   real(kind=dp) :: x, y, z, v, hsk
    integer :: kk, n, k, ncol
-   double precision :: seq(mxgr) !< sed equilibrium transport rate (kg/m/s) , dimension = mxgr
-   double precision :: wse(mxgr) !< effective fall velocity (m/s)           , dimension = mxgr, ws*crefa=wse*seq
+   real(kind=dp) :: seq(mxgr) !< sed equilibrium transport rate (kg/m/s) , dimension = mxgr
+   real(kind=dp) :: wse(mxgr) !< effective fall velocity (m/s)           , dimension = mxgr, ws*crefa=wse*seq
 
    if (ndraw(34) <= 1 .or. jaceneqtr == 1 .or. jased == 0) return
    call setcol(3)

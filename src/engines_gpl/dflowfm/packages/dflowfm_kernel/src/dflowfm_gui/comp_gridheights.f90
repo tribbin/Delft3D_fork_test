@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine comp_gridheights(mc, eheight, ierror)
+  use precision, only: dp
    use m_splines
    use m_gridsettings
    use m_spline2curvi
@@ -49,31 +50,31 @@ subroutine comp_gridheights(mc, eheight, ierror)
    implicit none
 
    integer, intent(in) :: mc !< number of grid points
-   double precision, dimension(Nsubmax, mc - 1), intent(out) :: eheight !< edge-based grid height for each subinterval of gridlayers
+   real(kind=dp), dimension(Nsubmax, mc - 1), intent(out) :: eheight !< edge-based grid height for each subinterval of gridlayers
    integer, intent(out) :: ierror !< 0: no error, 1: error
 
-   double precision, allocatable, dimension(:, :) :: hL, hR
-   double precision, allocatable, dimension(:) :: hL2, hR2
-!   double precision,              dimension(mcs)                       :: t
+   real(kind=dp), allocatable, dimension(:, :) :: hL, hR
+   real(kind=dp), allocatable, dimension(:) :: hL2, hR2
+!   real(kind=dp),              dimension(mcs)                       :: t
 
-   double precision, allocatable, dimension(:) :: sc !  grid points in center spline coordinates
-   double precision, allocatable, dimension(:, :) :: hgL, hgR !  grid heights at grid points
-   double precision, allocatable, dimension(:) :: hgL_loc, hgR_loc
+   real(kind=dp), allocatable, dimension(:) :: sc !  grid points in center spline coordinates
+   real(kind=dp), allocatable, dimension(:, :) :: hgL, hgR !  grid heights at grid points
+   real(kind=dp), allocatable, dimension(:) :: hgL_loc, hgR_loc
 
-   double precision, allocatable, dimension(:) :: xlist, ylist, hlist
+   real(kind=dp), allocatable, dimension(:) :: xlist, ylist, hlist
    integer, allocatable, dimension(:) :: nlistL, nlistR, nlist_loc
 
-   double precision :: fac, tL, tR
+   real(kind=dp) :: fac, tL, tR
 
 !  grid cross splines, per edge
    integer :: ncs, ndx
    integer, allocatable, dimension(:) :: ics, idx
-   double precision, allocatable, dimension(:) :: t
+   real(kind=dp), allocatable, dimension(:) :: t
 
    integer :: is, igL, igR, mfacmax, isL, isR
    integer :: i, iL, iR, j, num, NsubL, NsubR, numnew
 
-   double precision, external :: splinelength_int
+   real(kind=dp), external :: splinelength_int
 
    ierror = 1
 

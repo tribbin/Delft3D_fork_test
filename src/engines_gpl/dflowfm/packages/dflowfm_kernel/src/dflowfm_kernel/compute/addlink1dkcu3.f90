@@ -41,6 +41,7 @@ public :: addlink1Dkcu3
 contains
 
  subroutine addlink1Dkcu3(L, japerim) ! and add area's and volumes of 1D link kcu3
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_missing
@@ -54,8 +55,8 @@ contains
     integer :: japerim, L
 
     integer :: k1, k2, calcConv
-    double precision :: ar1, wid1, ar2, wid2, dx1, dx2, widu, perim
-    double precision :: hpr
+    real(kind=dp) :: ar1, wid1, ar2, wid2, dx1, dx2, widu, perim
+    real(kind=dp) :: hpr
 
     if (japerim == 0) then
        calcConv = 0

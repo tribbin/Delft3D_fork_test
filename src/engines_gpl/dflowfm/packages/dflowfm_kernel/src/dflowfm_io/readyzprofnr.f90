@@ -44,6 +44,7 @@ contains
  !! When the model is in spherical coordinates, the x,y pairs (lon,lat) are translated
  !! into metric distances.
  subroutine readyzprofnr(myzprofs, iprofnr, nyz, yy, zz, mx, width, height, zmin)
+  use precision, only: dp
     use unstruc_messages
     use m_profiles, only: tolzprof, ntolsave
     use geometry_module, only: dbdistance
@@ -51,11 +52,11 @@ contains
     use m_missing
     implicit none
     integer :: myzprofs, iprofnr, nyz, mx
-    double precision :: yy(mx), zz(mx), width, height, zmin
+    real(kind=dp) :: yy(mx), zz(mx), width, height, zmin
 
     integer :: L, nr, n, ikp(9999), n0, n1, n2, nn
     character(len=256) :: rec, tex
-    double precision :: xx0, yy0, zz0, xx1, yy1, zz1, zmax, a, b, dif, zn1, y01, y02, dy
+    real(kind=dp) :: xx0, yy0, zz0, xx1, yy1, zz1, zmax, a, b, dif, zn1, y01, y02, dy
 
     nyz = 0
 

@@ -37,9 +37,10 @@ implicit none
 contains
 
  subroutine fdster(dster, taucr, thetcr, pclay, g, d50, rhos, rhow, FCR)
+  use precision, only: dp
     implicit none
-    double precision :: dster, taucr, thetcr, pclay, g, d50, rhos, rhow, FCR
-    double precision :: dsand, dsilt, cmaxs, fch1, cmax, fpack, fclay
+    real(kind=dp) :: dster, taucr, thetcr, pclay, g, d50, rhos, rhow, FCR
+    real(kind=dp) :: dsand, dsilt, cmaxs, fch1, cmax, fpack, fclay
     if (DSTER <= 1.) THETCR = .24 ! this line added by hk and svdp: critical shields parameter
     if (DSTER <= 4.) THETCR = 0.115 / (DSTER)**0.5
     if (4. < DSTER .and. DSTER <= 10.) THETCR = .14 * DSTER**(-.64)

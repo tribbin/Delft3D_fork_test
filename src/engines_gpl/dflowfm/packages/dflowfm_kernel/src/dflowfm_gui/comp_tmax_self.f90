@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine comp_tmax_self(mc, xc, yc, vel, tmax)
+  use precision, only: dp
 
    use m_missing
    use geometry_module, only: dbdistance
@@ -46,20 +47,20 @@ subroutine comp_tmax_self(mc, xc, yc, vel, tmax)
    implicit none
 
    integer, intent(in) :: mc !< number of grid points
-   double precision, dimension(mc), intent(in) :: xc, yc !< coordinates of grid points
-   double precision, dimension(2, mc), intent(in) :: vel !< velocity vector at grid points
+   real(kind=dp), dimension(mc), intent(in) :: xc, yc !< coordinates of grid points
+   real(kind=dp), dimension(2, mc), intent(in) :: vel !< velocity vector at grid points
 
-   double precision, dimension(mc - 1), intent(inout) :: tmax !< maximum allowable grid layer growth time
+   real(kind=dp), dimension(mc - 1), intent(inout) :: tmax !< maximum allowable grid layer growth time
 
-   double precision, dimension(mc - 1) :: edge_width, edge_incr
+   real(kind=dp), dimension(mc - 1) :: edge_width, edge_incr
 
-   double precision :: dt
+   real(kind=dp) :: dt
 
    integer :: i, jsferic_old
 
-   double precision, parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: dtol = 1d-8
 
-   double precision, external :: dprodin
+   real(kind=dp), external :: dprodin
 
 !  work in model-coordinates
    jsferic_old = jsferic

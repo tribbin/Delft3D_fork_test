@@ -3739,7 +3739,8 @@ contains
       !     DESCRIPTION
       !
       !     This copied from richard's subroutine astrol, in goes the
-      !     modified Julian date, out comes an array of six double precision
+  use precision, only: dp
+      !     modified Julian date, out comes an array of six real(kind=dp)
       !     variables used for Doodson number computations
       !
       !     Computes the basic astronomical mean longitudes  s, h, p, N.
@@ -3765,7 +3766,7 @@ contains
       real(kind=dp) :: six(6), mjdate
       !
       !     mjdate      i    modified julian day (24-jan-2008 0:00 UTC : 54489.00000)
-      !     six           o  array of six double precision variables used for Doodson
+      !     six           o  array of six real(kind=dp) variables used for Doodson
       !                      number computations
       !                      see also Cartwright 1993, summer school lecture notes,
       !                      page 108

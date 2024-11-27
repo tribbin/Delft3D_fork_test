@@ -35,10 +35,11 @@ use m_rectangle
    implicit none
 contains
       subroutine FBOXNOP(XB1, YB1, XB2, YB2)
+  use precision, only: dp
          use m_fboxold
          use m_drawthis
 
-         double precision :: xb1, xb2, yb1, yb2
+         real(kind=dp) :: xb1, xb2, yb1, yb2
 
          if (ndraw(10) == 0) then
             call RECTANGLE(real(XB1), real(YB1), real(XB2), real(YB2))

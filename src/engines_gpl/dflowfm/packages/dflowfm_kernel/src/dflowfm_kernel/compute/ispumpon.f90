@@ -37,12 +37,13 @@ implicit none
 contains
 
  integer function ispumpon(n, s1k)
+  use precision, only: dp
     use fm_external_forcings_data
     use m_missing
     use m_structures
 
     integer, intent(in) :: n
-    double precision, intent(in) :: s1k
+    real(kind=dp), intent(in) :: s1k
     ! this is for safety, check arrays before dereference
     if (.not. allocated(pumponoff)) then
        ispumpon = 1

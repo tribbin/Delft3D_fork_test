@@ -42,6 +42,7 @@ public :: fillsystem_advec
 contains
 
    subroutine fillsystem_advec(ierror)
+  use precision, only: dp
       use m_flowgeom, only: ln, lnx, csu, snu, nd, ndx, ndxi
       use m_flow, only: vol1, Au
       use m_advec_data
@@ -51,8 +52,8 @@ contains
 
       integer, intent(inout) :: ierror
 
-      double precision :: dfac
-      double precision :: ux, uy
+      real(kind=dp) :: dfac
+      real(kind=dp) :: ux, uy
 
       integer :: i, irow, irowother, idir, ishift
       integer :: ipoint, ipointdiag

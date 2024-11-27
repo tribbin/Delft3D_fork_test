@@ -42,6 +42,7 @@ public :: comp_fluxver
 contains
 
 subroutine comp_fluxver(NUMCONST, limtyp, thetavert, Ndkx, zws, qw, kbot, ktop, sed, nsubsteps, jaupdate, ndeltasteps, flux, wsf)
+  use precision, only: dp
    use m_flowgeom, only: Ndx, ba, kfs ! static mesh information
    use m_flowtimes, only: dts
    use m_flow, only: s1, epshsdif, cffacver, jaimplicitfallvelocity ! do not use m_flow, please put this in the argument list
@@ -57,29 +58,29 @@ subroutine comp_fluxver(NUMCONST, limtyp, thetavert, Ndkx, zws, qw, kbot, ktop, 
 
    integer, intent(in) :: NUMCONST !< number of transported quantities
    integer, intent(in) :: limtyp !< limiter type
-   double precision, dimension(NUMCONST), intent(in) :: thetavert !< compute fluxes (<1) or not (1)
+   real(kind=dp), dimension(NUMCONST), intent(in) :: thetavert !< compute fluxes (<1) or not (1)
    integer, intent(in) :: Ndkx !< total number of flownodes (dynamically changing)
-   double precision, dimension(Ndkx), intent(in) :: zws !< vertical coordinate of layers at interface/center locations
-   double precision, dimension(Ndkx), intent(in) :: qw !< flow-field vertical discharges
+   real(kind=dp), dimension(Ndkx), intent(in) :: zws !< vertical coordinate of layers at interface/center locations
+   real(kind=dp), dimension(Ndkx), intent(in) :: qw !< flow-field vertical discharges
    integer, dimension(Ndx), intent(in) :: kbot !< flow-node based layer administration
    integer, dimension(Ndx), intent(in) :: ktop !< flow-node based layer administration
-   double precision, dimension(NUMCONST, Ndkx), intent(in) :: sed !< transported quantities
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: sed !< transported quantities
    integer, intent(in) :: nsubsteps !< number of substeps
    integer, dimension(Ndx), intent(in) :: jaupdate !< update cell (1) or not (0)
    integer, dimension(Ndx), intent(in) :: ndeltasteps !< number of substeps between updates
-   double precision, dimension(NUMCONST, Ndkx), intent(inout) :: flux !< adds vertical advection fluxes
-   double precision, dimension(NUMCONST), intent(in) :: wsf !< vertical fall velocities
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(inout) :: flux !< adds vertical advection fluxes
+   real(kind=dp), dimension(NUMCONST), intent(in) :: wsf !< vertical fall velocities
 
-   double precision, dimension(2049) :: dz
+   real(kind=dp), dimension(2049) :: dz
 
-   double precision :: sedL, sedR, ds1L, ds2L, ds1R, ds2R, sl3L, sl3R, cf
-   double precision :: dt_loc
-   double precision :: qw_loc
+   real(kind=dp) :: sedL, sedR, ds1L, ds2L, ds1R, ds2R, sl3L, sl3R, cf
+   real(kind=dp) :: dt_loc
+   real(kind=dp) :: qw_loc
 
    integer :: kk, k, kb, kt, kL, kR, kLL, kRR
    integer :: j, ll
 
-   double precision, parameter :: DTOL = 1d-8
+   real(kind=dp), parameter :: DTOL = 1d-8
 
    integer(4) :: ithndl = 0
    

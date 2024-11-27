@@ -34,6 +34,7 @@ contains
 !
 !> initialise vertical coordinates
  subroutine setkbotktop(jazws0) 
+  use precision, only: dp
     use m_flowgeom, only: ndx, ba, bl, ln, lnx, nd
     use m_flow
     use m_flowtimes, only: dts, ti_waq
@@ -46,12 +47,12 @@ contains
 
     integer :: k2, kb, k, n, kk, nL, nR, nlayb, nrlay, ktx
     integer :: kt0, kt1, kt2, kt3, LL, L, Lb, Lt, n1, n2, kb1, kb2, kt, kkk, kwaq, Ldn
-    double precision :: zkk, h0, toplaymint, volkt, savolkt, tevolkt, dtopsi
-    double precision :: w1, w2, w3, h1, h2, h3, zw1, zw2, zw3, bL1, bL2, bL3, ht1, ht2, ht3
+    real(kind=dp) :: zkk, h0, toplaymint, volkt, savolkt, tevolkt, dtopsi
+    real(kind=dp) :: w1, w2, w3, h1, h2, h3, zw1, zw2, zw3, bL1, bL2, bL3, ht1, ht2, ht3
     integer :: k1, k3, kb3, kk1, kk2, kk3
 
     integer :: numbd, numtp, j
-    double precision :: drhok, a, aa, h00, zsl, aaa, sig, dsig, dsig0
+    real(kind=dp) :: drhok, a, aa, h00, zsl, aaa, sig, dsig, dsig0
 
     if (kmx == 0) return
 

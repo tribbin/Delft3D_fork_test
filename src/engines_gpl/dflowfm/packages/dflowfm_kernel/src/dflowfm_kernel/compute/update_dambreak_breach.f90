@@ -41,6 +41,7 @@ public :: update_dambreak_breach
 contains
 
 subroutine update_dambreak_breach(startTime, deltaTime)
+  use precision, only: dp
 
    use m_flowgeom
    use m_flow
@@ -56,11 +57,11 @@ subroutine update_dambreak_breach(startTime, deltaTime)
    implicit none
 
    !in-out
-   double precision, intent(in) :: startTime
-   double precision, intent(in) :: deltaTime
+   real(kind=dp), intent(in) :: startTime
+   real(kind=dp), intent(in) :: deltaTime
 
    !locals
-   double precision :: tempValue, smax, smin, hmx, hmn
+   real(kind=dp) :: tempValue, smax, smin, hmx, hmn
    integer :: n, ierr, istru, indexLevelsAndWidths
 
    if (ndambreaksignals > 0) then ! Variable ndambreaksignals is >0 for all partitions if there is a dambreak, even if it is outside

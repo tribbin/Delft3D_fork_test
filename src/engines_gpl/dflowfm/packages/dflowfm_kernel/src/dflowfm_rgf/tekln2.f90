@@ -33,6 +33,7 @@ module m_tekln2
    implicit none
 contains
       subroutine TEKLN2(X, Y, mmax, nmax, M1, N1, M2, N2, NCOL)
+  use precision, only: dp
 !     TEKEN EEN LIJN IN GRID (MET CIRKELS ROND DE UITEINDEN)
          use m_missing, only: xymis
          use m_cirr
@@ -41,7 +42,7 @@ contains
          use m_lnabs
 
          integer :: mmax, nmax, m1, n1, m2, n2, ncol
-         double precision :: X(MMAX, NMAX), Y(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX)
 
          integer :: istart, i, j, in, jn
 

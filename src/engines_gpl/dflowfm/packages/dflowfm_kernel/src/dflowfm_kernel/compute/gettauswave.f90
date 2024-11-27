@@ -37,6 +37,7 @@ use m_linkstocentercartcomp
 contains
 !> Make output arrays for bed shear stress icm jawave>0, depending on waq coupling and 2D/3D
    subroutine gettauswave(waveswartdelwaq)
+  use precision, only: dp
       use m_flow
       use m_waves
       use m_flowgeom
@@ -49,9 +50,9 @@ contains
 
       ! Local variables
       integer :: L, LL, k1, k2, k, kb, kt, nn
-      double precision :: fw, ustw2, ust2, ust, cfn, wa, ar, cf, frcn, cz, z00
-      double precision :: ucxb, ucyb, ucxs, ucys, um, tauL
-      double precision, allocatable :: ustv(:, :)
+      real(kind=dp) :: fw, ustw2, ust2, ust, cfn, wa, ar, cf, frcn, cz, z00
+      real(kind=dp) :: ucxb, ucyb, ucxs, ucys, um, tauL
+      real(kind=dp), allocatable :: ustv(:, :)
 
       taus = 0d0
       workx = 0d0 ! save 2 arrays

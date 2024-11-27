@@ -39,6 +39,7 @@ implicit none
 contains
 
       subroutine TEKNET(ja)
+  use precision, only: dp
 
          use m_tekfaces
          use m_setlinkcolour
@@ -65,7 +66,7 @@ contains
          integer :: k2
          integer :: k3
          integer :: L, LL
-         double precision :: d1, d2, x, y
+         real(kind=dp) :: d1, d2, x, y
 
          if (NDRAW(2) <= 0 .or. NUML == 0) return
 

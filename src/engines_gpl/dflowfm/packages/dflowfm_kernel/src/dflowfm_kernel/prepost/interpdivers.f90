@@ -33,6 +33,7 @@ module m_interpdivers
    implicit none
 contains
  subroutine interpdivers(naar)
+  use precision, only: dp
 
     use m_netw
     use M_FLOWGEOM
@@ -47,8 +48,8 @@ contains
     use m_qnerror
     use m_get_samples_boundingbox
 
-    double precision, allocatable :: XX(:, :), YY(:, :)
-    double precision, allocatable :: XXX(:), YYY(:)
+    real(kind=dp), allocatable :: XX(:, :), YY(:, :)
+    real(kind=dp), allocatable :: XXX(:), YYY(:)
     integer, allocatable :: NNN(:)
 
     integer, intent(in) :: naar !< 1: To flow nodes, 2: to zk net nodes.

@@ -31,7 +31,7 @@
 
 module m_filter
 use m_solversettings, only: solversettings
-
+use precision, only: dp
 
 implicit none
 
@@ -66,7 +66,7 @@ subroutine ini_filter(jafilter, filterorder, jacheckmonitor, ierr)
 
 !   integer,          dimension(:), allocatable :: iLvec  !< vector Laplacian in CRS format, startpointers
 !   integer,          dimension(:), allocatable :: jLvec  !< vector Laplacian in CRS format, row numbers
-!   double precision, dimension(:), allocatable :: ALvec  !< vector Laplacian in CRS format, matrix entries
+!   real(kind=dp), dimension(:), allocatable :: ALvec  !< vector Laplacian in CRS format, matrix entries
 
 !   integer, dimension(:), allocatable :: num
 
@@ -77,7 +77,7 @@ subroutine ini_filter(jafilter, filterorder, jacheckmonitor, ierr)
 !
 !   character(len=LENFILNAM)           :: FNAM
 
-   double precision :: dfacDiv, dfacCurl, dfac, val
+   real(kind=dp) :: dfacDiv, dfacCurl, dfac, val
 
    integer :: kk, k
    integer :: L, L2, Lf, Lf2, LL2
@@ -428,9 +428,9 @@ subroutine add_rowelem(jA, A, N, j, val, num)
 
    integer, intent(in) :: N !< array length
    integer, dimension(N), intent(inout) :: jA !< rownumber array
-   double precision, dimension(N), intent(inout) :: A !< matrix values
+   real(kind=dp), dimension(N), intent(inout) :: A !< matrix values
    integer, intent(in) :: j !< rownumber to be inserted
-   double precision, intent(in) :: val !< value to be inserted
+   real(kind=dp), intent(in) :: val !< value to be inserted
    integer, intent(inout) :: num !< number of nonzero entries
 
    integer :: i, i2
@@ -482,8 +482,8 @@ subroutine comp_filter_predictor()
    use m_writematrix
    implicit none
 
-   double precision :: fac, dsign
-   double precision :: dt
+   real(kind=dp) :: fac, dsign
+   real(kind=dp) :: dt
 
    integer :: klay, LL, L
    integer :: Lb, Lt
@@ -500,7 +500,7 @@ subroutine comp_filter_predictor()
 
    integer :: lunfil
 
-   double precision, parameter :: facmax = 0.9d0 ! safety factor for maximum allowed sub time step
+   real(kind=dp), parameter :: facmax = 0.9d0 ! safety factor for maximum allowed sub time step
 
    if (itype == 0) return
 
@@ -719,7 +719,7 @@ subroutine get_dtmaxeps()
    use m_filter_data
    implicit none
 
-   double precision :: diag, offdiag
+   real(kind=dp) :: diag, offdiag
 
    integer :: i, j
    integer :: L
@@ -771,12 +771,12 @@ subroutine get_Deltax()
    use m_filter_data
    implicit none
 
-   double precision :: dinpr
+   real(kind=dp) :: dinpr
 
    integer :: L, L1
    integer :: j
 
-   double precision, parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: dtol = 1d-8
 
    do L = 1, Lnx
       Deltax(L) = Dx(L)
@@ -811,7 +811,7 @@ subroutine comp_checkmonitor()
    use m_get_Lbot_Ltop
    implicit none
 
-   double precision :: area
+   real(kind=dp) :: area
    integer :: kk1, kk2, k1, k2
    integer :: Ll, L, Lb, Lt
    integer :: klay
@@ -871,15 +871,15 @@ subroutine get_filter_coeff()
    use m_filter_data, only: iLvec, jLvec, ALvec, eps, order, Deltax
    use m_get_Lbot_Ltop
 
-   double precision, dimension(kmx) :: eps1 ! first-order filter coefficient
-   double precision :: eps2 ! second-order filter coefficient
-   double precision :: eps3 ! third-order filter coefficient
+   real(kind=dp), dimension(kmx) :: eps1 ! first-order filter coefficient
+   real(kind=dp) :: eps2 ! second-order filter coefficient
+   real(kind=dp) :: eps3 ! third-order filter coefficient
 
-   double precision :: dsign
-   double precision :: Q
-   double precision :: wcx, wcy, w, alpha
-   double precision :: volu
-   double precision :: vicouv !< typical viscosity
+   real(kind=dp) :: dsign
+   real(kind=dp) :: Q
+   real(kind=dp) :: wcx, wcy, w, alpha
+   real(kind=dp) :: volu
+   real(kind=dp) :: vicouv !< typical viscosity
 
    integer :: klay
    integer :: LL
@@ -892,7 +892,7 @@ subroutine get_filter_coeff()
 
    integer :: ierror
 !
-   double precision, parameter :: dtol = 0.01d0
+   real(kind=dp), parameter :: dtol = 0.01d0
 
    ierror = 1
 

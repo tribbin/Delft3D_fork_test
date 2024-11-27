@@ -43,6 +43,7 @@ public :: advecdriver
 contains
 
  subroutine advecdriver()
+  use precision, only: dp
     use m_advec, only: advec
     use m_flowtimes
     use m_flow
@@ -50,7 +51,7 @@ contains
     use m_setucxcuy_leastsquare, only: reconst2nd
     implicit none
 
-    double precision :: dta, das, ds
+    real(kind=dp) :: dta, das, ds
     integer :: L, k1, k2, k
 
     if (itstep == 3) then

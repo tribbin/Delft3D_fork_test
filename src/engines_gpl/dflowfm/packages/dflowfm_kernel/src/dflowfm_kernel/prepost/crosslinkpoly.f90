@@ -43,6 +43,7 @@ contains
   !> Finds the crossing of link L with the current polyline.
   !! returns first crossing, if found, JA=1
   subroutine CROSSLINKPOLY(L, num, ipoly, jdxL, pdxL, XM, YM, JA)
+  use precision, only: dp
 
      use m_missing, only: dmiss
      use m_netw
@@ -53,7 +54,7 @@ contains
      use m_qnerror
 
      integer :: L, JA
-     double precision :: XM, YM
+     real(kind=dp) :: XM, YM
      integer, intent(in) :: num !< number of polygon sections that intersect netlink L
      integer, intent(in) :: ipoly !< polygon identifier
      integer, dimension(num), intent(in) :: jdxL !< polygon sections that intersect netlink L
@@ -64,15 +65,15 @@ contains
      integer :: k1
      integer :: k2
      integer :: ku
-     double precision :: XP1, YP1, XP2, YP2, SL, SM, XCR, YCR, CRP, dis
+     real(kind=dp) :: XP1, YP1, XP2, YP2, SL, SM, XCR, YCR, CRP, dis
 
-     double precision, parameter :: dtol = 1d-8
+     real(kind=dp), parameter :: dtol = 1d-8
 
      integer :: i
      integer :: janew
      integer :: numcrossed
      integer, parameter :: MAXCROSS = 100
-     double precision, dimension(MAXCROSS) :: xcross, ycross
+     real(kind=dp), dimension(MAXCROSS) :: xcross, ycross
 
      K1 = KN(1, L); K2 = KN(2, L)
 

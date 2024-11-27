@@ -41,13 +41,14 @@ public :: togeneral
 contains
 
 subroutine togeneral(ng, hulp, ngen, widths)
+  use precision, only: dp
    use m_strucs
    use m_alloc
 
    integer, intent(in) :: ng !< Index of this general structure in the generalstruc(:) array
-   double precision, intent(in) :: hulp(26) !< genstru params read from file
+   real(kind=dp), intent(in) :: hulp(26) !< genstru params read from file
    integer, intent(in) :: ngen !< Number of flow links crossed by this single general structure
-   double precision, intent(in) :: widths(ngen) !< wu(L) values for all links crossed by this single general structure
+   real(kind=dp), intent(in) :: widths(ngen) !< wu(L) values for all links crossed by this single general structure
 
    generalstruc(ng)%widthleftW1 = hulp(1) !< this and following: see Sobek manual
    generalstruc(ng)%levelleftZb1 = hulp(2)

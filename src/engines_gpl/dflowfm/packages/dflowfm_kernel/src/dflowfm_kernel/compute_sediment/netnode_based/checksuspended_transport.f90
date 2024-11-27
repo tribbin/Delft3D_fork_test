@@ -43,14 +43,15 @@ public :: checksuspended_transport
 contains
 
  subroutine checksuspended_transport()
+  use precision, only: dp
     use m_check_einstein_garcia
     implicit none
-    double precision :: hsk
-    double precision :: ucr, ueff, Ucur, Pmob, sster, wster, ws
-    double precision :: aref, Tmob, crefa, ustar, rouse, sqcf, z0k, dks, hdune, qssevr84
-    double precision :: qsseqcheck, eincheck, eincheck2
-    double precision :: D50, D90, dstar, ag, sag, vonkar, ee, rhomean, rhosed, sqsgd50, temp, vismol, c1, c2
-    double precision :: Accr, rhodelta, wschk, ff, hf, df, D50a, hska
+    real(kind=dp) :: hsk
+    real(kind=dp) :: ucr, ueff, Ucur, Pmob, sster, wster, ws
+    real(kind=dp) :: aref, Tmob, crefa, ustar, rouse, sqcf, z0k, dks, hdune, qssevr84
+    real(kind=dp) :: qsseqcheck, eincheck, eincheck2
+    real(kind=dp) :: D50, D90, dstar, ag, sag, vonkar, ee, rhomean, rhosed, sqsgd50, temp, vismol, c1, c2
+    real(kind=dp) :: Accr, rhodelta, wschk, ff, hf, df, D50a, hska
 
     integer :: j, i, mout, nx = 4
 

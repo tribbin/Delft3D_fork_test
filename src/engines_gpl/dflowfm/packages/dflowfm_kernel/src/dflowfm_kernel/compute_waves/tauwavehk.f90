@@ -41,6 +41,7 @@ public :: tauwavehk
 contains
 
  subroutine tauwavehk(Hrms, Tsig, Depth, Uorbi, rlabd, ust)
+  use precision, only: dp
     use m_getwavenr, only: getwavenr
     use m_flow, only: rhog
     use m_sferic
@@ -48,10 +49,10 @@ contains
     use m_drawthis
 
     implicit none
-    double precision :: Hrms, Tsig, Depth, uorbi, hrm, ust
-    double precision :: hk, sh2hk, hksh2, asg, ew, sxx, syy, sxy, syx, shs, cp, cg, omeg
-    double precision :: rk, rkx, rky, cgcp, rk2cgcp, cgcp5, arms, rlabd
-    double precision, external :: tanhsafe, sinhsafe, sinhsafei
+    real(kind=dp) :: Hrms, Tsig, Depth, uorbi, hrm, ust
+    real(kind=dp) :: hk, sh2hk, hksh2, asg, ew, sxx, syy, sxy, syx, shs, cp, cg, omeg
+    real(kind=dp) :: rk, rkx, rky, cgcp, rk2cgcp, cgcp5, arms, rlabd
+    real(kind=dp), external :: tanhsafe, sinhsafe, sinhsafei
 
     if (depth < 0.01d0 .or. Tsig < 0.1d0) then ! flume cases with wave nr 5
        Uorbi = 0d0; rlabd = 0d0; ust = 0d0

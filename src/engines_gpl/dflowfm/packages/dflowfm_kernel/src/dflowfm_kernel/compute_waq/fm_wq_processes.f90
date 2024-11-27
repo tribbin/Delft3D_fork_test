@@ -897,6 +897,7 @@ end subroutine fm_wq_processes_ini_proc
 
 !! @return Integer result status (0 if successful)
 subroutine dfm_waq_initexternalforcings(iresult)
+  use precision, only: dp
    use fm_external_forcings
    use m_alloc
    use fm_external_forcings_data
@@ -921,6 +922,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
    use m_find_name, only: find_name
 
    implicit none
+   
    integer, intent(out) :: iresult
 
    character(len=256) :: filename, sourcemask
@@ -928,7 +930,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
    integer :: klocal, waqseg2D, waqseglay
    character(len=NAMTRACLEN) :: qidnam
    character(len=20) :: waqinput
-   double precision, allocatable :: viuh(:) ! temporary variable
+   real(kind=dp), allocatable :: viuh(:) ! temporary variable
 
    integer(4), save :: ithndl = 0
 
@@ -1299,6 +1301,7 @@ subroutine add_wqbot(wqbotnam, wqbotunit, iwqbot, janew)
 end subroutine add_wqbot
 
 subroutine fm_wq_processes_step(dt, time)
+  use precision, only: dp
    use m_fm_wq_processes
    use m_wq_processes_proces
    use m_mass_balance_areas
@@ -1308,8 +1311,8 @@ subroutine fm_wq_processes_step(dt, time)
 
    implicit none
 
-   double precision, intent(in) :: dt !< timestep for waq in seconds
-   double precision, intent(in) :: time !< time     for waq in seconds
+   real(kind=dp), intent(in) :: dt !< timestep for waq in seconds
+   real(kind=dp), intent(in) :: time !< time     for waq in seconds
 
    integer :: ipoiconc
 
@@ -1360,6 +1363,7 @@ subroutine fm_wq_processes_step(dt, time)
 end subroutine fm_wq_processes_step
 
 subroutine copy_data_from_fm_to_wq_processes(time)
+  use precision, only: dp
    !  copy data from D-FlowFM to WAQ
    use m_getfetch, only: getfetch
    use m_getkbotktopmax
@@ -1377,9 +1381,9 @@ subroutine copy_data_from_fm_to_wq_processes(time)
    use m_get_link1
    implicit none
 
-   double precision, intent(in) :: time !< time     for waq in seconds
+   real(kind=dp), intent(in) :: time !< time     for waq in seconds
 
-   double precision :: u10, dir, wdir, FetchL, FetchD
+   real(kind=dp) :: u10, dir, wdir, FetchL, FetchD
    integer :: isys, iconst, iwqbot
    integer :: ipoisurf, ipoitau, ipoivel
    integer :: ipoivol, ipoiconc, ipoisal, ipoitem
@@ -1688,7 +1692,7 @@ end subroutine copy_data_from_fm_to_wq_processes
 
 subroutine copy_data_from_wq_processes_to_fm(dt, tim)
    !  copy data from WAQ to D-FlowFM
-   use m_getkbotktopmax
+  use m_getkbotktopmax
    use m_missing, only: dmiss
    use m_flowgeom, only: Ndxi, ba
    use m_flow, only: vol1
@@ -1702,8 +1706,8 @@ subroutine copy_data_from_wq_processes_to_fm(dt, tim)
 
    implicit none
 
-   double precision, intent(in) :: dt
-   double precision, intent(in) :: tim
+   real(kind=dp), intent(in) :: dt
+   real(kind=dp), intent(in) :: tim
 
    integer :: isys, iconst, iwqbot
    integer :: ivar, iarr, iv_idx
@@ -1834,6 +1838,7 @@ logical function wq_processes_mydomain(iseg)
 end function wq_processes_mydomain
 
 logical function reduce_sum_wq_processes(size_wq_processes_data, wq_processes_data)
+  use precision, only: dp
 
    use m_partitioninfo
 
@@ -1842,8 +1847,8 @@ logical function reduce_sum_wq_processes(size_wq_processes_data, wq_processes_da
    integer :: size_wq_processes_data
    real :: wq_processes_data(size_wq_processes_data)
 
-   double precision :: mpi_wq_processes_data(size_wq_processes_data)
-   double precision :: mpi_wq_processes_data_reduce(size_wq_processes_data)
+   real(kind=dp) :: mpi_wq_processes_data(size_wq_processes_data)
+   real(kind=dp) :: mpi_wq_processes_data_reduce(size_wq_processes_data)
 
    if (jampi == 1) then
       mpi_wq_processes_data = dble(wq_processes_data)

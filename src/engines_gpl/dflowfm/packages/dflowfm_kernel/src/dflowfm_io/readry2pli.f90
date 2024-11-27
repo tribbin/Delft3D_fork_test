@@ -33,10 +33,11 @@ module m_read_dry2pli
    implicit none
 contains
  subroutine readry2pli(mthd, mout) ! convert barrier v file to model independent, barv content =  m,n,sill depth
+  use precision, only: dp
     use m_grid, only: xc, yc
 
     integer :: mthd, mout
-    double precision :: z = 9999d0
+    real(kind=dp) :: z = 9999d0
     character(len=132) :: rec
     integer :: m, n
 

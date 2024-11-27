@@ -36,7 +36,8 @@ implicit none
 
 contains
 
- double precision function Qucnu(n12, L) ! sum of (Q*uc cell centre upwind normal) at side n12 of link L
+ real(kind=dp) function Qucnu(n12, L) ! sum of (Q*uc cell centre upwind normal) at side n12 of link L
+  use precision, only: dp
     use m_flow ! advect the cell center velocities (dimension: m4/s2)
     use m_flowgeom ! leaving the cell = +
     implicit none
@@ -47,11 +48,11 @@ contains
     ! locals
     integer :: LL, LLL, LLLL ! for links LL,
     integer :: k12, kup ! relevant node, 1 or 2, L/R
-    double precision :: cs, sn, ucin, ucinx, uciny
+    real(kind=dp) :: cs, sn, ucin, ucinx, uciny
 
     integer :: nn12
 
-    double precision, external :: lin2nodx, lin2nody, nod2linx, nod2liny
+    real(kind=dp), external :: lin2nodx, lin2nody, nod2linx, nod2liny
 
     Qucnu = 0d0
     cs = csu(L)

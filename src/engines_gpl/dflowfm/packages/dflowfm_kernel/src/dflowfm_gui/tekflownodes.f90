@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine tekflownodes(ja)
+  use precision, only: dp
     use m_isosmoothflownode
     use m_isocol
     use m_halt
@@ -56,7 +57,7 @@ contains
     implicit none
     integer :: nodemode, nodewhat
     integer :: k, ja, ja2, nn, ncol
-    double precision :: zn
+    real(kind=dp) :: zn
 
     nodemode = ndraw(19)
     nodewhat = ndraw(28)

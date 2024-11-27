@@ -41,6 +41,7 @@ public :: compareanalytic
 contains
 
 subroutine compareanalytic(s, x, mmax)
+  use precision, only: dp
 
    use m_flowgeom
    use m_flow
@@ -48,8 +49,8 @@ subroutine compareanalytic(s, x, mmax)
    use m_inview
 
    integer :: mmax
-   double precision :: s(0:mmax), x(0:mmax)
-   double precision :: alf, dif, si
+   real(kind=dp) :: s(0:mmax), x(0:mmax)
+   real(kind=dp) :: alf, dif, si
    integer :: n, i, ii
 
    call statisticsnewstep()

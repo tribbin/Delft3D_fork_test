@@ -37,14 +37,15 @@
                         mmax, nmax, imax, &
                         M1, N1, M2, N2, MC, NC, &
                         MFAC, NFAC, IJYES)
-         use m_missing
+           use precision, only: dp
+           use m_missing
          use m_splint
          use m_readyy
          use m_get_ij
          implicit none
 
          integer :: mmax, nmax, imax, m1, n1, m2, n2, mc, nc, mfac, nfac
-         double precision :: X(MMAX, NMAX), XR(MMAX, NMAX), &
+         real(kind=dp) :: X(MMAX, NMAX), XR(MMAX, NMAX), &
             Y(MMAX, NMAX), YR(MMAX, NMAX), &
             XI2(MMAX, NMAX), XJ2(MMAX, NMAX), &
             YI2(MMAX, NMAX), YJ2(MMAX, NMAX), &
@@ -63,7 +64,7 @@
             XRH(MMAX, NMAX), YRH(MMAX, NMAX)
          integer IJYES(MMAX, NMAX)
 
-         double precision :: af, TI, TJ
+         real(kind=dp) :: af, TI, TJ
          integer :: md, nd, mfa, nfa, mfaa, nfaa, ki1, i1, i2, j1, j2, &
                     KI, LJ, LJ1, K, L, dum
          XR = dmiss

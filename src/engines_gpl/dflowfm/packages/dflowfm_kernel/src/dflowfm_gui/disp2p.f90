@@ -38,6 +38,7 @@ implicit none
 contains
 
       subroutine DISP2P(X, Y, MMAX, MC, NC, NCOL)
+  use precision, only: dp
          use m_cir
          use m_set_col
          use m_movabs
@@ -49,7 +50,7 @@ contains
          integer :: nc
          integer :: ncol
 !     LAAT EEN TWEEDIMENSIONALE FUNCTIE ZIEN MET PUNTJES
-         double precision :: X(MMAX, MMAX), Y(MMAX, MMAX)
+         real(kind=dp) :: X(MMAX, MMAX), Y(MMAX, MMAX)
          call SETCOL(NCOL)
          do I = 1, MC
             do J = 1, NC

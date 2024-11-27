@@ -41,6 +41,7 @@ public :: update_s_explicit
 contains
 
  subroutine update_s_explicit()
+  use precision, only: dp
     use m_sets01zbnd, only: sets01zbnd
     use m_flow
     use m_flowgeom
@@ -53,7 +54,7 @@ contains
     integer :: k
     integer :: ierror
 
-    double precision, parameter :: dtol = 1d-16
+    real(kind=dp), parameter :: dtol = 1d-16
 
 !!   check if upwinddirection has changed
 !    numchanged = 0

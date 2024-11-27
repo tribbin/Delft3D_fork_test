@@ -43,6 +43,7 @@ contains
 
 subroutine comp_fluxhor3D(NUMCONST, limtyp, Ndkx, Lnkx, u1, q1, sqi, vol1, kbot, Lbot, Ltop, kmxn, kmxL, sed, difsed, sigdifi, &
                           viu, nsubsteps, jaupdatehorflux, ndeltasteps, jaupdateconst, flux, dsedx, dsedy, jalimitdiff, dxiAu)
+  use precision, only: dp
    use m_flowgeom, only: Ndx, Lnx, ln, nd, klnup, slnup, dxi, acl, csu, snu, wcx1, wcx2, wcy1, wcy2, Dx ! static mesh information
    use m_flowtimes, only: dts
    use m_flowparameters, only: cflmx
@@ -62,43 +63,43 @@ subroutine comp_fluxhor3D(NUMCONST, limtyp, Ndkx, Lnkx, u1, q1, sqi, vol1, kbot,
    integer, intent(in) :: limtyp !< limiter type
    integer, intent(in) :: Ndkx !< total number of flownodes (dynamically changing)
    integer, intent(in) :: Lnkx !< total number of flowlinks (dynamically changing)
-   double precision, dimension(Lnkx), intent(in) :: u1 !< flow-field face-normal velocities
-   double precision, dimension(Lnkx), intent(in) :: q1 !< flow-field discharges
-   double precision, dimension(Ndkx), intent(in) :: sqi !< total outward-fluxes at flownodes
-   double precision, dimension(Ndkx), intent(in) :: vol1 !< volumes
+   real(kind=dp), dimension(Lnkx), intent(in) :: u1 !< flow-field face-normal velocities
+   real(kind=dp), dimension(Lnkx), intent(in) :: q1 !< flow-field discharges
+   real(kind=dp), dimension(Ndkx), intent(in) :: sqi !< total outward-fluxes at flownodes
+   real(kind=dp), dimension(Ndkx), intent(in) :: vol1 !< volumes
    integer, dimension(Ndx), intent(in) :: kbot !< flow-node based layer administration
    integer, dimension(Lnx), intent(in) :: Lbot !< flow-link based layer administration
    integer, dimension(Lnx), intent(in) :: Ltop !< flow-link based layer administration
    integer, dimension(Ndx), intent(in) :: kmxn !< flow-link based layer administration
    integer, dimension(Lnx), intent(in) :: kmxL !< flow-link based layer administration
 
-   double precision, dimension(NUMCONST, Ndkx), intent(in) :: sed !< transported quantities
-   double precision, dimension(NUMCONST), intent(in) :: difsed !< scalar-specific diffusion coefficent (dicouv)
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: sed !< transported quantities
+   real(kind=dp), dimension(NUMCONST), intent(in) :: difsed !< scalar-specific diffusion coefficent (dicouv)
    real, dimension(Lnkx), intent(in) :: viu !< spatially varying horizontal eddy viscosity, NOTE: real, not double
-   double precision, dimension(NUMCONST), intent(in) :: sigdifi !< 1/(Prandtl number) for heat, 1/(Schmidt number) for mass
+   real(kind=dp), dimension(NUMCONST), intent(in) :: sigdifi !< 1/(Prandtl number) for heat, 1/(Schmidt number) for mass
    integer, intent(in) :: nsubsteps !< number of substeps
    integer, dimension(Lnx), intent(in) :: jaupdatehorflux !< update horizontal flux (1) or not (0)
    integer, dimension(Ndx), intent(in) :: ndeltasteps !< number of substeps between updates
    integer, dimension(NUMCONST), intent(in) :: jaupdateconst !< update constituent (1) or not (0)
-   double precision, dimension(NUMCONST, Lnkx), intent(inout) :: flux !< adds horizontal advection and diffusion fluxes
-   double precision, dimension(NUMCONST, ndkx), intent(inout) :: dsedx !< grrx
-   double precision, dimension(NUMCONST, ndkx), intent(inout) :: dsedy !< grry
+   real(kind=dp), dimension(NUMCONST, Lnkx), intent(inout) :: flux !< adds horizontal advection and diffusion fluxes
+   real(kind=dp), dimension(NUMCONST, ndkx), intent(inout) :: dsedx !< grrx
+   real(kind=dp), dimension(NUMCONST, ndkx), intent(inout) :: dsedy !< grry
    integer, intent(in) :: jalimitdiff !< limit diffusion (for time step) (1) or not (0)
-   double precision, dimension(Lnkx), intent(in) :: dxiAu !< area of horizontal diffusive flux divided by Dx
+   real(kind=dp), dimension(Lnkx), intent(in) :: dxiAu !< area of horizontal diffusive flux divided by Dx
 
-   double precision :: sl1L, sl2L, sl3L, sl1R, sl2R, sl3R
-   double precision :: cf, sedkuL, sedkuR, ds1L, ds2L, ds1R, ds2R
-   double precision :: sedL, sedR
-   double precision :: fluxfac, fluxfacMaxL, fluxfacMaxR
-   double precision :: dfac1, dfac2
-   double precision :: difcoeff, QL, QR, diuspL, ds1, ds2, dsedn, half
-   double precision :: dt_loc
+   real(kind=dp) :: sl1L, sl2L, sl3L, sl1R, sl2R, sl3R
+   real(kind=dp) :: cf, sedkuL, sedkuR, ds1L, ds2L, ds1R, ds2R
+   real(kind=dp) :: sedL, sedR
+   real(kind=dp) :: fluxfac, fluxfacMaxL, fluxfacMaxR
+   real(kind=dp) :: dfac1, dfac2
+   real(kind=dp) :: difcoeff, QL, QR, diuspL, ds1, ds2, dsedn, half
+   real(kind=dp) :: dt_loc
 
    integer :: j, iswitchL, iswitchR
    integer :: k1, k2, LL, L, Lb, Lt, laydif, jaL, jaR
    integer :: kk1L, kk2L, kk1R, kk2R, k1L, k2L, k1R, k2R, is, ku
    integer :: number_limited_links
-   double precision :: flux_max_limit
+   real(kind=dp) :: flux_max_limit
 
    integer(4) :: ithndl =  0
    

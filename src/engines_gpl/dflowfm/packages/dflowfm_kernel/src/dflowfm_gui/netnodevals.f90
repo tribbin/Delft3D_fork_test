@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine NETNODEVALS(MET)
+  use precision, only: dp
      use m_flow
      use m_flowgeom
      use m_netw
@@ -46,8 +47,8 @@ contains
      integer :: MET
 
      integer :: k, L, j, K1, K2, K3, K4
-     double precision :: x, y, z, uar
-     double precision :: xn, yn, dis, rL ! for smallest distance to land boundary (method=7)
+     real(kind=dp) :: x, y, z, uar
+     real(kind=dp) :: xn, yn, dis, rL ! for smallest distance to land boundary (method=7)
 
      if (MET == 1) return
 

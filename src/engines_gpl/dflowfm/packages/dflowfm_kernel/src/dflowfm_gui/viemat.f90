@@ -39,21 +39,22 @@ contains
   !
   !
   subroutine viemat(the, phi)
+  use precision, only: dp
      use m_viewmat
      use m_perspx
      use m_matm4
      implicit none
-     double precision :: cp
-     double precision :: ct
-     double precision :: r
-     double precision :: sp
-     double precision :: st
-     double precision :: t1
-     double precision :: t2
-     double precision :: t3
-     double precision :: t4
-     double precision :: z
-     double precision :: the, phi
+     real(kind=dp) :: cp
+     real(kind=dp) :: ct
+     real(kind=dp) :: r
+     real(kind=dp) :: sp
+     real(kind=dp) :: st
+     real(kind=dp) :: t1
+     real(kind=dp) :: t2
+     real(kind=dp) :: t3
+     real(kind=dp) :: t4
+     real(kind=dp) :: z
+     real(kind=dp) :: the, phi
 
      ! Maak viewing matrix Vs
      ! phi (0 -- pi) en the (-pi/2 -- pi/2) : kijkhoekjes

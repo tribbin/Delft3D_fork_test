@@ -40,16 +40,17 @@ public :: upwsalslope
 
 contains
 
-double precision function upwsalslope(L, k, ds2) ! k is upwind cell for link L, find slope upwind of k
+real(kind=dp) function upwsalslope(L, k, ds2) ! k is upwind cell for link L, find slope upwind of k
+  use precision, only: dp
    use m_flowgeom ! limit upwind slopes for all inflowing links
    use m_flow
    use m_dcminmod
    implicit none
    integer :: L, k
-   double precision :: ds2
+   real(kind=dp) :: ds2
 
    integer :: kk, ku, LL, LLL, jap
-   double precision :: ds1
+   real(kind=dp) :: ds1
 
    upwsalslope = -1d9
    if (ds2 < 0) upwsalslope = 1d9

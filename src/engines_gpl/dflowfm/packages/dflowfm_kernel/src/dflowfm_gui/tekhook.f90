@@ -37,16 +37,17 @@ implicit none
 contains
 
       subroutine TEKHOOK(XP, YP)
+  use precision, only: dp
          use m_sferic
          use m_locatora
          use m_movabs
          use m_lnabs
 
          implicit none
-         double precision :: dx
-         double precision :: dy
-         double precision :: xp
-         double precision :: yp
+         real(kind=dp) :: dx
+         real(kind=dp) :: dy
+         real(kind=dp) :: xp
+         real(kind=dp) :: yp
 
          DX = XA - XP
          DY = YA - YP

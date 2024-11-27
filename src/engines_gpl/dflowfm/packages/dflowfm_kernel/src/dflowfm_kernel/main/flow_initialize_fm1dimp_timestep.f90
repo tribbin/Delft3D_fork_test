@@ -42,6 +42,7 @@ public :: flow_initialize_fm1dimp_timestep
 contains
 
 subroutine flow_initialize_fm1dimp_timestep(iresult, time1)
+  use precision, only: dp
    use m_fm1dimp_update_network
    use m_fm1dimp_update_bc
 
@@ -50,7 +51,7 @@ subroutine flow_initialize_fm1dimp_timestep(iresult, time1)
 !
 
 !input
-   double precision, intent(in) :: time1
+   real(kind=dp), intent(in) :: time1
 
 !output
    integer, intent(out) :: iresult !< Error status, DFM_NOERR==0 if succesful.

@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine TEKNODEVALS(MET)
+  use precision, only: dp
      use m_isosmoothnet
      use m_isocol
      use m_drcirc
@@ -60,17 +61,17 @@ contains
      
      implicit none
      integer :: MET
-     double precision :: d
+     real(kind=dp) :: d
      integer :: k1, k
      integer :: k2
      integer :: key
      integer :: l
      integer :: n
      integer :: ncol
-     double precision :: rd
-     double precision :: vv
-     double precision XD, YD, ZD, DX, DY, DZ, XX1, YY1, ZZ1, XX2, YY2, ZZ2, H
-     double precision :: X(4), Y(4), Z(4)
+     real(kind=dp) :: rd
+     real(kind=dp) :: vv
+     real(kind=dp) XD, YD, ZD, DX, DY, DZ, XX1, YY1, ZZ1, XX2, YY2, ZZ2, H
+     real(kind=dp) :: X(4), Y(4), Z(4)
 
      KMOD = max(1, NUMK / 100)
 

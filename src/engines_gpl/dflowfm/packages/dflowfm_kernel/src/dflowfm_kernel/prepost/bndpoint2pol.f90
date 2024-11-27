@@ -41,12 +41,13 @@ public :: bndpoint2pol
 contains
 
  subroutine bndpoint2pol(m, n)
+  use precision, only: dp
     use m_polygon
     use m_grid
 
     integer :: m, n
     
-    double precision :: xce, yce, xbb, ybb
+    real(kind=dp) :: xce, yce, xbb, ybb
     integer :: mu, nu, md, nd
 
     if (ijyes(m, n) == 0) then

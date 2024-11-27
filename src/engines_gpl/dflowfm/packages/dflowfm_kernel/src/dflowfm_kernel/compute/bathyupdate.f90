@@ -41,6 +41,7 @@ public :: bathyupdate
 contains
 
  subroutine bathyupdate()
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_netw, only: zk, zk1, numk
@@ -48,7 +49,7 @@ contains
 
     implicit none
     integer :: L, k, kk, kkk, k1, k2, n, nn, ierr, ja, k3, k4
-    double precision :: znn, bobm, zki
+    real(kind=dp) :: znn, bobm, zki
 
     if (jamorf == 0) return
     if (stm_included) return ! Done in fm_bott3d

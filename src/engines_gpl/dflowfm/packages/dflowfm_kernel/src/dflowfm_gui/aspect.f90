@@ -40,13 +40,14 @@ implicit none
 contains
 
       subroutine ASPECT(X1D, Y1D, X2D, Y2D)
+  use precision, only: dp
          use m_devices
          implicit none
-         double precision :: asp
-         double precision :: x1d
-         double precision :: x2d
-         double precision :: y1d
-         double precision :: y2d
+         real(kind=dp) :: asp
+         real(kind=dp) :: x1d
+         real(kind=dp) :: x2d
+         real(kind=dp) :: y1d
+         real(kind=dp) :: y2d
 !     RETURN Y2 AS 1.0 ASPECT RATIO VALUE
          call INQASP(ASP)
          Y2D = Y1D + (X2D - X1D) * ASP

@@ -41,6 +41,7 @@ public :: coriolistilt
 contains
 
     subroutine coriolistilt(tim)
+  use precision, only: dp
        use m_netw
        use m_flowgeom
        use m_flow
@@ -49,7 +50,7 @@ contains
        use m_set_bobs
 
        integer :: k, L
-       double precision :: s1k, yy, samp, ux, uy, dif, alf, tim
+       real(kind=dp) :: s1k, yy, samp, ux, uy, dif, alf, tim
 
        ux = 0.1d0; uy = 0d0; samp = ux * fcorio / ag
        if (tim == 0d0) then

@@ -37,14 +37,15 @@ implicit none
 contains
 
 subroutine getseg1D(hpr, wu2, dz, ai, frcn, ifrctyp, wid, ar, conv, perim, jaconv) ! copy of above routine dressed out for 1D
+  use precision, only: dp
    use m_get_cz
    implicit none
-   double precision, intent(in) :: hpr, wu2, dz, ai, frcn
-   double precision, intent(out) :: wid, ar, conv, perim !
+   real(kind=dp), intent(in) :: hpr, wu2, dz, ai, frcn
+   real(kind=dp), intent(out) :: wid, ar, conv, perim !
    integer, intent(in) :: ifrctyp, jaconv
-   double precision :: d83 = 2.666666d0, d16 = 0.166666d0, d23 = 0.666666d0
-   double precision :: hp2, Cz, cman, hav
-   double precision :: d38 = 0.375d0, d14 = 0.25d0
+   real(kind=dp) :: d83 = 2.666666d0, d16 = 0.166666d0, d23 = 0.666666d0
+   real(kind=dp) :: hp2, Cz, cman, hav
+   real(kind=dp) :: d38 = 0.375d0, d14 = 0.25d0
    integer :: L
 
    ! for jaconv >= 1, this routine gets 1D conveyance

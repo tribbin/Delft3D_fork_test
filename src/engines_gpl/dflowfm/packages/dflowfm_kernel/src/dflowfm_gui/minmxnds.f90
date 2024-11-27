@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine minmxnds()
+  use precision, only: dp
     use unstruc_display_data ! bepaal minimum en maximum van znod in viewing area
     use m_flowgeom, only: ndx, xz, yz
     use m_flow, only: ndmin, ndmax, hs
@@ -47,8 +48,8 @@ contains
     use m_znod
     
     integer :: i
-    double precision :: rmin, rmax
-    double precision :: zn
+    real(kind=dp) :: rmin, rmax
+    real(kind=dp) :: zn
     integer :: n, ja2
 
     if (jaauto > 0) then

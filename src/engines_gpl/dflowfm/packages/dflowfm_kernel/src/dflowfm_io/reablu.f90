@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine reablu(mout) ! read bottom level u points
+  use precision, only: dp
     use M_FLOWGEOM
     use m_qnerror
     use m_qn_read_error
@@ -47,7 +48,7 @@ contains
 
     integer :: L, L1
     integer :: lnxr
-    double precision :: rd
+    real(kind=dp) :: rd
     read (mout, '(a)') rec
     L1 = index(rec, '=') + 1
     read (rec(L1:), *, err=888) lnxr

@@ -42,6 +42,7 @@ public :: apply_tracer_bc
 contains
 
 subroutine apply_tracer_bc()
+  use precision, only: dp
    use m_transport
    use m_meteo
    use m_flowgeom, only: ln
@@ -50,7 +51,7 @@ subroutine apply_tracer_bc()
    use m_get_Lbot_Ltop
    implicit none
 
-   double precision :: valtop
+   real(kind=dp) :: valtop
 
    integer :: itrac, iconst
    integer :: k, kk, ki, kb

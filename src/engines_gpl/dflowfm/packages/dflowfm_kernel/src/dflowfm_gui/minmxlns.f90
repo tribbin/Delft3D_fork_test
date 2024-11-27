@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine minmxlns()
+  use precision, only: dp
 
     use m_flowgeom, only: ln, lnx, xz, yz
     use m_flow, only: lnmin, lnmax
@@ -45,8 +46,8 @@ contains
     use m_inview
     use m_zlin
 
-    double precision :: zn
-    double precision :: rmin, rmax
+    real(kind=dp) :: zn
+    real(kind=dp) :: rmin, rmax
     integer :: i, l, k1, k2
 
     if (jaauto > 0) then

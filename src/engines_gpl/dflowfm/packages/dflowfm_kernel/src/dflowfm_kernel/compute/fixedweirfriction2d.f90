@@ -39,6 +39,7 @@ implicit none
 contains
 
  subroutine fixedweirfriction2D(L, k1, k2, frL) ! frL of fixed weir
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_missing
@@ -47,10 +48,10 @@ contains
     implicit none
 
     integer :: L
-    double precision :: frL
+    real(kind=dp) :: frL
 
     integer :: k1, k2
-    double precision :: umod, uin, frLk1, frLk2, ucxk, ucyk, Cz, weirheight, weirlength, flatlength, a, ff
+    real(kind=dp) :: umod, uin, frLk1, frLk2, ucxk, ucyk, Cz, weirheight, weirlength, flatlength, a, ff
 
     if (frcu(L) == 0 .or. hu(L) < epshu) then
        frL = 0d0; return

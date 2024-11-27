@@ -60,14 +60,14 @@ function read_samples_from_geotiff(filename) result(success)
    integer(kind=c_int) :: rasterband_datatypesize
 
    real(kind=c_double) :: geotransform(6) ! Geo information of dataset
-   double precision :: dxa, dya ! Pixel size
-   double precision :: x0, y0 ! Origin
+   real(kind=dp) :: dxa, dya ! Pixel size
+   real(kind=dp) :: x0, y0 ! Origin
    integer :: i, j, istep ! Counters used for loops
    integer(kind=c_int) :: ierr ! Integer to store return values of C functions
-   double precision :: eps ! Small value to be used with inequalities involving floating point numbers
+   real(kind=dp) :: eps ! Small value to be used with inequalities involving floating point numbers
    type(c_ptr) :: c_area_or_point
    logical :: is_area
-   double precision :: pixeloffset
+   real(kind=dp) :: pixeloffset
 
    ! Register all available gdal drivers
    call gdalallregister()

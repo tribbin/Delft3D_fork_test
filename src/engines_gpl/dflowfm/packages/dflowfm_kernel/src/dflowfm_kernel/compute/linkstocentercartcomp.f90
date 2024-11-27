@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine linkstocentercartcomp(knod, vlin, vnod)
+  use precision, only: dp
     use m_flow, only: kmx, lnkx
     use m_flowgeom
     use m_get_Lbot_Ltop
@@ -44,8 +45,8 @@ contains
     implicit none
 
     integer, intent(in) :: knod
-    double precision, intent(in) :: vlin(lnkx)
-    double precision, intent(out) :: vnod(2, max(kmx, 1))
+    real(kind=dp), intent(in) :: vlin(lnkx)
+    real(kind=dp), intent(out) :: vnod(2, max(kmx, 1))
 
     integer :: L, k1, k2, k3, LL, LLL, Lb, Lt
 

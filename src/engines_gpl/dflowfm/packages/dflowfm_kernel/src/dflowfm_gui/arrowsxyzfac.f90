@@ -37,10 +37,11 @@ implicit none
 contains
 
       subroutine ARROWSXYzfac(X0, Y0, UX, UY, VFAC, zfac)
+  use precision, only: dp
          use m_movabs
          use m_lnabs
          implicit none
-         double precision :: X0, Y0, UX, UY, VFAC, zfac
+         real(kind=dp) :: X0, Y0, UX, UY, VFAC, zfac
 
          if (UX == 0 .and. UY == 0) return
 

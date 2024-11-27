@@ -37,10 +37,11 @@ implicit none
 contains
 
   subroutine TEKHEATS(TIMNOW)
+  use precision, only: dp
      use m_heatfluxes
      use m_gtext
      implicit none
-     double precision :: TIMNOW, tday
+     real(kind=dp) :: TIMNOW, tday
 
      TDAY = modulo(TIMNOW, 1440d0 * 60d0)
      call GTEXT('SUN', TDAY, QSunav, 221)

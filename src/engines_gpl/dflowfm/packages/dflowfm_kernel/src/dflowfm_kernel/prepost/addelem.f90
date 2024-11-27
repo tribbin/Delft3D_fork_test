@@ -42,6 +42,7 @@ public :: addelem
 contains
 
   subroutine ADDELEM(K1, K2)
+  use precision, only: dp
      use M_AFMETING
      use m_settings
      use m_cconstants
@@ -49,8 +50,8 @@ contains
 
      integer :: K1, K2
 
-     double precision :: a0
-     double precision :: r0
+     real(kind=dp) :: a0
+     real(kind=dp) :: r0
      
      if (JANET == 1) then
         A0 = PI * RDIAM * RDIAM / 4

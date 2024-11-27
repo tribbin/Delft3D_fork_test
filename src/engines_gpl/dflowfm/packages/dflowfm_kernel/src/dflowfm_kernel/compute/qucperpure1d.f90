@@ -43,7 +43,8 @@ contains
 !> sum of (Q*uc cell centre upwind normal) at side n12 of link L
 !! advect the cell center velocities (dimension: m4/s2)
 !! leaving the cell = +
- double precision function QucPerpure1D(n12, L) 
+ real(kind=dp) function QucPerpure1D(n12, L) 
+  use precision, only: dp
     use m_flow 
     use m_flowgeom 
 
@@ -59,9 +60,9 @@ contains
     integer :: L2a !< link number of link LL of node k12
     integer :: L2s !< sign of L2
 
-    double precision :: cs !< cosine of link direction (+1 for link in positive x-direction)
-    double precision :: sn !< sine of link direction (+1 for link in positive y-direction)
-    double precision :: ucin !< representative velocity transported along link
+    real(kind=dp) :: cs !< cosine of link direction (+1 for link in positive x-direction)
+    real(kind=dp) :: sn !< sine of link direction (+1 for link in positive y-direction)
+    real(kind=dp) :: ucin !< representative velocity transported along link
 
     if (kcu(L) == -1) then
        QucPerpure1D = 0d0

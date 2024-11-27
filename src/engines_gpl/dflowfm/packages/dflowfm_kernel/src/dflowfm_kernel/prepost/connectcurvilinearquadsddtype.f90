@@ -43,6 +43,7 @@ public :: connectcurvilinearquadsddtype
 contains
 
   subroutine connectcurvilinearquadsDDtype()
+  use precision, only: dp
      use m_closeenough, only: closeenough
      use m_netw
      use stdlib_sorting, only: sort_index
@@ -104,13 +105,13 @@ contains
      integer :: nx = 5, ny
      integer, allocatable :: nnq(:), nadjq(:, :), L1adjq(:), LLadjq(:), L2adjq(:, :), merg(:, :), kins(:), kins2(:)
 
-     double precision :: r2, xm, ym, xkkn1, ykkn1
+     real(kind=dp) :: r2, xm, ym, xkkn1, ykkn1
 
      integer, allocatable :: nnp(:), nnl(:), nrl(:), nnl2(:, :), k1L(:), k2L(:)
 
-     double precision :: sL, sm, xcr, ycr, crp
+     real(kind=dp) :: sL, sm, xcr, ycr, crp
      integer :: i, jacross, k1dum
-     double precision, dimension(:), allocatable :: dist
+     real(kind=dp), dimension(:), allocatable :: dist
      integer, dimension(:), allocatable :: idx
      integer, dimension(:), allocatable :: kdum
 

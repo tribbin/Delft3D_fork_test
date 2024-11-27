@@ -41,6 +41,7 @@ public :: diffusionimplicit2d
 contains
 
 subroutine diffusionimplicit2D()
+  use precision, only: dp
    use m_transport
    use m_flowgeom
    use m_flow
@@ -50,7 +51,7 @@ subroutine diffusionimplicit2D()
 
    implicit none
 
-   double precision :: ddx, difcoeff, diuspL, diag
+   real(kind=dp) :: ddx, difcoeff, diuspL, diag
    integer i, k1, k2, L, n
 
    integer(4) :: ithndl =  0

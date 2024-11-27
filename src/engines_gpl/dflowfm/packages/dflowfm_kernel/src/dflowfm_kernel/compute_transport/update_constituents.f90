@@ -79,6 +79,7 @@ public :: update_constituents
 contains
 
 subroutine update_constituents(jarhoonly)
+  use precision, only: dp
    use m_solve_vertical, only: solve_vertical
    use m_solve_2d, only: solve_2d
    use m_get_ndeltasteps, only: get_ndeltasteps
@@ -121,7 +122,7 @@ subroutine update_constituents(jarhoonly)
    integer :: ierror
 
    integer :: limtyp !< limiter type (>0), or first-order upwind (0)
-   double precision :: dts_store
+   real(kind=dp) :: dts_store
 
    integer :: LL, L, j, numconst_store, Lb, Lt
    integer :: istep

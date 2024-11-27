@@ -41,12 +41,13 @@ public :: closeenough
 contains
 
   subroutine closeenough(x1, y1, x2, y2, r, ja)
+  use precision, only: dp
 
      use m_missing, only: dmiss
      use m_sferic, only: jsferic, jasfer3D
      use geometry_module, only: dbdistance
 
-     double precision :: x1, y1, x2, y2, r2, r
+     real(kind=dp) :: x1, y1, x2, y2, r2, r
      integer :: ja
 
      ja = 0

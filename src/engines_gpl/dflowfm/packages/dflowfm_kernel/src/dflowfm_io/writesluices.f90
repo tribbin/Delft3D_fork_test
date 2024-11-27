@@ -41,8 +41,9 @@ public :: writesluices
 contains
 
  subroutine writesluices()
+  use precision, only: dp
     integer :: mgat = 0, mgat2 = 0, k, j
-    double precision :: t(6), h(6), tim, zgt, bed
+    real(kind=dp) :: t(6), h(6), tim, zgt, bed
 
     if (mgat /= 0) return
 

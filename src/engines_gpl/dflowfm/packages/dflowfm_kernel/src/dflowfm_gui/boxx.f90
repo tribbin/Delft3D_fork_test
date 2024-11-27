@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine BOXX(X, Y, NCOL)
+  use precision, only: dp
          use m_colnow
          use m_set_col
          implicit none
          integer :: ncol
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
 
          call SETCOL(NCOL)
          if (NCOLNOW >= 0) call IGrMARKER(real(X), real(Y), 3)

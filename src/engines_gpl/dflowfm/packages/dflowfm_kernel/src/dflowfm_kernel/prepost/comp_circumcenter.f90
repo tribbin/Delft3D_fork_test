@@ -42,24 +42,25 @@ public :: comp_circumcenter
 contains
 
 subroutine comp_circumcenter(N, xp, yp, xf, yf, xc, yc)
+  use precision, only: dp
    use m_sferic
    use m_missing
    use geometry_module, only: pinpok, getdxdy, getdx, getdy, cross, normalin
    use m_qnerror
 
    integer, intent(in) :: N !< polygon dimension
-   double precision, dimension(N), intent(in) :: xp, yp !< polygon node coordinates
-   double precision, dimension(N), intent(in) :: xf, yf !< face coordinates
-   double precision, intent(out) :: xc, yc !< circumcenter coordinates
+   real(kind=dp), dimension(N), intent(in) :: xp, yp !< polygon node coordinates
+   real(kind=dp), dimension(N), intent(in) :: xf, yf !< face coordinates
+   real(kind=dp), intent(out) :: xc, yc !< circumcenter coordinates
 
-   double precision, dimension(N) :: tx, ty
-   double precision, dimension(2, 2) :: T
-   double precision, dimension(2) :: rhs
+   real(kind=dp), dimension(N) :: tx, ty
+   real(kind=dp), dimension(2, 2) :: T
+   real(kind=dp), dimension(2) :: rhs
 
-   double precision :: xhalf, yhalf, dfac, x0, y0, det
+   real(kind=dp) :: xhalf, yhalf, dfac, x0, y0, det
 
-   double precision :: xzw, yzw, SL, SM, XCR, YCR, CRP
-   double precision :: xref, yref
+   real(kind=dp) :: xzw, yzw, SL, SM, XCR, YCR, CRP
+   real(kind=dp) :: xref, yref
 
    integer :: i, in, ip1
 

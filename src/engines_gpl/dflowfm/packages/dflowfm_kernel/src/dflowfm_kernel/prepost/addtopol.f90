@@ -42,12 +42,13 @@ contains
 
  !> add polygon to global polygons
  subroutine addtopol(XCRA, YCRA, NCRA)
+  use precision, only: dp
     use m_polygon
     use m_alloc
     use m_missing
 
     integer, intent(in) :: NCRA
-    double precision, dimension(NCRA), intent(in) :: XCRA, YCRA
+    real(kind=dp), dimension(NCRA), intent(in) :: XCRA, YCRA
 
     integer :: i
 

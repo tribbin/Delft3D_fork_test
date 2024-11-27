@@ -40,10 +40,11 @@ public :: ucrouse
 
 contains
 
-double precision function ucrouse(z, z0, h, a, rs)
+real(kind=dp) function ucrouse(z, z0, h, a, rs)
+  use precision, only: dp
    use m_einstein_garcia
    implicit none
-   double precision :: z, z0, h, a, rs
+   real(kind=dp) :: z, z0, h, a, rs
 
    ucrouse = log(z / z0) * ((a / (h - a)) * ((h - z) / z))**rs
 

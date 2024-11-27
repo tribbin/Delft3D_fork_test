@@ -43,6 +43,7 @@ contains
 !> Piaczekteta in 3D
 !! advect the cell center velocities (dimension: m4/s2)
  subroutine QucPer3Dsigmapiaczekteta(LL, Lb, Lt, cs, sn, ae, ai) 
+  use precision, only: dp
 
     use m_flow 
     use m_flowgeom
@@ -50,19 +51,19 @@ contains
     use m_sferic
 
     integer, intent(in) :: LL, Lb, Lt !< working for basis link LL
-    double precision, intent(in) :: cs, sn
-    double precision, intent(out) :: ae(Lt - Lb + 1) !< explicit part
-    double precision, intent(out) :: ai(Lt - Lb + 1) !< implicit part
+    real(kind=dp), intent(in) :: cs, sn
+    real(kind=dp), intent(out) :: ae(Lt - Lb + 1) !< explicit part
+    real(kind=dp), intent(out) :: ai(Lt - Lb + 1) !< implicit part
 
     ! locals
     integer :: La, LLL, LLLL, Lb2, Lt2, Lk ! for links LL,
     integer :: k12, n12, k1, k2 ! relevant node, 1 or 2, L/R
-    double precision :: ucin, cfl, tet, volu, ac, acq ! velocity surplus
+    real(kind=dp) :: ucin, cfl, tet, volu, ac, acq ! velocity surplus
 
-    double precision :: ucinx, uciny
+    real(kind=dp) :: ucinx, uciny
     integer :: nn12
 
-    double precision, external :: lin2nodx, lin2nody, nod2linx, nod2liny
+    real(kind=dp), external :: lin2nodx, lin2nody, nod2linx, nod2liny
 
     ae = 0d0; ai = 0d0
 

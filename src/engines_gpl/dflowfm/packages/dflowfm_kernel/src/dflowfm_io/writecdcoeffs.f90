@@ -44,6 +44,7 @@ public :: writeCdcoeffs
 contains
 
  subroutine writeCdcoeffs()
+  use precision, only: dp
     use unstruc_model
     use m_wind
     use m_waves
@@ -52,8 +53,8 @@ contains
     implicit none
 
     integer :: msgbu, k
-    double precision :: uwi, Cd10, fetchL, fetchD, hsig, tsig
-    double precision, allocatable :: hwavsav(:), twavsav(:)
+    real(kind=dp) :: uwi, Cd10, fetchL, fetchD, hsig, tsig
+    real(kind=dp), allocatable :: hwavsav(:), twavsav(:)
 
     call newfil(msgbu, trim(getoutputdir())//trim(md_ident)//'_Cdwcoeff.tek')
 

@@ -41,24 +41,25 @@ public :: comp_cross_time_1
 
 contains
 
-double precision function comp_cross_time_1(x1, x3, x4, v1, v3, v4, dclear)
+real(kind=dp) function comp_cross_time_1(x1, x3, x4, v1, v3, v4, dclear)
+  use precision, only: dp
    use m_missing
    use m_comp_roots4
    use m_cross_prod, only: cross_prod
 
    implicit none
 
-   double precision, dimension(2) :: x1, x3, x4 !< coordinates
-   double precision, dimension(2) :: v1, v3, v4 !< velocities
-   double precision :: dclear !< clearance
-   double precision, dimension(2) :: xs
-   double precision, dimension(4) :: t, beta
-   double precision, dimension(5) :: coeffs
-   double precision, dimension(2) :: x13, x34, v13, v34
-   double precision :: a, b, c, det, time, DdDt
-   double precision :: e, f, g
+   real(kind=dp), dimension(2) :: x1, x3, x4 !< coordinates
+   real(kind=dp), dimension(2) :: v1, v3, v4 !< velocities
+   real(kind=dp) :: dclear !< clearance
+   real(kind=dp), dimension(2) :: xs
+   real(kind=dp), dimension(4) :: t, beta
+   real(kind=dp), dimension(5) :: coeffs
+   real(kind=dp), dimension(2) :: x13, x34, v13, v34
+   real(kind=dp) :: a, b, c, det, time, DdDt
+   real(kind=dp) :: e, f, g
    integer :: i
-   double precision, parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: dtol = 1d-8
 
 !  a t^2 + b t + c = 0
 

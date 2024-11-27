@@ -35,14 +35,15 @@ use m_hydraulicallysmooth
    implicit none
 contains
  subroutine getcz(h1, frcn, ifrctyp, cz, L) ! basic get chezy coefficient,  this routine is not safe for frcn == 0
+  use precision, only: dp
     use m_physcoef, only: sag, vonkar, ee
     use m_flow, only: u1, v
 
     integer, intent(in) :: ifrctyp, L !< friction type
-    double precision :: h0, h1 !< hydraulic radius
-    double precision, intent(in) :: frcn !< friction coeff
-    double precision, intent(out) :: cz !< Computed Chezy coeff
-    double precision :: hurou, sixth = 1d0 / 6d0, sqcf, z0, umod
+    real(kind=dp) :: h0, h1 !< hydraulic radius
+    real(kind=dp), intent(in) :: frcn !< friction coeff
+    real(kind=dp), intent(out) :: cz !< Computed Chezy coeff
+    real(kind=dp) :: hurou, sixth = 1d0 / 6d0, sqcf, z0, umod
 
     h0 = max(h1, 1d-4)
     if (ifrctyp == 0) then ! Chezy type

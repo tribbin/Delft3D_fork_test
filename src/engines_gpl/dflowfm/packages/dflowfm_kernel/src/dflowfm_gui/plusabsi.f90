@@ -39,6 +39,7 @@ implicit none
 contains
 
       subroutine PLUSABSI(XK, YK, ZK, KN, NUMK, NUML, KEY, kndefault)
+  use precision, only: dp
          use m_menuv3
          use m_getreal
          use m_confrm
@@ -50,12 +51,12 @@ contains
 
          integer, parameter :: MAXOP = 64
          integer :: NUMK, NUML, KEY
-         double precision XK(NUMK), YK(NUMK), ZK(NUMK), XI, YI, ZI
+         real(kind=dp) XK(NUMK), YK(NUMK), ZK(NUMK), XI, YI, ZI
          integer KN(3, NUML)
          integer, intent(inout) :: kndefault !< Default uniform value (e.g. kn3typ), will be changed too at call site when user changes it in the dialog.
          character(len=40) OPTION(MAXOP), exp(MAXOP)
 
-         double precision :: af
+         real(kind=dp) :: af
          integer :: ia
          integer :: ichange
          integer :: inhul
@@ -65,9 +66,9 @@ contains
          integer :: l
          integer :: maxopt
          integer :: nwhat
-         double precision :: rd
+         real(kind=dp) :: rd
 
-         double precision, save :: A
+         real(kind=dp), save :: A
 
          A = kndefault
 

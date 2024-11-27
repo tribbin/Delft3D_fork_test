@@ -39,6 +39,7 @@ implicit none
 contains
 
       subroutine EDITCOLOURTABLE(MODE, KEY)
+  use precision, only: dp
          use m_choices
          use m_changecolor
          use m_allcolours
@@ -63,8 +64,8 @@ contains
          integer :: numcol
          integer :: numcolc
          integer :: nwhat
-         double precision :: xp
-         double precision :: yp
+         real(kind=dp) :: xp
+         real(kind=dp) :: yp
 
          character TEX * 26, TEX2 * 4
 

@@ -44,6 +44,7 @@ contains
 
 !> nodes in continuity eq
  subroutine s1nod() 
+  use precision, only: dp
     use precision_basics
     use time_module, only: seconds_to_datetimestring
     use m_plotdots
@@ -64,12 +65,12 @@ contains
     integer :: n
     integer :: kb, k2, L, k, LL, itpbn
     integer :: ibr
-    double precision :: dtiba, hh, zb, dtgh
-    double precision :: sqrtgfh, cffu, rowsum, fuL, ruL, huL, hep
+    real(kind=dp) :: dtiba, hh, zb, dtgh
+    real(kind=dp) :: sqrtgfh, cffu, rowsum, fuL, ruL, huL, hep
     integer :: i, ierr
     character(len=2) :: dim_text
-    double precision, parameter :: HBMIN = 1d-3
-    double precision, pointer, dimension(:) :: gridPointsChainages
+    real(kind=dp), parameter :: HBMIN = 1d-3
+    real(kind=dp), pointer, dimension(:) :: gridPointsChainages
     type(t_branch), pointer, dimension(:) :: branch
     logical :: domainCheck
     character(len=MAXSTRINGLEN) :: msgbufpar ! can not use msgbuf, as each OpenMP thread must have it's own

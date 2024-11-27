@@ -35,16 +35,16 @@ contains
 !> solves the quartic equation Ax^4+Bx^3+Cx^2+Dx+E=0
 subroutine comp_roots4(coeffs, x)
    use m_missing, only: dmiss
-   use Solve_Real_Poly
+   use Solve_Real_Poly, only: dp_14_60, rpoly
 
-   double precision, dimension(5), intent(in) :: coeffs !< coefficient vector (A,B,C,D,E)
-   double precision, dimension(4), intent(out) :: x !< roots
+   real(kind=dp_14_60), dimension(5), intent(in) :: coeffs !< coefficient vector (A,B,C,D,E)
+   real(kind=dp_14_60), dimension(4), intent(out) :: x !< roots
 
-   double precision, dimension(4) :: re, im !< real and imaginairy parts of zeros
+   real(kind=dp_14_60), dimension(4) :: re, im !< real and imaginairy parts of zeros
 
    logical :: Lfail
 
-   double precision :: dtol = 1d-12
+   real(kind=dp_14_60) :: dtol = 1d-12
 
    integer :: i, ndegree
 

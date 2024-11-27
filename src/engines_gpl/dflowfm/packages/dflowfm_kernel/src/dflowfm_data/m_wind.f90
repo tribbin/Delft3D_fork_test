@@ -31,39 +31,40 @@
 ! 
 
 module m_wind
+  use precision, only: dp
 implicit none
 
-double precision, allocatable, target :: wx(:)    !< [m/s] wind x velocity   (m/s) at u point {"location": "edge", "shape": ["lnx"]}
-double precision, allocatable, target :: wy(:)    !< [m/s] wind y velocity   (m/s) at u point {"location": "edge", "shape": ["lnx"]}
-double precision, allocatable, target :: ec_pwxwy_x(:)  !< Temporary array, for comparing EC-module to Meteo1.
-double precision, allocatable, target :: ec_pwxwy_y(:)  !< Temporary array, for comparing EC-module to Meteo1.
-double precision, allocatable, target :: ec_pwxwy_c(:)  !< Temporary array, for comparing EC-module to Meteo1.
-double precision, allocatable, target :: ec_charnock(:) !< Temporary array, for comparing EC-module to Meteo1.
-double precision, allocatable, target :: wcharnock(:)   !< space var charnock (-) at u point {"location": "edge", "shape": ["lnx"]}
+real(kind=dp), allocatable, target :: wx(:)    !< [m/s] wind x velocity   (m/s) at u point {"location": "edge", "shape": ["lnx"]}
+real(kind=dp), allocatable, target :: wy(:)    !< [m/s] wind y velocity   (m/s) at u point {"location": "edge", "shape": ["lnx"]}
+real(kind=dp), allocatable, target :: ec_pwxwy_x(:)  !< Temporary array, for comparing EC-module to Meteo1.
+real(kind=dp), allocatable, target :: ec_pwxwy_y(:)  !< Temporary array, for comparing EC-module to Meteo1.
+real(kind=dp), allocatable, target :: ec_pwxwy_c(:)  !< Temporary array, for comparing EC-module to Meteo1.
+real(kind=dp), allocatable, target :: ec_charnock(:) !< Temporary array, for comparing EC-module to Meteo1.
+real(kind=dp), allocatable, target :: wcharnock(:)   !< space var charnock (-) at u point {"location": "edge", "shape": ["lnx"]}
 
-double precision, allocatable, target :: patm(:)     !< atmospheric pressure user specified in (N/m2), internally reworked to (m2/s2)
+real(kind=dp), allocatable, target :: patm(:)     !< atmospheric pressure user specified in (N/m2), internally reworked to (m2/s2)
                                                       !! so that it can be merged with tidep later and difpatm/dx = m/s2, saves 1 array , using mode = 'add'
-double precision, allocatable, target :: rain(:)     !< [mm/day] rain at xz,yz {"location": "face", "shape": ["ndx"]}
-double precision, allocatable, target :: evap(:)     !< [m/s] evaporation at xz,yz {"location": "face", "shape": ["ndx"]}
+real(kind=dp), allocatable, target :: rain(:)     !< [mm/day] rain at xz,yz {"location": "face", "shape": ["ndx"]}
+real(kind=dp), allocatable, target :: evap(:)     !< [m/s] evaporation at xz,yz {"location": "face", "shape": ["ndx"]}
 integer :: id_first_wind, id_last_wind  !< counters to avoid looping over all ec_etims when only interessed in wind
 
 
-double precision, allocatable, target :: qext(:)         !< [m3/s] External discharge per cell {"location": "face", "shape": ["ndkx"]}
-double precision, allocatable, target :: qextreal(:)     !< [m3/s] Realized external discharge per cell {"location": "face", "shape": ["ndkx"]}
-double precision, allocatable, target :: vextcum(:)      !< [m3] Cumulative realized volume through qext {"location": "face", "shape": ["ndkx"]}
+real(kind=dp), allocatable, target :: qext(:)         !< [m3/s] External discharge per cell {"location": "face", "shape": ["ndkx"]}
+real(kind=dp), allocatable, target :: qextreal(:)     !< [m3/s] Realized external discharge per cell {"location": "face", "shape": ["ndkx"]}
+real(kind=dp), allocatable, target :: vextcum(:)      !< [m3] Cumulative realized volume through qext {"location": "face", "shape": ["ndkx"]}
 
-double precision, allocatable, target :: tair(:)         !< air temperature       (degC)
-double precision, allocatable, target :: rhum(:)         !< air relative humidity (%)
-double precision, allocatable, target :: clou(:)         !< air cloudiness        (%)
-double precision, allocatable, target :: airdensity(:)   !< air density           (kg/m3)
-double precision, allocatable, target :: qrad(:)         !< solar radiation       (W/m2)
-double precision, allocatable, target :: longwave(:)     !< long wave radiation   (W/m2)
-double precision, allocatable         :: heatsrc (:)     !< resulting 2D or 3D heat source per cell (Km3/s)
-double precision, allocatable         :: heatsrc0(:)     !< resulting 2D or 3D heat source per cell, only set at timeuser (Km3/s)
-double precision, allocatable         :: tbed(:)         !< bed temperature       (degC)
+real(kind=dp), allocatable, target :: tair(:)         !< air temperature       (degC)
+real(kind=dp), allocatable, target :: rhum(:)         !< air relative humidity (%)
+real(kind=dp), allocatable, target :: clou(:)         !< air cloudiness        (%)
+real(kind=dp), allocatable, target :: airdensity(:)   !< air density           (kg/m3)
+real(kind=dp), allocatable, target :: qrad(:)         !< solar radiation       (W/m2)
+real(kind=dp), allocatable, target :: longwave(:)     !< long wave radiation   (W/m2)
+real(kind=dp), allocatable         :: heatsrc (:)     !< resulting 2D or 3D heat source per cell (Km3/s)
+real(kind=dp), allocatable         :: heatsrc0(:)     !< resulting 2D or 3D heat source per cell, only set at timeuser (Km3/s)
+real(kind=dp), allocatable         :: tbed(:)         !< bed temperature       (degC)
 
 
-double precision, allocatable         :: cdwcof(:)       !< wind stress cd coefficient () , only if jatemp ==5
+real(kind=dp), allocatable         :: cdwcof(:)       !< wind stress cd coefficient () , only if jatemp ==5
 
 integer                           :: jawind              !< use wind yes or no
 integer                           :: japatm              !< use patm yes or no
@@ -83,22 +84,22 @@ integer                           :: jaheat_eachstep = 0 !< if 1, do it each ste
 integer                           :: jaQext              !< use Qin externally provided yes or no
 integer                           :: jaqin               !< use qin , sum of all in fluxes
 integer                           :: update_wind_stress_each_time_step = 0 !< if 1, update wind (and air pressure) in each computational time step, else in externalforcings (default)
-double precision                  :: windxav, windyav  !< average wind for plotting
+real(kind=dp)                  :: windxav, windyav  !< average wind for plotting
 
-double precision                  :: windsp
-double precision                  :: winddir         !< deg from north sailor
-double precision, target          :: rainuni         !< [mm/hr] uniform rain intensity. {"rank": 0}
-double precision                  :: wsx
-double precision                  :: wsy
-double precision                  :: rhoair          !< (kg/m3)
-double precision                  :: PavBnd          !< average ambient pressure (N/m2) for correction on open boundaries
-double precision                  :: PavIni          !< average ambient pressure (N/m2) for initial waterlevel correction
-double precision                  :: patmfac         !< 100 if Mbar, 1 if Pascal
+real(kind=dp)                  :: windsp
+real(kind=dp)                  :: winddir         !< deg from north sailor
+real(kind=dp), target          :: rainuni         !< [mm/hr] uniform rain intensity. {"rank": 0}
+real(kind=dp)                  :: wsx
+real(kind=dp)                  :: wsy
+real(kind=dp)                  :: rhoair          !< (kg/m3)
+real(kind=dp)                  :: PavBnd          !< average ambient pressure (N/m2) for correction on open boundaries
+real(kind=dp)                  :: PavIni          !< average ambient pressure (N/m2) for initial waterlevel correction
+real(kind=dp)                  :: patmfac         !< 100 if Mbar, 1 if Pascal
 
-double precision                  :: cdb(3)          !< breakpoints cd function cd coefficient
-double precision                  :: wdb(3)          !< breakpoints cd function windspeed
+real(kind=dp)                  :: cdb(3)          !< breakpoints cd function cd coefficient
+real(kind=dp)                  :: wdb(3)          !< breakpoints cd function windspeed
 integer                           :: ICdtyp          !< 1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955; 5=Hwang 2005; 6=Wuest 2005; 7=Hersbach 2010 (2 pts), 8: 4+viscous), 9=Garratt 1977.
-double precision                  :: relativewind    !< factor for top layer speed in relative wind, 0=no, 1 =full top layer speed 
+real(kind=dp)                  :: relativewind    !< factor for top layer speed in relative wind, 0=no, 1 =full top layer speed 
 integer                           :: jawindhuorzwsbased   !< 1 = finite volume , 0 = hu
 integer                           :: jawindpartialdry     !< Reduce windstress on water if link partially dry, only for bedlevtyp=3, 0 = no, 1 = yes
 contains

@@ -38,6 +38,7 @@ contains
 
 subroutine flgsfurufm(formno, m, teken, husb, hdsb, velhght, zs, ds, dg, dc, wstr,&
                   & cwfa, cwd, mugfa, cgfa, cgda, strdamf, lambda)
+  use precision, only: dp
 !!--description-----------------------------------------------------------------
 ! NONE
 !!--pseudo code and references--------------------------------------------------
@@ -56,42 +57,42 @@ subroutine flgsfurufm(formno, m, teken, husb, hdsb, velhght, zs, ds, dg, dc, wst
 !
 ! Local parameters
 !
-   double precision, parameter :: relax = 0.0d0, alfa = 0.9d0
+   real(kind=dp), parameter :: relax = 0.0d0, alfa = 0.9d0
 !
 ! Global variables
 !
    integer, intent(in) :: formno
    integer, intent(in) :: m
-   double precision, intent(in) :: cgda
-   double precision, intent(in) :: cgfa
-   double precision, intent(in) :: cwd
-   double precision, intent(in) :: cwfa
-   double precision, intent(in) :: dc
-   double precision, intent(in) :: dg
-   double precision, intent(in) :: ds
-   double precision, intent(in) :: hdsb
-   double precision, intent(in) :: husb
-   double precision, intent(in) :: mugfa
-   double precision, intent(in) :: strdamf, lambda
-   double precision, intent(in) :: teken
-   double precision, intent(in) :: velhght
-   double precision, intent(in) :: wstr
-   double precision, intent(in) :: zs
+   real(kind=dp), intent(in) :: cgda
+   real(kind=dp), intent(in) :: cgfa
+   real(kind=dp), intent(in) :: cwd
+   real(kind=dp), intent(in) :: cwfa
+   real(kind=dp), intent(in) :: dc
+   real(kind=dp), intent(in) :: dg
+   real(kind=dp), intent(in) :: ds
+   real(kind=dp), intent(in) :: hdsb
+   real(kind=dp), intent(in) :: husb
+   real(kind=dp), intent(in) :: mugfa
+   real(kind=dp), intent(in) :: strdamf, lambda
+   real(kind=dp), intent(in) :: teken
+   real(kind=dp), intent(in) :: velhght
+   real(kind=dp), intent(in) :: wstr
+   real(kind=dp), intent(in) :: zs
 !
 !
 ! Local variables
 !
    integer :: itgenstr
    logical :: again
-   double precision :: cu
-   double precision :: dh
-   double precision :: dxdt
-   double precision :: hs1
-   double precision :: mu
-   double precision :: rhsc
-   double precision :: ustru
-   double precision :: su
-   double precision :: sd
+   real(kind=dp) :: cu
+   real(kind=dp) :: dh
+   real(kind=dp) :: dxdt
+   real(kind=dp) :: hs1
+   real(kind=dp) :: mu
+   real(kind=dp) :: rhsc
+   real(kind=dp) :: ustru
+   real(kind=dp) :: su
+   real(kind=dp) :: sd
 
 !
 !

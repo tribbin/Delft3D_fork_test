@@ -41,13 +41,14 @@ public :: ian_young_pt
 contains
 
  subroutine ian_young_pt(U10, x, d, Hsig, Tsig)
+  use precision, only: dp
     use m_physcoef
     implicit none
-    double precision, intent(IN) :: d, U10, x
-    double precision, intent(OUT) :: Hsig, Tsig
-    double precision :: E, fp
-    double precision :: delta, XX, A1, B1, epsilon, nu, A2, B2, ta1, ta2
-    double precision, external :: tanhsafe
+    real(kind=dp), intent(IN) :: d, U10, x
+    real(kind=dp), intent(OUT) :: Hsig, Tsig
+    real(kind=dp) :: E, fp
+    real(kind=dp) :: delta, XX, A1, B1, epsilon, nu, A2, B2, ta1, ta2
+    real(kind=dp), external :: tanhsafe
     XX = ag * x / U10**2 ! non-dim fetch
     delta = ag * d / U10**2 ! non-dim depth
     ! calculate nondimensional energy

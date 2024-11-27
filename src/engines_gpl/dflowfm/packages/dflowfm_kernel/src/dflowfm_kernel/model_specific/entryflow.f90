@@ -41,6 +41,7 @@ public :: entryflow
 contains
 
       subroutine ENTRYFLOW(Y0, J, U, DUDY, TKE, EPS, NUT, GAMT)
+  use precision, only: dp
 !     STRATIFIED MIXING LAYER EXPERIMENTS BY DELFT HYDRAULICS
 !                           1987
 !
@@ -50,8 +51,8 @@ contains
 !     R.E. UITTENBOGAARD.
 !     NOV. 1987
 !
-         double precision :: Y0(*), U, DUDY, TKE, EPS, NUT, GAMT
-         double precision :: AU(50, 5), CMU, DY, KAP, ST, Y, uwall, uplate
+         real(kind=dp) :: Y0(*), U, DUDY, TKE, EPS, NUT, GAMT
+         real(kind=dp) :: AU(50, 5), CMU, DY, KAP, ST, Y, uwall, uplate
          integer :: J, nupnts, ip
 !
          data AU(1, 1)/.00/, AU(1, 2)/.00/, AU(1, 3)/.1605e+03/, &

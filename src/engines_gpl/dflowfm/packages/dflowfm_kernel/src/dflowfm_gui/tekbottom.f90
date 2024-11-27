@@ -37,23 +37,24 @@ implicit none
 contains
 
   subroutine TEKBOTTOM(MET)
+  use precision, only: dp
      use m_dmovabs
      use m_dlnabs
      use m_wearelt
      use m_howtoview
      use m_set_col
      implicit none
-     double precision :: dz
+     real(kind=dp) :: dz
      integer :: i
      integer :: k
      integer :: k1
      integer :: k2
      integer :: nz
-     double precision :: wd
-     double precision :: ybot
-     double precision :: ytop
+     real(kind=dp) :: wd
+     real(kind=dp) :: ybot
+     real(kind=dp) :: ytop
      integer :: MET
-     double precision XD, YD, ZD, XX1, XX2, ZZ1, ZZ2
+     real(kind=dp) XD, YD, ZD, XX1, XX2, ZZ1, ZZ2
      call SETCOL(160)
      if (MET == 1) return
 

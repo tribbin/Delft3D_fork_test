@@ -42,6 +42,7 @@ public :: anticreep
 contains
 
 subroutine anticreep(L)
+  use precision, only: dp
 
    use m_flow
    use m_flowgeom
@@ -52,21 +53,21 @@ subroutine anticreep(L)
    use m_dens_eck
 
    implicit none
-   double precision, allocatable, dimension(:) :: polal ! Z-coordinate horizontal layers in nm
-   double precision, allocatable, dimension(:) :: pocol
-   double precision, allocatable, dimension(:) :: polar ! Z-coordinate horizontal layers in nmu
-   double precision, allocatable, dimension(:) :: pocor
-   double precision, allocatable, dimension(:) :: poflu ! Z-coordinate gradient flux
-   double precision, allocatable, dimension(:) :: point
-   double precision, allocatable, dimension(:) :: drho, dsal, dtem
-   double precision, allocatable, dimension(:) :: kicol, kicor
+   real(kind=dp), allocatable, dimension(:) :: polal ! Z-coordinate horizontal layers in nm
+   real(kind=dp), allocatable, dimension(:) :: pocol
+   real(kind=dp), allocatable, dimension(:) :: polar ! Z-coordinate horizontal layers in nmu
+   real(kind=dp), allocatable, dimension(:) :: pocor
+   real(kind=dp), allocatable, dimension(:) :: poflu ! Z-coordinate gradient flux
+   real(kind=dp), allocatable, dimension(:) :: point
+   real(kind=dp), allocatable, dimension(:) :: drho, dsal, dtem
+   real(kind=dp), allocatable, dimension(:) :: kicol, kicor
 
    integer :: k1, k2, kbl, kbr, ktl, ktr, kll, krr, kl, kr, kl1, kl2, kr1, kr2
    integer :: kpoint, kf, k, j, Lb, Lt, LL, kfmax, kfmax1, kflux
    integer, intent(in) :: L
-   double precision :: grad, grad1, grad2, cl, cr, flux, flux1
-   double precision :: zbot, ztop, zmid, zbed, farea
-   double precision :: rhods, rhodt, temp, sal, dummy, dpbdx
+   real(kind=dp) :: grad, grad1, grad2, cl, cr, flux, flux1
+   real(kind=dp) :: zbot, ztop, zmid, zbed, farea
+   real(kind=dp) :: rhods, rhodt, temp, sal, dummy, dpbdx
 
    allocate (polal(0:kmx), pocol(0:kmx), polar(0:kmx), pocor(0:kmx))
    allocate (poflu(0:2 * kmx + 1), kicol(0:2 * kmx + 1), kicor(0:2 * kmx + 1))

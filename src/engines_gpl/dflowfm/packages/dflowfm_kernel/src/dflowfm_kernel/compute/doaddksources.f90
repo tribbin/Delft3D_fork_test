@@ -41,12 +41,13 @@ public :: doaddksources
 contains
 
  subroutine doaddksources() ! add k sources
+  use precision, only: dp
     use m_flow
     use m_flowtimes
     implicit none
 
     integer :: n, k, kk, kk2
-    double precision :: qsrck, dvoli, dtol = 1d-4
+    real(kind=dp) :: qsrck, dvoli, dtol = 1d-4
 
     do n = 1, numsrc
        if (ksrc(2, n) == 0 .and. ksrc(5, n) == 0) cycle ! due to initialisation

@@ -39,12 +39,13 @@ implicit none
 contains
 
 subroutine equili_spiralintensity()
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    use m_sferic, only: jsferic, fcorio
    implicit none
    integer :: kk
-   double precision :: spir_ce, spir_be, fcoriocof
+   real(kind=dp) :: spir_ce, spir_be, fcoriocof
 
    do kk = 1, ndx
       fcoriocof = fcorio

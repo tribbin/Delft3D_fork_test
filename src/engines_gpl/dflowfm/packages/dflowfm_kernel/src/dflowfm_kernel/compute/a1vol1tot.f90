@@ -41,6 +41,7 @@ public :: a1vol1tot
 contains
 
  subroutine a1vol1tot()
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_partitioninfo
@@ -48,7 +49,7 @@ contains
     use precision_basics
     implicit none
 
-    double precision, dimension(1) :: dum
+    real(kind=dp), dimension(1) :: dum
 
     integer :: k
 

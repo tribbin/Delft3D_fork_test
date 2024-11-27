@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine tekbathy(ja)
+  use precision, only: dp
     use m_isocol2
     use m_halt
     use unstruc_display
@@ -50,7 +51,7 @@ contains
     implicit none
     integer :: nodewhat
     integer :: k, ja, nn, ncol
-    double precision :: zn
+    real(kind=dp) :: zn
 
     if (ndraw(39) == 0) return
 

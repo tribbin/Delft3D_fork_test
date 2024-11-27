@@ -38,6 +38,7 @@ contains
 
 subroutine flgsd2fm(wsd, wstr, zs, w2, zb2, dg, ds1, ds2, elu, hd, rhoast,    &
                 & cgd, imag, ds, lambda)
+  use precision, only: dp
 !!--description-----------------------------------------------------------------
 ! NONE
 !!--pseudo code and references--------------------------------------------------
@@ -47,37 +48,37 @@ subroutine flgsd2fm(wsd, wstr, zs, w2, zb2, dg, ds1, ds2, elu, hd, rhoast,    &
 !
 ! Local parameters
 !
-   double precision, parameter :: c23 = 2.0d0 / 3.0d0, c13 = 1.0d0 / 3.0d0
+   real(kind=dp), parameter :: c23 = 2.0d0 / 3.0d0, c13 = 1.0d0 / 3.0d0
 !
 ! Global variables
 !
    logical, intent(out) :: imag
-   double precision, intent(in) :: cgd
-   double precision, intent(in) :: dg
-   double precision, intent(out) :: ds
-   double precision, intent(in) :: ds1
-   double precision, intent(in) :: ds2
-   double precision, intent(in) :: elu
-   double precision, intent(in) :: hd
-   double precision, intent(in) :: lambda
-   double precision, intent(in) :: rhoast
-   double precision, intent(in) :: w2
-   double precision, intent(in) :: wsd
-   double precision, intent(in) :: wstr
-   double precision, intent(in) :: zb2
-   double precision, intent(in) :: zs
+   real(kind=dp), intent(in) :: cgd
+   real(kind=dp), intent(in) :: dg
+   real(kind=dp), intent(out) :: ds
+   real(kind=dp), intent(in) :: ds1
+   real(kind=dp), intent(in) :: ds2
+   real(kind=dp), intent(in) :: elu
+   real(kind=dp), intent(in) :: hd
+   real(kind=dp), intent(in) :: lambda
+   real(kind=dp), intent(in) :: rhoast
+   real(kind=dp), intent(in) :: w2
+   real(kind=dp), intent(in) :: wsd
+   real(kind=dp), intent(in) :: wstr
+   real(kind=dp), intent(in) :: zb2
+   real(kind=dp), intent(in) :: zs
 !
 !
 ! Local variables
 !
-   double precision :: ag
-   double precision :: bg
-   double precision :: cg
-   double precision :: d2
-   double precision :: det
-   double precision :: hsl
-   double precision :: terma
-   double precision :: termb
+   real(kind=dp) :: ag
+   real(kind=dp) :: bg
+   real(kind=dp) :: cg
+   real(kind=dp) :: d2
+   real(kind=dp) :: det
+   real(kind=dp) :: hsl
+   real(kind=dp) :: terma
+   real(kind=dp) :: termb
 !
 !
 !! executable statements -------------------------------------------------------

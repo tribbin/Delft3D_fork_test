@@ -33,11 +33,12 @@ module m_get_link_area_wid2D
    implicit none
 contains
  subroutine getlinkareawid2D(wu2, dz, ai, hpr, ar, wid)
+  use precision, only: dp
     use m_flow, only: slotw2D
 
-    double precision, intent(in) :: wu2, dz, ai, hpr
-    double precision, intent(out) :: ar, wid
-    double precision :: hp2
+    real(kind=dp), intent(in) :: wu2, dz, ai, hpr
+    real(kind=dp), intent(out) :: ar, wid
+    real(kind=dp) :: hp2
 
     if (ai < 1d-3) then
        ! if (dz == 0d0) then

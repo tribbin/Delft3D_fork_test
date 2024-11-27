@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine TEKLAN(NCOL)
+  use precision, only: dp
      use m_linewidth
      use m_disp3c
      use m_dhitext
@@ -56,7 +57,7 @@ contains
      integer :: k
      integer :: ncl
      integer :: ncold
-     double precision :: rh
+     real(kind=dp) :: rh
 
      if (NDRAW(3) == 0) return
 

@@ -37,16 +37,17 @@ implicit none
 contains
 
       subroutine ARROWrcir(X0, Y0, cs, sn)
+  use precision, only: dp
          use M_WEARELT
          use m_movabs
          use m_lnabs
          implicit none
-         double precision :: cs
+         real(kind=dp) :: cs
          integer :: i
-         double precision :: sn
-         double precision :: x0
-         double precision :: y0
-         double precision :: X(3), Y(3), XR(3), YR(3)
+         real(kind=dp) :: sn
+         real(kind=dp) :: x0
+         real(kind=dp) :: y0
+         real(kind=dp) :: X(3), Y(3), XR(3), YR(3)
          data X(1)/0.8d0/, X(2)/1d0/, X(3)/0.8d0/, &
             Y(1)/-0.1d0/, Y(2)/0d0/, Y(3)/0.1d0/
 

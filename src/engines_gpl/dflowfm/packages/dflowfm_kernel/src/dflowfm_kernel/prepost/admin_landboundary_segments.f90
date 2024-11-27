@@ -46,6 +46,7 @@ public :: admin_landboundary_segments
 contains
 
 subroutine admin_landboundary_segments()
+  use precision, only: dp
    use m_landboundary
    use m_polygon
    use m_netw
@@ -64,8 +65,8 @@ subroutine admin_landboundary_segments()
    integer :: jbreak ! used to break segment in two
    integer :: i, j, ja, ja1, ja2, Nnew
 
-   double precision :: x1, y1, x2, y2, x3, y3, x4, y4, xn, yn, rl3, rl4
-   double precision :: dlanlength, dlinklength, dismin, dis3, dis4
+   real(kind=dp) :: x1, y1, x2, y2, x3, y3, x4, y4, xn, yn, rl3, rl4
+   real(kind=dp) :: dlanlength, dlinklength, dismin, dis3, dis4
    logical :: Lisclose
 
 !  allocate

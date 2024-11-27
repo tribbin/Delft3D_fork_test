@@ -37,6 +37,7 @@ use m_getwavenr, only: getwavenr
    implicit none
 contains
 subroutine getustwav(LL, z00, fw, ustw2, csw, snw, Dfu, Dfuc, deltau, costu, uorbu) ! at u-point, get ustarwave and get ustokes
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    use m_waves
@@ -46,19 +47,19 @@ subroutine getustwav(LL, z00, fw, ustw2, csw, snw, Dfu, Dfuc, deltau, costu, uor
    use m_get_Lbot_Ltop
 
    integer, intent(in) :: LL
-   double precision, intent(in) :: z00 ! current only z0
-   double precision, intent(out) :: fw, ustw2, csw, snw
-   double precision, intent(out) :: Dfu ! wave dissipation due to bedfriction
-   double precision, intent(out) :: Dfuc ! Dfu/c
-   double precision, intent(out) :: deltau ! wave bed boundary layer thickness
-   double precision, intent(out) :: costu
-   double precision, intent(out) :: uorbu
+   real(kind=dp), intent(in) :: z00 ! current only z0
+   real(kind=dp), intent(out) :: fw, ustw2, csw, snw
+   real(kind=dp), intent(out) :: Dfu ! wave dissipation due to bedfriction
+   real(kind=dp), intent(out) :: Dfuc ! Dfu/c
+   real(kind=dp), intent(out) :: deltau ! wave bed boundary layer thickness
+   real(kind=dp), intent(out) :: costu
+   real(kind=dp), intent(out) :: uorbu
 
-   double precision, external :: sinhsafei
+   real(kind=dp), external :: sinhsafei
    integer :: k1, k2, Lb, Lt, L, Lmin
-   double precision :: Tsig, Hrms, asg, rk, shs, phi1, phi2, dks, aks, omeg, f1u, f2u, f3u, sintu
-   double precision :: p1, p2, h, z, uusto, fac
-   double precision :: rolthk, rmax, erol, crol, mass
+   real(kind=dp) :: Tsig, Hrms, asg, rk, shs, phi1, phi2, dks, aks, omeg, f1u, f2u, f3u, sintu
+   real(kind=dp) :: p1, p2, h, z, uusto, fac
+   real(kind=dp) :: rolthk, rmax, erol, crol, mass
 
    Dfu = 0d0; Dfuc = 0d0; deltau = 0d0; uorbu = 0d0; csw = 1d0; snw = 0d0; costu = 1d0; fw = 0d0
 

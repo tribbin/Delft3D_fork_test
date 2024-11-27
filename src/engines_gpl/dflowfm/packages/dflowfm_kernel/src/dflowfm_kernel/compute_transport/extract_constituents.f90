@@ -60,8 +60,8 @@ subroutine extract_constituents()
    implicit none
 
    integer :: i, iconst, k, kk, limmin, limmax, ll, kb, k1, kt
-   double precision :: dmin
-   double precision :: t_freeze !< freezing point temperature [degC]
+   real(kind=dp) :: dmin
+   real(kind=dp) :: t_freeze !< freezing point temperature [degC]
    integer(4) :: ithndl =  0
    
    if (timon) call timstrt("extract_constituents", ithndl)

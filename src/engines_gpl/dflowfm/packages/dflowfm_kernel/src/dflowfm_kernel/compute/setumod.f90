@@ -46,6 +46,7 @@ contains
 !! set velocity gradient at u point
 !! set corner based Perot velocities
 subroutine setumod(jazws0) 
+  use precision, only: dp
    use m_setucxucyucxuucyunew, only: setucxucyucxuucyunew
    use m_setucxucyucxuucyu, only: setucxucyucxuucyu
    use m_setcornervelocities, only: setcornervelocities
@@ -70,28 +71,28 @@ subroutine setumod(jazws0)
    integer, intent(in) :: jazws0
    ! locals
    integer :: L, LL, k, k1, k2, k3, k4, kb, n, n1, n2 !
-   double precision :: duxdn, duydn, duxdt, duydt ! normal and tangential global ux,uy gradients
-   double precision :: vicl, c11, c12, c22
+   real(kind=dp) :: duxdn, duydn, duxdt, duydt ! normal and tangential global ux,uy gradients
+   real(kind=dp) :: vicl, c11, c12, c22
 
-   double precision :: sf, ac1, ac2, csl, snl, wuw, ustar, suxw, suyw, suxL, suyL
-   double precision :: cs, sn
-   double precision :: hmin, hs1, hs2
-   double precision :: fcor, vcor, fcor1, fcor2, fvcor
-   double precision :: dundn, dutdn, dundt, dutdt, shearvar, delty, vksag6, Cz
-   double precision :: huv
-   double precision, allocatable :: u1_tmp(:), vluban(:)
+   real(kind=dp) :: sf, ac1, ac2, csl, snl, wuw, ustar, suxw, suyw, suxL, suyL
+   real(kind=dp) :: cs, sn
+   real(kind=dp) :: hmin, hs1, hs2
+   real(kind=dp) :: fcor, vcor, fcor1, fcor2, fvcor
+   real(kind=dp) :: dundn, dutdn, dundt, dutdt, shearvar, delty, vksag6, Cz
+   real(kind=dp) :: huv
+   real(kind=dp), allocatable :: u1_tmp(:), vluban(:)
 
    integer :: nw, L1, L2, kt, Lb, Lt, Lb1, Lt1, Lb2, Lt2, kb1, kb2, ntmp, m
 
-   double precision :: DRL, nuhroller
+   real(kind=dp) :: DRL, nuhroller
 
-   double precision :: dxiAu, vicc, vlban, fcLL
+   real(kind=dp) :: dxiAu, vicc, vlban, fcLL
 
-   double precision, external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
-   double precision, external :: nod2wallx, nod2wally, wall2linx, wall2liny
+   real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
+   real(kind=dp), external :: nod2wallx, nod2wally, wall2linx, wall2liny
 
    integer :: number_limited_links
-   double precision :: viscocity_max_limit
+   real(kind=dp) :: viscocity_max_limit
 
    call timstrt('Umod', handle_umod)
    if (jazws0 == 1 .and. len_trim(md_restartfile) > 0) then

@@ -36,7 +36,8 @@ implicit none
 
 contains
 
- double precision function zlin(LL) ! get various values at flow links
+ real(kind=dp) function zlin(LL) ! get various values at flow links
+  use precision, only: dp
     use m_getltoplot
     use m_flow
     use m_flowgeom
@@ -50,7 +51,7 @@ contains
 
     integer, intent(in) :: LL
     integer :: L, linval, k1, k2, n1, n2, lll, ka, kb
-    double precision :: omega1, omega2, zb1, zb2, dum, alfa
+    real(kind=dp) :: omega1, omega2, zb1, zb2, dum, alfa
 
     zlin = dmiss
     if (LL < 1) then

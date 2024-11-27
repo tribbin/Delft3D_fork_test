@@ -41,6 +41,7 @@ implicit none
 contains
 
       subroutine EDITGRID(MODE, NFLD, KEY)
+  use precision, only: dp
          use m_choices
          use unstruc_colors, only: ncolrg, ncoldg
          use m_grid
@@ -63,7 +64,7 @@ contains
                     ML, NL, MH, NH, NUMP, NLOC, IN, JN, INSIDE, NCOL
          integer :: newmode
          character TEX * 20
-         double precision :: xp, yp, wf(4)
+         real(kind=dp) :: xp, yp, wf(4)
 
          TEX = ' '//FIELDOP(NFLD)
          L = len_trim(TEX)

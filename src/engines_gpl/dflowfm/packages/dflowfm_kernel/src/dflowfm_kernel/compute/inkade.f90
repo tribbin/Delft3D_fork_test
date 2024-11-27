@@ -37,10 +37,11 @@ implicit none
 contains
 
  subroutine inkade(sx2, sy2, i, j)
+  use precision, only: dp
     use m_ship
     implicit none
     integer :: i, j
-    double precision :: sx2, sy2
+    real(kind=dp) :: sx2, sy2
     i = 0; j = 0
     if (sx2 > xmxs) i = 1
     if (sx2 < xmns) i = -1

@@ -41,6 +41,7 @@ public :: thacker1d
 contains
 
  subroutine thacker1d(ini, xz, yz, s1, bl, ndx, t)
+  use precision, only: dp
     use m_netw, only: numk, xk, zk
     use m_sferic
     use m_physcoef, only: ag
@@ -51,9 +52,9 @@ contains
     use m_lnabs
 
     integer :: ndx, ini
-    double precision :: dep, xz(ndx), yz(ndx), s1(ndx), bl(ndx), t
+    real(kind=dp) :: dep, xz(ndx), yz(ndx), s1(ndx), bl(ndx), t
     integer :: is, k
-    double precision :: omeg, r, r0, rr0, psi, samp, st, ct, ux, uy, s1k, dif, xx, yy, period
+    real(kind=dp) :: omeg, r, r0, rr0, psi, samp, st, ct, ux, uy, s1k, dif, xx, yy, period
 
     dep = 10d0
     fcorio = 0d0

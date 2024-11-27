@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine SMALLSCREEN()
+  use precision, only: dp
          use m_screenarea
          use m_view_port
 
          implicit none
-         double precision :: xright
-         double precision :: ytop
+         real(kind=dp) :: xright
+         real(kind=dp) :: ytop
 
          YTOP = max(0.95d0, 1 - YBOT)
          XRIGHT = max(0.90d0, 1 - XLEFT)

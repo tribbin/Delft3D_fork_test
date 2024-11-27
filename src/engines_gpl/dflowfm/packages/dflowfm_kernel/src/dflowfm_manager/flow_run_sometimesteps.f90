@@ -32,6 +32,7 @@
 
 !> Runs flow steps for a certain period (do computational flowsteps for as long as timeinterval dtrange).
 subroutine flow_run_sometimesteps(dtrange, iresult) ! do computational flowsteps for as long as timeinterval dtrange
+  use precision, only: dp
    use m_flow_single_timestep, only: flow_single_timestep
    use m_flowtimes
    use unstruc_messages
@@ -42,11 +43,11 @@ subroutine flow_run_sometimesteps(dtrange, iresult) ! do computational flowsteps
                         lateral_volume_per_layer, distribute_lateral_discharge
 
    implicit none
-   double precision, intent(in) :: dtrange
+   real(kind=dp), intent(in) :: dtrange
    integer, intent(out) :: iresult !< Error status, DFM_NOERR==0 if successful.
    integer :: key
 
-   double precision :: timetarget
+   real(kind=dp) :: timetarget
 
    if (apply_transport_is_used) then
       call reset_outgoing_lat_concentration()

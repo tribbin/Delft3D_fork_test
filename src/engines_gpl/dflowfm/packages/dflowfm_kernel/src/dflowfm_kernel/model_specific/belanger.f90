@@ -40,6 +40,7 @@ public :: belanger
 contains
 
  subroutine belanger()
+  use precision, only: dp
     use m_physcoef
     use fm_external_forcings_data
     use m_flowgeom, only: xz, bl, dxi, ln
@@ -48,10 +49,10 @@ contains
     use m_movabs
     use m_lnabs
 
-    double precision :: chezy, cf, h0, h1, x0, x1, q, constant, bot, a, x, hav, slope, h, h3, hc, hc3, he3
+    real(kind=dp) :: chezy, cf, h0, h1, x0, x1, q, constant, bot, a, x, hav, slope, h, h3, hc, hc3, he3
     integer :: k, kb, L
     integer, parameter :: mmax = 100000, num = 200
-    double precision, allocatable :: xx(:), ss(:), uu(:)
+    real(kind=dp), allocatable :: xx(:), ss(:), uu(:)
 
     allocate (xx(0:mmax), ss(0:mmax), uu(0:mmax))
 

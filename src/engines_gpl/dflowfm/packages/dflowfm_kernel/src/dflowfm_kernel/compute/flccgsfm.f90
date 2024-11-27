@@ -37,6 +37,7 @@ implicit none
 contains
 
 subroutine flccgsfm(dg, dsc, cgd, cgf, cw, mugf, cgda, cgfa, mugfa)
+  use precision, only: dp
 !!--description-----------------------------------------------------------------
 ! NONE
 !!--pseudo code and references--------------------------------------------------
@@ -47,15 +48,15 @@ subroutine flccgsfm(dg, dsc, cgd, cgf, cw, mugf, cgda, cgfa, mugfa)
 !
 ! Global variables
 !
-   double precision, intent(in) :: cgd
-   double precision, intent(out) :: cgda
-   double precision, intent(in) :: cgf
-   double precision, intent(out) :: cgfa
-   double precision, intent(in) :: cw
-   double precision :: dg
-   double precision :: dsc
-   double precision, intent(in) :: mugf
-   double precision, intent(out) :: mugfa
+   real(kind=dp), intent(in) :: cgd
+   real(kind=dp), intent(out) :: cgda
+   real(kind=dp), intent(in) :: cgf
+   real(kind=dp), intent(out) :: cgfa
+   real(kind=dp), intent(in) :: cw
+   real(kind=dp) :: dg
+   real(kind=dp) :: dsc
+   real(kind=dp), intent(in) :: mugf
+   real(kind=dp), intent(out) :: mugfa
 !
 !! executable statements -------------------------------------------------------
 !

@@ -41,6 +41,7 @@ public :: setucxucyucxuucyunew
 contains
 
  subroutine setucxucyucxuucyunew() ! and reclaim ucxq, ucyq for Coriolis without interfering with Morfology
+  use precision, only: dp
     use m_setuc1d, only: setuc1d
     use m_flowgeom
     use precision_basics
@@ -56,12 +57,12 @@ contains
     logical :: make2dh
     integer :: L, KK, k1, k2, k, Lb, Lt, LL, nn, n, kt, kb, kbk, k2k, n1, n2, i
     integer :: itpbn
-    double precision :: uu, vv, uucx, uucy, cs, sn, hul, hsk, uin, duxdn, duydn, uhu, htrs
-    double precision :: u1correction
-    double precision :: uinx, uiny
+    real(kind=dp) :: uu, vv, uucx, uucy, cs, sn, hul, hsk, uin, duxdn, duydn, uhu, htrs
+    real(kind=dp) :: u1correction
+    real(kind=dp) :: uinx, uiny
 
-    double precision, external :: nod2linx, nod2liny
-    double precision, external :: lin2nodx, lin2nody
+    real(kind=dp), external :: nod2linx, nod2liny
+    real(kind=dp), external :: lin2nodx, lin2nody
 
     ucxq = 0d0; ucyq = 0d0 ! zero arrays
 

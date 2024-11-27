@@ -43,6 +43,7 @@ public :: flow_finalize_fm1dimp_timestep
 contains
 
 subroutine flow_finalize_fm1dimp_timestep()
+  use precision, only: dp
 
 !
 !MODULES
@@ -70,8 +71,8 @@ subroutine flow_finalize_fm1dimp_timestep()
 
    real, dimension(:, :), pointer :: waoft
 
-   double precision, dimension(:, :), pointer :: hpack
-   double precision, dimension(:, :), pointer :: qpack
+   real(kind=dp), dimension(:, :), pointer :: hpack
+   real(kind=dp), dimension(:, :), pointer :: qpack
 
 !locals
 

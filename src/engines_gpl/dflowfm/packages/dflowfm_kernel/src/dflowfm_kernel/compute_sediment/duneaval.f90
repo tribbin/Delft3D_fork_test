@@ -41,6 +41,7 @@ public :: duneaval
 contains
 
 subroutine duneaval(error)
+  use precision, only: dp
    use m_fm_erosed
    use m_sediment
    use m_flowgeom
@@ -52,8 +53,8 @@ subroutine duneaval(error)
    logical, intent(out) :: error
 
    integer :: k1, k2, L, lsd, ac1, ac2
-   double precision :: slp, slpmax, avflux, maxflux
-   double precision :: fixf, frc
+   real(kind=dp) :: slp, slpmax, avflux, maxflux
+   real(kind=dp) :: fixf, frc
 
    error = .true.
    avalflux = 0d0

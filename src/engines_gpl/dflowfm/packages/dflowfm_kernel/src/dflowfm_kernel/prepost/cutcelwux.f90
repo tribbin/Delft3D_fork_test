@@ -41,6 +41,7 @@ public :: cutcelwux
 contains
 
   subroutine CUTCELWUx(n12)
+  use precision, only: dp
      use m_crosslinkpoly, only: crosslinkpoly
      use m_netw
      use M_FLOWGEOM
@@ -55,7 +56,7 @@ contains
      integer :: K, K1, K2, L, LL, N, NN, LF, IC, LLU, IN
      integer, allocatable :: KNP(:)
 
-     double precision :: XM, YM, XXC(8), YYC(8), DAREA, DLENGTH, DLENMX
+     real(kind=dp) :: XM, YM, XXC(8), YYC(8), DAREA, DLENGTH, DLENMX
 
      call READYY('CUTCELWU', 0d0)
 

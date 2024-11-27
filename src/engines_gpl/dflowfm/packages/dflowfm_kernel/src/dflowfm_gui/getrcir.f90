@@ -36,7 +36,8 @@ implicit none
 
 contains
 
-  double precision function GETRCIR()
+  real(kind=dp) function GETRCIR()
+  use precision, only: dp
      use m_wearelt
 
      GETRCIR = RCIR

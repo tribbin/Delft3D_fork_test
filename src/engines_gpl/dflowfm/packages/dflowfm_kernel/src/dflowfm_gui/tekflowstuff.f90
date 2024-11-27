@@ -43,6 +43,7 @@ implicit none
 contains
 
  subroutine tekflowstuff(ja)
+  use precision, only: dp
     use m_tekflownodes
     use m_tekflowlinks
     use m_tekbathy
@@ -84,12 +85,12 @@ contains
     integer :: k, kk, L, LL, k1, k2, ncol, nn, k3, k4
     integer :: nodemode, linkmode ! how  to show on flow nodes and links
     integer :: nodewhat ! what to show on flow nodes and links
-    double precision :: xx1, yy1, Zz1 ! help only
-    double precision :: xx2, yy2, Zz2 ! help only
-    double precision :: x3, y3 ! help only
-    double precision :: zn
+    real(kind=dp) :: xx1, yy1, Zz1 ! help only
+    real(kind=dp) :: xx2, yy2, Zz2 ! help only
+    real(kind=dp) :: x3, y3 ! help only
+    real(kind=dp) :: zn
     integer :: model24 = 0 ! colourmodel 0/1
-    double precision :: uux, uuy
+    real(kind=dp) :: uux, uuy
     integer :: n, ja, ja2
 
     ! ndraw(28)= show what on nodes   ndraw(19)=how to show on nodes , NDRAW(8) = SHOW WHAT ON NETNODES

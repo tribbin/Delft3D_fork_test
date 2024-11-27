@@ -37,6 +37,7 @@ use m_check_einstein_garcia2, only: check_einstein_garcia2
    implicit none
 contains
  subroutine getequilibriumtransportrates(kk, seq, wse, mx, hsk) ! get them for flowcell kk or ban kk
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_netw
@@ -48,17 +49,17 @@ contains
     use m_get_czz0
 
     integer, intent(in) :: kk, mx ! flowcell kk or ban kk, mx fracnr
-    double precision, intent(out) :: seq(mx) ! seq(kg/m3)
-    double precision, intent(out) :: wse(mx) ! effective fall velocity (m/s)
-    double precision, intent(out) :: hsk ! waterdepth, flowcell or ban
+    real(kind=dp), intent(out) :: seq(mx) ! seq(kg/m3)
+    real(kind=dp), intent(out) :: wse(mx) ! effective fall velocity (m/s)
+    real(kind=dp), intent(out) :: hsk ! waterdepth, flowcell or ban
 
-    double precision :: cz, flx
-    double precision :: ucr, ueff, Twave, Uwave, Ucur, Ucrw, Pmob, beta, D50h, sbeq
-    double precision :: aref, Tmob, crefa, sseq, ustar, ustar2, rouse, sqcf, z0k, dks, hdune = 0
-    double precision :: qsseq, eincheck2
-    double precision :: seqbed
-    double precision :: hpr, dzz, wu2, wid, ar, hyr, zbu
-    double precision :: sumlay, dmorfacL, dh, ustar2swart, ustw2, fw, qeng, cf, wa, z00
+    real(kind=dp) :: cz, flx
+    real(kind=dp) :: ucr, ueff, Twave, Uwave, Ucur, Ucrw, Pmob, beta, D50h, sbeq
+    real(kind=dp) :: aref, Tmob, crefa, sseq, ustar, ustar2, rouse, sqcf, z0k, dks, hdune = 0
+    real(kind=dp) :: qsseq, eincheck2
+    real(kind=dp) :: seqbed
+    real(kind=dp) :: hpr, dzz, wu2, wid, ar, hyr, zbu
+    real(kind=dp) :: sumlay, dmorfacL, dh, ustar2swart, ustw2, fw, qeng, cf, wa, z00
     integer :: j, n, k, kg, nn, n1, L, LL, jabanhydrad = 0
 
     if (stm_included) return

@@ -227,13 +227,13 @@ contains
       real(fp), dimension(max(kmx, 1)) :: concin3d
       real(fp), dimension(kmax2d) :: concin2d
       character(256) :: errmsg
-      double precision :: zcc, maxdepfrac
-      double precision :: ubot
+      real(kind=dp) :: zcc, maxdepfrac
+      real(kind=dp) :: ubot
       integer :: ierr, kk, Lf, kmxvel, kb, kt
-      double precision, allocatable :: dzdx(:), dzdy(:), u1_tmp(:), ucxq_tmp(:), ucyq_tmp(:)
-      double precision, allocatable :: z0rouk(:), z0curk(:), deltas(:), ua(:), va(:)
-      double precision :: dzdn, dzds
-      double precision :: z0u, czu
+      real(kind=dp), allocatable :: dzdx(:), dzdy(:), u1_tmp(:), ucxq_tmp(:), ucyq_tmp(:)
+      real(kind=dp), allocatable :: z0rouk(:), z0curk(:), deltas(:), ua(:), va(:)
+      real(kind=dp) :: dzdn, dzds
+      real(kind=dp) :: z0u, czu
       !
       real(fp), dimension(:), allocatable :: localpar !< local array for sediment transport parameters
    !! executable statements -------------------------------------------------------

@@ -42,18 +42,19 @@ contains
 
 !> groundwater flow explicit
  subroutine setgrwflowexpl() 
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_flowtimes
     use m_hydrology_data
     use horton
 
-    double precision, parameter :: mmphr_to_mps = 1d-3 / 3600d0
+    real(kind=dp), parameter :: mmphr_to_mps = 1d-3 / 3600d0
 
     integer :: k1, k2, L, k
     integer :: ierr
-    double precision :: z1, z2, h1, h2, dh, dQ, hunsat, hunsat1, hunsat2, fac, qgrw, h2Q
-    double precision :: fc, conduct, h_upw, Qmx
+    real(kind=dp) :: z1, z2, h1, h2, dh, dQ, hunsat, hunsat1, hunsat2, fac, qgrw, h2Q
+    real(kind=dp) :: fc, conduct, h_upw, Qmx
 
     qingrw = 0d0; qoutgrw = 0d0; Volgrw = 0d0
 

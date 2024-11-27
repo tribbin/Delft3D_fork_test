@@ -41,10 +41,11 @@ public :: swart
 contains
 
 subroutine Swart(Tsig, uorbu, z00, fw, ustw2)
+  use precision, only: dp
 
    implicit none
-   double precision :: Tsig, uorbu, z00, fw, ustw2
-   double precision :: astar
+   real(kind=dp) :: Tsig, uorbu, z00, fw, ustw2
+   real(kind=dp) :: astar
 
    if (uorbu == 0d0) then
       fw = 0d0; ustw2 = 0d0; return

@@ -43,7 +43,7 @@ contains
          use IFOPNGL, only: GL_PROJECTION, GL_MODELVIEW, fglMatrixMode, fglLoadIdentity, fglOrtho
 #endif
          implicit none
-         double precision :: XW1, YW1, XW2, YW2
+         real(kind=dp) :: XW1, YW1, XW2, YW2
          if (XW1 == XW2 .or. YW1 == YW2) then
             XW2 = XW1 + 1
             YW2 = YW1 + 1

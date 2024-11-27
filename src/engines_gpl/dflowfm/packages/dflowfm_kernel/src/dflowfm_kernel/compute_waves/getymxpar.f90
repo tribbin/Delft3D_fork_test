@@ -41,11 +41,12 @@ public :: getymxpar
 contains
 
 subroutine getymxpar(modind, tauwav, taucur, fw, cdrag, abscos, ypar, ymxpar)
+  use precision, only: dp
    implicit none
    integer, intent(in) :: modind
-   double precision, intent(in) :: tauwav, taucur, fw, cdrag, abscos
-   double precision, intent(out) :: ypar, ymxpar
-   double precision :: xpar ! Variable x in in expression for parametrized models
+   real(kind=dp), intent(in) :: tauwav, taucur, fw, cdrag, abscos
+   real(kind=dp), intent(out) :: ypar, ymxpar
+   real(kind=dp) :: xpar ! Variable x in in expression for parametrized models
    real, dimension(8) :: coeffi ! Coefficient i in expression for parametrized models
    real, dimension(8) :: coeffj ! Coefficient j in expression for parametrized models
    real, dimension(8, 4) :: aa ! Coefficient a(i) in expression for parameter a
@@ -54,7 +55,7 @@ subroutine getymxpar(modind, tauwav, taucur, fw, cdrag, abscos, ypar, ymxpar)
    real, dimension(8, 4) :: nn ! Coefficient n(i) in expression for parameter n
    real, dimension(8, 4) :: pp ! Coefficient p(i) in expression for parameter p
    real, dimension(8, 4) :: qq ! Coefficient q(i) in expression for parameter q
-   double precision :: lfc, cj, coeffb, coeffp, coeffq, ci, coeffa, coeffm, coeffn
+   real(kind=dp) :: lfc, cj, coeffb, coeffp, coeffq, ci, coeffa, coeffm, coeffn
 
    data bb/0.29, 0.65, 0.27, 0.73, 0.22, 0.32, 0.47, -0.06, &
       0.55, 0.29, 0.51, 0.40, 0.73, 0.55, 0.29, 0.26, &

@@ -41,6 +41,7 @@ implicit none
 contains
 
 subroutine flgsfm(n, ng, L, jarea)
+  use precision, only: dp
    use m_flowgeom
 !!--description-----------------------------------------------------------------
 ! NONE
@@ -71,21 +72,21 @@ subroutine flgsfm(n, ng, L, jarea)
    integer :: il, ir, k1, k2, kL, kR, m, Lf
    integer :: L0, Lb, Lt, LL, kk, iup
    logical :: velheight
-   double precision :: cgd, cgf
-   double precision :: cwd, cwf
-   double precision :: dg, ds, ds1, ds2
-   double precision :: hdsb, husb
-   double precision :: lambda, mugf
-   double precision :: relax
-   double precision :: strdamf
-   double precision :: teken, tekenstr
-   double precision :: ud, uu
-   double precision :: w2, wsd, wstr
-   double precision :: zb2, zs
-   double precision :: gateloweredgelevel, gatedoorheight
-   double precision :: DsL, au0, au1, au2, au3
-   double precision :: gatefraction
-   double precision :: hhi(3), zbi(3), zti(3)
+   real(kind=dp) :: cgd, cgf
+   real(kind=dp) :: cwd, cwf
+   real(kind=dp) :: dg, ds, ds1, ds2
+   real(kind=dp) :: hdsb, husb
+   real(kind=dp) :: lambda, mugf
+   real(kind=dp) :: relax
+   real(kind=dp) :: strdamf
+   real(kind=dp) :: teken, tekenstr
+   real(kind=dp) :: ud, uu
+   real(kind=dp) :: w2, wsd, wstr
+   real(kind=dp) :: zb2, zs
+   real(kind=dp) :: gateloweredgelevel, gatedoorheight
+   real(kind=dp) :: DsL, au0, au1, au2, au3
+   real(kind=dp) :: gatefraction
+   real(kind=dp) :: hhi(3), zbi(3), zti(3)
 
 !
 !! executable statements -------------------------------------------------------

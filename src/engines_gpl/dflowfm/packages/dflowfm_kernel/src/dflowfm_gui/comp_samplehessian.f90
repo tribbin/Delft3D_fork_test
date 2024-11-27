@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine comp_sampleHessian(ierror)
+  use precision, only: dp
    use m_comp_samplegradi
    use m_samples
    use m_samples_refine
@@ -50,22 +51,22 @@ subroutine comp_sampleHessian(ierror)
 
    integer, intent(out) :: ierror !< error (1) or not (0)
 
-   double precision, dimension(2, 2) :: UU, VV ! for SVD: H = USV'
-   double precision, dimension(2) :: S ! for SVD: H = USV'
+   real(kind=dp), dimension(2, 2) :: UU, VV ! for SVD: H = USV'
+   real(kind=dp), dimension(2) :: S ! for SVD: H = USV'
 
-   double precision, dimension(2) :: gradiL, gradiR ! sample gradients at i-edges
-   double precision, dimension(2) :: gradjL, gradjR ! sample gradients at j-edges
-   double precision, dimension(2) :: SniL, sniR ! i-edge surface vector (for divergence)
-   double precision, dimension(2) :: SnjL, snjR ! j-edge surface vector (for divergence)
-   double precision :: dareaiL, dareaiR ! contribution to control volume area (for divergence)
-   double precision :: dareajL, dareajR ! contribution to control volume area (for divergence)
+   real(kind=dp), dimension(2) :: gradiL, gradiR ! sample gradients at i-edges
+   real(kind=dp), dimension(2) :: gradjL, gradjR ! sample gradients at j-edges
+   real(kind=dp), dimension(2) :: SniL, sniR ! i-edge surface vector (for divergence)
+   real(kind=dp), dimension(2) :: SnjL, snjR ! j-edge surface vector (for divergence)
+   real(kind=dp) :: dareaiL, dareaiR ! contribution to control volume area (for divergence)
+   real(kind=dp) :: dareajL, dareajR ! contribution to control volume area (for divergence)
 
-   double precision :: area ! control volume area of divergence operator (for Laplacian)
+   real(kind=dp) :: area ! control volume area of divergence operator (for Laplacian)
 
-   double precision :: zxx, zxy, zyx, zyy ! second order partial derivatives
-   double precision :: zx, zy ! first order partial derivatives
+   real(kind=dp) :: zxx, zxy, zyx, zyy ! second order partial derivatives
+   real(kind=dp) :: zx, zy ! first order partial derivatives
 
-   double precision :: af, dum, Dh
+   real(kind=dp) :: af, dum, Dh
 
    integer :: i, j, k, nrot, ip, ihasridge
 

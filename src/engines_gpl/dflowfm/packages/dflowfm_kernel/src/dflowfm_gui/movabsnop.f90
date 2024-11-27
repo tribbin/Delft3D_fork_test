@@ -33,9 +33,10 @@ module m_movabs_nop
    implicit none
 contains
       subroutine MOVABSnop(X, Y)
+  use precision, only: dp
          use unstruc_opengl, only: InOpenGLRendering, MoveTo
 
-         double precision :: x, y
+         real(kind=dp) :: x, y
 
          if (InOpenGLRendering) then
             call MoveTo(X, Y)

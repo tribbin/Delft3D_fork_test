@@ -38,9 +38,10 @@ implicit none
 contains
 
       subroutine GETPOS(X, Y)
+  use precision, only: dp
          implicit none
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
          real INFOGRAPHICS
          X = INFOGRAPHICS(1)
          Y = INFOGRAPHICS(2)

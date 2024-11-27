@@ -43,6 +43,7 @@ contains
    !> Reads raw restart data from a formatted restart file by wrirst.
    !! Water levels and velocities are directly stored into the flow arrays.
    subroutine REARST(Mrst, JA)
+     use precision, only: dp
       use unstruc_model
       use UNSTRUC_MESSAGES
       use M_FLOWTIMES
@@ -57,7 +58,7 @@ contains
       integer :: k
       integer :: l
       integer :: NDXR, LNXR ! alleen binnen deze subroutine
-      double precision :: DUM
+      real(kind=dp) :: DUM
 
       ja = 0
       ! READ(Mrst,*)  REFDATLOC, TSTART_USERLOC, NDXR, LNXR

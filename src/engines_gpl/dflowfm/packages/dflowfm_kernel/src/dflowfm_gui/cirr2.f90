@@ -37,13 +37,14 @@ implicit none
 contains
 
       subroutine CIRR2(X, Y, NCOL, R)
+  use precision, only: dp
          use m_cir
          use m_wearelt
          use m_set_col
          use m_movabs
          implicit none
          integer :: ncol
-         double precision :: x, y, r
+         real(kind=dp) :: x, y, r
          call SETCOL(NCOL)
          call MOVABS(X, Y)
          call CIR(RCIR * R)

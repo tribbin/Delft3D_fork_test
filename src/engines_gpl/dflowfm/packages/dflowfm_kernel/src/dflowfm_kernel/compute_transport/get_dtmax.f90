@@ -42,6 +42,7 @@ public :: get_dtmax
 contains
 
 subroutine get_dtmax()
+  use precision, only: dp
    use m_flowgeom, only: Ndx, Ndxi, bl, ln, lnx, ba
    use m_flow, only: s1, epshu, squ, sqi, vol1, kmx, diusp, viu, Lbot, Ltop, jaimplicitfallvelocity
    use m_flowparameters, only: eps10, cflmx, jadiusp
@@ -57,8 +58,8 @@ subroutine get_dtmax()
 
    implicit none
 
-   double precision :: difcoeff
-   double precision :: diuspL
+   real(kind=dp) :: difcoeff
+   real(kind=dp) :: diuspL
 
    integer :: kk, k, kb, kt
    integer :: L, LL, Lb, Lt
@@ -66,9 +67,9 @@ subroutine get_dtmax()
    integer :: j
    integer :: ierror
 
-   double precision :: sqtot, bak
+   real(kind=dp) :: sqtot, bak
 
-   double precision, parameter :: dtmax_default = 1d4
+   real(kind=dp), parameter :: dtmax_default = 1d4
 
    integer(4) :: ithndl =  0
    

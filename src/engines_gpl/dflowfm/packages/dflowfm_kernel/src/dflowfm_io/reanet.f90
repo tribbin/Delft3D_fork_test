@@ -41,6 +41,7 @@ public :: reanet
 contains
 
       subroutine REANET(filename, k0, L0, NUMKN, NUMLN, istat)
+  use precision, only: dp
          use m_netw
          use gridoperations
          use m_readyy
@@ -54,7 +55,7 @@ contains
          integer :: MNET, JA, LMOD, KMOD
          integer :: k, nr, knread, L, N1
          integer :: numbersonline
-         double precision :: af
+         real(kind=dp) :: af
          character REC * 332
 
          call oldfil(mnet, filename)

@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine CHANGEISOPARAMETERS()
+  use precision, only: dp
          use unstruc_colors
          use unstruc_display_data
          use dflowfm_version_module, only: company, product_name
@@ -47,8 +48,8 @@ contains
          use m_help
          use m_highlight_form_line
 
-         double precision :: dvi, dvi2
-         double precision :: dvnu
+         real(kind=dp) :: dvi, dvi2
+         real(kind=dp) :: dvnu
          integer :: i
          integer :: ifexit
          integer :: ifinit
@@ -67,8 +68,8 @@ contains
          integer :: numfld
          integer :: numpar
          integer :: nvn
-         double precision :: vmaxn
-         double precision :: vminn
+         real(kind=dp) :: vmaxn
+         real(kind=dp) :: vminn
          parameter(NUMPAR=19, NUMFLD=2 * NUMPAR)
          integer IX(NUMFLD), IY(NUMFLD), IS(NUMFLD), IT(NUMFLD)
          character OPTION(NUMPAR) * 40, HELPM(NUMPAR) * 60

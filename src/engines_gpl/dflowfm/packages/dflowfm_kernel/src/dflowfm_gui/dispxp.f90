@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine DISPXP(X, Y, N, NCOL)
+  use precision, only: dp
          use m_cir
          use m_set_col
          use m_movabs
@@ -44,9 +45,9 @@ contains
          integer :: i
          integer :: n
          integer :: ncol
-         double precision :: y
+         real(kind=dp) :: y
 !     LAAT TWEEDIMENSIONALE FUNCTIE PUNTJES ZIEN
-         double precision :: X(N)
+         real(kind=dp) :: X(N)
          call SETCOL(NCOL)
          do I = 1, N
             call MOVABS(X(I), Y)

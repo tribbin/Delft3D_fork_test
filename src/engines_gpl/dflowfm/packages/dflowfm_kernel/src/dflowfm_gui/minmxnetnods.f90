@@ -37,13 +37,14 @@ implicit none
 contains
 
   subroutine MINMXNETNODS()
+  use precision, only: dp
      use m_netw
      use m_missing, only: dmiss
      use m_depmax
      use m_inview
      
      integer :: i, k
-     double precision :: rd, rmax, rmin
+     real(kind=dp) :: rd, rmax, rmin
 
      ! BEPAAL MINIMUM EN MAXIMUM VAN DIEPTES BINNEN VIEWING AREA
 

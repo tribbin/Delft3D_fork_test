@@ -37,12 +37,13 @@ implicit none
 contains
 
  subroutine tekarcuv(vfac, met)
+  use precision, only: dp
     use m_arrowsxy
     use M_arcuv
     use m_htext
     use m_set_col
     implicit none
-    double precision :: vfac
+    real(kind=dp) :: vfac
     integer :: met
 
     integer :: mx, nx, i, j

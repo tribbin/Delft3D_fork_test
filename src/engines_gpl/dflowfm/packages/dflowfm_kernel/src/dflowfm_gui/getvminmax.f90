@@ -37,12 +37,13 @@ implicit none
 contains
 
   subroutine getvminmax(num, vmin, vmax, v, n)
+  use precision, only: dp
      use unstruc_display_data
      use m_missing, only: dmiss
 
      integer :: n
      integer, intent(in) :: num
-     double precision :: vmin, vmax, v(n)
+     real(kind=dp) :: vmin, vmax, v(n)
 
      if (profmin(num) == dmiss) then
         vmin = 1d9

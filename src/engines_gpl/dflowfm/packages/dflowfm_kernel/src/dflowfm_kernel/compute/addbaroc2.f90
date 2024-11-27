@@ -41,15 +41,16 @@ public :: addbaroc2
 contains
 
  subroutine addbaroc2(LL, Lb, Lt)
+  use precision, only: dp
     use m_flowgeom
     use m_flow
 
     implicit none
     integer :: LL, Lb, Lt
 
-    double precision :: gradpu(kmxx), rhovol(kmxx), dz1(kmxx), dz2(kmxx)
-    double precision :: z1u, z1d, z2u, z2d, p1u, p1d, p2u, p2d, r1u, r1d, r2u, r2d, dz3, d2
-    double precision :: barocl, alf1, alf2, alf3, gr1, gr2, gr3, hdx, fzu1, fzd1, fzu2, fzd2, dzz, dxx, rvd, vv, rvv, r
+    real(kind=dp) :: gradpu(kmxx), rhovol(kmxx), dz1(kmxx), dz2(kmxx)
+    real(kind=dp) :: z1u, z1d, z2u, z2d, p1u, p1d, p2u, p2d, r1u, r1d, r2u, r2d, dz3, d2
+    real(kind=dp) :: barocl, alf1, alf2, alf3, gr1, gr2, gr3, hdx, fzu1, fzd1, fzu2, fzd2, dzz, dxx, rvd, vv, rvv, r
     integer :: k1, k2, L
 
     ! rho = rhomean

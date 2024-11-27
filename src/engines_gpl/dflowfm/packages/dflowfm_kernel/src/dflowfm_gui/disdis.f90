@@ -33,6 +33,7 @@ module m_disdis
    implicit none
 contains
       subroutine DISDIS()
+  use precision, only: dp
 
          use m_devices
          use geometry_module, only: dbdistance
@@ -42,7 +43,7 @@ contains
          use m_disfor
          use m_ktext
          
-         double precision :: dis
+         real(kind=dp) :: dis
 !     -------------------------------
 !     write distance
 !     -------------------------------

@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine TEKFACES()
+  use precision, only: dp
 
          use unstruc_colors, only: ncolln
          use m_netw
@@ -52,11 +53,11 @@ contains
          integer :: ncol
          integer :: ni
 
-         double precision XX, YY, ZZ, XH(10), YH(10), ZH(10)
+         real(kind=dp) XX, YY, ZZ, XH(10), YH(10), ZH(10)
          integer, allocatable, save :: NP(:)
-         double precision :: XP, YP
-         double precision, allocatable, save :: ZP(:)
-         double precision, allocatable :: zp_copy(:)
+         real(kind=dp) :: XP, YP
+         real(kind=dp), allocatable, save :: ZP(:)
+         real(kind=dp), allocatable :: zp_copy(:)
 
          if (size(NP) < NUMP) then
             if (allocated(NP)) deallocate (NP, ZP)

@@ -33,16 +33,17 @@ module m_dminmax
     contains
     
       subroutine DMINMAX(X, MXLAN, XMIN, XMAX, MAXLAN)
+  use precision, only: dp
          use m_missing, only: dmiss
          implicit none
          integer :: i
          integer :: maxlan
          integer :: mxlan
-         double precision :: xmax
-         double precision :: xmin
-         double precision :: xx
+         real(kind=dp) :: xmax
+         real(kind=dp) :: xmin
+         real(kind=dp) :: xx
 !     BEPAAL MINIMUM EN MAXIMUM VAN EEN EENDIMENSIONALE ARRAY
-         double precision, intent(inout) :: X(MAXLAN)
+         real(kind=dp), intent(inout) :: X(MAXLAN)
 
          if (MXLAN == 0) then
             XMIN = 0

@@ -41,17 +41,18 @@ public :: carrier
 contains
 
  subroutine carrier(time1)
+  use precision, only: dp
     use m_movabs
     use m_lnabs
 
-    double precision :: time1
+    real(kind=dp) :: time1
 
-    double precision :: J0(100), J1(100), A1(100), A3(100), ahh
-    double precision :: h0, T0, s, etinbr, dc, tol, etabr, etain, a, a2
-    double precision :: omega, sg, osg, osg2, rl0, c, dt, t, uold, u, x, xster, hh, uu, xx
-    double precision :: pi, g
+    real(kind=dp) :: J0(100), J1(100), A1(100), A3(100), ahh
+    real(kind=dp) :: h0, T0, s, etinbr, dc, tol, etabr, etain, a, a2
+    real(kind=dp) :: omega, sg, osg, osg2, rl0, c, dt, t, uold, u, x, xster, hh, uu, xx
+    real(kind=dp) :: pi, g
     integer :: ic1, ic2, nt, ic, iter, it
-    double precision :: bessj0, bessj1
+    real(kind=dp) :: bessj0, bessj1
 
     !open(1,file='carrier.inp')
     !open(2,file='carrier.out')

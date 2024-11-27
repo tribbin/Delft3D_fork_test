@@ -37,6 +37,7 @@ implicit none
 contains
 
 subroutine MINMXNETCELLS()
+  use precision, only: dp
 
    use m_netw
    use m_flowgeom, only: xz, yz
@@ -46,9 +47,9 @@ subroutine MINMXNETCELLS()
    
    integer :: i
    integer :: k
-   double precision :: rd
-   double precision :: rmax
-   double precision :: rmin
+   real(kind=dp) :: rd
+   real(kind=dp) :: rmax
+   real(kind=dp) :: rmin
 
    if (JAAUTO > 0) then
       RMIN = 1.0d30

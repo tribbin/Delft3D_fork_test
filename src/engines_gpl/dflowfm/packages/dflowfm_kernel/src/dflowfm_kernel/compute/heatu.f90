@@ -40,15 +40,16 @@ implicit none
 contains
 
 subroutine heatu(timhr)
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    use m_sferic
    use m_get_kbot_ktop
    implicit none
 
-   double precision :: timhr
+   real(kind=dp) :: timhr
 
-   double precision :: qsnom
+   real(kind=dp) :: qsnom
    integer :: n, kb, kt
 
    heatsrc0 = 0d0 ! array of heat sources zero

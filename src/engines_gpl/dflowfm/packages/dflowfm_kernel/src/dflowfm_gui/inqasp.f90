@@ -38,14 +38,15 @@ implicit none
 contains
 
       subroutine INQASP(ASP)
+  use precision, only: dp
          use m_devices
          use m_screenarea
 
-         double precision :: asp
-         double precision :: dx
-         double precision :: dy
-         double precision :: xright
-         double precision :: ytop
+         real(kind=dp) :: asp
+         real(kind=dp) :: dx
+         real(kind=dp) :: dy
+         real(kind=dp) :: xright
+         real(kind=dp) :: ytop
 
          YTOP = max(0.95d0, 1 - YBOT)
          XRIGHT = max(0.90d0, 1 - XLEFT)

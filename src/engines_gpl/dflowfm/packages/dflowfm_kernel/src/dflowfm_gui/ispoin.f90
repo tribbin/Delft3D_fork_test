@@ -38,14 +38,15 @@ contains
 
     subroutine ISPOIN(X, Y, mmax, nmax, MC, NC, RD1, &
                       XL, YL, MV, NV)
+      use precision, only: dp
        use m_disval
        use m_missing, only: xymis
        use m_wearelt
 
        integer, intent(in) :: mmax, nmax, mc, nc
        integer, intent(out) :: mv, nv
-       double precision :: X(MMAX, NMAX), Y(MMAX, NMAX), RD1(MMAX, NMAX)
-       double precision :: xl, yl
+       real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX), RD1(MMAX, NMAX)
+       real(kind=dp) :: xl, yl
 
        integer :: m1, n1, m2, n2, ishot, mvol, nvol, i, j
 

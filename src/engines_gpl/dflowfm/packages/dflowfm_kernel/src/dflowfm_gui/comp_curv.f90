@@ -34,6 +34,7 @@ module m_comp_curv
 contains
 !> compute curvature in a point on a spline
    subroutine comp_curv(num, xsp, ysp, xsp2, ysp2, s, curv, dnx, dny, dsx, dsy)
+  use precision, only: dp
 
       use m_sferic
       use geometry_module, only: dbdistance, getdxdy, normalout
@@ -42,20 +43,20 @@ contains
 
       integer,                          intent(in)  :: num         !< number of spline control points
 
-      double precision, dimension(num), intent(in)  :: xsp, ysp    !< spline control point coordinates
-      double precision, dimension(num), intent(in)  :: xsp2, ysp2  !< spline control point second order derivatives of coordinates
-      double precision,                 intent(in)  :: s           !< point on spline in spline-coordinates
+      real(kind=dp), dimension(num), intent(in)  :: xsp, ysp    !< spline control point coordinates
+      real(kind=dp), dimension(num), intent(in)  :: xsp2, ysp2  !< spline control point second order derivatives of coordinates
+      real(kind=dp),                 intent(in)  :: s           !< point on spline in spline-coordinates
 
-      double precision,                 intent(out) :: curv       !< curvature in point on spline
-      double precision,                 intent(out) :: dnx, dny   !< normal vector
-      double precision,                 intent(out) :: dsx, dsy   !< tangential vector
+      real(kind=dp),                 intent(out) :: curv       !< curvature in point on spline
+      real(kind=dp),                 intent(out) :: dnx, dny   !< normal vector
+      real(kind=dp),                 intent(out) :: dsx, dsy   !< tangential vector
 
-      double precision                              :: A, B, x, y, xp, yp, xpp, ypp, x1, y1, csy, d1
+      real(kind=dp)                              :: A, B, x, y, xp, yp, xpp, ypp, x1, y1, csy, d1
 
       integer                                       :: iL, iR
 
-      double precision, parameter                   :: EPS=1d-4
-      double precision, external                    :: getdx, getdy
+      real(kind=dp), parameter                   :: EPS=1d-4
+      real(kind=dp), external                    :: getdx, getdy
 
       iL = max(min(int(s)+1,num-1),1)
       iR = max(iL+1,1)

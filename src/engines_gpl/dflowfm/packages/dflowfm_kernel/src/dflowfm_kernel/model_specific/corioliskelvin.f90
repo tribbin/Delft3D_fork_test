@@ -38,6 +38,7 @@ public :: corioliskelvin, oceaneddy
 contains
 
     subroutine corioliskelvin(tim)
+  use precision, only: dp
        use m_netw
        use m_flowgeom
        use m_flow
@@ -45,10 +46,10 @@ contains
        use unstruc_display
        use m_ini_sferic
 
-       double precision :: tim
+       real(kind=dp) :: tim
        
        integer :: k, L, k1, k2
-       double precision :: s1k, xx, yy, samp, dif, cs, sn, aer, dep, r0, x0, y0, Rossby, rr, sgh
+       real(kind=dp) :: s1k, xx, yy, samp, dif, cs, sn, aer, dep, r0, x0, y0, Rossby, rr, sgh
 
        if (tim == 0d0) then
           call inisferic()
@@ -96,6 +97,7 @@ contains
     end subroutine corioliskelvin
 
     subroutine oceaneddy(tim)
+  use precision, only: dp
        use m_netw
        use m_flowgeom
        use m_flow
@@ -106,8 +108,8 @@ contains
        implicit none
 
        integer :: k, L, k1, k2, LL, i, j, imx, jmx
-       double precision :: tim, s1k, xx, yy, samp, cs, sn, dep, rs
-       double precision :: x0, y0, Rossby, rr, sgh, uv, uvr, xff = 0.1d0, yff = 0.1d0
+       real(kind=dp) :: tim, s1k, xx, yy, samp, cs, sn, dep, rs
+       real(kind=dp) :: x0, y0, Rossby, rr, sgh, uv, uvr, xff = 0.1d0, yff = 0.1d0
 
        if (tim == 0d0) then
           call inisferic()

@@ -43,16 +43,17 @@ public :: wetbed
 contains
 
  subroutine wetbed(time)
+  use precision, only: dp
 
     use m_flowparameters, only: hwetbed
     use m_movabs
     use m_lnabs
 
     integer, parameter :: mmax = 601 !  3000
-    double precision :: s(0:mmax), u(0:mmax), x(0:mmax)
+    real(kind=dp) :: s(0:mmax), u(0:mmax), x(0:mmax)
 
-    double precision :: time, dxw, xc
-    double precision :: g, t, dt, xd, x0, xu, h1, h0, eps, c1, c0, u20, z0, c20, &
+    real(kind=dp) :: time, dxw, xc
+    real(kind=dp) :: g, t, dt, xd, x0, xu, h1, h0, eps, c1, c0, u20, z0, c20, &
        aa, ab, ac, ad, ba, bb, bc, bd, ca, cb, cc, cd, dd, d1, d2, d3, dz, &
        dc2, du2, z, c2, h2, u2, xm, c
     integer :: itmax, mc, i, iter, m

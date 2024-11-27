@@ -41,6 +41,7 @@ public :: addsorsin
 contains
 
  subroutine addsorsin(filename, area, ierr)
+  use precision, only: dp
 
     use fm_external_forcings_data
     use m_polygon
@@ -57,7 +58,7 @@ contains
     use m_reapol
 
     character(len=*), intent(in) :: filename
-    double precision, intent(in) :: area
+    real(kind=dp), intent(in) :: area
     integer, intent(out) :: ierr
     integer :: minp, kk, kk2, n1, n2, i, jakdtree, kdum(1)
     character(len=IdLen) :: tmpname(1)

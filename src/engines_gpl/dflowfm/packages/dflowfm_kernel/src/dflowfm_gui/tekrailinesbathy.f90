@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine tekrailinesBATHY(ncol, ITYP)
+  use precision, only: dp
     use m_flowgeom
     use m_flowparameters, only: ibedlevtyp
     use m_missing, only: dmiss
@@ -53,7 +54,7 @@ contains
     implicit none
     integer :: ncol, ITYP
     integer :: L, k1, k2, kk, k, n
-    double precision :: zz1, zz2, xx1, xx2, yy1, yy2
+    real(kind=dp) :: zz1, zz2, xx1, xx2, yy1, yy2
     integer :: ja, jg
 
     call setcol(ncol)

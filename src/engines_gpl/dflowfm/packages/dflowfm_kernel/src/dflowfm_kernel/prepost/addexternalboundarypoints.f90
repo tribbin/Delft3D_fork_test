@@ -41,6 +41,7 @@ public :: addexternalboundarypoints
 contains
 
  subroutine addexternalboundarypoints
+  use precision, only: dp
     use m_netw
     use m_flow
     use m_flowgeom
@@ -57,8 +58,8 @@ contains
 
     integer :: i, k, k1, k2, L, Lf, lb, nn, ierr, k3, k4, id, istart, num1d2d, kL, kR, mpliz
 
-    double precision :: wL, wR
-    double precision :: xci, yci, xce2, yce2
+    real(kind=dp) :: wL, wR
+    real(kind=dp) :: xci, yci, xce2, yce2
     integer, allocatable :: kdum(:)
 
     ! Update Mar'15: 1D/2D bnds points/links used to be mixed, now all 1D bnds nodes/links come first,

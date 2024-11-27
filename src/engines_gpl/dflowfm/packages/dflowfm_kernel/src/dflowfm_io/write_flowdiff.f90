@@ -41,13 +41,14 @@ public :: write_flowdiff
 contains
 
       subroutine write_flowdiff()
+  use precision, only: dp
          use m_flow
          use m_samples
          use m_znod
          implicit none
 
          integer mdiag
-         double precision :: avdiffm, avdifwq, fm, wq
+         real(kind=dp) :: avdiffm, avdifwq, fm, wq
          integer :: k, kk, num
 
          avdiffm = 0d0; avdifwq = 0d0; num = 0

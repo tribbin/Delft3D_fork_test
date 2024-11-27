@@ -41,6 +41,7 @@ public :: decaytracers
 contains
 
 subroutine decaytracers()
+  use precision, only: dp
    use m_transport
    use m_flowgeom
    use m_flow
@@ -49,7 +50,7 @@ subroutine decaytracers()
 
    implicit none
 
-   double precision :: decaytime
+   real(kind=dp) :: decaytime
    integer :: i, k
 
    integer(4) :: ithndl = 0

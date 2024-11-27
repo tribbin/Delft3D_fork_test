@@ -37,13 +37,14 @@ implicit none
 contains
 
       subroutine DHITEXT(IVAL, XD, YD)
+  use precision, only: dp
          use m_dproject
          use m_hi_text
 
          integer :: ival
-         double precision :: x
-         double precision :: y
-         double precision XD, YD
+         real(kind=dp) :: x
+         real(kind=dp) :: y
+         real(kind=dp) XD, YD
          !CALL DRIETWEE(XD,YD,ZD,X,Y,Z)
          call DPROJECT(Xd, Yd, X, Y, 1)
          call HITEXT(IVAL, X, Y)

@@ -40,6 +40,7 @@ contains
 
       ! NOTE: japes is disabled [AvD]
       subroutine SHWXYZ(X, Y, RD1, mmax, nmax, MC, NC, JAPERS, KEY, M, N)
+  use precision, only: dp
          use m_setxor
          use m_orglocator
          use m_dispos2
@@ -56,11 +57,11 @@ contains
          implicit none
 
          integer :: mmax, nmax, mc, nc, japers, key, m, n
-         double precision :: X(MMAX, NMAX), Y(MMAX, NMAX), RD1(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX), RD1(MMAX, NMAX)
          character(len=40) :: OLDKEY
 
          integer :: jadraw, jonce, jplus, nlevo
-         double precision :: XL, YL, RDOL, FAC
+         real(kind=dp) :: XL, YL, RDOL, FAC
 
          if (MC == 0) return
          OLDKEY = WRDKEY

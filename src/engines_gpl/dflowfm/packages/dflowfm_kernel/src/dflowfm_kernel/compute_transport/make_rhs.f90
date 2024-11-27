@@ -42,6 +42,7 @@ public :: make_rhs
 contains
 
 subroutine make_rhs(NUMCONST, thetavert, Ndkx, kmx, vol1, kbot, ktop, sumhorflux, fluxver, source, sed, nsubsteps, jaupdate, ndeltasteps, rhs)
+  use precision, only: dp
    use m_flowgeom, only: Ndxi, Ndx, ba ! static mesh information
    use m_flowtimes, only: dts
    use m_flowparameters, only: epshu, testdryflood
@@ -50,29 +51,29 @@ subroutine make_rhs(NUMCONST, thetavert, Ndkx, kmx, vol1, kbot, ktop, sumhorflux
    implicit none
 
    integer, intent(in) :: NUMCONST !< number of transported quantities
-   double precision, dimension(NUMCONST), intent(in) :: thetavert !< vertical advection explicit (0) or implicit (1)
+   real(kind=dp), dimension(NUMCONST), intent(in) :: thetavert !< vertical advection explicit (0) or implicit (1)
    integer, intent(in) :: Ndkx !< total number of flownodes (dynamically changing)
    integer, intent(in) :: kmx !< maximum number of layers
-!   double precision, dimension(Ndkx),      intent(in)    :: sq       !< flux balance (inward positive)
-   double precision, dimension(Ndkx), intent(in) :: vol1 !< volumes
+!   real(kind=dp), dimension(Ndkx),      intent(in)    :: sq       !< flux balance (inward positive)
+   real(kind=dp), dimension(Ndkx), intent(in) :: vol1 !< volumes
    integer, dimension(Ndx), intent(in) :: kbot !< flow-node based layer administration
    integer, dimension(Ndx), intent(in) :: ktop !< flow-node based layer administration
-   double precision, dimension(NUMCONST, Ndkx), intent(inout) :: sumhorflux !< sum of horizontal fluxes
-   double precision, dimension(NUMCONST, Ndkx), intent(in) :: fluxver !< vertical fluxes
-   double precision, dimension(NUMCONST, Ndkx), intent(in) :: source !< sources
-   double precision, dimension(NUMCONST, Ndkx), intent(inout) :: sed !< transported quantities
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(inout) :: sumhorflux !< sum of horizontal fluxes
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: fluxver !< vertical fluxes
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: source !< sources
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(inout) :: sed !< transported quantities
    integer, intent(in) :: nsubsteps !< number of substeps
    integer, dimension(Ndx), intent(in) :: jaupdate !< update cell (1) or not (0)
    integer, dimension(Ndx), intent(in) :: ndeltasteps !< number of substeps between updates
-   double precision, dimension(NUMCONST, Ndkx), intent(out) :: rhs ! right-hand side, dim(NUMCONST,Ndkx)
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(out) :: rhs ! right-hand side, dim(NUMCONST,Ndkx)
 
-   double precision :: dvoli
-   double precision :: dt_loc
+   real(kind=dp) :: dvoli
+   real(kind=dp) :: dt_loc
 
    integer :: kk, k, kb, kt
    integer :: j
 
-   double precision, parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: dtol = 1d-8
 
    integer(4) :: ithndl =  0
    

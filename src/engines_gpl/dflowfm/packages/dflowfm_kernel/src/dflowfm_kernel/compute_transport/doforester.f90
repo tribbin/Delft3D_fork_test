@@ -41,6 +41,7 @@ public :: doforester
 contains
 
 subroutine doforester()
+  use precision, only: dp
    use m_foresterpoint2
    use m_flow, only: vol1, ndkx, kbot, ktop, kmxn, ndkx, maxitverticalforestersal, maxitverticalforestertem
    use m_flowgeom, only: ndxi
@@ -51,7 +52,7 @@ subroutine doforester()
    implicit none
 
    integer :: kk, km, kb
-   double precision :: a(kmxx), d(kmxx)
+   real(kind=dp) :: a(kmxx), d(kmxx)
 
    integer(4) ::ithndl = 0
    

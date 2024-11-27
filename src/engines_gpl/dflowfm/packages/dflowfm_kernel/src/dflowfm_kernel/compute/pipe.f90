@@ -41,6 +41,7 @@ subroutine pipe(hpr, dia, area, width, japerim, perim) ! half open part
    use m_flow, only: slotw1D
 !
 ! this subroutine computes wetted circle surface as function
+  use precision, only: dp
 ! of diameter d and waterdepth dpt, as an option (if jd=1) it can compute
 ! the derivative da(dpt)/ddpt and (if jw=1) it can also compute the wetted
 ! perimeter
@@ -55,12 +56,12 @@ subroutine pipe(hpr, dia, area, width, japerim, perim) ! half open part
 !  sl    I, slotbreedte
    implicit none
    integer, intent(in) :: japerim
-   double precision, intent(in) :: dia, hpr
-   double precision, intent(out) :: area, width, perim
+   real(kind=dp), intent(in) :: dia, hpr
+   real(kind=dp), intent(out) :: area, width, perim
 
 ! Local variables
 
-   double precision :: are, fi, r, sq
+   real(kind=dp) :: are, fi, r, sq
 
    r = 0.5 * dia
    are = r - hpr

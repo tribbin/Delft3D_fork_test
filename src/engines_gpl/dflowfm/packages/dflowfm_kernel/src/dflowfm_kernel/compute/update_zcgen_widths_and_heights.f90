@@ -47,13 +47,14 @@ public :: update_zcgen_widths_and_heights
 contains
 
 subroutine update_zcgen_widths_and_heights()
+  use precision, only: dp
    use m_strucs
    use fm_external_forcings_data
    use m_flowgeom
    use m_structures
    implicit none
 
-   double precision :: crestwidth, totalWidth, closedWidth, closedGateWidthL, closedGateWidthR, help
+   real(kind=dp) :: crestwidth, totalWidth, closedWidth, closedGateWidthL, closedGateWidthR, help
    integer :: ng, L, L0, Lf
 
    do ng = 1, ncgensg ! Loop over general structures

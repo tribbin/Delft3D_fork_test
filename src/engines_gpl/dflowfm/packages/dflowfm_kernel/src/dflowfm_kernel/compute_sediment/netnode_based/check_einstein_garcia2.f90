@@ -41,12 +41,13 @@ public :: check_einstein_garcia2
 contains
 
 subroutine check_einstein_garcia2(aref, h, z0, rs, ein)
+  use precision, only: dp
    use m_sediment, only: numintverticaleinstein
 
    implicit none
-   double precision :: aref, h, z0, rs, ein, ucrouse1, ucrouse2, g, d1, di, z1, z2
+   real(kind=dp) :: aref, h, z0, rs, ein, ucrouse1, ucrouse2, g, d1, di, z1, z2
 
-   double precision :: y1, zl, zlm
+   real(kind=dp) :: y1, zl, zlm
 
    integer :: n, k
 

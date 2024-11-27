@@ -42,6 +42,7 @@ public :: assign_icjc
 contains
 
 subroutine assign_icjc(xp, yp, ic, jc, iexit)
+  use precision, only: dp
    use m_assignijgrid, only: assignijgrid
    use m_netw
    use m_grid
@@ -52,7 +53,7 @@ subroutine assign_icjc(xp, yp, ic, jc, iexit)
    use geometry_module, only: pinpok, dbpinpol, get_startend
    use m_find_common_node
 
-   double precision :: xp, yp !< coordinates of starting point
+   real(kind=dp) :: xp, yp !< coordinates of starting point
 
    integer, dimension(numk) :: ic, jc !< node indices (i,j)
    integer :: iexit !< 1 on success, 0 otherwise
@@ -60,7 +61,7 @@ subroutine assign_icjc(xp, yp, ic, jc, iexit)
    integer :: k, kk, in
    integer :: L1, L2, L3, L4
 
-   double precision :: xh(4), yh(4)
+   real(kind=dp) :: xh(4), yh(4)
 
    !integer, parameter                 :: IMISS = -999999
 

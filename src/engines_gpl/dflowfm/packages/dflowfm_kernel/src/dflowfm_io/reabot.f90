@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine REABOT(MMDD, JA)
+  use precision, only: dp
          use M_GRID
          use m_readyy
          use m_qn_read_error
@@ -45,7 +46,7 @@ contains
 
          integer :: mmdd, ja, m1, n1, m2, n2, L1, L2, L3, L4, L5
          integer :: m, n
-         double precision :: af
+         real(kind=dp) :: af
 
          character REC * 132
          call READYY('Reading SIMONA *.bottom File', 0d0)

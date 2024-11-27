@@ -40,6 +40,7 @@ implicit none
 contains
 
       subroutine EDITSPLINES(MODE, KEY)
+  use precision, only: dp
          use m_cir
          use m_choices
          use unstruc_colors
@@ -63,7 +64,7 @@ contains
 !
          integer :: IIJ
          integer :: ja, num, numb, ncol, nwhat, nput
-         double precision :: xp, yp
+         real(kind=dp) :: xp, yp
 
          WRDKEY = 'EDIT SPLINES'
          NLEVEL = 2

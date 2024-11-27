@@ -43,6 +43,7 @@ implicit none
 contains
 
       subroutine CHANGECOLOR(XP, YP)
+  use precision, only: dp
          use m_allcolours
          use unstruc_colors
          use m_depmax
@@ -60,8 +61,8 @@ contains
          integer :: n3
          integer :: numcol
 
-         double precision :: xp
-         double precision :: yp
+         real(kind=dp) :: xp
+         real(kind=dp) :: yp
 
          integer NCL(3)
 

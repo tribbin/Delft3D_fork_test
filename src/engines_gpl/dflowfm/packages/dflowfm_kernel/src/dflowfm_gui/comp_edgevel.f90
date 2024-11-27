@@ -39,6 +39,7 @@ implicit none
 contains
 
 subroutine comp_edgevel(mc, edgevel, dgrow1, nfac1, ierror)
+  use precision, only: dp
    use m_splines
    use m_gridsettings
    use m_spline2curvi
@@ -50,14 +51,14 @@ subroutine comp_edgevel(mc, edgevel, dgrow1, nfac1, ierror)
    implicit none
 
    integer, intent(in) :: mc !< number of grid points
-   double precision, dimension(mc - 1), intent(out) :: edgevel !< edge-based grid grow velocity, first layer only
-   double precision, dimension(Nsubmax, mc - 1), intent(out) :: dgrow1 !< edge-based grid growth factor, for each subinterval of grid layers
+   real(kind=dp), dimension(mc - 1), intent(out) :: edgevel !< edge-based grid grow velocity, first layer only
+   real(kind=dp), dimension(Nsubmax, mc - 1), intent(out) :: dgrow1 !< edge-based grid growth factor, for each subinterval of grid layers
    integer, dimension(Nsubmax, mc - 1), intent(out) :: nfac1 !< edge-based number of grid layers,  for each subinterval of grid layers
    integer, intent(out) :: ierror !< 0: no error, 1: error
 
-   double precision, allocatable :: eheight(:, :) ! edge-based grid height, for each subinterval of grid layers
+   real(kind=dp), allocatable :: eheight(:, :) ! edge-based grid height, for each subinterval of grid layers
 
-   double precision :: hmax, h_h0_maxL, h_h0_maxR
+   real(kind=dp) :: hmax, h_h0_maxL, h_h0_maxR
 
    integer :: i, is, igL, igR, j, js, mfacmax, nfacmax, ncs, numtruecross
    integer :: NuniL, NuniR, NexpL, NexpR, NsubL, NsubR, ja

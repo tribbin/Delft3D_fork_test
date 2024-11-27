@@ -37,26 +37,27 @@ implicit none
 contains
 
       subroutine ALLCOLOURS()
+  use precision, only: dp
          use m_wearelt
          use m_box_nop
          use m_fbox_nop
          use m_set_col
          implicit none
-         double precision :: dx
-         double precision :: dxc
-         double precision :: dy
-         double precision :: dyc
+         real(kind=dp) :: dx
+         real(kind=dp) :: dxc
+         real(kind=dp) :: dy
+         real(kind=dp) :: dyc
          integer :: i
          integer :: j
          integer :: ncol
-         double precision :: x
-         double precision :: xc
-         double precision :: xl
-         double precision :: xu
-         double precision :: y
-         double precision :: yc
-         double precision :: yl
-         double precision :: yu
+         real(kind=dp) :: x
+         real(kind=dp) :: xc
+         real(kind=dp) :: xl
+         real(kind=dp) :: xu
+         real(kind=dp) :: y
+         real(kind=dp) :: yc
+         real(kind=dp) :: yl
+         real(kind=dp) :: yu
          NCOL = 0
          XL = X2 - 0.66d0 * DSIX - RCIR * 4
          XU = XL + 0.66d0 * DSIX

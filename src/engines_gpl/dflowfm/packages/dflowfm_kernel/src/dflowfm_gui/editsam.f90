@@ -42,6 +42,7 @@ implicit none
 contains
 
       subroutine EDITSAM(MODE, KEY)
+  use precision, only: dp
          use m_choices
          use m_chadep
          use m_samples
@@ -63,8 +64,8 @@ contains
          integer :: num
          integer :: numb
          integer :: nwhat
-         double precision :: ziso
-         double precision :: xp, yp, rd
+         real(kind=dp) :: ziso
+         real(kind=dp) :: xp, yp, rd
          integer :: mp, mps
          character TEX * 26
 

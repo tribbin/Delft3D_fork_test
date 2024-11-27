@@ -31,6 +31,7 @@
 !
 
 subroutine dobatch() !
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    use unstruc_api, only: api_loadmodel, flow
@@ -38,7 +39,7 @@ subroutine dobatch() !
    implicit none
    
    integer :: k, ierr, mout, km(100)
-   double precision :: q30, q31, q32, q40, q41, q42, dt_max
+   real(kind=dp) :: q30, q31, q32, q40, q41, q42, dt_max
 
    open (newunit=mout, file='tst.out')
    write (mout, '(a)') ' kmx     q30     q40    q31     q41     q32    q42  '

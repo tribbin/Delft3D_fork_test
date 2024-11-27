@@ -37,12 +37,13 @@ implicit none
 contains
 
 subroutine pipemin(hpr, dia, area, width) ! top minus part
+  use precision, only: dp
    use m_sferic
    implicit none
-   double precision, intent(in) :: dia, hpr
-   double precision, intent(out) :: area, width
+   real(kind=dp), intent(in) :: dia, hpr
+   real(kind=dp), intent(out) :: area, width
 
-   double precision :: are, fi, r, sq
+   real(kind=dp) :: are, fi, r, sq
 
    r = 0.5 * dia
    if (hpr < r) then

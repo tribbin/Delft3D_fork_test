@@ -37,6 +37,7 @@ contains
   !! as a diagonal and another diagonal with length searchradius rcir.
   !! The returned zp value is the z-coordinate of the link's center.
   subroutine ISLINK(LL, XP, YP, ZP)
+  use precision, only: dp
 
      use m_netw, only: numl, kn, zk, yk, xk
      use m_wearelt, only: rcir
@@ -48,15 +49,15 @@ contains
      use m_dispnode
 
      integer, intent(out) :: LL !< Number of first netlink found, 0 if none.
-     double precision, intent(in) :: XP, YP !< Coordinates of input point.
-     double precision, intent(out) :: ZP !< Z-coordinate of netlink's center.
+     real(kind=dp), intent(in) :: XP, YP !< Coordinates of input point.
+     real(kind=dp), intent(out) :: ZP !< Z-coordinate of netlink's center.
      integer :: k1, k2, l, in, jins_old
-     double precision :: xkk
-     double precision :: ykk
-     double precision :: zkk
-     double precision :: xprange(4), yprange(4)
-     double precision :: xk1p, yk1p, xk2p, yk2p, rx, ry
-     double precision :: H = 0.5d0
+     real(kind=dp) :: xkk
+     real(kind=dp) :: ykk
+     real(kind=dp) :: zkk
+     real(kind=dp) :: xprange(4), yprange(4)
+     real(kind=dp) :: xk1p, yk1p, xk2p, yk2p, rx, ry
+     real(kind=dp) :: H = 0.5d0
 
 ! store
      jins_old = jins

@@ -50,6 +50,7 @@ logical function iterfurufm(m, su, sd, ustru, cu, rhsc, dxdt, lambda)
    ! Module:             iterfurufm (ITERFURU)
    !
    ! Module description: coefficients for momentum equation in wet weir point
+  use precision, only: dp
    !
    !
    !     update information
@@ -72,20 +73,20 @@ logical function iterfurufm(m, su, sd, ustru, cu, rhsc, dxdt, lambda)
 !
 !
    integer, intent(in) :: m
-   double precision, intent(in) :: ustru, lambda
-   double precision, intent(in) :: cu
-   double precision, intent(in) :: rhsc
-   double precision :: su ! not s(up) but s(k1)
-   double precision :: sd ! not s(do) but s(k2), see switch in calling routine
-   double precision :: dxdt
+   real(kind=dp), intent(in) :: ustru, lambda
+   real(kind=dp), intent(in) :: cu
+   real(kind=dp), intent(in) :: rhsc
+   real(kind=dp) :: su ! not s(up) but s(k1)
+   real(kind=dp) :: sd ! not s(do) but s(k2), see switch in calling routine
+   real(kind=dp) :: dxdt
 !
 ! Local variables
 !
 !
-   double precision, parameter :: relax = 0d0
-   double precision :: bu
-   double precision :: du, Cz
-   double precision :: u1mi, dxfrL
+   real(kind=dp), parameter :: relax = 0d0
+   real(kind=dp) :: bu
+   real(kind=dp) :: du, Cz
+   real(kind=dp) :: u1mi, dxfrL
 
 !
 !! executable statements -------------------------------- -----------------------

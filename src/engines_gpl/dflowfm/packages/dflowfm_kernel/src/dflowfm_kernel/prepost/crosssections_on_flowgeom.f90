@@ -38,6 +38,7 @@ public :: crosssections_on_flowgeom
 contains
 
 subroutine crosssections_on_flowgeom()
+  use precision, only: dp
    use m_monitoring_crosssections
    use m_flowgeom, only: Lnx
    use m_missing
@@ -55,8 +56,8 @@ subroutine crosssections_on_flowgeom()
 
    integer :: ic, icmod
 
-   double precision, dimension(:), allocatable :: xx, yy
-   double precision, dimension(:), allocatable :: dSL
+   real(kind=dp), dimension(:), allocatable :: xx, yy
+   real(kind=dp), dimension(:), allocatable :: dSL
    integer, dimension(:), allocatable :: iLink, ipol, istartcrs, numlist
    integer, dimension(:, :), allocatable :: linklist
    integer, dimension(:), allocatable :: idum
@@ -65,7 +66,7 @@ subroutine crosssections_on_flowgeom()
    integer :: istart, iend
 
    integer :: jakdtree = 1
-   double precision :: t0, t1
+   real(kind=dp) :: t0, t1
    character(len=128) :: mesg
    integer :: linknr, ii, branchIdx
    type(t_observCrossSection), pointer :: pCrs

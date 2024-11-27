@@ -41,6 +41,7 @@ public :: sum_const
 contains
 
 subroutine sum_const(iter, vol1)
+  use precision, only: dp
    use m_transport
    use m_flowgeom, only: Ndx
    use m_flow, only: Ndkx
@@ -48,9 +49,9 @@ subroutine sum_const(iter, vol1)
    implicit none
 
    integer, intent(in) :: iter
-   double precision, dimension(Ndkx), intent(in) :: vol1
+   real(kind=dp), dimension(Ndkx), intent(in) :: vol1
 
-   double precision, dimension(NUMCONST) :: sum
+   real(kind=dp), dimension(NUMCONST) :: sum
 
    integer :: kk, k, kb, kt
    integer :: j

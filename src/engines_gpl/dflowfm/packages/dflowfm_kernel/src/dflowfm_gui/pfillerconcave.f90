@@ -37,6 +37,7 @@ implicit none
 contains
 
     subroutine PFILLERconcave(X, Y, N_, NCOL, NCLR)
+  use precision, only: dp
        use unstruc_opengl
        use m_colnow
        use m_drawthis
@@ -46,7 +47,7 @@ contains
        integer :: N_
        integer :: nclr
        integer :: ncol
-       double precision :: X(N_), Y(N_)
+       real(kind=dp) :: X(N_), Y(N_)
        integer :: N
        integer, parameter :: NMAX = 128
        real xr(NMAX), yr(NMAX)

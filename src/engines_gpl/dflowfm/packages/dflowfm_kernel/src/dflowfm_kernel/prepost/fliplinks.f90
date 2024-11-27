@@ -33,6 +33,7 @@
 !> flip links in quads, when appropriate
 !>   note: we look for a local optimum, which is not necessarily the global one
 subroutine fliplinks()
+  use precision, only: dp
    use m_confrm
    use m_comp_ntopo
    use m_netw
@@ -70,14 +71,14 @@ subroutine fliplinks()
 
    integer :: maxlin
 
-   double precision :: sl, sm, xcr, ycr, crp ! used in cross check
+   real(kind=dp) :: sl, sm, xcr, ycr, crp ! used in cross check
 
-   double precision :: beta, Etot, Emin ! Monte-Carlo parameters
+   real(kind=dp) :: beta, Etot, Emin ! Monte-Carlo parameters
 
    logical :: Lflip
 
    integer, external :: nmk_opt
-   double precision, external :: rand
+   real(kind=dp), external :: rand
 
    if (jaswan /= 1) then
 

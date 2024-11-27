@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine allocateandset1Dnodexyarrays(n) ! only for plotting ....
+  use precision, only: dp
     use m_netw
     use m_flowgeom
     use m_sferic
@@ -49,14 +50,14 @@ contains
 
     ! locals
     integer :: m, k, no, L, La, n1, n2, ierr, JACROS
-    double precision :: x1, y1, x2, y2, hwu, cs, sn
-    double precision :: x1a, y1a, x2a, y2a, x1b, y1b, x2b, y2b
-    double precision :: SL, SM, XCR, YCR, CRP
+    real(kind=dp) :: x1, y1, x2, y2, hwu, cs, sn
+    real(kind=dp) :: x1a, y1a, x2a, y2a, x1b, y1b, x2b, y2b
+    real(kind=dp) :: SL, SM, XCR, YCR, CRP
     integer :: K1, K2
-    double precision :: dxt, dyt, phi
+    real(kind=dp) :: dxt, dyt, phi
     integer, allocatable :: linnrs(:)
-    double precision, allocatable :: arglins(:), arglin(:)
-    double precision, allocatable :: xx(:), yy(:)
+    real(kind=dp), allocatable :: arglins(:), arglin(:)
+    real(kind=dp), allocatable :: xx(:), yy(:)
     integer :: num
     integer :: jausedualnetcell
 

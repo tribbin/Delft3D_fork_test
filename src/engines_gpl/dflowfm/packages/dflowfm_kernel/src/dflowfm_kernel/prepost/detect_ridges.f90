@@ -42,6 +42,7 @@ public :: detect_ridges
 contains
 
 subroutine detect_ridges(jadeleteHessians)
+  use precision, only: dp
    use m_deallocate_samplehessian, only: deallocate_samplehessian
    use m_plot_ridges
    use m_samples
@@ -58,7 +59,7 @@ subroutine detect_ridges(jadeleteHessians)
    integer :: i, j, ip
    integer :: ierror, Nsamplesmooth_bak
 
-   double precision :: Dh
+   real(kind=dp) :: Dh
 
    ierror = 1
 

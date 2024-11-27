@@ -37,12 +37,13 @@ implicit none
 contains
 
 subroutine getverticallyaveraged(sal, mx)
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    use m_get_kbot_ktop
    implicit none
    integer :: n, k, kb, kt, mx
-   double precision :: sal(mx)
+   real(kind=dp) :: sal(mx)
 
    do n = 1, ndx
       call getkbotktop(n, kb, kt)

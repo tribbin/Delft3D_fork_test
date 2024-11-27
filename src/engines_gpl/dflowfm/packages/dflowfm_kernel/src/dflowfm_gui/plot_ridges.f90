@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine plot_ridges(ierror)
+  use precision, only: dp
 
    use m_samples
    use m_samples_refine
@@ -52,7 +53,7 @@ subroutine plot_ridges(ierror)
 
    integer :: i, j, ip
 
-   double precision :: Dx, Dy, dum, Dh, x0, y0, x1, y1, x2, y2
+   real(kind=dp) :: Dx, Dy, dum, Dh, x0, y0, x1, y1, x2, y2
 
    ierror = 1
 

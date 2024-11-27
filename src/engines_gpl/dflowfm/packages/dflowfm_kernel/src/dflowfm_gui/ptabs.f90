@@ -33,10 +33,11 @@ module m_ptabs
    implicit none
 contains
       subroutine PTABS(X, Y)
+  use precision, only: dp
          use unstruc_opengl, only: InOpenGLRendering, DrawPoint
          use m_dproject
 
-         double precision :: x, y, xx, yy
+         real(kind=dp) :: x, y, xx, yy
          call DPROJECT(X, Y, XX, YY, 1)
          if (InOpenGLRendering) then
             call DrawPoint(real(Xx), real(Yy))

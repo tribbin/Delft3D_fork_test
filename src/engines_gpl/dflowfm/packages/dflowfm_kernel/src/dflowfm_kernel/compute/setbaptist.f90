@@ -41,12 +41,13 @@ public :: setbaptist
 contains
 
  subroutine setbaptist()
+  use precision, only: dp
     use m_flow
     use m_flowgeom, only: ln, lnx
     use m_get_cz
 
     integer :: L, k1, k2
-    double precision :: ap, Cz, Czb, Czr, rnL, diaL, stemhL, gamhg, Cda, areastem, umag, fac, facL, Cdaleaf
+    real(kind=dp) :: ap, Cz, Czb, Czr, rnL, diaL, stemhL, gamhg, Cda, areastem, umag, fac, facL, Cdaleaf
 
     do L = 1, lnx
        k1 = ln(1, L); k2 = ln(2, L)

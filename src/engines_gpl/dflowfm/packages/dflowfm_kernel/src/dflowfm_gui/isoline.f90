@@ -35,9 +35,10 @@ use m_isofil
    implicit none
 contains
       subroutine isoline(xa, ya, za, xb, yb, zb)
+  use precision, only: dp
          use unstruc_display, only: rcir
 
-         double precision :: xa, ya, za, xb, yb, zb, dx, s, c, d, xh(4), yh(4), zh(4)
+         real(kind=dp) :: xa, ya, za, xb, yb, zb, dx, s, c, d, xh(4), yh(4), zh(4)
          dx = 0.2d0 * rcir
          call sincosdis(xa, ya, xb, yb, s, c, d)
          xh(1) = xa + dx * s

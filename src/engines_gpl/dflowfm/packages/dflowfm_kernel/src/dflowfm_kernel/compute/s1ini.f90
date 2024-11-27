@@ -45,6 +45,7 @@ contains
     
 !> links in continuity eq.
  subroutine s1ini() 
+  use precision, only: dp
     use precision_basics, only: dp
     use m_flow
     use m_flowgeom
@@ -59,8 +60,8 @@ contains
                          apply_transport
 
     integer :: L, k1, k2, k, LL, kt, idim, imba, i_lat, i_node
-    double precision :: aufu, auru, tetau
-    double precision :: ds, hsk, Qeva_ow, Qeva_icept, Qrain, Qicept, Qextk, aloc
+    real(kind=dp) :: aufu, auru, tetau
+    real(kind=dp) :: ds, hsk, Qeva_ow, Qeva_icept, Qrain, Qicept, Qextk, aloc
     logical :: isGhost
     integer :: i_layer
 

@@ -42,6 +42,7 @@ public :: get_ndeltasteps
 contains
 
 subroutine get_ndeltasteps()
+  use precision, only: dp
    use m_flowgeom, only: Ndxi, Lnxi, Lnx, ln
    use m_flowtimes, only: dts
    use m_transport
@@ -49,12 +50,12 @@ subroutine get_ndeltasteps()
 
    implicit none
 
-   double precision :: dt, dtmin
-   double precision :: logtwo
+   real(kind=dp) :: dt, dtmin
+   real(kind=dp) :: logtwo
 
    integer :: kk, LL
 
-   double precision, external :: get_dt
+   real(kind=dp), external :: get_dt
 
    integer(4) :: ithndl =  0
    

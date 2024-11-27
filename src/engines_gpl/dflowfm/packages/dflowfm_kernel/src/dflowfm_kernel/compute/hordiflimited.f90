@@ -36,16 +36,17 @@ implicit none
 
 contains
 
-double precision function hordiflimited(LL, L, rho_, nx) ! used to compute a strict horizontal gradient see vkester,stelling 1994
+real(kind=dp) function hordiflimited(LL, L, rho_, nx) ! used to compute a strict horizontal gradient see vkester,stelling 1994
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    implicit none
 
    integer :: L, LL, nx
-   double precision, intent(in) :: rho_(nx)
+   real(kind=dp), intent(in) :: rho_(nx)
 
    integer :: k1, k2, k2u, k1u, n1, n2, kb1, kb2, kt1, kt2
-   double precision :: alfu, rho1, rho2, drho1, drho2, drho3, drho4
+   real(kind=dp) :: alfu, rho1, rho2, drho1, drho2, drho3, drho4
 
    k1 = ln(1, L)
    k2 = ln(2, L)

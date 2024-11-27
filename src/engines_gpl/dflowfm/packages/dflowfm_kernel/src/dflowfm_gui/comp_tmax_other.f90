@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine comp_tmax_other(mc, jlay, xc, yc, vel, mc1, xc1, yc1, vel1, idx1, tmax)
+  use precision, only: dp
    use m_missing, only: dmiss
    use m_sferic
    use m_spline2curvi, only: dtolLR
@@ -49,35 +50,35 @@ subroutine comp_tmax_other(mc, jlay, xc, yc, vel, mc1, xc1, yc1, vel1, idx1, tma
 
    integer, intent(in) :: mc !< number of grid points
    integer, intent(in) :: jlay !< grid layer index
-   double precision, dimension(mc), intent(in) :: xc, yc !< coordinates of grid points
-   double precision, dimension(2, mc), intent(in) :: vel !< velocity vector at grid points
+   real(kind=dp), dimension(mc), intent(in) :: xc, yc !< coordinates of grid points
+   real(kind=dp), dimension(2, mc), intent(in) :: vel !< velocity vector at grid points
 
    integer, intent(in) :: mc1 !< number of other grid points
-   double precision, dimension(mc1), intent(in) :: xc1, yc1 !< coordinates of other grid points
-   double precision, dimension(2, mc1), intent(in) :: vel1 !< velocity vector at other grid points
+   real(kind=dp), dimension(mc1), intent(in) :: xc1, yc1 !< coordinates of other grid points
+   real(kind=dp), dimension(2, mc1), intent(in) :: vel1 !< velocity vector at other grid points
    integer, dimension(2, mc1), intent(in) :: idx1 !< (i,j)-indices of other grid points
 
-   double precision, dimension(mc), intent(inout) :: tmax !< maximum allowable grid layer growth time
+   real(kind=dp), dimension(mc), intent(inout) :: tmax !< maximum allowable grid layer growth time
 
-!   double precision, dimension(mc-1)                  :: edge_width, edge_incr
+!   real(kind=dp), dimension(mc-1)                  :: edge_width, edge_incr
 
-   double precision, dimension(2) :: x1, x2, x3, x4, v1, v2, v3, v4 ! node coordinates and velocities
-   double precision, dimension(2) :: xL, xR
+   real(kind=dp), dimension(2) :: x1, x2, x3, x4, v1, v2, v3, v4 ! node coordinates and velocities
+   real(kind=dp), dimension(2) :: xL, xR
 
-   double precision :: tmax1234
+   real(kind=dp) :: tmax1234
 
-   double precision :: d1, d2, d3, d4, dL1, dL2
-   double precision :: vv1, vv2, vv3, vv4, maxvv
+   real(kind=dp) :: d1, d2, d3, d4, dL1, dL2
+   real(kind=dp) :: vv1, vv2, vv3, vv4, maxvv
 
-   double precision :: t1, t2, t3, t4 ! cross times
-   double precision :: hlow2
-   double precision :: dclearance
+   real(kind=dp) :: t1, t2, t3, t4 ! cross times
+   real(kind=dp) :: hlow2
+   real(kind=dp) :: dclearance
 
    integer :: i, j, i1, j1, i2, j2, iL, iR, nummax, idum, imin, imax
    integer :: iLL, iRR, jsferic_old
 
-   double precision, parameter :: dtol = 1d-8
-!   double precision, parameter                        :: dtolLR= 1d-2
+   real(kind=dp), parameter :: dtol = 1d-8
+!   real(kind=dp), parameter                        :: dtolLR= 1d-2
 
 !  work in model-coordinates
    jsferic_old = jsferic

@@ -42,6 +42,7 @@ public :: disable_outside_curvigrid
 contains
 
 subroutine disable_outside_curvigrid(Nk, Ns, xk, yk, xs, ys, imaskk, imasks)
+  use precision, only: dp
    use m_grid
    use m_polygon
    use m_missing
@@ -53,8 +54,8 @@ subroutine disable_outside_curvigrid(Nk, Ns, xk, yk, xs, ys, imaskk, imasks)
    integer, intent(in) :: Nk !< number of network nodes
    integer, intent(in) :: Ns !< number of samples
 
-   double precision, dimension(Nk), intent(in) :: xk, yk !< network node coordinates
-   double precision, dimension(Ns), intent(in) :: xs, ys !< sample  coordinates
+   real(kind=dp), dimension(Nk), intent(in) :: xk, yk !< network node coordinates
+   real(kind=dp), dimension(Ns), intent(in) :: xs, ys !< sample  coordinates
    integer, dimension(Nk), intent(out) :: imaskk !< network nodes inside curvigrid (1) or not (0)
    integer, dimension(Ns), intent(out) :: imasks !< samples       inside curvigrid (1) or not (0)
 

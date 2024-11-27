@@ -38,15 +38,16 @@ contains
 
 subroutine get_spiralforce ! Effect of secondary flow on momentum equations
    ! This subroutine calculates the forces fx and fy for momentum equations
+  use precision, only: dp
    use m_flow
    use m_flowgeom
 
    implicit none
    integer :: k, k1, k2, LL, L, n
-   double precision :: cofa, cofb, cofc, cofd, cofe, coff, cofg, cofw, cofx, cofy, coftxx, coftxy, cof0
-   double precision :: dtxxdx, dtxxdy, dtxydx, dtxydy
-   double precision :: betas, beta, alfa
-   double precision :: fx, fy, fxl
+   real(kind=dp) :: cofa, cofb, cofc, cofd, cofe, coff, cofg, cofw, cofx, cofy, coftxx, coftxy, cof0
+   real(kind=dp) :: dtxxdx, dtxxdy, dtxydx, dtxydy
+   real(kind=dp) :: betas, beta, alfa
+   real(kind=dp) :: fx, fy, fxl
 
    ht_xx = 0d0; ht_xy = 0d0
 

@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine TEKGRPT(X, Y, mmax, nmax, MC, NC, MP, NP, NCOL)
+  use precision, only: dp
 !     TEKEN GRIDLIJNEN UITKOMEND OP DIT PUNT
          use m_missing
          use m_set_col
@@ -44,9 +45,9 @@ contains
          use m_lnabs
          implicit none
          integer :: mmax, nmax, mc, nc, mp, np, ncol
-         double precision :: X(MMAX, NMAX), Y(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX)
 
-         double precision :: xp, yp
+         real(kind=dp) :: xp, yp
          integer :: mpu, mpd, npu, npd
 
          call SETCOL(NCOL)

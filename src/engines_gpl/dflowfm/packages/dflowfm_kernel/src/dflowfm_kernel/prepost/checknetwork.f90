@@ -43,6 +43,7 @@ public :: checknetwork
 contains
 
 subroutine checknetwork()
+  use precision, only: dp
 
    use network_data
    use unstruc_colors
@@ -56,7 +57,7 @@ subroutine checknetwork()
    integer :: nLink = 0
 
    integer :: k, k1, k2, ka, kb, lprog, L, LL, jacros, nSearchRange, ncrossmax
-   double precision :: sl, sm, xcr, ycr, crp, E, E1
+   real(kind=dp) :: sl, sm, xcr, ycr, crp, E, E1
 
 ! It's impossible to reallocate in recursive findLinks, so reserve sufficient space here.
    allocate (linkQueue(1000))

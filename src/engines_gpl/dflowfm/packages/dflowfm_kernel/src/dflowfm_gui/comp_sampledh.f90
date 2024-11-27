@@ -37,7 +37,8 @@ implicit none
 
 contains
 
-double precision function comp_sampleDh(i, j)
+real(kind=dp) function comp_sampleDh(i, j)
+  use precision, only: dp
    use m_samples
    use geometry_module, only: dbdistance
    use m_missing, only: dmiss
@@ -49,7 +50,7 @@ double precision function comp_sampleDh(i, j)
 
    integer :: ip, ipiL, ipiR, ipjL, ipjR
 
-   double precision :: dum
+   real(kind=dp) :: dum
 
    if (MXSAM * MYSAM /= NS) goto 1234 ! structured samples only
 

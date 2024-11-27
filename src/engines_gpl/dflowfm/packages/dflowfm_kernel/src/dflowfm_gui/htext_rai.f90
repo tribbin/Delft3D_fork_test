@@ -37,13 +37,14 @@ implicit none
 contains
 
  subroutine htext_rai(val, x, y, xx, zz, ihv)
+  use precision, only: dp
     use m_raaitek
     use m_htext
     use m_movabs
     use m_lnabs
     implicit none
-    double precision :: val, x, y, xx, zz
-    double precision :: fx, fy, xa, ya
+    real(kind=dp) :: val, x, y, xx, zz
+    real(kind=dp) :: fx, fy, xa, ya
     integer :: ihv
     fx = xs2m - xs1m
     fy = ys2m - ys1m

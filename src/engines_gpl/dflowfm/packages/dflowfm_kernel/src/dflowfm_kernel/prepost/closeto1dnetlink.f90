@@ -41,6 +41,7 @@ public :: closeto1dnetlink
 contains
 
       subroutine CLOSETO1Dnetlink(XP1, YP1, N1, XN1, YN1, DIST, kn3channelonly) !
+  use precision, only: dp
 
          use m_netw
          use geometry_module, only: dbdistance, dlinedis
@@ -48,15 +49,15 @@ contains
          use m_sferic, only: jsferic, jasfer3D
 
          integer :: n1
-         double precision :: XP1, YP1, XN1, YN1
-         double precision, intent(out) :: DIST !< distance to 1D link
+         real(kind=dp) :: XP1, YP1, XN1, YN1
+         real(kind=dp), intent(out) :: DIST !< distance to 1D link
          integer, intent(in) :: kn3channelonly !< Whether or not (1/0) the kn3 code can only be a
          !< regular channel netlink (1 or 6), OR also allows
          !< 1D2D links (5 or 7).
 
-         double precision :: dismin
+         real(kind=dp) :: dismin
          integer :: ja, k1, k2, L
-         double precision :: xa, ya, xb, yb, dis, xn, yn
+         real(kind=dp) :: xa, ya, xb, yb, dis, xn, yn
 
          N1 = 0
          DISMIN = 9e+33

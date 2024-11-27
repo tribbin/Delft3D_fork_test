@@ -41,6 +41,7 @@ contains
  !! With a polygon active: all masked net nodes,
  !! without polygon: all corner points of flow cell underneath mouse pointer.
  subroutine dropland(xp, yp, idir)
+  use precision, only: dp
     use network_data, only: numk, xk, yk, zk
     use m_polygon, only: npl, xpl, ypl, zpl
     use m_flowgeom, only: ndx, ndxi, nd, bl
@@ -55,12 +56,12 @@ contains
     use m_hlcir2
     use m_movabs
 
-    double precision, intent(in) :: xp, yp !< Clicked point, which flow node to drop. If a polygon is active, drop all contained points, independent of xp, yp.
+    real(kind=dp), intent(in) :: xp, yp !< Clicked point, which flow node to drop. If a polygon is active, drop all contained points, independent of xp, yp.
     integer, intent(in) :: idir !< direction (1 for up, -1 for down)
 
     ! locals
     integer :: kk, k, n, nn, in, ncol, j
-    double precision :: dropstep !< Amount to add (in meters, may be negative)
+    real(kind=dp) :: dropstep !< Amount to add (in meters, may be negative)
 
     if (ndx == 0) return
 

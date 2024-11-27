@@ -41,6 +41,7 @@ public :: addlink1D2Dinternal
 contains
 
  subroutine addlink1D2Dinternal(L, japerim) ! and add area's and volumes of 1D2D links
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use unstruc_channel_flow, only: network
@@ -54,9 +55,9 @@ contains
     integer :: japerim, L
 
     integer :: k1, k2, jaconv, ifrctyp
-    double precision :: hpr1, ar1, wid1, hpr2, ar2, wid2, aru, widu, aconvu
-    double precision :: dx1, dx2, frcn, BL1, BL2, b21, wu2, ai
-    double precision :: beta, deltaa, hyr, Cz
+    real(kind=dp) :: hpr1, ar1, wid1, hpr2, ar2, wid2, aru, widu, aconvu
+    real(kind=dp) :: dx1, dx2, frcn, BL1, BL2, b21, wu2, ai
+    real(kind=dp) :: beta, deltaa, hyr, Cz
 
     k1 = ln(1, L); k2 = ln(2, L)
     if (bob0(1, L) < bob0(2, L)) then

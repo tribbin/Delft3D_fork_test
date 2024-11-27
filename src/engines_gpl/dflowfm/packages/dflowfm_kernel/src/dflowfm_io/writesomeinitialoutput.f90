@@ -41,6 +41,7 @@ public writesomeinitialoutput
 contains
 
 subroutine writesomeinitialoutput()
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    use m_flowtimes, only: rundat0
@@ -55,7 +56,7 @@ subroutine writesomeinitialoutput()
 
    implicit none
    integer :: k, mbalat, mwrong, L, msam, n, nf, jacheckba = 0
-   double precision :: batotown(1), batot(1), voltotown(1), volto(1), dist, dismin
+   real(kind=dp) :: batotown(1), batot(1), voltotown(1), volto(1), dist, dismin
 
    batotown = 0; voltotown = 0
 

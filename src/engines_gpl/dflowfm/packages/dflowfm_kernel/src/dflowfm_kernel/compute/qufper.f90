@@ -43,7 +43,8 @@ contains
 !> sum of (Q*uc cell centre upwind normal) at side n12 of link L
 !! advect the cell center velocities (dimension: m4/s2)
 !! leaving the cell = +
- double precision function QufPer(n12, L) 
+ real(kind=dp) function QufPer(n12, L) 
+  use precision, only: dp
     use m_flow 
     use m_flowgeom 
 
@@ -53,11 +54,11 @@ contains
     ! locals
     integer :: LL, LLL, LLLL ! for links LL,
     integer :: k12 ! relevant node, 1 or 2, L/R
-    double precision :: cs, sn, ucin, snL, csL, ufx, ufy, ucinx, uciny
+    real(kind=dp) :: cs, sn, ucin, snL, csL, ufx, ufy, ucinx, uciny
 
     integer :: nn12
 
-    double precision, external :: lin2nodx, lin2nody, nod2linx, nod2liny
+    real(kind=dp), external :: lin2nodx, lin2nody, nod2linx, nod2liny
 
     QufPer = 0d0
     cs = csu(L)

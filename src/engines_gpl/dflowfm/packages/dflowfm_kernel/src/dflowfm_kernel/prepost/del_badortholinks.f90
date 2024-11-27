@@ -42,6 +42,7 @@ contains
 
  !> remove netlinks to improve orthogonality
  subroutine del_badortholinks()
+  use precision, only: dp
     use network_data
     use m_flowgeom, only: xz, yz
     use m_netstore
@@ -53,16 +54,16 @@ contains
 
     implicit none
 
-    double precision, dimension(2) :: xz_st, yz_st
+    real(kind=dp), dimension(2) :: xz_st, yz_st
 
-    double precision, dimension(:), allocatable :: dortho
+    real(kind=dp), dimension(:), allocatable :: dortho
 
     integer, dimension(:), allocatable :: linkmask
     integer, dimension(:), allocatable :: iperm
 
-    double precision :: dorthosum, dorthosumnew
-    double precision :: dmaxorthop
-    double precision :: zz
+    real(kind=dp) :: dorthosum, dorthosumnew
+    real(kind=dp) :: dmaxorthop
+    real(kind=dp) :: zz
 
     integer :: LL, L, L1
     integer :: k1, k2

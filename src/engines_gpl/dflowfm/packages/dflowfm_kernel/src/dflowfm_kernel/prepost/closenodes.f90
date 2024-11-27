@@ -41,6 +41,7 @@ public :: closenodes
 contains
 
   subroutine CLOSENODES(K, KK, JA) ! ARE THESE NODES CLOSE, BUT UNCONNECTED?
+  use precision, only: dp
 
      use m_closeenough, only: closeenough
      use m_netw
@@ -55,7 +56,7 @@ contains
      integer :: n
      integer :: nx
 
-     double precision :: R0, R1, R2, SHORTESTLINK
+     real(kind=dp) :: R0, R1, R2, SHORTESTLINK
      JA = 0
      R0 = DLENGTH(K, KK)
      if (R0 > 6d0 * RCIR) return

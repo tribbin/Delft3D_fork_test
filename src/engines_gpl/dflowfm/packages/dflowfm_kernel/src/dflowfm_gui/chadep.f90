@@ -41,17 +41,18 @@ implicit none
 contains
 
       subroutine CHADEP(XP, YP, RD, KEY)
+  use precision, only: dp
          use M_MISSING
          use m_disput
          use m_help
          implicit none
-         double precision :: XP, YP, RD
+         real(kind=dp) :: XP, YP, RD
          integer :: KEY
 
-         double precision :: f
-         double precision :: fac
+         real(kind=dp) :: f
+         real(kind=dp) :: fac
          integer :: jplus
-         double precision :: rdol
+         real(kind=dp) :: rdol
          character WRDKEY * 40
          WRDKEY = 'CHANGE SCALAR VALUE'
          RDOL = RD

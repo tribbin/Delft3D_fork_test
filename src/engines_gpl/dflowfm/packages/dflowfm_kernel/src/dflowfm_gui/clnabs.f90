@@ -37,10 +37,11 @@ implicit none
 contains
 
       subroutine cLNABS(X, Y, ncol)
+  use precision, only: dp
          use m_set_col
          use m_lnabs
          implicit none
-         double precision :: x, y
+         real(kind=dp) :: x, y
          integer :: ncol
          call setcol(ncol)
          call LNABS(X, Y)

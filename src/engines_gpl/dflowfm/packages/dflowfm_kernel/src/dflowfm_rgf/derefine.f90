@@ -34,6 +34,7 @@ module m_derefine
 contains
 !***************7***  INTERPOLATION ************************************
       subroutine DEREFINE(M1, N1, M2, N2, NUM)
+  use precision, only: dp
          use m_grid, only: nc, mc, mmax, nmax, xc, yc
          use m_gridsettings, only: mfac, nfac
          use messagehandling, only: LEVEL_DEBUG, mess
@@ -43,7 +44,7 @@ contains
 
          integer :: m1, n1, m2, n2, num
          integer :: I, J, IR, INOW, JR, JNOW, MFA, NFA, MFAA, NFAA, MD, ND
-         double precision, allocatable :: XR(:, :), YR(:, :)
+         real(kind=dp), allocatable :: XR(:, :), YR(:, :)
          allocate (xr(mmax, nmax), yr(mmax, nmax))
 
          if (MFAC >= MC) then

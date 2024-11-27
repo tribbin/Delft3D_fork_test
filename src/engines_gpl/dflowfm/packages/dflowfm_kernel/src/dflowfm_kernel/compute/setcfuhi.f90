@@ -43,6 +43,7 @@ contains
 !> set friction coefficients g/C2 etc
 !! sqrt(g/C2) in both in 2D and in 3D
  subroutine setcfuhi() 
+  use precision, only: dp
     use m_flowtimes 
     use m_flow
     use m_flowgeom, only: lnx, lnx1d
@@ -50,7 +51,7 @@ contains
     use m_get_cz
 
     ! locals
-    double precision :: h0, cz, frcn
+    real(kind=dp) :: h0, cz, frcn
     integer :: l
 
     ! NOTE: When frcuni==0, the initial friction fields in frcu also become noneffective:

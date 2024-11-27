@@ -42,6 +42,7 @@ public :: comp_sumhorflux
 contains
 
 subroutine comp_sumhorflux(NUMCONST, kmx, Lnkx, Ndkx, Lbot, Ltop, fluxhor, sumhorflux)
+  use precision, only: dp
    use m_flowgeom, only: Lnx, Ln ! static mesh information
    use timers
 
@@ -53,8 +54,8 @@ subroutine comp_sumhorflux(NUMCONST, kmx, Lnkx, Ndkx, Lbot, Ltop, fluxhor, sumho
    integer, intent(in) :: Lnkx !< total number of flowlinks (dynamically changing)
    integer, dimension(Lnx), intent(in) :: Lbot !< flow-link based layer administration
    integer, dimension(Lnx), intent(in) :: Ltop !< flow-link based layer administration
-   double precision, dimension(NUMCONST, Lnkx), intent(in) :: fluxhor !< horizontal advection fluxes
-   double precision, dimension(NUMCONST, Ndkx), intent(inout) :: sumhorflux ! sum of horizontal fluxes, dim(NUMCONST,Ndkx)
+   real(kind=dp), dimension(NUMCONST, Lnkx), intent(in) :: fluxhor !< horizontal advection fluxes
+   real(kind=dp), dimension(NUMCONST, Ndkx), intent(inout) :: sumhorflux ! sum of horizontal fluxes, dim(NUMCONST,Ndkx)
 
    integer :: LL, L, Lb, Lt
    integer :: j, k1, k2

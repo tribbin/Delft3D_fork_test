@@ -33,6 +33,7 @@ module m_reconstruct_ucz
    implicit none
 contains
 subroutine reconstructucz(k)
+  use precision, only: dp
    ! Perot reconstruction of the vertical velocity, by Willem
    use m_flow
    use m_flowgeom
@@ -53,12 +54,12 @@ subroutine reconstructucz(k)
    !      >0 indicates the flow link ends at the current flow node  )
    integer ndlnx ! number of neighbouring flow links
 
-   double precision dx1, dx2, dz1, dz2
-   double precision dzL, dzL1, dzL2
-   double precision zlc, zlc1, zlc2
-   double precision zlu, dzhu
-   double precision Lsign, Lsign1, Lsign2
-   double precision wsigma1, wsigma2 ! interface velocity at lower and upper interface
+   real(kind=dp) dx1, dx2, dz1, dz2
+   real(kind=dp) dzL, dzL1, dzL2
+   real(kind=dp) zlc, zlc1, zlc2
+   real(kind=dp) zlu, dzhu
+   real(kind=dp) Lsign, Lsign1, Lsign2
+   real(kind=dp) wsigma1, wsigma2 ! interface velocity at lower and upper interface
    !
    if (k == 0) then
       !

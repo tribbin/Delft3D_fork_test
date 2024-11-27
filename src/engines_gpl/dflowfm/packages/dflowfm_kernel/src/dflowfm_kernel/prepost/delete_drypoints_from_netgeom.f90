@@ -43,6 +43,7 @@ public :: delete_drypoints_from_netgeom
 contains
 
 subroutine delete_drypoints_from_netgeom(dryptsfilelist, jaconfirm, jinside)
+  use precision, only: dp
    use m_cutcell_list, only: cutcell_list
    use m_samples_to_cellmask2
    use m_confrm
@@ -70,7 +71,7 @@ subroutine delete_drypoints_from_netgeom(dryptsfilelist, jaconfirm, jinside)
    character(len=255), dimension(:), allocatable :: fnames
    integer :: ifil
 
-   double precision :: t0, t1
+   real(kind=dp) :: t0, t1
 
    integer :: minp, N1, N2
    integer :: ja

@@ -49,6 +49,7 @@ public :: crspath_on_netgeom
 contains
 
 subroutine crspath_on_netgeom(path)
+  use precision, only: dp
    use m_crspath
    use network_data
    use m_get_link_neighboring_cell_coords
@@ -56,7 +57,7 @@ subroutine crspath_on_netgeom(path)
    type(tcrspath), intent(inout) :: path !< Cross section path that must be imposed on network geometry.
 
    integer :: L, isactive
-   double precision :: xza, yza, xzb, yzb
+   real(kind=dp) :: xza, yza, xzb, yzb
 
    path%lnx = 0 ! Reset link administration for this path.
 

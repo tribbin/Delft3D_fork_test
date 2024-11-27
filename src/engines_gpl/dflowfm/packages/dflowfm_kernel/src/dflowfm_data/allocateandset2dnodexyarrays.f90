@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine allocateandset2Dnodexyarrays(n)
+  use precision, only: dp
     use m_netw
     use m_flowgeom
     use m_sferic
@@ -45,7 +46,7 @@ contains
     integer :: n, IERR
     ! locals
     integer :: m, k, nn
-    double precision :: xmn, xmx
+    real(kind=dp) :: xmn, xmx
 
     nn = netcell(n)%n
 

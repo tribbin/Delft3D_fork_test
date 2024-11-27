@@ -40,10 +40,11 @@ public :: rho_eckart
 
 contains
 
-double precision function rho_Eckart(sal, temp)
-   double precision :: sal, temp
-   double precision :: cp1, clam1, temp2
-   double precision :: cp0, clam0, clam
+real(kind=dp) function rho_Eckart(sal, temp)
+  use precision, only: dp
+   real(kind=dp) :: sal, temp
+   real(kind=dp) :: cp1, clam1, temp2
+   real(kind=dp) :: cp0, clam0, clam
 
    temp2 = temp * temp
    cp0 = 5890.0d0 + 38.00d0 * temp - 0.3750d0 * temp2

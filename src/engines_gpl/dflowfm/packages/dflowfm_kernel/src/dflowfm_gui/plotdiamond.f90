@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine plotDiamond(x, y)
+  use precision, only: dp
          use m_wearelt
          use m_movabs
          use m_lnabs
 
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
 
          call MOVABS(X + .5 * RCIR, Y)
          call LNABS(X, Y + .5 * RCIR)

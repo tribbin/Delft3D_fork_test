@@ -42,16 +42,17 @@ public :: adjacent
 contains
 
   subroutine adjacent(x1, y1, x2, y2, x3, y3, x4, y4, ja, k1k, k2k)
+  use precision, only: dp
 
      use m_missing, only: dmiss
      use m_sferic, only: jsferic, jasfer3D
      use geometry_module, only: dbdistance, dlinedis
 
      integer :: jac
-     double precision :: x1, y1, x2, y2, x3, y3, x4, y4
+     real(kind=dp) :: x1, y1, x2, y2, x3, y3, x4, y4
      integer :: ja, k1k, k2k
 
-     double precision :: r1, r2, rm, xd, yd, xm, ym, dis1
+     real(kind=dp) :: r1, r2, rm, xd, yd, xm, ym, dis1
      integer :: ja1
 
      k1k = 0

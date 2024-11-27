@@ -41,7 +41,7 @@ contains
 
 subroutine flupdofm(m, il, ir, istru, velheight, &
                     husb, hdsb, uu, ud, teken, relax)
-
+  use precision, only: dp
    use m_strucs
    use m_flowgeom
    use m_flow
@@ -53,16 +53,16 @@ subroutine flupdofm(m, il, ir, istru, velheight, &
    integer, intent(in) :: m !< Flow link number, signed! If m < 0 then flow link is in opposite direction than structure left-right orientation.
    integer, intent(in) :: il, ir, istru
    logical, intent(in) :: velheight
-   double precision, intent(in) :: relax
+   real(kind=dp), intent(in) :: relax
 
-   double precision :: hdsb
-   double precision :: husb
-   double precision :: teken
-   double precision :: ud
-   double precision :: uu
+   real(kind=dp) :: hdsb
+   real(kind=dp) :: husb
+   real(kind=dp) :: teken
+   real(kind=dp) :: ud
+   real(kind=dp) :: uu
 
-   double precision :: tem
-!double precision               :: ucxku, ucyku
+   real(kind=dp) :: tem
+!real(kind=dp)               :: ucxku, ucyku
    integer :: L, k, LL, iflip
 
 ! Parameters:

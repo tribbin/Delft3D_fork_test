@@ -37,13 +37,14 @@ implicit none
 contains
 
 subroutine copynetcellstonetnodes() ! for smooth plotting only
+  use precision, only: dp
    use m_flowgeom, only: ndx2d, ba
    use m_netw, only: numk, rnod, netcell, rlin
    use m_alloc, only: aerr
 
    integer :: k, kk, kkk, n, nn4, ierr, ja
    real, allocatable, save :: rn(:)
-   double precision :: znn
+   real(kind=dp) :: znn
 
    ja = 0
    if (.not. allocated(rn)) then

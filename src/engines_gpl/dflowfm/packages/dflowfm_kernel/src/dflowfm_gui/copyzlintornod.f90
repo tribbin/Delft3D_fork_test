@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine copyzlintornod() ! for smooth plotting only
+  use precision, only: dp
     use m_flowgeom, only: lnxi, lnx1d, lncn, wu, dx
     use network_data
     use m_alloc
@@ -44,7 +45,7 @@ contains
     implicit none
     integer :: L, k, k1, k2, ierr, ja
     real, allocatable, save :: rn(:)
-    double precision :: zL, aL
+    real(kind=dp) :: zL, aL
 
     ja = 0
     if (.not. allocated(rn)) then

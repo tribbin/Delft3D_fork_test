@@ -36,6 +36,7 @@ use m_pipe
 implicit none
 contains
 subroutine getprof_1D(L, hprL, area, width, japerim, calcConv, perim)
+  use precision, only: dp
    use m_flow
    use m_flowgeom
    use m_flowtimes, only: time1, times_update_roughness
@@ -45,24 +46,24 @@ subroutine getprof_1D(L, hprL, area, width, japerim, calcConv, perim)
    use m_get_cz
 
    integer :: L, japerim, calcConv
-   double precision :: hprL !< hoogte in profiel
-   double precision :: area !< wet cross sectional area
-   double precision :: width !< width at water surface
-   double precision :: perim !< wet perimeter
+   real(kind=dp) :: hprL !< hoogte in profiel
+   real(kind=dp) :: area !< wet cross sectional area
+   real(kind=dp) :: width !< width at water surface
+   real(kind=dp) :: perim !< wet perimeter
 
-   double precision :: profw !< width  of profile
-   double precision :: profh !< height of profile
-   double precision :: hydrad !< hydraulic radius
+   real(kind=dp) :: profw !< width  of profile
+   real(kind=dp) :: profh !< height of profile
+   real(kind=dp) :: hydrad !< hydraulic radius
 
-   double precision :: area2, width2, perim2, cf2, alfa ! second prof i.c. interpolation
-   double precision :: alfg, czg, hpr
+   real(kind=dp) :: area2, width2, perim2, cf2, alfa ! second prof i.c. interpolation
+   real(kind=dp) :: alfg, czg, hpr
 
-   double precision :: frcn, cz, cf, conv, af_sub(3), perim_sub(3), cz_sub(3)
-   double precision :: q_sub(3) ! discharge per segment
+   real(kind=dp) :: frcn, cz, cf, conv, af_sub(3), perim_sub(3), cz_sub(3)
+   real(kind=dp) :: q_sub(3) ! discharge per segment
    integer :: LL, ka, kb, itp, itpa, ifrctyp, ibndsect
    integer :: k1, k2
    integer :: jacustombnd1d
-   double precision :: u1L, q1L, s1L, dpt, factor, maxflowwidth
+   real(kind=dp) :: u1L, q1L, s1L, dpt, factor, maxflowwidth
 
    LL = L
    if (L > lnxi) then ! for 1D boundary links, refer to attached link

@@ -42,6 +42,7 @@ implicit none
 contains
 
       subroutine EDITGRIDLINESHIFT(MODE, NFLD, KEY, M1, N1, M2, N2)
+  use precision, only: dp
          use m_grid
          use unstruc_colors, only: ncolrg
          use m_helpnow
@@ -60,7 +61,7 @@ contains
          character TEX * 20
 
          integer :: JA, NUM, NWHAT, NPUT, NUMB, JONCE, mp, np, m, n, NCOL
-         double precision :: xp, yp
+         real(kind=dp) :: xp, yp
          TEX = ' '//FIELDOP(NFLD)
          WRDKEY = FIELDOP(NFLD)
          NLEVEL = 3

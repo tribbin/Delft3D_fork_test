@@ -35,9 +35,10 @@ contains
       !> Draw a highlighted circle at current position.
       !! Highlighted means: blank center, coloured outline.
       subroutine HLCIR(R, icol)
+  use precision, only: dp
          use m_hlcir2
 
-         double precision, intent(in) :: R !< Radius in world coords.
+         real(kind=dp), intent(in) :: R !< Radius in world coords.
          integer, intent(in) :: icol !< Colour number
 
          call HLCIR2(R, 0, icol)

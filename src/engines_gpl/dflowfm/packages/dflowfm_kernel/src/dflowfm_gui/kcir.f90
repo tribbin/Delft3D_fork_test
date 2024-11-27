@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine KCIR(X, Y, Z)
+  use precision, only: dp
          use m_isocol
          use m_cir
          use unstruc_colors
@@ -46,9 +47,9 @@ contains
          use m_movabs
 
          integer :: ncol
-         double precision :: x
-         double precision :: y
-         double precision :: z
+         real(kind=dp) :: x
+         real(kind=dp) :: y
+         real(kind=dp) :: z
 
          if (Z /= dmiss) then
             call ISOCOL(Z, NCOL)

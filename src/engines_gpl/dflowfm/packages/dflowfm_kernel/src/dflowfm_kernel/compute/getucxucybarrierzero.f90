@@ -39,13 +39,14 @@ implicit none
 contains
 
   subroutine getucxucybarrierzero(Lf, ku, ucxku, ucyku)
+  use precision, only: dp
      use m_flow
      use m_flowgeom
      implicit none
 
      integer :: ku, L, LL, Ls, n12, Lf
-     double precision :: ucxku, ucyku, ww, ac1, cs, sn
-     double precision, external :: lin2nodx, lin2nody
+     real(kind=dp) :: ucxku, ucyku, ww, ac1, cs, sn
+     real(kind=dp), external :: lin2nodx, lin2nody
 
      ucxku = 0d0; ucyku = 0d0
 

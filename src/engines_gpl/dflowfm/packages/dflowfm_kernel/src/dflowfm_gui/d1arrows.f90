@@ -37,13 +37,14 @@ implicit none
 contains
 
       subroutine D1ARROWS(X, Y, Z, U, V, W, PSI0, VFAC)
+  use precision, only: dp
          use m_arrows
          use m_three_two
 
-         double precision :: psi0
-         double precision :: vfac
-         double precision :: X, Y, Z, U, V, W
-         double precision XD, YD, ZD, XP, YP, ZP, &
+         real(kind=dp) :: psi0
+         real(kind=dp) :: vfac
+         real(kind=dp) :: X, Y, Z, U, V, W
+         real(kind=dp) XD, YD, ZD, XP, YP, ZP, &
             UD, VD, WD, UR, VR, WR
          XD = X
          YD = Y

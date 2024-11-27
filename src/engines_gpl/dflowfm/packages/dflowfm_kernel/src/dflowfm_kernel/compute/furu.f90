@@ -42,6 +42,7 @@ implicit none
 contains
 
  subroutine furu() ! set fu, ru and kfs
+  use precision, only: dp
     use m_fixedweirfriction2d
     use m_filter
     use m_flow ! substitue u1 and q1
@@ -66,20 +67,20 @@ contains
     integer :: L, n, k1, k2, kb, LL, itu1, Lb, Lt, itpbn, i
     integer :: kup, kdo, iup
 
-    double precision :: bui, cu, du, du0, gdxi, ds
-    double precision :: slopec, hup, hdo, u1L, v2, frL, u1L0, zbndun, zbndu0n
-    double precision :: qk0, qk1, dzb, hdzb, z00 !
-    double precision :: st2
-    double precision :: twot = 2d0 / 3d0, hb, h23, ustbLL, agp, vLL
-    double precision :: fsqrtt, uorbL
+    real(kind=dp) :: bui, cu, du, du0, gdxi, ds
+    real(kind=dp) :: slopec, hup, hdo, u1L, v2, frL, u1L0, zbndun, zbndu0n
+    real(kind=dp) :: qk0, qk1, dzb, hdzb, z00 !
+    real(kind=dp) :: st2
+    real(kind=dp) :: twot = 2d0 / 3d0, hb, h23, ustbLL, agp, vLL
+    real(kind=dp) :: fsqrtt, uorbL
 
     integer :: np, L1 ! pumpstuff
-    double precision :: ap, qp, vp ! pumpstuff
+    real(kind=dp) :: ap, qp, vp ! pumpstuff
 
-    double precision :: cfuhi3D ! for bed friction
+    real(kind=dp) :: cfuhi3D ! for bed friction
 
     integer :: jaustarintsave
-    double precision :: sqcfi
+    real(kind=dp) :: sqcfi
 
     fsqrtt = sqrt(0.5d0)
     call timstrt('Furu', handle_furu)

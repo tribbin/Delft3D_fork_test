@@ -35,6 +35,7 @@ use m_vol12d, only: vol12d
 implicit none
 contains
  subroutine volsur() ! volsur entirely in s1 because of s1 iteration
+  use precision, only: dp
     use timers
     use m_flowgeom
     use m_flow
@@ -42,7 +43,7 @@ contains
     ! locals
     integer :: japerim
     integer :: L, n, k1, k2
-    double precision :: hh
+    real(kind=dp) :: hh
     integer, save :: handle = 0
 
     call timstrt('Volume calculation', handle)

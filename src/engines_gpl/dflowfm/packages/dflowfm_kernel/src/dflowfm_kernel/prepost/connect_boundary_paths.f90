@@ -42,6 +42,7 @@ public :: connect_boundary_paths
 contains
 
 recursive subroutine connect_boundary_paths(Lstart, nodemask, init, numnodes, nodelist)
+  use precision, only: dp
    use m_netw
    use m_alloc
    use m_missing
@@ -67,7 +68,7 @@ recursive subroutine connect_boundary_paths(Lstart, nodemask, init, numnodes, no
    integer :: i, j, k, kother, k1, k2, kk, L
    integer :: jstart, jend, numseg
 
-   double precision :: xn, yn, ddis, rL ! for toland
+   real(kind=dp) :: xn, yn, ddis, rL ! for toland
 
 !  note: in allocation of nodelist_loc, add space for new node
 !        nodelist_loc will be allocated and deallocated here
@@ -194,6 +195,7 @@ contains
 
 !>  add new land boundary segment that connects two others
    subroutine add_land()
+  use precision, only: dp
 
       use geometry_module, only: dbdistance
       use m_missing, only: dmiss
@@ -202,7 +204,7 @@ contains
       implicit none
 
       integer :: numseg1, numseg2
-      double precision :: xL1, yL1, xL2, yL2
+      real(kind=dp) :: xL1, yL1, xL2, yL2
 
 !     find segments numbers
       numseg1 = lanseg_map(nodelist_loc(1))

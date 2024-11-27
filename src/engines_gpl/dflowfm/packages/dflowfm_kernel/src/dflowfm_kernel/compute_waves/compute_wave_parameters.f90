@@ -46,6 +46,7 @@ contains
 
    ! compute uorb, rlabda for input in other subroutines
    subroutine compute_wave_parameters()
+  use precision, only: dp
       use m_xbeach_data
       use m_waves
       use m_flow, only: jawave, s1, kmx, jawavestokes, hu, flowwithoutwaves, epshu, wx, wy, ag, hs, waveforcing
@@ -58,7 +59,7 @@ contains
 
       integer :: k1, k2, k, L
       integer :: ierror
-      double precision :: hh, hw, tw, cs, sn, uorbi, rkw, ustt, uwi
+      real(kind=dp) :: hh, hw, tw, cs, sn, uorbi, rkw, ustt, uwi
 
       ! Fetch models
       !

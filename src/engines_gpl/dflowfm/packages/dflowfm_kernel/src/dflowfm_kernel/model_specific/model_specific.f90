@@ -55,6 +55,7 @@ public :: textflowspecific, equatorial, poiseuille, update_turkin_modelspecific
 contains
 
 subroutine textflowspecific()
+  use precision, only: dp
    use m_settextsizefac
    use m_ictext
    use unstruc_model, only: md_ident
@@ -70,7 +71,7 @@ subroutine textflowspecific()
    use m_znod
 
    character(len=140) :: tex
-   double precision :: QCURV, QRECT
+   real(kind=dp) :: QCURV, QRECT
    integer :: nn !< Which horizontal node to print
    nn = min(nplot, ndx)
 
@@ -196,6 +197,7 @@ subroutine textflowspecific()
 end subroutine textflowspecific
 
 subroutine update_turkin_modelspecific(Lf)
+  use precision, only: dp
    use m_entryflow, only: entryflow
    use m_flowgeom
    use m_flow
@@ -204,8 +206,8 @@ subroutine update_turkin_modelspecific(Lf)
    implicit none
    integer, intent(in) :: Lf !< 2D flow link number
 
-   double precision, save :: zw1(kmxx), uu(kmxx)
-   double precision :: dummy
+   real(kind=dp), save :: zw1(kmxx), uu(kmxx)
+   real(kind=dp) :: dummy
    integer :: L, Lb, Lt, kxL
 
    Lb = Lbot(Lf) ! bed layer index
@@ -239,6 +241,7 @@ end subroutine update_turkin_modelspecific
 
 ! AvD: TODO: cleanup below
 subroutine equatorial(t)
+  use precision, only: dp
 
    use m_flowgeom
    use m_flow
@@ -251,10 +254,10 @@ subroutine equatorial(t)
 
    implicit none
 
-   double precision :: t, deltax
-   double precision, allocatable, save :: uexa(:), zexa(:), xexa(:)
+   real(kind=dp) :: t, deltax
+   real(kind=dp), allocatable, save :: uexa(:), zexa(:), xexa(:)
    integer, allocatable, save :: iexa(:)
-   double precision, allocatable :: xz_copy(:)
+   real(kind=dp), allocatable :: xz_copy(:)
    integer :: L, k1, k2, n, i, lunfil
 
    if (t == 0d0) then
@@ -298,6 +301,7 @@ subroutine equatorial(t)
 end subroutine equatorial
 
 subroutine equatorialexact(t, xz, uexa, zexa, nx, deltax)
+  use precision, only: dp
    use m_sferic
    use m_physcoef
    use m_equatorial
@@ -306,10 +310,10 @@ subroutine equatorialexact(t, xz, uexa, zexa, nx, deltax)
 
    implicit none
    integer :: nx, n
-   double precision :: t, xz(nx), uexa(nx), zexa(nx)
+   real(kind=dp) :: t, xz(nx), uexa(nx), zexa(nx)
    complex(kind=8) :: ep, em, cp, cm, eiomt, eiomx, sqrtc, tt, htt
-   double precision :: tt0, F, cforc, cfree, per, lam, omfree
-   double precision :: deltax, czf, reltim, relday, rnrel
+   real(kind=dp) :: tt0, F, cforc, cfree, per, lam, omfree
+   real(kind=dp) :: deltax, czf, reltim, relday, rnrel
 
    Ue0 = 0d0
    g = ag
@@ -388,6 +392,7 @@ subroutine equatorialexact(t, xz, uexa, zexa, nx, deltax)
 end subroutine equatorialexact
 
 subroutine riverfloodwave()
+  use precision, only: dp
    use m_ictext
    use m_flow
    use m_flowgeom
@@ -397,7 +402,7 @@ subroutine riverfloodwave()
    implicit none
    character(len=132) :: tex
 
-   double precision :: sqlabda, sqgi, tim, et, et0, uu, uu0, ust, qst, qq
+   real(kind=dp) :: sqlabda, sqgi, tim, et, et0, uu, uu0, ust, qst, qq
 
    sqlabda = sqrt(cfuhi(1))
    sqgi = sqrt(ag * abs(bedslope))
@@ -436,6 +441,7 @@ subroutine riverfloodwave()
 end subroutine riverfloodwave
 
 subroutine weirtheo(j12)
+  use precision, only: dp
    use m_findqorifice12
    use m_findqorifice
    use m_ictext
@@ -450,10 +456,10 @@ subroutine weirtheo(j12)
    implicit none
    integer, intent(in) :: j12
    integer :: k, L, num, Lweir, ncgentst
-   double precision :: slinks, srechts, eup, edo, dE, dH, foot, zg, z1, z2, z3, qg, qglab, z2lab, qsimple, tim
-   double precision :: zupstream, zdownstream, crestheight, zcrestperfect, zminsub, zcrest, submer, qfree, g = 9.81d0, qg12, qgen, zg12
-   double precision :: qweirana, uupstream, ucrest, udownstream, bedlev, crestlev, qsub, qsup, qcond, qthd, gateheight, qcrit
-   double precision :: qrajaratnam
+   real(kind=dp) :: slinks, srechts, eup, edo, dE, dH, foot, zg, z1, z2, z3, qg, qglab, z2lab, qsimple, tim
+   real(kind=dp) :: zupstream, zdownstream, crestheight, zcrestperfect, zminsub, zcrest, submer, qfree, g = 9.81d0, qg12, qgen, zg12
+   real(kind=dp) :: qweirana, uupstream, ucrest, udownstream, bedlev, crestlev, qsub, qsup, qcond, qthd, gateheight, qcrit
+   real(kind=dp) :: qrajaratnam
    character(len=132) :: tex
    character(len=32) :: regime
    character(len=15) :: datetime
@@ -649,6 +655,7 @@ subroutine weirtheo(j12)
 end subroutine weirtheo
 
 subroutine gatetheo()
+  use precision, only: dp
    use m_findqorifice
    use m_ictext
    use m_flowgeom
@@ -657,7 +664,7 @@ subroutine gatetheo()
    use unstruc_colors
 
    implicit none
-   double precision :: agate, hup, hdown, qgate, z2, zg, qcrit
+   real(kind=dp) :: agate, hup, hdown, qgate, z2, zg, qcrit
    integer :: num
 
    character(len=132) :: tex, regime
@@ -680,6 +687,7 @@ subroutine gatetheo()
 end subroutine gatetheo
 
 subroutine poiseuille(init)
+  use precision, only: dp
    use m_settextsizefac
    use m_rcirc
    use m_netw
@@ -705,28 +713,28 @@ subroutine poiseuille(init)
    character(len=64) :: FNAM ! crosssection output filename
    character(len=64) :: varname1, varname2, varname3, varname4 ! variable names
 
-   double precision, allocatable, dimension(:) :: dcrs ! cross-section polygon coordinate
-   double precision, allocatable, dimension(:, :) :: var ! for output
-   double precision, allocatable, dimension(:) :: var1 ! for output
+   real(kind=dp), allocatable, dimension(:) :: dcrs ! cross-section polygon coordinate
+   real(kind=dp), allocatable, dimension(:, :) :: var ! for output
+   real(kind=dp), allocatable, dimension(:) :: var1 ! for output
 
    integer, allocatable, dimension(:) :: perm ! for sorting
 
-   double precision :: hev, c0, b, dy, hdy, dyy, aa, yw, ust, c2a, c2, xx0, yy, yf, uu, xx, fac
-   double precision :: x1, y1, xL, yL, xR, yR, alpha
-   double precision :: ux1, uy1, s01, yy0
+   real(kind=dp) :: hev, c0, b, dy, hdy, dyy, aa, yw, ust, c2a, c2, xx0, yy, yf, uu, xx, fac
+   real(kind=dp) :: x1, y1, xL, yL, xR, yR, alpha
+   real(kind=dp) :: ux1, uy1, s01, yy0
 
    integer :: i, j, k, ki, L, num
    integer :: icrs, np, nl, ip1, kL, kR
 
    integer, save :: icount
-   double precision, save :: time2write = -1d99
+   real(kind=dp), save :: time2write = -1d99
    logical, save :: Lwriteheader = .true., Lheaderwritten = .false.
    logical :: Lwritetime
 
    integer :: fid
 
    character(len=40) :: tex
-   double precision :: sumba
+   real(kind=dp) :: sumba
 
    if (abs(bedslope) < 1d-8) bedslope = -0d-5 ! SPvdP: now old mdu-files still work
 

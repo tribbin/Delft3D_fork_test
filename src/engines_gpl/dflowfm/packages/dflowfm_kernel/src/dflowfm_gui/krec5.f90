@@ -33,12 +33,13 @@ module m_krec5
    implicit none
 contains
       subroutine KREC5(XX, YY, XD, YD)
+  use precision, only: dp
          use m_pfiller_core
          
-         double precision :: xd
-         double precision :: xx
-         double precision :: yd
-         double precision :: yy
+         real(kind=dp) :: xd
+         real(kind=dp) :: xx
+         real(kind=dp) :: yd
+         real(kind=dp) :: yy
          real :: X(4), Y(4)
          X(1) = XX - XD
          Y(1) = YY - YD

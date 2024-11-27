@@ -33,11 +33,12 @@ module m_matm4
    implicit none
 contains
   subroutine MATM4(a, b, c)
+  use precision, only: dp
      integer :: i
      integer :: j
      integer :: k
      ! matrix matrix
-     double precision, dimension(4, 4) :: a, b, c
+     real(kind=dp), dimension(4, 4) :: a, b, c
      do i = 1, 4
         do k = 1, 4
            c(i, k) = 0d0

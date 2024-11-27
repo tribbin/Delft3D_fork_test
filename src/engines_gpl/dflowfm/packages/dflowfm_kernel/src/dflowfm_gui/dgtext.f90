@@ -37,15 +37,16 @@ implicit none
 contains
 
       subroutine DGTEXT(TEX, XD, YD, ZD, NCOL)
+  use precision, only: dp
          use m_three_two
          use m_gtext
 
          integer :: ncol
-         double precision :: x
-         double precision :: y
-         double precision :: z
+         real(kind=dp) :: x
+         real(kind=dp) :: y
+         real(kind=dp) :: z
          character TEX * (*)
-         double precision XD, YD, ZD
+         real(kind=dp) XD, YD, ZD
          call DRIETWEE(XD, YD, ZD, X, Y, Z)
          call GTEXT(TEX, X, Y, NCOL)
          return

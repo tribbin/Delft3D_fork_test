@@ -40,21 +40,22 @@ implicit none
 contains
 
       subroutine DISP3CAB(X, Y, Z, NCL, N, RCIR, NCOL, A, B)
+  use precision, only: dp
          use m_cir
          use M_MISSING
          use m_halt2
          use m_set_col
          implicit none
-         double precision :: a
-         double precision :: b
+         real(kind=dp) :: a
+         real(kind=dp) :: b
          integer :: i
          integer :: istart
          integer :: key
          integer :: n
          integer :: ncol
-         double precision :: rcir
+         real(kind=dp) :: rcir
 !     LAAT EEN TWEEDIMENSIONALE FUNCTIE ZIEN MET CIRKELS EN KLEUREN
-         double precision X(N), Y(N), Z(N)
+         real(kind=dp) X(N), Y(N), Z(N)
          integer NCL(N)
 
          if (N <= 0) return

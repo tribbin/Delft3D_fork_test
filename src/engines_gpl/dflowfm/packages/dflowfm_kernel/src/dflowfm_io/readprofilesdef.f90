@@ -38,6 +38,7 @@ implicit none
 contains
 
 subroutine readprofilesdef(ja) ! in afwachting van een module die profieldefinities leest
+  use precision, only: dp
    use UNSTRUC_MODEL
    use m_flowgeom
    use m_profiles
@@ -52,10 +53,10 @@ subroutine readprofilesdef(ja) ! in afwachting van een module die profieldefinit
    logical :: jawel
    character(len=256) :: rec
    integer, allocatable :: npr2(:)
-   double precision :: base, talud, width, height, zmin
+   real(kind=dp) :: base, talud, width, height, zmin
 
    integer, parameter :: mx = 2000
-   double precision :: yyh(mx), zzh(mx)
+   real(kind=dp) :: yyh(mx), zzh(mx)
 
    myzprofs = 0
 

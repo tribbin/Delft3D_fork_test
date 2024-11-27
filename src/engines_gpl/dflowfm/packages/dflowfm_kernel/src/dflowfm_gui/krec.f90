@@ -39,14 +39,15 @@ implicit none
 contains
 
       subroutine KREC(X, Y, Z, XD)
+  use precision, only: dp
          use m_isocol
          use m_colnow
 
          integer :: ncol
-         double precision :: x
-         double precision :: xd
-         double precision :: y
-         double precision :: z
+         real(kind=dp) :: x
+         real(kind=dp) :: xd
+         real(kind=dp) :: y
+         real(kind=dp) :: z
 
          call ISOCOL(Z, NCOL)
          if (NCOLNOW >= 0) call RECTANGLE(real(X - XD), real(Y - XD), real(X + XD), real(Y + XD))

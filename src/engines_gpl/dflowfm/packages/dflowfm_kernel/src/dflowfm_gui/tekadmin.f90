@@ -37,13 +37,14 @@ implicit none
 contains
 
       subroutine TEKADMIN(X, Y, I, J)
+  use precision, only: dp
          use m_draw_text
          implicit none
          integer :: i
          integer :: j
          integer :: l
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
          character TEX * 11
          if (I <= 9) then
             write (TEX(1:1), '(I1)') I

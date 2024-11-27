@@ -2045,7 +2045,7 @@ contains
 !     uses unrolled loops for increments equal to one.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision dx(1), dy(1)
+      real(kind=dp) dx(1), dy(1)
       integer i, incx, incy, ix, iy, m, mp1, n
 !
       if (n <= 0) return
@@ -2089,13 +2089,13 @@ contains
       return
    end
 
-   double precision function ddotORG(n, dx, incx, dy, incy) result(ddot)
+   real(kind=dp) function ddotORG(n, dx, incx, dy, incy) result(ddot)
 !
 !     forms the dot product of two vectors.
 !     uses unrolled loops for increments equal to one.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision dx(1), dy(1), dtemp
+      real(kind=dp) dx(1), dy(1), dtemp
       integer i, incx, incy, ix, iy, m, mp1, n
 !
       ddot = 0.0d0
@@ -2138,12 +2138,12 @@ contains
       return
    end
 !
-   double precision function dasum(n, dx, incx)
+   real(kind=dp) function dasum(n, dx, incx)
 !
 !     takes the sum of the absolute values.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision dx(1), dtemp
+      real(kind=dp) dx(1), dtemp
       integer i, incx, m, mp1, n, nincx
 !
       dasum = 0.0d0
@@ -2186,7 +2186,7 @@ contains
 !     uses unrolled loops for increments equal to one.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision dx(1), dy(1), da
+      real(kind=dp) dx(1), dy(1), da
       integer i, incx, incy, ix, iy, m, mp1, n
 !
       if (n <= 0) return
@@ -2228,19 +2228,19 @@ contains
       return
    end
 
-   double precision function dnrm2XXX_2(n, dx_2, incx)
+   real(kind=dp) function dnrm2XXX_2(n, dx_2, incx)
       integer, intent(in) :: n, incx
-      double precision, intent(in) :: dx_2(:, :)
+      real(kind=dp), intent(in) :: dx_2(:, :)
 
-      double precision, allocatable, dimension(:) :: dx
+      real(kind=dp), allocatable, dimension(:) :: dx
       dx = reshape(dx_2, [n])
       dnrm2XXX_2 = dnrm2XXX_1(n, dx, incx)
    end function dnrm2XXX_2
 
-   double precision function dnrm2XXX_1(n, dx, incx)
+   real(kind=dp) function dnrm2XXX_1(n, dx, incx)
       integer, intent(in) :: n, incx
-      double precision, intent(in) :: dx(:)
-      double precision :: cutlo, cuthi, hitest, sum, xmax, zero, one
+      real(kind=dp), intent(in) :: dx(:)
+      real(kind=dp) :: cutlo, cuthi, hitest, sum, xmax, zero, one
       integer :: next, nn, i, j
       data zero, one/0.0d0, 1.0d0/
 !
@@ -2368,7 +2368,7 @@ contains
 !     uses unrolled loops for increment equal to one.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision da, dx(1)
+      real(kind=dp) da, dx(1)
       integer i, incx, m, mp1, n, nincx
 !
       if (n <= 0) return
@@ -2410,7 +2410,7 @@ contains
 !     uses unrolled loops for increments equal one.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision dx(1), dy(1), dtemp
+      real(kind=dp) dx(1), dy(1), dtemp
       integer i, incx, incy, ix, iy, m, mp1, n
 !
       if (n <= 0) return
@@ -2465,7 +2465,7 @@ contains
 !     finds the index of element having max. absolute value.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision dx(1), dmax
+      real(kind=dp) dx(1), dmax
       integer i, incx, ix, n
 !
       idamaxXXX = 0
@@ -2503,7 +2503,7 @@ contains
 !     applies a plane rotation.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision dx(1), dy(1), dtemp, c, s
+      real(kind=dp) dx(1), dy(1), dtemp, c, s
       integer i, incx, incy, ix, iy, n
 !
       if (n <= 0) return
@@ -2540,7 +2540,7 @@ contains
 !     construct givens plane rotation.
 !     jack dongarra, linpack, 3/11/78.
 !
-      double precision da, db, c, s, roe, scale, r, z
+      real(kind=dp) da, db, c, s, roe, scale, r, z
 !
       no_warning_unused_dummy_argument(c)
 
@@ -4417,7 +4417,7 @@ contains
 !         whether this entry is zero. If it is then do not include
 !         in the output matrix. Note that the test is a test for
 !         an exact arithmetic zero. Be sure that the zeros are
-!         actual zeros in double precision otherwise this would not
+!         actual zeros in real(kind=dp) otherwise this would not
 !         work.
 !
 ! idiag = integer equal to the number of diagonals to be extracted.
@@ -5687,7 +5687,7 @@ contains
 !
 !  NCA     - Integer. First dimension of output arrays ca and jac.
 !
-!  A(NNZ)  - Real array. (Double precision)
+!  A(NNZ)  - Real array. (real(kind=dp))
 !            Stored entries of the sparse matrix A.
 !            NNZ is the number of nonzeros.
 !
@@ -5704,7 +5704,7 @@ contains
 !
 !  OUTPUT PARAMETERS
 !  -----------------
-!  AC(NAC,*)  - Real array. (Double precision)
+!  AC(NAC,*)  - Real array. (real(kind=dp))
 !               Stored entries of the sparse matrix A in compressed
 !               storage mode.
 !
@@ -6921,7 +6921,7 @@ contains
 !-----------------------------------------------------------------------
    end
 !-----------------------------------------------------------------------
-   double precision function getelm(i, j, a, ja, ia, iadd, sorted)
+   real(kind=dp) function getelm(i, j, a, ja, ia, iadd, sorted)
 !-----------------------------------------------------------------------
 !     purpose:
 !     --------
@@ -6961,7 +6961,7 @@ contains
 !     noel m. nachtigal october 28, 1990 -- youcef saad jan 20, 1991.
 !-----------------------------------------------------------------------
       integer i, ia(:), iadd, j, ja(:)
-      double precision a(:)
+      real(kind=dp) a(:)
       logical sorted
 !
 !     local variables.

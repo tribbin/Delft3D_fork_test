@@ -37,10 +37,11 @@ implicit none
 contains
 
       subroutine DISVAL1(DEP)
+  use precision, only: dp
          use unstruc_colors
          use m_ktext
 
-         double precision :: DEP
+         real(kind=dp) :: DEP
          character TEX * 8
          if (abs(DEP) < 10) then
             write (TEX(1:), '(F8.5)') DEP

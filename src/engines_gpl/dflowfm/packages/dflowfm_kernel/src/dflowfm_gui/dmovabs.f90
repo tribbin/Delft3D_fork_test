@@ -37,14 +37,15 @@ implicit none
 contains
 
       subroutine DMOVABS(XD, YD, ZD)
+  use precision, only: dp
          use m_oldz, only: oz
          use m_three_two
          use m_movabs
 
-         double precision :: x
-         double precision :: y
-         double precision :: z
-         double precision XD, YD, ZD
+         real(kind=dp) :: x
+         real(kind=dp) :: y
+         real(kind=dp) :: z
+         real(kind=dp) XD, YD, ZD
          call DRIETWEE(XD, YD, ZD, X, Y, Z)
          call MOVABS(X, Y)
          OZ = Z

@@ -39,13 +39,14 @@ implicit none
 contains
 
       subroutine ORGLOCATOR(XL, YL)
+  use precision, only: dp
          use m_devices
          use m_locatora
 
          integer :: ml
          integer :: nl
-         double precision :: xl
-         double precision :: yl
+         real(kind=dp) :: xl
+         real(kind=dp) :: yl
 
          if (XL == 0 .and. YL == 0) then
             ML = NPX / 2

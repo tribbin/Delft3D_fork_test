@@ -37,10 +37,11 @@ implicit none
 contains
 
       subroutine DISAREAN(AREAN)
+  use precision, only: dp
          use m_devices, only: iws
          use m_ktext
 
-         double precision :: arean
+         real(kind=dp) :: arean
          character(len=32) :: DISTAN
          write (DISTAN, '("CR. AR. N ", E11.4, " M2")') AREAN
          call KTEXT(DISTAN, IWS - 22, 5, 15)

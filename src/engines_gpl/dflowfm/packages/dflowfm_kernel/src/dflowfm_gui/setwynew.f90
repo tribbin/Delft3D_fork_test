@@ -39,6 +39,7 @@ implicit none
 contains
 
       subroutine SETWYnew(X, Y, DY)
+  use precision, only: dp
 !     Set zoomwindow limits at proper aspect ratio
          use m_setwor
          use m_inqasp
@@ -47,7 +48,7 @@ contains
          use m_sferzoom
          use m_dproject
 
-         double precision :: asp, x, y, dy, dx, XA, Y1A, y2a
+         real(kind=dp) :: asp, x, y, dy, dx, XA, Y1A, y2a
 
          FAC = 1
          call INQASP(ASP)

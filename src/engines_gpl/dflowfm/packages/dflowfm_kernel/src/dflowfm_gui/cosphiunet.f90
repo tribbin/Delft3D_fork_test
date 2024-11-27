@@ -36,7 +36,8 @@ implicit none
 
 contains
 
- double precision function cosphiunet(L) ! get link cos on net link
+ real(kind=dp) function cosphiunet(L) ! get link cos on net link
+  use precision, only: dp
 
     use m_flowgeom, only: xz, yz
     use m_netw

@@ -41,6 +41,7 @@ public :: addlink1D
 contains
 
  subroutine addlink1D(L, japerim) ! and add area's and volumes of 1D links
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_missing
@@ -56,8 +57,8 @@ contains
     integer :: japerim, L, calcConv
 
     integer :: k1, k2, LL
-    double precision :: ar1, wid1, ar2, wid2, dx1, dx2, widu, perim
-    double precision :: hpr
+    real(kind=dp) :: ar1, wid1, ar2, wid2, dx1, dx2, widu, perim
+    real(kind=dp) :: hpr
 
     dx1 = 0.5d0 * dx(L)
     dx2 = dx1

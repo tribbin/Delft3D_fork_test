@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine ISOCEL(X, Y, P, NCOLR)
+  use precision, only: dp
          use m_hitlin
          use m_dispf2
          use m_depmax
 
          integer :: i, ih, ja, ncolr, nh, nplus
-         double precision :: p, p1, p2, vn, x, x1, x2, xh, xhit, y, y1, y2, yh, yhit
+         real(kind=dp) :: p, p1, p2, vn, x, x1, x2, xh, xhit, y, y1, y2, yh, yhit
 
 !     TEKENT ALLE NV ISOLIJNEN IN EEN CEL TEKAL-METHODE
          dimension P(4), X(4), Y(4), XH(4), YH(4)

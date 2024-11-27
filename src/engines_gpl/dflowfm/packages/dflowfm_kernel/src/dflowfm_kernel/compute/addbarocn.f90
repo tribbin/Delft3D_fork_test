@@ -41,6 +41,7 @@ public :: addbarocn, addbarocnorg, addbarocnrho_w
 contains
 
  subroutine addbarocn(n) ! rho at cell centers
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_get_kbot_ktop
@@ -49,8 +50,8 @@ contains
     integer, intent(in) :: n
 
     integer :: k, kb, kt
-    double precision :: pu, pd, gr, dzz
-    double precision :: fuu, fud, fdu, fdd, dzu, dzd, roup, rodo, rvk
+    real(kind=dp) :: pu, pd, gr, dzz
+    real(kind=dp) :: fuu, fud, fdu, fdd, dzu, dzd, roup, rodo, rvk
 
     call getkbotktop(n, kb, kt)
     ! if (kt < kb) return
@@ -98,6 +99,7 @@ contains
  end subroutine addbarocn
 
  subroutine addbarocnrho_w(n) ! rho at interfaces (w points)
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_transport, only: ISALT, ITEMP, constituents
@@ -109,8 +111,8 @@ contains
     integer, intent(in) :: n
 
     integer :: k, kb, kt, i
-    double precision :: saw(0:kmxx), tmw(0:kmxx) ! rho at pressure point layer interfaces
-    double precision :: fzu, fzd, pu, pd, dzz, p0d, pdb, rhosk
+    real(kind=dp) :: saw(0:kmxx), tmw(0:kmxx) ! rho at pressure point layer interfaces
+    real(kind=dp) :: fzu, fzd, pu, pd, dzz, p0d, pdb, rhosk
 
     call getkbotktop(n, kb, kt)
     ! if (kt < kb) return
@@ -165,6 +167,7 @@ contains
  end subroutine addbarocnrho_w
 
  subroutine addbarocnorg(n)
+  use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_get_kbot_ktop
@@ -173,8 +176,8 @@ contains
     integer, intent(in) :: n
 
     integer :: k, kb, kt
-    double precision :: rhosw(0:kmxx) ! rho at pressure point layer interfaces
-    double precision :: fzu, fzd, alf, pu, pd, gr, dzz, rvn
+    real(kind=dp) :: rhosw(0:kmxx) ! rho at pressure point layer interfaces
+    real(kind=dp) :: fzu, fzd, alf, pu, pd, gr, dzz, rvn
 
     call getkbotktop(n, kb, kt)
     ! if (kt < kb) return

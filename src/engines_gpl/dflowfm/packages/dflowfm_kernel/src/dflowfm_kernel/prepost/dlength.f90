@@ -40,14 +40,15 @@ public :: dlength
 
 contains
 
-      double precision function DLENGTH(K1, K2)
+      real(kind=dp) function DLENGTH(K1, K2)
+  use precision, only: dp
          use m_netw
          use geometry_module, only: dbdistance
          use m_missing, only: dmiss
          use m_sferic, only: jsferic, jasfer3D
 
          integer :: K1, K2
-         double precision :: XD, YD, ZD
+         real(kind=dp) :: XD, YD, ZD
          if (NETFLOW == 1) then
             XD = XK(K2) - XK(K1)
             YD = YK(K2) - YK(K1)

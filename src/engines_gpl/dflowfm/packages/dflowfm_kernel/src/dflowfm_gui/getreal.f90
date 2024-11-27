@@ -31,13 +31,15 @@
 !
 
 module m_getreal
+  use precision, only: dp
 
 implicit none
 
 contains
 
-      ! Now a double precision (double precision ::)
+      ! Now a real(kind=dp) (real(kind=dp) ::)
       subroutine GETREAL(TEXT, value)
+  use precision, only: dp
          use m_devices
          use M_MISSING
          use m_helpnow
@@ -51,8 +53,8 @@ contains
          integer :: key
          integer :: nbckgr
          integer :: nforgr
-         double precision :: val
-         double precision :: value
+         real(kind=dp) :: val
+         real(kind=dp) :: value
          character TEXT * (*)
 
          VAL = value

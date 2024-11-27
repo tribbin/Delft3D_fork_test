@@ -34,10 +34,11 @@ module m_ini_sferic
 contains
  !> initialize sferical coordinate frame
  subroutine inisferic()
+  use precision, only: dp
     use m_sferic
     use m_physcoef
 
-    double precision :: sidereal
+    real(kind=dp) :: sidereal
     pi = acos(-1d0)
     twopi = 2d0 * pi
     dg2rd = pi / 180d0

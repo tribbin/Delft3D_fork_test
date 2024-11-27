@@ -37,10 +37,11 @@ implicit none
 contains
 
       subroutine DISDEP(m, n, dep)
+  use precision, only: dp
          use m_devices, only: iws
          use m_ktext
 
-         double precision :: dep
+         real(kind=dp) :: dep
          integer :: m
          integer :: n
          character distan * 23

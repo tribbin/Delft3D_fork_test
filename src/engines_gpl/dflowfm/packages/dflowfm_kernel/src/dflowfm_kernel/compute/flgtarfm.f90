@@ -38,6 +38,7 @@ contains
 
 subroutine flgtarfm(ng, L0, wuL, bl1, bl2, teken, zs, wstr, w2, wsd, zb2, ds1, ds2, cgf, & ! fromgeneral
                     cgd, cwf, cwd, mugf, lambda, strdamf, gatedoorheight)
+  use precision, only: dp
 !!--description-----------------------------------------------------------------
 ! NONE
 !!--pseudo code and references--------------------------------------------------
@@ -52,36 +53,36 @@ subroutine flgtarfm(ng, L0, wuL, bl1, bl2, teken, zs, wstr, w2, wsd, zb2, ds1, d
 !
    integer :: ng
    integer, intent(in) :: L0 !< counter for the current flow link under genstru #ng (1:ncgen for each separate genstru)
-   double precision, intent(in) :: wuL !< wu of this flow link.
-   double precision, intent(in) :: bl1 !< bl of nod1
-   double precision, intent(in) :: bl2 !< bl of nod2
-   double precision, intent(out) :: cgd
-   double precision, intent(out) :: cgf
-   double precision, intent(out) :: cwd
-   double precision, intent(out) :: cwf
-   double precision, intent(out) :: ds1
-   double precision, intent(out) :: ds2
-   double precision :: lambda
-   double precision, intent(out) :: mugf
-   double precision :: strdamf
-   double precision, intent(in) :: teken !< Flow direction, w.r.t. the structure's orientation. So: based on both upwind *and* flow-link<-->str-pli crossing.
-   double precision :: w2
-   double precision, intent(out) :: wsd
-   double precision, intent(out) :: wstr
-   double precision, intent(out) :: gatedoorheight
-   double precision :: zb2
-   double precision :: zs
+   real(kind=dp), intent(in) :: wuL !< wu of this flow link.
+   real(kind=dp), intent(in) :: bl1 !< bl of nod1
+   real(kind=dp), intent(in) :: bl2 !< bl of nod2
+   real(kind=dp), intent(out) :: cgd
+   real(kind=dp), intent(out) :: cgf
+   real(kind=dp), intent(out) :: cwd
+   real(kind=dp), intent(out) :: cwf
+   real(kind=dp), intent(out) :: ds1
+   real(kind=dp), intent(out) :: ds2
+   real(kind=dp) :: lambda
+   real(kind=dp), intent(out) :: mugf
+   real(kind=dp) :: strdamf
+   real(kind=dp), intent(in) :: teken !< Flow direction, w.r.t. the structure's orientation. So: based on both upwind *and* flow-link<-->str-pli crossing.
+   real(kind=dp) :: w2
+   real(kind=dp), intent(out) :: wsd
+   real(kind=dp), intent(out) :: wstr
+   real(kind=dp), intent(out) :: gatedoorheight
+   real(kind=dp) :: zb2
+   real(kind=dp) :: zs
 !
 !
 ! Local variables
 !
-   double precision :: help
-   double precision :: w1
-   double precision :: wsdl
-   double precision :: wsdr
-   double precision :: zb1
-   double precision :: zbsl
-   double precision :: zbsr
+   real(kind=dp) :: help
+   real(kind=dp) :: w1
+   real(kind=dp) :: wsdl
+   real(kind=dp) :: wsdr
+   real(kind=dp) :: zb1
+   real(kind=dp) :: zbsl
+   real(kind=dp) :: zbsr
 !
 !
 !! executable statements -------------------------------------------------------

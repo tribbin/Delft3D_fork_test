@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine tekpoly(n, x, y, ncol)
+  use precision, only: dp
          use m_set_col
          use m_movabs
          use m_lnabs
          implicit none
          integer, intent(in) :: N !< polygon dimension
-         double precision, dimension(n), intent(in) :: x, y !< polygon coordinates
+         real(kind=dp), dimension(n), intent(in) :: x, y !< polygon coordinates
          integer, intent(in) :: ncol !< color number
          integer :: i
 

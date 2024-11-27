@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine ISOFILTRI(X, Y, Z, NCOLR)
+  use precision, only: dp
          use m_topix
          use m_depmax
          use m_sub_polygon
@@ -44,8 +45,8 @@ contains
          use m_set_col
          use m_ptabs
 
-         double precision :: dzn
-         double precision :: frac
+         real(kind=dp) :: dzn
+         real(kind=dp) :: frac
          integer :: i
          integer :: ih
          integer :: j
@@ -59,11 +60,11 @@ contains
          integer :: nx3
          integer :: ny1
          integer :: ny3
-         double precision :: zmax
-         double precision :: zmin
-         double precision :: znex
-         double precision :: znow
-         double precision :: X(3), Y(3), Z(3), DX(3), DY(3), DZ(3), XH(10), YH(10)
+         real(kind=dp) :: zmax
+         real(kind=dp) :: zmin
+         real(kind=dp) :: znex
+         real(kind=dp) :: znow
+         real(kind=dp) :: X(3), Y(3), Z(3), DX(3), DY(3), DZ(3), XH(10), YH(10)
 
          do I = 1, 3
             J = I + 1

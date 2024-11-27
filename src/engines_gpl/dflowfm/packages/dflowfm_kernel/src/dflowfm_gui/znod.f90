@@ -38,7 +38,8 @@ implicit none
 
 contains
 
- double precision function znod(kk) ! get various values at flow nodes
+ real(kind=dp) function znod(kk) ! get various values at flow nodes
+  use precision, only: dp
     use m_getktoplot
     use m_flow
     use m_flowgeom
@@ -58,9 +59,9 @@ contains
     implicit none
 
     integer :: kk, k, nodval, L
-    double precision :: seq(mxgr), wse(mxgr), hsk, dum, czc, taucurc, ustw2, U10, FetchL, FetchD, rkk, shs
+    real(kind=dp) :: seq(mxgr), wse(mxgr), hsk, dum, czc, taucurc, ustw2, U10, FetchL, FetchD, rkk, shs
     integer :: jawaveswartdelwaq_local
-    double precision, external :: sinhsafei
+    real(kind=dp), external :: sinhsafei
 
     nodval = ndraw(28)
     znod = DMISS

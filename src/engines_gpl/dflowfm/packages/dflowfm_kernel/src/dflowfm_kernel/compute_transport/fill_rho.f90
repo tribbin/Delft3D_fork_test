@@ -41,6 +41,7 @@ public :: fill_rho
 contains
 
 subroutine fill_rho()
+  use precision, only: dp
    use m_transport
    use m_flowgeom
    use m_flow
@@ -53,7 +54,7 @@ subroutine fill_rho()
    implicit none
 
    integer :: kk, k, kb, kt
-   double precision :: dvoli, dtol = 1d-8
+   real(kind=dp) :: dvoli, dtol = 1d-8
 
    integer(4) :: ithndl = 0
    

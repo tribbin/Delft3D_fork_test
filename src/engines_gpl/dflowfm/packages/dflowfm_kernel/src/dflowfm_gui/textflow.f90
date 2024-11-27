@@ -38,6 +38,7 @@ implicit none
 contains
 
  subroutine TEXTFLOW()
+  use precision, only: dp
     use m_setxor
     use m_ictext
     use time_module, only: seconds_to_datetimestring
@@ -54,8 +55,8 @@ contains
     use m_zlin
     use m_znod
     implicit none
-    double precision :: cpuperstep, solrest, znn, dtav
-    double precision :: tsteps, tsol, tstepinc
+    real(kind=dp) :: cpuperstep, solrest, znn, dtav
+    real(kind=dp) :: tsteps, tsol, tstepinc
     integer :: nn, LL, nl
     character TEX * 210
     character, save :: TEX1 * 210 = '@'

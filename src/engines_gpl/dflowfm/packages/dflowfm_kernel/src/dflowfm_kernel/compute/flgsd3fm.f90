@@ -38,6 +38,7 @@ contains
 
 subroutine flgsd3fm(wsd, wstr, zs, w2, zb2, ds1, ds2, elu, hd, rhoast, cwd,   &
                 & ds, lambda)
+  use precision, only: dp
 !!--description-----------------------------------------------------------------
 ! NONE
 !!--pseudo code and references--------------------------------------------------
@@ -47,45 +48,45 @@ subroutine flgsd3fm(wsd, wstr, zs, w2, zb2, ds1, ds2, elu, hd, rhoast, cwd,   &
 !
 ! Local parameters
 !
-   double precision, parameter :: c23 = 2.0d0 / 3.0d0, c13 = 1.0d0 / 3.0d0
+   real(kind=dp), parameter :: c23 = 2.0d0 / 3.0d0, c13 = 1.0d0 / 3.0d0
 !
 ! Global variables
 !
-   double precision, intent(in) :: cwd
-   double precision, intent(out) :: ds
-   double precision, intent(in) :: ds1
-   double precision, intent(in) :: ds2
-   double precision, intent(in) :: elu
-   double precision, intent(in) :: hd
-   double precision, intent(in) :: lambda
-   double precision, intent(in) :: rhoast
-   double precision, intent(in) :: w2
-   double precision, intent(in) :: wsd
-   double precision, intent(in) :: wstr
-   double precision, intent(in) :: zb2
-   double precision, intent(in) :: zs
+   real(kind=dp), intent(in) :: cwd
+   real(kind=dp), intent(out) :: ds
+   real(kind=dp), intent(in) :: ds1
+   real(kind=dp), intent(in) :: ds2
+   real(kind=dp), intent(in) :: elu
+   real(kind=dp), intent(in) :: hd
+   real(kind=dp), intent(in) :: lambda
+   real(kind=dp), intent(in) :: rhoast
+   real(kind=dp), intent(in) :: w2
+   real(kind=dp), intent(in) :: wsd
+   real(kind=dp), intent(in) :: wstr
+   real(kind=dp), intent(in) :: zb2
+   real(kind=dp), intent(in) :: zs
 !
 !
 ! Local variables
 !
-   double precision :: aw
-   double precision :: bw
-   double precision :: cw
-   double precision :: d2
-   double precision :: fac
-   double precision :: h2a
-   double precision :: h2b
-   double precision :: h2c
-   double precision :: hsl
-   double precision :: hulp
-   double precision :: hulp1
-   double precision :: p
-   double precision :: phi
-   double precision :: q
-   double precision :: r60
-   double precision :: term
-   double precision :: u
-   double precision :: v
+   real(kind=dp) :: aw
+   real(kind=dp) :: bw
+   real(kind=dp) :: cw
+   real(kind=dp) :: d2
+   real(kind=dp) :: fac
+   real(kind=dp) :: h2a
+   real(kind=dp) :: h2b
+   real(kind=dp) :: h2c
+   real(kind=dp) :: hsl
+   real(kind=dp) :: hulp
+   real(kind=dp) :: hulp1
+   real(kind=dp) :: p
+   real(kind=dp) :: phi
+   real(kind=dp) :: q
+   real(kind=dp) :: r60
+   real(kind=dp) :: term
+   real(kind=dp) :: u
+   real(kind=dp) :: v
 !
 !
 !! executable statements -------------------------------------------------------

@@ -92,18 +92,19 @@ contains
 
     !> set_water_level_and_hu_for_dry_cells
     subroutine set_water_level_and_hu_for_dry_cells(water_level, upwind_waterheight)
+  use precision, only: dp
 
-       double precision, intent(inout) :: water_level(:) !< water_level
-       double precision, intent(inout) :: upwind_waterheight(:) !< upwind_waterheight
+       real(kind=dp), intent(inout) :: water_level(:) !< water_level
+       real(kind=dp), intent(inout) :: upwind_waterheight(:) !< upwind_waterheight
 
        integer :: node, link, link_index
-       double precision :: threshold
-       double precision, parameter :: WATER_LEVEL_TOLERANCE = 1d-10
-       double precision, parameter :: DELFT3D_MIN = 1d-9
-       double precision, parameter :: DELFT3D_MAX = 1d-3
-       double precision, parameter :: REDUCTION_FACTOR = 0.2d0
+       real(kind=dp) :: threshold
+       real(kind=dp), parameter :: WATER_LEVEL_TOLERANCE = 1d-10
+       real(kind=dp), parameter :: DELFT3D_MIN = 1d-9
+       real(kind=dp), parameter :: DELFT3D_MAX = 1d-3
+       real(kind=dp), parameter :: REDUCTION_FACTOR = 0.2d0
        integer, parameter :: FLAG_REDO_TIMESTEP = 2
-       double precision, parameter :: SET_VALUE = 0d0
+       real(kind=dp), parameter :: SET_VALUE = 0d0
        integer, parameter :: DELFT3D_FLOW_ALGORITHM_TO_PREVENT_VERY_THIN_LAYERS = 1
 
        Nodneg = 0

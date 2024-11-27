@@ -37,10 +37,11 @@ implicit none
 contains
 
    subroutine DVIEW(XD, YD, ZD, X, Y, Z)
+  use precision, only: dp
       use m_missing, only: dmiss
       use m_viewmat
 
-      double precision :: ce
+      real(kind=dp) :: ce
       integer :: i
       ! GEEF perspectievische COORDINATEN
       ! xD,yD,zD                             :coordinaten te tekenen punt
@@ -48,7 +49,7 @@ contains
       ! X,Y,Z                                :scherm coordinaten
       ! Vs                                   :viewing matrix na viema
 
-      double precision XD, YD, ZD, X, Y, Z
+      real(kind=dp) XD, YD, ZD, X, Y, Z
       dimension CE(4)
       ! use z as zd temporarily (zet to zero when zd==dmiss)
       if (zd == dmiss) then

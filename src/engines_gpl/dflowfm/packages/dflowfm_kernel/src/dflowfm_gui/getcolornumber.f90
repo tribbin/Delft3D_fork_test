@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine GETCOLORNUMBER(XP, YP, NUMCOL, N1O, N2O, N3O)
+  use precision, only: dp
          use m_disvalcolors
          use m_set_col
          use m_ptabs
@@ -49,8 +50,8 @@ contains
          integer :: n3
          integer :: n3o
          integer :: numcol
-         double precision :: xp
-         double precision :: yp
+         real(kind=dp) :: xp
+         real(kind=dp) :: yp
          call IGRGETPIXELRGB(real(XP), real(YP), N1O, N2O, N3O)
          do I = 0, 255
             call SETCOL(I)

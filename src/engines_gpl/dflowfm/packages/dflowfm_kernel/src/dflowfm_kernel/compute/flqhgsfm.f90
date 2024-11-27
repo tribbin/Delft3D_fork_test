@@ -38,7 +38,7 @@ contains
 
 subroutine flqhgsfm(m, teken, husb, hdsb, uu, zs, wstr, w2, wsd, zb2, ds1, ds2, &
                     dg, cgf, cgd, cwf, cwd, mugf, lambda, strdamf, jarea, ds)
-
+  use precision, only: dp
    use m_flgsfurufm
    use m_flgsd3fm
    use m_flgsd2fm
@@ -53,44 +53,44 @@ subroutine flqhgsfm(m, teken, husb, hdsb, uu, zs, wstr, w2, wsd, zb2, ds1, ds2, 
 !
    integer :: m
    logical, intent(in) :: jarea
-   double precision :: cgd
-   double precision :: cgf
-   double precision :: cwd
-   double precision, intent(in) :: cwf
-   double precision :: dg
-   double precision :: ds
-   double precision :: ds1
-   double precision :: ds2
-   double precision :: hdsb
-   double precision :: husb
-   double precision :: lambda
-   double precision :: mugf
-   double precision :: rhoast = 1d0
-   double precision :: strdamf
-   double precision :: teken
-   double precision, intent(in) :: uu
-   double precision :: w2
-   double precision :: wsd
-   double precision :: wstr
-   double precision :: zb2
-   double precision :: zs
+   real(kind=dp) :: cgd
+   real(kind=dp) :: cgf
+   real(kind=dp) :: cwd
+   real(kind=dp), intent(in) :: cwf
+   real(kind=dp) :: dg
+   real(kind=dp) :: ds
+   real(kind=dp) :: ds1
+   real(kind=dp) :: ds2
+   real(kind=dp) :: hdsb
+   real(kind=dp) :: husb
+   real(kind=dp) :: lambda
+   real(kind=dp) :: mugf
+   real(kind=dp) :: rhoast = 1d0
+   real(kind=dp) :: strdamf
+   real(kind=dp) :: teken
+   real(kind=dp), intent(in) :: uu
+   real(kind=dp) :: w2
+   real(kind=dp) :: wsd
+   real(kind=dp) :: wstr
+   real(kind=dp) :: zb2
+   real(kind=dp) :: zs
 !
 !
 ! Local variables
 !
    integer :: formno
    logical :: imag
-   double precision :: cgd2
-   double precision :: cgda
-   double precision :: cgfa
-   double precision :: cwfa
-   double precision :: dc
-   double precision :: dlim
-   double precision :: elu
-   double precision :: hd1
-   double precision :: hs1
-   double precision :: mugfa
-   double precision :: velhght, tr
+   real(kind=dp) :: cgd2
+   real(kind=dp) :: cgda
+   real(kind=dp) :: cgfa
+   real(kind=dp) :: cwfa
+   real(kind=dp) :: dc
+   real(kind=dp) :: dlim
+   real(kind=dp) :: elu
+   real(kind=dp) :: hd1
+   real(kind=dp) :: hs1
+   real(kind=dp) :: mugfa
+   real(kind=dp) :: velhght, tr
 !
 !
 !! executable statements -------------------------------------------------------

@@ -38,13 +38,14 @@ contains
 !> Computes/gets cell centered horizontal x/y velocities, either Eulerian or Lagrangian, and when requested also magnitude.
 !! Centralized routine for multiple uses in output files.
 subroutine getucxucyeulmag(N, ucxeulg, ucyeulg, ucmago, jaeulervel, jaucmag)
+  use precision, only: dp
    use m_flow, only: ndkx, ucx, ucy
    use m_flowparameters, only: jawave, flowWithoutWaves
 
    integer, intent(in) :: N !< Length of cell arrays (probably ndkx)
-   double precision, intent(out) :: ucxeulg(N) !< Target array in which to store x-velocities.
-   double precision, intent(out) :: ucyeulg(N) !< Target array in which to store y-velocities.
-   double precision, intent(out) :: ucmago(N) !< Target array in which to store velocity magnitudes. May be undefined when jaucmag==0.
+   real(kind=dp), intent(out) :: ucxeulg(N) !< Target array in which to store x-velocities.
+   real(kind=dp), intent(out) :: ucyeulg(N) !< Target array in which to store y-velocities.
+   real(kind=dp), intent(out) :: ucmago(N) !< Target array in which to store velocity magnitudes. May be undefined when jaucmag==0.
    integer, intent(in) :: jaeulervel !< Whether or not (1/0) to compute Eulerian velocities (i.e., substract Stokes drift)
    integer, intent(in) :: jaucmag !< Whether or not (1/0) to compute velocity magnitudes.
 

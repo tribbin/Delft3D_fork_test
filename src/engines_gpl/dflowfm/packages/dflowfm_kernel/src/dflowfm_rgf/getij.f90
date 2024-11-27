@@ -33,6 +33,7 @@ module m_get_ij
    implicit none
 contains
       subroutine GETIJ(X, XH, MMAX, NMAX, MNMAX, I1, I2, J1, J2)
+  use precision, only: dp
          integer :: i
          integer :: i1
          integer :: i2
@@ -44,7 +45,7 @@ contains
          integer :: mnmax
          integer :: nmax
 !     HAAL EEN LIJN (XH) UIT EEN ARRAY (X)
-         double precision :: X(MMAX, NMAX), XH(MNMAX)
+         real(kind=dp) :: X(MMAX, NMAX), XH(MNMAX)
          K = 0
          do J = J1, J2
             do I = I1, I2

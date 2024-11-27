@@ -37,11 +37,12 @@ implicit none
 contains
 
  subroutine hydraulicallysmooth(umod, h, sqcf)
+  use precision, only: dp
     use m_physcoef
     use m_flow
     implicit none
-    double precision :: umod, h, sqcf
-    double precision :: r, rv = 123.8d0, e = 8.84d0, eps = 1d-2, s, sd, er, ers
+    real(kind=dp) :: umod, h, sqcf
+    real(kind=dp) :: r, rv = 123.8d0, e = 8.84d0, eps = 1d-2, s, sd, er, ers
 
     r = umod * h / viskin ! Local re-number:
     r = max(r, 0.001d0)

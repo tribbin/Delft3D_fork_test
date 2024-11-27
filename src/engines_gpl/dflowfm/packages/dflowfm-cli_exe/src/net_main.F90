@@ -119,7 +119,7 @@ program unstruc
    integer, external :: iget_jaopengl
    integer, external :: flow_modelinit
 
-   double precision :: tstartall, tstopall ! just checking...
+   real(kind=dp) :: tstartall, tstopall ! just checking...
 
    call wall_clock_time(tstartall)
 

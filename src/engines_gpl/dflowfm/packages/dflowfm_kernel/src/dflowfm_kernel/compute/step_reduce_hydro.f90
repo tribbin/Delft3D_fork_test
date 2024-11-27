@@ -47,6 +47,7 @@ contains
     use m_poshcheck
     use m_furu
     use m_flow ! when entering this subroutine, s1=s0, u1=u0, etc
+  use precision, only: dp
     use m_flowgeom
     use Timers
     use m_flowtimes
@@ -71,7 +72,7 @@ contains
     integer :: key, jposhchk_sav, itype
     integer :: k, ierror, noddifmaxlevm
     logical :: firstnniteration, last_iteration
-    double precision :: dif, difmaxlevm
+    real(kind=dp) :: dif, difmaxlevm
 
 !-----------------------------------------------------------------------------------------------
     numnodneg = 0

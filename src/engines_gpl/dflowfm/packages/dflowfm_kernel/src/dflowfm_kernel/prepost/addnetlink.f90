@@ -41,9 +41,10 @@ public :: addnetlink
 contains
 
 subroutine addnetlink(x1, y1, x2, y2, L)
+  use precision, only: dp
    use gridoperations ! or you can not call connectdbn
    
-   double precision :: x1, y1, x2, y2
+   real(kind=dp) :: x1, y1, x2, y2
    integer :: k1, k2, L
    
    call getnetnodenr(x1, y1, k1)

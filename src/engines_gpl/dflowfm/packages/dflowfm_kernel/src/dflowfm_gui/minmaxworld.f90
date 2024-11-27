@@ -39,11 +39,12 @@ implicit none
 contains
 
       subroutine MINMAXWORLD(XMI, YMI, XMA, YMA)
+  use precision, only: dp
          ! ASPECT RATIO VAN HET DEFAULTGEBIED GOED ZETTEN
          use m_inqasp
          use m_wearelt
          
-         double precision :: XMI, YMI, XMA, YMA, ASPECT, XC, YC, DY, dx
+         real(kind=dp) :: XMI, YMI, XMA, YMA, ASPECT, XC, YC, DY, dx
          XMIN = XMI
          YMIN = YMI
          XMAX = XMA

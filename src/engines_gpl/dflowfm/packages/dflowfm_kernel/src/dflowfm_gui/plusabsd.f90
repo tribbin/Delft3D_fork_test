@@ -39,6 +39,7 @@ implicit none
 contains
 
       subroutine PLUSABSD(XK, YK, ZK, NUMK, KEY, EA)
+  use precision, only: dp
          use m_menuv3
          use m_getreal
          use m_confrm
@@ -50,11 +51,11 @@ contains
          integer, parameter :: MAXOP = 64
          character(len=40) :: OPTION(MAXOP), exp(MAXOP)
          integer :: NUMK, KEY
-         double precision :: XK(NUMK), YK(NUMK), ZK(NUMK), EA(NUMK)
-         double precision :: XI, YI, ZI, DA, AF, RD
+         real(kind=dp) :: XK(NUMK), YK(NUMK), ZK(NUMK), EA(NUMK)
+         real(kind=dp) :: XI, YI, ZI, DA, AF, RD
 
          integer :: ichange, inhul, ja, k, maxopt, nwhat
-         double precision, save :: A = 1d0
+         real(kind=dp), save :: A = 1d0
 
          JA = 0
          exp(1) = 'MENU TIG                                '

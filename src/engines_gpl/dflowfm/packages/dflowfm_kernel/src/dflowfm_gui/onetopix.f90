@@ -37,12 +37,13 @@ implicit none
 contains
 
       subroutine ONETOPIX(X, Y, NX, NY)
+  use precision, only: dp
          use m_devices
 
          integer :: nx
          integer :: ny
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
          NX = X * NPX
          NY = Y * NPY
          return

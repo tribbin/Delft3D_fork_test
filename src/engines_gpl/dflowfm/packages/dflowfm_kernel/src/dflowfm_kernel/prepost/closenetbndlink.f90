@@ -41,21 +41,22 @@ public :: closenetbndlink
 contains
 
       subroutine CLOSENETBNDLINK(XP1, YP1, N1)
+  use precision, only: dp
          use m_netw
          use geometry_module, only: dlinedis
          use m_missing, only: dmiss
          use m_sferic, only: jsferic, jasfer3D
 
          integer :: n1
-         double precision :: xp1
-         double precision :: yp1
+         real(kind=dp) :: xp1
+         real(kind=dp) :: yp1
 
-         double precision :: dismin
+         real(kind=dp) :: dismin
          integer :: ja
          integer :: k1
          integer :: k2
          integer :: l
-         double precision :: xa, ya, xb, yb, dis, xn, yn
+         real(kind=dp) :: xa, ya, xb, yb, dis, xn, yn
 
          N1 = 0
          DISMIN = 9e+33

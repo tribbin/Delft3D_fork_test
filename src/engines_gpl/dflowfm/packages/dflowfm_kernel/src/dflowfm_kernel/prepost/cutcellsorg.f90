@@ -41,6 +41,7 @@ public :: cutcellsorg
 contains
 
   subroutine CUTCELLSORG()
+  use precision, only: dp
 
      use m_crosslinkpoly, only: crosslinkpoly
      use m_netw
@@ -67,7 +68,7 @@ contains
      integer, allocatable :: KNP(:), KNEW(:), LDIN(:), LD1(:), LD2(:)
      integer :: KK(4)
 
-     double precision :: XM, YM
+     real(kind=dp) :: XM, YM
 
      if (MXLAN == 0) return
 

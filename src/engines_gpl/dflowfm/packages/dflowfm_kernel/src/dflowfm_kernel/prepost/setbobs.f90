@@ -35,6 +35,7 @@ use m_duikerstoprofs
    implicit none
 contains
  subroutine setbobs() ! and set blu, weigthed depth at u point
+  use precision, only: dp
     use m_netw
     use m_flowgeom
     use m_flow
@@ -44,8 +45,8 @@ contains
     use m_longculverts
 
     integer L, k1, k2, n1, n2, n, k, k3, LL, kk, Ls, mis, i, numcoords
-    double precision :: bl1, bl2, blv, bln, zn1, zn2, zn3, wn, alf, skewn, xt, yt, xn, yn
-    ! double precision, external :: skewav
+    real(kind=dp) :: bl1, bl2, blv, bln, zn1, zn2, zn3, wn, alf, skewn, xt, yt, xn, yn
+    ! real(kind=dp), external :: skewav
 
     ! First, prepare bed levels at pressure points:
 

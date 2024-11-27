@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine furu_structures()
+  use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_flowtimes
@@ -66,16 +67,16 @@ contains
     integer :: nstrucsg
     integer :: ncompound
 
-    double precision :: as1
-    double precision :: as2
-    double precision :: cmustr
-    double precision :: Cz
-    double precision :: dpt
-    double precision :: maxwidth1
-    double precision :: maxwidth2
-    double precision :: perimeter
-    double precision :: wetdown
-    double precision :: width
+    real(kind=dp) :: as1
+    real(kind=dp) :: as2
+    real(kind=dp) :: cmustr
+    real(kind=dp) :: Cz
+    real(kind=dp) :: dpt
+    real(kind=dp) :: maxwidth1
+    real(kind=dp) :: maxwidth2
+    real(kind=dp) :: perimeter
+    real(kind=dp) :: wetdown
+    real(kind=dp) :: width
 
     logical :: firstiter
     logical :: SkipDimensionChecks

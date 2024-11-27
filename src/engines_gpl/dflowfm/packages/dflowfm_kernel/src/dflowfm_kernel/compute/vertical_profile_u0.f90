@@ -43,6 +43,7 @@ public :: vertical_profile_u0
 contains
 
  subroutine vertical_profile_u0(dzu, womegu, Lb, Lt, kxL, LL)
+  use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_flowtimes
@@ -52,14 +53,14 @@ contains
     use m_filter_data, only: ustar, itype
     implicit none
     integer :: Lb, Lt, kxL, LL
-    double precision :: a(kmxx), b(kmxx), c(kmxx), d(kmxx), e(kmxx), dzu(kxL), womegu(kxL - 1), dzv(kmxx)
+    real(kind=dp) :: a(kmxx), b(kmxx), c(kmxx), d(kmxx), e(kmxx), dzu(kxL), womegu(kxL - 1), dzv(kmxx)
 
     integer :: L, k, k1, k2
-    double precision :: dzLw, vstress, adv, adv1, tt, ustv, st2, agp, dzurho
+    real(kind=dp) :: dzLw, vstress, adv, adv1, tt, ustv, st2, agp, dzurho
 
-    double precision :: gdxi, gdxids, du, cu, ac1, ac2, hup, twot = 0.666666666666d0, slopec
+    real(kind=dp) :: gdxi, gdxids, du, cu, ac1, ac2, hup, twot = 0.666666666666d0, slopec
 
-    double precision :: aa(kmxx), cc(kmxx) ! for five-diaginal matrix
+    real(kind=dp) :: aa(kmxx), cc(kmxx) ! for five-diaginal matrix
     ! aa(i)*u(i-2)+a(i)*u(i-1)+b(i)*u(i)+c(i)*u(i+1)+cc(i)*u(i+2)=d(i)
 
     integer :: jav3

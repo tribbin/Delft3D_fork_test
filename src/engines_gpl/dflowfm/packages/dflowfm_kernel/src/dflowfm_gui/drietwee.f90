@@ -35,9 +35,10 @@ use m_dview
    implicit none
 contains
    subroutine DRIETWEE(XD, YD, ZD, X, Y, Z)
+  use precision, only: dp
       use m_howtoview
 
-      double precision XD, YD, ZD, X, Y, Z
+      real(kind=dp) XD, YD, ZD, X, Y, Z
 
       if (JVIEW == 1) then ! NORMAL
          X = XD

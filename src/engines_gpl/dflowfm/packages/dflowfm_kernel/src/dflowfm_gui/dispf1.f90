@@ -37,17 +37,18 @@ implicit none
 contains
 
       subroutine DISPF1(Y, DX, N, NCOL)
+  use precision, only: dp
          use m_set_col
          use m_movabs
          use m_lnabs
 
-         double precision :: dx
+         real(kind=dp) :: dx
          integer :: i
          integer :: n
          integer :: ncol
-         double precision :: x
+         real(kind=dp) :: x
 !     LAAT EENDIMENSIONALE FUNCTIE ZIEN MET INTERVAL
-         double precision :: Y(N)
+         real(kind=dp) :: Y(N)
          call SETCOL(NCOL)
          X = 0
          call MOVABS(X, Y(1))

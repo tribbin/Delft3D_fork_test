@@ -47,6 +47,7 @@ implicit none
 contains
 
       subroutine EDITNETW(MODE, KEY)
+  use precision, only: dp
          use m_dispnodevals
          use m_disnd
          use m_dcirr
@@ -92,10 +93,10 @@ contains
          integer :: numb
          integer :: nwhat
          integer :: ierror
-         double precision :: xp1
-         double precision :: yp1
-         double precision :: zp1
-         double precision :: xp, yp, zp, ZPP
+         real(kind=dp) :: xp1
+         real(kind=dp) :: yp1
+         real(kind=dp) :: zp1
+         real(kind=dp) :: xp, yp, zp, ZPP
          character TEX * 26
          integer :: iresult
 

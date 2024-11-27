@@ -39,12 +39,13 @@ contains
 
 !> give ucx,ucy magnitude of uc1D, jaPure1D
 subroutine setucxy1D() 
+  use precision, only: dp
 
    use m_flowgeom, only: ndx, lnx, lnxi, kcu, ln
    use m_flow, only: ucx, ucy, uc1d
 
    integer :: n, LL, k2
-   double precision :: uxy
+   real(kind=dp) :: uxy
 
    do n = 1, ndx
       if (uc1D(n) /= 0) then

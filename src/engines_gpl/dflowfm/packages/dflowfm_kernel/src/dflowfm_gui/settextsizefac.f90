@@ -37,10 +37,11 @@ implicit none
 contains
 
       subroutine SETTEXTSIZEFAC(T)
+  use precision, only: dp
          use unstruc_opengl
          use m_textsize
          implicit none
-         double precision :: t
+         real(kind=dp) :: t
 
          if (InOpenGLRendering) then
             call SetTextHeight(int(FontSize * T * TSIZE))

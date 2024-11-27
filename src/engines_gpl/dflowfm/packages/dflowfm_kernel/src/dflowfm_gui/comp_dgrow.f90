@@ -37,26 +37,27 @@ implicit none
 
 contains
 
-double precision function comp_dgrow(height, dheight0, nfac, ierror)
+real(kind=dp) function comp_dgrow(height, dheight0, nfac, ierror)
+  use precision, only: dp
    use m_missing
    use m_comp_h
 
    implicit none
 
-   double precision, intent(in) :: height !< total grid height
-   double precision, intent(in) :: dheight0 !< first grid layer height
+   real(kind=dp), intent(in) :: height !< total grid height
+   real(kind=dp), intent(in) :: dheight0 !< first grid layer height
    integer, intent(in) :: nfac !< number of grid layers
    integer, intent(out) :: ierror !< error (1) or not (0)
 
    integer :: iter
 
-   double precision :: fkp1, fk, fkm1, gkp1, gk, gkm1
+   real(kind=dp) :: fkp1, fk, fkm1, gkp1, gk, gkm1
 
    integer, parameter :: maxiter = 1000
 
-   double precision, parameter :: dtol = 1d-8
-   double precision, parameter :: deps = 1d-2
-   double precision, parameter :: relax = 0.5d0
+   real(kind=dp), parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: deps = 1d-2
+   real(kind=dp), parameter :: relax = 0.5d0
 
    ierror = 1
 

@@ -131,9 +131,9 @@ contains
 
       implicit none
 
-      double precision, intent(in) :: tim !< Current time, should in fact be time1, since the data written is always s1, ucx, etc.
+      real(kind=dp), intent(in) :: tim !< Current time, should in fact be time1, since the data written is always s1, ucx, etc.
 
-      double precision, allocatable :: geom_x(:), geom_y(:)
+      real(kind=dp), allocatable :: geom_x(:), geom_y(:)
       integer, allocatable :: node_count(:)
       integer, allocatable, save :: id_tra(:)
       integer, allocatable, save :: id_hwq(:)
@@ -141,7 +141,7 @@ contains
 
       integer :: ngenstru_, n
 
-      double precision, save :: curtime_split = 0d0 ! Current time-partition that the file writer has open.
+      real(kind=dp), save :: curtime_split = 0d0 ! Current time-partition that the file writer has open.
       integer :: ntot, i, j, ierr, nNodeTot, nNodes, k1, k2, nlinks
 
       character(len=255) :: filename
@@ -159,7 +159,7 @@ contains
 
       integer :: id_twodim, nc_precision
       integer, save :: id_timebds
-      double precision, save :: time_his_prev
+      real(kind=dp), save :: time_his_prev
 
       character(len=4) :: stat_name_postfix
       character(len=11) :: stat_name_filter_postfix
@@ -1430,6 +1430,7 @@ contains
    end function get_dimid_len
 
    subroutine write_station_netcdf_variable(output_variable_item, ihisfile, it_his)
+      use precision, only: dp
       use netcdf, only: nf90_put_var
       use netcdf_utils, only: check_netcdf_error
       use m_reshape, only: reshape_implicit
@@ -1442,7 +1443,7 @@ contains
 
       integer :: local_id_var, station_id_index
       integer, allocatable :: counts(:), starts(:), positions(:)
-      double precision, allocatable :: transformed_data(:)
+      real(kind=dp), allocatable :: transformed_data(:)
 
       local_id_var = output_variable_item%id_var
 

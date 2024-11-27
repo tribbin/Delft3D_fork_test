@@ -34,6 +34,7 @@ module m_get_zlayer_indices
 contains
  !> Gets the local layer numbers for a given grid cell.
  subroutine getzlayerindices(n, nlayb, nrlay)
+  use precision, only: dp
     use m_flowgeom, only: bl
     use m_flow
 
@@ -43,7 +44,7 @@ contains
 
     integer :: k, Ltn, mx ! layerdistribution indexes
 
-    double precision :: fac, dzz
+    real(kind=dp) :: fac, dzz
 
     Ltn = laydefnr(n)
     mx = laymx(Ltn)

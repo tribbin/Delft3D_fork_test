@@ -37,6 +37,7 @@ implicit none
 contains
 
   subroutine TEKLINKNUMS(MET, NCOL)
+  use precision, only: dp
      use m_dhtext
      use m_dhitext
      use M_MISSING
@@ -52,9 +53,9 @@ contains
      integer :: k2
      integer :: key
      integer :: l
-     double precision :: vv
+     real(kind=dp) :: vv
 
-     double precision XP, YP, ZP
+     real(kind=dp) XP, YP, ZP
      call SETCOL(NCOL)
      if (MET == 2 .or. MET >= 6 .and. MET <= 8) then
         LMOD = max(1, NUML / 100)

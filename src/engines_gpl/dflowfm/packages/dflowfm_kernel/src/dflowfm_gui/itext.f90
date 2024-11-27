@@ -37,6 +37,7 @@ implicit none
 contains
 
       subroutine ITEXT(TEX, NX, NY)
+  use precision, only: dp
          use unstruc_colors
          use m_set_col
          use m_draw_text
@@ -44,8 +45,8 @@ contains
          integer :: l
          integer :: nx
          integer :: ny
-         double precision :: x
-         double precision :: y
+         real(kind=dp) :: x
+         real(kind=dp) :: y
 !     grafische tekst op normale text posities
          character TEX * (*)
          X = X1 + (X2 - X1) * dble(NX) / dble(IWS)

@@ -42,7 +42,7 @@ contains
  !use m_flowgeom
  !implicit none
  !integer :: mout, k
- !double precision :: phi, r0
+ !real(kind=dp) :: phi, r0
  !
  !return
  !call inisferic()

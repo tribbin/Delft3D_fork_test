@@ -37,6 +37,7 @@ implicit none
 contains
 
  subroutine isosmoothflownode(k) ! smooth isolines in flow cells
+  use precision, only: dp
     use m_isofil
     use m_flowgeom
     use m_netw, only: rnod
@@ -44,7 +45,7 @@ contains
     integer :: k
 
     integer :: nn4, n
-    double precision :: zz(10)
+    real(kind=dp) :: zz(10)
 
     nn4 = size(nd(k)%nod)
     do n = 1, nn4

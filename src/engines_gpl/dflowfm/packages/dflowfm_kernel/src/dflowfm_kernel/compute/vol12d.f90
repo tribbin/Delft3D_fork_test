@@ -42,6 +42,7 @@ contains
 
 !> vol12d and add area's and volumes of 1D and 2D links, japerim=1: also set conveyance
  subroutine VOL12D(japerim) 
+  use precision, only: dp
     use m_addship2d, only: addship2D
     use m_addlink2d, only: addlink2D
     use m_addlink1dkcu3, only: addlink1Dkcu3
@@ -60,7 +61,7 @@ contains
 
     integer :: L, k1, n, nl1, nl2, i, nstor, n1d
     integer :: loopcount
-    double precision :: sl1, sl2
+    real(kind=dp) :: sl1, sl2
     type(t_storage), dimension(:), pointer :: stors
 
     nl1 = nonlin1D

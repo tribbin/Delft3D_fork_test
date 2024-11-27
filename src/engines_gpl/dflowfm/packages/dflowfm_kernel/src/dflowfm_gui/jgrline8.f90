@@ -35,18 +35,19 @@ use m_polyline
       implicit none
 contains
    subroutine JGRLINE8(X, Y, N) ! TEKEN LIJN, INCL XYMISSEN, GEBRUIK VAN INVIEW EN PROJECTIE
+  use precision, only: dp
 
       use m_missing
       use m_inview2
 
       integer :: n
-      double precision :: X(N), Y(N)
+      real(kind=dp) :: X(N), Y(N)
 
       integer :: i
       integer :: in
       integer :: k
       integer :: l
-      double precision :: XA, YA
+      real(kind=dp) :: XA, YA
       integer, parameter :: KMAX = 4096 ! BEPERKING VAN INTERACTER
       real :: XX(KMAX), YY(KMAX)
 

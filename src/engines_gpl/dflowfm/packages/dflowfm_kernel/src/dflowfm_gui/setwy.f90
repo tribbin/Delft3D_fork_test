@@ -40,11 +40,12 @@ implicit none
 contains
 
       subroutine SETWY(X1, Y1, X2)
+  use precision, only: dp
          use m_inqasp
          use m_sferic
          implicit none
-         double precision :: x1, x2, y1
-         double precision :: asp, x, y, dy
+         real(kind=dp) :: x1, x2, y1
+         real(kind=dp) :: asp, x, y, dy
 
          call INQASP(asp)
          x = 0.5 * (x1 + x2)

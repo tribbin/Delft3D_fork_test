@@ -41,20 +41,21 @@ public :: connect
 contains
 
   subroutine CONNECT(K1, K2, LFAC, R00)
+  use precision, only: dp
      use m_netw
      use gridoperations
      use m_cconstants
      use m_dlength, only: dlength
 
      integer :: K1, K2, LFAC
-     double precision :: R00
+     real(kind=dp) :: R00
      integer :: ja
      integer :: kl
      integer :: kr
      integer :: l
      integer :: ll
      integer :: lnu
-     double precision :: r0
+     real(kind=dp) :: r0
 
      do L = 1, NUML
         if (KN(1, L) == K1 .and. KN(2, L) == K2 .or. &

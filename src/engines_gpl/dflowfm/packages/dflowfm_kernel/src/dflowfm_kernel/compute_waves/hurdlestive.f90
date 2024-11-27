@@ -41,11 +41,12 @@ public :: hurdlestive
 contains
 
  subroutine hurdlestive(U10, fetchL, fetchD, Hsig, Tsig)
+  use precision, only: dp
     use m_physcoef
     implicit none
-    double precision :: U10, fetchL, fetchD, Hsig, Tsig
-    double precision :: rt, ua, fs, ds, aa1, aa2, aa3, aa4
-    double precision, external :: tanhsafe
+    real(kind=dp) :: U10, fetchL, fetchD, Hsig, Tsig
+    real(kind=dp) :: rt, ua, fs, ds, aa1, aa2, aa3, aa4
+    real(kind=dp), external :: tanhsafe
 
     rt = 1.1d0 ! temperature and density  dependent
     ua = 0.71d0 * (rt * U10)**1.23 ! reference wind speed

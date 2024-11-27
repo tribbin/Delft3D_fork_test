@@ -42,11 +42,12 @@ public :: afhouwendammit
 contains
 
  subroutine afhouwendammit()
+  use precision, only: dp
     use m_ship
     use m_shipcoor
     implicit none
     integer :: n, i, j
-    double precision :: sx1, sy1, sx2, sy2, eas, easm, frc
+    real(kind=dp) :: sx1, sy1, sx2, sy2, eas, easm, frc
 
     ! kinetic e = potential e
     ! 0.5*m*u*u = 0.5*eas*dx*dx, u   = 5m/s, dx = 10 m indeuking => eas = deadw   potential energy = kinetic energy
