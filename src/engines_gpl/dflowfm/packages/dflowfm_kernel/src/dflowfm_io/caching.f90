@@ -36,18 +36,18 @@
 
 !> Manages the caching file - store and retrieve the grid-based information.
 module unstruc_caching
-   use precision
+   use precision, only: dp
    use m_observations_data, only: numobs, xobs, yobs, locTpObs, kobs, lobs
    use m_monitoring_crosssections, only: crs, tcrs, deallocCrossSections
-   use md5_checksum
-   use m_alloc
-   use network_data
+   use md5_checksum, only: md5length, md5file
+   use m_alloc, only: realloc
+   use network_data, only: tface, netcell
    use string_module, only: get_version_major_minor_integer
    use m_crspath, only: tcrspath
 
    implicit none
 
-   ! CachingFormatVersion = 1.00
+   ! CachingFormatVersion = 1.01
    integer, parameter :: CacheFormatMajorVersion = 1
    integer, parameter :: CacheFormatMinorVersion = 1
 
@@ -69,11 +69,11 @@ module unstruc_caching
    integer, parameter, private :: key_dry_points_and_areas = 4
    integer, parameter, private :: key_thin_dams = 5
 
-   double precision, dimension(:), allocatable, private :: cache_xobs
-   double precision, dimension(:), allocatable, private :: cache_yobs
-   double precision, dimension(:), allocatable, private :: cache_xpl_fixed
-   double precision, dimension(:), allocatable, private :: cache_ypl_fixed
-   double precision, dimension(:), allocatable, private :: cache_dsl_fixed
+   real(kind=dp), dimension(:), allocatable, private :: cache_xobs
+   real(kind=dp), dimension(:), allocatable, private :: cache_yobs
+   real(kind=dp), dimension(:), allocatable, private :: cache_xpl_fixed
+   real(kind=dp), dimension(:), allocatable, private :: cache_ypl_fixed
+   real(kind=dp), dimension(:), allocatable, private :: cache_dsl_fixed
    integer, dimension(:), allocatable, private :: cache_locTpObs
    integer, dimension(:), allocatable, private :: cache_kobs
    integer, dimension(:), allocatable, private :: cache_lobs
@@ -88,11 +88,11 @@ module unstruc_caching
    integer, private :: cached_nump1d2d_dry
    integer, dimension(:, :), allocatable, private :: cached_lne_dry
    integer, dimension(:), allocatable, private :: cached_lnn_dry
-   double precision, dimension(:), allocatable, private :: cached_xzw_dry
-   double precision, dimension(:), allocatable, private :: cached_yzw_dry
-   double precision, dimension(:), allocatable, private :: cached_bottom_area_dry
-   double precision, dimension(:), allocatable, private :: cached_xz_dry
-   double precision, dimension(:), allocatable, private :: cached_yz_dry
+   real(kind=dp), dimension(:), allocatable, private :: cached_xzw_dry
+   real(kind=dp), dimension(:), allocatable, private :: cached_yzw_dry
+   real(kind=dp), dimension(:), allocatable, private :: cached_bottom_area_dry
+   real(kind=dp), dimension(:), allocatable, private :: cached_xz_dry
+   real(kind=dp), dimension(:), allocatable, private :: cached_yz_dry
    type(tface), dimension(:), allocatable, private :: cached_netcell_dry
 
    type(tcrspath), dimension(:), allocatable, private :: cached_thin_dams
@@ -348,7 +348,7 @@ contains
       !
       read (lun, iostat=ierr) key, number_thin_dams
       if (ierr /= 0 .or. key /= section(key_thin_dams)) then
-         call mess(LEVEL_WARN, 'Failed to thin dams from cache file (none present). Proceeding with normal initialization.')
+         call mess(LEVEL_WARN, 'Failed to load thin dams from cache file (none present). Proceeding with normal initialization.')
          close (lun)
          return
       end if
@@ -769,10 +769,10 @@ contains
 !> Copy the cached information on fixed weirs.
    subroutine copyCachedFixedWeirs(npl, xpl, ypl, number_links, iLink, iPol, dSL, success)
       integer, intent(in) :: npl !< Number of points in the polylines making up the weirs
-      double precision, dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
-      double precision, dimension(:), intent(in) :: ypl !< Y-coordinates of the polyline points for the weirs
+      real(kind=dp), dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
+      real(kind=dp), dimension(:), intent(in) :: ypl !< Y-coordinates of the polyline points for the weirs
       integer, intent(out) :: number_links !< Number of flow links that was cached
-      double precision, dimension(:), intent(out) :: dSL !< Intersection distance of each flow link on polyline segments that were cached
+      real(kind=dp), dimension(:), intent(out) :: dSL !< Intersection distance of each flow link on polyline segments that were cached
       integer, dimension(:), intent(out) :: iLink !< Flow link numbers that were cached
       integer, dimension(:), intent(out) :: iPol !< Intersected polyline segment numbers that were cached
       logical, intent(out) :: success !< The cached information was compatible if true
@@ -806,9 +806,9 @@ contains
    subroutine cacheFixedWeirs(npl, xpl, ypl, number_links, iLink, iPol, dSL)
       integer, intent(in) :: npl !< Number of points in the polylines making up the weirs
       integer, intent(in) :: number_links !< Number of flow links that is to be cached
-      double precision, dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
-      double precision, dimension(:), intent(in) :: ypl !< Y-coordinates of the polyline points for the weirs
-      double precision, dimension(:), intent(in) :: dSL !< Intersection distance of each flow link on polyline segments that are to be cached
+      real(kind=dp), dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
+      real(kind=dp), dimension(:), intent(in) :: ypl !< Y-coordinates of the polyline points for the weirs
+      real(kind=dp), dimension(:), intent(in) :: dSL !< Intersection distance of each flow link on polyline segments that are to be cached
       integer, dimension(:), intent(in) :: iLink !< Flow link numbers to be cached
       integer, dimension(:), intent(in) :: iPol !< Intersected polyline segment number to be cached
 
@@ -825,11 +825,11 @@ contains
       integer, intent(out) :: nump1d2d !< nr. of 1D and 2D netcells (2D netcells come first)
       integer, dimension(:, :), intent(out) :: lne !< (2,numl) Edge administration 1=nd1 , 2=nd2, rythm of kn flow nodes between/next to which this net link lies.
       integer, dimension(:), intent(inout) :: lnn !< (numl) Nr. of cells in which link participates (ubound for non-dummy values in lne(:,L))
-      double precision, dimension(:), intent(inout) :: bottom_area !< [m2] bottom area, if < 0 use table in node type {"location": "face", "shape": ["ndx"]}
-      double precision, dimension(:), intent(out) :: xz !< [m/degrees_east] waterlevel point / cell centre, x-coordinate (m) {"location": "face", "shape": ["ndx"]}
-      double precision, dimension(:), intent(out) :: yz !< [m/degrees_north] waterlevel point / cell centre, y-coordinate (m) {"location": "face", "shape": ["ndx"]}
-      double precision, dimension(:), intent(out) :: xzw !< [m] x-coordinate, centre of gravity {"shape": ["nump"]}
-      double precision, dimension(:), intent(out) :: yzw !< [m] y-coordinate, centre of gravity {"shape": ["nump"]}
+      real(kind=dp), dimension(:), intent(inout) :: bottom_area !< [m2] bottom area, if < 0 use table in node type {"location": "face", "shape": ["ndx"]}
+      real(kind=dp), dimension(:), intent(out) :: xz !< [m/degrees_east] waterlevel point / cell centre, x-coordinate (m) {"location": "face", "shape": ["ndx"]}
+      real(kind=dp), dimension(:), intent(out) :: yz !< [m/degrees_north] waterlevel point / cell centre, y-coordinate (m) {"location": "face", "shape": ["ndx"]}
+      real(kind=dp), dimension(:), intent(out) :: xzw !< [m] x-coordinate, centre of gravity {"shape": ["nump"]}
+      real(kind=dp), dimension(:), intent(out) :: yzw !< [m] y-coordinate, centre of gravity {"shape": ["nump"]}
       type(tface), dimension(:), intent(inout) :: netcell !< (nump1d2d) 1D&2D net cells (nodes and links)
       logical, intent(out) :: success !< The cached information was compatible if true
 
@@ -881,11 +881,11 @@ contains
       integer, intent(in) :: nump1d2d !< nr. of 1D and 2D netcells (2D netcells come first)
       integer, dimension(:, :), intent(in) :: lne !< (2,numl) Edge administration 1=nd1 , 2=nd2, rythm of kn flow nodes between/next to which this net link lies.
       integer, dimension(:), intent(in) :: lnn !< (numl) Nr. of cells in which link participates (ubound for non-dummy values in lne(:,L))
-      double precision, dimension(:), intent(in) :: bottom_area !< [m2] bottom area, if < 0 use table in node type {"location": "face", "shape": ["ndx"]}
-      double precision, dimension(:), intent(in) :: xz !< [m/degrees_east] waterlevel point / cell centre, x-coordinate (m) {"location": "face", "shape": ["ndx"]}
-      double precision, dimension(:), intent(in) :: yz !< [m/degrees_north] waterlevel point / cell centre, y-coordinate (m) {"location": "face", "shape": ["ndx"]}
-      double precision, dimension(:), intent(in) :: xzw !< [m] x-coordinate, centre of gravity {"shape": ["nump"]}
-      double precision, dimension(:), intent(in) :: yzw !< [m] y-coordinate, centre of gravity {"shape": ["nump"]}
+      real(kind=dp), dimension(:), intent(in) :: bottom_area !< [m2] bottom area, if < 0 use table in node type {"location": "face", "shape": ["ndx"]}
+      real(kind=dp), dimension(:), intent(in) :: xz !< [m/degrees_east] waterlevel point / cell centre, x-coordinate (m) {"location": "face", "shape": ["ndx"]}
+      real(kind=dp), dimension(:), intent(in) :: yz !< [m/degrees_north] waterlevel point / cell centre, y-coordinate (m) {"location": "face", "shape": ["ndx"]}
+      real(kind=dp), dimension(:), intent(in) :: xzw !< [m] x-coordinate, centre of gravity {"shape": ["nump"]}
+      real(kind=dp), dimension(:), intent(in) :: yzw !< [m] y-coordinate, centre of gravity {"shape": ["nump"]}
       type(tface), dimension(:), intent(in) :: netcell !< (nump1d2d) 1D&2D net cells (nodes and links)
       integer number_nodes
       integer number_links
