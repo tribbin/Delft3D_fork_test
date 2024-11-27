@@ -45,7 +45,7 @@ subroutine thindams_on_netgeom()
    use m_find_crossed_links_kdtree2
    use m_get_link_neighboring_cell_coords
    use m_append_crspath_to_pol
-   use unstruc_caching, only: cacheRetrieved, cache_thin_dams, copy_cached_thin_dams
+   use unstruc_caching, only: cache_retrieved, cache_thin_dams, copy_cached_thin_dams
    implicit none
 
    double precision, dimension(:), allocatable :: dSL
@@ -73,7 +73,7 @@ subroutine thindams_on_netgeom()
 
    ierror = 1
 
-   if (cacheRetrieved()) then
+   if (cache_retrieved()) then
       call copy_cached_thin_dams(thd, cache_success)
    end if
 

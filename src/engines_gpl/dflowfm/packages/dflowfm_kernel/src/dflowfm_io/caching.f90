@@ -136,9 +136,9 @@ contains
    end subroutine default_caching
 
 !> Check that the caching file contained compatible information
-   logical function cacheRetrieved()
-      cacheRetrieved = cache_success
-   end function cacheRetrieved
+   logical function cache_retrieved()
+      cache_retrieved = cache_success
+   end function cache_retrieved
 
 !> Load the information from the caching file - if any.
    subroutine load_caching_file(base_name, net_file, use_caching)
@@ -306,7 +306,7 @@ contains
       allocate (cache_cross_sections(number))
       allocate (cache_linklist(number_links))
       allocate (cache_ipol(number_links))
-      call loadCachedSections(lun, cache_linklist, cache_ipol, cache_cross_sections, ierr)
+      call load_cached_cross_sections(lun, cache_linklist, cache_ipol, cache_cross_sections, ierr)
       if (ierr /= 0) then
          call mess(LEVEL_WARN, 'Failed to load cross sections from cache file (invalid data). Proceeding with normal initialization.')
          close (lun)
@@ -440,7 +440,7 @@ contains
    end subroutine load_netcell
 
 !> Load cached cross sections from a caching file.
-   subroutine loadCachedSections(lun, linklist, ipol, sections, ierr)
+   subroutine load_cached_cross_sections(lun, linklist, ipol, sections, ierr)
       integer, intent(in) :: lun !< LU-number of the caching file
       integer, dimension(:), intent(out) :: linklist !< Cached list of crossed flow links
       integer, dimension(:), intent(out) :: ipol !< Cached polygon administration
@@ -497,17 +497,17 @@ contains
             exit
          end if
       end do
-   end subroutine loadCachedSections
+   end subroutine load_cached_cross_sections
 
 !> Save the link list of crossed flow links for later storage in the caching file.
-   subroutine saveLinklist(length, linklist, ipol)
+   subroutine save_link_list(length, linklist, ipol)
       integer, intent(in) :: length !< Length of the list of crossed flow links
       integer, dimension(:), intent(in) :: linklist !< List of crossed flow links to be saved
       integer, dimension(:), intent(in) :: ipol !< Polygon administration
 
       cache_linklist = linklist(1:length)
       cache_ipol = ipol(1:length)
-   end subroutine saveLinklist
+   end subroutine save_link_list
 
 !> Store the grid-based information in the caching file.
    subroutine store_caching_file(base_name, use_caching)
@@ -580,7 +580,7 @@ contains
          allocate (cache_ipol(0))
       end if
       write (lun) section(key_cross_sections), size(crs)
-      call storeSections(lun, crs, cache_linklist, cache_ipol)
+      call store_cross_sections(lun, crs, cache_linklist, cache_ipol)
 
       !
       ! Store the data for the dry points and areas
@@ -650,7 +650,7 @@ contains
    end subroutine store_netcell
 
 !> Store cross sections to a caching file.
-   subroutine storeSections(lun, sections, linklist, ipol)
+   subroutine store_cross_sections(lun, sections, linklist, ipol)
       integer, intent(in) :: lun !< LU-number of the caching file
       type(tcrs), dimension(:), intent(in) :: sections !< Array of cross-sections to be filled
       integer, dimension(:), intent(in) :: linklist !< List of crossed flow links
@@ -681,10 +681,10 @@ contains
             end if
          end if
       end do
-   end subroutine storeSections
+   end subroutine store_cross_sections
 
 !> Copy the cached network information for observation points.
-   subroutine copyCachedObservations(success)
+   subroutine copy_cached_observations(success)
       logical, intent(out) :: success !< The cached information was compatible if true
 
       success = .false.
@@ -707,10 +707,10 @@ contains
             lobs(1:numobs) = cache_lobs
          end if
       end if
-   end subroutine copyCachedObservations
+   end subroutine copy_cached_observations
 
 !> Copy the cached network information for cross-sections
-   subroutine copyCachedCrossSections(linklist, ipol, success)
+   subroutine copy_cached_cross_sections(linklist, ipol, success)
       integer, dimension(:), allocatable, intent(out) :: linklist !< Cached list of crossed flow links
       integer, dimension(:), allocatable, intent(out) :: ipol !< Polygon administration
       logical, intent(out) :: success !< The cached information was compatible if true
@@ -764,10 +764,10 @@ contains
             end do
          end if
       end if
-   end subroutine copyCachedCrossSections
+   end subroutine copy_cached_cross_sections
 
 !> Copy the cached information on fixed weirs.
-   subroutine copyCachedFixedWeirs(npl, xpl, ypl, number_links, iLink, iPol, dSL, success)
+   subroutine copy_cached_fixed_weirs(npl, xpl, ypl, number_links, iLink, iPol, dSL, success)
       integer, intent(in) :: npl !< Number of points in the polylines making up the weirs
       real(kind=dp), dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
       real(kind=dp), dimension(:), intent(in) :: ypl !< Y-coordinates of the polyline points for the weirs
@@ -798,12 +798,12 @@ contains
             dSL(1:number_links) = cache_dSL_fixed
          end if
       end if
-   end subroutine copyCachedFixedWeirs
+   end subroutine copy_cached_fixed_weirs
 
-!> cacheFixedWeirs:
+!> cache_fixed_weirs:
 !>     The arrays for fixed weirs are partly local - they do not reside in a
 !>     module, so explicitly store them when we have the actual data
-   subroutine cacheFixedWeirs(npl, xpl, ypl, number_links, iLink, iPol, dSL)
+   subroutine cache_fixed_weirs(npl, xpl, ypl, number_links, iLink, iPol, dSL)
       integer, intent(in) :: npl !< Number of points in the polylines making up the weirs
       integer, intent(in) :: number_links !< Number of flow links that is to be cached
       real(kind=dp), dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
@@ -817,7 +817,7 @@ contains
       cache_iLink_fixed = iLink(1:number_links)
       cache_iPol_fixed = iPol(1:number_links)
       cache_dSL_fixed = dSL(1:number_links)
-   end subroutine cacheFixedWeirs
+   end subroutine cache_fixed_weirs
 
 !> Copy grid information, where dry points and areas have been deleted, from cache file:
    subroutine copy_cached_netgeom_without_dry_points_and_areas(nump, nump1d2d, lne, lnn, bottom_area, xz, yz, xzw, yzw, netcell, success)

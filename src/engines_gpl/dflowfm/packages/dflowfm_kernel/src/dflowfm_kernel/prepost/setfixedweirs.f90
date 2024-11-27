@@ -166,15 +166,15 @@ subroutine setfixedweirs()
    allocate (iLcr(Lnx)); Ilcr = 0
    allocate (ipol(Lnx))
    allocate (dSL(Lnx))
-   if (cacheRetrieved()) then
+   if (cache_retrieved()) then
       ierror = 0
-      call copyCachedFixedWeirs(npl, xpl, ypl, numcrossedLinks, iLink, iPol, dSL, success)
+      call copy_cached_fixed_weirs(npl, xpl, ypl, numcrossedLinks, iLink, iPol, dSL, success)
    else
       success = .false.
    end if
    if (.not. success) then
       call find_crossed_links_kdtree2(treeglob, NPL, XPL, YPL, 2, Lnx, 2, numcrossedLinks, iLink, iPol, dSL, ierror)
-      call cacheFixedWeirs(npl, xpl, ypl, numcrossedLinks, iLink, iPol, dSL)
+      call cache_fixed_weirs(npl, xpl, ypl, numcrossedLinks, iLink, iPol, dSL)
    end if
    call wall_clock_time(t_extra(2, 3))
 
