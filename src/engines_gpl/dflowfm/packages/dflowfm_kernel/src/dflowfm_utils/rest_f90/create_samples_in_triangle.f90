@@ -32,7 +32,7 @@
 
 !> create samples in triangle
 subroutine create_samples_in_triangle()
-  use precision, only: dp
+   use precision, only: dp
 
    use m_polygon
    use m_samples

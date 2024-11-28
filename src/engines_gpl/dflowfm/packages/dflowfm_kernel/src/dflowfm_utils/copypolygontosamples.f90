@@ -31,7 +31,7 @@
 !
 
    subroutine COPYPOLYGONTOSAMPLES()
-  use precision, only: dp
+      use precision, only: dp
       use M_SAMPLES
       use M_POLYGON
       use m_missing

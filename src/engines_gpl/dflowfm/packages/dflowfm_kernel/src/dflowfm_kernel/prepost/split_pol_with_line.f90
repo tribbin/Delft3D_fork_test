@@ -32,7 +32,7 @@
 
  !> split polygon with line through two points (xa,ya) and (xb,yb)
  subroutine split_pol_with_line(xa, ya, xb, yb, idir)
-  use precision, only: dp
+    use precision, only: dp
     use m_polygon
     use m_alloc
     use m_missing
@@ -131,7 +131,7 @@
  contains
 
     logical function isleft(x, y) !< is left-hand side of line (given some orientation)
-  use precision, only: dp
+       use precision, only: dp
        real(kind=dp), intent(in) :: x, y
 
        isleft = .false.
@@ -147,7 +147,7 @@
 
 !>  intersect line segment 1-2 with line through points a and b
     subroutine intersect(x1, y1, x2, y2, xi, yi)
-  use precision, only: dp
+       use precision, only: dp
        implicit none
 
        real(kind=dp), intent(in) :: x1, y1, x2, y2 !< line start and end coordinates

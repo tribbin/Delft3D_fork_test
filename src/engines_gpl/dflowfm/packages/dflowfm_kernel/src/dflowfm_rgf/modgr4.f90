@@ -31,7 +31,7 @@
 !
 
       subroutine MODGR4(NUMP, LANDORSPLINE)
-  use precision, only: dp
+         use precision, only: dp
          use m_grid
          use m_landboundary
          use M_SPLINES, only: mcs, splnump => nump

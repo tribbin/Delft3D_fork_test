@@ -31,7 +31,7 @@
 !
 
 module m_sobekdfm !
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
    private
@@ -185,7 +185,7 @@ contains
 
    !> Set flooding thresholds for 1d2d interfaces/boundaries
    subroutine sethu_1d2d()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowparameters
       use m_flowgeom
@@ -336,7 +336,7 @@ contains
 
 !
    subroutine compute_1d2d_coefficients()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_reduce
       use m_flowparameters

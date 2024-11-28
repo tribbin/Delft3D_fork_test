@@ -31,7 +31,7 @@
 !
 
        subroutine TOSPLINE(XX, YY, XV, YV)
-  use precision, only: dp
+          use precision, only: dp
           use M_SPLINES
           use m_spline
           use m_get_ij

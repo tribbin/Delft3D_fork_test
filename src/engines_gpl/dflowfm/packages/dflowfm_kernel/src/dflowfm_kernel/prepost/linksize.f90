@@ -32,7 +32,7 @@
 
  !> compute the length of a netlink
  real(kind=dp) function linksize(L)
-  use precision, only: dp
+    use precision, only: dp
     use m_netw
     use geometry_module, only: dbdistance
     use m_missing, only: dmiss

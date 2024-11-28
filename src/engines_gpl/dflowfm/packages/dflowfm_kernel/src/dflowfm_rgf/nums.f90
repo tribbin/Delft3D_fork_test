@@ -31,7 +31,7 @@
 !
 
       subroutine NUMS(X, mmax, nmax, MC, NC)
-  use precision, only: dp
+         use precision, only: dp
 !     GEEF AANTAL SPLINES MC EN MAXIMUM AANTAL PUNTEN OP SPLINE NC
 !      USE DIMENS
          use m_numpold

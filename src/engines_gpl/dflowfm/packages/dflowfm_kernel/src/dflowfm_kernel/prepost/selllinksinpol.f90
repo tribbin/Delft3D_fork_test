@@ -31,7 +31,7 @@
 !
 
    subroutine SELLLINKSINPOL(LIN, N)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_missing, only: dmiss, jins
       use geometry_module, only: pinpok

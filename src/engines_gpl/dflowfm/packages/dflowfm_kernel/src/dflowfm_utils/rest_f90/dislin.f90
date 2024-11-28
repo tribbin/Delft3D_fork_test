@@ -34,7 +34,7 @@ module m_dislin
 contains
 !>     AFSTAND VAN PUNT XX,YY TOT LIJN MET PARM TV
    real(kind=dp) function DISLIN(X, Y, N, XX, YY, TV)
-  use precision, only: dp
+      use precision, only: dp
 
       use geometry_module, only: dbdistance
       use m_missing, only: dmiss

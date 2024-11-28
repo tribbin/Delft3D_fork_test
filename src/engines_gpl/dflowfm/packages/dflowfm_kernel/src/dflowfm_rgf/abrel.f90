@@ -31,7 +31,7 @@
 !
 
       subroutine ABREL(X1, Y1, B1R, NFAC)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: nfac
          real(kind=dp) :: X1(NFAC + 1), Y1(NFAC + 1), B1R(NFAC + 1)

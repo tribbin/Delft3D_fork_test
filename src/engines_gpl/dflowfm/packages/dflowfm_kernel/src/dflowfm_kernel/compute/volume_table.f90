@@ -32,7 +32,7 @@
 
 !> Module for using volume tables at 1d nodes for the computation of the total volume of water in a node.
 module m_VolumeTables
-  use precision, only: dp
+   use precision, only: dp
    use messageHandling
    use m_GlobalParameters
 
@@ -152,7 +152,7 @@ contains
 
    !> Retrieve the volume for given volume table and water level
    real(kind=dp) function getVolumeVoltable(this, level)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_channel_flow
       class(t_voltable) :: this
       real(kind=dp), intent(in) :: level !< water level
@@ -185,7 +185,7 @@ contains
 
    !> Retrieve the surface area for given volume table and water level
    real(kind=dp) function getSurfaceVoltable(this, level)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_channel_flow
 
       class(t_voltable) :: this
@@ -218,7 +218,7 @@ contains
 
    !> Returns the volume which is the result of a decreasing width for a given water level
    real(kind=dp) function getVolumeDecreasingVoltable(this, level)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_channel_flow
 
       class(t_voltable) :: this
@@ -236,7 +236,7 @@ contains
 
    !> Retrieve the surface area for given volume table and water level
    real(kind=dp) function getSurfaceDecreasingVoltable(this, level)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_channel_flow
 
       class(t_voltable) :: this
@@ -407,7 +407,7 @@ contains
    !> ** number of summerdikes
    !> * allocate the arrays in the volume tables.
    subroutine initializeVltb(vltb)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters
       use m_flowgeom
       use unstruc_channel_flow
@@ -522,7 +522,7 @@ contains
 
    !> Add the storage of storage nodes to the volume tables.
    subroutine addStorageToVltb(vltb)
-  use precision, only: dp
+      use precision, only: dp
       use m_Storage
       use m_flowgeom
       use m_flowparameters
@@ -602,7 +602,7 @@ contains
 
    !> Add the volumes for flow link Lorg to the volume tables.
    subroutine addVolumeAtLinkToVltb(Lorg, n, summerDikeIndex, dir, vltb, vltbOnLinks)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use unstruc_channel_flow
       use m_flowparameters

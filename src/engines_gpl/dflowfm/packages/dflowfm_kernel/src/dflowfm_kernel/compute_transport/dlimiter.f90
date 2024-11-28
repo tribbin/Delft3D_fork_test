@@ -30,12 +30,12 @@
 !
 !
 module m_dlimiter
-    implicit none
+   implicit none
 contains
 
 !> limiter function
    real(kind=dp) function dlimiter(d1, d2, limtyp)
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp), intent(in) :: d1, d2 !< left and right slopes
       integer, intent(in) :: limtyp !< first order upwind (0) or MC (>0)

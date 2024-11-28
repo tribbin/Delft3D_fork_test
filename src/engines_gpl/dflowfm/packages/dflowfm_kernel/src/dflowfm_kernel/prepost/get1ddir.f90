@@ -36,7 +36,7 @@
  !! link connected (i.e., 1D endpoint, maybe connected with kcu=3
  !! type link to 2D grid cell).
  subroutine get1Ddir(n1, xt, yt)
-  use precision, only: dp
+    use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_sferic, only: jsferic, jasfer3D

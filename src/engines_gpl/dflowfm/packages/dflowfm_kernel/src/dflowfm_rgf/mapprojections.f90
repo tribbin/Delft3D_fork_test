@@ -31,7 +31,7 @@
 !
 
       subroutine MAPPROJECTIONS(IT, JA)
-  use precision, only: dp
+         use precision, only: dp
          use m_converparameters
          use M_MAPPROPARAMETERS
          use M_SFERIC

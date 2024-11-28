@@ -36,7 +36,7 @@ contains
 
    !> Initialize external forcings from an 'old' format ext file. Only to be called once as part of fm_initexternalforcings.
    module subroutine init_old(iresult)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_addsorsin, only: addsorsin
       use m_add_tracer, only: add_tracer
@@ -1363,7 +1363,7 @@ contains
 
    !> Initialization of all extra quantities not covered by initialize_ext_old, such as structures and laterals. Only called as part of fm_initexternalforcings
    module subroutine init_misc(iresult)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: ln, xz, yz, iadv, ba, wu
       use unstruc_model, only: md_extfile_dir
       use timespace, only: uniform, spaceandtime, readprovider
@@ -1375,7 +1375,7 @@ contains
       use m_sobekdfm, only: nbnd1d2d
       use m_partitioninfo, only: is_ghost_node, jampi, reduce_sum
       use m_laterals, only: numlatsg, ILATTP_1D, ILATTP_2D, ILATTP_ALL, kclat, nnlat, n1latsg, n2latsg, balat, qplat, lat_ids, &
-         initialize_lateraldata, apply_transport
+                            initialize_lateraldata, apply_transport
       use m_sobekdfm, only: init_1d2d_boundary_points
       use unstruc_files, only: resolvepath
       use m_togeneral, only: togeneral

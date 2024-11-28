@@ -34,13 +34,13 @@
                         Y1, Y2, Y3, Y4, &
                         mmax, nmax, imax, &
                         MFAC, NFAC, XRH, YRH)
-        use precision, only: dp
+         use precision, only: dp
          use m_missing
          implicit none
          integer :: mmax, nmax, imax, mfac, nfac
          real(kind=dp) :: X1(IMAX), X2(IMAX), X3(IMAX), X4(IMAX), XRH(MMAX, NMAX), &
-            Y1(IMAX), Y2(IMAX), Y3(IMAX), Y4(IMAX), YRH(MMAX, NMAX), &
-            B1R(IMAX), B2R(IMAX), A1R(IMAX), A2R(IMAX)
+                          Y1(IMAX), Y2(IMAX), Y3(IMAX), Y4(IMAX), YRH(MMAX, NMAX), &
+                          B1R(IMAX), B2R(IMAX), A1R(IMAX), A2R(IMAX)
 
          integer :: I, J
          real(kind=dp) :: A1, A2, B1, B2, D, DX, DY, AIJ, BIJ, EX, EY, XA, YA, XB, YB, DEXY

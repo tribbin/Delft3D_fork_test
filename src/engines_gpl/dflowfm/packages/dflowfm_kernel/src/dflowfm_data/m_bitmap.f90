@@ -35,7 +35,7 @@
 !---------------------------------------------------------------------------------------------------------------------------------
 ! rest.f90
 module M_BITMAP
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer, allocatable, save :: IPIX(:)
    integer, save :: MXP, NXP

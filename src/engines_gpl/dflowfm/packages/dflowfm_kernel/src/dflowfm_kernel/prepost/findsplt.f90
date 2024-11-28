@@ -31,7 +31,7 @@
 !
 
       subroutine FINDSPLT(X, Y, X2, Y2, MMAX, MFAC, MCS, TS, DS, XS, YS, JA)
-  use precision, only: dp
+         use precision, only: dp
          use m_splint
          implicit none
          integer :: ja

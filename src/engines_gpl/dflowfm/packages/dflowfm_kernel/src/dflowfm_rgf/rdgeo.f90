@@ -31,7 +31,7 @@
 !
 
     subroutine RDGEO(xrd, yrd, xgeo, ygeo, JAPARIJS)
-  use precision, only: dp
+       use precision, only: dp
        use m_sferic
        implicit none
        integer :: japarijs

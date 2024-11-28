@@ -897,7 +897,7 @@ end subroutine fm_wq_processes_ini_proc
 
 !! @return Integer result status (0 if successful)
 subroutine dfm_waq_initexternalforcings(iresult)
-use precision, only: dp
+   use precision, only: dp
    use fm_external_forcings
    use m_alloc
    use fm_external_forcings_data
@@ -921,7 +921,7 @@ use precision, only: dp
    use m_find_name, only: find_name
 
    implicit none
-   
+
    integer, intent(out) :: iresult
 
    character(len=256) :: filename, sourcemask
@@ -1300,7 +1300,7 @@ subroutine add_wqbot(wqbotnam, wqbotunit, iwqbot, janew)
 end subroutine add_wqbot
 
 subroutine fm_wq_processes_step(dt, time)
-  use precision, only: dp
+   use precision, only: dp
    use m_fm_wq_processes
    use m_wq_processes_proces
    use m_mass_balance_areas
@@ -1363,7 +1363,7 @@ end subroutine fm_wq_processes_step
 
 subroutine copy_data_from_fm_to_wq_processes(time)
    !  copy data from D-FlowFM to WAQ
-  use precision, only: dp
+   use precision, only: dp
    use m_getfetch, only: getfetch
    use m_getkbotktopmax
    use m_flowgeom, only: Ndxi, ba
@@ -1691,7 +1691,7 @@ end subroutine copy_data_from_fm_to_wq_processes
 
 subroutine copy_data_from_wq_processes_to_fm(dt, tim)
    !  copy data from WAQ to D-FlowFM
-  use m_getkbotktopmax
+   use m_getkbotktopmax
    use m_missing, only: dmiss
    use m_flowgeom, only: Ndxi, ba
    use m_flow, only: vol1
@@ -1704,7 +1704,7 @@ subroutine copy_data_from_wq_processes_to_fm(dt, tim)
    use timers
 
    implicit none
-   
+
    real(kind=dp), intent(in) :: dt
    real(kind=dp), intent(in) :: tim
 
@@ -1837,7 +1837,7 @@ logical function wq_processes_mydomain(iseg)
 end function wq_processes_mydomain
 
 logical function reduce_sum_wq_processes(size_wq_processes_data, wq_processes_data)
-  use precision, only: dp
+   use precision, only: dp
 
    use m_partitioninfo
 

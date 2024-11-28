@@ -32,7 +32,7 @@
 
 ! update cellmask from samples
 subroutine samples_to_cellmask()
-  use precision, only: dp
+   use precision, only: dp
 
    use network_data
    use m_samples

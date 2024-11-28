@@ -32,7 +32,7 @@
 
 !< Reduce runup values over domains
 subroutine updateValuesOnRunupGauges_mpi()
-  use precision, only: dp
+   use precision, only: dp
    use m_monitoring_runupgauges
    use m_partitioninfo
    use m_timer

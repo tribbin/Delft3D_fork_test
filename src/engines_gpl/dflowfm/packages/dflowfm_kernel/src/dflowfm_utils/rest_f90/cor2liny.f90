@@ -32,7 +32,7 @@
 
 !>    return y-component in link coordinate frame of a vector in corner (netnode) coordinate frame
       real(kind=dp) function cor2liny(L, i12, ux, uy)
-  use precision, only: dp
+         use precision, only: dp
          use m_flowgeom, only: csbn, snbn
          use m_sferic
          implicit none

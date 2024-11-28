@@ -405,7 +405,7 @@ contains
    end subroutine get_mbainputname
 
    subroutine mba_update(time)
-  use precision, only: dp
+      use precision, only: dp
       use m_mass_balance_areas
       use m_fm_wq_processes
       use m_partitioninfo
@@ -536,7 +536,7 @@ contains
    end subroutine mba_update
 
    subroutine mba_final(time)
-  use precision, only: dp
+      use precision, only: dp
       use m_mass_balance_areas
       use m_fm_wq_processes
       use m_partitioninfo
@@ -587,7 +587,7 @@ contains
    end subroutine mba_final
 
    subroutine mba_sum(nombs, nomba, mbadef, mbavolume, mbamass)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_fm_wq_processes, only: numwqbots, wqbot
       use m_partitioninfo
@@ -626,7 +626,7 @@ contains
    end subroutine mba_sum
 
    subroutine mba_sum_morphology(lsedtot, nomba, mbadef, mbamorfac, mbabedmass, mbabedshortmass, mbafluffmass, mbamassreduce)
-  use precision, only: dp
+      use precision, only: dp
       use m_partitioninfo, only: jampi, idomain, my_rank
       use m_flowgeom, only: ndxi, ba
       use m_fm_erosed, only: lsed, stmpar, mfluff, morfac, iflufflyr
@@ -696,7 +696,7 @@ contains
    end subroutine mba_sum_morphology
 
    subroutine mba_sum_area(nomba, mbadef, mbaba)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_partitioninfo
       use m_flowgeom
@@ -720,7 +720,7 @@ contains
    end subroutine mba_sum_area
 
    subroutine comp_horflowmba()
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: Lbot, Ltop, q1
       use m_flowtimes, only: dts
       use fm_external_forcings_data, only: numsrc, qsrc
@@ -730,8 +730,8 @@ contains
       integer :: LL, L, Lb, Lt, k1, k2, i, n
       real(kind=dp) :: qsrck
 
-      integer(4) :: ithndl =  0
-      
+      integer(4) :: ithndl = 0
+
       if (timon) call timstrt("comp_horflowmba", ithndl)
 
       do i = 1, nombaln
@@ -768,7 +768,7 @@ contains
    end subroutine comp_horflowmba
 
    subroutine comp_horfluxmba()
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: Lbot, Ltop
       use m_flowtimes, only: dts
       use m_mass_balance_areas
@@ -821,7 +821,7 @@ contains
    end subroutine comp_horfluxmba
 
    subroutine comp_bedload_fluxmba()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowtimes, only: dts
       use m_mass_balance_areas, only: nombaln, mbalnlist, mbalnfromto, mbasedflux
       use m_fm_erosed, only: lsedtot, e_sbn, morfac
@@ -1077,7 +1077,7 @@ contains
    end subroutine add_name
 
    subroutine add_values(bal_values, ii, values, jalump, has_entry)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp), dimension(:, :), intent(inout) :: bal_values !< array containing the flux values
       integer, intent(inout) :: ii !< last written index into flow_or_flux
       real(kind=dp), dimension(2), intent(in) :: values !< vector
@@ -1111,7 +1111,7 @@ contains
    end subroutine add_values
 
    subroutine add_value_change(bal_values, ii, val_beg, val_end)
-  use precision, only: dp
+      use precision, only: dp
       use m_mass_balance_areas, only: DIR_FROM, DIR_TO
 
       real(kind=dp), dimension(:, :), intent(inout) :: bal_values !< array containing the flux values
@@ -1264,7 +1264,7 @@ contains
    end subroutine mba_prepare_names_flows
 
    subroutine mba_prepare_values_flows(imba, overall_balance)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: jatem, jambalumpmba, jambalumpbnd, jambalumpsrc
       use m_wind, only: jarain, jaevap
       use fm_external_forcings_data, only: numsrc
@@ -1405,7 +1405,7 @@ contains
    end subroutine mba_prepare_names_flows_whole_model
 
    subroutine mba_prepare_values_flows_whole_model(overall_balance)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: jatem, jambalumpbnd, jambalumpsrc
       use m_wind, only: jarain, jaevap
       use fm_external_forcings_data, only: numsrc
@@ -1632,7 +1632,7 @@ contains
    end subroutine mba_prepare_names_fluxes
 
    subroutine mba_prepare_values_fluxes(imbs, imba, overall_balance)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: jatem, jambalumpmba, jambalumpbnd, jambalumpsrc, jambalumpproc
       use fm_external_forcings_data, only: numsrc
       use m_flowparameters, only: jatem
@@ -1922,7 +1922,7 @@ contains
    end subroutine mba_prepare_names_fluxes_whole_model
 
    subroutine mba_prepare_values_fluxes_whole_model(imbs, overall_balance)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: jatem, jambalumpbnd, jambalumpsrc, jambalumpproc
       use fm_external_forcings_data, only: numsrc
       use m_flowparameters, only: jatem
@@ -2079,7 +2079,7 @@ contains
    end subroutine mba_prepare_values_fluxes_whole_model
 
    subroutine mba_write_netcdf_header()
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_netcdf, only: unc_create, unc_close
       use unstruc_files, only: defaultFilename
       use m_flowtimes, only: Tudunitstr
@@ -2309,7 +2309,7 @@ contains
    end function mba_write_netcdf_flux_names
 
    subroutine mba_write_netcdf_step()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowtimes, only: time1
       use m_mass_balance_areas
       use netcdf, only: nf90_write, nf90_put_var, nf90_strerror
@@ -2409,7 +2409,7 @@ contains
    end subroutine mba_write_netcdf_final
 
    subroutine mba_write_bal_time_step(lunbal, timestart, timeend, datestart, dateend, overall_balance)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_mass_balance_areas
       use m_fm_wq_processes, ifluxdummy => iflux
@@ -2671,7 +2671,7 @@ contains
    end subroutine mba_write_bal_time_step
 
    subroutine mba_write_csv_time_step(luncsvm, luncsvmb, datestart, dateend)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_mass_balance_areas
       use m_fm_wq_processes, ifluxdummy => iflux

@@ -126,7 +126,7 @@ contains
    ! set mask to determine which sedtrails xk,yk points lie on present grid
    ! determine interpolation weights to transfer data from flowgeom to sedtrails output
    subroutine sedtrails_get_grid_on_network()
-  use precision, only: dp
+      use precision, only: dp
       use m_sedtrails_data
       use m_polygon
       use m_tpoly

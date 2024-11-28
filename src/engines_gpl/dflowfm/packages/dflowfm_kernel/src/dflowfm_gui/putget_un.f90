@@ -33,7 +33,7 @@ module m_putget_un
    implicit none
 contains
    subroutine putget_un(NUM, NWHAT, NPUT, NUMB, XP, YP, KEY)
-  use precision, only: dp
+      use precision, only: dp
       use m_drawthis
       use m_fkeys
       use m_disput

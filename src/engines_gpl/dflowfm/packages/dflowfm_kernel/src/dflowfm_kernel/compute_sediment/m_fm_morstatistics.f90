@@ -507,7 +507,7 @@ contains
 
    ! Write sedmor statistics to NetCDF
    subroutine unc_write_sed(tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use unstruc_netcdf
@@ -548,7 +548,7 @@ contains
    end subroutine unc_write_sed
 
    subroutine unc_write_sedstat_filepointer_ugrid(sedids, tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_alloc
       use io_ugrid
       use unstruc_netcdf

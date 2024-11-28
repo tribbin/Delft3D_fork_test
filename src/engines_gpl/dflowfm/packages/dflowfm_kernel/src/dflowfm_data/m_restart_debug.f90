@@ -30,7 +30,7 @@
 !
 
 module m_restart_debug
-  use precision, only: dp
+   use precision, only: dp
 
    implicit none
 

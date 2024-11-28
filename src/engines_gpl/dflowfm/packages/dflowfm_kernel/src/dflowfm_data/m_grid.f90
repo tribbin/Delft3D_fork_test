@@ -31,7 +31,7 @@
 !
 
 module m_grid
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer :: MET = 1 ! drawing method
    integer :: mc = 0, nc = 0 ! actuele dimensies

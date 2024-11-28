@@ -31,7 +31,7 @@
 !
 
   subroutine isquadadjacenttoline(L1, n, L2)
-  use precision, only: dp
+     use precision, only: dp
      use m_adjacent, only: adjacent
      use m_netw
      implicit none

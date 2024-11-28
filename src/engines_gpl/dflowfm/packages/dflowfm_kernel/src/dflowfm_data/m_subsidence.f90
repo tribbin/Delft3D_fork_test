@@ -31,7 +31,7 @@
 !
 
 module m_subsidence
-  use precision, only: dp
+   use precision, only: dp
    logical :: sdu_first !< Flag indicating whether this is the first call to obtain the 'bedrock_surface_elevation'
    integer :: sdu_update_s1 !< Flag indicating whether water levels at wet point should be updated (0 = no, 1 = yes)
    integer :: jasubsupl !< Flag indicating whether subsidence and uplift is included in the simulation (0 = no, 1 = yes)

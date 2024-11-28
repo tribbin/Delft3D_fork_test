@@ -31,7 +31,7 @@
 !
 
   subroutine NODTOALL()
-  use precision, only: dp
+     use precision, only: dp
      use m_addelem, only: addelem
      use m_netw
      use gridoperations

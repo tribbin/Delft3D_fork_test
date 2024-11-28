@@ -31,7 +31,7 @@
 !
 
    subroutine REFINEPOLYGONUSINGNETWORK()
-  use precision, only: dp
+      use precision, only: dp
       use m_closein, only: closein
       use m_checktriangle, only: checktriangle
       use m_netw

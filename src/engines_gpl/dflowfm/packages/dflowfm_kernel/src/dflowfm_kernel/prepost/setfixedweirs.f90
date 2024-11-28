@@ -31,7 +31,7 @@
 !
 !>  override bobs along pliz's, jadykes == 0: only heights, 1 = also dyke attributes
 subroutine setfixedweirs()
-  use precision, only: dp
+   use precision, only: dp
    use m_netw
    use m_flowgeom
    use m_flow
@@ -633,7 +633,7 @@ subroutine setfixedweirs()
 contains
 
    subroutine check_fixed_weirs_parameters_against_limits()
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp), parameter :: GROUND_HEIGHT_MINIMUM = -500.0d0
       real(kind=dp), parameter :: GROUND_HEIGHT_MAXIMUM = 500.0d0
@@ -712,7 +712,7 @@ contains
 
 !> check_value_and_write_message
    logical function is_value_inside_limits(value_to_be_checked, min_limit, max_limit, value_name, file_name, pli_name, location)
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp), intent(in) :: value_to_be_checked !< value_to_be_checked
       real(kind=dp), intent(in) :: min_limit !< min_limit

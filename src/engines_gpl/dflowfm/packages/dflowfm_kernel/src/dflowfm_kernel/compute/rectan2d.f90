@@ -31,7 +31,7 @@
 !
 
 subroutine rectan2D(hpr, br, hr, area, width, japerim, perim)
-  use precision, only: dp
+   use precision, only: dp
    use m_flow, only: slotw1D
    implicit none
    integer :: japerim

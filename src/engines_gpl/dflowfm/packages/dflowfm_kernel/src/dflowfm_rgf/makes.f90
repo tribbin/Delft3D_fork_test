@@ -35,7 +35,7 @@ contains
 !>     maak X,Y splines + afstandsarray en splines S op basis
 !!     van NT snijpunten
    subroutine MAKES(X, Y, X2, Y2, T, S, S2, imax, N, NT, H)
-  use precision, only: dp
+      use precision, only: dp
       use m_splinxy
       use m_spline
       use m_getdis

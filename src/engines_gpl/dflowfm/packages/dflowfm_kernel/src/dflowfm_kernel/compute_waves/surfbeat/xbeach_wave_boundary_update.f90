@@ -1296,7 +1296,7 @@ contains
    ! ------------- Interpolate to standard spectrum ---------------
    ! --------------------------------------------------------------
    subroutine interpolate_spectrum(ibnd, specin, specinterp, fmax)
-  use precision, only: dp
+      use precision, only: dp
 
       use interp
 
@@ -1470,7 +1470,7 @@ contains
    ! ----------- Merge all separate spectra into one --------------
    ! -------------- average spectrum for other use ----------------
    subroutine generate_combined_spectrum(ibnd, specinterp, combspec)
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
       integer, intent(in) :: ibnd
@@ -1559,7 +1559,7 @@ contains
    end subroutine generate_combined_spectrum
 
    subroutine generate_combined_spectrum_weighted(ibnd, npb, kL, kR, wL, wR, specinterp, combspec)
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
       integer, intent(in) :: ibnd
@@ -1833,7 +1833,7 @@ contains
    ! ----------- Small subroutine to determine -----------------
    ! ------------ representative wave period -------------------
    subroutine tpDcalc(Sf, f, Trep, trepfac, switch)
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
 
@@ -2609,10 +2609,10 @@ contains
                   ! Depth-average velocity in wave direction:
                   U = 1.d0 / hb0 * wp%wgen(ik) * wp%A(j, ik) * &
                       sin(wp%wgen(ik) * wp%tin(it) &
-                           - wp%kgen(ik) * (sin(wp%thetagen(ik)) * disty(j) &
-                                            + cos(wp%thetagen(ik)) * distx(j)) &
-                           + wp%phigen(ik) &
-                           ) * &
+                          - wp%kgen(ik) * (sin(wp%thetagen(ik)) * disty(j) &
+                                           + cos(wp%thetagen(ik)) * distx(j)) &
+                          + wp%phigen(ik) &
+                          ) * &
                       1.d0 / wp%kgen(ik)
 
                   ! Eastward component:
@@ -2982,7 +2982,7 @@ contains
    end subroutine generate_nhtimeseries_file
 
    subroutine set_stationary_spectrum(ibnd, combspec)
-  use precision, only: dp
+      use precision, only: dp
       use m_sferic
       use m_physcoef
       use interp

@@ -33,7 +33,7 @@
 !> get mesh bounding box coordinates (useful for spherical, periodic coordinates)
 !>   2D part of the mesh only
 subroutine get_meshbounds(xboundmin, xboundmax)
-  use precision, only: dp
+   use precision, only: dp
    use network_data
    implicit none
 

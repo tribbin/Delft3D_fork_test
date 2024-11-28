@@ -647,7 +647,7 @@ contains
 !! Input are parameters in seconds since refdat; this subroutine will take
 !! care of date calculations, time zones and string conversion.
    function unc_add_time_coverage(ncid, start_since_ref, end_since_ref, resolution) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use time_module, only: duration_to_string, datetime_to_string, ymd2modified_jul
       use m_flowtimes, only: refdat, tzone
       use dfm_error
@@ -1190,7 +1190,7 @@ contains
    end function unc_def_var_map
 
    function unc_put_att_dble(ncid, id_var, att_name, att_value) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use dfm_error
       implicit none
 
@@ -1334,7 +1334,7 @@ contains
 !! Typical call: unc_put_var(mapids, mapids%id_s1(:), UNC_LOC_S, s1)
 
    function unc_put_var_map_int(ncid, id_tsp, id_var, iloc, integers, default_value, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       implicit none
       integer :: ierr
       integer, intent(in) :: ncid
@@ -1365,7 +1365,7 @@ contains
    end function unc_put_var_map_int
 
    function unc_put_var_map_real(ncid, id_tsp, id_var, iloc, reals, default_value, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       implicit none
       integer :: ierr
       integer, intent(in) :: ncid
@@ -1396,7 +1396,7 @@ contains
    end function unc_put_var_map_real
 
    function unc_put_var_map_dble(ncid, id_tsp, id_var, iloc, values, default_value, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numk, numl, numl1d
       use m_flow, only: kmx
@@ -1695,7 +1695,7 @@ contains
 !> copy of unc_put_var_map_dble for writing bytes
 !! TODO: use templating
    function unc_put_var_map_byte(ncid, id_tsp, id_var, iloc, values, default_value, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numk, numl, numl1d
       use m_flow, only: kmx
@@ -2054,7 +2054,7 @@ contains
    end function unc_put_var_map_byte_timebuffer
 
    function unc_put_var_map_dble2(ncid, id_tsp, id_var, iloc, values, default_value, locdim, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numl, numl1d
       use dfm_error
@@ -2216,7 +2216,7 @@ contains
    end function unc_put_var_map_dble2
 
    function unc_put_var_map_dble3(ncid, id_tsp, id_var, iloc, values, default_value, locdim, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numl, numl1d
       use dfm_error
@@ -2946,7 +2946,7 @@ contains
 !> Writes rst/flow data to a newly opened netCDF dataset.
 !! The netnode and -links have been written already.
    subroutine unc_write_rst_filepointer(irstfile, tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use m_flowgeom
@@ -5232,7 +5232,7 @@ contains
 !> Writes map/flow data to an already opened netCDF dataset. NEW version according to UGRID conventions + much cleanup.
 !! The netnode and -links have been written already.
    subroutine unc_write_map_filepointer_ugrid(mapids, tim, jabndnd) ! wrimap
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use m_flowgeom
@@ -7942,7 +7942,7 @@ contains
    end subroutine unc_write_map_filepointer_ugrid
 !> Adds variable at nodes to map-file.
    function unc_put_var_map_nodes(ncid, id_tsp, id_var, values, jabndnd_) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use network_data, only: kc, numk
       use m_missing, only: dmiss
       use fm_location_types, only: UNC_LOC_CN
@@ -7974,7 +7974,7 @@ contains
 !> Writes map/flow data to an already opened netCDF dataset.
 !! The netnode and -links have been written already.
    subroutine unc_write_map_filepointer(imapfile, tim, jaseparate) ! wrimap
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use m_flowgeom
@@ -10844,7 +10844,7 @@ contains
 
 !> Writes the unstructured net in UGRID format to an already opened netCDF dataset.
    subroutine unc_write_net_filepointer(inetfile, janetcell, janetbnd, jaidomain, jaiglobal_s)
-  use precision, only: dp
+      use precision, only: dp
       use network_data
       use m_alloc
       use m_polygon
@@ -11990,7 +11990,7 @@ contains
 !> Reads the net data from a NetCDF file.
 !! Processing is done elsewhere.
    subroutine unc_read_net_ugrid(filename, numk_keep, numl_keep, numk_read, numl_read, ierr)
-  use precision, only: dp
+      use precision, only: dp
       use network_data
       use m_save_ugrid_state
       use io_netcdf
@@ -12509,7 +12509,7 @@ contains
 !> Reads the net data from a NetCDF file.
 !! Processing is done elsewhere.
    subroutine unc_read_net(filename, numk_keep, numl_keep, numk_read, numl_read, ierr)
-  use precision, only: dp
+      use precision, only: dp
       use network_data
       use m_sferic
       use m_missing
@@ -12741,7 +12741,7 @@ contains
 
 !> Assigns the information, that has been read from a restart file and stored in array1, to a 2D array2.
    subroutine assign_restart_data_to_local_array(array1, array2, iloc, loccount, jamergedmap, iloc_own, write_only_bottom_layer, target_shift)
-  use precision, only: dp
+      use precision, only: dp
       use m_get_kbot_ktop
       real(kind=dp), allocatable, intent(in) :: array1(:) !< Array that contains information read from a restart file
       real(kind=dp), allocatable, intent(inout) :: array2(:, :) !< Target 2D array
@@ -12796,7 +12796,7 @@ contains
 !! s1/u1, etc. arrays, with some empty ghost values in between here and there.
 !! The calling routine should later call update_ghosts, such that ghost locations are filled as well.
    function get_var_and_shift(ncid, varname, targetarr, tmparr, loctype, kmx, locstart, loccount, it_read, jamergedmap, iloc_own, iloc_merge, target_shift) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use dfm_error
       use fm_location_types
       use m_get_kbot_ktop
@@ -12958,7 +12958,7 @@ contains
 !! Processing is done elsewhere.
 !subroutine unc_read_map(filename, numk_keep, numl_keep, numk_read, numl_read, ierr)
    subroutine unc_read_map_or_rst(filename, ierr)
-  use precision, only: dp
+      use precision, only: dp
       use time_module, only: datetimestring_to_seconds, seconds_to_datetimestring
       use m_flow
       use m_flowtimes
@@ -14771,7 +14771,7 @@ contains
 
 ! Write input coordinates of all structures of input structuretype to open history file
    subroutine unc_write_struc_input_coordinates(ihisfile, structuretype)
-  use precision, only: dp
+      use precision, only: dp
       use m_structures
       use m_globalparameters
       use simple_geometry, only: sgeom_def_geometry_variables
@@ -15094,7 +15094,7 @@ contains
 
 !> Writes the unstructured flow geometry in UGRID format to an already opened netCDF dataset.
    subroutine unc_write_flowgeom_filepointer_ugrid(ncid, id_tsp, jabndnd, jafou, ja2D)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom
       use network_data
@@ -15461,7 +15461,7 @@ contains
 
 !> Writes the unstructured 1D flow geometry in UGRID format to an already opened netCDF dataset for use in the dfm volume tool.
    subroutine unc_write_1D_flowgeom_ugrid(id_tsp, ncid, jabndnd, jafou, ja2D, contacts_, contacttype_, numcontacts)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom
       use network_data
@@ -15839,7 +15839,7 @@ contains
 
 !> Writes the unstructured flow geometry to an already opened netCDF dataset.
    subroutine unc_write_flowgeom_filepointer(igeomfile, jabndnd)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use network_data
       use m_sferic
@@ -16433,7 +16433,7 @@ contains
 
 ! Read cell info. in order to bypass findcells
    subroutine readcells(filename, ierr, jaidomain, jaiglobal_s, jareinitialize)
-  use precision, only: dp
+      use precision, only: dp
 
       use network_data
       use m_flowgeom
@@ -16844,7 +16844,7 @@ contains
    end subroutine readcells
 
    subroutine find_flownodesorlinks_merge(n, x, y, n_loc, n_own, iloc_own, iloc_merge, janode, jaerror2sam, inode_merge2loc)
-  use precision, only: dp
+      use precision, only: dp
       use kdtree2Factory
       use unstruc_messages
       use m_flowgeom
@@ -16978,7 +16978,7 @@ contains
 
 !! check if the flownodes or flowlinks in the current model have the same numbering with in the rst file
    subroutine check_flownodesorlinks_numbering_rst(n, janode, x_rst, y_rst, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use network_data, only: xzw, yzw
       use m_flowgeom, only: xu, yu
       use unstruc_messages
@@ -17176,7 +17176,7 @@ contains
 
 !> Read structure infomation from the rst file
    subroutine read_structures_from_rst(ncid, filename, it_read)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_channel_flow, only: network
       use m_alloc
       use m_GlobalParameters
@@ -18065,7 +18065,7 @@ contains
    end subroutine convert_hysteresis_summerdike
 
    subroutine linktonode2(u_x, u_y, s_x, s_y, ndxndxi) ! bring 2 scalars on u points to zeta points
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom
       use m_flow
@@ -18092,7 +18092,7 @@ contains
 
 !> write_array_with_dmiss_for_dry_cells_into_netcdf_file
    function write_array_with_dmiss_for_dry_cells_into_netcdf_file(ncid, id_tsp, id_var, data_location, array, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: kfs
       use m_alloc, only: aerr
       use m_missing, only: dmiss
@@ -18140,7 +18140,7 @@ contains
 
 !> write_array_with_dmiss_for_dry_faces_into_netcdf_file
    function write_array_with_dmiss_for_dry_faces_into_netcdf_file(ncid, id_tsp, id_var, data_location, array, jabndnd) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: hu
       use m_alloc, only: aerr
       use m_missing, only: dmiss
@@ -18232,7 +18232,7 @@ contains
 !> Read sediment data to `constituents` (the indexing prevents passing
 !  another variable).
    subroutine read_sediment(var, stradd, imapfile, kstart, kcount, it_read, um, target_shift)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flow, only: kmx, ndkx
       use m_transport, only: ISED1, ISEDN, const_names
@@ -18285,7 +18285,7 @@ contains
 
 !> Write 2D/3D array on cell centres and for boundaries
    function unc_put_var_rst_dble(irstfile, id_internal_flow_node_data_var, id_bnd_flow_node_data_var, data_values, itim) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom, only: ndxi, ndx
       use m_flow, only: kmx, work1
@@ -18329,7 +18329,7 @@ contains
 
 !> Transfrom vector information to matrix for 3D information on cell centres
    subroutine flow_node_vector_to_matrix(data_values, flow_node_index1, flow_node_index2, data_values_matrix)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_missing, only: dmiss
       use m_get_kbot_ktop

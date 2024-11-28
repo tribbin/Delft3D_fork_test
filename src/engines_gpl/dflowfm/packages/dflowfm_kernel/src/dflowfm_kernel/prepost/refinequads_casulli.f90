@@ -32,7 +32,7 @@
 
 !> "Casulli"-type refinement of quads
 subroutine refinequads_casulli
-  use precision, only: dp
+   use precision, only: dp
    use m_getlink_gui
    use m_confrm
    use m_netw
@@ -366,7 +366,7 @@ contains
 
 !> create and store the new nodes in directional refinequads_casulli
    subroutine makenodes_directional(xp, yp, Lstart, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_assign_icjc, only: assign_icjc
       use m_confrm
       use unstruc_colors, only: ncolln

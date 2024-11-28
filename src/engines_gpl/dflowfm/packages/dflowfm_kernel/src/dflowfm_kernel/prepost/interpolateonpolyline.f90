@@ -35,7 +35,7 @@ contains
    !> Find a point on a polyline at a certain distance from the start.
       !! The distance is measured along the consecutive polyline segments.
    subroutine interpolateOnPolyline(X, Y, Z, T, MMAX, XP, YP, ZP, TP, JA)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: mmax !< Nr. of polyline points.
       real(kind=dp), intent(in) :: X(MMAX), Y(MMAX), Z(mmax) !< The polyline coordinates.
       real(kind=dp), intent(in) :: T(MMAX) !< Accumulated segment lengths at all points.

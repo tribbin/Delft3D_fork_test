@@ -32,16 +32,16 @@
 
 module m_wave_uorbrlabda
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: wave_uorbrlabda
+   public :: wave_uorbrlabda
 
 contains
 
    subroutine wave_uorbrlabda()
-  use precision, only: dp
+      use precision, only: dp
       use m_getwavenr, only: getwavenr
       use m_waves, only: uorb, wlenwav, uorbwav, twav, hwav, rlabda, jauorb, jauorbfromswan
       use m_flow, only: s1

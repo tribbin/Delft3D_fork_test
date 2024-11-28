@@ -32,7 +32,7 @@
 
 !> write matlab double array to file
    subroutine matlab_write_double(matfile, varname, var, Ni, Nj)
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
 

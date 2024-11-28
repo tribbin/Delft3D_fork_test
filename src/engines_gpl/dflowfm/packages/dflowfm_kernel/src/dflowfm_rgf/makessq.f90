@@ -33,7 +33,7 @@ module m_makessq
    implicit none
 contains
    subroutine MAKESSQ(S, A, SR, SL, SSQ, NT, MFAC, IMAX)
-  use precision, only: dp
+      use precision, only: dp
       use m_makesr
 
       integer :: nt, mfac, imax

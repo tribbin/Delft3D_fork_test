@@ -31,7 +31,7 @@
 !
 
       subroutine INDEKSI(N, NARRIN, INDX)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: i
          integer :: indx

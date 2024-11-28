@@ -32,14 +32,14 @@
 
 !> approximate spline length
 real(kind=dp) function splinelength(num, xspl, yspl)
-  use precision, only: dp
+   use precision, only: dp
 
    use geometry_module, only: dbdistance
    use m_missing, only: dmiss
    use m_sferic, only: jsferic, jasfer3D
    use m_splinxy
    use m_splintxy
-   
+
    implicit none
 
    integer, intent(in) :: num !< number of spline control points

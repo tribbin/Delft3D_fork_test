@@ -32,7 +32,7 @@
 
 !! Initialise net link based kd-tree for trachytopes or calibration
 subroutine netlink_tree(phase)
-  use precision, only: dp
+   use precision, only: dp
 
    use network_data, only: numl, xk, yk, kn
    use kdtree2Factory

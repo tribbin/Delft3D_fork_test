@@ -32,16 +32,16 @@
 
 module m_tauwave
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: tauwave
+   public :: tauwave
 
 contains
 
    subroutine tauwave()
-  use precision, only: dp
+      use precision, only: dp
       use m_getymxpar, only: getymxpar
       use m_sferic
       use m_flowparameters

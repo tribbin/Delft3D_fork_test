@@ -32,7 +32,7 @@
 
 !> grow ijc with blocksize to satisfy objective lower- and upperbound
 subroutine grow_ijc(lowold, uppold, lowobj, uppobj, init)
-  use precision, only: dp
+   use precision, only: dp
 
    use m_alloc
    use m_grid

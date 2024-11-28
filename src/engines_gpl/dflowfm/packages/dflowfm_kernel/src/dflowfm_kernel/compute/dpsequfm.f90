@@ -33,7 +33,7 @@ contains
 !
 
    function dpsequfm(dvar1, dvar2, eps) ! equal within eps?
-  use precision, only: dp
+      use precision, only: dp
       logical :: dpsequfm
       real(kind=dp), intent(in) :: dvar1, dvar2, eps
       dpsequfm = abs(dvar1 - dvar2) < eps

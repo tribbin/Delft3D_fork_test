@@ -29,7 +29,7 @@
 
 !
 module m_sethu
-  use precision, only: dp
+   use precision, only: dp
    use m_setveg, only: setveg
    use m_sets01zbnd, only: sets01zbnd
    use m_get_upstream_downstream_cell_numbers
@@ -55,7 +55,7 @@ module m_sethu
 
    abstract interface
       real(kind=dp) function get_upstream_water_level_any()
-  use precision, only: dp
+         use precision, only: dp
       end function
    end interface
 
@@ -65,7 +65,7 @@ contains
 !
 !> Set upwind waterdepth hu and au
    subroutine calculate_hu_au_and_advection_for_dams_weirs(set_zws0, set_hu)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flow
       use m_fixedweirs
@@ -262,7 +262,7 @@ contains
 
 !> use_advection_block_subgrid_and_Rajaratnam
       subroutine calculate_advection_block_subgrid_and_Rajaratnam()
-  use precision, only: dp
+         use precision, only: dp
 
          real(kind=dp) :: hu_crest
          real(kind=dp) :: hup
@@ -283,7 +283,7 @@ contains
 
 !> calculate_advection_Rajaratnam
       subroutine calculate_advection_Rajaratnam()
-  use precision, only: dp
+         use precision, only: dp
          real(kind=dp) :: ufac
          real(kind=dp) :: efac
 
@@ -319,7 +319,7 @@ contains
 
 !> calculate_advection_block_Tabellenboek_and_Villemonte
       subroutine calculate_advection_block_Tabellenboek_and_Villemonte()
-  use precision, only: dp
+         use precision, only: dp
          integer :: nfw
          integer :: itel
          character(len=4) :: toest
@@ -537,7 +537,7 @@ contains
 
 !> calculate_hu_au_central_in_lower_part
       subroutine calculate_hu_au_central_in_lower_part()
-  use precision, only: dp
+         use precision, only: dp
 
          integer, parameter :: option_AVERAGE = 1
          integer, parameter :: option_MAX = 2
@@ -609,7 +609,7 @@ contains
 
 !> calculate_hu_au_upwind_based
       subroutine calculate_hu_au_upwind_based()
-  use precision, only: dp
+         use precision, only: dp
 
          real(kind=dp) :: hsku
 
@@ -631,7 +631,7 @@ contains
 
 !> calculate_hu_au_downwind_wet
       subroutine calculate_hu_au_downwind_wet()
-  use precision, only: dp
+         use precision, only: dp
          real(kind=dp) :: hskx
 
          zw0u = max(bl(upstream_cell), bl(downstream_cell))
@@ -647,7 +647,7 @@ contains
 
 !> calculate_hu_au_downwind_dry
       subroutine calculate_hu_au_downwind_dry()
-  use precision, only: dp
+         use precision, only: dp
          real(kind=dp) :: hsku
 
          zw0u = max(zws(kb - 1), bl(upstream_cell))
@@ -692,7 +692,7 @@ contains
 
 !> get_upstream_water_level_upwind
    real(kind=dp) function get_upstream_water_level_upwind() result(upstream_water_level)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: s0
 
       implicit none
@@ -703,7 +703,7 @@ contains
 
 !> get_upstream_water_level_central_limiter
    real(kind=dp) function get_upstream_water_level_central_limiter() result(upstream_water_level)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: s0
 
       implicit none
@@ -714,7 +714,7 @@ contains
 
    !> get_upstream_water_level_perot_alfa_limiter
    real(kind=dp) function get_upstream_water_level_perot_alfa_limiter() result(upstream_water_level)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: s0
       use m_flowgeom, only: acl
 
@@ -726,7 +726,7 @@ contains
 
 !> get_upstream_water_level_regular_linear_interpolation
    real(kind=dp) function get_upstream_water_level_regular_linear_interpolation() result(upstream_water_level)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: s0
       use m_flowgeom, only: acl
 
@@ -738,7 +738,7 @@ contains
 
 !> get_upstream_water_level_usual_limiters
    real(kind=dp) function get_upstream_water_level_usual_limiters() result(upstream_water_level)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: limtyphu
       use m_flow, only: s0
       use m_flowgeom, only: klnup, slnup

@@ -31,7 +31,7 @@
 !
 
 module m_plotdots
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer :: numdots ! number of dots
    integer :: NSIZE = 0 ! array size
@@ -63,7 +63,7 @@ contains
 
 !> add a dot
    subroutine adddot(x, y, z, colournumber)
-  use precision, only: dp
+      use precision, only: dp
       implicit none
 
       real(kind=dp), intent(in) :: x, y

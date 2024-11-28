@@ -32,12 +32,12 @@
 
 module m_cirasp
 
-implicit none
+   implicit none
 
 contains
 
    subroutine CIRasp(R)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_opengl
       implicit none
       real(kind=dp) :: R

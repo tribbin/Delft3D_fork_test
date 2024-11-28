@@ -43,7 +43,7 @@
 !!   -boundary condition related information of the tracers are stored in "bndtr" of type "bndtype"
 
 module m_transportdata
-  use precision, only: dp
+   use precision, only: dp
    integer, parameter :: NAMLEN = 128
    integer :: NUMCONST ! Total number of constituents
    integer :: NUMCONST_MDU ! number of constituents as specified in mdu/ext file
@@ -70,7 +70,7 @@ module m_transportdata
 end module m_transportdata
 
 module m_transport
-  use precision, only: dp
+   use precision, only: dp
 
    use m_transportdata !separation to get rid of all those use only: checks
 

@@ -32,26 +32,26 @@
 
 module m_plotdiamond
 
-implicit none
+   implicit none
 
 contains
 
-      subroutine plotDiamond(x, y)
-  use precision, only: dp
-         use m_wearelt
-         use m_movabs
-         use m_lnabs
+   subroutine plotDiamond(x, y)
+      use precision, only: dp
+      use m_wearelt
+      use m_movabs
+      use m_lnabs
 
-         real(kind=dp) :: x
-         real(kind=dp) :: y
+      real(kind=dp) :: x
+      real(kind=dp) :: y
 
-         call MOVABS(X + .5 * RCIR, Y)
-         call LNABS(X, Y + .5 * RCIR)
-         call LNABS(X - .5 * RCIR, Y)
-         call LNABS(X, Y - .5 * RCIR)
-         call LNABS(X + .5 * RCIR, Y)
+      call MOVABS(X + .5 * RCIR, Y)
+      call LNABS(X, Y + .5 * RCIR)
+      call LNABS(X - .5 * RCIR, Y)
+      call LNABS(X, Y - .5 * RCIR)
+      call LNABS(X + .5 * RCIR, Y)
 
-         return
-      end
+      return
+   end
 
 end module m_plotdiamond

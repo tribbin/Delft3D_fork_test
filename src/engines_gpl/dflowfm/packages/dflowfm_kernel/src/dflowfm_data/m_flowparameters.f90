@@ -31,7 +31,7 @@
 !
 
 module m_flowparameters
-  use precision, only: dp
+   use precision, only: dp
    use m_sediment, only: jased
    use m_missing
 
@@ -528,7 +528,7 @@ module m_flowparameters
    integer :: jamapucqvec !< velocity vectors (discharge based) to map file, 0: no, 1: yes
    integer :: jamapww1 !< upward velocity on flow link to map file, 0: no, 1: yes
    integer :: jamapnumlimdt !< Write the total number of times a cell was Courant limiting to map file, 0: no, 1: yes
-   logical :: write_numlimdt_file !< Write the total number of times a cell was Courant limiting to <run_id>_numlimdt.xyz file 
+   logical :: write_numlimdt_file !< Write the total number of times a cell was Courant limiting to <run_id>_numlimdt.xyz file
    integer :: jamaptaucurrent !< shear stress to map file, 0: no, 1: yes
    integer :: jamapz0 !< roughness heights to map file, 0: no, 1: yes
    integer :: jamap_chezy_elements !< chezy roughness in flow elements to map file, 0: no, 1: yes

@@ -32,7 +32,7 @@
 
 !> net orthogonalisation and smoothing
 subroutine ORTHOGONALISENET(jarerun)
-  use precision, only: dp
+   use precision, only: dp
    use m_teknet
    use m_copynetnodestosam
    use m_halt3
@@ -720,7 +720,7 @@ subroutine ORTHOGONALISENET(jarerun)
 contains
 
    subroutine comp_local_coords(iloc, kk1, x, y, Nloc, xloc, yloc)
-  use precision, only: dp
+      use precision, only: dp
       use m_sferic
       use network_data, only: numk, nmk
       use m_inverse_map
@@ -787,7 +787,7 @@ contains
 !!   sum_kk ww(kk,k0) * (x1(kk1(kk,k0)) - x1(k0)) = rhs(1,k0)
 !!   sum_kk ww(kk,k0) * (y1(kk1(kk,k0)) - y1(k0)) = rhs(2,k0)
    subroutine orthonet_compweights(nmkx, kk1, aspect, ww, rhs)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_sferic
       use m_flowgeom
@@ -904,7 +904,7 @@ contains
 
 !> smoother that strives to optimize the cell area distribution
    subroutine orthonet_compweights_vol(nmkx2, nmk2, kk2, ww2x, ww2y, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_sferic
       use m_orthosettings
@@ -1140,7 +1140,7 @@ contains
 !!   sum_kk ww(kk,k0) * x1(kk2(kk,k0)) = 0
 !!   sum_kk ww(kk,k0) * y1(kk2(kk,k0)) = 0
    subroutine orthonet_compweights_smooth(ops, u, ww2, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_sferic
       use m_flowgeom
@@ -1488,7 +1488,7 @@ contains
 !!     Moving Mesh Partial Differential Equations',
 !!     J. of Comp. Phys., 2001, sects. 3.4 and 3.5
    subroutine orthonet_comp_Ginv(u, ops, J, Ginv)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_orthosettings
 
@@ -1642,7 +1642,7 @@ contains
 !> compute the operators for each unique topology in the
 !!    inverse-map elliptic smoother
    subroutine orthonet_comp_ops(ops, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_alloc
       use m_inverse_map
@@ -1848,7 +1848,7 @@ contains
 !>  determine and store unique topologies, based on xi and eta
 !!    topology is defined by the node angels w.r.t. center node: theta
    subroutine orthonet_save_topo(k0, adm, xi, eta, top, lisnew)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_missing
       use m_inverse_map
@@ -1931,7 +1931,7 @@ contains
 
 !>  Anorm = (Ax,y)
    real(kind=dp) function Anorm(x, y, A)
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
 
@@ -1954,7 +1954,7 @@ contains
 !!      Phi_c = sum_{l-1}^nmk Az_l Phi_l
 !!    Gxi, Geta, Divxi, Diveta and Az are stored in (type tops) op
    subroutine orthonet_comp_operators(k0, adm, xi, eta, op, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_sferic
       use m_inverse_map
@@ -2297,7 +2297,7 @@ contains
 
 !>    assign xi and eta to all nodes in the stencil
    subroutine orthonet_assign_xieta(k0, adm, xi, eta, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_sferic
       use m_missing
@@ -2623,7 +2623,7 @@ contains
 
 !>  compute the optimal angle between two links
    real(kind=dp) function opt_angle(Nnodes, theta1, theta2, lblink)
-  use precision, only: dp
+      use precision, only: dp
       implicit none
 
       integer :: Nnodes !< number of nodes in the netcell
@@ -2654,7 +2654,7 @@ contains
 
 !>  smooth the node-based variable u
    subroutine orthonet_smooth_u(u, ITAPSM, u_smooth)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_orthosettings
       use unstruc_messages

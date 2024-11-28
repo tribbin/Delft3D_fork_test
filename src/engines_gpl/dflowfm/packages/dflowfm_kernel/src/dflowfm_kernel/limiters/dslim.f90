@@ -33,7 +33,7 @@ module m_dslim
    implicit none
 contains
    real(kind=dp) function dslim(d1, d2, limtyp)
-  use precision, only: dp
+      use precision, only: dp
       use m_dminmod
       use m_dvanleer
       use m_dkoren

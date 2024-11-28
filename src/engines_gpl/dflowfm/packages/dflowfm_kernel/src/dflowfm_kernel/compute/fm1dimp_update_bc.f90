@@ -35,7 +35,7 @@ contains
 !> Updates the boundary conditions. The FM variables are updated in <flow_initimestep>
 ! and here we put them into the table that uses SRE.
    subroutine fm1dimp_update_bc(iresult, time1)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flow, only: au
       use m_f1dimp, only: f1dimppar

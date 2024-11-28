@@ -32,11 +32,11 @@
 
 module m_fm_adjust_bedload
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: fm_adjust_bedload
+   public :: fm_adjust_bedload
 
 contains
 

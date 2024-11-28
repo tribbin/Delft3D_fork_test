@@ -31,7 +31,7 @@
 !
 
   subroutine SETPOINT(XP, YP, ZP, K1)
-  use precision, only: dp
+     use precision, only: dp
 
      use m_tweedrie
      use m_netw

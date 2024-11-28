@@ -32,31 +32,31 @@
 
 module m_dispf1
 
-implicit none
+   implicit none
 
 contains
 
-      subroutine DISPF1(Y, DX, N, NCOL)
-  use precision, only: dp
-         use m_set_col
-         use m_movabs
-         use m_lnabs
+   subroutine DISPF1(Y, DX, N, NCOL)
+      use precision, only: dp
+      use m_set_col
+      use m_movabs
+      use m_lnabs
 
-         real(kind=dp) :: dx
-         integer :: i
-         integer :: n
-         integer :: ncol
-         real(kind=dp) :: x
+      real(kind=dp) :: dx
+      integer :: i
+      integer :: n
+      integer :: ncol
+      real(kind=dp) :: x
 !     LAAT EENDIMENSIONALE FUNCTIE ZIEN MET INTERVAL
-         real(kind=dp) :: Y(N)
-         call SETCOL(NCOL)
-         X = 0
-         call MOVABS(X, Y(1))
-         do I = 2, N
-            X = X + DX
-            call LNABS(X, Y(I))
-         end do
-         return
-      end
+      real(kind=dp) :: Y(N)
+      call SETCOL(NCOL)
+      X = 0
+      call MOVABS(X, Y(1))
+      do I = 2, N
+         X = X + DX
+         call LNABS(X, Y(I))
+      end do
+      return
+   end
 
 end module m_dispf1

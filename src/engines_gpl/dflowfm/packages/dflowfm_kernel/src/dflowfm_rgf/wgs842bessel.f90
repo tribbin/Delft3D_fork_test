@@ -34,7 +34,7 @@ module m_wgs842bessel
 contains
 !> convert from WGS84 to Bessel
    subroutine wgs842bessel(phiwgs, lamwgs, phibes, lambes)
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp), intent(in) :: phiwgs, lamwgs
       real(kind=dp), intent(out) :: phibes, lambes

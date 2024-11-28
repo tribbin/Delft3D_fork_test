@@ -31,7 +31,7 @@
 !
 
  subroutine inworld(xx) ! shifts x coordinates in world window, only call if jsferic == 1
-  use precision, only: dp
+    use precision, only: dp
     use m_missing
     use m_sferic
     real(kind=dp) :: xx

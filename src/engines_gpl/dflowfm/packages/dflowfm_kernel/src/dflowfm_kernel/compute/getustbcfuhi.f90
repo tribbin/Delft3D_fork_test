@@ -1,8 +1,7 @@
 module m_getustbcfuhi
-use m_getvanrijnwci
+   use m_getvanrijnwci
 
-
-implicit none
+   implicit none
 
 contains
 
@@ -39,7 +38,7 @@ contains
    !
 
    subroutine getustbcfuhi(LL, Lb, ustbLL, cfuhiLL, hdzb, z00, cfuhi3D) ! see Uittenbogaard's subroutine USTAR
-  use precision, only: dp
+      use precision, only: dp
       use m_getsoulsbywci
       use m_flow
       use m_flowgeom, only: ln, dxi, csu, snu

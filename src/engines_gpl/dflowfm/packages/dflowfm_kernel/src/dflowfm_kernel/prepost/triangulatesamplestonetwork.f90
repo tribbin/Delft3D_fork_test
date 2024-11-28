@@ -31,7 +31,7 @@
 !
 
    subroutine Triangulatesamplestonetwork(JADOORLADEN)
-  use precision, only: dp
+      use precision, only: dp
       use m_checktriangle, only: checktriangle
       use m_netw, only: numk, numl, kn, xk, yk, zk, nb, LMAX, KMAX
       use M_SAMPLES

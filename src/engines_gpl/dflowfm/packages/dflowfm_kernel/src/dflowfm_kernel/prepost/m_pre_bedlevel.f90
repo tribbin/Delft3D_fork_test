@@ -45,7 +45,7 @@ contains
 !! This is necessary for obtaining the right `hu` for
 !! analytical cases.
    subroutine extrapolate_bedlevel_at_boundaries()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom, only: bl, dxi, csu, snu
 
@@ -114,7 +114,7 @@ contains
 
 !> Compute the bed slope at cell centres.
    subroutine bed_slope_at_z(dzdx, dzdy)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom, only: ln, bl, dxi, ndx, lnxi, csu, snu
 

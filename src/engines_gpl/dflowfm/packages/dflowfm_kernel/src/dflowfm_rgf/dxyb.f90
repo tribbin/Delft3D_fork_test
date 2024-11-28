@@ -33,7 +33,7 @@
       subroutine DXYB(X, Y, mmax, nmax, MC, &
                       NC, II, JJ, IN, &
                       JN, DXY0)
-        use precision, only: dp
+         use precision, only: dp
          use m_missing
          use geometry_module, only: dbdistance
          use m_sferic, only: jsferic, jasfer3D

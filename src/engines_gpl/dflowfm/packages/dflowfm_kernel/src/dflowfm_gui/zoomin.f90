@@ -30,16 +30,16 @@
 !
 !
 module m_zoomin
-use m_wearel
-use m_setxor
-use m_setwynew
-use m_orglocator
-use m_inqasp
+   use m_wearel
+   use m_setxor
+   use m_setwynew
+   use m_orglocator
+   use m_inqasp
 
    implicit none
 contains
    subroutine ZOOMIN(KEY, NPUT)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_colors
       use m_wearelt
       use m_sferic

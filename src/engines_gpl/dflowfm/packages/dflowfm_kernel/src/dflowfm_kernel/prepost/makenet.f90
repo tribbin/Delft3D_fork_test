@@ -31,14 +31,14 @@
 !
 
    subroutine MAKENET(japaramscreen)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_dellink, only: dellink
       use m_addmaze, only: addmaze
       use m_makenetparameters
       use m_netw
       use m_makenet ! NTYP ANGLE SIZE THICK NRX NRY
-      use m_grid, only:nc, mc, xc, yc
+      use m_grid, only: nc, mc, xc, yc
       use m_missing, only: dmiss, jins
       use m_sferic
       use geometry_module, only: pinpok

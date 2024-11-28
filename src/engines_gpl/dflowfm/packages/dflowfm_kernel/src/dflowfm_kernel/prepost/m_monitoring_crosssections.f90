@@ -201,7 +201,7 @@ contains
 
 !> Starts a new cross section in the active array of crs, increasing memory when necessary.
    subroutine addCrossSections(name, xp, yp, iOC)
-  use precision, only: dp
+      use precision, only: dp
       character(len=*), intent(in) :: name
       real(kind=dp), intent(in) :: xp(:), yp(:)
       integer, optional, intent(in) :: iOC !< local index of cross sections that are defined via *.ini, in the m_network%network%observcrs set.
@@ -306,7 +306,7 @@ contains
 
 !> Adds observation cross sections, that are read from *.ini file, to the normal cross section adm
    subroutine addObservCrsFromIni(network, filename)
-  use precision, only: dp
+      use precision, only: dp
       use m_network
       use m_sferic, only: jsferic
       use odugrid
@@ -385,7 +385,7 @@ contains
 !! The input arrays have the structure of the global polygon:
 !! one or more polylines separated by dmiss values.
    subroutine pol_to_crosssections(xpl, ypl, npl, names)
-  use precision, only: dp
+      use precision, only: dp
       use m_missing
 
       real(kind=dp), intent(in) :: xpl(:), ypl(:) !< Long array with one or more polylines, separated by dmiss

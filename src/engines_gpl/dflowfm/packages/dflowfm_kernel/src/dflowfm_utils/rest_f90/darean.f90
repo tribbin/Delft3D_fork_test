@@ -35,7 +35,7 @@
  !! Only the first polygon is considered; whenever a missing value
  !! is encountered, the polygon is 'closed'.
  subroutine dAREAN(XX, YY, N, DAREA, DLENGTH, DLENMX)
-  use precision, only: dp
+    use precision, only: dp
     use m_missing
     use m_sferic
     use geometry_module, only: dbdistance, get_startend, comp_masscenter

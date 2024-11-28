@@ -33,7 +33,7 @@
   ! =================================================================================================
   ! =================================================================================================
   subroutine setpillars()
-  use precision, only: dp
+     use precision, only: dp
      use m_flowgeom, only: ndx, lnx, ba, wu, nd
      use fm_external_forcings_data, only: pillar, Cpil
      use m_vegetation, only: rnveg, diaveg, stemheight

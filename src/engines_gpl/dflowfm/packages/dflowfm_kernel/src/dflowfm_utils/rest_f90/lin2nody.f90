@@ -32,7 +32,7 @@
 
 !>    return y-component in node coordinate frame of a vector in link coordinate frame
       real(kind=dp) function lin2nody(L, i12, ux, uy)
-  use precision, only: dp
+         use precision, only: dp
          use m_flowgeom, only: csb, snb
          use m_sferic
          implicit none

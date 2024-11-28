@@ -31,7 +31,7 @@
 !
 
       subroutine insertsamples(L1, L2)
-  use precision, only: dp
+         use precision, only: dp
          use m_samples
          use m_gridsettings, only: mfac
          implicit none

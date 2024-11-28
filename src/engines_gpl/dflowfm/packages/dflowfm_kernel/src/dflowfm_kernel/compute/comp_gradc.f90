@@ -34,16 +34,16 @@
 !>   note: since we use wcx1 etc., it is assumed that normal components at the closed boundary are zero
 module m_comp_gradc
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: comp_gradC
+   public :: comp_gradC
 
 contains
 
    subroutine comp_gradC(val, gradx, grady)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: ln, Lnx, Ndx, Dxi, wcx1, wcy1, wcx2, wcy2
       implicit none
 

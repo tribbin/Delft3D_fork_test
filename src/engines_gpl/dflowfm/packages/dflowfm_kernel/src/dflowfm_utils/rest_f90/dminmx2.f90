@@ -31,7 +31,7 @@
 !
 
       subroutine DMINMX2(X, XMIN, XMAX, MC, NC, MMAX, NMAX)
-  use precision, only: dp
+         use precision, only: dp
          use M_MISSING
          implicit none
          integer :: i

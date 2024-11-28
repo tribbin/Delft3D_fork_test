@@ -36,7 +36,7 @@
 !                          IJC,IJYES,TIJ,XH,YH,         &
 !                          X1,Y1,X2,Y2,X3,Y3,X4,Y4)
     subroutine SPLRGFR()
-  use precision, only: dp
+       use precision, only: dp
        use M_SPLINES
        use m_missing, only: xymis
        use m_grid

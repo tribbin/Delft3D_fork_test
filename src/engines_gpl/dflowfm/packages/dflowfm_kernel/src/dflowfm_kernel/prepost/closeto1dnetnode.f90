@@ -32,16 +32,16 @@
 
 module m_closeto1dnetnode
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: closeto1dnetnode
+   public :: closeto1dnetnode
 
 contains
 
    subroutine CLOSETO1Dnetnode(XP1, YP1, N1, dist) !
-  use precision, only: dp
+      use precision, only: dp
 
       use m_netw
       use geometry_module, only: dbdistance

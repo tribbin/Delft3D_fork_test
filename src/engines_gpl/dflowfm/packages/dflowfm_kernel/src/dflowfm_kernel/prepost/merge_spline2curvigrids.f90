@@ -32,7 +32,7 @@
 
 !> merge grids from spline2curvi
 subroutine merge_spline2curvigrids()
-  use precision, only: dp
+   use precision, only: dp
    use m_grid
    use m_alloc
    use m_missing

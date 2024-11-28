@@ -31,7 +31,7 @@
 !
 
       subroutine NULARR(X, MMAX, NMAX)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: i
          integer :: j

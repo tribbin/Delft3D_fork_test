@@ -31,7 +31,7 @@
 !
 
   subroutine COPYTRANS()
-  use precision, only: dp
+     use precision, only: dp
      use m_netw
      use m_alloc
      use m_missing, only: jins, dmiss

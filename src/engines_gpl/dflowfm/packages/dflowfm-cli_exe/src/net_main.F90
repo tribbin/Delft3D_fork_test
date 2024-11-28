@@ -98,7 +98,7 @@ program unstruc
    use m_editsam
    use m_editnetw
    use m_read_commandline, only: read_commandline
-   
+
    implicit none
 
    integer :: KEY

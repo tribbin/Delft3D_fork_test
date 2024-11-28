@@ -38,7 +38,7 @@
 !!
 !! Validated for projected coordinates without rotation.
 module dem
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
    private
@@ -100,7 +100,7 @@ contains
 !! \param yarr 2D array with raster y coordinates for all elevation samples.
 !! \param  arr 2D array with raster elevation data (in dem_info\%elevUnitOfMeasure units).
    subroutine read_dem_file(filename, dem_info, xarr, yarr, arr)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_messages
       character(len=*), intent(in) :: filename
       type(DEMInfo), intent(inout) :: dem_info
@@ -147,7 +147,7 @@ contains
 !! \param xarr 2D array for raster x coordinates for all elevation samples (including missing).
 !! \param yarr 2D array for raster y coordinates for all elevation samples (including missing).
    subroutine get_dem_grid(dem_info, xarr, yarr)
-  use precision, only: dp
+      use precision, only: dp
       type(DEMInfo), intent(in) :: dem_info
       real(kind=dp), intent(out) :: xarr(:, :), yarr(:, :)
 !
@@ -296,7 +296,7 @@ contains
 !! \param dem_info DEMInfo as produced by read_dem_header.
 !! \param arr(:,:) 2D array to store elevation raster data in.
    subroutine read_dem_data(fp, dem_info, arr)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_messages
       use m_readyy
       integer, intent(in) :: fp

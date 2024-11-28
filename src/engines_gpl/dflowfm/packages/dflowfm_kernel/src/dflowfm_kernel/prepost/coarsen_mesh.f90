@@ -31,13 +31,13 @@
 !
 
 module m_coarsen_mesh
-use m_teknode
+   use m_teknode
 
    implicit none
 contains
 !> coarsen the net
    subroutine coarsen_mesh()
-  use precision, only: dp
+      use precision, only: dp
       use m_halt3
       use m_netw
       use unstruc_colors, only: ncolhl

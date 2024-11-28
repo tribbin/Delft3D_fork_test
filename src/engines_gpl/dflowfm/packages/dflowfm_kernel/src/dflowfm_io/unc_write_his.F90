@@ -378,7 +378,7 @@ contains
             nNodeTot = 0
             if (network%sts%numGates > 0) then ! new gate
                do n = 1, network%sts%numGates
-                  associate(pstru => network%sts%struct(network%sts%gateIndices(n)))
+                  associate (pstru => network%sts%struct(network%sts%gateIndices(n)))
                      nlinks = pstru%numlinks
                      if (nlinks > 0) then
                         nNodes = nlinks + 1
@@ -1555,7 +1555,7 @@ contains
       structure_names = [(srcname(i), integer :: i=1, numsrc)]
       call unc_put_his_structure_names(ncid, jahissourcesink, id_srcname, structure_names)
 
-      if (network%sts%numGates> 0) then
+      if (network%sts%numGates > 0) then
          indices = [(network%sts%gateIndices(i), integer :: i=1, ngategen)]
          structure_names = [(trimexact(network%sts%struct(network%sts%gateIndices(i))%id, strlen_netcdf), integer :: i=1, ngategen)]
       else
@@ -1564,7 +1564,6 @@ contains
       end if
 
       call unc_put_his_structure_names(ncid, jahisgate, id_gategen_id, structure_names)
-
 
       structure_names = [(lat_ids(i), integer :: i=1, numlatsg)]
       call unc_put_his_structure_names(ncid, jahislateral, id_lat_id, structure_names)

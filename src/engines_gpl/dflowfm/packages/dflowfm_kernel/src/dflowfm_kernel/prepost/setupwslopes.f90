@@ -31,7 +31,7 @@
 !
 
  subroutine setupwslopes() ! set upwind slope pointers and weightfactors
-  use precision, only: dp
+    use precision, only: dp
     ! TODO: 1D upwind slope pointers (gewoon de vorige)
     use m_disable_higherorder_at_sorsin, only: disable_higherorder_at_sorsin
     use m_flowgeom

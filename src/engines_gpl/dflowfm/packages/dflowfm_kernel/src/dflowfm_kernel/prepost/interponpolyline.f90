@@ -34,7 +34,7 @@
       !! The interpolation is done along a polyline at the distances
       !! measured along the consecutive polyline segments.
       subroutine interpOnPolyline(DPL, DXS, NPL, DXS1, DXS2)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: npl
          real(kind=dp), intent(in) :: DPL(NPL) !< Accumulated distance at each point.

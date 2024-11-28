@@ -31,7 +31,7 @@
 !
 
 module m_advec_data
-  use precision, only: dp
+   use precision, only: dp
    use m_solver
 
    integer :: jaoutput = 1 !< output matrices to file (1) or not (0)

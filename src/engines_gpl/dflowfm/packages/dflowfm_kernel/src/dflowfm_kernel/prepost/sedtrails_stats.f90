@@ -31,7 +31,7 @@
 !
 
 module m_sedtrails_stats
-  use precision, only: dp
+   use precision, only: dp
    use m_sedtrails_data
 
    implicit none
@@ -113,7 +113,7 @@ contains
 
    !> Update the (time-)integral statistics for all flow nodes, typically after each time step.
    subroutine update_sedtrails_stats()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowtimes, only: dts
       use m_flow, only: hs, ucx, ucy, taus, kmx, hs, vol1
       use m_flowgeom, only: ndx, bl, ba

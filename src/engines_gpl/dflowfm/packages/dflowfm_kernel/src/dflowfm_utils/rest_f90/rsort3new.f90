@@ -31,7 +31,7 @@
 !
 
       subroutine RSORT3new(X, Y, Z, N)
-  use precision, only: dp
+         use precision, only: dp
          use stdlib_sorting, only: sort_index
          implicit none
          integer :: k, n

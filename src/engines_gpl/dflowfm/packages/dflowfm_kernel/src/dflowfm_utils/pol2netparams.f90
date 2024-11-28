@@ -32,7 +32,7 @@
 
  !> get uniform curvilinear grid parameters in "makenet" from polygon
  subroutine pol2netparams()
-  use precision, only: dp
+    use precision, only: dp
     use m_makenet
     use m_polygon
     use m_sferic

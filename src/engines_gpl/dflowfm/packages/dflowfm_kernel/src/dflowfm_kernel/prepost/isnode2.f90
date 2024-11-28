@@ -31,7 +31,7 @@
 !
 
   subroutine ISNODE2(KP, XP, YP, ZP) ! X,Y,Z MOETEN ALLEN KLOPPEN
-  use precision, only: dp
+     use precision, only: dp
      use m_netw
      use m_wearelt
      use m_howtoview

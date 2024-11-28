@@ -31,7 +31,7 @@
 !
 
       subroutine EQDINT(YH2, imax, TJ, Y2)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: imax
          real(kind=dp) :: YH2(imax)

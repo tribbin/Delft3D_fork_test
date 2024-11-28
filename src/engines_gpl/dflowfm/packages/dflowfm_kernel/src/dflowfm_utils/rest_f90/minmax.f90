@@ -31,7 +31,7 @@
 !
 
       subroutine MINMAX(X, MXLAN, XMIN, XMAX, MAXLAN)
-  use precision, only: dp
+         use precision, only: dp
          use M_MISSING
          implicit none
          integer :: i

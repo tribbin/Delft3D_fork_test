@@ -32,8 +32,8 @@
 
 !> find meshline nearest to land boundary
 subroutine find_nearest_meshline(jasnap)
-     use precision, only: dp
-     use m_connect_boundary_paths, only: connect_boundary_paths
+   use precision, only: dp
+   use m_connect_boundary_paths, only: connect_boundary_paths
    use m_admin_landboundary_segments, only: admin_landboundary_segments
    use m_clnabs
    use m_netw
@@ -344,7 +344,7 @@ contains
 
 !> mask the nodes that are considered in the shortest path algorithm
    subroutine masknodes(numseg)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_cellcrossedbyland, only: cellcrossedbyland
       use m_missing
@@ -626,7 +626,7 @@ contains
 
 !> Dijkstra's shortest path algorithm
    subroutine shortest_path(numseg, jstart, jend, kstart, nodemask, netboundonly, klink)
-  use precision, only: dp
+      use precision, only: dp
 
       use network_data
       use geometry_module, only: dbdistance, dlinedis
@@ -752,7 +752,7 @@ contains
 !>       within a certain distance from the land boundary segment
 !>  note: will use jleft, jright, rLleft and rLright
    subroutine get_kstartend(jstart, jend, kstart, kend)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_missing, only: dmiss, JINS
       use m_polygon, only: NPL, xpl, ypl, zpl
@@ -865,7 +865,7 @@ contains
 !>       on a link that is closest to the start and end node of the boundary segment respectively
 !>  note: will use jleft, jright, rLleft and rLright
    subroutine get_kstartend2(jend, kstart, kend)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_missing, only: dmiss, JINS
       use m_polygon, only: NPL, xpl, ypl, zpl
@@ -989,7 +989,7 @@ contains
 
 !> compute typical mesh width for a node, which is the maximum length of the connected links
    real(kind=dp) function dmeshwidth(k)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_missing
       use m_polygon, only: NPL, xpl, ypl, zpl

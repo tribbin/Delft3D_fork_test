@@ -35,7 +35,7 @@
 !! of the unstructured flow solver.
 !<
 module m_rcm
-use precision, only: dp
+   use precision, only: dp
    implicit none
 contains
    function adj_bandwidth(node_num, adj_num, adj_row, adj)
@@ -5235,7 +5235,7 @@ contains
 end module m_rcm
 
 module Solve_Real_Poly
-use precision, only: dp
+   use precision, only: dp
 ! CACM Algorithm 493 by Jenkins & Traub
 
 ! Compliments of netlib   Sat Jul 26 11:57:43 EDT 1986
@@ -5251,7 +5251,7 @@ use precision, only: dp
 
    real(kind=dp), allocatable, save :: p(:), qp(:), k(:), qk(:), svk(:)
    real(kind=dp), save :: sr, si, u, v, a, b, c, d, a1, a2, a3, a6, &
-      a7, e, f, g, h, szr, szi, lzr, lzi
+                          a7, e, f, g, h, szr, szi, lzr, lzi
    real, save :: eta, are, mre
    integer, save :: n, nn
 

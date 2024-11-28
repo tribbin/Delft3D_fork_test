@@ -31,7 +31,7 @@
 !
 
   subroutine NEWklok(cpu)
-  use precision, only: dp
+     use precision, only: dp
      implicit none
      real(kind=dp) :: cpu
      real :: currentcpu

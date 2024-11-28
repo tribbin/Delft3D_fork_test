@@ -31,7 +31,7 @@
 !
 
       subroutine TIDYSAMPLES(XS, YS, ZS, IPSAM, NS, MXSAM, MYSAM)
-  use precision, only: dp
+         use precision, only: dp
          use stdlib_sorting, only: sort_index
          use m_readyy
          implicit none

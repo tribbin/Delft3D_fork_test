@@ -32,12 +32,12 @@
 
 module m_tekpolygon
 
-implicit none
+   implicit none
 
 contains
 
    subroutine tekpolygon()
-  use precision, only: dp
+      use precision, only: dp
       use m_rcirc
       use m_polygon
       use unstruc_display

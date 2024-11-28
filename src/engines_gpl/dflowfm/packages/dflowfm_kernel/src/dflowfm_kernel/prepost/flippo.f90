@@ -32,7 +32,7 @@
 
 !> reverse indexing of selected polygon
 subroutine flippo(ip)
-  use precision, only: dp
+   use precision, only: dp
    use m_polygon
 
    implicit none

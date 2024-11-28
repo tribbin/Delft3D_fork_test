@@ -31,7 +31,7 @@
 !
 
 module m_sedtrails_data
-  use precision, only: dp
+   use precision, only: dp
    use coordinate_reference_system
    implicit none
 

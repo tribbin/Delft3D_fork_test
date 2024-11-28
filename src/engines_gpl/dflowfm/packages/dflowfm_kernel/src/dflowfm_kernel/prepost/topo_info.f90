@@ -32,7 +32,7 @@
 
 !> link-based mesh-topology information
 real(kind=dp) function topo_info(L)
-  use precision, only: dp
+   use precision, only: dp
    use m_comp_ntopo
    use m_netw
    use m_landboundary

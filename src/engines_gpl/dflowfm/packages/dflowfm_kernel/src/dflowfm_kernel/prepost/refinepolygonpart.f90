@@ -34,7 +34,7 @@
       !! If the polygon/line ends between i1 and i2 (dmiss), then refinement
       !! stops there (i.e. refinement is only within *one* polygon).
       subroutine REFINEPOLYGONpart(i1, i2, jauniform) !DPLA = ACTUELE LENGTECOOR, DXA = ACTUELE GRIDSIZE, DXS = STREEF GRIDSIZE, ALLEN OP POLYGONPOINTS
-  use precision, only: dp
+         use precision, only: dp
          use m_averagediff, only: averagediff
          use m_accumulatedistance, only: accumulatedistance
          use M_POLYGON

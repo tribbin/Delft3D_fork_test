@@ -31,7 +31,7 @@
 !
 
    subroutine ORTHOGONISENET_old()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_clnabs
       use m_netw

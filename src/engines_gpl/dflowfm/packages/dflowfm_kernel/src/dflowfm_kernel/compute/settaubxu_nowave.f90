@@ -32,16 +32,16 @@
 
 module m_settaubxu_nowave
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: settaubxu_nowave
+   public :: settaubxu_nowave
 
 contains
 
    subroutine settaubxu_nowave(use_u1)
-     use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flow
       use m_physcoef

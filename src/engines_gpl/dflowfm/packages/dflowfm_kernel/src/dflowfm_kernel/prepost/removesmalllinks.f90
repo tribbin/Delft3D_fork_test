@@ -31,7 +31,7 @@
 !
 
    subroutine REMOVESMALLLINKS() ! 1 REMOVES IF FLOW LINK DISTANCES ARE SMALL RELATIVE TO CONNECTED CELL SIZES
-  use precision, only: dp
+      use precision, only: dp
 
       use m_netw ! 2 REMOVES SMALL TRIANGLES NEXT TO
       use M_FLOWGEOM

@@ -31,7 +31,7 @@
 !
 
       subroutine DX0ISX1(X0, Y0, Z0, X1, Y1, Z1, KMAX)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: k
          integer :: KMAX

@@ -39,7 +39,7 @@ contains
 
 !> snap polygon to mesh
    subroutine snappol(Nin, Xin, Yin, dsep, itype, Nout, Xout, Yout, ipoLout, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_polygon
       use m_missing
       use m_alloc
@@ -237,7 +237,7 @@ contains
 
 !> snap point to flow node
    subroutine snappnt(Nin, xin, yin, dsep, Nout, xout, yout, ipoLout, ierror, kout)
-  use precision, only: dp
+      use precision, only: dp
       use m_alloc
       use m_flowgeom, only: xz, yz
       use m_GlobalParameters, only: INDTP_ALL
@@ -318,7 +318,7 @@ contains
 !> snap polyline to mesh boundary
 !>   2D only
    subroutine snapbnd(bndtype, Nin, Xin, Yin, dsep, Nout, Xout, Yout, ipoLout, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use timespace_triangle
       use m_polygon
       use m_missing

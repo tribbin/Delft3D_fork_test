@@ -33,7 +33,7 @@
 !> holds variables and arrays for the fetch proc operation
 module fetch_proc_operation_data
 
- use precision, only: dp
+   use precision, only: dp
    integer, dimension(:), allocatable :: ndx_over_procs !< ndx data over procs
    integer, dimension(:, :), allocatable :: iglobal_s_procs !< iglobal_s data for each proc
    real(kind=dp), dimension(:, :), allocatable :: f_buffer !< buffer to send fetch/fetdp data
@@ -278,7 +278,7 @@ subroutine set_mpi_environment_wwo_fetch_proc()
       call mpi_comm_size(DFM_COMM_ALLWORLD, numranks, error)
       if (numranks > 2) then
          allocate (list_of_procs(numranks - 1), stat=error)
-         list_of_procs = [ (i, i=0, numranks - 2) ]
+         list_of_procs = [(i, i=0, numranks - 2)]
          call MPI_Comm_group(DFM_COMM_ALLWORLD, dflowfm_entire_group, error)
          call MPI_Group_incl(dflowfm_entire_group, numranks - 1, list_of_procs, dflowfm_group, error)
          call MPI_Comm_create(DFM_COMM_ALLWORLD, dflowfm_group, DFM_COMM_DFMWORLD, error)

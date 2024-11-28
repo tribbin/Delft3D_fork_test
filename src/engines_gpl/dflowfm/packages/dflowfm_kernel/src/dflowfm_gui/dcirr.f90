@@ -32,24 +32,24 @@
 
 module m_dcirr
 
-implicit none
+   implicit none
 
 contains
 
-      subroutine DCIRR(XD, YD, ZD, NCOL)
-  use precision, only: dp
-         use m_three_two
-         use m_cirr
+   subroutine DCIRR(XD, YD, ZD, NCOL)
+      use precision, only: dp
+      use m_three_two
+      use m_cirr
 
-         implicit none
-         integer :: ncol
-         real(kind=dp) :: x
-         real(kind=dp) :: y
-         real(kind=dp) :: z
-         real(kind=dp) XD, YD, ZD
-         call DRIETWEE(XD, YD, ZD, X, Y, Z)
-         call CIRR(X, Y, NCOL)
-         return
-      end
+      implicit none
+      integer :: ncol
+      real(kind=dp) :: x
+      real(kind=dp) :: y
+      real(kind=dp) :: z
+      real(kind=dp) XD, YD, ZD
+      call DRIETWEE(XD, YD, ZD, X, Y, Z)
+      call CIRR(X, Y, NCOL)
+      return
+   end
 
 end module m_dcirr

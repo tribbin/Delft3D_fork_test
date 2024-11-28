@@ -30,14 +30,14 @@
 !
 !
 module m_gettauswave
-use m_swart, only: swart
-use m_linkstocentercartcomp
+   use m_swart, only: swart
+   use m_linkstocentercartcomp
 
    implicit none
 contains
 !> Make output arrays for bed shear stress icm jawave>0, depending on waq coupling and 2D/3D
    subroutine gettauswave(waveswartdelwaq)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_waves
       use m_flowgeom
@@ -95,7 +95,7 @@ contains
                   if (kmx > 0) then
                      ust = ust + ustb(LL) * ar
                   end if
-               !z00 = z00 + ar*hu(LL)*exp(-1d0 - vonkar*cz/sag)   ! z0ucur, to avoid double counting
+                  !z00 = z00 + ar*hu(LL)*exp(-1d0 - vonkar*cz/sag)   ! z0ucur, to avoid double counting
                   z00 = z00 + ar * z0ucur(LL) ! z0ucur, to avoid double counting
                end if
             end do

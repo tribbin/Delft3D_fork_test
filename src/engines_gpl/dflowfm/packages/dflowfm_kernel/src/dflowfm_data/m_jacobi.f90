@@ -31,7 +31,7 @@
 !
 
 module m_jacobi ! arrays needed for solving jacobi
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer :: ndxjac = 0 ! nr. of nodes already allocated for jacobi should be ndx
    integer :: lnxjac = 0 ! nr. of links already allocated for jacobi should be lnx

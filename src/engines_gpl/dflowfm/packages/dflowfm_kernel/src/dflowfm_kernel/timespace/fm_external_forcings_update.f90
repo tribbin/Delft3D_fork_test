@@ -68,7 +68,7 @@ contains
 
    !> set field oriented boundary conditions
    module subroutine set_external_forcings(time_in_seconds, initialization, iresult)
-  use precision, only: dp
+      use precision, only: dp
       use m_update_zcgen_widths_and_heights, only: update_zcgen_widths_and_heights
       use m_update_pumps_with_levels, only: update_pumps_with_levels
       use m_heatu
@@ -236,7 +236,7 @@ contains
 
 !> get_timespace_value_by_item_and_array_and_consider_success_value
    subroutine get_timespace_value_by_item_array_consider_success_value(item, array, time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
 
       integer, intent(in) :: item !< Item for getting values
       real(kind=dp), intent(inout) :: array(:) !< Array that stores the values
@@ -248,7 +248,7 @@ contains
 
 !> set_temperature_models
    subroutine set_temperature_models(time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
       logical :: foundtempforcing
@@ -301,7 +301,7 @@ contains
 
 !> get_timespace_value_by_name_and_consider_success_value
    subroutine get_timespace_value_by_name_and_consider_success_value(name, time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
       character(*), intent(in) :: name
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
@@ -311,7 +311,7 @@ contains
 
 !> get_timespace_value_by_item_and_consider_success_value
    subroutine get_timespace_value_by_item_and_consider_success_value(item, time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
 
       integer, intent(in) :: item
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
@@ -322,7 +322,7 @@ contains
 
    !> get_timespace_value_by_item_and_array
    subroutine get_timespace_value_by_item_and_array(item, array, time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
 
       integer, intent(in) :: item !< Item for getting values
       real(kind=dp), intent(inout) :: array(:) !< Array that stores the values
@@ -334,7 +334,7 @@ contains
 
 !> get_timespace_value_by_item
    subroutine get_timespace_value_by_item(item, time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
 
       integer, intent(in) :: item !< Item for getting values
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
@@ -347,7 +347,7 @@ contains
    subroutine set_wave_parameters(initialization)
       use ieee_arithmetic, only: ieee_is_nan
       use m_compute_wave_parameters, only: compute_wave_parameters
-      
+
       logical, intent(in) :: initialization !< initialization phase
 
       logical :: all_wave_variables !< flag indicating whether _all_ wave variables should be mirrored at the boundary
@@ -591,7 +591,7 @@ contains
 
 !> convert wave direction [degrees] from nautical to cartesian meteorological convention
    elemental function convert_wave_direction_from_nautical_to_cartesian(nautical_wave_direction) result(cartesian_wave_direction)
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp), intent(in) :: nautical_wave_direction !< wave direction [degrees] in nautical  convention
       real(kind=dp) :: cartesian_wave_direction !< wave direction [degrees] in cartesian convention
@@ -605,7 +605,7 @@ contains
 
 !> retrieve icecover
    subroutine retrieve_icecover(time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
       use m_fm_icecover, only: ja_icecover, ice_af, ice_h, ICECOVER_EXT
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
@@ -624,7 +624,7 @@ contains
 
 !> retrieve_rainfall
    subroutine retrieve_rainfall(time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
       ! Retrieve rainfall for ext-file quantity 'rainfall'.
@@ -641,7 +641,7 @@ contains
 
 !> update_network_data
    subroutine update_network_data(time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
       logical :: success_previous
@@ -676,7 +676,7 @@ contains
 
 !> update_subsidence_and_uplift_data
    subroutine update_subsidence_and_uplift_data(time_in_seconds)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
       if (.not. sdu_first) then

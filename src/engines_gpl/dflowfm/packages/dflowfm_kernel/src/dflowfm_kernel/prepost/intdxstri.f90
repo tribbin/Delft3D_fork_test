@@ -31,7 +31,7 @@
 !
 
       subroutine INTDXSTRI(XH, YH, DXS, NPH, JDLA)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          use m_samples
          use m_sferic, only: jsferic, jasfer3D

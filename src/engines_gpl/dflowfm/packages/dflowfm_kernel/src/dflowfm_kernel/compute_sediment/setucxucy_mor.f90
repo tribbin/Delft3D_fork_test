@@ -32,18 +32,18 @@
 
 module m_setucxucy_mor
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: setucxucy_mor
+   public :: setucxucy_mor
 
 contains
 
    ! =================================================================================================
    ! =================================================================================================
    subroutine setucxucy_mor(u1_loc)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flow
       use m_fm_erosed, only: ucxq_mor, ucyq_mor

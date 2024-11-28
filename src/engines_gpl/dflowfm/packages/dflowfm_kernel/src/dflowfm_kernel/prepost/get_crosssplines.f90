@@ -32,7 +32,7 @@
 
 !> get the intersections of a spline with all other splines
 subroutine get_crosssplines(num, xs1, ys1, ncs, ics, Lorient, t, cosphi)
-  use precision, only: dp
+   use precision, only: dp
    use m_splines
    use m_spline2curvi
    use m_alloc

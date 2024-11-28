@@ -32,7 +32,7 @@
 
 !> snap spline to nearest land boundary
 subroutine snap_spline(ispline)
-  use precision, only: dp
+   use precision, only: dp
    use m_confrm
    use m_comp_afinespline
    use m_landboundary

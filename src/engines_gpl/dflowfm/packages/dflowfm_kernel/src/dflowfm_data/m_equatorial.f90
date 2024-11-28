@@ -31,7 +31,7 @@
 !
 
 module m_equatorial
-  use precision, only: dp
+   use precision, only: dp
    real(kind=dp) :: x, fr, Ue0, k, h, g, L, utyp, period, ap, am, om, Zp, ufac
    integer :: nmode = 0, nfreq = 1
    integer :: ndxfreeL, ndxforced, ndtfreeL, ndtforced

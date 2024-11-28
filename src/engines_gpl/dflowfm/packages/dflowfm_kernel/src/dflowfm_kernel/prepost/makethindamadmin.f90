@@ -31,7 +31,7 @@
 !
 
 subroutine makethindamadmin()
-  use precision, only: dp
+   use precision, only: dp
    use m_flowgeom
    use network_data
    use m_alloc

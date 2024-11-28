@@ -32,16 +32,16 @@
 
 module m_setucxqucyq_mor
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: setucxqucyq_mor
+   public :: setucxqucyq_mor
 
 contains
 
    subroutine setucxqucyq_mor(u1, ucxq, ucyq)
-  use precision, only: dp
+      use precision, only: dp
       use m_fm_erosed, only: ucxq_mor, ucyq_mor, hs_mor, link1, link1sign, ndx_mor
       use m_flowgeom, only: ndx, lnx, lnxi, ln, nd, wcx1, wcx2, wcy1, wcy2, csu, snu, bl, lnx1D, kcs
       use m_flow, only: hs, hu, zws, kmx, au, q1, lnkx, ndkx

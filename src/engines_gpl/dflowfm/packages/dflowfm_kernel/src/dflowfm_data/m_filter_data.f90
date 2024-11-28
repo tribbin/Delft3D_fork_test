@@ -31,7 +31,7 @@
 !
 
 module m_filter_data
-  use precision, only: dp
+   use precision, only: dp
    use m_solver
 
    type(tsolver) :: solver_filter

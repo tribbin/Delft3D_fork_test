@@ -106,7 +106,7 @@ contains
 !> Reads the value for a real(kind=dp) variable from a propery tree.
 !! When not found, and error is logged and program stops.
    subroutine get_req_double(prop_ptr, chapter, key, value)
-  use precision, only: dp
+      use precision, only: dp
       type(tree_data), pointer, intent(in) :: prop_ptr
       character(*), intent(in) :: chapter
       character(*), intent(in) :: key

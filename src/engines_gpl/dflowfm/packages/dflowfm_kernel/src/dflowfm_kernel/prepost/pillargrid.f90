@@ -32,7 +32,7 @@
 
 !> create pillar grid in polygon
 subroutine pillargrid(ierror)
-  use precision, only: dp
+   use precision, only: dp
    use m_grid
    use m_gridsettings
    use m_polygon

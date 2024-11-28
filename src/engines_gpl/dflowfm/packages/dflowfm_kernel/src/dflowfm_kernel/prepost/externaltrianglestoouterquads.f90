@@ -31,7 +31,7 @@
 !
 
    subroutine externaltrianglestoouterquads()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_netw
       use m_polygon

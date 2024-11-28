@@ -32,7 +32,7 @@
 
  !> make structured triangular mesh from curvlinear grid
  subroutine maketrigrid()
-  use precision, only: dp
+    use precision, only: dp
     use m_confrm
     use m_cleargrid
     use m_grid, only: nc, mc, xc, yc

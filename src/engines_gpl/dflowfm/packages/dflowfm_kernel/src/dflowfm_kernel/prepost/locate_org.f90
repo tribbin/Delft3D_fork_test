@@ -32,7 +32,7 @@
 
 !> original locate
   subroutine LOCATE_ORG(XX, N, X, J)
-  use precision, only: dp
+     use precision, only: dp
      integer :: N, J
      real(kind=dp) :: XX(N), X
 

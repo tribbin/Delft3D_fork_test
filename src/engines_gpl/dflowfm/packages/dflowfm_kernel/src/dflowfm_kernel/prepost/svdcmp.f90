@@ -33,7 +33,7 @@
 !>  Singular value Decomposition
 !!    from: Numerical Recipes in Fortran 77
       subroutine SVDCMP(A, M, N, MP, NP, W, V)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          real(kind=dp) :: A, W, V
          integer, intent(in) :: m, n, mp, np

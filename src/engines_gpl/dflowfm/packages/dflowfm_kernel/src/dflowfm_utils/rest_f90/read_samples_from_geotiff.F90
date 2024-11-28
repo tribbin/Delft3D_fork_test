@@ -33,7 +33,7 @@
 !> Read samples from a GeoTIFF file.
 !! Samples are being stored in the global dataset of m_samples.
 function read_samples_from_geotiff(filename) result(success)
-use precision, only: dp
+   use precision, only: dp
    use MessageHandling
    use, intrinsic :: iso_c_binding
 #ifdef HAVE_GDAL

@@ -36,7 +36,7 @@ module m_gettaus
    implicit none
 contains
    subroutine gettaus(typout, kernel)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: ndxi
       use m_flow, only: czs, taus
       use m_alloc

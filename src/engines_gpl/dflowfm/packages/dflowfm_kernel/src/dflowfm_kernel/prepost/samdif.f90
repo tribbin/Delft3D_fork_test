@@ -32,7 +32,7 @@
 
 !> take difference of samples with second sample set within tooclose distance
 subroutine samdif()
-  use precision, only: dp
+   use precision, only: dp
 
    use m_polygon
    use m_samples

@@ -31,7 +31,7 @@
 !
 
       subroutine MAKEPLOTAREAS(NUMROW, NUMCOL, nsize)
-  use precision, only: dp
+         use precision, only: dp
          use m_dscreens
          implicit none
          real(kind=dp) :: dx

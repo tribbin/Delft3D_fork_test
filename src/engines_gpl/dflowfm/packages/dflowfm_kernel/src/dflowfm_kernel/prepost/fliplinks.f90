@@ -33,7 +33,7 @@
 !> flip links in quads, when appropriate
 !>   note: we look for a local optimum, which is not necessarily the global one
 subroutine fliplinks()
-  use precision, only: dp
+   use precision, only: dp
    use m_confrm
    use m_comp_ntopo
    use m_netw
@@ -65,7 +65,7 @@ subroutine fliplinks()
 
    integer :: L1L, L1R, L2L, L2R ! other links in triangles connected to link L
 
-   integer :: jacross ! check if two diagonals of a quadrilateral cross 
+   integer :: jacross ! check if two diagonals of a quadrilateral cross
    integer :: jatriangulate ! triangulate all cells prior to link flippingz
    integer :: jalandbound ! take land boundaries into account or not
 

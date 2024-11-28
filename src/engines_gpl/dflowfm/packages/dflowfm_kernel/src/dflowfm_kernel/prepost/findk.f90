@@ -31,7 +31,7 @@
 !
 
    subroutine FINDK(XL, YL, ZL, KV)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       implicit none
       real(kind=dp) :: XL, YL, ZL
@@ -39,7 +39,7 @@
       integer :: k
 
       real(kind=dp) :: RMIN, R, &
-         DX, DY, DZ
+                       DX, DY, DZ
       RMIN = 99d+20
 
       KV = 0

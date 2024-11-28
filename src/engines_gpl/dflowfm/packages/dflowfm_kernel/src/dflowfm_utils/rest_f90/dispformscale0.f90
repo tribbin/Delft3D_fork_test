@@ -31,7 +31,7 @@
 !
 
       subroutine DISPFORMscale0(value, fmt)
-  use precision, only: dp
+         use precision, only: dp
          use m_scalepos
          implicit none
          integer :: n1

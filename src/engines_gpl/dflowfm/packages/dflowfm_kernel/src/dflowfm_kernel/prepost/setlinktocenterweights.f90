@@ -30,7 +30,7 @@
 !
 !
  subroutine setlinktocenterweights() ! set center related linkxy weights
-  use precision, only: dp
+    use precision, only: dp
 
     use m_flow
     use m_netw
@@ -57,7 +57,7 @@
     wcx2 = 0
     wcy2 = 0
     wcL = 0
-    
+
     if (allocated(wcxy)) deallocate (wcxy)
     allocate (wcxy(2, ndx), stat=ierr); wcxy = 0
     call aerr('wcxy (2,ndx)', ierr, 2 * ndx)

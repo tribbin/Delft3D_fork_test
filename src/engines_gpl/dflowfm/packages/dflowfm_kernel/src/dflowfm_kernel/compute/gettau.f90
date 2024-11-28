@@ -30,7 +30,7 @@
 !
 !
 module m_get_tau
-use m_swart, only: swart
+   use m_swart, only: swart
 
    implicit none
 
@@ -44,7 +44,7 @@ use m_swart, only: swart
 
 contains
    subroutine gettau(n, taucurc, czc, jawaveswartdelwaq_par)
-  use precision, only: dp
+      use precision, only: dp
       !
       ! Parameters
       integer :: n
@@ -56,7 +56,7 @@ contains
    end subroutine gettau
 
    subroutine gettau2(n, taucurc, czc, ustw2, jawaveswartdelwaq_par)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flow
       use m_waves

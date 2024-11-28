@@ -31,7 +31,7 @@
 !
 
   subroutine ONELINE(K) ! TWEE LIJNTJES WORDEN 1
-  use precision, only: dp
+     use precision, only: dp
      use m_delnode, only: delnode
      use m_connect, only: connect
      use m_netw

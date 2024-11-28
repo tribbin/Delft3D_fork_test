@@ -30,11 +30,11 @@
 !
 !
 module m_dlimiter_nonequi
-    implicit none
+   implicit none
 contains
 !> MC limiter function for non-equidistant grid
    real(kind=dp) function dlimiter_nonequi(d1, d2, alpha, s)
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp), intent(in) :: d1, d2 !< left and right slopes
       real(kind=dp), intent(in) :: alpha !< interface distance

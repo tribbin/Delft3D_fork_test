@@ -31,7 +31,7 @@
 !
 
 module m_profiles
-  use precision, only: dp
+   use precision, only: dp
    ! profile related :
    type tprof !< this is a profile type
       integer :: ityp !< 1 = circle, 2=rectan1dlumped, 3=rectan2d, 9=yzlumped, 10=yzconveyance

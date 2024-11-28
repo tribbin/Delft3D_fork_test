@@ -32,7 +32,7 @@
 
 ! update m_wind::vextcum(:) with the realized inflow from m_wind::qextreal(:)
 subroutine updateCumulativeInflow(deltat)
-  use precision, only: dp
+   use precision, only: dp
    use m_wind
    use m_flowgeom, only: ndx
 

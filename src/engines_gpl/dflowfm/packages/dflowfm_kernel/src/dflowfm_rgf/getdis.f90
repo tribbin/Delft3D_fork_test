@@ -33,7 +33,7 @@ module m_getdis
    implicit none
 contains
    subroutine GETDIS(X, Y, X2, Y2, N, TS, SS, H)
-  use precision, only: dp
+      use precision, only: dp
 
       use geometry_module, only: dbdistance
       use m_missing, only: dmiss

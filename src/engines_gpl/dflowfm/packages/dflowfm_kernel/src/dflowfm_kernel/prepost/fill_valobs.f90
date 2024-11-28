@@ -32,7 +32,7 @@
 
 ! fill observation stations array
 subroutine fill_valobs()
-  use precision, only: dp
+   use precision, only: dp
    use m_linkstocentercartcomp
    use m_flow
    use m_flowtimes

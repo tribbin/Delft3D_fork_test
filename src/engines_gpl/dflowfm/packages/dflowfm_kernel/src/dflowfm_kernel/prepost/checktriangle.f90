@@ -32,16 +32,16 @@
 
 module m_checktriangle
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: checktriangle
+   public :: checktriangle
 
 contains
 
    subroutine CHECKTRIANGLE(N, JA, phimin, phimax)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_samples
       use m_ec_triangle

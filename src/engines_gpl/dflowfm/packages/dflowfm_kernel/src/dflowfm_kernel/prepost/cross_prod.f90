@@ -33,20 +33,20 @@
 !> cross product
 module m_cross_prod
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: cross_prod
+   public :: cross_prod
 
 contains
 
-real(kind=dp) function cross_prod(a, b)
-  use precision, only: dp
-   real(kind=dp), dimension(2) :: a, b
+   real(kind=dp) function cross_prod(a, b)
+      use precision, only: dp
+      real(kind=dp), dimension(2) :: a, b
 
-   cross_prod = a(1) * b(2) - a(2) * b(1)
+      cross_prod = a(1) * b(2) - a(2) * b(1)
 
-end function cross_prod
+   end function cross_prod
 
 end module m_cross_prod

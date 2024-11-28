@@ -32,7 +32,7 @@
 
 !>    return x-component in link coordinate frame of vector in "klnup"-node coordinate frame
       real(kind=dp) function nodup2linx(L, ib, ux, uy)
-  use precision, only: dp
+         use precision, only: dp
          use m_flowgeom, only: csbup, snbup
          use m_sferic
          implicit none

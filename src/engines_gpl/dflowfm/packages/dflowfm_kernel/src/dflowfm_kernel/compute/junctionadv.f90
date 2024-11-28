@@ -32,14 +32,14 @@
 
 module m_junctionadv
 
-implicit none
+   implicit none
 
 contains
 
    ! =================================================================================================
    ! =================================================================================================
    subroutine junctionadv()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: lnx1d, ln, nd
       use m_flow, only: q1
       use m_fm_erosed, only: q_zeta

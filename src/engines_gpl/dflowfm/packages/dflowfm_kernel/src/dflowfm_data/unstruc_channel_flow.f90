@@ -31,7 +31,7 @@
 !
 
 module unstruc_channel_flow
-  use precision, only: dp
+   use precision, only: dp
    use m_network
    implicit none
    type(t_network), target :: network

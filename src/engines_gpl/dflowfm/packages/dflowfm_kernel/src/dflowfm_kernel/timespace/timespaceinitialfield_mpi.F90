@@ -31,7 +31,7 @@
 !
 module m_timespaceinitialfield_mpi
 
-implicit none
+   implicit none
 
 contains
    !> perform interpolation on rank 0 only (and save some memory with multiple ranks on one node)

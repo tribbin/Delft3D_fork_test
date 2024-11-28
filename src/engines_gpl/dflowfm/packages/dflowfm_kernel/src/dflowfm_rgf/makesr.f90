@@ -34,7 +34,7 @@ module m_makesr
 contains
 
    subroutine MAKESR(AR, S0, S1, SR, MFAC)
-  use precision, only: dp
+      use precision, only: dp
       integer :: mfac
       real(kind=dp) :: ar, s0, s1
       real(kind=dp) :: SR(MFAC + 1)

@@ -31,7 +31,7 @@
 !
 
 module m_timer
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer, parameter :: jatimer = 1 !< time parallel solver (1) or not (0)
    integer, parameter :: NUMT = 29 !< number of timings
@@ -118,7 +118,7 @@ contains
 
 !> start the timer
    subroutine starttimer(itvar)
-  use precision, only: dp
+      use precision, only: dp
       use m_wall_clock_time
       implicit none
 
@@ -144,7 +144,7 @@ contains
 
 !> stop the timer
    subroutine stoptimer(itvar)
-  use precision, only: dp
+      use precision, only: dp
       use MessageHandling
       use m_wall_clock_time
 
@@ -181,7 +181,7 @@ contains
 
    !> get timer value
    real(kind=dp) function gettimer(itype, itvar)
-  use precision, only: dp
+      use precision, only: dp
       implicit none
       integer, intent(in) :: itype !< timer type, cpu-time (0) or wall-clock time (other)
       integer, intent(in) :: itvar !< timer number

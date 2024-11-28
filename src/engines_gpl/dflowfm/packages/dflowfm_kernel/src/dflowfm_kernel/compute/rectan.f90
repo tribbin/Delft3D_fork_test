@@ -31,7 +31,7 @@
 !
 
 subroutine rectan(hpr, br, hr, area, width, japerim, perim, closed)
-  use precision, only: dp
+   use precision, only: dp
    use m_flow, only: slotw1D
    use m_longculverts, only: newculverts
    implicit none

@@ -32,16 +32,16 @@
 
 module m_setwavmubnd
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: setwavmubnd
+   public :: setwavmubnd
 
 contains
 
    subroutine setwavmubnd()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flowparameters
       use fm_external_forcings_data

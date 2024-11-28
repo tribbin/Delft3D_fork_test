@@ -31,7 +31,7 @@
 !
 
       subroutine RSORT3(X, Y, Z, N)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: j
          integer :: j1

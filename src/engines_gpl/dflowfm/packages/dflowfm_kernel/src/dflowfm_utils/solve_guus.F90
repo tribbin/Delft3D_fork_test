@@ -624,7 +624,7 @@
     use m_netw, only: xzw, yzw
     use unstruc_model, only: md_ident
     use m_qnerror
-    
+
     implicit none
     integer :: ndx, its
     real(kind=dp) :: s1(ndx)
@@ -1668,7 +1668,7 @@
     use m_partitioninfo
     use m_readyy
     use m_saad, only: inisaad
-    
+
     implicit none
 
     integer :: Ndx, Lnx
@@ -2396,7 +2396,7 @@
     real(kind=dp) :: res ! residual
     real(kind=dp) :: dum
     real(kind=dp) :: beta, val
-    
+
     integer, parameter :: MAXITER = 100
     integer :: iter, its
     integer :: i, jj, n, na

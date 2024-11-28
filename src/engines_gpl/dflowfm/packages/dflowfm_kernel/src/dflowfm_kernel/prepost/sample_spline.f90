@@ -34,7 +34,7 @@ module m_sample_spline
 contains
 !> sample a spline
    subroutine sample_spline(num, xs, ys, numref, Nr, xr, yr, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_splines
       use m_alloc
       use m_splint

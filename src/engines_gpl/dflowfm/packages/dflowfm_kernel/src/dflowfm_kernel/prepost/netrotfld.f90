@@ -33,7 +33,7 @@
 !>  network field rotate
 !!     It is assumed that there is a backup copy of the grid.
 subroutine netrotfld(xp, yp, kp)
-  use precision, only: dp
+   use precision, only: dp
    use m_teknet
    use m_confrm
    use m_netw

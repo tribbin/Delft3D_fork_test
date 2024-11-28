@@ -37,8 +37,8 @@
                         mmax, nmax, imax, &
                         M1, N1, M2, N2, MC, NC, &
                         MFAC, NFAC, IJYES)
-           use precision, only: dp
-           use m_missing
+         use precision, only: dp
+         use m_missing
          use m_splint
          use m_readyy
          use m_get_ij
@@ -46,22 +46,22 @@
 
          integer :: mmax, nmax, imax, m1, n1, m2, n2, mc, nc, mfac, nfac
          real(kind=dp) :: X(MMAX, NMAX), XR(MMAX, NMAX), &
-            Y(MMAX, NMAX), YR(MMAX, NMAX), &
-            XI2(MMAX, NMAX), XJ2(MMAX, NMAX), &
-            YI2(MMAX, NMAX), YJ2(MMAX, NMAX), &
-            XH1(IMAX), XH21(IMAX), &
-            XH2(IMAX), XH22(IMAX), &
-            XH3(IMAX), XH23(IMAX), &
-            XH4(IMAX), XH24(IMAX), &
-            YH1(IMAX), YH21(IMAX), &
-            YH2(IMAX), YH22(IMAX), &
-            YH3(IMAX), YH23(IMAX), &
-            YH4(IMAX), YH24(IMAX), &
-            X1(IMAX), Y1(IMAX), &
-            X2(IMAX), Y2(IMAX), &
-            X3(IMAX), Y3(IMAX), &
-            X4(IMAX), Y4(IMAX), &
-            XRH(MMAX, NMAX), YRH(MMAX, NMAX)
+                          Y(MMAX, NMAX), YR(MMAX, NMAX), &
+                          XI2(MMAX, NMAX), XJ2(MMAX, NMAX), &
+                          YI2(MMAX, NMAX), YJ2(MMAX, NMAX), &
+                          XH1(IMAX), XH21(IMAX), &
+                          XH2(IMAX), XH22(IMAX), &
+                          XH3(IMAX), XH23(IMAX), &
+                          XH4(IMAX), XH24(IMAX), &
+                          YH1(IMAX), YH21(IMAX), &
+                          YH2(IMAX), YH22(IMAX), &
+                          YH3(IMAX), YH23(IMAX), &
+                          YH4(IMAX), YH24(IMAX), &
+                          X1(IMAX), Y1(IMAX), &
+                          X2(IMAX), Y2(IMAX), &
+                          X3(IMAX), Y3(IMAX), &
+                          X4(IMAX), Y4(IMAX), &
+                          XRH(MMAX, NMAX), YRH(MMAX, NMAX)
          integer IJYES(MMAX, NMAX)
 
          real(kind=dp) :: af, TI, TJ

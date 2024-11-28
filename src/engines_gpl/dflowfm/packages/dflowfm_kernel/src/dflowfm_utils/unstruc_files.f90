@@ -136,7 +136,7 @@ contains
 !!
 !! When an output directory is configured, the filename is also prefixed with that, unless switched off by prefixWithDirectory=.false..
    function defaultFilename(filecat, timestamp, prefixWithDirectory, allowWildcard)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_model
       use m_flowtimes
       use time_module, only: seconds_to_datetimestring
@@ -479,7 +479,7 @@ contains
       filebase = ' '
       filebase = filename(L1:L2)
    end subroutine basename
-   
+
 !> Resolves an input path (typically a file path) to its
 !! actual location. This routine selects whether the path
 !! needs to be resolved relative to a given basedir, or

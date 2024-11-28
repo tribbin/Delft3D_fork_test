@@ -33,7 +33,7 @@
 !>  regularise spline2curvi grid
 !>     note: there is an asymmetry, but this procedure is intended for regularisation only
 subroutine regularise_spline2curvigrid()
-  use precision, only: dp
+   use precision, only: dp
    use m_grid
    use m_spline2curvi, only: dtolLR
    use m_missing, only: dmiss

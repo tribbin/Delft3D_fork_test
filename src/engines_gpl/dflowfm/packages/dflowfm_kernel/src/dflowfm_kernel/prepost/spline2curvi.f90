@@ -32,7 +32,7 @@
 
 !> generate curvilinear grid from spline
 subroutine spline2curvi()
-  use precision, only: dp
+   use precision, only: dp
 
    use m_confrm
    use m_comp_edgevel

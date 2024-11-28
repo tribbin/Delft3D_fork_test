@@ -32,7 +32,7 @@
 
 !> refine cells by splitting links
 subroutine refinecellsandfaces2()
-  use precision, only: dp
+   use precision, only: dp
    use m_deallocate_samplehessian, only: deallocate_samplehessian
    use m_connect_hanging_nodes, only: connect_hanging_nodes
    use m_write_illegal_cells_to_pol, only: write_illegal_cells_to_pol
@@ -434,7 +434,7 @@ contains
 
 !> compute refinement criterion from sample data
    subroutine compute_jarefine(jarefine, jalink, jakdtree, ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_samples
       use m_ec_interpolationsettings
@@ -551,7 +551,7 @@ contains
 !> compute refinement criterion in a polygon
 !>    always based on averaging2 or bilinarc
    subroutine compute_jarefine_poly(ic, N, x, y, jarefine, jarefinelink, jakdtree, Lhang)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_ec_interpolationsettings
       use m_samples, only: NS, xs, ys, zs
@@ -942,7 +942,7 @@ contains
 
 !> refine the cells, based on a cell and link refinement mask
    subroutine refine_cells(jarefine, jalink, linkbrother, ierror)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_comp_middle_latitude
       use geometry_module, only: getcircumcenter
@@ -1362,7 +1362,7 @@ contains
 !> find the brother links
 !>    hanging nodes are assumed to have two consecutive brother links
    subroutine find_linkbrothers(linkbrother)
-  use precision, only: dp
+      use precision, only: dp
       use m_comp_middle_latitude
       use m_netw
       use m_sferic

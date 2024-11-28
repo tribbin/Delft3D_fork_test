@@ -33,7 +33,7 @@ module m_sub_polygon
    implicit none
 contains
    subroutine POLYGON(X, Y, N, NCOL)
-  use precision, only: dp
+      use precision, only: dp
       use m_colnow
       use m_set_col
       use m_lnabs

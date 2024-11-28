@@ -34,7 +34,7 @@ module m_delete_cell
 contains
 !> delete cell and update administration (no direct need for findcells afterwards)
    subroutine deletecell(k, ndirect, nindirect, kdirect, kindirect, kne, Lprompt_nogo, jadeleted)
-  use precision, only: dp
+      use precision, only: dp
       use m_confrm
       use m_netw
       use m_missing

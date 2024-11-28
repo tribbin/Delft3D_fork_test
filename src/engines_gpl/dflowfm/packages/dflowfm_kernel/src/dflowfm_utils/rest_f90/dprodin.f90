@@ -31,7 +31,7 @@
 !
 
  real(kind=dp) function dprodin(x1, y1, x2, y2, x3, y3, x4, y4) ! inner product of two segments
-  use precision, only: dp
+    use precision, only: dp
     use m_missing
     use m_sferic
     use geometry_module, only: getdx, getdy, sphertoCart3D

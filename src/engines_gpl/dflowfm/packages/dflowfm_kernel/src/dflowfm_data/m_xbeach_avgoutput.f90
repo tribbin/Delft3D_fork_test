@@ -31,7 +31,7 @@
 !
 
 module m_xbeach_avgoutput
-  use precision, only: dp
+   use precision, only: dp
 
    real(kind=dp), allocatable :: H_mean(:), H_var(:), H_min(:), H_max(:), H_varcross(:), H_varsquare(:) !< Sign wave height
    real(kind=dp), allocatable :: urms_mean(:), urms_var(:), urms_max(:), urms_min(:), urms_varcross(:), urms_varsquare(:) !< orbital velocity
@@ -47,8 +47,8 @@ module m_xbeach_avgoutput
    real(kind=dp), allocatable :: ucx_mean(:), ucx_var(:), ucx_min(:), ucx_max(:), ucx_varcross(:), ucx_varsquare(:) !< velocity
    real(kind=dp), allocatable :: ucy_mean(:), ucy_var(:), ucy_min(:), ucy_max(:), ucy_varcross(:), ucy_varsquare(:) !< velocity
    real(kind=dp), allocatable :: thetamean_mean(:), thetamean_var(:), thetamean_min(:), thetamean_max(:), & !< wave direction
-      thetamean_varcross(:), thetamean_varsquare(:), &
-      thetamean_sin(:), thetamean_cos(:)
+                                 thetamean_varcross(:), thetamean_varsquare(:), &
+                                 thetamean_sin(:), thetamean_cos(:)
    real(kind=dp), allocatable :: cwav_mean(:), cwav_var(:), cwav_min(:), cwav_max(:), cwav_varcross(:), cwav_varsquare(:) !< phase velocity
    real(kind=dp), allocatable :: cgwav_mean(:), cgwav_var(:), cgwav_min(:), cgwav_max(:), cgwav_varcross(:), cgwav_varsquare(:) !< group velocity
    real(kind=dp), allocatable :: sigmwav_mean(:), sigmwav_var(:), sigmwav_min(:), sigmwav_max(:), sigmwav_varcross(:), sigmwav_varsquare(:) !< relative freq

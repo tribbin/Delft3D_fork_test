@@ -34,7 +34,7 @@
      !! Counts the number of splines and the maximum length and moves all
      !! All splines with <=1 point are reset and moved to the back.
      subroutine CHECKSPL(X, Y, mmax, nmax, MCS, NCS)
-  use precision, only: dp
+        use precision, only: dp
         use m_missing
         use m_numpold
         implicit none

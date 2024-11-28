@@ -31,7 +31,7 @@
 !
 
 module m_samples_refine ! used in refinecellsandfaces2 and in sample paths
-  use precision, only: dp
+   use precision, only: dp
    integer :: NDIM = 5 !< sample vector dimension
    real(kind=dp), allocatable, dimension(:, :, :) :: zss !< sample data [zs, direction vector x-component, direction vector y-component, refinement criterion, ridge distance], dim(NDIM,MXSAM,MYSAM)
 

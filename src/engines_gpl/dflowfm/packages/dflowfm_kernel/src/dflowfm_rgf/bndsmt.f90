@@ -32,7 +32,7 @@
 
 !*******************  BOUNDARY TREATMENT *****************************
       subroutine BNDSMT(XR, YR, XI2, YI2, XJ2, YJ2, ATP, M1, N1, M2, N2)
-  use precision, only: dp
+         use precision, only: dp
          use m_grid
          use m_gridsettings
          use m_get_ij
@@ -77,8 +77,8 @@
 !     EN PROJECTIE OP SPLINE VAN NABIJ PUNT (BFAC = 1)
 !     BIJ NCODE IS 5, INT(ERNAL) HORIZONTAAL, 6 = VERTICAAL
          real(kind=dp) :: XR(MMAX, NMAX), YR(MMAX, NMAX), &
-            XI2(MMAX, NMAX), XJ2(MMAX, NMAX), ATP(MMAX, NMAX), &
-            YI2(MMAX, NMAX), YJ2(MMAX, NMAX)
+                          XI2(MMAX, NMAX), XJ2(MMAX, NMAX), ATP(MMAX, NMAX), &
+                          YI2(MMAX, NMAX), YJ2(MMAX, NMAX)
 
          real(kind=dp), allocatable :: XH(:), YH(:), XH2(:), YH2(:)
          real(kind=dp) :: XX1, XX2, YY1, YY2, TV, XV, YV, XV2, YV2, DIS

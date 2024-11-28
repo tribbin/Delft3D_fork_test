@@ -34,7 +34,7 @@
                          Y1, Y2, Y3, Y4, &
                          IMX, MX, NX, XRH, YRH)
 
-        use precision, only: dp
+         use precision, only: dp
          use M_GRIDSETTINGS
          use m_orthosettings, only: ITIN
          implicit none
@@ -50,13 +50,13 @@
          integer :: nx
          real(kind=dp) :: wa
          real(kind=dp), dimension(:, :), allocatable :: X1V, Y1V, X2V, Y2V, &
-            X3V, Y3V, X4V, Y4V, &
-            SI, SJ, W1, W2, W3, W4
+                                                        X3V, Y3V, X4V, Y4V, &
+                                                        SI, SJ, W1, W2, W3, W4
          real(kind=dp), dimension(:), allocatable :: D1, D2, D3, D4, TI, TJ
 
          real(kind=dp) :: XRH(MX, NX), YRH(MX, NX), &
-            X1(IMX), X2(IMX), X3(IMX), X4(IMX), &
-            Y1(IMX), Y2(IMX), Y3(IMX), Y4(IMX)
+                          X1(IMX), X2(IMX), X3(IMX), X4(IMX), &
+                          Y1(IMX), Y2(IMX), Y3(IMX), Y4(IMX)
          real(kind=dp) :: RI, RJ, T1, T2, T3, T4
 
 !     1,2    VERTICALEN

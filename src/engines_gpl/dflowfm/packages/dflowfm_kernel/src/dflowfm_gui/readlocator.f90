@@ -33,7 +33,7 @@ module m_readlocator
    implicit none
 contains
    subroutine READLOCATOR(X, Y, KEY)
-  use precision, only: dp
+      use precision, only: dp
       use m_wearelt
       use m_devices
       use m_partitioninfo, only: jampi

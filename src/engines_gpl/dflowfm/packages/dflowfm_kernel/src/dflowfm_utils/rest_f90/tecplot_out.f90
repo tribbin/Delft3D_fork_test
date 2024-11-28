@@ -33,7 +33,7 @@
 !> Write tecplot output in already opened file
 !>   note: file is closed when tim==tstop
    subroutine tecplot_out(mtecfil, tim, Lwriheader)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom
       use m_flow

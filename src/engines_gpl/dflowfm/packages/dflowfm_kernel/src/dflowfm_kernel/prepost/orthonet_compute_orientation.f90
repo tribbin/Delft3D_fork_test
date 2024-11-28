@@ -32,7 +32,7 @@
 
 !>  compute the orientation of a cell by SVD
 subroutine orthonet_compute_orientation(aspect, uu1, vv1, uu2, vv2, i)
-  use precision, only: dp
+   use precision, only: dp
    use m_netw
    use m_sferic
    use m_alloc

@@ -31,7 +31,7 @@
 !
 
  subroutine setcornertolinkorientations()
-  use precision, only: dp
+    use precision, only: dp
     use m_flowgeom
     use network_data, only: xk, yk
     use m_sferic

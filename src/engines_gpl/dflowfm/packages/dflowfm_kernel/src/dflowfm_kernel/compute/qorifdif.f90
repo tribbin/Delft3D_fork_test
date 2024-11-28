@@ -33,7 +33,7 @@ module m_qorifdif
    implicit none
 contains
    subroutine qorifdif(hg, d, h1, h3, h2, qd)
-  use precision, only: dp
+      use precision, only: dp
       use m_getq1
       use m_getq2
       real(kind=dp) :: hg, d, h1, h3, h2, qd

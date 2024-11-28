@@ -32,7 +32,7 @@
 
 !> check if a link is close to a land boundary segment
 subroutine linkcrossedbyland(L, jstart, jend, jland, jacross)
-  use precision, only: dp
+   use precision, only: dp
 
    use m_netw
    use m_landboundary

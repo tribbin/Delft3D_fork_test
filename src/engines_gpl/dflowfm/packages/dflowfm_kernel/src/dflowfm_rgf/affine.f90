@@ -31,7 +31,7 @@
 !
 
       subroutine AFFINE(XX, YY, XG, YG, INI)
-  use precision, only: dp
+         use precision, only: dp
          use M_BITMAP
          use string_module, only: find_first_letter
          use m_qnerror

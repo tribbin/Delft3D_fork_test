@@ -32,7 +32,7 @@
 
 !>    return x-component in link coordinate frame of vector in node coordinate frame
       real(kind=dp) function nod2linx(L, i12, ux, uy)
-  use precision, only: dp
+         use precision, only: dp
          use m_flowgeom, only: csb, snb
          use m_sferic
          implicit none

@@ -32,7 +32,7 @@
 
 ! todo: MERGE THIS WITH UNSTRUC_BOUNDARIES
 module m_bnd !< boundary-type module
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer, parameter :: NAMLEN = 128
 

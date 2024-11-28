@@ -31,7 +31,7 @@
 !
 
   subroutine renumber_cutcellmasks(perm)
-  use precision, only: dp
+     use precision, only: dp
      use network_data, only: numL
      use m_cutcells
      implicit none

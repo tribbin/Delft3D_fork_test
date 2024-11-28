@@ -67,7 +67,7 @@ contains
 
    !> Find flow link number(s) intersected by a given polyline.
    function findlink_by_pli(npl, xpl, ypl, Larr, numlinks, lftopol, sortlinks, linktype) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: xz, yz, ln, lnx, lnx1D
       use stdlib_sorting, only: sort_index
       use dfm_error
@@ -174,7 +174,7 @@ contains
 
    !> Find the nearest flow link number for a given location, using (branch index, chainage).
    function findlink_by_branchindex(branchindex, chainage, L) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_channel_flow
       use dfm_error
 
@@ -196,7 +196,7 @@ contains
 
    !> Find the nearest flow link number for a given location, using (branch id, chainage).
    function findlink_by_branchid(branchid, chainage, L) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_channel_flow
       use m_hash_search
       use dfm_error
@@ -330,7 +330,7 @@ contains
 
    !> find flow node number(s), enclosed in a polygon
    function findnode_by_pol(npol, xpol, ypol, points, numpoints, nodetype) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: xz, yz, ndx2D, ndxi
       use messagehandling
       use m_polygon, only: xpl, ypl, npl, increasepol
@@ -424,7 +424,7 @@ contains
 
    !> find the flow node number, using (branch id, chainage).
    function findnode_by_branchid(branchId, chainage, nodenr) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_hash_search
       use unstruc_channel_flow
       use dfm_error
@@ -450,7 +450,7 @@ contains
 
    !> Find the flow node number, using (branch index, chainage).
    function findnode_by_branchindex(branchIndex, chainage, nodenr) result(ierr)
-  use precision, only: dp
+      use precision, only: dp
       use m_hash_search
       use unstruc_channel_flow
       use dfm_error

@@ -31,7 +31,7 @@
 !
 
       subroutine DOSMOOTH(NFLD)
-  use precision, only: dp
+         use precision, only: dp
          use m_gridsettings
          use m_grid
          use unstruc_colors
@@ -50,7 +50,7 @@
 
          integer :: MD, ND, M1, M2, N1, N2, JS, I, J, K, JA1, JA2
          real(kind=dp) :: R1, R2, R3, FR, XX, YY, X21, X22, Y21, Y22, X41, X42, Y41, Y42, &
-            A, B, TV1, TV2
+                          A, B, TV1, TV2
 
          allocate (XH(MMAX, NMAX), YH(MMAX, NMAX))
 

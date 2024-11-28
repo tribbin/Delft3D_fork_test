@@ -32,16 +32,16 @@
 
 module m_fm_mor_maxtimestep
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: fm_mor_maxtimestep
+   public :: fm_mor_maxtimestep
 
 contains
 
    subroutine fm_mor_maxtimestep()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowtimes, only: dts
       use m_flow, only: eps10, jamapflowanalysis, kkcflmx, limitingTimestepEstimation
       use m_flowgeom, only: acl, ba, csu, snu, wu

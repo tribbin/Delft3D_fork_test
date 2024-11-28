@@ -32,7 +32,7 @@
 
 ! make the dual mesh
 subroutine make_dual_mesh()
-  use precision, only: dp
+   use precision, only: dp
    use m_alloc
    use m_missing
    use network_data

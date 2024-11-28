@@ -328,7 +328,7 @@ end module wrwaq
 module waq
    use unstruc_messages
    use m_getkbotktopmax
-use precision, only: dp
+   use precision, only: dp
 
    implicit none
 

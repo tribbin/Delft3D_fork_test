@@ -33,7 +33,7 @@
 !> network field move
 !!   Is is assumed that there is a backup copy of the grid.
 subroutine netmodfld(xp, yp, kp)
-  use precision, only: dp
+   use precision, only: dp
    use m_netw
    use m_grid
    use m_alloc

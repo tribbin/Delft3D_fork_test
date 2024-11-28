@@ -31,7 +31,7 @@
 !
 
       subroutine DISPFORM(value, fmt)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          integer :: n1
          integer :: n2

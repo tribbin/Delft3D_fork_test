@@ -31,7 +31,7 @@
 !
 
       subroutine FINDNM(XL, YL, X, Y, mmax, nmax, MC, NC, INSIDE, MV, NV, IN, JN, wf)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          use geometry_module, only: pinpok
          implicit none

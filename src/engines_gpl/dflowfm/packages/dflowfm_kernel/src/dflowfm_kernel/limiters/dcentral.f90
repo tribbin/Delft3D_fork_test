@@ -33,7 +33,7 @@ module m_dcentral
    implicit none
 contains
    real(kind=dp) function dcentral(d1, d2) ! twee maal vergroot vanwege acl
-  use precision, only: dp
+      use precision, only: dp
       use m_dcminmod
       real(kind=dp) d1, d2
 

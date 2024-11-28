@@ -32,18 +32,18 @@
 
 module m_rearst
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: rearst
+   public :: rearst
 
 contains
 
    !> Reads raw restart data from a formatted restart file by wrirst.
    !! Water levels and velocities are directly stored into the flow arrays.
    subroutine REARST(Mrst, JA)
-     use precision, only: dp
+      use precision, only: dp
       use unstruc_model
       use UNSTRUC_MESSAGES
       use M_FLOWTIMES

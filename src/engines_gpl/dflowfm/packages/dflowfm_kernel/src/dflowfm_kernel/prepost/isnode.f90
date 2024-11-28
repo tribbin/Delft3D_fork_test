@@ -31,7 +31,7 @@
 !
 
   subroutine ISNODE(KP, XP, YP, ZP)
-  use precision, only: dp
+     use precision, only: dp
 
      use m_netw
      use m_wearelt, only: cr, rcir

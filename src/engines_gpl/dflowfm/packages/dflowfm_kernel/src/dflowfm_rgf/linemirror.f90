@@ -31,7 +31,7 @@
 !
 
       subroutine LINEMIRROR() !X, Y, mmax, nmax, MC, NC, IJC,IJYES)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          use m_grid
          use m_gridsettings

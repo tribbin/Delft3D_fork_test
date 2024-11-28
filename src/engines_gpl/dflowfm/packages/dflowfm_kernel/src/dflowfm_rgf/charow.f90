@@ -31,7 +31,7 @@
 !
 
       subroutine CHAROW(X, mmax, nmax, I1, I2, NUMSPL)
-  use precision, only: dp
+         use precision, only: dp
 !     VERWISSEL RIJ I1 EN I2
 !      USE DIMENS
          implicit none

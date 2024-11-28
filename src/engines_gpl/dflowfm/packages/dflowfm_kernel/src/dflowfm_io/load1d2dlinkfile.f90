@@ -32,14 +32,14 @@
 
 module m_load1d2dlinkfile
 
-implicit none
+   implicit none
 
 contains
 
    !> Reads custom parameters for 1D2D links from a *.ini file,
    !! and assigns them to the correct flow links.
    subroutine load1D2DLinkFile(filename)
-  use precision, only: dp
+      use precision, only: dp
       use string_module, only: strcmpi
       use m_flowgeom, only: lnx1d, kcu, wu1D2D, hh1D2D, lnx, lnx1D
       use m_inquire_flowgeom

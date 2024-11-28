@@ -31,7 +31,7 @@
 !
 
 module m_xbeach_data
-  use precision, only: dp
+   use precision, only: dp
    use m_xbeach_typesandkinds
    !==================================================================================================================================
    ! XBeach related variables

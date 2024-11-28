@@ -32,7 +32,7 @@
 
 !> interpolation of sample data to network nodes, in curvilinear grid coordinates
 subroutine sam2net_curvi(numk, xk, yk, zk)
-  use precision, only: dp
+   use precision, only: dp
    use m_disable_outside_curvigrid, only: disable_outside_curvigrid
    use m_confrm
    use m_grid

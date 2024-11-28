@@ -32,16 +32,16 @@
 
 module m_checktrianglenetcell
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: checktrianglenetcell
+   public :: checktrianglenetcell
 
 contains
 
    subroutine CHECKTRIANGLEnetcell(N, JA, phimin, phimax)
-  use precision, only: dp
+      use precision, only: dp
       use M_netw
       use M_SFERIC
       use m_ec_triangle

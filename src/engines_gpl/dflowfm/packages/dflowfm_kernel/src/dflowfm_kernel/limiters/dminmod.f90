@@ -34,7 +34,7 @@ module m_dminmod
 contains
 
    real(kind=dp) function dminmod(d1, d2) ! twee maal vergroot vanwege acl
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp) d1, d2
       if (d1 * d2 > 0d0) then

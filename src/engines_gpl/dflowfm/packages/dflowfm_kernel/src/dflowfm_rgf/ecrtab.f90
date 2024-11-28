@@ -31,7 +31,7 @@
 !
 
       subroutine ECRTAB(X, MC, NC, MRGF, HALF, mmax, nmax)
-  use precision, only: dp
+         use precision, only: dp
          use m_readyy
          implicit none
          real(kind=dp) :: af

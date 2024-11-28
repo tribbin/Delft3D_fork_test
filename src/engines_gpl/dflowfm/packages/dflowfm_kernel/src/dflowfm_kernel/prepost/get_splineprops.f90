@@ -32,7 +32,7 @@
 
 !> derive center spline propererties from cross splines
 subroutine get_splineprops(mcs_old, id, iLRmfac)
-  use precision, only: dp
+   use precision, only: dp
 
    use m_allocate_splineprops, only: allocate_splineprops
    use m_splines

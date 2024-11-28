@@ -33,7 +33,7 @@ module m_htext
    implicit none
 contains
    subroutine HTEXT(VAL, X, Y)
-  use precision, only: dp
+      use precision, only: dp
       use m_colnow
       use m_draw_text
 

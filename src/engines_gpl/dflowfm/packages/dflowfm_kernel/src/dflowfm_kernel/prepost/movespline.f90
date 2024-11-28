@@ -32,7 +32,7 @@
 
 !>    move a whole spline
       subroutine movespline(ispline, inode, xp, yp)
-  use precision, only: dp
+         use precision, only: dp
          use m_splines
          implicit none
 

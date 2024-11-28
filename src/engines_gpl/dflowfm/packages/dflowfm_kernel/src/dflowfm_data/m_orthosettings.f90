@@ -32,7 +32,7 @@
 
 !> Orthogonalisation settings, both for regular grids and unstructured nets.
 module m_orthosettings
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer :: ITATP = 2 !< Nr. of outer    iterations in grid/net orthogonalisation.
    integer :: ITBND = 25 !< Nr. of boundary iterations in grid/net orthogonalisation. (within ITATP)

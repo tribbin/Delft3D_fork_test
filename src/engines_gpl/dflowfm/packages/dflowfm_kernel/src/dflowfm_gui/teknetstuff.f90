@@ -31,17 +31,16 @@
 !
 
 module m_teknetstuff
-use m_tekpreviousnet
-use m_teknodevals
-use m_teknodenums
+   use m_tekpreviousnet
+   use m_teknodevals
+   use m_teknodenums
 
-
-implicit none
+   implicit none
 
 contains
 
    subroutine TEKNETSTUFF(key)
-  use precision, only: dp
+      use precision, only: dp
       use m_teknetcells
       use m_teknet
       use m_teklinkvals

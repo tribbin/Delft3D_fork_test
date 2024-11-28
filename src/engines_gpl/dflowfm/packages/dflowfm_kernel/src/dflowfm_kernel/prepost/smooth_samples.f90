@@ -33,7 +33,7 @@
 !> smooth structured sample data and put it in zss(1,:,:)
 !>    D u/ D t = div grad u
 subroutine smooth_samples(MXSAM, MYSAM, NS, NDIM, Nsamplesmooth, zs, zss)
-  use precision, only: dp
+   use precision, only: dp
 !   use m_samples
 !   use m_samples_refine
    use m_missing

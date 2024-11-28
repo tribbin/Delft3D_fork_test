@@ -1,5 +1,5 @@
 module m_1d2d_fixedweirs
-  use precision, only: dp
+   use precision, only: dp
 
    implicit none
    private
@@ -256,7 +256,7 @@ contains
          zs = bob(1, L)
 
          s1p_1d = s1(k1d)
-         if (comparereal(b0_2dv(i), 0d0)/=0) then
+         if (comparereal(b0_2dv(i), 0d0) /= 0) then
             s1_2dv(i) = d1p_2dv(i) / b0_2dv(i) - (b0_2di(i) / b0_2dv(i)) * s1(k2d)
          else
             s1_2dv(i) = s1(k2d)
@@ -385,7 +385,7 @@ contains
 
    !> Adjust the matrix for the 1d2d lateral links
    subroutine set_matrix_coefficients()
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: fu, ru, hu, u0, au
       use m_flowgeom, only: ln, teta
       use m_reduce, only: lv2, ccr, bbr, ddr
@@ -571,7 +571,7 @@ contains
    !> For convergence the discharge calculated at the 1d node (from 1d to 2d) must be
    !> equal to - discharge calculated at the 2d node from the 2d node to the 1d node.
    logical function check_convergence_1d2d_fixedweirs()
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: au, s1, hu
       use precision_basics, only: comparereal
       use m_flowtimes

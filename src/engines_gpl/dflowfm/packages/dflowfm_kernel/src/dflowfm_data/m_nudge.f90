@@ -31,7 +31,7 @@
 !
 
 module m_nudge
-  use precision, only: dp
+   use precision, only: dp
    real(kind=dp), allocatable, target :: nudge_tem(:) !< 3D temperature for nudging
    real(kind=dp), allocatable, target :: nudge_sal(:) !< 3D salinity for nudging
    real(kind=dp), allocatable :: nudge_time(:) !< nudge relaxation time

@@ -36,7 +36,7 @@
 !! Validity is determined by s01max, u01max, umagmax and dtminbreak.
 !! Also print a warning if water level or velocity > s01warn, u01warn, umagwarn
 subroutine flow_validatestate(iresult)
-  use precision, only: dp
+   use precision, only: dp
    use unstruc_messages
    use m_flow
    use m_flowgeom

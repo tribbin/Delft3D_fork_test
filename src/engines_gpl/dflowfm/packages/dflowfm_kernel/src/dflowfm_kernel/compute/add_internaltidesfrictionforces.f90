@@ -32,18 +32,18 @@
 
 !> add internal tides friction forces to adve
 module m_add_internaltidesfrictionforces
-use m_comp_gradc, only: comp_gradC
+   use m_comp_gradc, only: comp_gradC
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: add_InternalTidesFrictionForces
+   public :: add_InternalTidesFrictionForces
 
 contains
 
    subroutine add_InternalTidesFrictionForces()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flow
       use m_flowtimes

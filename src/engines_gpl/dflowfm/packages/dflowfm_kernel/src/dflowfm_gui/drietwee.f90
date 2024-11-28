@@ -30,12 +30,12 @@
 !
 !
 module m_three_two
-use m_dview
+   use m_dview
 
    implicit none
 contains
    subroutine DRIETWEE(XD, YD, ZD, X, Y, Z)
-  use precision, only: dp
+      use precision, only: dp
       use m_howtoview
 
       real(kind=dp) XD, YD, ZD, X, Y, Z

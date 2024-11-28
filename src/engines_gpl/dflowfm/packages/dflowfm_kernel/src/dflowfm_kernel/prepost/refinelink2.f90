@@ -31,7 +31,7 @@
 !
 
   subroutine REFINELINK2(L12, K12)
-  use precision, only: dp
+     use precision, only: dp
      use m_netw
      use gridoperations, only: dsetnewpoint
      use m_new_link

@@ -32,7 +32,7 @@
 
 !
       subroutine INDEKS(N, ARRIN, INDX)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          real(kind=dp) :: arrin
          integer :: i

@@ -28,11 +28,11 @@
 !-------------------------------------------------------------------------------
 module m_setuc1d
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: setuc1d
+   public :: setuc1d
 
 contains
 

@@ -32,12 +32,12 @@
 
 module m_teksam
 
-implicit none
+   implicit none
 
 contains
 
    subroutine TEKSAM(MET)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_settextsize
       use m_minmxsam
@@ -49,7 +49,7 @@ contains
       use m_perspx
       use m_halt2
       use m_set_col
-      
+
       real(kind=dp) :: RC
       real(kind=dp) :: hrc
       integer :: i, KMOD
@@ -102,7 +102,7 @@ contains
    end subroutine TEKSAM
 
    subroutine TEKarc(MET)
-  use precision, only: dp
+      use precision, only: dp
       use m_settextsize
       use m_minmxsam
       use m_arcinfo
@@ -142,7 +142,7 @@ contains
    end subroutine TEKarc
 
    subroutine tek1sample(x, y, z, met, hrc, m)
-  use precision, only: dp
+      use precision, only: dp
       use m_isocol2
       use m_cir
       use m_box
@@ -204,6 +204,5 @@ contains
       end if
 
    end subroutine tek1sample
-
 
 end module m_teksam

@@ -32,7 +32,7 @@
 
 !> copy netboundary to polygon, starting from a specified point
 subroutine netboundtopoly(kstart)
-  use precision, only: dp
+   use precision, only: dp
    use m_polygon
    use m_netw
    use m_alloc

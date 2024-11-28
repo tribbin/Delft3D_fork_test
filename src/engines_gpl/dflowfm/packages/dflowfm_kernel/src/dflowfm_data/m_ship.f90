@@ -31,8 +31,8 @@
 !
 
 module m_ship
-  use precision, only: dp
-  
+   use precision, only: dp
+
    integer :: nshiptxy = 0, iniship !< nr of ships / initialised 0,1
    integer, allocatable :: kship(:) !< index array
    real(kind=dp), allocatable, target :: xyship(:) !< new position or velocity provided by module

@@ -48,7 +48,7 @@ subroutine flow_trachyinit()
    use m_flow, only: kmx, zslay, z0urou
    use m_flowtimes, only: dt_user
    use m_trachy ! (FM module containing trachy data structure)
-  use precision, only: dp
+   use precision, only: dp
    use m_rdtrt ! (contains dimtrt)
    use m_trtrou ! (contains chktrt)
    use unstruc_files, only: mdia

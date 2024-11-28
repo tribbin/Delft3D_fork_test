@@ -32,17 +32,17 @@
 
 module m_setwavfu
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: setwavfu
+   public :: setwavfu
 
 contains
 
    !> subroutine to compute wave forces
    subroutine setwavfu()
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_messages
       use MessageHandling
       use m_flowparameters
@@ -69,7 +69,7 @@ contains
       end if
 
       ! Set correct limiting depth
-   if (jawave==3 .or. jawave==7) then
+      if (jawave == 3 .or. jawave == 7) then
          hminlw = m_waves_hminlw
          hminlwi = 1d0 / m_waves_hminlw
          gammaloc = gammax

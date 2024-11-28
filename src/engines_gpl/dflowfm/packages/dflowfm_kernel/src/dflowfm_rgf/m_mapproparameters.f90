@@ -61,7 +61,7 @@
 !
 !
 module M_MAPPROPARAMETERS
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    real(kind=dp) :: XCE, YCE, DELTX, DELTY, XF, YF, FI, XCSTEREO, YCSTEREO
    real(kind=dp) :: CSE = 1d0, SNE = 0d0

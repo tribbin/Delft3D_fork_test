@@ -32,16 +32,16 @@
 
 module m_createsamplesinpolygon2
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: createsamplesinpolygon2
+   public :: createsamplesinpolygon2
 
 contains
 
    subroutine CREATESAMPLESINPOLYGON2()
-  use precision, only: dp
+      use precision, only: dp
       use m_ec_triangle
       use network_data, only: TRIANGLESIZEFAC
       use M_SAMPLES

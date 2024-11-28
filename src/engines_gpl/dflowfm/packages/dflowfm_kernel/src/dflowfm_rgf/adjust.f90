@@ -31,7 +31,7 @@
 !
 
       subroutine ADJUST(X, Y, mmax, nmax, MC, NC)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          implicit none
          integer :: mmax, nmax, mc, nc

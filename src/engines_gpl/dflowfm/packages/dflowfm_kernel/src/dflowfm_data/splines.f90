@@ -30,10 +30,10 @@
 !
 !
 module M_splines
-  use precision, only: dp
+   use precision, only: dp
    use m_missing, only: dxymis
    use m_readyy
-   
+
    implicit none
 
    real(kind=dp), dimension(:, :), allocatable :: xsp, ysp, xsp2, ysp2
@@ -129,7 +129,7 @@ contains
    end subroutine newSpline
 
    subroutine setSplinePoint(m, n, xp, yp)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: m, n
       real(kind=dp), intent(in) :: xp, yp
       xsp(m, n) = xp
@@ -137,7 +137,7 @@ contains
    end subroutine setSplinePoint
 
    subroutine insertSplinePoint(m, n, xp, yp)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: m, n
       real(kind=dp), intent(in) :: xp, yp
 
@@ -167,7 +167,7 @@ contains
    end subroutine insertSplinePoint
 
    subroutine addSplinePoint(m, x, y)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: m
       real(kind=dp), intent(in) :: x, y
 
@@ -175,7 +175,7 @@ contains
    end subroutine addSplinePoint
 
    subroutine addSplinePoints(m, x, y)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: m
       real(kind=dp), intent(in) :: x(:), y(:)
       integer :: npts
@@ -254,9 +254,9 @@ contains
 
 !> Finds a spline point within a certain radius of a clicked point.
    subroutine isSplinePoint(xl, yl, rcir, mv, nv)
-  use precision, only: dp
+      use precision, only: dp
       use m_dispnode2
-      
+
       real(kind=dp), intent(inout) :: xl, yl !< The clicked point
       real(kind=dp), intent(in) :: rcir !< The search radius around the point
       integer, intent(out) :: mv, nv !< The spline nr and spline-point nr found.
@@ -309,7 +309,7 @@ contains
 
 !>  read splines in TEKAL format
    subroutine readSplines(mspl)
-  use precision, only: dp
+      use precision, only: dp
       integer :: mspl
 
       character REC * 4

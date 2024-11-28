@@ -30,11 +30,11 @@
 !
 !
 module m_dlimitercentral
-    implicit none
+   implicit none
 contains
 
    real(kind=dp) function dlimitercentral(dc, d2, limtyp) ! as dlimiter, now for central gradient instead of slope
-  use precision, only: dp
+      use precision, only: dp
 
       real(kind=dp), intent(in) :: dc, d2 !< central and right slopes
       integer, intent(in) :: limtyp !< first order upwind (0) or MC (>0)

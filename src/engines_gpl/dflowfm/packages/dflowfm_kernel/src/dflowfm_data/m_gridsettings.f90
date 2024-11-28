@@ -33,7 +33,7 @@
 !> Regular grid generation settings. All orthogonalisation settings are in
 !! module m_orthosettings.
 module M_GRIDSETTINGS
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
    integer :: MFAC = 2000 !< M-refinement factor for regular grid generation.

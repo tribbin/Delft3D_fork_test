@@ -31,7 +31,7 @@
 !
 
       subroutine GETSPL2(X, XI2, XJ2, MC, NC, MMAX, NMAX)
-  use precision, only: dp
+         use precision, only: dp
          use M_MISSING
          use m_spline
          use m_put_ij

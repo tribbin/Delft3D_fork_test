@@ -31,7 +31,7 @@
 !
 
    subroutine REMOVESAMPLESONTOPOFNETPOINTS(XS, YS, NS)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       implicit none
       integer :: ns

@@ -34,9 +34,9 @@ module m_dkoren
 contains
 
    real(kind=dp) function dkoren(d1, d2) ! nog naar kijken
-  use precision, only: dp
+      use precision, only: dp
 
-   real(kind=dp) d1, d2, r
+      real(kind=dp) d1, d2, r
       if (d1 * d2 > 0d0) then
          r = d2 / d1
          dkoren = max(0d0, min(r + r, min((1d0 + r + r) / 3d0, 2d0)))

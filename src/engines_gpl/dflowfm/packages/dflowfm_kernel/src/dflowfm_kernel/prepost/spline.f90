@@ -34,7 +34,7 @@ module m_spline
 contains
 
    subroutine SPLINE(Y, N, Y2)
-  use precision, only: dp
+      use precision, only: dp
       integer :: i
       integer :: k
       integer :: n

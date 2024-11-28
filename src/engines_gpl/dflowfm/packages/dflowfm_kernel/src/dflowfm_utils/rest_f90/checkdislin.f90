@@ -31,7 +31,7 @@
 !
 
       subroutine checkdislin()
-  use precision, only: dp
+         use precision, only: dp
          use m_rcirc
          use m_polygon
          use m_sferic

@@ -35,7 +35,7 @@
 !! cross the polyline (both 1D and 2D).
 !! Used for cross sections, and thin dams and dykes.
 module m_crspath
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
 !> Data type for storing the the polyline path and set of crossed flow
@@ -49,7 +49,7 @@ module m_crspath
       real(kind=dp), allocatable :: wfp(:) !< Weightfactor of first point in crossed segment
                                                    !! as indicated in indexp (between 0 and 1).
       real(kind=dp), allocatable :: xp(:), yp(:), &
-         zp(:) !< Polyline points that define the crs (size=np)
+                                    zp(:) !< Polyline points that define the crs (size=np)
       real(kind=dp), allocatable :: xk(:, :), yk(:, :) !< For plotting only (size=2,lnx).
                                                    !! for all 'lnx' flow links, store both start
                                                    !! and end point because segments will not be ordered
@@ -145,7 +145,7 @@ contains
 
 !> Sets the cross section definition path to specified polyline coordinates.
    subroutine setCrossSectionPathPolyline(path, xp, yp, zp)
-  use precision, only: dp
+      use precision, only: dp
       type(tcrspath), intent(inout) :: path !< The crs path to be updated.
       real(kind=dp), intent(in) :: xp(:), yp(:) !< Polyline coordinates to define the crs path.
       real(kind=dp), optional, intent(in) :: zp(:) !< Optional z-values at xp/yp coordinates.
@@ -247,7 +247,7 @@ contains
 !! This routine can be used with 'network geometry' (e.g. for thin dams)
 !! and 'flow geometry' (e.g. for cross sections and fixed weirs).
    subroutine crspath_on_singlelink(path, linknr, xk3, yk3, xk4, yk4, xza, yza, xzb, yzb, zork)
-  use precision, only: dp
+      use precision, only: dp
 
       use geometry_module, only: crossinbox
       use m_sferic, only: jsferic
@@ -312,7 +312,7 @@ contains
 !! The input arrays (xpl, ypl, zpl) have the structure of the global polygon:
 !! one or more polylines separated by dmiss values.
    subroutine pol_to_flowlinks(xpl, ypl, zpl, npl, ns, paths)
-  use precision, only: dp
+      use precision, only: dp
       use m_missing
 
       real(kind=dp), intent(in) :: xpl(:), ypl(:), zpl(:) !< Long array with one or more polylines, separated by dmiss

@@ -35,7 +35,7 @@
 !! *.ext file for quantities such as initialwaterlevel,
 !! frictioncoefficient, etc.
 module unstruc_extfile
-  use precision, only: dp
+   use precision, only: dp
 
    use unstruc_messages
    use properties

@@ -32,7 +32,7 @@
 
 !>  indentify the points in an array
     subroutine makelineindex(num, x, idx)
-  use precision, only: dp
+       use precision, only: dp
        use m_missing
        use geometry_module, only: get_startend
 

@@ -70,7 +70,7 @@ module m_netw
 contains
 
    subroutine loadNetwork(filename, istat, jadoorladen)
-  use precision, only: dp
+      use precision, only: dp
 
       use unstruc_netcdf, only: unc_read_net, unc_write_net, md5_net_file
       use unstruc_messages

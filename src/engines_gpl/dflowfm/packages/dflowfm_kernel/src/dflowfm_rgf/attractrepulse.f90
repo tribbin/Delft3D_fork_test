@@ -31,7 +31,7 @@
 !
 
       subroutine ATTRACTREPULSE(XH, YH, X, Y, mmax, nmax, MC, NC, NUMP, JA)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          use m_gridsettings
          use m_sferic

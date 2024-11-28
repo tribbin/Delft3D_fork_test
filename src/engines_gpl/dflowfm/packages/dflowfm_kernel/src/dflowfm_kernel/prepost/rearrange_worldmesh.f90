@@ -33,7 +33,7 @@
 !> rearrange netnodes for spherical, periodic coordinates
 !>    net nodes at the left are preferred
 subroutine rearrange_worldmesh(xboundmin, xboundmax)
-  use precision, only: dp
+   use precision, only: dp
    use m_sferic
    use network_data
    implicit none

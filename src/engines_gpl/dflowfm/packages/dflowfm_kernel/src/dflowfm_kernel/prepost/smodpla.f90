@@ -31,7 +31,7 @@
 !
 
       subroutine SMODPLA(DPLA, DXS, NPL) ! SMOOTH WITH DESIRED
-  use precision, only: dp
+         use precision, only: dp
          use M_ALLOC
          implicit none
          integer :: npl

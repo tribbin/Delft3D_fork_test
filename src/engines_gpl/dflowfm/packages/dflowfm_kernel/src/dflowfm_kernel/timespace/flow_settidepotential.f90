@@ -31,7 +31,7 @@
 !
 
  subroutine flow_settidepotential(timmin)
-  use precision, only: dp
+    use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_flowtimes

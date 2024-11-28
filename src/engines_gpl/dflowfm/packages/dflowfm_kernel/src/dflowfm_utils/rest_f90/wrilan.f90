@@ -31,7 +31,7 @@
 !
 
       subroutine WRILAN(MPOL)
-  use precision, only: dp
+         use precision, only: dp
          use M_LANDBOUNDARY
          use m_wrildb
          implicit none

@@ -32,7 +32,7 @@
 
 !> generate the first gridline of the whole grid, i.e. on all center splines
 subroutine make_wholegridline(ierror)
-  use precision, only: dp
+   use precision, only: dp
    use m_splines
    use m_grid
    use m_gridsettings

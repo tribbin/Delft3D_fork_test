@@ -32,7 +32,7 @@
 
 !> copy the spline to a polyline
 subroutine spline2poly()
-  use precision, only: dp
+   use precision, only: dp
    use m_splines
    use m_spline2curvi
    use m_gridsettings

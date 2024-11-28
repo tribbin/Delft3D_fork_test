@@ -31,7 +31,7 @@
 !
 
 module m_statistics
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    real(kind=dp) :: avedif !< for now only, cum dif with analytic sol
    real(kind=dp) :: sqadif !< for now only, cum dif with analytic sol

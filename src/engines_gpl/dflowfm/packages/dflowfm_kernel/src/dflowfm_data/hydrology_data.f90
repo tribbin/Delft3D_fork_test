@@ -33,7 +33,7 @@
 !> Module for storing the optional hydrology state variables
 module m_hydrology_data
 
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
    !

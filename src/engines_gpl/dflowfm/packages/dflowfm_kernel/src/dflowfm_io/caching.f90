@@ -672,7 +672,7 @@ contains
 
 !> Copy the cached information on fixed weirs.
    subroutine copyCachedFixedWeirs(npl, xpl, ypl, number_links, iLink, iPol, dSL, success)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: npl !< Number of points in the polylines making up the weirs
       real(kind=dp), dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
       real(kind=dp), dimension(:), intent(in) :: ypl !< Y-coordinates of the polyline points for the weirs
@@ -709,7 +709,7 @@ contains
 !>     The arrays for fixed weirs are partly local - they do not reside in a
 !>     module, so explicitly store them when we have the actual data
    subroutine cacheFixedWeirs(npl, xpl, ypl, number_links, iLink, iPol, dSL)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: npl !< Number of points in the polylines making up the weirs
       integer, intent(in) :: number_links !< Number of flow links that is to be cached
       real(kind=dp), dimension(:), intent(in) :: xpl !< X-coordinates of the polyline points for the weirs
@@ -727,7 +727,7 @@ contains
 
 !> Copy grid information, where dry points and areas have been deleted, from cache file:
    subroutine copy_cached_netgeom_without_dry_points_and_areas(nump, nump1d2d, lne, lnn, bottom_area, xz, yz, xzw, yzw, netcell, success)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(out) :: nump !< Nr. of 2d netcells.
       integer, intent(out) :: nump1d2d !< nr. of 1D and 2D netcells (2D netcells come first)
       integer, dimension(:, :), intent(out) :: lne !< (2,numl) Edge administration 1=nd1 , 2=nd2, rythm of kn flow nodes between/next to which this net link lies.
@@ -769,7 +769,7 @@ contains
 
 !> Cache grid information, where dry points and areas have been deleted:
    subroutine cache_netgeom_without_dry_points_and_areas(nump, nump1d2d, lne, lnn, bottom_area, xz, yz, xzw, yzw, netcell)
-  use precision, only: dp
+      use precision, only: dp
       integer, intent(in) :: nump !< Nr. of 2d netcells.
       integer, intent(in) :: nump1d2d !< nr. of 1D and 2D netcells (2D netcells come first)
       integer, dimension(:, :), intent(in) :: lne !< (2,numl) Edge administration 1=nd1 , 2=nd2, rythm of kn flow nodes between/next to which this net link lies.

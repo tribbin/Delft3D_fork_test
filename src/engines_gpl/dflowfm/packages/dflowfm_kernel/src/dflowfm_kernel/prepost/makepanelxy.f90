@@ -31,7 +31,7 @@
 !
 
       subroutine MAKEPANELXY(JPANEL)
-  use precision, only: dp
+         use precision, only: dp
 
          use m_netw
          use M_AFMETING
@@ -78,7 +78,7 @@
          real(kind=dp) :: y
          real(kind=dp) :: ykk
 
-     !    common / SET2 / REKMAX, DRUKMAX, NUMDIK, JOFREEZE
+         !    common / SET2 / REKMAX, DRUKMAX, NUMDIK, JOFREEZE
          real(kind=dp) DX1, DY1, DZ1
          real(kind=dp) :: DR(4)
          integer :: INI, JaNET

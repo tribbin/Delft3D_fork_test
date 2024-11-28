@@ -32,12 +32,12 @@
 
 module m_teknetcells
 
-implicit none
+   implicit none
 
 contains
 
    subroutine teknetcells(netwhat, jahalt, jacol)
-  use precision, only: dp
+      use precision, only: dp
       use m_minmxnetcells
       use m_isosmoothnet
       use m_isocol

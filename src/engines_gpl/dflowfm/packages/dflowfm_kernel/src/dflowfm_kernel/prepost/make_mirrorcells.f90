@@ -32,7 +32,7 @@
 
 !> make the mirror cells for open boundaries
 subroutine make_mirrorcells(Nx, xe, ye, xyen, kce, ke, ierror)
-  use precision, only: dp
+   use precision, only: dp
    use network_data, only: numL, kn, lne, xk, yk
    implicit none
 

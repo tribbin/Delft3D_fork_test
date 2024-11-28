@@ -32,7 +32,7 @@
 
 !> add polygon and fill cutcell mask with "kc"
    subroutine store_cutcellmasks(numk, kc, numL, Lmask, xmL, ymL)
-  use precision, only: dp
+      use precision, only: dp
       use m_cutcells
       use m_alloc
       use unstruc_messages

@@ -33,7 +33,7 @@
 !> Module for maintaining (time-integral) statistics on flow quantities.
 !! NOTE: could be the successor of Fourier analysis. Just maintain some first max/avg quantities for now.
 module m_integralstats
-  use precision, only: dp
+   use precision, only: dp
 
    integer :: is_numndvals !< Number of variables on flow nodes for which statistics are recorded.
    integer, parameter :: IDX_TAUS = 1 !< Index for mean bed shear stress

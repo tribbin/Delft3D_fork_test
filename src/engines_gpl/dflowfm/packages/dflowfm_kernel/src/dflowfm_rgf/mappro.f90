@@ -31,7 +31,7 @@
 !
 
       subroutine MAPPRO(XX, YY, XG, YG, IZONE, NZONE, IHEM, ITYPE, JSFERIC, INIA)
-  use precision, only: dp
+         use precision, only: dp
          use M_MISSING
          !use proj4
          implicit none

@@ -33,7 +33,7 @@ module m_splintxy
    implicit none
 contains
    subroutine SPLINTXY(X, Y, X2, Y2, N, T, XT, YT)
-  use precision, only: dp
+      use precision, only: dp
       use m_splint
 
       integer :: n

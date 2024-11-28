@@ -34,7 +34,7 @@ module m_splint
 contains
 
    subroutine SPLINT(YA, Y2A, N, X, Y)
-  use precision, only: dp
+      use precision, only: dp
 
       integer :: N !< number of control points
       real(kind=dp), dimension(N) :: ya !< control point values

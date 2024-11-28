@@ -36,7 +36,7 @@
     !! To know whether point at index L1 is a start/end point of one of these
     !! polylines, check on a neighbouring dmiss.
     logical function ispolystartend(X, N, MAXPOL, ipoi) result(res)
-  use precision, only: dp
+       use precision, only: dp
        use m_missing
        implicit none
        integer, intent(in) :: MAXPOL !< Length of polyline coordinate arrays.

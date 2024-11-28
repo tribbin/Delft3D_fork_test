@@ -31,8 +31,8 @@
 !
 
 module m_fetch_local_data
-  use precision, only: dp
-use m_kcir
+   use precision, only: dp
+   use m_kcir
 
    logical, allocatable :: calculate_for(:)
    integer, allocatable :: list_of_upwind_cells(:), number_of_upwind_cells(:)
@@ -43,7 +43,7 @@ end module m_fetch_local_data
 !> calculates fetch length and depth based significant wave height and period
 !! based on Hurdle, Stive formulae, tauwave based on Swart, taus = taubmx = taucur + tauwave, as in Delwaq
 subroutine tauwavefetch(tim)
-  use precision, only: dp
+   use precision, only: dp
    use m_sediment, only: rlabda
    use m_flowgeom, only: ndx, ndxi, ndx2d
    use m_flow
@@ -171,7 +171,7 @@ end subroutine tauwavefetch
 
 !> calculates fetch length and depth
 subroutine calculate_fetch_values_for_all_wind_directions(total_nr_cells)
-  use precision, only: dp
+   use precision, only: dp
    use m_arrowsxy
    use m_netw
    use m_flowgeom
@@ -258,7 +258,7 @@ end subroutine calculate_fetch_values_for_all_wind_directions
 
 !< make a list of upwind cells for each cell for a given wind direction
 subroutine make_list_of_upwind_cells(u_wind, v_wind)
-  use precision, only: dp
+   use precision, only: dp
    use m_flowgeom
    use m_fetch_local_data
    use m_alloc
@@ -345,7 +345,7 @@ end subroutine make_list_of_upwind_cells
 
 !< search cells that are starting points for the fetch length calculations
 subroutine search_starting_cells(u_wind, v_wind, nr_cells_done)
-  use precision, only: dp
+   use precision, only: dp
    use m_netw
    use m_flowgeom
    use m_flow, only: s1, dxymis
@@ -454,7 +454,7 @@ end subroutine search_starting_cells
 
 !< calculates fetch length and depth for a given wind direction
 subroutine calculate_fetch_values(nr_cells_done, total_nr_cells)
-  use precision, only: dp
+   use precision, only: dp
 
    use m_flowgeom, only: ndxi, ndx, bl, xz, yz
    use m_flow
@@ -537,8 +537,8 @@ end subroutine calculate_fetch_values
 
 !> get phiwav values
 subroutine get_phiwav_values()
-  use precision, only: dp
-use m_waves, only : phiwav
+   use precision, only: dp
+   use m_waves, only: phiwav
    use m_flowgeom
    use m_flow
    use m_sferic, only: pi
@@ -564,7 +564,7 @@ end subroutine get_phiwav_values
 
 !> copy values to boundary nodes
 subroutine copy_values_to_boundary_nodes()
-   use m_waves, only : phiwav, rlabda
+   use m_waves, only: phiwav, rlabda
    use m_flowgeom
    use m_flow
    use m_waves, only: uorb, twav, hwav

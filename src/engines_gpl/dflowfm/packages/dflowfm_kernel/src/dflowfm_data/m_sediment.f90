@@ -174,7 +174,7 @@ contains
    end subroutine default_sediment
 
    subroutine allocgrains() ! for all fractions:
-  use precision, only: dp
+      use precision, only: dp
       use MessageHandling
       use m_physcoef
       use m_turbulence, only: sigsed

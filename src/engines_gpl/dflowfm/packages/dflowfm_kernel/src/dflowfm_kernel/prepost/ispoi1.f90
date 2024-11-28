@@ -36,7 +36,7 @@
       !! input coordinates to the exact polyline point coordinates when
       !! it is found.
       subroutine ISPOI1(X, Y, N, XL, YL, MV)
-  use precision, only: dp
+         use precision, only: dp
          use m_wearelt, only: rcir
          use m_missing, only: dmiss
          use m_dispnode

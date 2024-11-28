@@ -34,7 +34,7 @@ contains
 
 !>    plot a statusbar in the GUI
    subroutine READYY(TEXT, AF)
-  use precision, only: dp
+      use precision, only: dp
       use m_devices
       use m_gui
       use m_fillup

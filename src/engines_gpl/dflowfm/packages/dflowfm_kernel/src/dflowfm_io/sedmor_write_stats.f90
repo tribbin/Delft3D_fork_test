@@ -32,16 +32,16 @@
 
 module m_sedmor_write_stats
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: sedmor_write_stats
+   public :: sedmor_write_stats
 
 contains
 
    subroutine sedmor_write_stats(tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_sediment, only: stm_included, stmpar
       use m_flowparameters, only: eps10
       use m_flowtimes, only: ti_sed, ti_seds, ti_sede, tstop_user, time_sed

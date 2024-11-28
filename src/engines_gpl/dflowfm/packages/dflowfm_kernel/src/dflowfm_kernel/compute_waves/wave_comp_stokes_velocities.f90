@@ -32,16 +32,16 @@
 
 module m_wave_comp_stokes_velocities
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: wave_comp_stokes_velocities
+   public :: wave_comp_stokes_velocities
 
 contains
 
    subroutine wave_comp_stokes_velocities()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters
       use m_flowgeom
       use m_flow, only: hu, hs

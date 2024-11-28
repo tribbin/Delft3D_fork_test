@@ -31,7 +31,7 @@
 !
 
       subroutine GEOMERC(XG, YG, XX, YY)
-  use precision, only: dp
+         use precision, only: dp
          use M_SFERIC
          implicit none
          real(kind=dp) :: XX, YY, XG, YG, FI2, YC, CY, F, E

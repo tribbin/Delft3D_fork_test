@@ -31,12 +31,11 @@
 !
 
 module m_calbedform
-use m_solve_2d, only: solve_2d
-use m_comp_sumhorflux, only: comp_sumhorflux
-use m_comp_fluxhor3d, only: comp_fluxhor3d
-use m_comp_dxiau, only: comp_dxiau
-use m_setucxucy_mor, only: setucxucy_mor
-
+   use m_solve_2d, only: solve_2d
+   use m_comp_sumhorflux, only: comp_sumhorflux
+   use m_comp_fluxhor3d, only: comp_fluxhor3d
+   use m_comp_dxiau, only: comp_dxiau
+   use m_setucxucy_mor, only: setucxucy_mor
 
    implicit none
 
@@ -59,7 +58,7 @@ contains
       use m_physcoef, only: ag, rhomean, vismol
       use m_flowgeom, only: ndxi, ndx, lnx, lnxi, ln, wcl, bl
       use m_flowparameters, only: epshs, jawave, flowWithoutWaves
-      use m_flow, only: frcu,ifrcutp,hu, u1,s1, ucx_mor, ucy_mor, lnkx
+      use m_flow, only: frcu, ifrcutp, hu, u1, s1, ucx_mor, ucy_mor, lnkx
       use m_flowtimes
       use m_waves
       use m_get_kbot_ktop
@@ -1018,8 +1017,8 @@ contains
 
       implicit none
 
-      integer, parameter :: BFNSUBSTEPS=1
-      
+      integer, parameter :: BFNSUBSTEPS = 1
+
       real(kind=dp), dimension(1, ndx), intent(inout) :: thevar !< variable to be tranported
       real(kind=dp), dimension(lnx), intent(in) :: qadv
       real(kind=dp), dimension(lnx), intent(in) :: uadv

@@ -31,7 +31,7 @@
 !
 
   subroutine ISNODEDB(KP, XP, YP)
-  use precision, only: dp
+     use precision, only: dp
      use m_netw
      implicit none
      integer :: KP

@@ -81,7 +81,7 @@ contains
    !> Initialise flow model time dependent parameters
  !! @return Integer error status (0) if succesful.
    integer function flow_flowinit() result(error)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flow
       use m_flowtimes
@@ -192,7 +192,7 @@ contains
          return
       end if
       call mess(LEVEL_INFO, 'Done initializing external forcings.')
-      
+
       ! it has to be called after EC module initialization
       call read_moving_stations(md_obsfile)
 
@@ -909,7 +909,7 @@ contains
 
 !> initialize discharge boundaries
    subroutine initialize_values_at_discharge_boundaries()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: epshu
       use fm_external_forcings_data, only: nqbnd, L1qbnd, L2qbnd, kbndu
       use m_flowgeom, only: bob
@@ -1052,7 +1052,7 @@ contains
 
 !> correction_s1_for_atmospheric_pressure
    subroutine correction_s1_for_atmospheric_pressure()
-  use precision, only: dp
+      use precision, only: dp
       use m_physcoef, only: ag, rhomean
       use m_flowgeom, only: ndxi
       use m_flow, only: s1
@@ -1130,7 +1130,7 @@ contains
 
 !> include_ground_water
    subroutine include_ground_water()
-  use precision, only: dp
+      use precision, only: dp
       use m_grw
       use m_cell_geometry, only: ndx
       use m_flow, only: hs
@@ -1262,7 +1262,7 @@ contains
 
 !> set wave modelling
    subroutine set_wave_modelling()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: jawave, flowWithoutWaves, waveforcing, jawavestokes
       use m_flow, only: hs, hu, kmx
       use mathconsts, only: sqrt2_hp
@@ -1362,7 +1362,7 @@ contains
 
 !> initialize_salinity_from_bottom_or_top
    subroutine initialize_salinity_from_bottom_or_top()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: jasal, inisal2D, uniformsalinitybelowz, Sal0abovezlev, salmax
       use m_flow, only: kmx, kmxn, sa1, satop, sabot, zws
       use m_cell_geometry, only: ndx
@@ -1620,7 +1620,7 @@ contains
 
 !> apply hardcoded specific input
    subroutine apply_hardcoded_specific_input()
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_flowgeom
       use m_flow
@@ -2341,7 +2341,7 @@ contains
 
 !> restore au and q1 for 3D case for the first write into a history file
    subroutine restore_au_q1_3D_for_1st_history_record()
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: q1, LBot, kmx, kmxL
       use fm_external_forcings_data, only: fusav, rusav, ausav, ncgen
       use m_flowgeom, only: lnx

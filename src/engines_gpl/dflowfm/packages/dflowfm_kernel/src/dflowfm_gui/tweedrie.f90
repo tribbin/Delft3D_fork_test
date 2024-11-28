@@ -32,12 +32,12 @@
 
 module m_tweedrie
 
-implicit none
+   implicit none
 
 contains
 
    subroutine TWEEDRIE(X, Y, XD, YD, ZD)
-  use precision, only: dp
+      use precision, only: dp
       use m_howtoview
       implicit none
       real(kind=dp) :: X, Y, XD, YD, ZD

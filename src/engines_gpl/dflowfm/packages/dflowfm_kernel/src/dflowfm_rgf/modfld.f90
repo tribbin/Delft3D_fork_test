@@ -38,7 +38,7 @@ contains
    subroutine MODFLD(XH, YH, X, Y, &
                      mmax, nmax, MC, NC, MP, NP, &
                      NUMP, NLOC, IN, JN)
-     use precision, only: dp
+      use precision, only: dp
       use m_missing, only: xymis
       use m_wearelt, only: dsix
       use m_tolocl

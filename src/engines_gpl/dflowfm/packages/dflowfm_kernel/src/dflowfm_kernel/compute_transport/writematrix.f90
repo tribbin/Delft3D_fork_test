@@ -30,11 +30,11 @@
 !
 !
 module m_writematrix
-      implicit none
+   implicit none
 contains
    !> output matrix in CRS format to file
    subroutine writeMatrix(FNAM, N, ia, ja, a, VARNAM, jaappend)
-  use precision, only: dp
+      use precision, only: dp
 
       character(len=*), intent(in) :: FNAM !< filename
 

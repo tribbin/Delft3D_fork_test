@@ -31,7 +31,7 @@
 !
 
   subroutine MAKECOARSE2FINETRIANGLECONNECTIONCELLS()
-  use precision, only: dp
+     use precision, only: dp
      use m_netw
      use m_sferic, only: jsferic, jasfer3D
      use m_missing, only: dxymis

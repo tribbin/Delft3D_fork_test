@@ -33,7 +33,7 @@
 !>    compute the intersection of two splines
       subroutine SECT3R(XI, YI, XJ, YJ, imax, CRP, &
                         NUMPI, NUMPJ, NUMCRO, TIV, TJV, XP, YP)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          use geometry_module, only: dbdistance, cross
          use m_sferic, only: jsferic, jasfer3D
@@ -58,9 +58,9 @@
          real(kind=dp), intent(out) :: xp, yp !< coordinates of intersection point
 
          real(kind=dp) :: ti, tj, tip, tjp, ti0, ti1, ti2, tj0, tj1, tj2, tii, tjj, &
-            tio, tjo, &
-            timx, tjmx, eps, eps2, xcr, ycr, crs, dis, &
-            xo, yo
+                          tio, tjo, &
+                          timx, tjmx, eps, eps2, xcr, ycr, crs, dis, &
+                          xo, yo
          real(kind=dp) :: sl, sm, xi2(imax), yi2(imax), xj2(imax), yj2(imax), xc(4), yc(4)
          integer :: i, j, jo, jacros, k
 

@@ -35,7 +35,7 @@ contains
 !> Updates the variables of flow1d implicit solver that
 !change every time step
    subroutine fm1dimp_update_network(iresult)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_f1dimp, only: f1dimppar, reallocate_fill
       use unstruc_channel_flow, only: network

@@ -33,7 +33,7 @@ module m_reasam
    implicit none
 contains
    subroutine REASAM(MSAM, JADOORLADEN)
-  use precision, only: dp
+      use precision, only: dp
       use M_MISSING
       use M_SAMPLES
       use m_alloc

@@ -31,9 +31,9 @@ module m_golddis
    implicit none
 contains
    subroutine GOLDDIS(AX, BX, CX, TOL, P, P2, Y, Y2, N, XMIN, DIS, SSQ, H)
-  use precision, only: dp
+      use precision, only: dp
       use m_getdis
-      
+
       integer :: n
       real(kind=dp) :: P(N), P2(N), Y(N), Y2(N)
       real(kind=dp) :: ax, bx, cx, tol, xmin, dis, ssq

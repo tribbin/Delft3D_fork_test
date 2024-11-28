@@ -32,16 +32,16 @@
 
 module m_closein
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: closein
+   public :: closein
 
 contains
 
    subroutine CLOSEIN(XA, YA, INNUMP, KIN, NKIN, KK) ! KK IS HET MEEST DICHTBIJ GELEGEN POINT VAN INNUMP
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
 
       real(kind=dp) :: xa

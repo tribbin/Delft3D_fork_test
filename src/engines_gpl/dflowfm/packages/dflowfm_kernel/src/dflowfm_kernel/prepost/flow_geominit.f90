@@ -31,7 +31,7 @@
 !
 
  subroutine flow_geominit(iphase) ! initialise flow geometry
-  use precision, only: dp
+    use precision, only: dp
     use m_cutcell_list, only: cutcell_list
     use m_checknetwork, only: checknetwork
     use m_allocate_linktocenterweights, only: allocate_linktocenterweights
@@ -1077,7 +1077,7 @@
     if (numlimdt_baorg > 0) then ! if prev_numlimdt(k) > numlimdt_baorg then ba(k) = baorg(k) in cutcell
        call reanumlimdt()
     end if
-    call cutcell_list(n12, 3)  ! CUT CELLS, N12 = 5, WU AND BA ADAPTATION
+    call cutcell_list(n12, 3) ! CUT CELLS, N12 = 5, WU AND BA ADAPTATION
     numlimdt = 0
 ! deallocate(kfs) ; allocate(kfs(ndx)) ! SPvdP: removed, since (1) uninitialized and (2) kfs needed in "setlinktocenterweights" later
 

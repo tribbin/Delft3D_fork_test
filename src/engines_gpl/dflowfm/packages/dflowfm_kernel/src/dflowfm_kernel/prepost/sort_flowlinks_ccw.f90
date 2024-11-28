@@ -32,7 +32,7 @@
 
 !> sort flowlinks in nd%ln counterclockwise (copy-paste and modified from above)
 subroutine sort_flowlinks_ccw()
-  use precision, only: dp
+   use precision, only: dp
    use m_flowgeom, only: xz, yz, nd, Ndx, ln
    use m_sferic
    use m_alloc

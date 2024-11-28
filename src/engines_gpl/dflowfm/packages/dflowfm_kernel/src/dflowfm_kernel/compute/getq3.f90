@@ -33,7 +33,7 @@ module m_getq3
    implicit none
 contains
    subroutine getq3(hg, a, h1, h2, q) ! momentumbehoud bovenstrooms
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp) :: hg, a, h1, h2, q
       real(kind=dp) :: g, t, r, tr
       g = 9.81d0

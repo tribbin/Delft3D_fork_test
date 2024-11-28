@@ -31,7 +31,7 @@
 !
 
 module m_einstein_garcia ! integral polynomial coefficients, (sedimentation engineering garcia table 2.5
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    real(kind=dp) :: c1(5, 0:6), c2(5, 0:6), d(1:5)
 end module m_einstein_garcia

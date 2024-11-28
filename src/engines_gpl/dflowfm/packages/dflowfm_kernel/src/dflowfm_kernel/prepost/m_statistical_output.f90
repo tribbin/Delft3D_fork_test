@@ -116,7 +116,7 @@ contains
 
    !> Update the stat_output of an item, depending on the operation_type.
    elemental subroutine update_statistical_output(item, dts)
-  use precision, only: dp
+      use precision, only: dp
       type(t_output_variable_item), intent(inout) :: item !< statistical output item to update
       real(kind=dp), intent(in) :: dts !< current timestep
 
@@ -174,7 +174,7 @@ contains
 
    !> Create a new output item and add it to the output set according to output quantity config
    subroutine add_stat_output_items(output_set, output_config, data_pointer, source_input_function_pointer)
-  use precision, only: dp
+      use precision, only: dp
       use m_statistical_output_types, only: process_data_interface_double
       use MessageHandling, only: mess, LEVEL_WARN
 

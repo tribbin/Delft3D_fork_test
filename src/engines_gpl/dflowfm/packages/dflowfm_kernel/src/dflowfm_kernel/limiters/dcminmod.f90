@@ -34,9 +34,9 @@ module m_dcminmod
 contains
 
    real(kind=dp) function dcminmod(d1, d2) ! basic minmod definition
-  use precision, only: dp
+      use precision, only: dp
 
-   real(kind=dp) d1, d2
+      real(kind=dp) d1, d2
       if (d1 * d2 > 0) then
          if (abs(d1) < abs(d2)) then
             dcminmod = d1

@@ -33,7 +33,7 @@ module m_crosspoly
    implicit none
 contains
    subroutine crosspoly(xa, ya, xb, yb, xpl, ypl, npl, XM, YM, CRPM, JA, isec, distanceStartPolygon)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_missing
       use m_sferic, only: jsferic, jasfer3D

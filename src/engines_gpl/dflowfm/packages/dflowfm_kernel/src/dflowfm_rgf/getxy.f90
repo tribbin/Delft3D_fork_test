@@ -34,7 +34,7 @@ module m_getxy
 contains
 !>     zoek TT in X,Y, en XT,YT met dezelfde afstand geeft als SSQ
    subroutine GETXY(T, X, X2, Y, Y2, imax, N, NT, SSQ, XT, YT, TT, H)
-  use precision, only: dp
+      use precision, only: dp
       use m_golddis
       use m_splintxy
 

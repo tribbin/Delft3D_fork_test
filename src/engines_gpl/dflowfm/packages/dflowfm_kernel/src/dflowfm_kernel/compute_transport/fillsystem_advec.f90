@@ -33,16 +33,16 @@
 !> construct matrix for first-order upwind discretization of advection
 module m_fillsystem_advec
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: fillsystem_advec
+   public :: fillsystem_advec
 
 contains
 
    subroutine fillsystem_advec(ierror)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: ln, lnx, csu, snu, nd, ndx, ndxi
       use m_flow, only: vol1, Au
       use m_advec_data

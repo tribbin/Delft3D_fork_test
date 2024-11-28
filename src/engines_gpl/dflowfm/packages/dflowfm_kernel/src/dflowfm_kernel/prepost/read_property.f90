@@ -40,7 +40,7 @@ contains
    !! The string value is always returned, if found, and an attempt is also made to
    !! parse it into a scalar double, or alternatively to check whether it is an existing file.
    subroutine read_property(prop_ptr, key, strvalue, dblvalue, is_double, typeandid, success)
-  use precision, only: dp
+      use precision, only: dp
       use properties
       use unstruc_messages
       type(TREE_DATA), pointer, intent(in) :: prop_ptr !< Property tree as read from a single .ini block

@@ -32,17 +32,17 @@
 
 module m_fm_upwbed
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: fm_upwbed
+   public :: fm_upwbed
 
 contains
 
    ! Interpolate flownode-based vector (sx,sy) to edge-based vector (e_sn, e_st)
    subroutine fm_upwbed(lsedtot, sx, sy, sxtot, sytot, e_sn, e_st)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: acl, snu, csu, kcu
       use m_flow, only: u1, epshu, hu
       use unstruc_messages

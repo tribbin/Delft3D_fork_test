@@ -31,7 +31,7 @@
 !
 
  subroutine setdtorg(jareduced) ! set computational timestep dts
-  use precision, only: dp
+    use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_wind

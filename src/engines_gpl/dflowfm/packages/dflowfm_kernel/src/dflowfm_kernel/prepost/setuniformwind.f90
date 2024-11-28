@@ -31,7 +31,7 @@
 !
 
  subroutine setuniformwind()
-  use precision, only: dp
+    use precision, only: dp
     use m_setwindstress, only: setwindstress
     use m_wind
     use m_sferic

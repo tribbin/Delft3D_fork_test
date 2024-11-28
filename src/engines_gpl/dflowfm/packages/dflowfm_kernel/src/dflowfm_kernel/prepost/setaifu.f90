@@ -31,7 +31,7 @@
 !
 
  subroutine setaifu() ! set bed skewness array for roughness
-  use precision, only: dp
+    use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_netw

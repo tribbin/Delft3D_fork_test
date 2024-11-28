@@ -33,7 +33,7 @@ module m_writearcinfoheader
    implicit none
 contains
    subroutine WRITEARCINFOHEADER(MARC, MC, NC, X0, Y0, DX, DY, dmiss)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp) :: dmiss
       real(kind=dp) :: dx, dy
       integer :: marc

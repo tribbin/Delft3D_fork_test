@@ -38,7 +38,7 @@
 !!    - a time-dependent updating routine
 
 module m_calibration
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
    public cldtype
@@ -114,7 +114,7 @@ module m_calibration
 contains
 
    subroutine read_cldfile(md_cldfile, clddata, phase)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_messages
       use m_missing, only: dmiss, intmiss
       use unstruc_files, only: mdia
@@ -469,7 +469,7 @@ contains
    end subroutine read_cldfile
 
    subroutine read_cllfile(md_cllfile, clddata, phase)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_messages
       use m_missing, only: intmiss
       use unstruc_files, only: mdia
@@ -748,7 +748,7 @@ contains
    end subroutine read_cllfile
 
    subroutine update_clddata()
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_messages
       use m_monitoring_crosssections
       use m_observations_data, only: valobs, IPNT_S1
@@ -811,7 +811,7 @@ contains
    subroutine f_from_table_of_x(xvals, fvals, idx_start, idx_end, fslope, fcross, x, f)
 ! Calibration helper function -- Determines f value from a f table which is a function of x based on a query value x
 ! TO DO: general function available? combine with trachy?
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
 

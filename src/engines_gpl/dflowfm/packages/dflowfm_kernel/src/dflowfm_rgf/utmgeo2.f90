@@ -37,7 +37,7 @@
 !! Written by Chuck Gantz- chuck.gantz@globalstar.com
 !! BY: Chuck Gantz, http://www.gpsy.com/gpsinfo/geotoutm/gantz/LatLong-UTMconversion.cpp
     subroutine utmgeo2(xutm, yutm, xgeo, ygeo, IZONE, ihem)
-  use precision, only: dp
+       use precision, only: dp
        use m_sferic
        use m_ellips
        implicit none

@@ -31,7 +31,7 @@
 !
 
       subroutine RMDOUBLE(XS, YS, ZS, IPSAM, NS)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          use m_sferic
          use unstruc_messages

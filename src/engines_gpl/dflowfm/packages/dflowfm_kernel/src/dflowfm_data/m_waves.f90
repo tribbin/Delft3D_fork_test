@@ -31,7 +31,7 @@
 !
 
 module m_waves
-  use precision, only: dp
+   use precision, only: dp
 
    implicit none
    integer, parameter :: TPWAVDEFAULT = 0 !< Indicator for TP

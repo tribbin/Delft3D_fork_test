@@ -32,7 +32,7 @@
 
 !>    transform local spherical coordinates (xloc,yloc) around reference point (xref,yref) to global spherical coordinates (xglob,yglob)
       subroutine loc2spher(xref, yref, N, xloc, yloc, xglob, yglob)
-  use precision, only: dp
+         use precision, only: dp
          use m_sferic
          use geometry_module, only: sphertocart3D, cart3Dtospher
          implicit none

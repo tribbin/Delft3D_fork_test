@@ -31,7 +31,7 @@
 !
 
    subroutine SHRINKYZPROF(Y, Z, N, NX)
-  use precision, only: dp
+      use precision, only: dp
       use M_MISSING
       implicit none
       integer :: N, NX, NACT

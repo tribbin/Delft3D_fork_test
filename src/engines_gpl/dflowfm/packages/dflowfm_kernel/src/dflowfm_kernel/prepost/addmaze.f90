@@ -32,16 +32,16 @@
 
 module m_addmaze
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: addmaze
+   public :: addmaze
 
 contains
 
    subroutine ADDMAZE(X, Y, Z, N, JAFIVE) ! FOR FLOW GRIDS
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use gridoperations
 

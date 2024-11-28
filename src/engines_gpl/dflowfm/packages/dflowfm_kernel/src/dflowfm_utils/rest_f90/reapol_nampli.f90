@@ -35,7 +35,7 @@
       !! The block names may be used for cross sections.
       !! A dmiss line starts a new polyline without a name. Multiple dmiss lines are skipped.
       subroutine REAPOL_NAMPLI(MPOL, jadoorladen, janampl, ipli)
-  use precision, only: dp
+         use precision, only: dp
          use M_POLYGON
          use network_data, only: NETSTAT_CELLS_DIRTY
          use M_MISSING

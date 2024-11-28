@@ -31,7 +31,7 @@
 !
 
 module m_solver
-  use precision, only: dp
+   use precision, only: dp
    type tsolver
 !     matrix
       integer :: numrows !< number of rows

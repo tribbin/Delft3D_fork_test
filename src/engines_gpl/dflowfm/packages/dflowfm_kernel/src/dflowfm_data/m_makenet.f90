@@ -31,7 +31,7 @@
 !
 
 module m_makenet
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    !integer                       :: NTYP = 0, NRX = 3, NRY = 3
    integer :: nrx = 192, nry = 250, ntyp = 6

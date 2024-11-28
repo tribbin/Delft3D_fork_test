@@ -36,7 +36,7 @@
 !! NOTE: This functionality ONLY supports when using "polylinefile" to specify the structure location
 !! TODO: extend it to support other ways of specifying the structure location.
 subroutine find_netcells_for_structures(size_istrucells, nstrucells, istrucells)
-  use precision, only: dp
+   use precision, only: dp
    use m_structures
    use string_module
    use timespace_parameters

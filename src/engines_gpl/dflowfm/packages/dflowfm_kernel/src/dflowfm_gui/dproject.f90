@@ -33,7 +33,7 @@ module m_dproject
    implicit none
 contains
    subroutine dPROJECT(X8, Y8, XX4, YY4, MODE)
-  use precision, only: dp
+      use precision, only: dp
       use m_sferic
       use m_wearelt
       use m_sferzoom

@@ -31,7 +31,7 @@
 !
 
    subroutine MERGENET()
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use M_MERGENET ! NUMM JBLUNT
       use geometry_module, only: dbdistance

@@ -30,7 +30,7 @@
 !
 !
 module unstruc_display_data
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
    integer :: ntek = 0

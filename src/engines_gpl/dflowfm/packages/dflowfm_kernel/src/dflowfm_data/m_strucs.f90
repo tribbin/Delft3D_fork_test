@@ -31,7 +31,7 @@
 !
 
 module m_strucs
-  use precision, only: dp
+   use precision, only: dp
    use m_GlobalParameters
    integer :: nstru !< total nr of structures
 

@@ -31,7 +31,7 @@
 !
 
   real(kind=dp) function SHORTESTLINK(K)
-  use precision, only: dp
+     use precision, only: dp
      use m_netw
      use m_dlength, only: dlength
      implicit none

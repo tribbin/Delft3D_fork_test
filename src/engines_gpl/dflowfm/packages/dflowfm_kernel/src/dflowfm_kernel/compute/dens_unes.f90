@@ -64,7 +64,7 @@ contains
 !!--description-----------------------------------------------------------------
 !
 !    Function: Computes water density from temperature and
-  use precision, only: dp
+      use precision, only: dp
 !              salinity using equation of state (rhowat).
 !
 ! Method used: Equation of state following UNESCO, (UNESCO,

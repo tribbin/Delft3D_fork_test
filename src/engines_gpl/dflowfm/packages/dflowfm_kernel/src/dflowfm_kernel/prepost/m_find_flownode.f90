@@ -39,7 +39,7 @@ contains
 
 !> Find for each input point the nearest flow node, given a set of points [xx, yy].
    subroutine find_nearest_flownodes(n, xx, yy, names, node_nrs_nearest, jakdtree, jaoutside, iLocTp)
-  use precision, only: dp
+      use precision, only: dp
       use unstruc_messages
       use m_partitioninfo
       use m_flowgeom
@@ -138,7 +138,7 @@ contains
 !> Find for each input point the nearest flow node, given a set of points [xx, yy].
 !! Uses the k-d tree routines
    subroutine find_nearest_flownodes_kdtree(treeinst, Ns, xs, ys, node_nr_nearest, jaoutside, iLocTp, ierror)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_missing
       use m_flowgeom

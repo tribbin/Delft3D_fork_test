@@ -33,7 +33,7 @@ module m_lubksb
    implicit none
 contains
    subroutine LUBKSB(A, N, NP, INDX, B)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp) :: a
       real(kind=dp) :: b
       integer :: i

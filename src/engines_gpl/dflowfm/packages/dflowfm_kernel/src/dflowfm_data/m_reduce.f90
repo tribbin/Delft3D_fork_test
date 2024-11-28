@@ -35,7 +35,7 @@
 !---------------------------------------------------------------------------------------------------------------------------------
 ! solve_guus.f90
 module m_reduce
-  use precision, only: dp
+   use precision, only: dp
 
    implicit none
    !

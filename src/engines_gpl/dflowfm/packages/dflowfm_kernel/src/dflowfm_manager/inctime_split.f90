@@ -34,7 +34,7 @@
 !! Each output file with name base_timesplit0_.. will contain output for time_split0 < time1 <= time_split.
 !! (Only for time1=tstart_user, time_split0 <= time1, i.e. first map file in sequence will have one more snapshot.)
 subroutine inctime_split(tim)
-  use precision, only: dp
+   use precision, only: dp
    use m_flowtimes
    use unstruc_messages
    use m_date_time_from_ref_date, only: date_time_from_ref_date

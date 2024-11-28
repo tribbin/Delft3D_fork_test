@@ -32,17 +32,17 @@
 
 module m_dslimvec
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: dslimvec
+   public :: dslimvec
 
 contains
 
    !> limited higher-order correction of vector data
    subroutine dslimvec(ds1x, ds1y, ds2x, ds2y, csu, snu, limtyp, dsx, dsy)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters
       use m_dslim
       implicit none

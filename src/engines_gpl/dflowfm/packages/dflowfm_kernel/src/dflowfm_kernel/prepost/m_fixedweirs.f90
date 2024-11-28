@@ -33,7 +33,7 @@
 !> Contains the global data for all fixed weirs.
 !! fxw is the array of cross section paths.
 module m_fixedweirs
-  use precision, only: dp
+   use precision, only: dp
    use m_crspath
    implicit none
 

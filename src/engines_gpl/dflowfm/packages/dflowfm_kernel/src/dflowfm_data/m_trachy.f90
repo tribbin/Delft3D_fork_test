@@ -41,7 +41,7 @@
 !! values at net links are known.
 !!
 module m_trachy
-  use precision, only: dp
+   use precision, only: dp
    use trachytopes_data_module
    use properties
    implicit none

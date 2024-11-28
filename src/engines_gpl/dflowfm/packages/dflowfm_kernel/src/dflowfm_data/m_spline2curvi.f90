@@ -32,7 +32,7 @@
 
 !> global variables for spline2curvi
 module m_spline2curvi
-  use precision, only: dp
+   use precision, only: dp
    integer, parameter :: Nsubmax = 10 !< maximum number of subintervals of grid layers, each having their own exponential grow factor
    type tspline !< center spline type that contains information derived from cross splines
 !     cross spline data

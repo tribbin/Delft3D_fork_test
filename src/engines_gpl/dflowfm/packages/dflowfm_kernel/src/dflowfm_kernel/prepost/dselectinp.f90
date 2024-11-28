@@ -31,7 +31,7 @@
 !
 
    subroutine DSELECTINP(X, Y, N, KIN)
-  use precision, only: dp
+      use precision, only: dp
       use M_POLYGON
       use m_missing, only: dmiss, jins
       use geometry_module, only: dpinpok

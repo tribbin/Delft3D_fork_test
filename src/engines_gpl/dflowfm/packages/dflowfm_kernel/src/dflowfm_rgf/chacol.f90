@@ -31,7 +31,7 @@
 !
 
       subroutine CHACOL(X, mmax, nmax, J1, J2, NUMSPL)
-  use precision, only: dp
+         use precision, only: dp
 !     VERWISSEL KOLOM J1 EN J2
 !      USE DIMENS
          implicit none

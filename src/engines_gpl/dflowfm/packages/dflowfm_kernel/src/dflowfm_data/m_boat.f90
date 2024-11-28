@@ -31,7 +31,7 @@
 !
 
 module m_boat
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    real(kind=dp), allocatable :: XBOAT(:), YBOAT(:), ZBOAT(:) ! INLEZEN &
    real(kind=dp), allocatable :: XBOOT(:), YBOOT(:), ZBOOT(:) ! AFBEELDEN LIJNEN

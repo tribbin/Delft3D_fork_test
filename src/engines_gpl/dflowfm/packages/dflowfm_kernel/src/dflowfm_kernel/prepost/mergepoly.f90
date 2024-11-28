@@ -35,7 +35,7 @@
     !! Multiple polylines are stored in one large array, separated by dmiss.
     !! Possibly, one or two of the polylines is flipped and then glued to the other.
     subroutine mergepoly(X, Y, Z, maxpol, n, i1, i2)
-  use precision, only: dp
+       use precision, only: dp
        use M_MISSING
        implicit none
        integer, intent(in) :: MAXPOL !< Length of polyline coordinate arrays.

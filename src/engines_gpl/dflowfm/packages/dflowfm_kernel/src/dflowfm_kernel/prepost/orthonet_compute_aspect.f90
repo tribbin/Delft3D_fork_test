@@ -32,7 +32,7 @@
 
 !>  compute link-based aspect ratios
 subroutine orthonet_compute_aspect(aspect)
-  use precision, only: dp
+   use precision, only: dp
    use m_netw
    use m_flowgeom
    use m_missing
@@ -226,7 +226,7 @@ contains
 
 !  compute link length
    real(kind=dp) function dblinklength(kk)
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use geometry_module, only: dbdistance
       use m_missing, only: dmiss

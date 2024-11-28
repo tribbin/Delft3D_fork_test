@@ -31,7 +31,7 @@
 !
 
       subroutine MODGR2(XH, YH, X, Y, mmax, nmax, MC, NC, NUMP)
-  use precision, only: dp
+         use precision, only: dp
          use m_modfld
          use m_grid_block
          implicit none

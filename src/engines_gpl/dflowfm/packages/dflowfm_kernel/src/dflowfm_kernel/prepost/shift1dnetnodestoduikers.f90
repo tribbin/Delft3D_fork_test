@@ -31,7 +31,7 @@
 !
 
  subroutine shift1Dnetnodestoduikers()
-  use precision, only: dp
+    use precision, only: dp
     use m_closeto1dnetlink, only: closeto1dnetlink
     use m_netw
     use m_flowgeom

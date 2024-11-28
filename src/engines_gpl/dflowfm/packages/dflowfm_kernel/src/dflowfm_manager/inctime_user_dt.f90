@@ -33,7 +33,7 @@
 !> Increase the time_user with a delta t
 !! Called from API.
  subroutine inctime_user_dt(dt)
-  use precision, only: dp
+    use precision, only: dp
     use m_flowtimes
     implicit none
     real(kind=dp), intent(in) :: dt !< increase time_user with delta t (dt)

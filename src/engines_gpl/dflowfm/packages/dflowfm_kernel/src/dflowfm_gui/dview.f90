@@ -32,12 +32,12 @@
 
 module m_dview
 
-implicit none
+   implicit none
 
 contains
 
    subroutine DVIEW(XD, YD, ZD, X, Y, Z)
-  use precision, only: dp
+      use precision, only: dp
       use m_missing, only: dmiss
       use m_viewmat
 

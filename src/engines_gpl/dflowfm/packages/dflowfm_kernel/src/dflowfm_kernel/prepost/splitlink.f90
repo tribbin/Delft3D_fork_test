@@ -32,7 +32,7 @@
 
 !> split a link, make new cells and update administration
 subroutine splitlink(xp, yp, L_, dcosmin, jatek, ierror)
-  use precision, only: dp
+   use precision, only: dp
    use m_dellink, only: dellink
    use m_dcirr
    use m_netw

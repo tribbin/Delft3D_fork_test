@@ -32,7 +32,7 @@
 
 !>  grow gridlayers from a net boundary
 subroutine netboundtocurvi(kp)
-  use precision, only: dp
+   use precision, only: dp
    use m_change_spline2curvi_param
    use m_polygon
    use m_grid

@@ -34,7 +34,7 @@
  !!
  !! Use idir=1 for adding water, -1 for lowering it.
  subroutine dropwater(xp, yp, idir)
-  use precision, only: dp
+    use precision, only: dp
     use m_isocol
     use m_polygon
     use m_flowgeom

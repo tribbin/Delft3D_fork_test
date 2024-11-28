@@ -34,7 +34,7 @@ module m_smeerfunctie
 contains
 
    subroutine SMEERFUNCTIE(I, J, MP, NP, FR, IN, JN)
-  use precision, only: dp
+      use precision, only: dp
       use m_grid_block
 
       integer :: i, j, mp, np, in, jn

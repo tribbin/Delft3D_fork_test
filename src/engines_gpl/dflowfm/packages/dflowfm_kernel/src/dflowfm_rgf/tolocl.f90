@@ -36,7 +36,7 @@ contains
 !!     WEEG TUSSEN MAX(!) VIER MOGELIJKE MEDE RICHTINGBEPALENDE OMLIGGEND
 !!     NTO = 0 IS NAAR LOKAAL, NTO = 1 IS NAAR GLOBAAL
    subroutine TOLOCL(DX0, DY0, X, Y, mmax, nmax, MP, NP, NTO)
-  use precision, only: dp
+      use precision, only: dp
       use m_missing, only: xymis
       use m_sferic, only: dg2rd, jsferic
       integer :: mmax, nmax, mp, np, nto

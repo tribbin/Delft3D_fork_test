@@ -31,7 +31,7 @@
 !
 
       subroutine GOLDLN(AX, BX, CX, TOL, XMIN, P, Q, N, XX, YY, DIS)
-  use precision, only: dp
+         use precision, only: dp
          use m_dislin
          implicit none
          real(kind=dp) :: ax

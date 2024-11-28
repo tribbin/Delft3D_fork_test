@@ -31,7 +31,7 @@
 !
 
  subroutine setprofs1D()
-  use precision, only: dp
+    use precision, only: dp
 
     use m_closeto1dnetlink, only: closeto1dnetlink
     use m_readprofilesloc

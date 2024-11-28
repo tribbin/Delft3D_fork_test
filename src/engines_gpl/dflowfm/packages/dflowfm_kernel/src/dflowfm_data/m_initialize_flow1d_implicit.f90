@@ -36,8 +36,7 @@
 !> <flow1d_implicit> and only has access to the variables in that project.
 
 module m_initialize_flow1d_implicit
-use m_init_1dinfo, only: init_1dinfo
-
+   use m_init_1dinfo, only: init_1dinfo
 
 contains
 
@@ -789,7 +788,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    subroutine inifm1dimp_faap(iresult)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_f1dimp
       use m_flowgeom, only: ndx, bai_mor, ba, bl, dx, lnx, dxi, acl, wu, snu, csu, wu_mor, wcx1, wcx2, wcy1, wcy2, kcu, wcl, lnxi, griddim
@@ -1069,7 +1068,7 @@ contains
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
    subroutine inifm1dimp_fic(iresult)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_f1dimp
       use m_flowgeom, only: ndx, ndxi, wu, nd

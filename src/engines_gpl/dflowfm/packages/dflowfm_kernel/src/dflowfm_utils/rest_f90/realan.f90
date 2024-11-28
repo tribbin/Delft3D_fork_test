@@ -31,7 +31,7 @@
 !
 
     subroutine REALAN(MLAN, ANTOT)
-  use precision, only: dp
+       use precision, only: dp
        use m_polygon
        use M_landboundary
        use M_MISSING

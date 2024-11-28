@@ -48,7 +48,7 @@ module m_makespl
    implicit none
 contains
    subroutine MAKESPL(T, X, Y, imax, N, NT, MNFAC, XH, YH, KMAX, TT, H)
-  use precision, only: dp
+      use precision, only: dp
       use m_gridsettings
       use m_makes
       use m_makessq
@@ -56,8 +56,8 @@ contains
 
       integer :: imax, n, nt, kmax, mnfac
       real(kind=dp) :: X(IMAX), Y(IMAX), X2(IMAX), Y2(IMAX), T(IMAX), S(IMAX), &
-         S2(IMAX), SSQ(IMAX), XH(IMAX), YH(IMAX), &
-         A(IMAX), SL(IMAX), SR(IMAX)
+                       S2(IMAX), SSQ(IMAX), XH(IMAX), YH(IMAX), &
+                       A(IMAX), SL(IMAX), SR(IMAX)
       real(kind=dp), intent(in) :: H !< for curvature adapted meshing
 
       real(kind=dp), dimension(IMAX), intent(out) :: TT !< spline-coordinates of grid points

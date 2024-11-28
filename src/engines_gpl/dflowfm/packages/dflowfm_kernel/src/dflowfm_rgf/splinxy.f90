@@ -34,7 +34,7 @@ module m_splinxy
 contains
 
    subroutine SPLINXY(X, Y, X2, Y2, N)
-  use precision, only: dp
+      use precision, only: dp
 !      USE DIMENS
       use m_spline
       integer :: n

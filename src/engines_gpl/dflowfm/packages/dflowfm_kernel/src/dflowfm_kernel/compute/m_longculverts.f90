@@ -34,7 +34,7 @@
 !! Long culverts are read from the structures.ini file(s), and converted into
 !! new netlinks and prof1D definitions.
 module m_longculverts
-  use precision, only: dp
+   use precision, only: dp
    use m_getflowdir
    use MessageHandling
    use m_missing
@@ -858,7 +858,7 @@ contains
    !! In case of multiple culverts, the coordinate arrays must have missing value
    !! (dmiss) separators between each polyline.
    subroutine make1D2DLongCulverts(xplCulv, yplCulv, zplCulv, nplCulv, linksCulv)
-  use precision, only: dp
+      use precision, only: dp
       use m_missing
       use m_polygon
       use geometry_module
@@ -943,7 +943,7 @@ contains
    !! In case of multiple culverts, the coordinate arrays must have missing value
    !! (dmiss) separators between each polyline.
    subroutine convert1D2DLongCulverts(xplCulv, yplCulv, zplCulv, nplCulv, linksCulv)
-  use precision, only: dp
+      use precision, only: dp
       use m_missing
       use m_polygon
       use geometry_module
@@ -1113,7 +1113,7 @@ contains
    !! The cross section definition (defining the long culvert's shape)
    !! must already have been read from file.
    subroutine addlongculvertcrosssections(network, branchId, csdefId, zpl, iref)
-  use precision, only: dp
+      use precision, only: dp
       use m_hash_search
       use m_readCrossSections
       use m_network
@@ -1319,7 +1319,7 @@ contains
 
    !> Find 2D netcell the longculvert endpoint is located in, add a new node and return its node number
    subroutine longculvert_create_endpoint(j, k)
-  use precision, only: dp
+      use precision, only: dp
       use m_polygon, only: xpl, ypl, zpl
       use network_data, only: xzw, yzw, zk
       use gridoperations, only: setnewpoint, incells

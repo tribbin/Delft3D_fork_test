@@ -31,7 +31,7 @@
 !
 
       subroutine read_samples_from_dem(filnam, jadoorladen)
-  use precision, only: dp
+         use precision, only: dp
          use dem
          use m_missing
          use m_samples

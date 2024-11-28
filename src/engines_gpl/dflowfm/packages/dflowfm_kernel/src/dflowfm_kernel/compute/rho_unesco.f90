@@ -32,23 +32,23 @@
 
 module m_rho_unesco
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: rho_unesco
+   public :: rho_unesco
 
 contains
 
-real(kind=dp) function rho_Unesco(sal, temp)
-  use precision, only: dp
-   use m_dens_unes
-   implicit none
-   real(kind=dp) :: saL, temp
-   real(kind=dp) :: rhods, rhodt
+   real(kind=dp) function rho_Unesco(sal, temp)
+      use precision, only: dp
+      use m_dens_unes
+      implicit none
+      real(kind=dp) :: saL, temp
+      real(kind=dp) :: rhods, rhodt
 
-   call dens_unes(temp, sal, rho_Unesco, rhods, rhodt)
+      call dens_unes(temp, sal, rho_Unesco, rhods, rhodt)
 
-end function rho_Unesco
+   end function rho_Unesco
 
 end module m_rho_unesco

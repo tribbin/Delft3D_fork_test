@@ -31,7 +31,7 @@
 !
 
       subroutine GEOUTM(xgeo, ygeo, xutm, yutm, Izone, nzone, IERR)
-  use precision, only: dp
+         use precision, only: dp
          use m_ellips
          implicit none
          integer :: nzone
@@ -128,7 +128,7 @@
 !     set fi and dl
 !
          fi = ygeo * pi / 180d0
-         dl = (xgeo + 177d0 - 6d0 * real(Izone - 1, kind=kind(dl)) ) * pi / 180d0
+         dl = (xgeo + 177d0 - 6d0 * real(Izone - 1, kind=kind(dl))) * pi / 180d0
 !
 !     constants, related to fi
 !

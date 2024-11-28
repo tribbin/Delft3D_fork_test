@@ -31,7 +31,7 @@
 !
 
 module M_XYTEXTS
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    integer, parameter :: maxtxt = 2000
    real(kind=dp) :: xtxt(maxtxt), ytxt(maxtxt), heitxt(maxtxt)

@@ -34,7 +34,7 @@
 !>    check bl and kmxn
 !>    update kmxn, kmxL
 subroutine update_vertadmin()
-  use precision, only: dp
+   use precision, only: dp
    use m_partitioninfo
    use m_flowgeom
    use m_flow

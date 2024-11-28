@@ -276,7 +276,7 @@ contains
       use m_missing
       use m_alloc
       use gridoperations
-      
+
       implicit none
 
       integer, intent(in) :: janet !< for network (1) or flow geom (0) or add 1D net (2)

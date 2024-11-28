@@ -32,17 +32,17 @@
 
 module m_comp_gravinput
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: comp_GravInput
+   public :: comp_GravInput
 
 contains
 
    !> compute Graviational Input from tidal forces and SAL
    subroutine comp_GravInput()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom
       use m_flow
       use unstruc_messages

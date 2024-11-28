@@ -32,7 +32,7 @@
 
 !>    bilineair interpolation between four nodes
       subroutine bilin6(x, y, z, xp, yp, zp)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
 
          implicit none

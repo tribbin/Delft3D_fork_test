@@ -32,7 +32,7 @@
 
       subroutine ATPPAR(X, Y, M1, N1, M2, N2, &
                         ATP, A, B, C, D, E)
-        use precision, only: dp
+         use precision, only: dp
          use m_grid, not1 => xc, not2 => yc
          use M_GRIDSETTINGS
          use m_orthosettings
@@ -57,8 +57,8 @@
 !     En vul ATP in celmiddens
 
          real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX), ATP(MMAX, NMAX), &
-            A(MMAX, NMAX), B(MMAX, NMAX), C(MMAX, NMAX), &
-            D(MMAX, NMAX), E(MMAX, NMAX)
+                          A(MMAX, NMAX), B(MMAX, NMAX), C(MMAX, NMAX), &
+                          D(MMAX, NMAX), E(MMAX, NMAX)
 
          real(kind=dp) :: X1, Y1, X2, Y2, D12, X3, Y3, X4, Y4, D34, D14, D23
          save NDRAW8

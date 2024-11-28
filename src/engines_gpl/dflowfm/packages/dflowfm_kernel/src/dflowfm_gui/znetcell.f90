@@ -31,16 +31,15 @@
 !
 
 module m_znetcell
-use m_checktrianglenetcell, only: checktrianglenetcell
-use m_getwavenr, only: getwavenr
+   use m_checktrianglenetcell, only: checktrianglenetcell
+   use m_getwavenr, only: getwavenr
 
-
-implicit none
+   implicit none
 
 contains
 
    real(kind=dp) function znetcell(k)
-  use precision, only: dp
+      use precision, only: dp
 
       use unstruc_display
       use m_netw

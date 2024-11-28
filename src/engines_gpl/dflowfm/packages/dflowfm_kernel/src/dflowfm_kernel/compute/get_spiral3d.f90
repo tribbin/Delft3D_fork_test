@@ -32,12 +32,12 @@
 
 module m_get_spiral3d
 
-implicit none
+   implicit none
 
 contains
 
    subroutine get_spiral3d
-  use precision, only: dp
+      use precision, only: dp
       use m_findfn
       use m_flow, only: ucx, ucy, spirint, zws, hs, dzslay, spiratx, spiraty
       use m_flowgeom, only: ndx

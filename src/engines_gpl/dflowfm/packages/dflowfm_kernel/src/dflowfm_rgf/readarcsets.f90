@@ -31,7 +31,7 @@
 !
 
       subroutine REAdarcsets(mlist)
-  use precision, only: dp
+         use precision, only: dp
          use m_netw
          use M_ARCINFO
          use M_MISSING

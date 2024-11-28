@@ -31,7 +31,7 @@
 !
 
       subroutine LUDCMP(A, N, NP, INDX, D, JAPARALLEL)
-  use precision, only: dp
+         use precision, only: dp
          implicit none
          real(kind=dp) :: a
          real(kind=dp) :: aamax

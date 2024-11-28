@@ -31,7 +31,7 @@
 !
 
    subroutine RELINK()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_dellinksinpol, only: dellinksinpol
       use m_netw

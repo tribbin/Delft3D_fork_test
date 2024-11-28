@@ -32,7 +32,7 @@
 
 !>    return x-component in corner (netnode) coordinate frame of a vector in link coordinate frame
       real(kind=dp) function lin2cory(L, i12, ux, uy)
-  use precision, only: dp
+         use precision, only: dp
          use m_flowgeom, only: csbn, snbn
          use m_sferic
          implicit none

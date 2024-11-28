@@ -32,7 +32,7 @@
 
 !>  smooth the link-based aspect ratios (SLR/R01) along parallel and perpendicular mesh lines (obsolete)
 subroutine orthonet_smooth_aspect(aspect, iexit)
-  use precision, only: dp
+   use precision, only: dp
    use m_netw
    use m_orthosettings
    use unstruc_messages

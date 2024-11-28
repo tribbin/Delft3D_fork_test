@@ -31,7 +31,7 @@
 !
 
   subroutine GETMIDDLEKNOT(K1, K2, K12, A12, R12)
-  use precision, only: dp
+     use precision, only: dp
      use m_netw
      use gridoperations
      implicit none

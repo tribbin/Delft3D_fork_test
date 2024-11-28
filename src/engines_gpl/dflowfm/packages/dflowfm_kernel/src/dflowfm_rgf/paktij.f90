@@ -31,7 +31,7 @@
 !
 
      subroutine PAKTIJ(T, mmax, nmax, TH, imax, I1, I2, J1, J2, NUM)
-  use precision, only: dp
+        use precision, only: dp
         implicit none
 !     Haal lijn uit array en geef aantal niet nul NUM
         integer :: mmax, nmax, imax, i1, i2, j1, j2, num

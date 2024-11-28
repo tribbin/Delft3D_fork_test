@@ -134,7 +134,7 @@ module m_xbeach_netcdf
 contains
 
    subroutine xbeach_write_stats(tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: jawave, jaavgwavquant, eps10, jamombal
       use m_flowtimes, only: ti_wav, ti_wavs, ti_wave, tstop_user, time_wav
       use precision_basics
@@ -170,7 +170,7 @@ contains
    end subroutine
 
    subroutine unc_write_wav(tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use unstruc_netcdf
@@ -215,7 +215,7 @@ contains
    end subroutine unc_write_wav
 
    subroutine unc_write_wav_filepointer_ugrid(wavids, tim)
-  use precision, only: dp
+      use precision, only: dp
       use io_ugrid
       use unstruc_netcdf
       use m_xbeach_avgoutput
@@ -512,7 +512,7 @@ contains
 
 !> Writes time-averaged spatial wave output to an already opened netCDF dataset.
    subroutine unc_write_wav_filepointer(imapfile, tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use m_flowgeom
@@ -947,7 +947,7 @@ contains
 !! Construct averages for netcdf output
 !! (Re)allocation in flow_waveinit
    subroutine xbeach_makeaverages(dt)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowgeom
       use m_flowtimes
@@ -1590,7 +1590,7 @@ contains
    end subroutine
 
    subroutine xbeach_mombalance
-  use precision, only: dp
+      use precision, only: dp
       ! calculates some terms to construct momentum balances
       ! still not sure about this one, discuss with Dano and use with caution for now
       use m_xbeach_avgoutput

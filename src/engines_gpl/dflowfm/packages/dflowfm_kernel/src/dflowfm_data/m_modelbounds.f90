@@ -35,7 +35,7 @@
 !!
 !! Note: x/y or lat/lon pairs may be set to dmiss if they are not applicable.
 module m_modelbounds
-  use precision, only: dp
+   use precision, only: dp
    real(kind=dp) :: mb_xmin !< Smallest x-value (of 2D cell vertices/1D nodes).
    real(kind=dp) :: mb_xmax !< Largest  x-value (of 2D cell vertices/1D nodes).
    real(kind=dp) :: mb_ymin !< Smallest y-value (of 2D cell vertices/1D nodes).

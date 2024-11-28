@@ -34,7 +34,7 @@ module m_rechtsaf_active
 contains
 
    logical function rechtsaf_active(K1, K2, K3)
-  use precision, only: dp
+      use precision, only: dp
 
       use network_data, only: xk, yk
       use geometry_module, only: duitpl

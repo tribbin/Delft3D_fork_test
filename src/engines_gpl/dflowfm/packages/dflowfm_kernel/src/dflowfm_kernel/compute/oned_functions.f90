@@ -231,7 +231,7 @@ contains
 
    !> Set the node numbers from flowgeom for the storage nodes
    subroutine set_node_numbers_for_storage_nodes()
-  use precision, only: dp
+      use precision, only: dp
 
       use unstruc_channel_flow
       use m_flowgeom
@@ -321,7 +321,7 @@ contains
    !!       incoming or outgoing branch (link).) \n
    !!       A connection node is located at the beginning or end of the branch.
    subroutine set_cross_sections_to_gridpoints()
-  use precision, only: dp
+      use precision, only: dp
 
       use unstruc_channel_flow
       use m_flowgeom
@@ -487,7 +487,7 @@ contains
    end subroutine save_1d_nrd_vars_in_stm
 
    subroutine setbobs_1d()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_network
       use m_flowgeom
@@ -619,7 +619,7 @@ contains
    !! the pump. Values are stored in struct%fu(:), etc. and *also* set
    !! in m_flow::fu(:), etc.
    subroutine computePump_all_links(struct)
-  use precision, only: dp
+      use precision, only: dp
       use m_1d_structures
       use m_pump
       use m_flowtimes
@@ -842,7 +842,7 @@ contains
    !! * the highest nearby cross section level ("embankment") for other nodes,
    !! * dmiss, i.e. not applicable, if no cross section is defined at the node.
    subroutine set_ground_level_for_1d_nodes(network)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: groundLevel, groundStorage, ndxi, ndx2d, nd, kcu
       use m_Storage
       use m_CrossSections
@@ -922,7 +922,7 @@ contains
 
    !> Set maximal volume for 1d nodes, later used for computation of volOnGround(:).
    subroutine set_max_volume_for_1d_nodes()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: groundLevel, volMaxUnderground, ndx, ndxi, ndx2d
       use m_flow, only: s1, vol1, a1, vol1_f, a1m, s1m, nonlin
       use m_alloc
@@ -1026,7 +1026,7 @@ contains
 
    !> Compute the cumulative time when water is above ground level.
    subroutine updateTimeWetOnGround(dts)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowparameters, only: epswetout
       use m_flowtimes, only: time_wetground
       use m_flow, only: s1
@@ -1093,7 +1093,7 @@ contains
    !> Update total net inflow through all connected 1d2d links for each 1d node with given computational time step.
    !! Value in vTot1d2d is cumulative in time since TStart.
    subroutine updateTotalInflow1d2d(dts)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: vTot1d2d, qCur1d2d, q1
       use m_flowgeom, only: ndx2d, lnx1d, kcu, ln
       implicit none
@@ -1123,7 +1123,7 @@ contains
 
    !> Update total net inflow of all laterals for each 1d node with given computational time step.
    subroutine updateTotalInflowLat(dts)
-  use precision, only: dp
+      use precision, only: dp
       use m_flow, only: vTotLat, qCurLat
       use m_flowgeom, only: ndx2d
       use m_laterals, only: qqlat, numlatsg, n1latsg, n2latsg, nnlat
@@ -1197,7 +1197,7 @@ contains
 
    ! Perform a time interpolation of the roughness parameters and store them in the currentValues array
    subroutine interpolateRoughnessParameters(rgs, times_update_roughness, tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_Roughness
 
       type(t_RoughnessSet), intent(inout) :: rgs !< Roughness set
@@ -1224,7 +1224,7 @@ contains
 
    !> Shift the time dependent values, called prior to the update of the roughness parameters for a new time level
    subroutine shiftTimeDependentRoughnessValues(rgs)
-  use precision, only: dp
+      use precision, only: dp
       use m_Roughness
 
       type(t_RoughnessSet), intent(inout) :: rgs !< Roughness set

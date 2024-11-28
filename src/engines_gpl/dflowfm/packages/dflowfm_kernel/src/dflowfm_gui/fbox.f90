@@ -30,12 +30,12 @@
 !
 !
 module m_fbox
-use m_rectangle
+   use m_rectangle
 
    implicit none
 contains
    subroutine FBOX(X1, Y1, X2, Y2)
-  use precision, only: dp
+      use precision, only: dp
       use m_fboxold
       use m_drawthis
       use m_dproject

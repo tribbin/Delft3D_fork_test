@@ -34,7 +34,7 @@ module m_dsuperbee
 contains
 
    real(kind=dp) function dsuperbee(ds1, ds2)
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp) :: ds1, ds2, r
 
       if (ds1 * ds2 > 0d0) then

@@ -31,7 +31,7 @@
 !
 
       subroutine GOLD(AX, BX, CX, TOL, XMIN, P, P2, Q, Q2, XX, YY, N, DIS)
-  use precision, only: dp
+         use precision, only: dp
          use m_spldist
          implicit none
          real(kind=dp) :: c

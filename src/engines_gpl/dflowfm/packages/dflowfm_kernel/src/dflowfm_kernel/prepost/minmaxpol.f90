@@ -32,7 +32,7 @@
 module m_min_max_pol
 contains
    subroutine MINMAXPOL(XMIN, YMIN, XMAX, YMAX)
-  use precision, only: dp
+      use precision, only: dp
       use M_POLYGON
       use M_MISSING, only: xymis
       implicit none

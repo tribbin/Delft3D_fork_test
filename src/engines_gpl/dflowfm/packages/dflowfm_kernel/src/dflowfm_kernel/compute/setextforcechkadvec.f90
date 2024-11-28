@@ -28,7 +28,7 @@
 !-------------------------------------------------------------------------------
 
  subroutine setextforcechkadvec()
-  use precision, only: dp
+    use precision, only: dp
     use m_get_spiralforce
     use m_get_spiral3d
     use m_comp_gravinput, only: comp_GravInput

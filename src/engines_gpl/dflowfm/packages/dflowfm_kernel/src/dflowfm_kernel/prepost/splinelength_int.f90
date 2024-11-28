@@ -32,7 +32,7 @@
 
 !> approximate spline pathlength in interval
 real(kind=dp) function splinelength_int(num, xspl, yspl, s0, s1)
-  use precision, only: dp
+   use precision, only: dp
 
    use geometry_module, only: dbdistance
    use m_missing, only: dmiss

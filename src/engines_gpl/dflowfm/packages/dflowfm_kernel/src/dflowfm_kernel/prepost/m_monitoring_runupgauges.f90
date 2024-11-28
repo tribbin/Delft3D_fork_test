@@ -28,7 +28,7 @@
 !-------------------------------------------------------------------------------
 
 module m_monitoring_runupgauges
-  use precision, only: dp
+   use precision, only: dp
    use m_crspath
    use m_missing
    use MessageHandling, only: IdLen
@@ -141,7 +141,7 @@ contains
 !! The input arrays have the structure of the global polygon:
 !! one or more polylines separated by dmiss values.
    subroutine polyline_to_runupgauges(pl_x, pl_y, pl_n, names)
-  use precision, only: dp
+      use precision, only: dp
       use m_missing
 
       real(kind=dp), intent(in) :: pl_x(:), pl_y(:) !< Long array with one or more polylines, separated by dmiss
@@ -233,7 +233,7 @@ contains
 
 !> adds runup gauge with name and polyline coordinates
    subroutine add_runup_gauges(name, pl_x, pl_y)
-  use precision, only: dp
+      use precision, only: dp
       character(len=*), intent(in) :: name !> name of the new runup gauge
       real(kind=dp), intent(in) :: pl_x(:), pl_y(:) !> x- and y coordinates of polyline
 

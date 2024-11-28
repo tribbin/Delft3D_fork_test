@@ -31,7 +31,7 @@
 !
 
       subroutine GEORD(xgeo, ygeo, xrd, yrd, JAPARIJS)
-  use precision, only: dp
+         use precision, only: dp
          use m_wgs842bessel
          implicit none
          integer :: japarijs

@@ -33,7 +33,7 @@ module m_wripol
    implicit none
 contains
    subroutine WRIPOL(MPOL)
-  use precision, only: dp
+      use precision, only: dp
       use M_POLYGON
       use m_missing
       use m_wrildb

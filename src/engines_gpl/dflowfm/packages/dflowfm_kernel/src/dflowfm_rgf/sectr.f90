@@ -33,7 +33,7 @@
      subroutine SECTR(X, Y, TIJ, mmax, nmax, imax, &
                       merr, NUMI, &
                       NUMSPL, NUMPX, NTYP, MN12, XI, YI, XJ, YJ)
-       use precision, only: dp
+        use precision, only: dp
         use unstruc_colors
         use unstruc_messages
         use unstruc_display

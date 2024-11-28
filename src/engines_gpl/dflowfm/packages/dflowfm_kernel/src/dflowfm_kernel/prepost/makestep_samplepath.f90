@@ -32,7 +32,7 @@
 
 ! make a step to the next sample in a sample path
 subroutine makestep_samplepath(ipprev, ipcur, ipnext, Nsub, ipsub, ierror)
-  use precision, only: dp
+   use precision, only: dp
    use m_samples
    use m_samples_refine
    use m_missing, only: dmiss, dxymis

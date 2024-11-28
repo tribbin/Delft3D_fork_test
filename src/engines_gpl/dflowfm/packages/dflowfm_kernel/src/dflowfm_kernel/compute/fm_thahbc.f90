@@ -52,7 +52,7 @@
 
 module m_fm_thahbc
 
-implicit none
+   implicit none
 
 contains
 
@@ -120,7 +120,7 @@ contains
    end subroutine fm_thahbc
 
    subroutine thconst(iconst, nbnd, zbnd, kbnd, tht, thz)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_transport
       use mathconsts, only: pi_hp
@@ -183,6 +183,5 @@ contains
          end do
       end do
    end subroutine
-
 
 end module m_fm_thahbc

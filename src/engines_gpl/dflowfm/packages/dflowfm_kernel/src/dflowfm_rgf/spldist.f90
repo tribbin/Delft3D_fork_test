@@ -33,7 +33,7 @@ module m_spldist
    implicit none
 contains
    real(kind=dp) function SPLDIST(X, X2, Y, Y2, XX, YY, TV, N)
-  use precision, only: dp
+      use precision, only: dp
       use m_splint
       use m_planedistance
 

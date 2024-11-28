@@ -41,7 +41,7 @@ contains
 !! NOTE: when using the makecounterclockwise=1 option, the two net node numbers in ZPL may
 !! have been flipped to the last two indices for the polygons that were re-oriented.
    subroutine copynetboundstopol(inpol, needfindcells, makecounterclockwise, setnetstat)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_alloc
       use m_polygon

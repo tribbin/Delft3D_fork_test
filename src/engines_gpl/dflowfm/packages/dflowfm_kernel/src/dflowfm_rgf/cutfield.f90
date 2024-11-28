@@ -31,7 +31,7 @@
 !
 
       subroutine CUTFIELD(X, Y, mmax, nmax, MC, NC)
-  use precision, only: dp
+         use precision, only: dp
          use m_missing
          use m_grid_block
          implicit none

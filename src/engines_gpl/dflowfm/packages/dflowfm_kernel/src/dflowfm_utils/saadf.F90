@@ -56,7 +56,7 @@
 #define no_warning_unused_dummy_argument(x) associate( x => x ); end associate
 
 module m_saadf
-use precision, only: dp
+   use precision, only: dp
    implicit none
 
    interface dnrm2XXX
@@ -164,7 +164,6 @@ contains
    subroutine aplb(nrow, ncol, job, a, ja, ia, b, jb, ib,&
    &c, jc, ic, nzmax, iw, ierr)
 
-
       integer, intent(in) :: nrow, ncol, nzmax, job
       real(dp), intent(inout) :: a(:), b(:), c(:)
       integer, intent(inout) :: ja(:), jb(:), jc(:), ia(nrow + 1), ib(nrow + 1)&
@@ -258,7 +257,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine aplb1(nrow, ncol, job, a, ja, ia, b, jb, ib, c, jc, ic, nzmax, ierr)
-
 
       integer, intent(in) :: nrow, ncol, nzmax, job
       integer, intent(out) :: ierr
@@ -369,7 +367,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine aplsb(nrow, ncol, a, ja, ia, s, b, jb, ib, c, jc, ic,&
    &nzmax, ierr)
-
 
       integer, intent(in) :: nrow, ncol, nzmax
       integer, intent(out) :: ierr
@@ -492,7 +489,6 @@ contains
    subroutine aplsb1(nrow, ncol, a, ja, ia, s, b, jb, ib, c, jc, ic,&
    &nzmax, ierr)
 
-
       integer, intent(in) :: nrow, ncol, nzmax
       integer, intent(out) :: ierr
       real(dp), intent(inout) :: a(:), b(:), c(:), s
@@ -612,7 +608,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine apmbt(nrow, ncol, job, a, ja, ia, b, jb, ib,&
    &c, jc, ic, nzmax, iw, ierr)
-
 
       integer, intent(in) :: nrow, ncol, nzmax, job
       integer, intent(out) :: ierr
@@ -760,7 +755,6 @@ contains
    subroutine aplsbt(nrow, ncol, a, ja, ia, s, b, jb, ib,&
    &c, jc, ic, nzmax, iw, ierr)
 
-
       integer, intent(in) :: nrow, ncol, nzmax
       integer, intent(out) :: ierr
       real(dp), intent(inout) :: a(:), b(:), c(:), s
@@ -896,7 +890,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine diamua(nrow, job, a, ja, ia, diag, b, jb, ib)
 
-
       integer, intent(in) :: nrow, job
       real(dp), intent(inout) :: a(:), b(:), diag(nrow)
       integer, intent(inout) :: ja(:), jb(:), ia(nrow + 1), ib(nrow + 1)
@@ -958,7 +951,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine amudia(nrow, job, a, ja, ia, diag, b, jb, ib)
 
-
       integer, intent(in) :: nrow, job
       real(dp), intent(inout) :: a(:), b(:), diag(nrow)
       integer, intent(inout) :: ja(:), jb(:), ia(nrow + 1), ib(nrow + 1)
@@ -1016,7 +1008,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine aplsca(nrow, a, ja, ia, scal, iw)
-
 
       integer, intent(in) :: nrow
       real(dp), intent(inout) :: a(:), scal
@@ -1117,7 +1108,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine apldia(nrow, job, a, ja, ia, diag, b, jb, ib, iw)
-
 
       integer, intent(in) :: nrow, job
       real(dp), intent(inout) :: a(:), b(:), diag(nrow)
@@ -1379,7 +1369,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine amuxe(n, x, y, na, ncol, a, ja)
-
 
       integer, intent(in) :: n, na, ncol
       real(dp), intent(inout) :: x(n), y(n), a(na, *)
@@ -1783,7 +1772,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine ldsoll(n, x, y, al, jal, nlev, lev, ilev)
 
-
       integer, intent(in) :: n, nlev
       integer, intent(inout) :: jal(:), ilev(nlev + 1), lev(n)
       real(dp), intent(inout) :: x(n), y(n), al(:)
@@ -2024,7 +2012,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine errpr(n, y, y1, iout, msg)
 
-
       integer, intent(in) :: n, iout
       real(dp), intent(in) :: y(:), y1(:)
       character(len=6), intent(in) :: msg
@@ -2041,7 +2028,7 @@ contains
       return
    end
    subroutine dcopy(n, dx, incx, dy, incy)
-   use precision, only: dp
+      use precision, only: dp
 !
 !     copies a vector, x, to a vector, y.
 !     uses unrolled loops for increments equal to one.
@@ -2783,7 +2770,6 @@ contains
 !----------------------------------------------------------------------c
    subroutine csrdns(nrow, ncol, a, ja, ia, dns, ndns, ierr)
 
-
       integer, intent(in) :: nrow, ncol, ndns
       integer, intent(out) :: ierr
       real(dp), intent(inout) :: dns(ndns, *), a(:)
@@ -2840,7 +2826,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine dnscsr(nrow, ncol, nzmax, dns, a, ja, ia, ierr)
-
 
       integer, intent(in) :: nrow, ncol, nzmax
       integer, intent(out) :: ierr
@@ -2971,7 +2956,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine coicsr(n, nnz, job, a, ja, ia, iwk)
-
 
       integer, intent(in) :: n, nnz, job
       integer, intent(inout) :: ia(nnz), ja(nnz), iwk(n + 1)
@@ -3161,7 +3145,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine csrssr(nrow, a, ja, ia, nzmax, ao, jao, iao, ierr)
-
 
       integer, intent(in) :: nrow, nzmax
       integer, intent(out) :: ierr
@@ -3512,7 +3495,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine xssrcsr(nrow, a, ja, ia, nzmax, ao, jao, iao, indu, ierr)
 
-
       integer, intent(in) :: nrow, nzmax
       integer, intent(out) :: ierr
       integer, intent(inout) :: ia(nrow + 1), iao(nrow + 1), ja(:), jao(nzmax)&
@@ -3632,7 +3614,6 @@ contains
    subroutine csrell(nrow, a, ja, ia, maxcol, coef, jcoef, ncoef,&
    &ndiag, ierr)
 
-
       integer, intent(in) :: nrow, maxcol, ncoef
       integer, intent(out) :: ierr, ndiag
       integer, intent(inout) :: ia(nrow + 1), ja(:), jcoef(ncoef, 1)
@@ -3709,7 +3690,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine ellcsr(nrow, coef, jcoef, ncoef, ndiag, a, ja, ia, nzmax, ierr)
 
-
       integer, intent(in) :: nrow, nzmax, ncoef, ndiag
       integer, intent(out) :: ierr
       integer, intent(inout) :: ia(nrow + 1), ja(:), jcoef(ncoef, 1)
@@ -3775,7 +3755,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine csrmsr(n, a, ja, ia, ao, jao, wk, iwk)
-
 
       integer, intent(in) :: n
       real(dp), intent(inout) :: a(:), ao(:), wk(n)
@@ -3886,7 +3865,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine msrcsr(n, a, ja, ao, jao, iao, wk, iwk)
-
 
       integer, intent(in) :: n
       real(dp), intent(inout) :: a(:), ao(:), wk(n)
@@ -4015,7 +3993,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine csrcsc2(n, n2, job, ipos, a, ja, ia, ao, jao, iao)
 
-
       integer, intent(in) :: n, job, n2, ipos
       integer, intent(inout) :: ia(n + 1), iao(n2 + 1), ja(:), jao(:)
       real(dp), intent(inout) :: a(:), ao(:)
@@ -4095,7 +4072,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine csrlnk(n, a, ja, ia, link)
-
 
       real(dp), intent(inout) :: a(:)
       integer, intent(in) :: n
@@ -4250,7 +4226,6 @@ contains
    subroutine csrdia(n, idiag, job, a, ja, ia, ndiag,&
    &diag, ioff, ao, jao, iao, ind)
 
-
       integer, intent(in) :: n, ndiag
       integer, intent(inout) :: idiag
       real(dp), intent(inout) :: diag(ndiag, idiag), a(:), ao(:)
@@ -4396,7 +4371,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine diacsr(n, job, idiag, diag, ndiag, ioff, a, ja, ia)
-
 
       integer, intent(in) :: n, job, ndiag, idiag
       real(dp), intent(inout) :: diag(ndiag, idiag), a(:)
@@ -4767,7 +4741,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine csrbnd(n, a, ja, ia, job, abd, nabd, lowd, ml, mu, ierr)
 
-
       integer, intent(in) :: n, nabd, job
       integer, intent(out) :: ierr
       real(dp), intent(inout) :: a(:), abd(nabd, n)
@@ -4914,10 +4887,9 @@ contains
 !-----------------------------------------------------------------------
    subroutine bndcsr(n, abd, nabd, lowd, ml, mu, a, ja, ia, len, ierr)
 
-
       integer, intent(in) :: n, nabd
       integer, intent(out) :: ierr
-      real(dp), intent(inout) :: a(:), abd(:,:)
+      real(dp), intent(inout) :: a(:), abd(:, :)
       integer, intent(inout) :: ia(n + 1), ja(:), len, lowd
       real(dp) :: t
       integer :: i, j, irow, ml, mu, ko
@@ -5010,7 +4982,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine csrssk(n, imod, a, ja, ia, asky, isky, nzmax, ierr)
-
 
       integer, intent(in) :: n, nzmax
       integer, intent(out) :: ierr
@@ -5129,7 +5100,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine sskssr(n, imod, asky, isky, ao, jao, iao, nzmax, ierr)
 
-
       integer, intent(in) :: n, nzmax
       integer, intent(out) :: ierr
       real(dp), intent(inout) :: asky(:), ao(nzmax)
@@ -5246,7 +5216,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine csrjad(nrow, a, ja, ia, idiag, iperm, ao, jao, iao)
 
-
       integer, intent(in) :: nrow
       integer, intent(out) :: idiag
       integer, intent(inout) :: ja(:), jao(:), ia(nrow + 1), iperm(nrow)&
@@ -5349,7 +5318,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine jadcsr(nrow, idiag, a, ja, ia, iperm, ao, jao, iao)
-
 
       integer, intent(in) :: nrow, idiag
       integer, intent(inout) :: ja(:), jao(:), ia(idiag + 1), iperm(nrow)&
@@ -5614,7 +5582,6 @@ contains
 !-----end-of-cooell-----------------------------------------------------
 !-----------------------------------------------------------------------
    subroutine xcooell(n, nnz, a, ja, ia, ac, jac, nac, ner, ncmax, ierr)
-
 
       integer, intent(in) :: n, nnz, nac, ner
       integer, intent(out) :: ierr
@@ -5907,7 +5874,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine usscsr(nrow, a, ja, ia, diag, al, jal, ial, au, jau, iau)
 
-
       integer, intent(in) :: nrow
       real(dp), intent(inout) :: a(:), al(:), diag(:), au(:)
       integer, intent(inout) :: ja(:), ia(nrow + 1), jal(:), ial(nrow + 1)&
@@ -6001,7 +5967,6 @@ contains
    end
 
    subroutine ssscsr(nrow, a, ja, ia, diag, al, jal, ial, au)
-
 
       integer, intent(in) :: nrow
       real(dp), intent(inout) :: a(:), al(:), diag(:), au(:)
@@ -6280,7 +6245,6 @@ contains
 ! kvstmerge: Merges block partitionings, for conformal row/col pattern c
 !----------------------------------------------------------------------c
    subroutine submat(n, job, i1, i2, j1, j2, a, ja, ia, nr, nc, ao, jao, iao)
-
 
       integer, intent(in) :: n, job
       integer, intent(inout) :: i1, i2, j1, j2, nr, nc, ia(:), ja(:), jao(:)&
@@ -7141,7 +7105,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine transp(nrow, ncol, a, ja, ia, iwk, ierr)
 
-
       integer, intent(in) :: nrow
       integer, intent(out) :: ierr
       integer, intent(inout) :: ia(:), ja(:), iwk(:), ncol
@@ -7574,7 +7537,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine rperm(nrow, a, ja, ia, ao, jao, iao, perm, job)
 
-
       integer, intent(in) :: nrow, job
       integer, intent(inout) :: ja(:), ia(nrow + 1), jao(:), iao(nrow + 1)&
       &, perm(nrow)
@@ -7800,7 +7762,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine dperm1(i1, i2, a, ja, ia, b, jb, ib, perm, ipos, job)
 
-
       integer, intent(in) :: ipos, job
       integer, intent(inout) :: i1, i2, ja(:), ia(:), jb(:), ib(:), perm(:)
       real(dp), intent(inout) :: a(:), b(:)
@@ -7862,7 +7823,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine dperm2(i1, i2, a, ja, ia, b, jb, ib, cperm, rperm, istart,&
    &ipos, job)
-
 
       integer, intent(in) :: ipos, job, istart
       integer, intent(inout) :: i1, i2, ja(:), ia(:), jb(:), ib(:), cperm(:)&
@@ -7956,7 +7916,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine dmperm(nrow, a, ja, ao, jao, perm, job)
 
-
       integer, intent(in) :: nrow
       integer, intent(inout) :: ja(:), jao(:), perm(nrow), job
       real(dp), intent(inout) :: a(:), ao(:)
@@ -8021,7 +7980,6 @@ contains
 
    subroutine permsimple(n, x, XH, perm, permselect)
 
-
       integer, intent(in) :: n, perm(n), permselect
       real(dp), intent(inout) :: x(n), XH(N)
       integer :: k
@@ -8036,7 +7994,6 @@ contains
 
    subroutine permsimpleINVERSE(n, x, XH, perm, permselect)
 
-
       integer, intent(in) :: n, perm(n), permselect
       real(dp), intent(inout) :: x(n), XH(N)
       integer :: k
@@ -8050,7 +8007,6 @@ contains
    end
 
    subroutine dvperm(n, x, perm)
-
 
       integer, intent(in) :: n
       integer, intent(inout) :: perm(n)
@@ -8295,7 +8251,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine dscaldg(n, a, ja, ia, diag, job)
 
-
       integer, intent(in) :: n, job
       real(dp), intent(inout) :: a(:), diag(:)
       integer, intent(inout) :: ia(:), ja(:)
@@ -8353,7 +8308,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine extbdg(n, a, ja, ia, bdiag, nblk, ao, jao, iao)
-
 
       integer, intent(in) :: n, nblk
       real(dp), intent(inout) :: bdiag(:), a(:), ao(:)
@@ -8423,7 +8377,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine getbwd(n, a, ja, ia, ml, mu)
-
 
       integer, intent(in) :: n
       real(dp), intent(inout) :: a(:)
@@ -8905,7 +8858,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine rnrms(nrow, nrm, a, ja, ia, diag)
 
-
       integer, intent(in) :: nrow, nrm
       real(dp), intent(inout) :: a(:), diag(nrow)
       integer, intent(inout) :: ja(:), ia(nrow + 1)
@@ -8963,7 +8915,6 @@ contains
 !-----------------------------------------------------------------------
    subroutine cnrms(nrow, nrm, a, ja, ia, diag)
 
-
       integer, intent(in) :: nrow, nrm
       real(dp), intent(inout) :: a(:), diag(nrow)
       integer, intent(inout) :: ja(:), ia(nrow + 1)
@@ -9016,7 +8967,6 @@ contains
    end
 !-----------------------------------------------------------------------
    subroutine roscal(nrow, job, nrm, a, ja, ia, diag, b, jb, ib, ierr)
-
 
       integer, intent(in) :: nrow, job, nrm
       integer, intent(out) :: ierr
@@ -10473,7 +10423,6 @@ contains
    end
 
    subroutine amub_countonly(nrow, ncol, a, ja, ia, b, jb, ib, iw, len)
-
 
       integer, intent(in) :: nrow, ncol
       integer, intent(out) :: len

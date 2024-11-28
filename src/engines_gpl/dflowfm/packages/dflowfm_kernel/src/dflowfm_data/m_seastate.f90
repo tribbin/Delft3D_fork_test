@@ -31,7 +31,7 @@
 !
 
 module m_seastate
-  use precision, only: dp
+   use precision, only: dp
    implicit none
    real(kind=dp) :: TWOPI, WAVLEN, WAVKX, WAVOM
    real(kind=dp) :: WAVCEL = 5, WAVPER = 15, WAVAMP = .1

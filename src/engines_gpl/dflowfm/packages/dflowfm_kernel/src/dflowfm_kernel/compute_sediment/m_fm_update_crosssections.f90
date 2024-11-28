@@ -276,7 +276,7 @@ contains
    end function fm_get_ds
 
    subroutine fm_update_mor_width_area()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowgeom, only: lnx, lnx1d, lnxi, lnx1Db, wu, wu_mor, LBND1D, bai, ba_mor, bai_mor, ndx, dx, ln, acl, ndx2D, ndx1Db
       use m_cell_geometry, only: ba
       use unstruc_channel_flow, only: network

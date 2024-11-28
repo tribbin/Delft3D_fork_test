@@ -39,12 +39,12 @@
 #include "blasfm.h"
 
 module GAMMAS
-use precision, only: dp
+   use precision, only: dp
    real(kind=dp) :: gammax, gammay, alpha
 end module GAMMAS
 
 module m_saad
-use precision, only: dp
+   use precision, only: dp
    use GAMMAS
 
    integer, allocatable :: &

@@ -31,7 +31,7 @@
 !
 
  subroutine get2Dnormal(n1, xn1, yn1) ! get x and y components of land normal vector pointing upward.
-  use precision, only: dp
+    use precision, only: dp
 
     use m_flowgeom ! = ok for all internal cells
     use m_flow

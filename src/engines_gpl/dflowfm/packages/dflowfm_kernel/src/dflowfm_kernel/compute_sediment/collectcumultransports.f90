@@ -32,16 +32,16 @@
 
 module m_collectcumultransports
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: collectcumultransports
+   public :: collectcumultransports
 
 contains
 
    subroutine collectcumultransports()
-  use precision, only: dp
+      use precision, only: dp
       use m_flowtimes, only: dts
       use m_flowgeom, only: ndx
       use m_fm_erosed

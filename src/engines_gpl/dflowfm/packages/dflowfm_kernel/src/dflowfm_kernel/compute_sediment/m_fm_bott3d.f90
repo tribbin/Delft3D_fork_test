@@ -514,7 +514,7 @@ contains
    !! one branch (e.g., a bifurcation). This is done by applying a closure
    !! relation (the nodal point relation)
    subroutine apply_nodal_point_relation()
-  use precision, only: dp
+      use precision, only: dp
 
    !!
    !! Declarations
@@ -772,7 +772,7 @@ contains
 
    !> Apply morphodynamic boundary condition on bed level
    subroutine fm_bed_boundary_conditions(timhr)
-  use precision, only: dp
+      use precision, only: dp
 
    !!
    !! Declarations
@@ -974,7 +974,7 @@ contains
 
    !> Compute change in bed level `dbodsd`
    subroutine fm_change_in_sediment_thickness(dtmor)
-  use precision, only: dp
+      use precision, only: dp
 
    !!
    !! Declarations
@@ -1182,7 +1182,7 @@ contains
    !> Redistribute erosion of wet cell next to dry cell to the dry cell
    !! to consider some sort of bank or beach erosion
    subroutine fm_dry_bed_erosion(dtmor)
-  use precision, only: dp
+      use precision, only: dp
 
    !!
    !! Declarations
@@ -1394,7 +1394,7 @@ contains
 
    !> Apply bed boundary condition
    subroutine fm_apply_bed_boundary_condition(dtmor, timhr)
-  use precision, only: dp
+      use precision, only: dp
 
    !!
    !! Declarations
@@ -1560,7 +1560,7 @@ contains
    !< Update concentrations in water column to conserve mass because of bottom update
    !! This needs to happen in work array sed, not constituents, because of copying back and forth later on
    subroutine fm_update_concentrations_after_bed_level_update()
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flow, only: kmx, hs
       use m_flowgeom, only: ndx
@@ -1797,7 +1797,7 @@ contains
 
    !> Update bottom elevation
    subroutine fm_update_bed_level(dtmor)
-  use precision, only: dp
+      use precision, only: dp
 
    !!
    !! Declarations
@@ -1964,7 +1964,7 @@ contains
    end subroutine fm_update_bl
 
    subroutine fm_erosion_velocity(dtmor)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_flowgeom, only: ndx
       use m_fm_erosed, only: blchg, dzbdt
@@ -1998,7 +1998,7 @@ contains
    end subroutine fm_erosion_velocity
 
    subroutine fm_sumflux(LL, sumflux, flux)
-  use precision, only: dp
+      use precision, only: dp
 
    !!
    !! Declarations

@@ -30,12 +30,12 @@
 !
 !
 module m_jgrline8
-use m_polyline
+   use m_polyline
 
-      implicit none
+   implicit none
 contains
    subroutine JGRLINE8(X, Y, N) ! TEKEN LIJN, INCL XYMISSEN, GEBRUIK VAN INVIEW EN PROJECTIE
-  use precision, only: dp
+      use precision, only: dp
 
       use m_missing
       use m_inview2

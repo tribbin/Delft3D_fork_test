@@ -31,7 +31,7 @@
 !
 
       subroutine SWITCH(X, Y, mmax, nmax, JN, NUMPJ)
-  use precision, only: dp
+         use precision, only: dp
 !      USE DIMENS
          implicit none
          integer :: mmax, nmax, jn, numpj

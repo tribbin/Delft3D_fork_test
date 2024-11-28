@@ -32,7 +32,7 @@
 
 !>    return y-component in link coordinate frame of vector in wall coordinate frame
       real(kind=dp) function wall2liny(nw, i12, ux, uy)
-  use precision, only: dp
+         use precision, only: dp
          use m_flowgeom, only: csbw, snbw
          use m_sferic
          implicit none

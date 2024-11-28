@@ -33,7 +33,7 @@
 ! m_WEARELT movet to gridgeom
 
 module m_textlines
-  use precision, only: dp
+   use precision, only: dp
    real(kind=dp) :: txsize
    real(kind=dp) :: txxpos
    real(kind=dp) :: txypos

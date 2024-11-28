@@ -32,16 +32,16 @@
 
 module m_dellinksinpol
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: dellinksinpol
+   public :: dellinksinpol
 
 contains
 
    subroutine DELLINKSINPOL()
-  use precision, only: dp
+      use precision, only: dp
       use m_netw
       use m_missing, only: dmiss, jins
       use geometry_module, only: pinpok

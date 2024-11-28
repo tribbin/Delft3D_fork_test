@@ -30,11 +30,11 @@
 !
 !
 module m_isofil_color
-    implicit none
+   implicit none
 contains
-    
-    subroutine isofil_color(X, Y, Z, n4, NCOLR, VAL, NCOLS, NV)
-  use precision, only: dp
+
+   subroutine isofil_color(X, Y, Z, n4, NCOLR, VAL, NCOLS, NV)
+      use precision, only: dp
       use m_topix
       use m_drawthis
       use m_sub_polygon

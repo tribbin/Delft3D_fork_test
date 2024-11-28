@@ -1,5 +1,5 @@
 module m_setucxcuy_leastsquare
-  use precision, only: dp
+   use precision, only: dp
 
    real(kind=dp), dimension(:, :, :), allocatable :: AtWAiAtW ! Matrix for each flow node
    integer, dimension(:), allocatable :: ireconstu
@@ -10,7 +10,7 @@ contains
    ! ==============================================================================================
    ! ==============================================================================================
    subroutine reconst2ndini()
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowgeom
       use m_netw
@@ -285,7 +285,7 @@ contains
    ! ==============================================================================================
    ! ==============================================================================================
    subroutine reconst2nd()
-  use precision, only: dp
+      use precision, only: dp
       use m_flow
       use m_flowgeom
       use m_netw
@@ -601,7 +601,7 @@ contains
    ! ==============================================================================================
    ! ==============================================================================================
    subroutine gaussj1(a, n, np, b, m, mp, ierr)
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
       integer :: m, mp, n, np, ierr
@@ -690,7 +690,7 @@ contains
    ! ==============================================================================================
    ! ==============================================================================================
    subroutine qrdcmp(a, n, np, c, d, sing)
-  use precision, only: dp
+      use precision, only: dp
 
       implicit none
       integer :: n, np

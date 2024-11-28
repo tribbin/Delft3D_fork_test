@@ -32,7 +32,7 @@
 
 !>    copy and move a whole spline
       subroutine copyspline(ispline, inode, xp, yp)
-  use precision, only: dp
+         use precision, only: dp
          use m_splines
          use m_sferic
          use geometry_module, only: dbdistance, dcosphi

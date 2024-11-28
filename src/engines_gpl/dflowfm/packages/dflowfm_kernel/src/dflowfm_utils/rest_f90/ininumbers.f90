@@ -31,7 +31,7 @@
 !
 
       subroutine ININUMBERS()
-  use precision, only: dp
+         use precision, only: dp
          use M_MISSING
          implicit none
 

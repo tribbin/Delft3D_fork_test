@@ -32,7 +32,7 @@
 
 !> convert from Bessel to WGS84
 subroutine bessel2wgs84(phibes, lambes, phiwgs, lamwgs)
-  use precision, only: dp
+   use precision, only: dp
    implicit none
 
    real(kind=dp), intent(in) :: phibes, lambes

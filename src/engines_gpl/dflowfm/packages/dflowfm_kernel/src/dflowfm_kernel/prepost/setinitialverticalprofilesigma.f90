@@ -31,7 +31,7 @@
 !
 
 subroutine setinitialverticalprofilesigma(yy, ny, filename) ! polyfil
-  use precision, only: dp
+   use precision, only: dp
    use m_flowgeom
    use m_flow
    use m_polygon

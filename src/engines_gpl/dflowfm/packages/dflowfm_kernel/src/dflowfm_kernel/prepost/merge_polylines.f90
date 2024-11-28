@@ -32,7 +32,7 @@
 
 !> merge polylines
 subroutine merge_polylines()
-  use precision, only: dp
+   use precision, only: dp
 
    use m_polygon
    use m_missing

@@ -31,7 +31,7 @@
 !
 
  subroutine dropzout(idir)
-  use precision, only: dp
+    use precision, only: dp
     use m_isocol
     use m_polygon
     use m_flowgeom

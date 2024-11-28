@@ -31,18 +31,18 @@
 !
 
 module m_wrirstfileold
-use m_wrirstold, only: WRIRSTold
+   use m_wrirstold, only: WRIRSTold
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: WRIRSTfileold
+   public :: WRIRSTfileold
 
 contains
 
    subroutine WRIRSTfileold(tim)
-  use precision, only: dp
+      use precision, only: dp
       use m_flowtimes
       use unstruc_model
       use m_flow

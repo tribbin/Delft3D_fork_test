@@ -32,7 +32,7 @@
 
 !> check if a line segment crosses the gridline on the center spline
 logical function Lcrossgridline(x1, x2, j)
-  use precision, only: dp
+   use precision, only: dp
 
    use m_grid
    use m_missing

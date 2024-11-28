@@ -31,7 +31,7 @@
 !
 
  subroutine getdxofconnectedkcu1(Lf, wuL) ! width of connection link has lenght of connected 1D links
-  use precision, only: dp
+    use precision, only: dp
     use geometry_module
     use m_sferic
     use m_missing

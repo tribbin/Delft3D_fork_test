@@ -30,7 +30,7 @@
 !
 
 subroutine tekship()
-  use precision, only: dp
+   use precision, only: dp
    use m_ship
    use m_set_col
    use m_movabs

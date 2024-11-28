@@ -31,7 +31,7 @@
 !
 
 module m_mass_balance_areas
-  use precision, only: dp
+   use precision, only: dp
    integer, parameter :: NAMMBALEN = 128 !< maximum length of mass balance area names
 
    integer, parameter :: DIR_FROM = 1 !< flux direction from this area

@@ -32,7 +32,7 @@
 
 !> find the frontline of the old (static) grid
 subroutine findfront(mc, nc, mmax, nmax, xc, yc, num, xf, yf, idxf, nf)
-  use precision, only: dp
+   use precision, only: dp
    use m_missing, only: dmiss
    use m_get_lr
 

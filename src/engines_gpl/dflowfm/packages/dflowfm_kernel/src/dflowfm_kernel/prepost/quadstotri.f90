@@ -31,7 +31,7 @@
 !
 
   subroutine quadsTOTRI()
-  use precision, only: dp
+     use precision, only: dp
      use m_connect, only: connect
      use m_netw
      use gridoperations

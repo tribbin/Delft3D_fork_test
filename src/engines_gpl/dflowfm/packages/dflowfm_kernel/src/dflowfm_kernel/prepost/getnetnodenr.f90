@@ -31,7 +31,7 @@
 !
 
 subroutine getnetnodenr(x, y, k)
-  use precision, only: dp
+   use precision, only: dp
    use m_missing
    use gridoperations
    real(kind=dp) :: x, y, z

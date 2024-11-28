@@ -32,12 +32,12 @@
 
 !> derefine mesh
 module m_derefine_mesh
-use m_teknode
+   use m_teknode
 
    implicit none
 contains
    subroutine derefine_mesh(xp, yp, Lconfirm)
-  use precision, only: dp
+      use precision, only: dp
 
       use m_confrm
       use m_netw

@@ -33,7 +33,7 @@ module m_getq2
    implicit none
 contains
    subroutine getq2(hg, h2, h3, q) ! momentumbehoud benedenstrooms
-  use precision, only: dp
+      use precision, only: dp
       real(kind=dp) :: hg, h2, h3, q
       real(kind=dp) :: g, t, r, tr
       g = 9.81d0

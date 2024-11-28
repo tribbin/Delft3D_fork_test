@@ -32,7 +32,7 @@
 
       subroutine CLOSPT(X, Y, mmax, nmax, MC, NC, &
                         XL, YL, MV, NV)
-        use precision, only: dp
+         use precision, only: dp
          use m_missing
          implicit none
 

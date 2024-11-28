@@ -32,7 +32,7 @@
 
 !> prepares a matrix for solver test (as in "mpitest")
 subroutine make_matrix(CFL, s1)
-  use precision, only: dp
+   use precision, only: dp
    use m_reduce
    use m_flowgeom
 

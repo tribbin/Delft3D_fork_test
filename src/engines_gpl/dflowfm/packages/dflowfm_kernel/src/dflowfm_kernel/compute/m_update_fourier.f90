@@ -41,7 +41,7 @@ contains
 
 !> update module array energy head eh
    subroutine update_eh()
-  use precision, only: dp
+      use precision, only: dp
       use m_fourier_analysis, only: eh
       use m_flow, only: s1, ucx, ucy
       use m_flowgeom, only: ndx
@@ -67,7 +67,7 @@ contains
 !! first make sure the size is correct
 !! then fill using getblu_from_bob
    subroutine update_wl_at_links()
-  use precision, only: dp
+      use precision, only: dp
       use m_fourier_analysis, only: sul
       use m_flow, only: hu
       use m_flowgeom, only: lnx
@@ -92,7 +92,7 @@ contains
 
 !> prepare all quantities needed by the Fourier analysis and perform Fourier computation
    subroutine update_fourier(ti_fou)
-  use precision, only: dp
+      use precision, only: dp
       use m_fourier_analysis
       use m_flowtimes, only: time0
       use m_flow, only: ndkx, workx, worky, ucmag, jaeulervel

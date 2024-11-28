@@ -31,7 +31,7 @@
 !
 
       subroutine REAARC(MINP, japrompt)
-  use precision, only: dp
+         use precision, only: dp
          use m_getreal
          use m_arcinfo
          use m_polygon
