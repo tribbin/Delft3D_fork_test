@@ -897,7 +897,7 @@ end subroutine fm_wq_processes_ini_proc
 
 !! @return Integer result status (0 if successful)
 subroutine dfm_waq_initexternalforcings(iresult)
-  use precision, only: dp
+use precision, only: dp
    use fm_external_forcings
    use m_alloc
    use fm_external_forcings_data
@@ -912,7 +912,6 @@ subroutine dfm_waq_initexternalforcings(iresult)
    use m_meteo
    use m_ec_instance
    use dfm_error
-   use processes_input
    use m_fm_wq_processes
    use timers
    use unstruc_files, only: resolvePath
@@ -1363,8 +1362,8 @@ subroutine fm_wq_processes_step(dt, time)
 end subroutine fm_wq_processes_step
 
 subroutine copy_data_from_fm_to_wq_processes(time)
-  use precision, only: dp
    !  copy data from D-FlowFM to WAQ
+  use precision, only: dp
    use m_getfetch, only: getfetch
    use m_getkbotktopmax
    use m_flowgeom, only: Ndxi, ba
@@ -1705,7 +1704,7 @@ subroutine copy_data_from_wq_processes_to_fm(dt, tim)
    use timers
 
    implicit none
-
+   
    real(kind=dp), intent(in) :: dt
    real(kind=dp), intent(in) :: tim
 

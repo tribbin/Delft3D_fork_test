@@ -39,6 +39,7 @@
 #include "blasfm.h"
 
 module GAMMAS
+use precision, only: dp
    real(kind=dp) :: gammax, gammay, alpha
 end module GAMMAS
 

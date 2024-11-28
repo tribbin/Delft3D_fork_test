@@ -33,6 +33,7 @@
 !> holds variables and arrays for the fetch proc operation
 module fetch_proc_operation_data
 
+ use precision, only: dp
    integer, dimension(:), allocatable :: ndx_over_procs !< ndx data over procs
    integer, dimension(:, :), allocatable :: iglobal_s_procs !< iglobal_s data for each proc
    real(kind=dp), dimension(:, :), allocatable :: f_buffer !< buffer to send fetch/fetdp data

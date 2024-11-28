@@ -31,6 +31,7 @@
 !
 
       subroutine TMISARR(H, MMAX, NMAX)
+      use precision, only: dp
          use M_MISSING
          implicit none
          integer :: i

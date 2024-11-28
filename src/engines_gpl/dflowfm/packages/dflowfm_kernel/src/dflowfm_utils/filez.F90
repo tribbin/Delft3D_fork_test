@@ -527,6 +527,7 @@ subroutine zoekinteger(minp, key, val, ja)
 end subroutine zoekinteger
 
 subroutine zoekdouble(minp, key, val, ja)
+use precision, only: dp
    implicit none
    integer, intent(in) :: minp !< File pointer
    character(*), intent(in) :: key

@@ -36,6 +36,7 @@
 module m_petsc
 #include <petsc/finclude/petscksp.h>
 
+use precision, only: dp
    use petsc
    PetscInt :: numrows ! number of rows in this domain
    integer :: numallrows ! number of rows of whole system
