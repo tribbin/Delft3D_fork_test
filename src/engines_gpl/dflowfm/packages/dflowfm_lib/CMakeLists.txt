@@ -6,9 +6,6 @@ set(include_path include)
 # Set the DFlow FM component path
 set(dflowfm_path "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 
-# Set the directory referring to the ref folder
-set(res_path ${dflowfm_path}/res)
-
 #Version includes
 set(version_include_dir ${CMAKE_SOURCE_DIR}/../version_includes)
 set(dflowfm_version_header_path ${dflowfm_path}/version)
@@ -127,12 +124,12 @@ endif(WIN32)
 
 if(UNIX)
     message(STATUS "Setting target_compile_definitions in Unix")
-    target_compile_definitions(${library_name} PRIVATE "HAVE_DISPLAY=0;HAVE_METIS;HAVE_POLYPACK;HAVE_MPI;HAVE_PETSC")
+    target_compile_definitions(${library_name} PRIVATE "HAVE_MPI;HAVE_PETSC")
 endif(UNIX)
 
 if(WIN32)
     message(STATUS "Setting target_compile_definitions in windows")
-    target_compile_definitions(${library_name} PRIVATE "WIN32;HAVE_DISPLAY=0;HAVE_METIS;HAVE_POLYPACK;HAVE_MPI;HAVE_PETSC;HAVE_OPENGL")
+    target_compile_definitions(${library_name} PRIVATE "WIN32;HAVE_MPI;HAVE_PETSC")
 endif(WIN32)
 
 
