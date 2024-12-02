@@ -66,5 +66,5 @@ RUN setx /M PATH $($Env:PATH + ';C:\\Program Files\\Git\\usr\\bin')
 # Copy the setup script into the container
 COPY set-env.cmd C:\\set-env.cmd
 
-# Set the entry point to the setup script
-ENTRYPOINT ["cmd", "/S", "/C", "C:\\set-env.cmd"]
+# Set the default command to run the setup script
+CMD ["cmd", "/S", "/C", "C:\\setup_env.bat"]
