@@ -67,7 +67,7 @@ contains
 
       integer :: L, k, k1, k2, kb, n
 
-      real(kind=dp)n :: qb, wsemx, dgrlay, dtvi, hsk, dmorfax
+      real(kind=dp) :: qb, wsemx, dgrlay, dtvi, hsk, dmorfax
       integer :: j, ki, jastep, kk
       integer :: LL, Lb, Lt, kt, km
 

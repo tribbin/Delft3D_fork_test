@@ -80,7 +80,7 @@ contains
 
       integer :: isg, iadvL
       integer :: iad, n, kk, kb
-      real(kind=dp) :: ucxku, ucyku, ai, ae, abh, volu, volui, hh, huvL, baik1, baik2
+      real(kind=dp) :: ucxku, ucyku, ai, ae, abh, volu, volui, huvL, baik1, baik2
       real(kind=dp) :: vol_k1 !< representative volume for node k1
       real(kind=dp) :: vol_k2 !< representative volume for node k2
       real(kind=dp) :: ucin, fdx, ql, ac1, ac2, uqn, qn, rhoinsrc, dzss, qnn

@@ -28,7 +28,7 @@
 !-------------------------------------------------------------------------------
 
 module m_tabellenboek
-
+   use precision, only: dp
    implicit none
 
    private
@@ -38,7 +38,6 @@ module m_tabellenboek
 contains
 
    real(kind=dp) function tabellenboek(d1, eweir, qunit, qvolk)
-      use precision, only: dp
 !-------------------------------------------------------------------------------
 !!--description-----------------------------------------------------------------
 !
@@ -63,36 +62,35 @@ contains
 !!--pseudo code and references--------------------------------------------------
 ! NONE
 !!--declarations----------------------------------------------------------------
-      use precision
       implicit none
 !
 ! Global variables
 !
-      real(fp), intent(in) :: d1 !!  Distance between crest and downstream depth
-      real(fp), intent(in) :: eweir !!  Energy level at weir
-      real(fp), intent(in) :: qunit !!  Discharge at weir crest
-      real(fp), intent(in) :: qvolk !!  Maximum discharge (super critical flow)
+      real(dp), intent(in) :: d1 !!  Distance between crest and downstream depth
+      real(dp), intent(in) :: eweir !!  Energy level at weir
+      real(dp), intent(in) :: qunit !!  Discharge at weir crest
+      real(dp), intent(in) :: qvolk !!  Maximum discharge (super critical flow)
 
 !
 !
 ! Local variables
 !
-      real(fp) :: f1
-      real(fp) :: f1low
-      real(fp) :: f1up
-      real(fp) :: f2
-      real(fp) :: f2low
-      real(fp) :: f2up
-      real(fp) :: qqv
-      real(fp) :: qqvlow
-      real(fp) :: qqvup
-      real(fp) :: theta
+      real(dp) :: f1
+      real(dp) :: f1low
+      real(dp) :: f1up
+      real(dp) :: f2
+      real(dp) :: f2low
+      real(dp) :: f2up
+      real(dp) :: qqv
+      real(dp) :: qqvlow
+      real(dp) :: qqvup
+      real(dp) :: theta
 !
 !
 !! executable statements -------------------------------------------------------
 !
       !
-      qqv = min(qunit / qvolk, 1.0_fp)
+      qqv = min(qunit / qvolk, 1.0_dp)
       !
       !-----Calculate energy loss according to tables (based on experinments
       !     in the delta flums)
