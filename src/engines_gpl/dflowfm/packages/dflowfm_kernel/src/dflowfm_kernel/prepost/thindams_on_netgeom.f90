@@ -60,18 +60,19 @@ subroutine thindams_on_netgeom()
    integer :: isactive
    integer :: ic, iL, L, LL, NPL_prev
    integer :: jakdtree = 1 ! use kdtree (1) or not (0)
-   logical :: cache_success = .false.
+   logical :: cache_read
 
    if (nthd == 0) return
 
    ierror = 1
-
+   
+   cache_read = .false.
    if (cache_retrieved()) then
-      call copy_cached_thin_dams(thd, cache_success)
+      call copy_cached_thin_dams(thd, cache_read)
    end if
 
-   if (cache_success) then
-      do ic = 1, size(thd, 1)
+   if (cache_read) then
+      do ic = 1, nthd
          do L = 1, thd(ic)%lnx
             LL = abs(thd(ic)%ln(L))
             if (LL > 0 .and. LL <= numl) then
@@ -158,6 +159,6 @@ subroutine thindams_on_netgeom()
 
       call cache_thin_dams(thd)
 
-   end if ! if (cache_success) then
+   end if ! if (.not. cache_read) then
 
 end subroutine thindams_on_netgeom
