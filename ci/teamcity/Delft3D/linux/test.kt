@@ -1,4 +1,4 @@
-package testbench
+package Delft3D.linux
 
 import java.io.File
 import jetbrains.buildServer.configs.kotlin.*
@@ -6,12 +6,21 @@ import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
 
-import build.*
+import Delft3D.template.*
 
-object TestbenchLinux : BuildType({
+import Trigger
 
-    name = "Linux"
-    buildNumberPattern = "%dep.${BuildDockerLinux.id}.build.revisions.short%"
+object LinuxTest : BuildType({
+
+    templates(
+        TemplateMergeRequest,
+        TemplateMergeTarget,
+        TemplatePublishStatus,
+        TemplateMonitorPerformance
+    )
+
+    name = "Test"
+    buildNumberPattern = "%build.vcs.number%"
 
     artifactRules = """
         test\deltares_testbench\data\cases\**\*.pdf      => pdf
@@ -21,7 +30,7 @@ object TestbenchLinux : BuildType({
         test\deltares_testbench\copy_cases               => copy_cases.zip
     """.trimIndent()
 
-    val filePath = "${DslContext.baseDir}/testbench/vars/dimr_testbench_table.csv"
+    val filePath = "${DslContext.baseDir}/vars/dimr_testbench_table.csv"
     val lines = File(filePath).readLines()
     val linuxLines = lines.filter { line -> line.contains("lnx64")}
     val configs = linuxLines.map { line ->
@@ -53,16 +62,6 @@ object TestbenchLinux : BuildType({
                 value(config)
             })
         }
-        pullRequests {
-            id = "merge_request"
-            provider = gitlab {
-                authType = token {
-                    token = "%gitlab_private_access_token%"
-                }
-                filterSourceBranch = "+:*"
-                ignoreDrafts = true
-            }
-        }
         dockerSupport {
             id = "DockerSupport"
             cleanupPushedImages = true
@@ -70,39 +69,9 @@ object TestbenchLinux : BuildType({
                 dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
             }
         }
-        if (DslContext.getParameter("environment") == "production") {
-            commitStatusPublisher {
-                id = "Delft3D_gitlab"
-                enabled = true
-                vcsRootExtId = "${DslContext.settingsRoot.id}"
-                publisher = gitlab {
-                    authType = vcsRoot()
-                }
-            }
-        }
-        perfmon {
-            id = "perfmon"
-        }
     }
 
     steps {
-        script {
-            name = "Merge main into branch"
-            id = "Merge_main_into_branch"
-
-            conditions {
-                contains("teamcity.build.branch", "merge-requests")
-            }
-            workingDir = "."
-            scriptContent = """
-                git remote add temporary 'https://svc_teamcity_gitdsc:%gitlab_private_access_token%@git.deltares.nl/oss/delft3d.git'
-                git fetch temporary refs/merge-requests/*:refs/remotes/temporary/merge-requests/* --quiet
-                git checkout temporary/%teamcity.build.branch%/merge
-                python3 -c "import subprocess; commit_id=subprocess.check_output(['git','rev-parse', 'HEAD'], universal_newlines=True).strip(); print('##teamcity[addBuildTag \'merge commit ID: '+commit_id+'\']')"
-                git remote remove temporary
-            """.trimIndent()
-        }
-
         python {
             name = "Run TestBench.py"
             id = "Run_Testbench"
@@ -124,7 +93,7 @@ object TestbenchLinux : BuildType({
                     --override-paths "from[local]=/dimrset,root[local]=/opt,from[engines_to_compare]=/dimrset,root[engines_to_compare]=/opt,from[engines]=/dimrset,root[engines]=/opt"
                 """.trimIndent()
             }
-            dockerImage = "containers.deltares.nl/delft3d/test/delft3dfm:alma8-%dep.${BuildDockerLinux.id}.build.revisions.short%"
+            dockerImage = "containers.deltares.nl/delft3d/test/delft3dfm:alma8-%build.vcs.number%"
             dockerImagePlatform = PythonBuildStep.ImagePlatform.Linux
             dockerPull = true
             dockerRunParameters = """
@@ -139,7 +108,7 @@ object TestbenchLinux : BuildType({
             executionMode = BuildStep.ExecutionMode.ALWAYS
             commandType = other {
                 subCommand = "rmi"
-                commandArgs = "containers.deltares.nl/delft3d/test/delft3dfm:alma8-%dep.${BuildDockerLinux.id}.build.revisions.short%"
+                commandArgs = "containers.deltares.nl/delft3d/test/delft3dfm:alma8-%build.vcs.number%"
             }
         }
         dockerCommand {
@@ -162,14 +131,15 @@ object TestbenchLinux : BuildType({
     }
 
     dependencies {
-        dependency(TestbenchTrigger) {
+        dependency(Trigger) {
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
             }
         }
-        dependency(BuildDockerLinux) {
+        dependency(LinuxDocker) {
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
             }
         }
     }
