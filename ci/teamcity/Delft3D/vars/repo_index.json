@@ -46,6 +46,7 @@
         "src/tools_lgpl/matlab/quickplot/*"
     ],
     "tc":[
+        "ci/teamcity/*",
         "test/deltares_testbench/tools/*",
         "test/deltares_testbench/test/*",
         "test/deltares_testbench/src/*",
