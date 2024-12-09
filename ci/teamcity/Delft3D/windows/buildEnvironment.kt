@@ -90,7 +90,7 @@ object WindowsBuildEnvironment : BuildType({
     features {
         dockerSupport {
             loginToRegistry = on {
-                dockerRegistryId = "PROJECT_EXT_225"
+                dockerRegistryId = "DOCKER_REGISTRY_DELFT3D_DEV"
             }
         }
     }
