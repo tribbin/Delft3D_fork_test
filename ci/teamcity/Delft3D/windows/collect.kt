@@ -68,7 +68,7 @@ object WindowsCollect : BuildType({
     }
 
     dependencies {
-        dependency(AbsoluteId("Temporary_PersonalBuildsMatthijs_BuildOssWin64vs2019if23")) {
+        dependency(WindowsBuild) {
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
