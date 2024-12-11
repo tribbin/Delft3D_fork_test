@@ -88,6 +88,11 @@ object WindowsBuildEnvironment : BuildType({
             """.trimIndent()
             branchFilter = """
                 +:<default>
+            """.trimIndent()
+            param("trigger.type", "vcs")
+        }
+        vcs {
+            branchFilter = """
                 +:refs/tags/*
             """.trimIndent()
             param("trigger.type", "vcs")
