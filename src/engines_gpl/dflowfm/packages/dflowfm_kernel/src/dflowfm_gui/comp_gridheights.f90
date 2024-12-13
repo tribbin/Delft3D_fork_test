@@ -32,7 +32,7 @@
 
 !> compute the grid heights at grid edges on the center spline
 module m_comp_gridheights
-use m_get_index, only: get_index
+   use m_get_valid_cross_splines, only: get_valid_cross_splines
 
    implicit none
 
@@ -171,7 +171,7 @@ contains
 
             do j = 1, Nsubmax
                nlist_loc = nlistL - j
-               call get_index(ncs, nlist_loc, ndx, idx)
+               call get_valid_cross_splines(ncs, nlist_loc, ndx, idx)
 
                if (ndx > 0) then
                   hL(j, 1:ncs) = splineprops(is)%hL(j, 1:ncs)
@@ -218,7 +218,7 @@ contains
                end if
 
                nlist_loc = nlistR - j
-               call get_index(ncs, nlist_loc, ndx, idx)
+               call get_valid_cross_splines(ncs, nlist_loc, ndx, idx)
 
                if (ndx > 0) then
                   hR(j, 1:ncs) = splineprops(is)%hR(j, 1:ncs)
