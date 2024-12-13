@@ -30,6 +30,16 @@
 !
 !
 
+module m_runupgauges_on_flowgeom
+
+implicit none
+
+private
+
+public :: runupgauges_on_flowgeom
+
+contains
+
 subroutine runupgauges_on_flowgeom()
    use precision, only: dp
    use m_monitoring_runupgauges
@@ -44,7 +54,6 @@ subroutine runupgauges_on_flowgeom()
    use m_wall_clock_time
    use m_find_crossed_links_kdtree2
    use m_crspath_on_flowgeom
-   implicit none
 
    integer :: ic, icmod
 
@@ -197,3 +206,5 @@ subroutine runupgauges_on_flowgeom()
 
    return
 end subroutine runupgauges_on_flowgeom
+
+end module m_runupgauges_on_flowgeom

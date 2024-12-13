@@ -29,6 +29,12 @@
 
 !> Finalizes a single time step, should be called directly after flow_run_single_timestep
 module m_flow_finalize_single_timestep
+use m_flow_validatestate, only: flow_validatestate
+use m_updatevaluesonrunupgauges_mpi, only: updatevaluesonrunupgauges_mpi
+use m_updatevaluesonrunupgauges, only: updatevaluesonrunupgauges
+use m_updatevaluesonobservationstations, only: updatevaluesonobservationstations
+use m_updatevaluesonlaterals, only: updatevaluesonlaterals
+
 
    implicit none
 

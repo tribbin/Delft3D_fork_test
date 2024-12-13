@@ -32,6 +32,7 @@
 
 !>    copy and move a polygon orthogonally
       subroutine copypol(ipol, xp, yp)
+         use m_get_polstartend, only: get_polstartend
          use precision, only: dp
          use m_sferic
          use m_polygon

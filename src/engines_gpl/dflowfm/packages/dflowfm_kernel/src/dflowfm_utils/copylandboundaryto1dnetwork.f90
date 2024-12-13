@@ -31,6 +31,8 @@
 !
 
  subroutine copylandboundaryto1Dnetwork()
+    use m_regrid1d, only: regrid1d
+    use m_maptopolyline, only: maptopolyline
     use precision, only: dp
 
     use m_accumulatedistance, only: accumulatedistance

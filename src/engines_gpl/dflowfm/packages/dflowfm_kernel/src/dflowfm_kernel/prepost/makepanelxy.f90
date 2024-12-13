@@ -30,16 +30,24 @@
 !
 !
 
+module m_makepanelxy
+
+implicit none
+
+private
+
+public :: makepanelxy
+
+contains
+
       subroutine MAKEPANELXY(JPANEL)
          use precision, only: dp
-
          use m_netw
          use M_AFMETING
          use gridoperations
          use m_howtoview
          use m_cconstants
 
-         implicit none
          integer :: JPANEL
 
          real(kind=dp) :: ael
@@ -316,3 +324,5 @@
 
          return
       end subroutine MAKEPANELXY
+
+end module m_makepanelxy

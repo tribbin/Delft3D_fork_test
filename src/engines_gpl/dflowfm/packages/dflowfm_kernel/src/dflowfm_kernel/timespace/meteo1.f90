@@ -783,6 +783,7 @@ contains
       use unstruc_messages
       use m_find_flownode, only: find_nearest_flownodes_kdtree
       use m_wall_clock_time
+      use m_in_flowcell, only: in_flowcell
 
       implicit none
 

@@ -32,6 +32,7 @@
 
 !> reverse indexing of selected polygon
 module m_flippo
+use m_get_polstartend, only: get_polstartend
 
 implicit none
 

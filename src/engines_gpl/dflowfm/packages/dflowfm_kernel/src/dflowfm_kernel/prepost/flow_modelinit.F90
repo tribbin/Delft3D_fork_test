@@ -31,6 +31,14 @@
 !
 
 module m_flow_modelinit
+use m_update_vertadmin, only: update_vertadmin
+use m_update_geom, only: update_geom
+use m_setbobsongullies, only: setbobsongullies
+use m_resetflow, only: resetflow
+use m_netlink_tree, only: netlink_tree
+use m_init_lateral_his, only: init_lateral_his
+use m_flow_trachyinit, only: flow_trachyinit
+use m_flow_sedmorinit, only: flow_sedmorinit
 
 implicit none
 
@@ -113,6 +121,7 @@ contains
     use m_structure_parameters
     use m_set_frcu_mor
     use m_flow_obsinit
+    use m_set_model_boundingbox, only: set_model_boundingbox
     !
     ! To raise floating-point invalid, divide-by-zero, and overflow exceptions:
     ! Activate the following line (See also statements below)
@@ -122,7 +131,6 @@ contains
     integer :: istat, L, ierr, k1, k2
     logical :: set_hu, use_u1
     integer, external :: init_openmp
-    integer, external :: set_model_boundingbox
 
     real(kind=dp), allocatable :: weirdte_save(:)
     real(kind=dp), allocatable :: ucxq_save(:), ucyq_save(:)

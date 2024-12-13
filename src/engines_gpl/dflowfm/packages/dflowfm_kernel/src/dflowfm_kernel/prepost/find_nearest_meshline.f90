@@ -32,6 +32,9 @@
 
 !> find meshline nearest to land boundary
 module m_find_nearest_meshline
+use m_toland, only: toland
+use m_linkcrossedbyland, only: linkcrossedbyland
+
 
 implicit none
 

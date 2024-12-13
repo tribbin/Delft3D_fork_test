@@ -31,6 +31,16 @@
 !
 
 !>  compute link-based aspect ratios
+module m_orthonet_compute_aspect
+
+implicit none
+
+private
+
+public :: orthonet_compute_aspect
+
+contains
+
 subroutine orthonet_compute_aspect(aspect)
    use precision, only: dp
    use m_netw
@@ -39,8 +49,6 @@ subroutine orthonet_compute_aspect(aspect)
    use m_orthosettings
    use geometry_module, only: dbdistance
    use m_sferic, only: jsferic, jasfer3D
-
-   implicit none
 
    real(kind=dp), dimension(numL) :: aspect !< aspect-ratios at the links
 
@@ -240,3 +248,5 @@ contains
    end function dblinklength
 
 end subroutine orthonet_compute_aspect
+
+end module m_orthonet_compute_aspect

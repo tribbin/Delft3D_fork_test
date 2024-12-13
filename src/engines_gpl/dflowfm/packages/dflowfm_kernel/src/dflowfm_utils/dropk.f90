@@ -31,6 +31,7 @@
 !
 
  subroutine dropk(xp, yp)
+    use m_isflowlink, only: isflowlink
     use precision, only: dp
     use m_polygon
     use m_flowgeom

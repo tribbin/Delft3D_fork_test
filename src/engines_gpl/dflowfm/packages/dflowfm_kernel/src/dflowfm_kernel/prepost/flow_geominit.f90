@@ -31,6 +31,26 @@
 !
 
 module m_flow_geominit
+use m_which2dnetlinkwascrossed, only: which2dnetlinkwascrossed
+use m_thindams_on_netgeom, only: thindams_on_netgeom
+use m_sort_flowlinks_ccw, only: sort_flowlinks_ccw
+use m_setwallorientations, only: setwallorientations
+use m_setprofs1d, only: setprofs1d
+use m_setlinktocornerweights, only: setlinktocornerweights
+use m_setlinktocenterweights, only: setlinktocenterweights
+use m_setcornertolinkorientations, only: setcornertolinkorientations
+use m_setcentertolinkorientations, only: setcentertolinkorientations
+use m_setbobsonroofs, only: setbobsonroofs
+use m_setbedlevelfromextfile, only: setbedlevelfromextfile
+use m_setaifu, only: setaifu
+use m_renumberflownodes, only: renumberflownodes
+use m_remove_unused_nodes_and_links, only: remove_unused_nodes_and_links
+use m_reanumlimdt, only: reanumlimdt
+use m_preparecells, only: preparecells
+use m_make_orthocenters, only: make_orthocenters
+use m_makethindamadmin, only: makethindamadmin
+use m_iadvecini, only: iadvecini
+use m_getdxofconnectedkcu1, only: getdxofconnectedkcu1
 
 implicit none
 

@@ -30,6 +30,18 @@
 !
 !
 module m_flow_flowinit
+   use m_setzminmax, only: setzminmax
+   use m_flow_settidepotential, only: flow_settidepotential
+   use m_set_saltem_nudge, only: set_saltem_nudge
+   use m_set_nudgerate, only: set_nudgerate
+   use m_setvelocityfield, only: setvelocityfield
+   use m_setupwslopes, only: setupwslopes
+   use m_setstruclink, only: setstruclink
+   use m_setpillars, only: setpillars
+   use m_setinitialverticalprofile, only: setinitialverticalprofile
+   use m_setfixedweirs, only: setfixedweirs
+   use m_setbobs_fixedweirs, only: setbobs_fixedweirs
+   use m_flow_setstarttime, only: flow_setstarttime
    use m_flow_initfloodfill, only: flow_initfloodfill
    use m_fill_valobs, only: fill_valobs
    use m_fill_onlywetlinks, only: fill_onlywetlinks

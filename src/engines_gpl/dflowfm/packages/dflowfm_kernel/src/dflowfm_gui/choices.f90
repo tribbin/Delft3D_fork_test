@@ -69,6 +69,27 @@
 ! subroutines from net.F90
 !----------------------------------------------------------------------
 module m_choices
+   use m_flow_spatietimestep, only: flow_spatietimestep
+   use m_triangulate_quadsandmore, only: triangulate_quadsandmore
+   use m_triangulatesamplestonetwork, only: triangulatesamplestonetwork
+   use m_tieldb, only: tieldb
+   use m_spline2curvi_sub, only: spline2curvi
+   use m_shift1dnetnodestoduikers, only: shift1dnetnodestoduikers
+   use m_samdif, only: samdif
+   use m_removesmalllinks, only: removesmalllinks
+   use m_regrid1d, only: regrid1d
+   use m_refinequads_casulli, only: refinequads_casulli
+   use m_refinequads, only: refinequads
+   use m_refinepolygon, only: refinepolygon
+   use m_refinecellsandfaces2, only: refinecellsandfaces2
+   use m_orthogonalisenet, only: orthogonalisenet
+   use m_merge_polylines, only: merge_polylines
+   use m_mergenodesinpolygon, only: mergenodesinpolygon
+   use m_make_dual_mesh, only: make_dual_mesh
+   use m_maketrigrid, only: maketrigrid
+   use m_makenet_sub, only: makenet
+   use m_makecoarse2finetriangleconnectioncells, only: makecoarse2finetriangleconnectioncells
+   use m_make1d2dconnections, only: make1d2dconnections
    use m_fliplinks, only: fliplinks
    use m_externaltrianglestoouterquads, only: externaltrianglestoouterquads
    use m_detect_ridges, only: detect_ridges

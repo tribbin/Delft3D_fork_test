@@ -30,6 +30,8 @@
 !
 !
 module m_mergenodes
+use m_givelinknum, only: givelinknum
+
 
    implicit none
 

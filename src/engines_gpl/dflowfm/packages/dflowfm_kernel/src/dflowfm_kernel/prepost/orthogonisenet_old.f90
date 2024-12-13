@@ -30,6 +30,16 @@
 !
 !
 
+module m_orthogonisenet_old
+
+implicit none
+
+private
+
+public :: orthogonisenet_old
+
+contains
+
    subroutine ORTHOGONISENET_old()
       use precision, only: dp
 
@@ -45,8 +55,6 @@
       use m_readyy
       use m_makenetnodescoding
       use m_movabs
-
-      implicit none
 
       real(kind=dp) :: X0, Y0, X1, Y1, W0, XL, YL, XR, YR, ZZZ
       real(kind=dp) :: X2, Y2, X3, Y3, X4, Y4, A, B, DIS2, DIS3, XN, YN
@@ -571,3 +579,5 @@
       !, NB ) ! AvD: TODO: this is for showing node codes (during ortho), but also introduces memleak.
 
    end subroutine ORTHOGONISENET_old
+
+end module m_orthogonisenet_old

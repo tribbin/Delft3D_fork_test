@@ -31,8 +31,17 @@
 !
 
 !> get the cross splines that have valid grid height
+module m_get_index
+
+implicit none
+
+private
+
+public :: get_index
+
+contains
+
 subroutine get_index(ncs, isvalid, ndx, idx)
-   implicit none
 
    integer, intent(in) :: ncs !< number of cross splines
    integer, dimension(ncs), intent(in) :: isvalid !< valid (>=0) or not (<0)
@@ -51,3 +60,5 @@ subroutine get_index(ncs, isvalid, ndx, idx)
 
    return
 end subroutine
+
+end module m_get_index

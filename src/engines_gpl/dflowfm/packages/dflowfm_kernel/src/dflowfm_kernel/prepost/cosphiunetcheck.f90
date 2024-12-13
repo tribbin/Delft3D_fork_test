@@ -31,6 +31,7 @@
 !
 
 subroutine cosphiunetcheck(jausererror)
+   use m_resetflow, only: resetflow
    use precision, only: dp
    use m_flowgeom
    use network_data

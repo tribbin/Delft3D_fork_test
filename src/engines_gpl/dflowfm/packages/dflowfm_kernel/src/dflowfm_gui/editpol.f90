@@ -31,6 +31,15 @@
 !
 
 module m_editpol
+   use m_flow_spatietimestep, only: flow_spatietimestep
+   use m_refinepolygonpart, only: refinepolygonpart
+   use m_poltonet, only: poltonet
+   use m_poltolines, only: poltolines
+   use m_poltoland, only: poltoland
+   use m_modln2, only: modln2
+   use m_mergepoly, only: mergepoly
+   use m_makepanelxy, only: makepanelxy
+   use m_ispoi1, only: ispoi1
    use m_flippo, only: flippo
    use m_droptracer, only: droptracer
    use m_wearel
@@ -77,6 +86,7 @@ contains
       use m_hlcir
       use m_dropland
       use m_movabs
+      use m_ispolystartend, only: ispolystartend
 
       integer :: jaquit, jazoomshift, nshift
       integer :: k
@@ -93,7 +103,6 @@ contains
       real(kind=dp) :: xp, yp, RD
       integer :: iresult
       integer :: ja4
-      logical, external :: ispolystartend
       character TEX * 26, fnam * 255
 
       if (jampi == 1) then

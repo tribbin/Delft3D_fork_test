@@ -31,6 +31,7 @@
 !
 
 module m_addsorsin
+use m_reallocsrc, only: reallocsrc
 
    implicit none
 

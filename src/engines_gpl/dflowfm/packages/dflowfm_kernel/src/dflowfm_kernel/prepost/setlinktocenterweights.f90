@@ -29,15 +29,23 @@
 
 !
 !
+module m_setlinktocenterweights
+
+implicit none
+
+private
+
+public :: setlinktocenterweights
+
+contains
+
  subroutine setlinktocenterweights() ! set center related linkxy weights
     use precision, only: dp
-
     use m_flow
     use m_netw
     use m_flowgeom
     use m_sferic
     use m_longculverts
-    implicit none
 
     real(kind=dp) :: wud, wuL1, wuL2, cs, sn
     integer :: L, ierr, n, kk, n12, lnxmax
@@ -238,3 +246,5 @@
     kfs = 0
 
  end subroutine setlinktocenterweights
+
+end module m_setlinktocenterweights

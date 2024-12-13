@@ -99,6 +99,12 @@ program unstruc
    use m_editnetw
    use m_read_commandline, only: read_commandline
    use m_flow_modelinit, only: flow_modelinit
+   use m_makelongculverts_commandline, only: makelongculverts_commandline
+   use m_makenet_sub, only: makenet
+   use m_partition_from_commandline, only: partition_from_commandline
+   use m_refine_from_commandline, only: refine_from_commandline
+   use m_resetFullFlowModel, only: resetFullFlowModel
+   use m_dobatch, only: dobatch
 
    implicit none
 

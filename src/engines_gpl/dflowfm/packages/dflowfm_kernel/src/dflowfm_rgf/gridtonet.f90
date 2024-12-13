@@ -31,6 +31,7 @@
 !
 
      subroutine gridtonet()
+        use m_mergenodesinpolygon, only: mergenodesinpolygon
         use precision, only: dp
         use m_addnetpointnocheck, only: addnetpointnocheck
         use m_confrm

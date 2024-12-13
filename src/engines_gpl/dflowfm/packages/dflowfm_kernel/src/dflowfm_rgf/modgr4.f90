@@ -31,6 +31,7 @@
 !
 
       subroutine MODGR4(NUMP, LANDORSPLINE)
+         use m_toland, only: toland
          use precision, only: dp
          use m_grid
          use m_landboundary

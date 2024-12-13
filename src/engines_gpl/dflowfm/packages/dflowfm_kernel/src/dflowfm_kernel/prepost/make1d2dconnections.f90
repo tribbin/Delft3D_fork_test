@@ -30,6 +30,16 @@
 !
 !
 
+module m_make1d2dconnections
+
+implicit none
+
+private
+
+public :: make1d2dconnections
+
+contains
+
  subroutine make1D2Dconnections()
     use m_filemenu
     use network_data, only: imake1d2dtype, searchRadius1D2DLateral, I1D2DTP_1TO1, I1D2DTP_1TON_EMB, I1D2DTP_1TON_LAT
@@ -68,3 +78,5 @@
     end select
 
  end subroutine make1D2Dconnections
+
+end module m_make1d2dconnections

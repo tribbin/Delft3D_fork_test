@@ -32,6 +32,16 @@
 
 !>  regularise spline2curvi grid
 !>     note: there is an asymmetry, but this procedure is intended for regularisation only
+module m_regularise_spline2curvigrid
+
+implicit none
+
+private
+
+public :: regularise_spline2curvigrid
+
+contains
+
 subroutine regularise_spline2curvigrid()
    use precision, only: dp
    use m_grid
@@ -40,8 +50,6 @@ subroutine regularise_spline2curvigrid()
    use geometry_module, only: dbdistance
    use m_sferic, only: jsferic, jasfer3D
    use m_get_lr
-
-   implicit none
 
    real(kind=dp) :: xi
    real(kind=dp) :: dhmax, dtolLR_bak
@@ -99,3 +107,5 @@ subroutine regularise_spline2curvigrid()
 
    return
 end subroutine regularise_spline2curvigrid
+
+end module m_regularise_spline2curvigrid

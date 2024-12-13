@@ -31,6 +31,21 @@
 !
 
 !> net orthogonalisation and smoothing
+module m_orthogonalisenet
+use m_svdcmp, only: svdcmp
+use m_sortlinks, only: sortlinks
+use m_snap_to_landboundary, only: snap_to_landboundary
+use m_orthonet_project_on_boundary, only: orthonet_project_on_boundary
+use m_orthonet_compute_aspect, only: orthonet_compute_aspect
+
+implicit none
+
+private
+
+public :: orthogonalisenet
+
+contains
+
 subroutine ORTHOGONALISENET(jarerun)
    use m_fliplinks, only: fliplinks
    use m_find_nearest_meshline, only: find_nearest_meshline
@@ -58,8 +73,6 @@ subroutine ORTHOGONALISENET(jarerun)
    use m_makenetnodescoding
    use m_cirr
    use m_orthonet_admin
-
-   implicit none
 
    integer :: jarerun !< rerun, no=1, yes=1
 
@@ -1142,6 +1155,8 @@ contains
 !!   sum_kk ww(kk,k0) * x1(kk2(kk,k0)) = 0
 !!   sum_kk ww(kk,k0) * y1(kk2(kk,k0)) = 0
    subroutine orthonet_compweights_smooth(ops, u, ww2, ierror)
+      use m_matlab_write_int, only: matlab_write_int
+      use m_matlab_write_double, only: matlab_write_double
       use precision, only: dp
       use m_netw
       use m_sferic
@@ -1490,6 +1505,7 @@ contains
 !!     Moving Mesh Partial Differential Equations',
 !!     J. of Comp. Phys., 2001, sects. 3.4 and 3.5
    subroutine orthonet_comp_Ginv(u, ops, J, Ginv)
+      use m_matlab_write_double, only: matlab_write_double
       use precision, only: dp
       use m_netw
       use m_orthosettings
@@ -2703,3 +2719,5 @@ contains
    end subroutine orthonet_smooth_u
 
 end subroutine orthogonalisenet
+
+end module m_orthogonalisenet

@@ -31,6 +31,9 @@
 !
 
 module m_externaltrianglestoouterquads
+use m_setpoint, only: setpoint
+use m_getquad, only: getquad
+
 
 implicit none
 

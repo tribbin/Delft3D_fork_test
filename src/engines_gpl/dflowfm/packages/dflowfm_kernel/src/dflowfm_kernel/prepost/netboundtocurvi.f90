@@ -31,6 +31,18 @@
 !
 
 !>  grow gridlayers from a net boundary
+module m_netboundtocurvi
+use m_netboundtopoly_makemasks, only: netboundtopoly_makemasks
+use m_netboundtopoly, only: netboundtopoly
+
+implicit none
+
+private
+
+public :: netboundtocurvi
+
+contains
+
 subroutine netboundtocurvi(kp)
    use m_flippo, only: flippo
    use precision, only: dp
@@ -49,8 +61,6 @@ subroutine netboundtocurvi(kp)
    use m_dlinedis2
    use m_increase_grid
    use m_grow_layer
-
-   implicit none
 
    integer, intent(in) :: kp !< clicked node
 
@@ -254,3 +264,5 @@ subroutine netboundtocurvi(kp)
 
    return
 end subroutine netboundtocurvi
+
+end module m_netboundtocurvi

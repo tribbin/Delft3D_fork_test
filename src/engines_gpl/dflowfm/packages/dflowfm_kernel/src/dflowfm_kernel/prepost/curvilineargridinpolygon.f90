@@ -31,6 +31,8 @@
 !
 
 module m_curvilineargridinpolygon
+use m_pillargrid, only: pillargrid
+use m_maptopolyline, only: maptopolyline
 
    implicit none
 

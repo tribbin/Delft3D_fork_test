@@ -33,6 +33,16 @@
 !> Put the polyline thin dams on the network links.
 !! All crossed net links are set to kn(3,L) = 0, such that flow_geominit
 !! does not even create a flow link across it.
+module m_thindams_on_netgeom
+
+implicit none
+
+private
+
+public :: thindams_on_netgeom
+
+contains
+
 subroutine thindams_on_netgeom()
    use precision, only: dp
    use m_crspath_on_netgeom, only: crspath_on_netgeom
@@ -49,8 +59,6 @@ subroutine thindams_on_netgeom()
    use unstruc_caching, only: cache_retrieved, cache_thin_dams, copy_cached_thin_dams
    use precision, only: dp
    
-   implicit none
-
    real(kind=dp), dimension(:), allocatable :: dSL
    integer, dimension(:), allocatable :: iLink, ipol, idum
    real(kind=dp) :: xza, yza, xzb, yzb
@@ -164,3 +172,5 @@ subroutine thindams_on_netgeom()
    end if ! if (.not. cache_read) then
 
 end subroutine thindams_on_netgeom
+
+end module m_thindams_on_netgeom

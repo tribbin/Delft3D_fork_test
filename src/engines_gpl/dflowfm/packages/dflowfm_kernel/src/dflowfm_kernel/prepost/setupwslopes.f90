@@ -27,8 +27,15 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
+module m_setupwslopes
+
+implicit none
+
+private
+
+public :: setupwslopes
+
+contains
 
  subroutine setupwslopes() ! set upwind slope pointers and weightfactors
     use precision, only: dp
@@ -43,8 +50,6 @@
     use m_missing, only: dmiss
     use fm_external_forcings_data
     use m_dlinedis2
-
-    implicit none
 
     integer :: L, k12, k2
     real(kind=dp) :: dxn, dyn, rmin, r
@@ -320,3 +325,5 @@
     end do
 
  end subroutine setupwslopes
+
+end module m_setupwslopes
