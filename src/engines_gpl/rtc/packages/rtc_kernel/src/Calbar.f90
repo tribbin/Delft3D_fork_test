@@ -131,7 +131,7 @@
 !     Check the Julian date
 !-----------------------------------------------------------------------
       if (juldt .lt. 0.0) then
-        call ERRMSG (946, 0, 'CALBAR', &
+        CALL ERRMSG2 (946, 0, 'CALBAR', &
                      ' Wrong date requested from D3DFlow ', outuni)
         RetVal = 946
         Return

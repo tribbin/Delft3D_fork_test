@@ -14,7 +14,7 @@ set_source_files_properties(
                    src/Cmpdecv.F90
                    src/datafrommatlab.F90
                    src/datatomatlab.F90
-                   src/ERRMSG.F90
+                   src/ERRMSG2.F90
                    src/filemodule.F90
                    src/LocationDataModule.F90  # no preprocessot needed, should be .f90
                    src/OpenMatlab.F90

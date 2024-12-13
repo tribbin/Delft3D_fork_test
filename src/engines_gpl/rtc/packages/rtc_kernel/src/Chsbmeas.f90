@@ -95,7 +95,7 @@
                   ELSEIF (MEASCH(IMEAS) .EQ. '>') THEN
                      CHKTRUE = (RVAL .GT. MEASCV(IMEAS))
                   ELSE
-                     CALL ERRMSG (920,0, MEASCH(IMEAS), ' Sobek-measure file', IOUT1)
+                     CALL ERRMSG2 (920,0, MEASCH(IMEAS), ' Sobek-measure file', IOUT1)
                      RetVal = 920
                      Return
                   ENDIF
@@ -141,7 +141,7 @@
                    ELSEIF (MEASNCH(IV,IMEAS) .EQ. '>') THEN
                       CHKTRUE = (RVAL .GT. MEASNCV(IV,IMEAS))
                    ELSE
-                      CALL ERRMSG (920,0, MEASNCH(IV,IMEAS), ' Sobek-measure file', IOUT1)
+                      CALL ERRMSG2 (920,0, MEASNCH(IV,IMEAS), ' Sobek-measure file', IOUT1)
                       RetVal = 920
                       Return
                    ENDIF

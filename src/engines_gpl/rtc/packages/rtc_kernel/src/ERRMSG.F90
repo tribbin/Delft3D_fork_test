@@ -25,7 +25,7 @@
 !                                                                               
 !-------------------------------------------------------------------------------
 
-      SUBROUTINE ERRMSG (ICODE, IECODE, NAMSUB, STRING, IOUT1)
+      SUBROUTINE ERRMSG2 (ICODE, IECODE, NAMSUB, STRING, IOUT1)
 
 ! *********************************************************************
 ! *** RTC module for use with SOBEK, Delft_3B
