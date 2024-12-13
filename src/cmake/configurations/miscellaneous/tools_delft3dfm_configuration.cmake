@@ -28,4 +28,4 @@ if(NOT TARGET cosumo_bmi)
 endif()
 
 # D-Waq tools
-include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_tools.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/dwaq/dwaq_tools.cmake)

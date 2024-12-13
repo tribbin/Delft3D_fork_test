@@ -83,7 +83,7 @@ endif()
 # proj
 if(WIN32)
     if(NOT TARGET proj)
-        include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/proj_configuration.cmake)
+        include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/miscellaneous/proj_configuration.cmake)
     endif()
 endif(WIN32)
 
