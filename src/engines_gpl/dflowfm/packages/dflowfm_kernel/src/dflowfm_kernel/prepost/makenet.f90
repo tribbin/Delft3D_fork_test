@@ -31,6 +31,9 @@
 !
 
 module m_makenet_sub
+use m_pol2netparams, only: pol2netparams
+use m_del_grid_outside_pol, only: del_grid_outside_pol
+use m_getdeltay, only: getdeltay
 use m_mergenodesinpolygon, only: mergenodesinpolygon
 
 implicit none

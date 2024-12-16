@@ -30,12 +30,22 @@
 !
 !
 
+module m_somdist
+
+implicit none
+
+private
+
+public :: somdist
+
+contains
+
       subroutine SOMDIST(A, B, C, D, M1, N1, M2, N2)
          use precision, only: dp
          use m_grid
          use m_missing
          use m_isitu
-         implicit none
+
          integer :: i
          integer :: i2
          integer :: ii
@@ -184,3 +194,5 @@
 
          return
       end subroutine SOMDIST
+
+end module m_somdist

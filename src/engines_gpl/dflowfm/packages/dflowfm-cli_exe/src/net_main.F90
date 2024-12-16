@@ -105,6 +105,7 @@ program unstruc
    use m_refine_from_commandline, only: refine_from_commandline
    use m_resetFullFlowModel, only: resetFullFlowModel
    use m_dobatch, only: dobatch
+   use m_generatepartitionmdufile, only: generatepartitionmdufile
 
    implicit none
 
@@ -122,8 +123,6 @@ program unstruc
    character(len=maxnamelen) :: md_mapfile_base !< storing the user-defined map file
    character(len=maxnamelen) :: md_flowgeomfile_base !< storing the user-defined flowgeom file
    character(len=maxnamelen) :: md_classmapfile_base !< storing the user-defined class map file
-
-   integer, external :: iget_jaopengl
 
    real(kind=dp) :: tstartall, tstopall ! just checking...
 

@@ -30,6 +30,16 @@
 !
 !
 
+module m_scherm
+
+implicit none
+
+private
+
+public :: scherm
+
+contains
+
   subroutine SCHERM()
      use m_netw
      use m_flowgeom
@@ -38,7 +48,7 @@
      use m_samples
      use unstruc_messages
      use m_helpnow
-     implicit none
+
      integer :: i
      integer :: omp_numt
 
@@ -103,3 +113,5 @@
 
      return
   end subroutine SCHERM
+
+end module m_scherm

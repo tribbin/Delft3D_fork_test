@@ -31,6 +31,8 @@
 !
 
 module m_maketrigrid
+use m_savegrd, only: savegrd
+
 
 implicit none
 

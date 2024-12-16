@@ -32,6 +32,8 @@
 
 !> interpolation of sample data to network nodes, in curvilinear grid coordinates
 module m_sam2net_curvi
+use m_savegrd, only: savegrd
+
 
 implicit none
 

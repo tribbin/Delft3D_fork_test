@@ -31,6 +31,9 @@
 !
 
 module m_flow_modelinit
+use m_fill_geometry_arrays_lateral, only: fill_geometry_arrays_lateral
+use m_datum2, only: datum2
+use m_calibration_init, only: calibration_init
 use m_update_vertadmin, only: update_vertadmin
 use m_update_geom, only: update_geom
 use m_setbobsongullies, only: setbobsongullies
@@ -122,6 +125,7 @@ contains
     use m_set_frcu_mor
     use m_flow_obsinit
     use m_set_model_boundingbox, only: set_model_boundingbox
+    use m_init_openmp, only: init_openmp
     !
     ! To raise floating-point invalid, divide-by-zero, and overflow exceptions:
     ! Activate the following line (See also statements below)
@@ -130,7 +134,6 @@ contains
 
     integer :: istat, L, ierr, k1, k2
     logical :: set_hu, use_u1
-    integer, external :: init_openmp
 
     real(kind=dp), allocatable :: weirdte_save(:)
     real(kind=dp), allocatable :: ucxq_save(:), ucyq_save(:)

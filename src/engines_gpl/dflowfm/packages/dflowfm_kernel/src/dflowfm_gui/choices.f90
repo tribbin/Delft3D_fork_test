@@ -69,6 +69,27 @@
 ! subroutines from net.F90
 !----------------------------------------------------------------------
 module m_choices
+   use m_scherm, only: scherm
+   use m_copy_sam2dots, only: copy_sam2dots
+   use m_copy_dots2sam, only: copy_dots2sam
+   use m_copytrans, only: copytrans
+   use m_copythindamstopol, only: copythindamstopol
+   use m_copysplinestofinepol, only: copysplinestofinepol
+   use m_copysamtopol, only: copysamtopol
+   use m_copypolygontosamples, only: copypolygontosamples
+   use m_copypolygontoobservations, only: copypolygontoobservations
+   use m_copypoltospline, only: copypoltospline
+   use m_copypoltoldb, only: copypoltoldb
+   use m_copynetwtopol, only: copynetwtopol
+   use m_copyldbtopol, only: copyldbtopol
+   use m_copylandboundaryto1dnetwork, only: copylandboundaryto1dnetwork
+   use m_copyfixedweirstopol, only: copyfixedweirstopol
+   use m_copycurvigridboundstopol, only: copycurvigridboundstopol
+   use m_copycrosssectionstopol, only: copycrosssectionstopol
+   use m_savegrd, only: savegrd
+   use m_mapprojections, only: mapprojections
+   use m_gridtonet, only: gridtonet
+   use m_delgrd, only: delgrd
    use m_flow_spatietimestep, only: flow_spatietimestep
    use m_triangulate_quadsandmore, only: triangulate_quadsandmore
    use m_triangulatesamplestonetwork, only: triangulatesamplestonetwork
@@ -117,6 +138,7 @@ module m_choices
    use m_copynetlinkstosam
    use m_copygridtosam
    use m_copyzlintosamples
+   use m_connecthangingnodes, only: connecthangingnodes, removelinksofhangingnodes, makeZKbedlevels
 
    implicit none
 

@@ -31,6 +31,16 @@
 !
 
 !>    copy and move a polygon orthogonally
+module m_copypol
+
+implicit none
+
+private
+
+public :: copypol
+
+contains
+
       subroutine copypol(ipol, xp, yp)
          use m_get_polstartend, only: get_polstartend
          use precision, only: dp
@@ -39,8 +49,6 @@
          use m_sferic
          use m_missing
          use geometry_module, only: getdxdy
-
-         implicit none
 
          integer, intent(in) :: ipol !< polygon point
          real(kind=dp), intent(in) :: xp, yp !< new polygon point coordinates
@@ -159,3 +167,5 @@
 
          return
       end subroutine copypol
+
+end module m_copypol

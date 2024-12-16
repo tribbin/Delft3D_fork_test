@@ -28,8 +28,8 @@
 !-------------------------------------------------------------------------------
     
 module m_inidat
+use m_wrirgf, only: wrirgf
 use m_maketekaltimes, only: maketekaltimes
-
 
 implicit none
 
@@ -284,8 +284,8 @@ contains
       use m_reapol
       use m_reasam
       use m_loadbitmap
+      use m_reagrid, only: reagrid
 
-      implicit none
       character inarg * (*), EXT * 4
       logical JAWEL
       integer :: minp, n1, n2, istat, ja

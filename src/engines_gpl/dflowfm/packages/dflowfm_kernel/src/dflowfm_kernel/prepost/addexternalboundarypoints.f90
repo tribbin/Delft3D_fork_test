@@ -31,6 +31,7 @@
 !
 
 module m_addexternalboundarypoints
+use m_a1x1a2x2, only: a1x1a2x2
 use m_mirrorcell, only: mirrorcell
 
 

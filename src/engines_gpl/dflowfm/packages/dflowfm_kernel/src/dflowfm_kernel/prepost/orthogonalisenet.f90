@@ -824,8 +824,6 @@ contains
       real(kind=dp) :: x0, y0, x1, y1, x3, y3, xn, yn
       real(kind=dp) :: atpf1
 
-      real(kind=dp), external :: dprodin
-
       integer :: kk, k0, k1l, kl, l, ja
       integer :: nn
 

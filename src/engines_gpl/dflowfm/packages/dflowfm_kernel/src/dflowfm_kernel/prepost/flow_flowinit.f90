@@ -30,6 +30,7 @@
 !
 !
 module m_flow_flowinit
+   use m_statisticsini, only: statisticsini
    use m_setzminmax, only: setzminmax
    use m_flow_settidepotential, only: flow_settidepotential
    use m_set_saltem_nudge, only: set_saltem_nudge
@@ -125,6 +126,7 @@ contains
       use m_volsur
       use m_meteo, only: initialize_ec_module
       use m_observations, only: read_moving_stations
+      use m_solve_guus, only: reducept
 
       implicit none
 

@@ -32,6 +32,8 @@
 
 !> get the intersections of a spline with all other splines
 module m_get_crosssplines
+use m_sect3r, only: sect3r
+
 
 implicit none
 

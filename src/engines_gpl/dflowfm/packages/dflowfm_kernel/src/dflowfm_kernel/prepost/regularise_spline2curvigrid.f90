@@ -33,6 +33,8 @@
 !>  regularise spline2curvi grid
 !>     note: there is an asymmetry, but this procedure is intended for regularisation only
 module m_regularise_spline2curvigrid
+use m_savegrd, only: savegrd
+
 
 implicit none
 

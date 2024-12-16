@@ -28,6 +28,8 @@
 !-------------------------------------------------------------------------------
 
 module m_setupwslopes
+use m_dcross, only: dcross
+
 
 implicit none
 
@@ -50,6 +52,7 @@ contains
     use m_missing, only: dmiss
     use fm_external_forcings_data
     use m_dlinedis2
+    use m_dprodin, only: dprodin
 
     integer :: L, k12, k2
     real(kind=dp) :: dxn, dyn, rmin, r
@@ -61,8 +64,6 @@ contains
     integer :: ierr, n
     real(kind=dp) :: rn(6)
     integer :: kun(6), nri(6)
-
-    real(kind=dp), external :: dprodin
 
     if (allocated(klnup)) then
        deallocate (klnup, slnup)

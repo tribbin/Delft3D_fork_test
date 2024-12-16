@@ -30,8 +30,17 @@
 !
 !
 
+module m_getdimensions
+
+implicit none
+
+private
+
+public :: getdimensions
+
+contains
+
       subroutine GETDIMENSIONS(MXD, NXD, MXLN, NSX)
-         implicit none
          integer :: mout
          integer :: mxd
          integer :: mxln
@@ -71,3 +80,5 @@
 999      continue
          return
       end
+
+end module m_getdimensions

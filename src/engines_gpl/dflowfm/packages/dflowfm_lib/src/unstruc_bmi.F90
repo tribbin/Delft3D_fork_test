@@ -1331,11 +1331,10 @@ contains
       use m_laterals, only: numlatsg, qplat, qqlat, balat, qplatCum, qplatCumPre, qplatAve, qLatReal, qLatRealCum
       use m_laterals, only: qLatRealCumPre, qLatRealAve, n1latsg, n2latsg, nnlat, kclat
       use morphology_data_module, only: PARSOURCE_FIELD
+      use m_init_openmp, only: init_openmp
 
       character(kind=c_char), intent(in) :: c_var_name(*)
       type(c_ptr), value, intent(in) :: xptr
-
-      integer, external :: init_openmp
 
       character(kind=c_char), dimension(:), pointer :: x_0d_char_ptr => null()
       real(c_double), pointer :: x_0d_double_ptr

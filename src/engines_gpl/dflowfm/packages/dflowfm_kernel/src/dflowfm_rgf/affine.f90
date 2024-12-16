@@ -30,13 +30,23 @@
 !
 !
 
+module m_affine
+
+implicit none
+
+private
+
+public :: affine
+
+contains
+
       subroutine AFFINE(XX, YY, XG, YG, INI)
          use precision, only: dp
          use M_BITMAP
          use string_module, only: find_first_letter
          use m_qnerror
          use m_bilinxy
-         implicit none
+
          integer :: ini
          logical :: jawel
          integer :: k
@@ -85,3 +95,5 @@
 
          return
       end
+
+end module m_affine

@@ -90,6 +90,9 @@ contains
       use m_partition_write_domains, only: partition_write_domains
       use m_resetFullFlowModel, only: resetFullFlowModel
       use m_resetflow, only: resetflow
+      use m_readarcinfo, only: readarcinfo
+      use m_reagrid, only: reagrid
+      use m_wrirgf, only: wrirgf
 
       integer :: NUM, NWHAT, KEY
       integer :: ja, ierr

@@ -68,6 +68,7 @@ contains
 
    !> set field oriented boundary conditions
    module subroutine set_external_forcings(time_in_seconds, initialization, iresult)
+      use m_calibration_update, only: calibration_update
       use m_flow_settidepotential, only: flow_settidepotential
       use precision, only: dp
       use m_update_zcgen_widths_and_heights, only: update_zcgen_widths_and_heights

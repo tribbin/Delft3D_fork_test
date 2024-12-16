@@ -31,6 +31,7 @@
 !> Manages the unstruc model definition for the active problem.
 module unstruc_model
 
+   use m_datum2, only: datum2
    use m_setmodind, only: setmodind
    use m_setgrainsizes, only: setgrainsizes
    use precision

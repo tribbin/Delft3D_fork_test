@@ -30,11 +30,20 @@
 !
 !
 
+module m_checknans
+
+implicit none
+
+private
+
+public :: checknans
+
+contains
+
  subroutine checknans()
     use m_flowgeom
     use m_flow
     use m_reduce
-    implicit none
 
     call newfil(mdump, 'dump')
 
@@ -58,3 +67,5 @@
     call doclose(mdump)
 
  end subroutine checknans
+
+end module m_checknans

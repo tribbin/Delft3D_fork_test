@@ -30,6 +30,16 @@
 !
 !
 
+module m_dropk
+
+implicit none
+
+private
+
+public :: dropk
+
+contains
+
  subroutine dropk(xp, yp)
     use m_isflowlink, only: isflowlink
     use precision, only: dp
@@ -37,7 +47,7 @@
     use m_flowgeom
     use m_flow
     use m_get_Lbot_Ltop
-    implicit none
+
     real(kind=dp), intent(in) :: xp, yp
 
     ! locals
@@ -53,3 +63,5 @@
     end if
     return
  end subroutine dropk
+
+end module m_dropk

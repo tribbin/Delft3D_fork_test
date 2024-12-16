@@ -31,6 +31,7 @@
 !
 
 module m_editsplines
+   use m_copyspline, only: copyspline
    use m_snap_spline, only: snap_spline
    use m_movespline, only: movespline
    use m_deleteselectedsplines, only: deleteselectedsplines

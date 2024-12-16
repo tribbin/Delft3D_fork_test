@@ -67,7 +67,6 @@ contains
       real(kind=dp) :: ATPF1
       integer, save :: NUMKO = 0, NUMLO = 0
       real(kind=dp) :: area, areatot, xzwr, yzwr, rout
-      real(kind=dp), external :: dprodin
       real(kind=dp) :: relaxin, relax1
 
       integer :: JSFERICold

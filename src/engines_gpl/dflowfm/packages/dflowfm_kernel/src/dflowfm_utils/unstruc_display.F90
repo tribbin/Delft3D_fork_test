@@ -295,6 +295,7 @@ contains
       use m_drawthis
       use m_depmax2
       use m_datum
+      use m_iget_jaopengl, only: iget_jaopengl
 
       character(len=*), intent(in) :: filename
 
@@ -302,7 +303,6 @@ contains
       character(len=20) :: rundat
       integer :: mfil, istat, i, KRGB(4)
       integer :: jaeps, jaland
-      integer, external :: iget_jaopengl
 
       call newfil(mfil, filename)
 

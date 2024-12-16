@@ -49,6 +49,7 @@ subroutine orthonet_compute_aspect(aspect)
    use m_orthosettings
    use geometry_module, only: dbdistance
    use m_sferic, only: jsferic, jasfer3D
+   use m_dprodin, only: dprodin
 
    real(kind=dp), dimension(numL) :: aspect !< aspect-ratios at the links
 
@@ -66,8 +67,6 @@ subroutine orthonet_compute_aspect(aspect)
    logical, allocatable, dimension(:) :: Liscurvi ! node-based curvi-like indicator
 
    real(kind=dp) :: ortho1
-
-   real(kind=dp), external :: dprodin
    real(kind=dp), parameter :: EPS = 1d-4
 
    allocate (R(2, numL), S(numL), Liscurvi(numk))

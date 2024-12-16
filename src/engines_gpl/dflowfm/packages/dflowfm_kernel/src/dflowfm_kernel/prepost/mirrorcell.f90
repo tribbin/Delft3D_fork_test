@@ -62,7 +62,6 @@ contains
 
     real(kind=dp) :: dis, dis2, rx, ry, xd, yd
     real(kind=dp) :: x3, x4
-    real(kind=dp), external :: dprodin
     integer :: ja, jadismxbnd = 0
 
     real(kind=dp), dimension(1) :: rxloc, ryloc

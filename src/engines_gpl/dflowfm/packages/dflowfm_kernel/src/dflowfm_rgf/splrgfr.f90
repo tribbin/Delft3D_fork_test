@@ -35,7 +35,21 @@
 !                          MC, NC, MERR, MFAC, NFAC,    &
 !                          IJC,IJYES,TIJ,XH,YH,         &
 !                          X1,Y1,X2,Y2,X3,Y3,X4,Y4)
+module m_splrgfr
+use m_tranfn2, only: tranfn2
+
+implicit none
+
+private
+
+public :: splrgfr
+
+contains
+
     subroutine SPLRGFR()
+       use m_sectr, only: sectr
+       use m_savegrd, only: savegrd
+       use m_paktij, only: paktij
        use precision, only: dp
        use M_SPLINES
        use m_missing, only: xymis
@@ -50,7 +64,6 @@
        use m_increase_grid
        use m_restore_grd
        use m_get_ij
-       implicit none
 
        real(kind=dp), allocatable, dimension(:, :) :: xspc, yspc, xh, yh, tij
        real(kind=dp), allocatable, dimension(:) :: x1, x2, x3, x4, y1, y2, y3, y4
@@ -253,3 +266,5 @@
 
        return
     end subroutine splrgfr
+
+end module m_splrgfr

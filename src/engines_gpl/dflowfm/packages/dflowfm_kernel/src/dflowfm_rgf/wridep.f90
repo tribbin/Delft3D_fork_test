@@ -30,10 +30,20 @@
 !
 !
 
+module m_wridep
+
+implicit none
+
+private
+
+public :: wridep
+
+contains
+
       subroutine WRIDEP(MMDD, ZC, M1, N1, MC, NC, mmax, nmax)
          use precision, only: dp
          use m_readyy
-         implicit none
+
          integer :: MMDD, M1, N1, MC, NC, mmax, nmax, n, m
          real(kind=dp) :: ZC(mmax, nmax)
          real(kind=dp) :: AF
@@ -48,3 +58,5 @@
          call DOCLOSE(MMDD)
          return
       end
+
+end module m_wridep

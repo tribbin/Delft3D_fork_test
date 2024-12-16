@@ -32,6 +32,7 @@
 
 !>  grow gridlayers from a net boundary
 module m_netboundtocurvi
+use m_savegrd, only: savegrd
 use m_netboundtopoly_makemasks, only: netboundtopoly_makemasks
 use m_netboundtopoly, only: netboundtopoly
 

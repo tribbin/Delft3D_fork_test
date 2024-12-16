@@ -41,6 +41,9 @@ contains
       use m_flow
       use m_flowgeom
       use m_missing
+      use m_cor2linx, only: cor2linx
+      use m_cor2liny, only: cor2liny
+
       implicit none
 
       integer :: L ! in direction of link L
@@ -57,7 +60,7 @@ contains
 
       integer :: ik1, ik2, in3, in4
 
-      real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
+      real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody
 
       horvic3 = 0d0
       csL = csu(L); snL = snu(L)

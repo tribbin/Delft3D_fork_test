@@ -31,6 +31,10 @@
 !
 
 module m_editpol
+   use m_dropzout, only: dropzout
+   use m_dropwater, only: dropwater
+   use m_dropk, only: dropk
+   use m_copypol, only: copypol
    use m_flow_spatietimestep, only: flow_spatietimestep
    use m_refinepolygonpart, only: refinepolygonpart
    use m_poltonet, only: poltonet

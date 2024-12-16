@@ -31,6 +31,8 @@
 !
 
 module m_flow_geominit
+use m_darean, only: darean
+use m_dumpnetlink, only: dumpnetlink
 use m_which2dnetlinkwascrossed, only: which2dnetlinkwascrossed
 use m_thindams_on_netgeom, only: thindams_on_netgeom
 use m_sort_flowlinks_ccw, only: sort_flowlinks_ccw

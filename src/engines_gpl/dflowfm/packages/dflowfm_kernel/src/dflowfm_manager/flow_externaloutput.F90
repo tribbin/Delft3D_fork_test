@@ -31,6 +31,7 @@
 !
 
 module m_flow_externaloutput
+use m_step_to_screen, only: step_to_screen
 use m_inctime_split, only: inctime_split
 
 implicit none

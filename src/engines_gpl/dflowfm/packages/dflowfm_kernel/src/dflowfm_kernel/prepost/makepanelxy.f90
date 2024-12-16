@@ -31,6 +31,8 @@
 !
 
 module m_makepanelxy
+use m_dputar, only: dputar
+
 
 implicit none
 

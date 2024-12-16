@@ -32,6 +32,7 @@
 
       !> Writes active cross sections to a polyline file.
       subroutine wricrs(mpol)
+         use m_copycrosssectionstopol, only: copycrosssectionstopol
          use m_crosssections
          use m_polygon
          use m_missing
