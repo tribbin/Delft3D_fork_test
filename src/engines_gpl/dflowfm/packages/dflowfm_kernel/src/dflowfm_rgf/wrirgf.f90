@@ -30,6 +30,16 @@
 !
 !
 
+module m_wrirgf
+
+implicit none
+
+private
+
+public :: wrirgf
+
+contains
+
       !> Write a curvilinear grid to (ascii) grd-file.
       !! NOTE: 'new' format (RGFGrid 4.x)
       !!
@@ -42,6 +52,8 @@
       !! Next line should be mmax, nmax
       !! That ends the header, start reading coordinates in the usual fashion.
       subroutine WRIRGF(MRGF, FILNAM)
+         use m_wridep, only: wridep
+         use m_ecrtab, only: ecrtab
          use precision, only: dp
          use m_sferic
          use m_grid
@@ -52,7 +64,6 @@
          use m_firstlin
          use m_wripol
 
-         implicit none
          real(kind=dp) :: half
          integer :: ipnt, n, i, j, nfirst
          integer :: mrgf, mdep
@@ -120,3 +131,5 @@
          end if
 
       end subroutine WRIRGF
+
+end module m_wrirgf

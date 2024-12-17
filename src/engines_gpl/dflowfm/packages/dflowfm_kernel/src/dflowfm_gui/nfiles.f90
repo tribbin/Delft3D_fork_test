@@ -86,6 +86,13 @@ contains
       use m_wrirstfileold, only: WRIRSTfileold
       use m_wriswan, only: WRIswan
       use m_setucxucyucxuucyunew, only: setucxucyucxuucyunew
+      use m_inidat, only: inidat
+      use m_partition_write_domains, only: partition_write_domains
+      use m_resetFullFlowModel, only: resetFullFlowModel
+      use m_resetflow, only: resetflow
+      use m_readarcinfo, only: readarcinfo
+      use m_reagrid, only: reagrid
+      use m_wrirgf, only: wrirgf
 
       integer :: NUM, NWHAT, KEY
       integer :: ja, ierr

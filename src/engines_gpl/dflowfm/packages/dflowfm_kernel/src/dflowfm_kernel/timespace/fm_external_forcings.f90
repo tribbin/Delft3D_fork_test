@@ -28,6 +28,8 @@
 !-------------------------------------------------------------------------------
 
 module fm_external_forcings
+   use m_make_mirrorcells, only: make_mirrorcells
+   use m_in2dflowcell, only: in2dflowcell
    use m_count_links, only: count_links
    use m_add_bndtracer, only: add_bndtracer
    use m_addopenbndsection, only: addopenbndsection
@@ -1640,6 +1642,7 @@ contains
       use unstruc_inifields, only: initialize_initial_fields
       use m_qnerror
       use m_flow_init_structurecontrol, only: flow_init_structurecontrol
+      use m_setzminmax, only: setzminmax
 
       integer, intent(out) :: iresult
 

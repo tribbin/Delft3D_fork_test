@@ -33,6 +33,7 @@
 !> flip links in quads, when appropriate
 !>   note: we look for a local optimum, which is not necessarily the global one
 module m_fliplinks
+use m_triangulate_cells, only: triangulate_cells
 
 implicit none
 
@@ -88,7 +89,6 @@ subroutine fliplinks()
 
    logical :: Lflip
 
-   integer, external :: nmk_opt
    real(kind=dp), external :: rand
 
    if (jaswan /= 1) then

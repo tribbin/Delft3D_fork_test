@@ -65,6 +65,8 @@ contains
       use m_get_cz
       use m_horvic
       use m_horvic3
+      use m_cor2linx, only: cor2linx
+      use m_cor2liny, only: cor2liny
 
       implicit none
 
@@ -88,7 +90,7 @@ contains
 
       real(kind=dp) :: dxiAu, vicc, vlban, fcLL
 
-      real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody, cor2linx, cor2liny
+      real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody
       real(kind=dp), external :: nod2wallx, nod2wally, wall2linx, wall2liny
 
       integer :: number_limited_links

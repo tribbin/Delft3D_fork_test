@@ -1203,6 +1203,7 @@ contains
 !>    ghost cells are masked in module variable ighostlev_nodebased
    subroutine partition_set_ghostlevels_nodebased(idmn, numlay_loc, ierror)
       use network_data
+      use m_icommon, only: common_cell_for_two_net_links
       implicit none
 
       integer, intent(in) :: idmn !< domain number
@@ -1210,8 +1211,6 @@ contains
       integer, intent(out) :: ierror !< error (1) or not (0)
 
       integer :: ilay, ic, icother, i, ip1, kk, k, L, Lp1, numcells
-
-      integer, external :: common_cell_for_two_net_links
 
       ierror = 1
 
@@ -5123,13 +5122,12 @@ contains
    subroutine get_ghost_corners(domain_number, min_ghost_level, max_ghost_level, ghost_type, ghost_list)
       use network_data, only: numk, nmk, nod
       use m_alloc
+      use m_icommon, only: common_cell_for_two_net_links
 
       implicit none
       integer, intent(in) :: domain_number
       integer, intent(in) :: min_ghost_level, max_ghost_level, ghost_type
       type(tghost), allocatable, intent(out) :: ghost_list(:)
-
-      integer, external :: common_cell_for_two_net_links
 
       integer, pointer :: ghost_level(:)
       integer :: node, index, first_link, second_link, cell, number_of_cells, min_ghost_level_for_cell

@@ -32,6 +32,8 @@
 
 !> construct triangle with three blocks of curvilinear grids
 subroutine pol2curvi_tri(i1, i2_, i3_)
+   use m_tranfn2, only: tranfn2
+   use m_get_polstartend, only: get_polstartend
    use precision, only: dp
    use m_grid
    use m_gridsettings

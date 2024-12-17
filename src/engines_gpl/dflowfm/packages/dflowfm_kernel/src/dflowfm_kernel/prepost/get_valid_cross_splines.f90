@@ -31,23 +31,27 @@
 !
 
 !> get the cross splines that have valid grid height
-subroutine get_index(ncs, isvalid, ndx, idx)
+module m_get_valid_cross_splines
    implicit none
+   private
+   public :: get_valid_cross_splines
 
-   integer, intent(in) :: ncs !< number of cross splines
-   integer, dimension(ncs), intent(in) :: isvalid !< valid (>=0) or not (<0)
-   integer, intent(out) :: ndx !< number of valid cross splines
-   integer, dimension(ncs), intent(out) :: idx !< valid cross splines
+contains
 
-   integer :: i
+   subroutine get_valid_cross_splines(ncs, isvalid, ndx, idx)
+      integer, intent(in) :: ncs !< number of cross splines
+      integer, dimension(ncs), intent(in) :: isvalid !< valid (>=0) or not (<0)
+      integer, intent(out) :: ndx !< number of valid cross splines
+      integer, dimension(ncs), intent(out) :: idx !< valid cross splines
 
-   ndx = 0
-   do i = 1, ncs
-      if (isvalid(i) >= 0) then
-         ndx = ndx + 1
-         idx(ndx) = i
-      end if
-   end do
+      integer :: i
 
-   return
-end subroutine
+      ndx = 0
+      do i = 1, ncs
+         if (isvalid(i) >= 0) then
+            ndx = ndx + 1
+            idx(ndx) = i
+         end if
+      end do
+   end subroutine get_valid_cross_splines
+end module m_get_valid_cross_splines

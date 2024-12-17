@@ -30,6 +30,17 @@
 !
 !
 !>  override bobs along pliz's, jadykes == 0: only heights, 1 = also dyke attributes
+module m_setfixedweirs
+use m_setfixedweirscheme3onlink, only: setfixedweirscheme3onlink
+
+implicit none
+
+private
+
+public :: setfixedweirs
+
+contains
+
 subroutine setfixedweirs()
    use precision, only: dp
    use m_netw
@@ -54,8 +65,6 @@ subroutine setfixedweirs()
    use m_readyy
    use m_wall_clock_time
    use m_find_crossed_links_kdtree2
-
-   implicit none
 
    integer :: k, kk, n1, n2, n, L, LL, jacros, minp, kint, ierr, nh, nhh, i, Lf
    integer :: jaweir, Lastfoundk, kf, kL, Lnt, nna, nnb, k3, k4
@@ -744,3 +753,5 @@ contains
    end function is_value_inside_limits
 
 end subroutine setfixedweirs
+
+end module m_setfixedweirs

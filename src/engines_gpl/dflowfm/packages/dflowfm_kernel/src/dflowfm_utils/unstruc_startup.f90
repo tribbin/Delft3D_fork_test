@@ -33,6 +33,7 @@
 module unstruc_startup
 !! Separates some startup/initialization procedures from the main program in net.f90
 
+   use m_inidepmax2, only: inidepmax2
    use m_intini
    use m_helpin
    use unstruc_ini

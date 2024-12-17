@@ -32,6 +32,16 @@
 
 !> write the network domains to file
 !>    it is assumed that the domain coloring "idomain" is available
+module m_partition_write_domains
+
+implicit none
+
+private
+
+public :: partition_write_domains
+
+contains
+
    subroutine partition_write_domains(netfilename, icgsolver, jacells, japolygon, japartugrid)
 
       use m_partitioninfo
@@ -44,8 +54,6 @@
       use system_utils, only: find_last_slash
       use m_qnerror
       use m_wripol
-
-      implicit none
 
       character(len=*), intent(in) :: netfilename !< filename of whole network
       integer, intent(in) :: icgsolver !< intended solver
@@ -129,3 +137,5 @@
 
       return
    end subroutine partition_write_domains
+
+end module m_partition_write_domains

@@ -29,6 +29,16 @@
 
 !
 !
+module m_solve_guus
+
+implicit none
+
+private
+
+public :: pack_matrix, reducept, solve_matrix
+
+contains
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -361,7 +371,7 @@
 
     implicit none
     integer j, n, iadres, jj, iad2, ierr
-    integer, external :: ijadr
+
     iadres = 0
     do n = 1, nodtot
        ia(n)%l = 0
@@ -426,7 +436,7 @@
 
     implicit none
     integer i, j, m, n, ijij, nn, ierr
-    integer, external :: ijadr
+
     do n = 1, nogauss
        ndn = noel(n)
        ijij = 0
@@ -467,7 +477,7 @@
 
     implicit none
     integer i, j, n, m, ierr
-    integer, external :: ijadr
+
     nocg = 0
     do i = 1, nodtot
        ndn = nbrstk(i)
@@ -2677,3 +2687,5 @@
 
     return
  end subroutine testsolver
+
+end module m_solve_guus

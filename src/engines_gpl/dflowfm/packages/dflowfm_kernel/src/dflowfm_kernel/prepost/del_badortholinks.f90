@@ -31,6 +31,7 @@
 !
 
 module m_del_badortholinks
+use m_mergecells, only: mergecells
 
    implicit none
 

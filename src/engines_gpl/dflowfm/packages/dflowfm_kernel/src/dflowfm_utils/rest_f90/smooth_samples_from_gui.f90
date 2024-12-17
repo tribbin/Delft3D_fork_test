@@ -31,6 +31,7 @@
 !
 
 subroutine smooth_samples_from_GUI()
+   use m_smooth_samples, only: smooth_samples
    use m_samples
    use m_qnerror
    use m_getint

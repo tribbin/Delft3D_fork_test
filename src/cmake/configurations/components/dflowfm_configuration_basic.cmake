@@ -1,7 +1,4 @@
 # Specify the modules to be included
-
-include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/windows_postbuild_configuration.cmake)
-
 if(NOT TARGET deltares_common)
     add_subdirectory(${checkout_src_root}/${deltares_common_module} deltares_common)
 endif()
@@ -12,10 +9,6 @@ endif()
 
 if(NOT TARGET deltares_common_mpi)
     add_subdirectory(${checkout_src_root}/${deltares_common_mpi_module} deltares_common_mpi)
-endif()
-
-if(NOT TARGET ftnunit)
-    add_subdirectory(${checkout_src_root}/${ftnunit_module} ftnunit)
 endif()
 
 # Ice
@@ -49,9 +42,14 @@ if(NOT TARGET flow1d)
     add_subdirectory(${checkout_src_root}/${flow1d_module} flow1d)
 endif()
 
+if(NOT TARGET flow1d_implicit)
+    add_subdirectory(${checkout_src_root}/${flow1d_implicit} flow1d_implicit)
+endif()
+
 # Waq
-include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_base.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/dwaq/dwaq_dflowfm_online_coupling.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/dwaq/dwaq_base.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/dwaq/dwaq_dflowfm_online_coupling.cmake)
+
 
 
 
@@ -78,9 +76,30 @@ if(NOT TARGET dhydrology_kernel)
 endif()
 
 # Dflowfm modules
-if(NOT TARGET dflowfm_kernel)
-    add_subdirectory(${checkout_src_root}/${dflowfm_kernel_module} dflowfm_kernel)
+add_subdirectory(${checkout_src_root}/${dflowfm_kernel_module} dflowfm_kernel)
+add_subdirectory(${checkout_src_root}/${dflowfm_cli_exe_module} dflowfm_cli_exe)
+# dflowfm_lib: only when without interacter
+if(NOT WITH_INTERACTER)
+    add_subdirectory(${checkout_src_root}/${dflowfm_lib_module} dflowfm_lib)
 endif()
+
+# Tools_gpl
+# DFMoutput
+if(NOT TARGET dfmoutput)
+    add_subdirectory(${checkout_src_root}/${dfmoutput_module} dfmoutput)
+endif()
+
+# DFM_volume_tool
+if(NOT TARGET dfm_volume_tool)
+    add_subdirectory(${checkout_src_root}/${dfm_volume_tool_module} dfm_volume_tool)
+endif()
+
+# DFM_api_access
+if(NOT TARGET dfm_api_access)
+    add_subdirectory(${checkout_src_root}/${dfm_api_access_module} dfm_api_access)
+endif()
+
+
 
 # Third party libraries
 # kdtree2
@@ -98,6 +117,7 @@ if(NOT TARGET md5)
 endif()
 
 # metis
+
 if(NOT TARGET metis)
     add_subdirectory(${checkout_src_root}/${metis_module} metis)
 endif()
@@ -140,7 +160,7 @@ endif()
 # proj
 if(WIN32)
     if(NOT TARGET proj)
-        include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/include/proj_configuration.cmake)
+        include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/miscellaneous/proj_configuration.cmake)
     endif()
 endif(WIN32)
 
@@ -168,9 +188,16 @@ if(NOT TARGET gridgeom)
     add_subdirectory(${checkout_src_root}/${gridgeom_module} gridgeom)
 endif()
 
-# interacter_stub
-if(NOT TARGET interacter_stub)
-    add_subdirectory(${checkout_src_root}/${interacter_stub_module} interacter_stub)
+# icepack
+if(NOT TARGET icepack)
+    add_subdirectory(${checkout_src_root}/${icepack_module} icepack)
+endif()
+
+if(NOT WITH_INTERACTER)
+    # Use interacter_stub instead
+    if(NOT TARGET interacter_stub)
+        add_subdirectory(${checkout_src_root}/${interacter_stub_module} interacter_stub)
+    endif()
 endif()
 
 # polypack
@@ -183,19 +210,45 @@ if(NOT TARGET nefis)
     add_subdirectory(${checkout_src_root}/${nefis_module} nefis)
 endif()
 
+# spherepack
+if(NOT TARGET spherepack)
+    add_subdirectory(${checkout_src_root}/${spherepack_module} spherepack)
+endif()
 
-# Test binaries
-add_subdirectory(${checkout_src_root}/${test_deltares_common_module} test_deltares_common)
-add_subdirectory(${checkout_src_root}/${test_ec_module} test_ec_module)
-add_subdirectory(${checkout_src_root}/${test_dflowfm_kernel} test_dflowfm_kernel)
-add_subdirectory(${delwaq_unit_tests_module} tests_delwaq)
-add_subdirectory(${checkout_src_root}/${test_io_netcdf} test_io_netcdf)
-add_subdirectory(${utils_lgpl_tests_module} tests_utils_lgpl)
+# Unit tests for dflowfm and io_netcdf
+# Only for the version without interacter
+if(NOT WITH_INTERACTER)
+    if(NOT TARGET ftnunit)
+        add_subdirectory(${checkout_src_root}/${ftnunit_module} ftnunit)
+    endif()
+
+    if(NOT TARGET test_dflowfm_kernel)
+        add_subdirectory(${checkout_src_root}/${test_dflowfm_kernel} test_dflowfm_kernel)
+    endif()
+    
+    if(NOT TARGET test_deltares_common)
+        add_subdirectory(${checkout_src_root}/${test_deltares_common_module} test_deltares_common)
+    endif()
+    
+    if(NOT TARGET test_ec_module)
+        add_subdirectory(${checkout_src_root}/${test_ec_module} test_ec_module)
+    endif()
+
+    if (NOT TARGET test_io_netcdf)
+        add_subdirectory(${checkout_src_root}/${test_io_netcdf} test_io_netcdf)
+    endif()
+endif(NOT WITH_INTERACTER)
+
 
 if(UNIX)
     # install
-    add_subdirectory(${checkout_src_root}/${install_tests_module} install_tests)
-endif(UNIX)
+    add_subdirectory(${checkout_src_root}/${install_dflowfm_module} install_dflowfm)
+endif()
 
-# Project name must be at the end of the configuration: it might get a name when including other configurations and needs to overwrite that
-project(tests)
+# Plugins
+if(NOT TARGET plugin_culvert)
+    add_subdirectory(${checkout_src_root}/plugins_lgpl/plugin_culvert plugin_culvert)
+endif()
+if(NOT TARGET plugin_delftflow_traform)
+    add_subdirectory(${checkout_src_root}/plugins_lgpl/plugin_delftflow_traform plugin_delftflow_traform)
+endif()

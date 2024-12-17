@@ -30,9 +30,19 @@
 !
 !
 
+module m_givelinknum
+
+implicit none
+
+private
+
+public :: givelinknum
+
+contains
+
   subroutine GIVELINKNUM(K1, K2, L)
      use m_netw
-     implicit none
+
      integer :: K1, K2, L
 
      L = 0
@@ -44,3 +54,5 @@
      end do
      return
   end subroutine GIVELINKNUM
+
+end module m_givelinknum

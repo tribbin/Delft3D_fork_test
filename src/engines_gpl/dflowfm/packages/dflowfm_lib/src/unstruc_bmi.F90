@@ -35,6 +35,17 @@
 #define no_warning_unused_variable(x) associate( x => x ); end associate
 
 module bmi
+   use m_flow_run_usertimestep, only: flow_run_usertimestep
+   use m_flow_run_sometimesteps, only: flow_run_sometimesteps
+   use m_flow_init_usertimestep, only: flow_init_usertimestep
+   use m_flow_finalize_usertimestep, only: flow_finalize_usertimestep
+   use m_updatevaluesonobservationstations, only: updatevaluesonobservationstations
+   use m_resetfullflowmodel, only: resetfullflowmodel
+   use m_partition_write_domains, only: partition_write_domains
+   use m_land_change_callback, only: land_change_callback
+   use m_inidat, only: inidat
+   use m_getstructureindex, only: getstructureindex
+   use m_getlateralindex, only: getlateralindex
    use m_flow_run_single_timestep, only: flow_run_single_timestep
    use m_flow_init_single_timestep, only: flow_init_single_timestep
    use m_flow_finalize_single_timestep, only: flow_finalize_single_timestep
@@ -1321,11 +1332,10 @@ contains
       use m_laterals, only: qLatRealCumPre, qLatRealAve, n1latsg, n2latsg, nnlat, kclat
       use morphology_data_module, only: PARSOURCE_FIELD
       use string_module, only: str_token
+      use m_init_openmp, only: init_openmp
 
       character(kind=c_char), intent(in) :: c_var_name(*)
       type(c_ptr), value, intent(in) :: xptr
-
-      integer, external :: init_openmp
 
       character(kind=c_char), dimension(:), pointer :: x_0d_char_ptr => null()
       real(c_double), pointer :: x_0d_double_ptr

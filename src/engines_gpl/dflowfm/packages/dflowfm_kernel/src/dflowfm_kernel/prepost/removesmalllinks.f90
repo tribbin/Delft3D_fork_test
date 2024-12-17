@@ -30,9 +30,19 @@
 !
 !
 
-   subroutine REMOVESMALLLINKS() ! 1 REMOVES IF FLOW LINK DISTANCES ARE SMALL RELATIVE TO CONNECTED CELL SIZES
-      use precision, only: dp
+module m_removesmalllinks
 
+implicit none
+
+private
+
+public :: removesmalllinks
+
+contains
+
+   subroutine REMOVESMALLLINKS() ! 1 REMOVES IF FLOW LINK DISTANCES ARE SMALL RELATIVE TO CONNECTED CELL SIZES
+      use m_removecoincidingtriangles, only: removecoincidingtriangles
+      use precision, only: dp
       use m_netw ! 2 REMOVES SMALL TRIANGLES NEXT TO
       use M_FLOWGEOM
       use unstruc_messages
@@ -42,7 +52,6 @@
       use gridoperations
       use m_mergenodes
       use m_set_nod_adm
-      implicit none
 
       real(kind=dp) :: R01, R02, AN1, AN2, XL, YL, XR, YR, XZWr, YZWr, ZZZ
       integer :: KL1, KL2, KN1a, KN2a, L, jaremove
@@ -205,3 +214,5 @@
       deallocate (XNW, YNW, NNW)
 
    end subroutine REMOVESMALLLINKS
+
+end module m_removesmalllinks

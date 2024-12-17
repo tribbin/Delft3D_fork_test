@@ -41,6 +41,8 @@
 !>     |           |
 !>   2 x-----------x 3
 subroutine pol2curvi(i1, i2, i3, ja4)
+   use m_tranfn2, only: tranfn2
+   use m_get_polstartend, only: get_polstartend
    use precision, only: dp
    use m_grid
    use m_gridsettings

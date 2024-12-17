@@ -31,6 +31,7 @@
 !
 
 module m_flow_allocflow
+use m_polygonlayering, only: polygonlayering
 
 implicit none
 

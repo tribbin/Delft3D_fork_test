@@ -68,6 +68,7 @@ subroutine test_iniField1dField
     use dfm_error
     use ifport
     use m_flow_modelinit, only: flow_modelinit
+    use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer                   :: i, j, k, ibr
@@ -180,6 +181,7 @@ subroutine test_iniField1dField_waterdepth
     use dfm_error
     use ifport
     use m_flow_modelinit, only: flow_modelinit
+    use m_resetfullflowmodel, only: resetfullflowmodel
 
     ! Locals
     integer                                     :: i
@@ -379,6 +381,7 @@ subroutine test_iniField1dField_waterlevel
     use dfm_error
     use ifport
     use m_flow_modelinit, only: flow_modelinit
+    use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer                                     :: i
@@ -578,6 +581,7 @@ subroutine test_iniField1dField_waterdepth_cross_sections
     use dfm_error
     use ifport
     use m_flow_modelinit, only: flow_modelinit
+    use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer                                     :: i
@@ -627,6 +631,7 @@ subroutine two_branch_water_depth_and_level_combination(level_first_branch, leve
     use unstruc_model
     use ifport
     use m_flow_modelinit, only: flow_modelinit
+    use m_resetfullflowmodel, only: resetfullflowmodel
 
     real(kind=dp),    intent(in) :: level_first_branch
     real(kind=dp),    intent(in) :: level_second_branch
@@ -722,6 +727,7 @@ subroutine test_iniField1d_waterlevel_2d_points_not_set()
     use unstruc_model
     use ifport
     use m_flow_modelinit, only: flow_modelinit
+    use m_resetfullflowmodel, only: resetfullflowmodel
 
     character(len=12)        :: mdufile
     character(len=23)        :: test_dir_name

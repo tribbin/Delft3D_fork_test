@@ -39,6 +39,8 @@
 !! of the other samples.
 !! Also used by flow_flowinit() for the <tt>WaterLevIniFile</tt> from the MDU.
 module m_flow_initfloodfill
+use m_in_flowcell, only: in_flowcell
+
 
 implicit none
 

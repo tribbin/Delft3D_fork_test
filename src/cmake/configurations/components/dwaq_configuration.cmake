@@ -1,4 +1,4 @@
-set(waq_include_dir ${CMAKE_CURRENT_LIST_DIR}/include/dwaq)
+set(waq_include_dir ${CMAKE_CURRENT_LIST_DIR}/dwaq)
 include(${waq_include_dir}/dwaq_functions.cmake)
 
 list(APPEND CMAKE_MESSAGE_INDENT "  ")

@@ -30,6 +30,13 @@
 !
 !
 module unstruc_api
+   use m_flow_usertimestep, only: flow_usertimestep
+   use m_flow_externaloutput, only: flow_externaloutput
+   use m_updatevaluesonrunupgauges_mpi, only: updatevaluesonrunupgauges_mpi
+   use m_updatevaluesonrunupgauges, only: updatevaluesonrunupgauges
+   use m_updatevaluesonlaterals, only: updatevaluesonlaterals
+   use m_resetfullflowmodel, only: resetfullflowmodel
+   use m_inidat, only: inidat, loadfile, savefile
    use m_write_some_final_output, only: write_some_final_output
    use m_writecdcoeffs, only: writeCdcoeffs
    use m_plotnu

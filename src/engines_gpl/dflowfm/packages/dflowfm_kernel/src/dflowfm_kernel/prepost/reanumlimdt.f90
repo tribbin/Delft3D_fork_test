@@ -30,17 +30,24 @@
 !
 !
 
+module m_reanumlimdt
+
+implicit none
+
+private
+
+public :: reanumlimdt
+
+contains
+
  subroutine reanumlimdt()
     use m_flowgeom
     use m_GlobalParameters, only: INDTP_ALL
     use MessageHandling, only: IdLen
-
     use m_flow
     use m_partitioninfo
     use m_samples
     use m_find_flownode, only: find_nearest_flownodes
-
-    implicit none
 
     character(len=IdLen) :: name, nams
     logical :: jawel
@@ -76,3 +83,5 @@
        deallocate (xs, ys, zs, knum)
     end if
  end subroutine reanumlimdt
+
+end module m_reanumlimdt

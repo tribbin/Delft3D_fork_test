@@ -32,6 +32,7 @@
 
    !> test iterative solver (as "mpitest")
    subroutine soltest(iCFL, icgsolver_loc, maxsubmatvecs, iepsdiff, iepscg)
+      use m_solve_guus, only: solve_matrix
       use precision, only: dp
       use m_update_matrix, only: update_matrix
       use m_partitioninfo
@@ -44,6 +45,7 @@
       use m_flow
       use m_alloc
       use m_flow_modelinit, only: flow_modelinit
+      use m_solve_guus, only: pack_matrix
       implicit none
 
       integer, intent(in) :: iCFL !< wave-based Courant number

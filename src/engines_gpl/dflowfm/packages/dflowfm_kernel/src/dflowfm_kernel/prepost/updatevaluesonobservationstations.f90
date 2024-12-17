@@ -31,6 +31,16 @@
 !
 
 !> update observation station data
+module m_updatevaluesonobservationstations
+
+implicit none
+
+private
+
+public :: updatevaluesonobservationstations
+
+contains
+
 subroutine updateValuesOnObservationStations()
    use m_fill_valobs, only: fill_valobs
    use m_flowtimes, only: time1
@@ -39,8 +49,6 @@ subroutine updateValuesOnObservationStations()
    use m_partitioninfo, only: jampi, reduce_valobs
    use m_timer, only: jatimer, IOUTPUTMPI, starttimer, stoptimer
    use precision_basics, only: comparereal
-
-   implicit none
 
    if (comparereal(time1, valobs_last_update_time, eps10) == 0) then
       return
@@ -57,3 +65,5 @@ subroutine updateValuesOnObservationStations()
 
    return
 end subroutine updateValuesOnObservationStations
+
+end module m_updatevaluesonobservationstations
