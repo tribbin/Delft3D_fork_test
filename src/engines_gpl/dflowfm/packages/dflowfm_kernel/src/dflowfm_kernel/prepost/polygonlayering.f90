@@ -30,7 +30,19 @@
 !
 !
 
+module m_polygonlayering
+
+implicit none
+
+private
+
+public :: polygonlayering
+
+contains
+
  subroutine polygonlayering(mpol)
+    use precision, only: dp
+    use m_closedefinedflownode, only: closedefinedflownode
     use m_flow
     use m_flowgeom
     use m_polygon
@@ -42,11 +54,10 @@
     use geometry_module
     use m_reapol
 
-    implicit none
     integer :: mpol
     integer :: k, j, jstart, jend, ierr, jdla, ipoint, jakdtree, ndim, n, in, nspl, n1
     integer, allocatable :: nds(:), ndn(:)
-    double precision, allocatable :: zz(:)
+    real(kind=dp), allocatable :: zz(:)
 
     call reapol(mpol, 0)
 
@@ -154,3 +165,5 @@
     deallocate (indxx, wfxx, zz, nds, ndn, iistart, iiend)
 
  end subroutine polygonlayering
+
+end module m_polygonlayering

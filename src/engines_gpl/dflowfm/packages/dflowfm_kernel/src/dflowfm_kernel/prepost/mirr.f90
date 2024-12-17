@@ -30,15 +30,28 @@
 !
 !
 
-  subroutine MIRR(X, Y, Z, X2, Y2, Z2)
-     use M_LANDBOUNDARY
-     implicit none
-     double precision X, Y, Z, X2, Y2, Z2
+module m_mirr
 
-     double precision :: ym
+implicit none
+
+private
+
+public :: mirr
+
+contains
+
+  subroutine MIRR(X, Y, Z, X2, Y2, Z2)
+     use precision, only: dp
+     use M_LANDBOUNDARY
+
+     real(kind=dp) X, Y, Z, X2, Y2, Z2
+
+     real(kind=dp) :: ym
      YM = (YLAN(1) + YLAN(2)) / 2
      X2 = X
      Y2 = 2 * YM - Y
      Z2 = Z
      return
   end subroutine MIRR
+
+end module m_mirr

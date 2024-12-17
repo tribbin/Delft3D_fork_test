@@ -30,12 +30,23 @@
 !
 !
 
+module m_getspl2
+
+implicit none
+
+private
+
+public :: getspl2
+
+contains
+
       subroutine GETSPL2(X, XI2, XJ2, MC, NC, MMAX, NMAX)
+         use precision, only: dp
          use M_MISSING
          use m_spline
          use m_put_ij
          use m_get_ij
-         implicit none
+
          integer :: i
          integer :: iff
          integer :: il
@@ -51,8 +62,8 @@
 !     VUL DE ARRAY MET TWEEDE AFGELEIDES IN I EN J RICHTING
 !     HAAL TELKENS EEN LIJNTJE, DOE SPLINE EN ZET TERUG
 
-         double precision :: X(MMAX, NMAX), XI2(MMAX, NMAX), XJ2(MMAX, NMAX)
-         double precision, allocatable :: XH1(:), XH21(:), XHH(:)
+         real(kind=dp) :: X(MMAX, NMAX), XI2(MMAX, NMAX), XJ2(MMAX, NMAX)
+         real(kind=dp), allocatable :: XH1(:), XH21(:), XHH(:)
 
          MNMAX = max(MMAX, NMAX)
 
@@ -123,3 +134,5 @@
 
          return
       end subroutine GETSPL2
+
+end module m_getspl2

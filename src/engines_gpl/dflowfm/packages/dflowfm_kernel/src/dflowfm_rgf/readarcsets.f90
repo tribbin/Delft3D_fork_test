@@ -30,14 +30,23 @@
 !
 !
 
+module m_readarcsets
+
+implicit none
+
+private
+
+public :: readarcsets
+
+contains
+
       subroutine REAdarcsets(mlist)
+         use precision, only: dp
          use m_netw
          use M_ARCINFO
          use M_MISSING
          use m_readyy
          use m_delpol
-
-         implicit none
 
          integer :: Mlist
          integer :: Marc
@@ -46,7 +55,7 @@
          logical jawel
 
          integer :: i1, i2, j1, j2, k, L, Lp, numfil
-         double precision :: af, f11, f21, f12, f22, dii, djj
+         real(kind=dp) :: af, f11, f21, f12, f22, dii, djj
 
          numfil = 0
 
@@ -114,3 +123,5 @@
          call READYY(' ', -1d0)
 
       end subroutine REAdarcsets
+
+end module m_readarcsets

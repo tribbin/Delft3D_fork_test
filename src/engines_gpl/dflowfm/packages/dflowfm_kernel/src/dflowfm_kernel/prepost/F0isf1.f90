@@ -30,10 +30,21 @@
 !
 !
 
+module m_f0isf1
+
+implicit none
+
+private
+
+public :: f0isf1
+
+contains
+
       subroutine F0ISF1(X0, X1, KMAX)
+         use precision, only: dp
          implicit none
          integer :: KMAX
-         double precision :: X0(KMAX), X1(KMAX)
+         real(kind=dp) :: X0(KMAX), X1(KMAX)
 
          integer :: K
 
@@ -42,3 +53,5 @@
          end do
          return
       end subroutine F0ISF1
+
+end module m_f0isf1

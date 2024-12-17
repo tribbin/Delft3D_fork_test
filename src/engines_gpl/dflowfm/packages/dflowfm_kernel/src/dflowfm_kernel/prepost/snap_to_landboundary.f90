@@ -27,17 +27,25 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
 !> snap netnodes to land boundary segment
+module m_snap_to_landboundary
+use m_toland, only: toland
+
+
+implicit none
+
+private
+
+public :: snap_to_landboundary
+
+contains
+
 subroutine snap_to_landboundary()
+   use precision, only: dp
    use m_netw
    use m_landboundary
 
-   implicit none
-
-   double precision :: xn, yn, ddis, rL
+   real(kind=dp) :: xn, yn, ddis, rL
 
    integer :: k, numlanseg, jstart, jend, j, MXLAN_sav
 
@@ -66,3 +74,5 @@ subroutine snap_to_landboundary()
 
    return
 end subroutine snap_to_landboundary
+
+end module m_snap_to_landboundary

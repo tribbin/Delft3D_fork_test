@@ -30,13 +30,22 @@
 !
 !
 
+module m_copytrans
+
+implicit none
+
+private
+
+public :: copytrans
+
+contains
+
   subroutine COPYTRANS()
+     use precision, only: dp
      use m_netw
      use m_alloc
      use m_missing, only: jins, dmiss
      use geometry_module, only: get_startend, dpinpok
-
-     implicit none
 
      integer :: ierr
      integer :: in
@@ -48,9 +57,9 @@
      integer :: l0
      integer :: lo
      integer :: n
-     double precision :: xoff
-     double precision :: yoff
-     double precision :: zoff
+     real(kind=dp) :: xoff
+     real(kind=dp) :: yoff
+     real(kind=dp) :: zoff
 
      integer, allocatable :: KC2(:), LC2(:)
      allocate (KC2(NUMK), LC2(NUML), STAT=IERR)
@@ -124,3 +133,5 @@
      !   CALL REMZEROS()
      return
   end subroutine COPYTRANS
+
+end module m_copytrans

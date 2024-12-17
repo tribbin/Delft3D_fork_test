@@ -31,27 +31,37 @@
 !
 
 !> derive center spline propererties from cross splines
-subroutine get_splineprops(mcs_old, id, iLRmfac)
+module m_get_splineprops
 
+implicit none
+
+private
+
+public :: get_splineprops
+
+contains
+
+subroutine get_splineprops(mcs_old, id, iLRmfac)
+   use m_get_heights, only: get_heights
+   use m_get_crosssplines, only: get_crosssplines
+   use precision, only: dp
+   use m_allocate_splineprops, only: allocate_splineprops
    use m_splines
    use m_spline2curvi
    use m_alloc
    use m_deallocate_spline_props
-
-   implicit none
+   use m_splinelength, only: splinelength
 
    integer, intent(in) :: mcs_old !< number of original splines
    integer, dimension(mcs_old), intent(in) :: id !< original settings
    integer, dimension(3, mcs_old), intent(in) :: iLRmfac !< original settings
 
-   double precision, dimension(:), allocatable :: xlist, ylist
+   real(kind=dp), dimension(:), allocatable :: xlist, ylist
 
    integer :: i, j, is, js, imiddle, ismiddle
    integer :: num, ncs, numnew
 
-   double precision :: dslength, hsumL, hsumR, hmax
-
-   double precision, external :: splinelength
+   real(kind=dp) :: dslength, hsumL, hsumR, hmax
 
 !  allocate
    allocate (xlist(1), ylist(1))
@@ -175,3 +185,5 @@ subroutine get_splineprops(mcs_old, id, iLRmfac)
 
    return
 end subroutine get_splineprops
+
+end module m_get_splineprops

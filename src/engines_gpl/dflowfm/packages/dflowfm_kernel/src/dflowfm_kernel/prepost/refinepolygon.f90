@@ -31,20 +31,34 @@
 !
 
 !> Refine entire current polyline from start to end.
+module m_refinepolygon
+use m_refinepolygonpart, only: refinepolygonpart
+
+implicit none
+
+private
+
+public :: refinepolygon
+
+contains
+
       subroutine refinepolygon()
+         use m_modln2, only: modln2
+         use precision, only: dp
+         use m_typevalue
          use m_polygon !, only: npl, dxuni
          use m_tpoly
          use m_sferic
          use m_missing
          use geometry_module, only: dbdistance, half
          use m_delpol
-         implicit none
+
          integer :: i1, i2
          integer :: key
 
          type(tpoly), dimension(:), allocatable :: pli, pliout ! tpoly-type polygons
 
-         double precision :: dl, xnew, ynew, znew
+         real(kind=dp) :: dl, xnew, ynew, znew
 
          integer :: numpols, numpolsout ! number of tpoly-type polygons
          integer :: i
@@ -102,3 +116,5 @@
          call dealloc_tpoly(pliout)
 
       end subroutine refinepolygon
+
+end module m_refinepolygon

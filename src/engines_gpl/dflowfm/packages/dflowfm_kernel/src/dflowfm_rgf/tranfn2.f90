@@ -30,13 +30,25 @@
 !
 !
 
+module m_tranfn2
+
+implicit none
+
+private
+
+public :: tranfn2
+
+contains
+
       subroutine TRANFN2(X1, X2, X3, X4, & ! WAS B
                          Y1, Y2, Y3, Y4, &
                          IMX, MX, NX, XRH, YRH)
 
+         use m_abrel2, only: abrel2
+         use precision, only: dp
          use M_GRIDSETTINGS
          use m_orthosettings, only: ITIN
-         implicit none
+
          integer :: i
          integer :: ierr
          integer :: imx
@@ -47,16 +59,16 @@
          integer :: mx
          integer :: nn
          integer :: nx
-         double precision :: wa
-         double precision, dimension(:, :), allocatable :: X1V, Y1V, X2V, Y2V, &
-            X3V, Y3V, X4V, Y4V, &
-            SI, SJ, W1, W2, W3, W4
-         double precision, dimension(:), allocatable :: D1, D2, D3, D4, TI, TJ
+         real(kind=dp) :: wa
+         real(kind=dp), dimension(:, :), allocatable :: X1V, Y1V, X2V, Y2V, &
+                                                        X3V, Y3V, X4V, Y4V, &
+                                                        SI, SJ, W1, W2, W3, W4
+         real(kind=dp), dimension(:), allocatable :: D1, D2, D3, D4, TI, TJ
 
-         double precision :: XRH(MX, NX), YRH(MX, NX), &
-            X1(IMX), X2(IMX), X3(IMX), X4(IMX), &
-            Y1(IMX), Y2(IMX), Y3(IMX), Y4(IMX)
-         double precision :: RI, RJ, T1, T2, T3, T4
+         real(kind=dp) :: XRH(MX, NX), YRH(MX, NX), &
+                          X1(IMX), X2(IMX), X3(IMX), X4(IMX), &
+                          Y1(IMX), Y2(IMX), Y3(IMX), Y4(IMX)
+         real(kind=dp) :: RI, RJ, T1, T2, T3, T4
 
 !     1,2    VERTICALEN
 !     3,4    HORIZONTALEN
@@ -210,3 +222,5 @@
 
          return
       end subroutine tranfn2
+
+end module m_tranfn2

@@ -30,11 +30,25 @@
 !
 !
 
+module m_quadstotri
+
+implicit none
+
+private
+
+public :: quadstotri
+
+contains
+
   subroutine quadsTOTRI()
+     use m_findel, only: findel
+     use precision, only: dp
+     use m_connect, only: connect
      use m_netw
      use gridoperations
-     implicit none
-     double precision :: a
+     use m_dlength, only: dlength
+
+     real(kind=dp) :: a
      integer :: k0
      integer :: k1
      integer :: k2
@@ -44,8 +58,7 @@
      integer :: l12
      integer :: np
      integer :: numtri
-     double precision :: r
-     double precision DLENGTH
+     real(kind=dp) :: r
 
      call FINDcells(4) ! quads
 
@@ -77,3 +90,5 @@
 
      return
   end subroutine quadsTOTRI
+
+end module m_quadstotri

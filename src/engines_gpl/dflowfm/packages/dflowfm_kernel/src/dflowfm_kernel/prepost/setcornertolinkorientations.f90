@@ -30,7 +30,18 @@
 !
 !
 
+module m_setcornertolinkorientations
+
+implicit none
+
+private
+
+public :: setcornertolinkorientations
+
+contains
+
  subroutine setcornertolinkorientations()
+    use precision, only: dp
     use m_flowgeom
     use network_data, only: xk, yk
     use m_sferic
@@ -38,16 +49,15 @@
     use unstruc_messages
     use m_missing, only: dmiss
     use geometry_module, only: half, spher2locvec
-    implicit none
 
-    double precision :: xL, yL
+    real(kind=dp) :: xL, yL
 
     integer :: k3, k4
     integer :: L
 
     integer :: ierr
 
-    double precision, parameter :: dtol = 1d-8
+    real(kind=dp), parameter :: dtol = 1d-8
 
     if (allocated(csbn)) deallocate (csbn)
     if (allocated(snbn)) deallocate (snbn)
@@ -77,3 +87,5 @@
 
     return
  end subroutine setcornertolinkorientations
+
+end module m_setcornertolinkorientations

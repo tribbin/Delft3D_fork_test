@@ -30,11 +30,22 @@
 !
 !
 
+module m_paktij
+
+implicit none
+
+private
+
+public :: paktij
+
+contains
+
      subroutine PAKTIJ(T, mmax, nmax, TH, imax, I1, I2, J1, J2, NUM)
-        implicit none
-!     Haal lijn uit array en geef aantal niet nul NUM
+        use precision, only: dp
+
+        !     Haal lijn uit array en geef aantal niet nul NUM
         integer :: mmax, nmax, imax, i1, i2, j1, j2, num
-        double precision :: T(MMAX, NMAX), TH(IMAX)
+        real(kind=dp) :: T(MMAX, NMAX), TH(IMAX)
         integer :: i, j, k, ji1
         TH = 0d0
         K = 0
@@ -50,3 +61,5 @@
         NUM = K
         return
      end subroutine paktij
+
+end module m_paktij

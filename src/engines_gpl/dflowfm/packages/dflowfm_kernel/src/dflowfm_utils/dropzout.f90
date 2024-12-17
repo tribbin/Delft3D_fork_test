@@ -30,7 +30,18 @@
 !
 !
 
+module m_dropzout
+
+implicit none
+
+private
+
+public :: dropzout
+
+contains
+
  subroutine dropzout(idir)
+    use precision, only: dp
     use m_isocol
     use m_polygon
     use m_flowgeom
@@ -41,12 +52,12 @@
     use m_get_kbot_ktop
     use m_set_kbot_ktop
     use m_pfiller
-    implicit none
+
     integer, intent(in) :: idir !< direction (1 for up, -1 for down)
 
     ! locals
     integer :: n, nn, in, ncol, k, kb, kt
-    double precision :: dropstep
+    real(kind=dp) :: dropstep
 
     if (ndx == 0) return
 
@@ -90,3 +101,5 @@
     end if
 
  end subroutine dropzout
+
+end module m_dropzout

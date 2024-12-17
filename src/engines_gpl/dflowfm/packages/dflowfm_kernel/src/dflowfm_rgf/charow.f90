@@ -30,14 +30,23 @@
 !
 !
 
+module m_charow
+
+implicit none
+
+private
+
+public :: charow
+
+contains
+
       subroutine CHAROW(X, mmax, nmax, I1, I2, NUMSPL)
-!     VERWISSEL RIJ I1 EN I2
-!      USE DIMENS
-         implicit none
+         use precision, only: dp
+
          integer :: mmax, nmax, i1, i2, numspl
-         double precision :: X(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX)
          integer :: j
-         double precision :: xh
+         real(kind=dp) :: xh
 
          do J = 1, NUMSPL
             XH = X(I1, J)
@@ -46,3 +55,5 @@
          end do
          return
       end subroutine charow
+
+end module m_charow

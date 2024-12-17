@@ -30,15 +30,27 @@
 !
 !
 
+module m_checkspl
+
+implicit none
+
+private
+
+public :: checkspl
+
+contains
+
      !> Checks spline points in X and Y.
      !! Counts the number of splines and the maximum length and moves all
      !! All splines with <=1 point are reset and moved to the back.
      subroutine CHECKSPL(X, Y, mmax, nmax, MCS, NCS)
+        use m_charow, only: charow
+        use precision, only: dp
         use m_missing
         use m_numpold
-        implicit none
+
         integer :: mmax, nmax, mcs, ncs
-        double precision :: X(MMAX, NMAX), Y(MMAX, NMAX)
+        real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX)
 
         integer :: numspl, numpx, numpi, numpj, i, j, k
 
@@ -68,3 +80,5 @@
         NCS = NUMPX
         return
      end subroutine checkspl
+
+end module m_checkspl

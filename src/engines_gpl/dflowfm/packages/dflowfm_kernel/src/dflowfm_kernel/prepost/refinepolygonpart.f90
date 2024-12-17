@@ -30,23 +30,39 @@
 !
 !
 
+module m_refinepolygonpart
+use m_smodpla, only: smodpla
+
+
+implicit none
+
+private
+
+public :: refinepolygonpart
+
+contains
+
       !> Refine part of a polygon, indicated by start and end index.
       !! If the polygon/line ends between i1 and i2 (dmiss), then refinement
       !! stops there (i.e. refinement is only within *one* polygon).
       subroutine REFINEPOLYGONpart(i1, i2, jauniform) !DPLA = ACTUELE LENGTECOOR, DXA = ACTUELE GRIDSIZE, DXS = STREEF GRIDSIZE, ALLEN OP POLYGONPOINTS
+         use m_maptopolyline, only: maptopolyline
+         use m_interponpolyline, only: interponpolyline
+         use precision, only: dp
+         use m_averagediff, only: averagediff
+         use m_accumulatedistance, only: accumulatedistance
          use M_POLYGON
          use M_MISSING
          use m_ec_triangle
          use M_SAMPLES
          use m_alloc
-         implicit none
 
          integer :: i1, i2
          integer, intent(in) :: jauniform !< use uniform spacing (1) or not (0)
 
-         double precision :: dxs1
-         double precision :: dxs2
-         double precision :: dxsm
+         real(kind=dp) :: dxs1
+         real(kind=dp) :: dxs2
+         real(kind=dp) :: dxsm
          integer :: ierr
          integer :: ja
          integer :: kk
@@ -54,13 +70,13 @@
          integer :: nmn
          integer :: nmx
          integer :: no, nplo
-         double precision :: rma, rmx
+         real(kind=dp) :: rma, rmx
          !DPL  = IDEM, OORSPRONKELIJK
 
-         double precision, allocatable :: XPLO(:), YPLO(:), ZPLO(:), DPL(:)
-         double precision, allocatable :: XH(:), YH(:), ZH(:), DPLA(:), DXA(:), DXS(:)
+         real(kind=dp), allocatable :: XPLO(:), YPLO(:), ZPLO(:), DPL(:)
+         real(kind=dp), allocatable :: XH(:), YH(:), ZH(:), DPLA(:), DXA(:), DXS(:)
 
-         double precision :: TXS, TXA, RMN, THIRD, TWOTHIRD
+         real(kind=dp) :: TXS, TXA, RMN, THIRD, TWOTHIRD
          integer :: NX, JDLA
 
          JDLA = 1
@@ -241,3 +257,5 @@
          deallocate (XPLO, YPLO, ZPLO, DPL, XH, YH, ZH, DPLA, DXA, DXS)
 
       end subroutine REFINEPOLYGONpart
+
+end module m_refinepolygonpart

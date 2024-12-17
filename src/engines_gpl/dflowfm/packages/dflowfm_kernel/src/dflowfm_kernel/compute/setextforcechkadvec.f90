@@ -28,6 +28,13 @@
 !-------------------------------------------------------------------------------
 
  subroutine setextforcechkadvec()
+    use precision, only: dp
+    use m_get_spiralforce
+    use m_get_spiral3d
+    use m_comp_gravinput, only: comp_GravInput
+    use m_anticreep, only: anticreep
+    use m_add_internaltidesfrictionforces, only: add_InternalTidesFrictionForces
+    use m_addbaroclinicpressure, only: addbaroclinicpressure
     use m_flow
     use m_flowparameters, only: trshcorio
     use m_flowgeom
@@ -45,9 +52,9 @@
     implicit none
 
     integer :: L, LL, Lb, Lt, k1, k2, kt1, kt2
-    double precision :: dptot, tidp, trshcorioi, dzt, dztm, alf
-    double precision :: wfac, Dzk
-    double precision :: uixL, uiyL, uL, vL, uxL, uyL, duxL, duyL, duL, cdi, ice_shear
+    real(kind=dp) :: dptot, tidp, trshcorioi, dzt, dztm, alf
+    real(kind=dp) :: wfac, Dzk
+    real(kind=dp) :: uixL, uiyL, uL, vL, uxL, uyL, duxL, duyL, duL, cdi, ice_shear
 
     trshcorioi = 1d0 / trshcorio
 
@@ -166,11 +173,9 @@
           end if
        end do
     end if
-    ! jre wm67
-    if ((jawave == 3 .or. jawave == 6) .and. .not. flowWithoutWaves) then
-       ! if a SWAN computation is performed, add wave forces to adve
-       ! This part is mainly based on the wave forces formulation (wsu) of Delft3D (cucnp.f90)
 
+    if ((jawave == 3 .or. jawave >= 6 .or. (jawave == 4 .and. lwave == 1)) .and. .not. flowWithoutWaves) then
+       ! add wave forces to adve
        if (kmx == 0) then ! 2D
           do L = 1, lnx
              wfac = 1d0
@@ -186,36 +191,11 @@
                 wfac = wfac * (1.0d0 - 0.5d0 * (ice_af(ln(1, LL)) + ice_af(ln(2, LL))))
              end if
              call getLbotLtop(LL, Lb, Lt)
+             if (Lt < Lb) cycle
              do L = Lb, Lt
                 adve(L) = adve(L) - wfac * wavfu(L) ! Dimensions [m/s^2]
              end do
           end do
-       end if
-    end if
-
-    if (jawave == 4) then ! wave forcing from XBeach
-       if (lwave == 1) then
-          if (kmx == 0) then
-             do L = 1, Lnx
-                wfac = 1d0
-                if (ice_reduce_waves) then
-                   wfac = wfac * (1.0d0 - 0.5d0 * (ice_af(ln(1, L)) + ice_af(ln(2, L))))
-                end if
-                adve(L) = adve(L) - wfac * wavfu(L)
-             end do
-          else
-             do L = 1, lnx
-                wfac = 1d0
-                if (ice_reduce_waves) then
-                   wfac = wfac * (1.0d0 - 0.5d0 * (ice_af(ln(1, L)) + ice_af(ln(2, L))))
-                end if
-                call getLbotLtop(L, Lb, Lt)
-                if (Lt < Lb) cycle
-                do LL = Lb, Lt
-                   adve(LL) = adve(LL) - wfac * wavfu(LL)
-                end do
-             end do
-          end if
        end if
     end if
 

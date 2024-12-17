@@ -26,63 +26,41 @@
 !  Deltares, and remain the property of Stichting Deltares. All rights reserved.
 !
 !-------------------------------------------------------------------------------
+!
+module m_dcross
 
-!
-!
+implicit none
 
-!----- AGPL --------------------------------------------------------------------
-!
-!  Copyright (C)  Stichting Deltares, 2017-2024.
-!
-!  This file is part of Delft3D (D-Flow Flexible Mesh component).
-!
-!  Delft3D is free software: you can redistribute it and/or modify
-!  it under the terms of the GNU Affero General Public License as
-!  published by the Free Software Foundation version 3.
-!
-!  Delft3D  is distributed in the hope that it will be useful,
-!  but WITHOUT ANY WARRANTY; without even the implied warranty of
-!  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-!  GNU Affero General Public License for more details.
-!
-!  You should have received a copy of the GNU Affero General Public License
-!  along with Delft3D.  If not, see <http://www.gnu.org/licenses/>.
-!
-!  contact: delft3d.support@deltares.nl
-!  Stichting Deltares
-!  P.O. Box 177
-!  2600 MH Delft, The Netherlands
-!
-!  All indications and logos of, and references to, "Delft3D",
-!  "D-Flow Flexible Mesh" and "Deltares" are registered trademarks of Stichting
-!  Deltares, and remain the property of Stichting Deltares. All rights reserved.
-!
-!-------------------------------------------------------------------------------
-!
-!
+private
+
+public :: dcross
+
+contains
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
       subroutine dCROSS(X1, Y1, X2, Y2, X3, Y3, X4, Y4, JACROS, SL, SM, XCR, YCR, CRP) ! liggen 3 en 4 aan weerszijden van lijn 12
+         use precision, only: dp
          use m_sferic
          use geometry_module, only: getdxdy, sphertoCart3D, Cart3Dtospher, crossinbox
-         implicit none
-         double precision :: det
-         double precision :: eps
-         double precision :: X1, Y1, X2, Y2, X3, Y3, X4, Y4, SL, SM, XCR, YCR, CRP
+
+         real(kind=dp) :: det
+         real(kind=dp) :: eps
+         real(kind=dp) :: X1, Y1, X2, Y2, X3, Y3, X4, Y4, SL, SM, XCR, YCR, CRP
          integer :: JACROS
 
-         double precision :: X21, Y21, X43, Y43, X31, Y31
-         double precision :: xx1, yy1, zz1
-         double precision :: xx2, yy2, zz2
-         double precision :: xx3, yy3, zz3
-         double precision :: xx4, yy4, zz4
-         double precision :: xx21, yy21, zz21
-         double precision :: xx43, yy43, zz43
-         double precision :: xx31, yy31, zz31
-         double precision :: xxn, yyn, zzn
-         double precision :: det2
-         double precision :: xxcr, yycr, zzcr
+         real(kind=dp) :: X21, Y21, X43, Y43, X31, Y31
+         real(kind=dp) :: xx1, yy1, zz1
+         real(kind=dp) :: xx2, yy2, zz2
+         real(kind=dp) :: xx3, yy3, zz3
+         real(kind=dp) :: xx4, yy4, zz4
+         real(kind=dp) :: xx21, yy21, zz21
+         real(kind=dp) :: xx43, yy43, zz43
+         real(kind=dp) :: xx31, yy31, zz31
+         real(kind=dp) :: xxn, yyn, zzn
+         real(kind=dp) :: det2
+         real(kind=dp) :: xxcr, yycr, zzcr
 
          JACROS = 0
          EPS = 0.00001d0
@@ -166,3 +144,5 @@
 
          return
       end subroutine dcross
+
+end module m_dcross

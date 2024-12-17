@@ -31,8 +31,18 @@
 !
 
 !> take difference of samples with second sample set within tooclose distance
-subroutine samdif()
+module m_samdif
 
+implicit none
+
+private
+
+public :: samdif
+
+contains
+
+subroutine samdif()
+   use precision, only: dp
    use m_polygon
    use m_samples
    use network_data, only: tooclose
@@ -42,15 +52,13 @@ subroutine samdif()
    use geometry_module, only: dbdistance
    use m_delpol
 
-   implicit none
-
-   double precision :: dist
+   real(kind=dp) :: dist
 
    integer :: i, ipnt, ierror
    integer :: numnoval
 
-   double precision, parameter :: VAL_NOPNT = 1234d0
-   double precision, parameter :: dtol = 1d-8
+   real(kind=dp), parameter :: VAL_NOPNT = 1234d0
+   real(kind=dp), parameter :: dtol = 1d-8
 
    if (NS < 1 .or. NS3 < 2) goto 1234
 
@@ -120,3 +128,5 @@ subroutine samdif()
 
    return
 end subroutine samdif
+
+end module m_samdif

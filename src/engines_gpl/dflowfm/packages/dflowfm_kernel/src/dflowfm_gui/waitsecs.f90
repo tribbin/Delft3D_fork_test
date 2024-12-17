@@ -30,16 +30,24 @@
 !
 !
 
-      subroutine WAITSECS(NSEC)
-         implicit none
-         integer :: i
-         integer :: key
-         integer :: nsec
-         call INFLUSH()
-         do I = 1, NSEC
-            call IOSWAIT(100)
-            call INKEYEVENTIMM(KEY)
-            if (KEY /= -999 .and. KEY /= -32387) return
-         end do
-         return
-      end
+module m_waitsecs
+
+   implicit none
+
+contains
+
+   subroutine WAITSECS(NSEC)
+      implicit none
+      integer :: i
+      integer :: key
+      integer :: nsec
+      call INFLUSH()
+      do I = 1, NSEC
+         call IOSWAIT(100)
+         call INKEYEVENTIMM(KEY)
+         if (KEY /= -999 .and. KEY /= -32387) return
+      end do
+      return
+   end
+
+end module m_waitsecs

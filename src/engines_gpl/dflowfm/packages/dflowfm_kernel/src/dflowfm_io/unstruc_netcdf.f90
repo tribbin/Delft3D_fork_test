@@ -43,6 +43,7 @@
 !> Reads and writes unstructured net/flow data in netCDF format.
 module unstruc_netcdf
 
+   use m_reconstruct_cc_stokesdrift, only: reconstruct_cc_stokesdrift
    use precision
    use netcdf
    use unstruc_messages
@@ -443,8 +444,8 @@ module unstruc_netcdf
       integer :: id_mfluff(MAX_ID_VAR) = -1
       integer :: id_sxwav(MAX_ID_VAR) = -1
       integer :: id_sywav(MAX_ID_VAR) = -1
-   integer :: id_sbxwav(MAX_ID_VAR) = -1
-   integer :: id_sbywav(MAX_ID_VAR) = -1
+      integer :: id_sbxwav(MAX_ID_VAR) = -1
+      integer :: id_sbywav(MAX_ID_VAR) = -1
       integer :: id_z0c(MAX_ID_VAR) = -1
       integer :: id_z0r(MAX_ID_VAR) = -1
       integer :: id_dtcell(MAX_ID_VAR) = -1
@@ -646,14 +647,15 @@ contains
 !! Input are parameters in seconds since refdat; this subroutine will take
 !! care of date calculations, time zones and string conversion.
    function unc_add_time_coverage(ncid, start_since_ref, end_since_ref, resolution) result(ierr)
+      use precision, only: dp
       use time_module, only: duration_to_string, datetime_to_string, ymd2modified_jul
       use m_flowtimes, only: refdat, tzone
       use dfm_error
       implicit none
       integer, intent(in) :: ncid !< NetCDF dataset id
-      double precision, intent(in) :: start_since_ref !< Start of time coverage/output [seconds since refdat]
-      double precision, intent(in) :: end_since_ref !< End   of time coverage/output [seconds since refdat]
-      double precision, intent(in) :: resolution !< Time interval between outputs [seconds]
+      real(kind=dp), intent(in) :: start_since_ref !< Start of time coverage/output [seconds since refdat]
+      real(kind=dp), intent(in) :: end_since_ref !< End   of time coverage/output [seconds since refdat]
+      real(kind=dp), intent(in) :: resolution !< Time interval between outputs [seconds]
       integer :: ierr !< Result status, DFM_NOERR if successful.
 
       logical :: success_
@@ -1188,13 +1190,14 @@ contains
    end function unc_def_var_map
 
    function unc_put_att_dble(ncid, id_var, att_name, att_value) result(ierr)
+      use precision, only: dp
       use dfm_error
       implicit none
 
       integer, intent(in) :: ncid !< NetCDF file unit
       integer, intent(in) :: id_var(:) !< Returned variable id.
       character(len=*), intent(in) :: att_name !< Name of the attribute to be set
-      double precision, intent(in) :: att_value !< (Character) attribute value to be set.
+      real(kind=dp), intent(in) :: att_value !< (Character) attribute value to be set.
       integer :: ierr !< Result status, DFM_NOERR if successful.
 
       integer :: i, numvar
@@ -1331,6 +1334,7 @@ contains
 !! Typical call: unc_put_var(mapids, mapids%id_s1(:), UNC_LOC_S, s1)
 
    function unc_put_var_map_int(ncid, id_tsp, id_var, iloc, integers, default_value, jabndnd) result(ierr)
+      use precision, only: dp
       implicit none
       integer :: ierr
       integer, intent(in) :: ncid
@@ -1338,10 +1342,10 @@ contains
       integer, intent(in) :: id_var(:) !< Ids of variable to write values into, one for each submesh (1d/2d/3d if applicable)
       integer, intent(in) :: iloc !< Stagger location for this variable (one of UNC_LOC_S, UNC_LOC_U, UNC_LOC_W).
       integer, dimension(:), intent(in) :: integers
-      double precision, optional :: default_value
+      real(kind=dp), optional :: default_value
       integer, optional, intent(in) :: jabndnd
 
-      double precision, dimension(:), allocatable :: values
+      real(kind=dp), dimension(:), allocatable :: values
       integer :: jabndnd_ !< Flag specifying whether boundary nodes are to be written.
 
       if (present(jabndnd)) then
@@ -1361,6 +1365,7 @@ contains
    end function unc_put_var_map_int
 
    function unc_put_var_map_real(ncid, id_tsp, id_var, iloc, reals, default_value, jabndnd) result(ierr)
+      use precision, only: dp
       implicit none
       integer :: ierr
       integer, intent(in) :: ncid
@@ -1368,10 +1373,10 @@ contains
       integer, intent(in) :: id_var(:) !< Ids of variable to write values into, one for each submesh (1d/2d/3d if applicable)
       integer, intent(in) :: iloc !< Stagger location for this variable (one of UNC_LOC_S, UNC_LOC_U, UNC_LOC_W).
       real(kind=4), dimension(:), intent(in) :: reals
-      double precision, optional :: default_value
+      real(kind=dp), optional :: default_value
       integer, optional, intent(in) :: jabndnd
 
-      double precision, dimension(:), allocatable :: values
+      real(kind=dp), dimension(:), allocatable :: values
       integer :: jabndnd_ !< Flag specifying whether boundary nodes are to be written.
 
       if (present(jabndnd)) then
@@ -1391,6 +1396,7 @@ contains
    end function unc_put_var_map_real
 
    function unc_put_var_map_dble(ncid, id_tsp, id_var, iloc, values, default_value, jabndnd) result(ierr)
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numk, numl, numl1d
       use m_flow, only: kmx
@@ -1403,15 +1409,15 @@ contains
       use m_get_layer_indices
       use m_get_layer_indices_l_max
       use m_get_Lbot_Ltop_max
-      
+
       implicit none
 
       integer, intent(in) :: ncid
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
       integer, intent(in) :: id_var(:) !< Ids of variable to write values into, one for each submesh (1d/2d/3d if applicable).
       integer, intent(in) :: iloc !< Stagger location for this variable (one of UNC_LOC_CN, UNC_LOC_S, UNC_LOC_U, UNC_LOC_L, UNC_LOC_S3D, UNC_LOC_U3D, UNC_LOC_W).
-      double precision, intent(in) :: values(:) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
-      double precision, optional, intent(in) :: default_value !< Optional default value, used for writing dummy data on closed edges (i.e. netlinks with no flowlink). NOTE: is not a _FillValue!
+      real(kind=dp), intent(in) :: values(:) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
+      real(kind=dp), optional, intent(in) :: default_value !< Optional default value, used for writing dummy data on closed edges (i.e. netlinks with no flowlink). NOTE: is not a _FillValue!
       integer, optional, intent(in) :: jabndnd
 
       integer :: ierr !< Result status, DFM_NOERR if successful.
@@ -1419,8 +1425,8 @@ contains
       integer :: n1d_write !< Number of 1D nodes to write.
       integer :: lnx2d, lnx2db, numl2d, Lf, L, i, n, k, kb, kt, nlayb, nrlay, LL, Lb, Ltx, nlaybL, nrlayLx
 !TODO remove save and deallocate?
-      double precision, allocatable, save :: workL(:)
-      double precision, allocatable, save :: workS3D(:, :), workU3D(:, :), workW(:, :), workWU(:, :)
+      real(kind=dp), allocatable, save :: workL(:)
+      real(kind=dp), allocatable, save :: workS3D(:, :), workU3D(:, :), workW(:, :), workWU(:, :)
 ! temporary UGRID fix
       integer :: jabndnd_ !< Flag specifying whether boundary nodes are to be written.
       integer :: ndxndxi !< Last 2/3D node to be saved. Equals ndx when boundary nodes are written, or ndxi otherwise.
@@ -1689,6 +1695,7 @@ contains
 !> copy of unc_put_var_map_dble for writing bytes
 !! TODO: use templating
    function unc_put_var_map_byte(ncid, id_tsp, id_var, iloc, values, default_value, jabndnd) result(ierr)
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numk, numl, numl1d
       use m_flow, only: kmx
@@ -1717,8 +1724,8 @@ contains
       integer :: n1d_write !< Number of 1D nodes to write.
       integer :: lnx2d, lnx2db, numl2d, Lf, L, i, n, k, kb, kt, nlayb, nrlay, LL, Lb, Ltx, nlaybL, nrlayLx
 !TODO remove save and deallocate?
-      double precision, allocatable, save :: workL(:)
-      double precision, allocatable, save :: workS3D(:, :), workU3D(:, :), workW(:, :), workWU(:, :)
+      real(kind=dp), allocatable, save :: workL(:)
+      real(kind=dp), allocatable, save :: workS3D(:, :), workU3D(:, :), workW(:, :), workWU(:, :)
 
       ierr = DFM_NOERR
 
@@ -2047,6 +2054,7 @@ contains
    end function unc_put_var_map_byte_timebuffer
 
    function unc_put_var_map_dble2(ncid, id_tsp, id_var, iloc, values, default_value, locdim, jabndnd) result(ierr)
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numl, numl1d
       use dfm_error
@@ -2058,8 +2066,8 @@ contains
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
       integer, intent(in) :: id_var(:) !< Ids of variable to write values into, one for each submesh (1d/2d/3d if applicable).
       integer, intent(in) :: iloc !< Stagger location for this variable (one of UNC_LOC_CN, UNC_LOC_S, UNC_LOC_U, UNC_LOC_L, UNC_LOC_S3D, UNC_LOC_U3D, UNC_LOC_W).
-      double precision, intent(in) :: values(:, :) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
-      double precision, optional, intent(in) :: default_value !< Optional default value, used for writing dummy data on closed edges (i.e. netlinks with no flowlink). NOTE: is not a _FillValue!
+      real(kind=dp), intent(in) :: values(:, :) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
+      real(kind=dp), optional, intent(in) :: default_value !< Optional default value, used for writing dummy data on closed edges (i.e. netlinks with no flowlink). NOTE: is not a _FillValue!
       integer, optional, intent(in) :: locdim !< Optional index of the location dimension (default = 1)
       integer, optional, intent(in) :: jabndnd
 
@@ -2070,7 +2078,7 @@ contains
       integer :: ilocdim
       integer :: lndim
       integer, dimension(3) :: dimids_var
-      double precision, allocatable :: work(:, :)
+      real(kind=dp), allocatable :: work(:, :)
       integer :: jabndnd_ !< Flag specifying whether boundary nodes are to be written.
       integer :: ndxndxi !< Last node to be saved. Equals ndx when boundary nodes are written, or ndxi otherwise.
       integer :: last_1d !< Last 1d node to be saved. Equals ndx1db when boundary nodes are written, or ndxi otherwise.
@@ -2208,6 +2216,7 @@ contains
    end function unc_put_var_map_dble2
 
    function unc_put_var_map_dble3(ncid, id_tsp, id_var, iloc, values, default_value, locdim, jabndnd) result(ierr)
+      use precision, only: dp
       use m_flowgeom
       use network_data, only: numl, numl1d
       use dfm_error
@@ -2219,8 +2228,8 @@ contains
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
       integer, intent(in) :: id_var(:) !< Ids of variable to write values into, one for each submesh (1d/2d/3d if applicable).
       integer, intent(in) :: iloc !< Stagger location for this variable (one of UNC_LOC_CN, UNC_LOC_S, UNC_LOC_U, UNC_LOC_L, UNC_LOC_S3D, UNC_LOC_U3D, UNC_LOC_W).
-      double precision, intent(in) :: values(:, :, :) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
-      double precision, optional, intent(in) :: default_value !< Optional default value, used for writing dummy data on closed edges (i.e. netlinks with no flowlink). NOTE: is not a _FillValue!
+      real(kind=dp), intent(in) :: values(:, :, :) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
+      real(kind=dp), optional, intent(in) :: default_value !< Optional default value, used for writing dummy data on closed edges (i.e. netlinks with no flowlink). NOTE: is not a _FillValue!
       integer, optional, intent(in) :: locdim !< Optional index of the location dimension (default = 1)
       integer, optional, intent(in) :: jabndnd
 
@@ -2231,7 +2240,7 @@ contains
       integer :: ilocdim
       integer :: lndim1, lndim2
       integer, dimension(4) :: dimids_var
-      double precision, allocatable :: work(:, :, :)
+      real(kind=dp), allocatable :: work(:, :, :)
       integer :: jabndnd_ !< Flag specifying whether boundary nodes are to be written.
       integer :: ndxndxi !< Last node to be saved. Equals ndx when boundary nodes are written, or ndxi otherwise.
       integer :: last_1d !< Last 1d node to be saved. Equals ndx1db when boundary nodes are written, or ndxi otherwise.
@@ -2937,6 +2946,7 @@ contains
 !> Writes rst/flow data to a newly opened netCDF dataset.
 !! The netnode and -links have been written already.
    subroutine unc_write_rst_filepointer(irstfile, tim)
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use m_flowgeom
@@ -3031,17 +3041,17 @@ contains
       integer, allocatable, save :: id_sf1_bnd(:)
 
       integer :: i, itim, k, kb, kt, kk, LL, Lb, iconst, L, j, nv, nv1, nm, ndxbnd, nlayb, nrlay, LTX, nlaybL, nrlaylx, maxNumLinks, numLinks, L0, nlen, istru, maxNumStages, numStages, nfuru
-      double precision :: svthick
-      double precision, dimension(:), pointer :: dens
-      double precision, allocatable :: max_threttim(:)
-      double precision, dimension(:), allocatable :: dum
-      double precision, dimension(:, :, :), allocatable :: frac
-      double precision, dimension(:, :), allocatable :: poros
+      real(kind=dp) :: svthick
+      real(kind=dp), dimension(:), pointer :: dens
+      real(kind=dp), allocatable :: max_threttim(:)
+      real(kind=dp), dimension(:), allocatable :: dum
+      real(kind=dp), dimension(:, :, :), allocatable :: frac
+      real(kind=dp), dimension(:, :), allocatable :: poros
       integer, allocatable, dimension(:, :) :: netcellnod
       integer, allocatable, dimension(:) :: kn1write, kn2write
-      double precision, allocatable, dimension(:) :: tmp_x, tmp_y, tmp_s0, tmp_s1, tmp_bl, tmp_sa1, tmp_tem1
-      double precision, allocatable, dimension(:) :: tmp_squ, tmp_sqi
-      double precision, allocatable, dimension(:) :: tmp_ucxq, tmp_ucyq
+      real(kind=dp), allocatable, dimension(:) :: tmp_x, tmp_y, tmp_s0, tmp_s1, tmp_bl, tmp_sa1, tmp_tem1
+      real(kind=dp), allocatable, dimension(:) :: tmp_squ, tmp_sqi
+      real(kind=dp), allocatable, dimension(:) :: tmp_ucxq, tmp_ucyq
       logical :: is_wq_bot_3d
 
       character(len=8) :: numformat
@@ -3051,11 +3061,11 @@ contains
       type(t_CSType), pointer :: pCS
       type(t_CSType), pointer, dimension(:) :: pCSs
       integer :: jmax, ndx1d, nCrs
-      double precision, dimension(:, :), allocatable :: work1d_z
-      double precision, dimension(:, :), allocatable :: work2d
+      real(kind=dp), dimension(:, :), allocatable :: work1d_z
+      real(kind=dp), dimension(:, :), allocatable :: work2d
       integer, dimension(:, :), allocatable :: work2di
       integer, dimension(:), allocatable :: work1di
-      double precision, dimension(:, :, :), allocatable :: work3d
+      real(kind=dp), dimension(:, :, :), allocatable :: work3d
       integer, dimension(:, :, :), allocatable :: work3di
       type(t_structure), pointer :: pstru
 
@@ -5222,6 +5232,7 @@ contains
 !> Writes map/flow data to an already opened netCDF dataset. NEW version according to UGRID conventions + much cleanup.
 !! The netnode and -links have been written already.
    subroutine unc_write_map_filepointer_ugrid(mapids, tim, jabndnd) ! wrimap
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use m_flowgeom
@@ -5271,26 +5282,26 @@ contains
       integer :: ndxndxi !< Last node to be saved. Equals ndx when boundary nodes are written, or ndxi otherwise.
       integer, save :: ierr, ndim
 
-      double precision, allocatable :: ust_x(:), ust_y(:), wavout(:), wavout2(:), scaled_rain(:)
+      real(kind=dp), allocatable :: ust_x(:), ust_y(:), wavout(:), wavout2(:), scaled_rain(:)
       character(len=255) :: tmpstr
       integer :: nm
       integer :: Lf
       character(16) :: dxname
       character(64) :: dxdescr
       character(15) :: transpunit
-      double precision :: rhol, mortime, wavfac
-      double precision :: moravg, dmorft, dmorfs, rhodt
-      double precision :: um, ux, uy
-      double precision, dimension(:, :), allocatable :: poros, toutputx, toutputy, sxtotori, sytotori
-      double precision, dimension(:, :, :), allocatable :: frac
+      real(kind=dp) :: rhol, mortime, wavfac
+      real(kind=dp) :: moravg, dmorft, dmorfs, rhodt
+      real(kind=dp) :: um, ux, uy, dzu
+      real(kind=dp), dimension(:, :), allocatable :: poros, toutputx, toutputy, sxtotori, sytotori
+      real(kind=dp), dimension(:, :, :), allocatable :: frac
       integer, dimension(:), allocatable :: flag_val
       character(len=10000) :: flag_mean
 
-      double precision, dimension(:), allocatable :: numlimdtdbl
-      double precision, dimension(:), allocatable :: work1d, work1d2
-      double precision :: dicc
+      real(kind=dp), dimension(:), allocatable :: numlimdtdbl
+      real(kind=dp), dimension(:), allocatable :: work1d, work1d2
+      real(kind=dp) :: dicc
 
-      double precision, dimension(:), pointer :: dens
+      real(kind=dp), dimension(:), pointer :: dens
 
 !    Secondary Flow
 !        id_rsi, id_rsiexact, id_dudx, id_dudy, id_dvdx, id_dvdy, id_dsdx, id_dsdy
@@ -5303,16 +5314,16 @@ contains
       integer :: iLocS ! Either UNC_LOC_S or UNC_LOC_S3D, depending on whether layers are present.
       integer :: iLocU ! Either UNC_LOC_U or UNC_LOC_U3D, depending on whether layers are present.
       integer :: isrc, kbot_, ktop_, nk, nkbot, nktop
-      double precision, dimension(:), allocatable :: windx, windy, toutput, rks, wa
-      double precision :: zwu0
+      real(kind=dp), dimension(:), allocatable :: windx, windy, toutput, rks, wa
+      real(kind=dp) :: zwu0
       character(len=4) :: str
 
       type(t_CSType), pointer :: pCS
       type(t_CSType), pointer, dimension(:) :: pCSs
       integer :: ndx1d
       integer, save :: jmax, nCrs
-      double precision, dimension(:, :), allocatable :: work1d_z, work1d_n
-      double precision, dimension(:, :, :), allocatable :: work3d, work3d2
+      real(kind=dp), dimension(:, :), allocatable :: work1d_z, work1d_n
+      real(kind=dp), dimension(:, :, :), allocatable :: work3d, work3d2
       character(3) :: sednr !< string representation of sediment fraction number
       character(256) :: varname !< name of netCDF variable
       character(1024) :: longname !< long, descriptive name of netCDF variable content
@@ -6163,113 +6174,78 @@ contains
             end if
          end if
 
-         if (jamapwav > 0) then
-            ! TO DO JRE: fix dit voor offline wave koppeling
+         if (jawave > 0 .and. jamapwav > 0) then
             if (flowWithoutWaves) then ! Check the external forcing wave quantities and their associated arrays
                if (jamapwav_hwav > 0 .and. allocated(hwav)) then
                   if (jamapsigwav == 0) then
                      ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_rms_height', 'RMS wave height', 'm', jabndnd=jabndnd_) ! not CF
                   else
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_wave_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
                   end if
                end if
                if (jamapwav_twav > 0 .and. allocated(twav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'tp', '', 'Peak wave period', 's')
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'tp', 'sea_surface_wave_period_at_variance_spectral_density_maximum', 'Peak wave period', 's')
                end if
                if (jamapwav_phiwav > 0 .and. allocated(phiwav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_phiwav, nc_precision, UNC_LOC_S, 'dir', '', 'Mean direction of wave propagation relative to ksi-dir. ccw', 'deg', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, nc_precision, UNC_LOC_S, 'thetamean', 'sea_surface_wave_from_direction', 'Wave from direction', 'degree')
                end if
-               if (jamapwav_sxwav > 0 .and. allocated(sxwav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, nc_precision, UNC_LOC_S, 'sxwav', 'sea_surface_x_wave_force_surface', 'Surface layer wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+            else ! flow with waves
+               !
+               ! First def all common quantities
+               if (jamapsigwav == 0) then
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_rms_height', 'RMS wave height', 'm', jabndnd=jabndnd_) ! not CF
+               else
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
                end if
-               if (jamapwav_sywav > 0 .and. allocated(sywav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, nc_precision, UNC_LOC_S, 'sywav', 'sea_surface_y_wave_force_surface', 'Surface layer wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, nc_precision, UNC_LOC_S, 'thetamean', 'sea_surface_wave_from_direction', 'Wave from direction', 'degree', jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'twav', 'sea_surface_wave_period_at_variance_spectral_density_maximum', 'Wave peak period', 's') ! we assume working with the peak period in all our formulations
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_uorb, nc_precision, UNC_LOC_S, 'uorb', 'sea_surface_wave_orbital_velocity', 'Wave orbital velocity', 'm s-1', jabndnd=jabndnd_) ! not CF
+               !
+               if (jawavestokes > 0) then
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokes, nc_precision, iLocS, 'ust_cc', 'sea_surface_wave_stokes_drift_x_velocity', 'Stokes drift, x-component', 'm s-1', jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokes, nc_precision, iLocS, 'vst_cc', 'sea_surface_wave_stokes_drift_y_velocity', 'Stokes drift, y-component', 'm s-1', jabndnd=jabndnd_)
+
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokeslink, nc_precision, iLocU, 'ustokes', '', 'Stokes drift, n-component', 'm s-1', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokeslink, nc_precision, iLocU, 'vstokes', '', 'Stokes drift, t-component', 'm s-1', jabndnd=jabndnd_) ! not CF
                end if
-               if (jamapwav_sbxwav > 0 .and. allocated(sbxwav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, nc_precision, UNC_LOC_S, 'sbxwav', 'sea_surface_x_wave_force_body', 'Water body wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+               !
+               ! Then wave model dependent:
+               if ((jawave == 3 .or. jawave == 4 .or. jawave == 7) .and. jawaveforces > 0) then
+                  ! Report wave forces depth-integrated in flow cell center for easier comparison with other models/observations
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fx, nc_precision, UNC_LOC_S, 'Fx', 'sea_surface_wave_x_force', 'Wave force, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fy, nc_precision, UNC_LOC_S, 'Fy', 'sea_surface_wave_y_force', 'Wave force, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  ! Report wave forces depth-dependent in flow links, ie where they are applied
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fxlink, nc_precision, iLocU, 'wavfu', '', 'Wave force at velocity point, n-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fylink, nc_precision, iLocU, 'wavfv', '', 'Wave force at velocity point, t-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+
+                  if (kmx > 0) then
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, nc_precision, UNC_LOC_S, 'sxwav', 'sea_surface_wave_x_force_surface', 'Surface layer wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, nc_precision, UNC_LOC_S, 'sywav', 'sea_surface_wave_y_force_surface', 'Surface layer wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, nc_precision, UNC_LOC_S, 'sxbwav', 'sea_surface_wave_x_force_body', 'Water body wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, nc_precision, UNC_LOC_S, 'sybwav', 'sea_surface_wave_y_force_body', 'Water body wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  end if
                end if
-               if (jamapwav_sbywav > 0 .and. allocated(sbywav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, nc_precision, UNC_LOC_S, 'sbywav', 'sea_surface_y_wave_force_body', 'Water body wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-               end if
-               if (jamapwav_mxwav > 0 .and. allocated(mxwav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_mxwav, nc_precision, UNC_LOC_S, 'mx', '', 'Wave-induced volume flux in x-direction', 'm3 s-1 m-1', jabndnd=jabndnd_) ! not CF
-               end if
-               if (jamapwav_mywav > 0 .and. allocated(mywav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_mywav, nc_precision, UNC_LOC_S, 'my', '', 'Wave-induced volume flux in y-direction', 'm3 s-1 m-1', jabndnd=jabndnd_) ! not CF
-               end if
-               if (jamapwav_dsurf > 0 .and. allocated(dsurf)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dsurf, nc_precision, UNC_LOC_S, 'dissurf', '', 'Wave energy dissipation rate at the free surface', 'w m-2', jabndnd=jabndnd_) ! not CF
-               end if
-               if (jamapwav_dwcap > 0 .and. allocated(dwcap)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dwcap, nc_precision, UNC_LOC_S, 'diswcap', '', 'Wave energy dissipation rate due to white capping', 'w m-2', jabndnd=jabndnd_) ! not CF
-               end if
-               if (jamapwav_distot > 0 .and. allocated(distot)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_distot, nc_precision, UNC_LOC_S, 'distot', '', 'Total wave energy dissipation', 'w m-2', jabndnd=jabndnd_) ! not CF
-               end if
-               if (jamapwav_uorb > 0 .and. allocated(uorbwav)) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_uorb, nc_precision, UNC_LOC_S, 'uorb', 'sea_surface_wave_orbital_velocity', 'Wave orbital velocity', 'm s-1', jabndnd=jabndnd_) ! not CF
-               end if
-            else ! flow With Waves
-               ! JRE waves
+
                if (jawave == 4) then
                   ierr = nf90_def_dim(mapids%ncid, 'ntheta', ntheta, mapids%id_tsp%id_ntheta)
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_E, nc_precision, UNC_LOC_S, 'E', 'sea_surface_bulk_wave_energy', 'Wave energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_E, nc_precision, UNC_LOC_S, 'E', 'sea_surface_wave_bulk_energy', 'Wave energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
                   if (roller > 0) then
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_R, nc_precision, UNC_LOC_S, 'R', 'sea_surface_bulk_roller_energy', 'Roller energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_DR, nc_precision, UNC_LOC_S, 'DR', 'sea_surface_bulk_roller_dissipation', 'Roller energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_R, nc_precision, UNC_LOC_S, 'R', 'sea_surface_wave_bulk_roller_energy', 'Roller energy per square meter', 'J m-2', jabndnd=jabndnd_) ! not CF
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_DR, nc_precision, UNC_LOC_S, 'DR', 'sea_surface_wave_bulk_roller_dissipation', 'Roller energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
                   end if
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_D, nc_precision, UNC_LOC_S, 'D', 'sea_surface_wave_breaking_dissipation', 'Wave breaking energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Df, nc_precision, UNC_LOC_S, 'Df', 'sea_surface_wave_bottom_dissipation', 'Wave bottom energy dissipation per square meter', 'W m-2', jabndnd=jabndnd_) ! not CF
 
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxx, nc_precision, UNC_LOC_S, 'Sxx', '', 'Radiation stress, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Syy, nc_precision, UNC_LOC_S, 'Syy', '', 'Radiation stress, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxy, nc_precision, UNC_LOC_S, 'Sxy', 'sea_surface_wave_radiation_stress_NE', 'Radiation stress, xy-component', 'N m-2', jabndnd=jabndnd_) ! not CF
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxx, nc_precision, UNC_LOC_S, 'Sxx', 'sea_surface_wave_xx_radiation_stress', 'Radiation stress, x-component', 'N m-2', jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Syy, nc_precision, UNC_LOC_S, 'Syy', 'sea_surface_wave_yy_radiation_stress', 'Radiation stress, y-component', 'N m-2', jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Sxy, nc_precision, UNC_LOC_S, 'Sxy', 'sea_surface_wave_xy_radiation_stress', 'Radiation stress, xy-component', 'N m-2', jabndnd=jabndnd_)
 
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cwav, nc_precision, UNC_LOC_S, 'cwav', 'sea_surface_wave_phase_celerity', 'Sea_surface_wave_phase_celerity', 'm s-1', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cgwav, nc_precision, UNC_LOC_S, 'cgwav', 'sea_surface_wave_group_celerity', 'Sea_surface_wave_group_celerity', 'm s-1', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sigmwav, nc_precision, UNC_LOC_S, 'sigmwav', 'sea_surface_wave_mean_frequency', 'Sea_surface_wave_mean_frequency', 'rad s-1', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_kwav, nc_precision, UNC_LOC_S, 'kwav', 'sea_surface_wave_wavenumber', 'Sea_surface_wave_wavenumber', 'rad m-1', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nwav, nc_precision, UNC_LOC_S, 'nwav', 'sea_surface_wave_cg_over_c', 'Sea_surface_wave_ratio_group_phase_speed', '-', jabndnd=jabndnd_) ! not CF
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ctheta, nc_precision, UNC_LOC_S, 'ctheta', 'sea_surface_wave_refraction_celerity', 'Sea_surface_wave_refraction_celerity', 'rad s-1', dimids=(/mapids%id_tsp%id_ntheta, -2, -1/), jabndnd=jabndnd_) ! not CF
-                  !
-                  !if (windmodel.eq.0) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_l1, nc_precision, UNC_LOC_S, 'L1', 'sea_surface_wave_wavelength', 'Sea_surface_wave_wavelength', 'm', jabndnd=jabndnd_) ! not CF
-                  !elseif ( (windmodel .eq. 1) .and. (jawsource .eq. 1) ) then
-                  !   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_SwE  , nf90_double, UNC_LOC_S, 'SwE'  , 'source_term_wind_on_E'      , 'wind source term on wave energy'                  , 'J m-2 s-1', jabndnd=jabndnd_) ! not CF
-                  !   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_SwT  , nf90_double, UNC_LOC_S, 'SwT'  , 'source_term_wind_on_T'      , 'wind source term on wave period'                  , 's s-1', jabndnd=jabndnd_) ! not CF
-                  !endif
-               end if
-
-               if ((jawave == 3 .or. jawave == 4) .and. kmx > 0) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, nc_precision, UNC_LOC_S, 'sxwav', 'sea_surface_x_wave_force_surface', 'Surface layer wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, nc_precision, UNC_LOC_S, 'sywav', 'sea_surface_y_wave_force_surface', 'Surface layer wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, nc_precision, UNC_LOC_S, 'sxbwav', 'sea_surface_x_wave_force_body', 'Water body wave forcing term, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, nc_precision, UNC_LOC_S, 'sybwav', 'sea_surface_y_wave_force_body', 'Water body wave forcing term, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-               end if
-
-               if (jawave > 0) then
-                  if (jamapsigwav == 0) then
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_rms_height', 'RMS wave height', 'm', jabndnd=jabndnd_) ! not CF
-                  else
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, nc_precision, UNC_LOC_S, 'hwav', 'sea_surface_wave_significant_wave_height', 'Significant wave height', 'm', jabndnd=jabndnd_)
-                  end if
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_uorb, nc_precision, UNC_LOC_S, 'uorb', 'sea_surface_wave_orbital_velocity', 'Wave orbital velocity', 'm s-1', jabndnd=jabndnd_) ! not CF
-                  !
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokes, nc_precision, iLocS, 'ust_cc', 'sea_surface_x_stokes_drift', 'Stokes drift, x-component', 'm s-1', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokes, nc_precision, iLocS, 'vst_cc', 'sea_surface_y_stokes_drift', 'Stokes drift, y-component', 'm s-1', jabndnd=jabndnd_) ! not CF
-
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokeslink, nc_precision, iLocU, 'ustokes', '', 'Stokes drift, n-component', 'm s-1', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokeslink, nc_precision, iLocU, 'vstokes', '', 'Stokes drift, t-component', 'm s-1', jabndnd=jabndnd_) ! not CF
-
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, nc_precision, UNC_LOC_S, 'thetamean', 'sea_surface_wave_from_direction', 'Wave from direction', 'deg from N', jabndnd=jabndnd_) ! not CF
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, nc_precision, UNC_LOC_S, 'twav', 'sea_surface_wave_period', 'Wave period', 's') ! not CF
-                  if (jawave == 3 .or. jawave == 4) then
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fx, nc_precision, iLocS, 'Fx', 'sea_surface_x_wave_force', 'Wave force, x-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fy, nc_precision, iLocS, 'Fy', 'sea_surface_y_wave_force', 'Wave force, y-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fxlink, nc_precision, iLocU, 'wavfu', '', 'Wave force at velocity point, n-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fylink, nc_precision, iLocU, 'wavfv', '', 'Wave force at velocity point, t-component', 'N m-2', jabndnd=jabndnd_) ! not CF
-                  end if
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_l1, nc_precision, UNC_LOC_S, 'lwav', 'sea_surface_wave_wavelength', 'Wave length', 'm', jabndnd=jabndnd_) ! not CF
                end if
             end if
          end if
@@ -7512,15 +7488,16 @@ contains
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_qtot, UNC_LOC_S, Qtotmap, jabndnd=jabndnd_)
       end if
 
-      if (jamapwav > 0) then
-         ! TO DO JRE: fix dit voor offline wave koppeling
+      if (jawave > 0 .and. jamapwav > 0) then
+         !
+         if (jamapsigwav == 0) then
+            wavfac = 1d0
+         else
+            wavfac = sqrt(2d0)
+         end if
+         !
          if (flowWithoutWaves) then ! Check the external forcing wave quantities and their associated arrays
             if (jamapwav_hwav > 0 .and. allocated(hwav)) then
-               if (jamapsigwav == 0) then
-                  wavfac = 1d0
-               else
-                  wavfac = sqrt(2d0)
-               end if
                if (allocated(wa)) then
                   deallocate (wa, stat=ierr)
                end if
@@ -7534,38 +7511,82 @@ contains
             if (jamapwav_phiwav > 0 .and. allocated(phiwav)) then
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_phiwav, UNC_LOC_S, phiwav, jabndnd=jabndnd_)
             end if
-            if (jamapwav_sxwav > 0 .and. allocated(sxwav)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, UNC_LOC_S, sxwav, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_sywav > 0 .and. allocated(sywav)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, UNC_LOC_S, sywav, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_sbxwav > 0 .and. allocated(sbxwav)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, UNC_LOC_S, sbxwav, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_sbywav > 0 .and. allocated(sbywav)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, UNC_LOC_S, sbywav, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_mxwav > 0 .and. allocated(mxwav)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_mxwav, UNC_LOC_S, mxwav, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_mywav > 0 .and. allocated(mywav)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_mywav, UNC_LOC_S, mywav, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_dsurf > 0 .and. allocated(dsurf)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dsurf, UNC_LOC_S, dsurf, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_dwcap > 0 .and. allocated(dwcap)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dwcap, UNC_LOC_S, dwcap, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_distot > 0 .and. allocated(distot)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_distot, UNC_LOC_S, distot, jabndnd=jabndnd_)
-            end if
-            if (jamapwav_uorb > 0 .and. allocated(uorbwav)) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_uorb, UNC_LOC_S, uorbwav, jabndnd=jabndnd_)
-            end if
          else ! flowWithoutWaves
-            ! JRE - XBeach
+            if (allocated(wa)) then
+               deallocate (wa, stat=ierr)
+            end if
+            allocate (wa(1:ndx), stat=ierr)
+            wa = wavfac * hwav
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, UNC_LOC_S, wa, jabndnd=jabndnd_)
+            wa = modulo(270d0 - phiwav, 360d0)
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, UNC_LOC_S, wa, jabndnd=jabndnd_)
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, UNC_LOC_S, twav)
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_uorb, UNC_LOC_S, uorb, jabndnd=jabndnd_)
+            deallocate (wa)
+            !
+            if (jawavestokes > 0) then
+               call realloc(ust_x, ndkx, keepExisting=.false.)
+               call realloc(ust_y, ndkx, keepExisting=.false.)
+               call reconstruct_cc_stokesdrift(ndkx, ust_x, ust_y)
+
+               ! then write:
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokes, iLocS, ust_x, jabndnd=jabndnd_)
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokes, iLocS, ust_y, jabndnd=jabndnd_)
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokeslink, iLocU, ustokes, jabndnd=jabndnd_)
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokeslink, iLocU, vstokes, jabndnd=jabndnd_)
+            end if
+            !
+            if ((jawave == 3 .or. jawave == 4 .or. jawave == 7) .and. jawaveforces > 0) then
+               call realloc(windx, ndkx, keepExisting=.false., fill=0d0) ! reuse scratch wind arrays, ust_x, y still needed for tausx,y
+               call realloc(windy, ndkx, keepExisting=.false., fill=0d0)
+               call realloc(wavout, lnkx, keepExisting=.false., fill=0d0)
+               call realloc(wavout2, lnkx, keepExisting=.false., fill=0d0)
+               if (kmx == 0) then
+                  do L = 1, lnx
+                     k1 = ln(1, L); k2 = ln(2, L)
+                     windx(k1) = windx(k1) + wcx1(L) * wavfu(L) * hu(L) * rhomean
+                     windx(k2) = windx(k2) + wcx2(L) * wavfu(L) * hu(L) * rhomean
+                     windy(k1) = windy(k1) + wcy1(L) * wavfu(L) * hu(L) * rhomean
+                     windy(k2) = windy(k2) + wcy2(L) * wavfu(L) * hu(L) * rhomean
+                     wavout(L) = wavfu(L) * hu(L) * rhomean ! stack
+                     wavout2(L) = wavfv(L) * hu(L) * rhomean
+                  end do
+               else
+                  do L = 1, lnx
+                     k1 = ln(1, L); k2 = ln(2, L)
+                     call getLbotLtop(L, Lb, Lt)
+                     if (Lt < Lb) cycle
+                     do LL = Lb, Lt
+                        if (LL == Lb) then
+                           dzu = hu(Lb)
+                        else
+                           dzu = hu(LL) - hu(LL - 1)
+                        end if
+                        ! depth-integrated
+                        windx(k1) = windx(k1) + wcx1(L) * wavfu(LL) * dzu * rhomean
+                        windx(k2) = windx(k2) + wcx2(L) * wavfu(LL) * dzu * rhomean
+                        windy(k1) = windy(k1) + wcy1(L) * wavfu(LL) * dzu * rhomean
+                        windy(k2) = windy(k2) + wcy2(L) * wavfu(LL) * dzu * rhomean
+                        ! depth dependent
+                        wavout(LL) = wavfu(LL) * hu(L) * rhomean ! stack
+                        wavout2(LL) = wavfv(LL) * hu(L) * rhomean
+                     end do
+                  end do
+               end if
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fx, UNC_LOC_S, windx, jabndnd=jabndnd_)
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fy, UNC_LOC_S, windy, jabndnd=jabndnd_)
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fxlink, ilocU, wavout, jabndnd=jabndnd_)
+               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fylink, ilocU, wavout2, jabndnd=jabndnd_)
+               deallocate (wavout, wavout2)
+               !
+               if (kmx > 0) then
+                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, UNC_LOC_S, sxwav, jabndnd=jabndnd_)
+                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, UNC_LOC_S, sywav, jabndnd=jabndnd_)
+                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, UNC_LOC_S, sbxwav, jabndnd=jabndnd_)
+                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, UNC_LOC_S, sbywav, jabndnd=jabndnd_)
+               end if
+            end if
+            !
             if (jawave == 4) then
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_E, UNC_LOC_S, E, jabndnd=jabndnd_)
                if (roller > 0) then
@@ -7583,96 +7604,12 @@ contains
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cgwav, UNC_LOC_S, cgwav, jabndnd=jabndnd_)
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_kwav, UNC_LOC_S, kwav, jabndnd=jabndnd_)
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nwav, UNC_LOC_S, nwav, jabndnd=jabndnd_)
-
-               !if (windmodel.eq.0) then
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_l1, UNC_LOC_S, L1, jabndnd=jabndnd_)
-               !elseif ( (windmodel.eq.1) .and. (jawsource.eq.1 ) ) then
-               !   ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_SwE      , UNC_LOC_S, SwE, jabndnd=jabndnd_)
-               !   ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_SwT      , UNC_LOC_S, SwT, jabndnd=jabndnd_)
-               !endif
-
                ierr = nf90_put_var(mapids%ncid, mapids%id_ctheta(2), ctheta(:, 1:ndxndxi), start=(/1, 1, itim/), count=(/ntheta, ndxndxi, 1/))
             end if
-
-            ! JRE to do Offline wave
-            if ((jawave == 3 .or. jawave == 4) .and. kmx > 0) then
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxwav, UNC_LOC_S, sxwav, jabndnd=jabndnd_)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sywav, UNC_LOC_S, sywav, jabndnd=jabndnd_)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxwav, UNC_LOC_S, sbxwav, jabndnd=jabndnd_)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbywav, UNC_LOC_S, sbywav, jabndnd=jabndnd_)
-            end if
-
-            if (jawave > 0) then
-               if (jamapsigwav == 0) then
-                  wavfac = 1d0
-               else
-                  wavfac = sqrt(2d0)
-               end if
-               if (allocated(wa)) then
-                  deallocate (wa, stat=ierr)
-               end if
-               allocate (wa(1:ndx), stat=ierr)
-               wa = wavfac * hwav
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_hwav, UNC_LOC_S, wa, jabndnd=jabndnd_)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_uorb, UNC_LOC_S, uorb, jabndnd=jabndnd_)
-
-               wa = modulo(270d0 - phiwav, 360d0)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thetamean, UNC_LOC_S, wa, jabndnd=jabndnd_)
-               deallocate (wa)
-
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_twav, UNC_LOC_S, twav)
-
-               call realloc(ust_x, ndkx, keepExisting=.false.)
-               call realloc(ust_y, ndkx, keepExisting=.false.)
-               call reconstruct_cc_stokesdrift(ndkx, ust_x, ust_y)
-
-               ! then write:
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokes, iLocS, ust_x, jabndnd=jabndnd_)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokes, iLocS, ust_y, jabndnd=jabndnd_)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ustokeslink, iLocU, ustokes, jabndnd=jabndnd_)
-               ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_vstokeslink, iLocU, vstokes, jabndnd=jabndnd_)
-
-               ! Wave forces
-               if (jawave == 3 .or. jawave == 4) then
-                  call realloc(windx, ndkx, keepExisting=.false., fill=0d0) ! reuse scratch wind arrays, ust_x, y still needed for tausx,y
-                  call realloc(windy, ndkx, keepExisting=.false., fill=0d0)
-                  call realloc(wavout, lnkx, keepExisting=.false., fill=0d0)
-                  call realloc(wavout2, lnkx, keepExisting=.false., fill=0d0)
-                  wavout = 0d0; wavout2 = 0d0
-                  if (kmx == 0) then
-                     do L = 1, lnx
-                        k1 = ln(1, L); k2 = ln(2, L)
-                        windx(k1) = windx(k1) + wcx1(L) * wavfu(L) * hu(L) * rhomean
-                        windx(k2) = windx(k2) + wcx2(L) * wavfu(L) * hu(L) * rhomean
-                        windy(k1) = windy(k1) + wcy1(L) * wavfu(L) * hu(L) * rhomean
-                        windy(k2) = windy(k2) + wcy2(L) * wavfu(L) * hu(L) * rhomean
-                        wavout(L) = wavfu(L) * hu(L) * rhomean ! stack
-                        wavout2(L) = wavfv(L) * hu(L) * rhomean
-                     end do
-                  else
-                     do L = 1, lnx
-                        call getLbotLtop(L, Lb, Lt)
-                        if (Lt < Lb) cycle
-                        do LL = Lb, Lt
-                           k1 = ln(1, LL); k2 = ln(2, LL)
-                           windx(k1) = windx(k1) + wcx1(L) * wavfu(LL) * hu(L) * rhomean ! consider rhoL here
-                           windx(k2) = windx(k2) + wcx2(L) * wavfu(LL) * hu(L) * rhomean
-                           windy(k1) = windy(k1) + wcy1(L) * wavfu(LL) * hu(L) * rhomean
-                           windy(k2) = windy(k2) + wcy2(L) * wavfu(LL) * hu(L) * rhomean
-                           wavout(LL) = wavfu(LL) * hu(L) * rhomean ! stack
-                           wavout2(LL) = wavfv(LL) * hu(L) * rhomean
-                        end do
-                     end do
-                  end if
-                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fx, iLocS, windx, jabndnd=jabndnd_)
-                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fy, iLocS, windy, jabndnd=jabndnd_)
-                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fxlink, iLocU, wavout, jabndnd=jabndnd_)
-                  ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_Fylink, iLocU, wavout2, jabndnd=jabndnd_)
-                  deallocate (wavout, wavout2)
-               end if
-            end if
-         end if ! flowWithoutWaves
-      end if
+            !
+         end if
+      end if ! flowWithoutWaves
 
       ! Bed shear stress and roughness
       !
@@ -8005,6 +7942,7 @@ contains
    end subroutine unc_write_map_filepointer_ugrid
 !> Adds variable at nodes to map-file.
    function unc_put_var_map_nodes(ncid, id_tsp, id_var, values, jabndnd_) result(ierr)
+      use precision, only: dp
       use network_data, only: kc, numk
       use m_missing, only: dmiss
       use fm_location_types, only: UNC_LOC_CN
@@ -8012,13 +7950,13 @@ contains
       integer, intent(in) :: ncid
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
       integer, intent(in) :: id_var(:) !< Ids of variable to write values into, one for each submesh (1d/2d/3d if applicable).
-      double precision, intent(in) :: values(:) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
+      real(kind=dp), intent(in) :: values(:) !< The data values to be written. Should in standard FM order (1d/2d/3d node/link conventions, @see m_flow).
       integer, intent(in) :: jabndnd_
 
       integer :: ierr
 
       integer :: nn
-      double precision, allocatable :: array_on_file(:)
+      real(kind=dp), allocatable :: array_on_file(:)
 
       allocate (array_on_file(numk))
       array_on_file = dmiss
@@ -8036,6 +7974,7 @@ contains
 !> Writes map/flow data to an already opened netCDF dataset.
 !! The netnode and -links have been written already.
    subroutine unc_write_map_filepointer(imapfile, tim, jaseparate) ! wrimap
+      use precision, only: dp
       use m_flow
       use m_flowtimes
       use m_flowgeom
@@ -8112,23 +8051,23 @@ contains
          id_rnveg, id_diaveg, id_veg_stemheight
 
       integer, dimension(:, :), allocatable, save :: id_dxx ! fractions
-      double precision, dimension(:), allocatable :: dum
-      double precision, dimension(:, :), allocatable :: poros
-      double precision, dimension(:, :, :), allocatable :: frac
-      double precision, dimension(:), allocatable :: toutput
-      double precision, dimension(:, :), allocatable :: toutputx, toutputy
-      double precision, dimension(:), allocatable :: rks
+      real(kind=dp), dimension(:), allocatable :: dum
+      real(kind=dp), dimension(:, :), allocatable :: poros
+      real(kind=dp), dimension(:, :, :), allocatable :: frac
+      real(kind=dp), dimension(:), allocatable :: toutput
+      real(kind=dp), dimension(:, :), allocatable :: toutputx, toutputy
+      real(kind=dp), dimension(:), allocatable :: rks
 
       integer, dimension(:), allocatable :: idum
 
       integer :: iid, i, j, jj, itim, k, kb, kt, kk, n, LL, Ltx, Lb, L, nm, nlayb, nrlay, nlaybL, nrlayLx, varid, ndims
       integer :: ndxndxi ! Either ndx or ndxi, depending on whether boundary nodes also need to be written.
-      double precision, dimension(:), allocatable :: windx, windy
-      double precision, dimension(:), allocatable :: numlimdtdbl ! TODO: WO/AvD: remove this once integer version of unc_def_map_var is available
-      double precision :: vicc, dicc
+      real(kind=dp), dimension(:), allocatable :: windx, windy
+      real(kind=dp), dimension(:), allocatable :: numlimdtdbl ! TODO: WO/AvD: remove this once integer version of unc_def_map_var is available
+      real(kind=dp) :: vicc, dicc
       integer :: jaeulerloc
 
-      double precision :: rhol
+      real(kind=dp) :: rhol
       character(16) :: dxname, zw_elem, zcc_elem, zwu_link, zu_link
       character(64) :: dxdescr
       character(10) :: transpunit
@@ -8137,7 +8076,7 @@ contains
       integer, dimension(:), allocatable :: flag_val
       character(len=10000) :: flag_mean
 
-      double precision, dimension(:), pointer :: dens
+      real(kind=dp), dimension(:), pointer :: dens
 
       if (.not. allocated(id_dxx) .and. stm_included) allocate (id_dxx(1:stmpar%morpar%nxx, 1:2))
 
@@ -10905,6 +10844,7 @@ contains
 
 !> Writes the unstructured net in UGRID format to an already opened netCDF dataset.
    subroutine unc_write_net_filepointer(inetfile, janetcell, janetbnd, jaidomain, jaiglobal_s)
+      use precision, only: dp
       use network_data
       use m_alloc
       use m_polygon
@@ -10942,7 +10882,7 @@ contains
       integer :: id_mesh2d
       integer :: jaInDefine
       integer :: k, L, nv, numbnd, maxbnd, numencparts, numencpts
-      double precision, allocatable :: polc(:)
+      real(kind=dp), allocatable :: polc(:)
       integer, dimension(:), allocatable :: kn1write
       integer, dimension(:), allocatable :: kn2write
       integer :: istart, iend, ipoint, ipoly, numpoints, iorient, iinterior
@@ -11956,7 +11896,7 @@ contains
          end if
 
          ierr = nf90_redef(ncid) ! TODO: AvD: I know that all this redef is slow. Split definition and writing soon.
-         
+
          !define 1d2dcontacts only after mesh2d is completly defined
          if (n1d2dcontacts > 0) then
             ierr = ug_def_mesh_contact(ncid, id_tsp%meshcontacts, trim(contactname), n1d2dcontacts, id_tsp%meshids1d, id_tsp%meshids2d, UG_LOC_NODE, UG_LOC_FACE, start_index)
@@ -12050,6 +11990,7 @@ contains
 !> Reads the net data from a NetCDF file.
 !! Processing is done elsewhere.
    subroutine unc_read_net_ugrid(filename, numk_keep, numl_keep, numk_read, numl_read, ierr)
+      use precision, only: dp
       use network_data
       use m_save_ugrid_state
       use io_netcdf
@@ -12083,7 +12024,7 @@ contains
       integer :: im, nmesh, i, L, numk_last, numl_last
       integer :: ncid, id_netnodez
       integer, allocatable :: kn12(:, :), kn3(:) ! Placeholder arrays for the edge_nodes and edge_types
-      double precision :: convversion, zk_fillvalue, altsign
+      real(kind=dp) :: convversion, zk_fillvalue, altsign
       type(t_ug_meshgeom) :: meshgeom
 
       ! 1d2d links
@@ -12092,11 +12033,11 @@ contains
       character(len=80), allocatable :: contactslongnames(:)
       logical :: includeArrays
       logical :: do_edgelengths, need_edgelengths
-      double precision, allocatable :: xface(:), yface(:)
+      real(kind=dp), allocatable :: xface(:), yface(:)
       integer :: nodesOnBranchVertices
       character(len=:), allocatable :: tmpstring
       integer :: n1, n2, ibr_n1, ibr_n2, ibr
-      double precision :: off1, off2
+      real(kind=dp) :: off1, off2
       integer :: numerr, threshold_abort_current
 
       numk_read = 0
@@ -12568,6 +12509,7 @@ contains
 !> Reads the net data from a NetCDF file.
 !! Processing is done elsewhere.
    subroutine unc_read_net(filename, numk_keep, numl_keep, numk_read, numl_read, ierr)
+      use precision, only: dp
       use network_data
       use m_sferic
       use m_missing
@@ -12594,7 +12536,7 @@ contains
                  id_crsvar
 
       integer :: L
-      double precision :: zk_fillvalue
+      real(kind=dp) :: zk_fillvalue
 
       call readyy('Reading net data', 0d0)
 
@@ -12799,9 +12741,10 @@ contains
 
 !> Assigns the information, that has been read from a restart file and stored in array1, to a 2D array2.
    subroutine assign_restart_data_to_local_array(array1, array2, iloc, loccount, jamergedmap, iloc_own, write_only_bottom_layer, target_shift)
+      use precision, only: dp
       use m_get_kbot_ktop
-      double precision, allocatable, intent(in) :: array1(:) !< Array that contains information read from a restart file
-      double precision, allocatable, intent(inout) :: array2(:, :) !< Target 2D array
+      real(kind=dp), allocatable, intent(in) :: array1(:) !< Array that contains information read from a restart file
+      real(kind=dp), allocatable, intent(inout) :: array2(:, :) !< Target 2D array
       integer, intent(in) :: iloc !< Index of one dimension of the 2D array
       integer, intent(in) :: loccount !< Spatial count in file to read (e.g. ndxi_own)
       integer, intent(in) :: jamergedmap !< Whether input is from a merged map file (i.e. needs shifting or not) (1/0)
@@ -12853,17 +12796,18 @@ contains
 !! s1/u1, etc. arrays, with some empty ghost values in between here and there.
 !! The calling routine should later call update_ghosts, such that ghost locations are filled as well.
    function get_var_and_shift(ncid, varname, targetarr, tmparr, loctype, kmx, locstart, loccount, it_read, jamergedmap, iloc_own, iloc_merge, target_shift) result(ierr)
+      use precision, only: dp
       use dfm_error
       use fm_location_types
       use m_get_kbot_ktop
       use m_get_layer_indices
       use m_get_layer_indices_l_max
       use m_get_Lbot_Ltop_max
-      
+
       integer, intent(in) :: ncid !< Open NetCDF data set
       character(len=*), intent(in) :: varname !< Variable name in file.
-      double precision, intent(inout) :: targetarr(:) !< Data will be stored in this array.
-      double precision, intent(inout) :: tmparr(:) !< Temporary work array where file data will be first read before shifting.
+      real(kind=dp), intent(inout) :: targetarr(:) !< Data will be stored in this array.
+      real(kind=dp), intent(inout) :: tmparr(:) !< Temporary work array where file data will be first read before shifting.
       integer, intent(in) :: loctype !< Loc type (UNC_LOC_S, etc.)
       integer, intent(in) :: kmx !< Number of layers (0 if 2D)
       integer, intent(in) :: locstart !< Spatial index in file where to start reading (e.g. kstart)
@@ -12876,7 +12820,7 @@ contains
       integer :: ierr !< Result, DFM_NOERR if successful
       integer :: id_var
       integer :: i, ib, it, is, imap, numDims, d1, d2, nlayb, nrlay
-      double precision, allocatable :: tmparray1D(:), tmparray2D(:, :)
+      real(kind=dp), allocatable :: tmparray1D(:), tmparray2D(:, :)
       integer, dimension(nf90_max_var_dims) :: rhdims, tmpdims
       integer :: jamerged_dif
       integer :: target_shift_
@@ -13014,6 +12958,7 @@ contains
 !! Processing is done elsewhere.
 !subroutine unc_read_map(filename, numk_keep, numl_keep, numk_read, numl_read, ierr)
    subroutine unc_read_map_or_rst(filename, ierr)
+      use precision, only: dp
       use time_module, only: datetimestring_to_seconds, seconds_to_datetimestring
       use m_flow
       use m_flowtimes
@@ -13091,15 +13036,15 @@ contains
       logical :: mdu_has_date
       integer, allocatable :: maptimes(:)
       logical :: file_exists
-      double precision, allocatable :: max_threttim(:)
-      double precision, allocatable :: tmpvar(:, :)
-      double precision, allocatable :: tmpvar1(:), tmpvar1D(:)
-      double precision, allocatable :: tmpvar2(:, :, :)
-      double precision, allocatable :: tmp_s1(:), tmp_bl(:), tmp_s0(:)
-      double precision, allocatable :: tmp_sqi(:), tmp_squ(:)
-      double precision, allocatable :: tmp_ucxq(:), tmp_ucyq(:)
-      double precision, allocatable :: rst_bodsed(:, :), rst_mfluff(:, :), rst_thlyr(:, :)
-      double precision, allocatable :: rst_msed(:, :, :)
+      real(kind=dp), allocatable :: max_threttim(:)
+      real(kind=dp), allocatable :: tmpvar(:, :)
+      real(kind=dp), allocatable :: tmpvar1(:), tmpvar1D(:)
+      real(kind=dp), allocatable :: tmpvar2(:, :, :)
+      real(kind=dp), allocatable :: tmp_s1(:), tmp_bl(:), tmp_s0(:)
+      real(kind=dp), allocatable :: tmp_sqi(:), tmp_squ(:)
+      real(kind=dp), allocatable :: tmp_ucxq(:), tmp_ucyq(:)
+      real(kind=dp), allocatable :: rst_bodsed(:, :), rst_mfluff(:, :), rst_thlyr(:, :)
+      real(kind=dp), allocatable :: rst_msed(:, :, :)
       integer, allocatable :: itmpvar(:)
       real(fp) :: mfracsum, poros, sedthick
       real(fp), dimension(stmpar%lsedtot) :: mfrac
@@ -13115,7 +13060,7 @@ contains
       character(len=255) :: tmpstr, tmpstr1
 
       integer :: jmax, ndx1d, nCrs
-      double precision, dimension(:, :), allocatable :: work1d_z, work1d_n
+      real(kind=dp), dimension(:, :), allocatable :: work1d_z, work1d_n
 
       ierr = DFM_GENERICERROR
 
@@ -13410,7 +13355,7 @@ contains
       ! Read qa (flow link), optional: only from rst file, so no error check
       ierr = get_var_and_shift(imapfile, 'qa', qa, tmpvar1, UNC_LOC_U3D, kmx, Lstart, um%lnx_own, it_read, um%jamergedmap, &
                                um%ilink_own, um%ilink_merge)
-
+    
       ! Read ucxq (flow elem), optional: only from rst file, so no error check
       ucxyq_read_rst = .true.
 
@@ -13429,6 +13374,14 @@ contains
          ucxyq_read_rst = .false.
       end if
 
+      ! Read ucx (flow elem), optional: only from rst file, so no error check
+      ierr = get_var_and_shift(imapfile, 'ucx', ucx, tmpvar1, tmp_loc, kmx, kstart, um%ndxi_own, 1, um%jamergedmap, &
+                              um%inode_own, um%inode_merge)
+      
+      ! Read ucy (flow elem), optional: only from rst file, so no error check
+      ierr = get_var_and_shift(imapfile, 'ucy', ucy, tmpvar1, tmp_loc, kmx, kstart, um%ndxi_own, 1, um%jamergedmap, &
+                              um%inode_own, um%inode_merge)
+      
       ! Read rho (flow elem), optional: only from rst file and when sediment and `idens` is true, so no error check
       rho_read_rst = .true.
 
@@ -13769,7 +13722,7 @@ contains
       end if !ITRA1
 
       ! Read the water quality bottom variables
-      is_wq_bot_3d = jahiswqbot3d .or. jamapwqbot3d
+      is_wq_bot_3d = jahiswqbot3d /= 0 .or. jamapwqbot3d /= 0
       if (numwqbots > 0) then
          call realloc(tmpvar1D, ndkx, keepExisting=.false., fill=0.0d0)
          do iwqbot = 1, numwqbots
@@ -14227,7 +14180,7 @@ contains
             ierr = nf90_inquire_dimension(imapfile, id_1dflowlinkdim, len=numl1d)
             if (ierr == nf90_noerr) then
                if (numl1d == network%numl) then
-                  call realloc(tmpvar1D, numl1d, keepExisting=.false., fill=0d0) ! We use this array becasue get_var_and_shift requires a double precision array
+                  call realloc(tmpvar1D, numl1d, keepExisting=.false., fill=0d0) ! We use this array becasue get_var_and_shift requires a real(kind=dp) array
                   ierr = get_var_and_shift(imapfile, 'hysteresis_for_summerdike', tmpvar1D, tmpvar1, UNC_LOC_U, kmx, Lstart, numl1d, it_read, um%jamergedmap, &
                                            um%ilink_own, um%ilink_merge)
                   ! Convert to logic value and fill in hysteresis_for_summerdike
@@ -14826,6 +14779,7 @@ contains
 
 ! Write input coordinates of all structures of input structuretype to open history file
    subroutine unc_write_struc_input_coordinates(ihisfile, structuretype)
+      use precision, only: dp
       use m_structures
       use m_globalparameters
       use simple_geometry, only: sgeom_def_geometry_variables
@@ -14833,7 +14787,7 @@ contains
       integer, intent(in) :: structuretype ! Structure type, see: m_globalparameters
       integer, intent(in) :: ihisfile ! Handle to already open history file
 
-      double precision, allocatable :: geomXStrucInput(:), geomYStrucInput(:)
+      real(kind=dp), allocatable :: geomXStrucInput(:), geomYStrucInput(:)
       integer, allocatable :: nNodesStrucInput(:)
       integer :: ierr, nNodeTot, nstruc
       integer :: id_Strucgendim_input, id_Strucgeom_input_node_count, id_Strucgeom_input_node_coordx, id_Strucgeom_input_node_coordy
@@ -15148,6 +15102,7 @@ contains
 
 !> Writes the unstructured flow geometry in UGRID format to an already opened netCDF dataset.
    subroutine unc_write_flowgeom_filepointer_ugrid(ncid, id_tsp, jabndnd, jafou, ja2D)
+      use precision, only: dp
 
       use m_flowgeom
       use network_data
@@ -15200,9 +15155,9 @@ contains
       integer, allocatable :: contacttype(:)
 
       ! re-mapping of 1d mesh coordinates for UGrid
-      double precision, allocatable :: xue(:), yue(:)
+      real(kind=dp), allocatable :: xue(:), yue(:)
       ! re-mapping of 2d mesh coordinates for UGrid
-      double precision, allocatable :: x2dn(:), y2dn(:), z2dn(:)
+      real(kind=dp), allocatable :: x2dn(:), y2dn(:), z2dn(:)
       integer :: netNodeReMappedIndex, nnSize
 
       jaInDefine = 0
@@ -15514,6 +15469,7 @@ contains
 
 !> Writes the unstructured 1D flow geometry in UGRID format to an already opened netCDF dataset for use in the dfm volume tool.
    subroutine unc_write_1D_flowgeom_ugrid(id_tsp, ncid, jabndnd, jafou, ja2D, contacts_, contacttype_, numcontacts)
+      use precision, only: dp
 
       use m_flowgeom
       use network_data
@@ -15563,16 +15519,16 @@ contains
       integer :: Li !< Index of 1D link (can be internal or boundary)
       integer :: id_flowelemcontourptsdim, id_flowelemcontourx, id_flowelemcontoury
       integer :: jaInDefine
-      double precision, allocatable :: work2(:, :)
+      real(kind=dp), allocatable :: work2(:, :)
       integer :: n1dedges, n1d2dcontacts, numk2d, start_index
       integer, allocatable :: contacttype(:)
 
       ! re-mapping of 1d mesh coordinates for UGrid
-      double precision, allocatable :: x1dn(:), y1dn(:), x1du(:), y1du(:)
+      real(kind=dp), allocatable :: x1dn(:), y1dn(:), x1du(:), y1du(:)
       integer, pointer :: nodebranchidx_remap(:)
-      double precision, pointer :: nodeoffsets_remap(:)
+      real(kind=dp), pointer :: nodeoffsets_remap(:)
       integer, pointer :: edgebranchidx_remap(:)
-      double precision, pointer :: edgeoffsets_remap(:)
+      real(kind=dp), pointer :: edgeoffsets_remap(:)
       character(len=ug_idsLen), allocatable :: nodeids_remap(:)
       character(len=ug_idsLongNamesLen), allocatable :: nodelongnames_remap(:)
 
@@ -15891,6 +15847,7 @@ contains
 
 !> Writes the unstructured flow geometry to an already opened netCDF dataset.
    subroutine unc_write_flowgeom_filepointer(igeomfile, jabndnd)
+      use precision, only: dp
       use m_flowgeom
       use network_data
       use m_sferic
@@ -15924,8 +15881,8 @@ contains
       integer, dimension(:), allocatable :: lne1write
       integer, dimension(:), allocatable :: lne2write
 
-      double precision, dimension(:), allocatable :: zz
-      double precision, dimension(:, :), allocatable :: work2
+      real(kind=dp), dimension(:), allocatable :: zz
+      real(kind=dp), dimension(:, :), allocatable :: work2
 
       jaInDefine = 0
 
@@ -16484,6 +16441,7 @@ contains
 
 ! Read cell info. in order to bypass findcells
    subroutine readcells(filename, ierr, jaidomain, jaiglobal_s, jareinitialize)
+      use precision, only: dp
 
       use network_data
       use m_flowgeom
@@ -16519,7 +16477,7 @@ contains
       integer :: im1d, im2d !< mesh ids in ioncid dataset, for 1D and 2D
       integer :: numk1d !< Local counter for number of 1d net nodes ("grid points")
       integer :: nump1d !< Local counter for number of 1d nodes ("cells")
-      double precision :: convversion !< io_netcdf conventions version number
+      real(kind=dp) :: convversion !< io_netcdf conventions version number
       integer :: ncontacts, im
 
       ierr = DFM_NOERR
@@ -16894,6 +16852,7 @@ contains
    end subroutine readcells
 
    subroutine find_flownodesorlinks_merge(n, x, y, n_loc, n_own, iloc_own, iloc_merge, janode, jaerror2sam, inode_merge2loc)
+      use precision, only: dp
       use kdtree2Factory
       use unstruc_messages
       use m_flowgeom
@@ -16907,7 +16866,7 @@ contains
       implicit none
       type(kdtree_instance) :: treeinst
       integer, intent(in) :: n !< number of flownodes in merged map file
-      double precision, dimension(n), intent(in) :: x, y !< coordinates of flownode circumcenters or flowlink centers in merged map file
+      real(kind=dp), dimension(n), intent(in) :: x, y !< coordinates of flownode circumcenters or flowlink centers in merged map file
       integer, intent(in) :: n_loc !< number of flownodes or flowlinks of the current subdomain (including ghosts)
       integer, intent(in) :: n_own !< number of flownodes or flowlinks of the current subdomain (excluding ghosts)
       integer, intent(in) :: janode !< if janode==1, find flow nodes, otherwise find flow links
@@ -16917,10 +16876,10 @@ contains
       integer, intent(in) :: jaerror2sam !< add unfound nodes to samples (1) or not (0)
       integer :: ierror = 1
       integer :: k, nn, i, jj, kk, jamerge2own
-      double precision :: R2search = 1d-8 !< Search radius
-      double precision :: t0, t1
+      real(kind=dp) :: R2search = 1d-8 !< Search radius
+      real(kind=dp) :: t0, t1
       character(len=128) :: mesg
-      double precision, allocatable :: x_tmp(:), y_tmp(:)
+      real(kind=dp), allocatable :: x_tmp(:), y_tmp(:)
 
       call wall_clock_time(t0)
       if (present(inode_merge2loc)) then
@@ -17027,6 +16986,7 @@ contains
 
 !! check if the flownodes or flowlinks in the current model have the same numbering with in the rst file
    subroutine check_flownodesorlinks_numbering_rst(n, janode, x_rst, y_rst, ierror)
+      use precision, only: dp
       use network_data, only: xzw, yzw
       use m_flowgeom, only: xu, yu
       use unstruc_messages
@@ -17038,12 +16998,12 @@ contains
 
       integer, intent(in) :: n ! Number of flownodes/flowlinks to be checked
       integer, intent(in) :: janode !if janode==1, find flow nodes, otherwise find flow links
-      double precision, dimension(:), intent(in) :: x_rst, y_rst ! Coordinates read from rst file
+      real(kind=dp), dimension(:), intent(in) :: x_rst, y_rst ! Coordinates read from rst file
       integer, intent(out) :: ierror
 
-      double precision, allocatable :: x_tmp(:), y_tmp(:)
+      real(kind=dp), allocatable :: x_tmp(:), y_tmp(:)
       integer :: i
-      double precision :: dist, dtol = 1d-8
+      real(kind=dp) :: dist, dtol = 1d-8
       character(len=128) :: message
 
       ierror = 0
@@ -17224,6 +17184,7 @@ contains
 
 !> Read structure infomation from the rst file
    subroutine read_structures_from_rst(ncid, filename, it_read)
+      use precision, only: dp
       use unstruc_channel_flow, only: network
       use m_alloc
       use m_GlobalParameters
@@ -17241,7 +17202,7 @@ contains
       character(len=IdLen), allocatable :: struDimNames(:)
       integer, allocatable :: ids_struDim(:)
       character(len=IdLen) :: struName
-      double precision, allocatable :: tmpvar(:), tmpvar3d(:, :, :), tmpvar2d(:, :)
+      real(kind=dp), allocatable :: tmpvar(:), tmpvar3d(:, :, :), tmpvar2d(:, :)
       integer, allocatable :: tmpvar3di(:, :, :), tmpvar2di(:, :)
       integer :: strucDimErr, i, nLinks, nStru, ierr, iStru, nfuru, numlinks, strucVarErr, L, L0, nstages, maxNumStages
       integer :: id_culvert_openh, id_longculvert_valveopen, &
@@ -18112,13 +18073,14 @@ contains
    end subroutine convert_hysteresis_summerdike
 
    subroutine linktonode2(u_x, u_y, s_x, s_y, ndxndxi) ! bring 2 scalars on u points to zeta points
+      use precision, only: dp
 
       use m_flowgeom
       use m_flow
 
       implicit none
 
-      double precision :: u_x(:), u_y(:), s_x(:), s_y(:)
+      real(kind=dp) :: u_x(:), u_y(:), s_x(:), s_y(:)
       integer :: ndxndxi
 
       integer :: n, LL, LLL, k1, k2, k3
@@ -18138,6 +18100,7 @@ contains
 
 !> write_array_with_dmiss_for_dry_cells_into_netcdf_file
    function write_array_with_dmiss_for_dry_cells_into_netcdf_file(ncid, id_tsp, id_var, data_location, array, jabndnd) result(ierr)
+      use precision, only: dp
       use m_flowgeom, only: kfs
       use m_alloc, only: aerr
       use m_missing, only: dmiss
@@ -18148,12 +18111,12 @@ contains
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
       integer, intent(in) :: id_var(:) !< Variable ID
       integer, intent(in) :: data_location !< Data location
-      double precision, allocatable, intent(in) :: array(:) !< 2D case array to be written
+      real(kind=dp), allocatable, intent(in) :: array(:) !< 2D case array to be written
       integer, optional, intent(in) :: jabndnd !< Flag specifying whether boundary nodes are to be written.
 
       integer :: ierr !< Result status
       integer :: cell
-      double precision, allocatable :: temp_array(:)
+      real(kind=dp), allocatable :: temp_array(:)
 
       if (.not. allocated(kfs)) then
          call mess(LEVEL_INFO, 'Dry cells are not "removed" in a map file due to the current implementation. Please contact DFM developers.')
@@ -18185,6 +18148,7 @@ contains
 
 !> write_array_with_dmiss_for_dry_faces_into_netcdf_file
    function write_array_with_dmiss_for_dry_faces_into_netcdf_file(ncid, id_tsp, id_var, data_location, array, jabndnd) result(ierr)
+      use precision, only: dp
       use m_flow, only: hu
       use m_alloc, only: aerr
       use m_missing, only: dmiss
@@ -18195,12 +18159,12 @@ contains
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
       integer, intent(in) :: id_var(:) !< Variable ID
       integer, intent(in) :: data_location !< Data location
-      double precision, allocatable, intent(in) :: array(:) !< array to be written
+      real(kind=dp), allocatable, intent(in) :: array(:) !< array to be written
       integer, optional, intent(in) :: jabndnd !< Flag specifying whether boundary nodes are to be written.
 
       integer :: ierr !< Result status
       integer :: face
-      double precision, allocatable :: temp_array(:)
+      real(kind=dp), allocatable :: temp_array(:)
 
       if (.not. allocated(hu)) then
          call mess(LEVEL_INFO, 'Dry faces are not "removed" in a map file due to the current implementation. Please contact DFM developers.')
@@ -18276,6 +18240,7 @@ contains
 !> Read sediment data to `constituents` (the indexing prevents passing
 !  another variable).
    subroutine read_sediment(var, stradd, imapfile, kstart, kcount, it_read, um, target_shift)
+      use precision, only: dp
 
       use m_flow, only: kmx, ndkx
       use m_transport, only: ISED1, ISEDN, const_names
@@ -18285,7 +18250,7 @@ contains
       use fm_location_types, only: UNC_LOC_S3D, UNC_LOC_S
 
 !input/output
-      double precision, allocatable, dimension(:, :), intent(inout) :: var !< (:,ndkx) Data array into which the sediment data will be read.
+      real(kind=dp), allocatable, dimension(:, :), intent(inout) :: var !< (:,ndkx) Data array into which the sediment data will be read.
       character(len=*), intent(in) :: stradd !< variable name suffix for distinguishing between internal and boundary cells, leave empty for internal cells.
       integer, intent(in) :: imapfile !< file handle for reading in netcdf file
       integer, intent(in) :: kstart !< 2D start position for reading in netcdf file
@@ -18297,7 +18262,7 @@ contains
 !local
       integer :: i
       integer :: ierr, tmp_loc
-      double precision, allocatable :: tmpvar1(:), tmpvar1D(:)
+      real(kind=dp), allocatable :: tmpvar1(:), tmpvar1D(:)
       character(len=255) :: tmpstr
 
       if (kmx > 0) then
@@ -18328,6 +18293,7 @@ contains
 
 !> Write 2D/3D array on cell centres and for boundaries
    function unc_put_var_rst_dble(irstfile, id_internal_flow_node_data_var, id_bnd_flow_node_data_var, data_values, itim) result(ierr)
+      use precision, only: dp
 
       use m_flowgeom, only: ndxi, ndx
       use m_flow, only: kmx, work1
@@ -18340,7 +18306,7 @@ contains
       integer, intent(in) :: id_internal_flow_node_data_var !< index of internal cells variable on netcdf file
       integer, intent(in) :: id_bnd_flow_node_data_var !< index of boundary cells variable on netcdf file
       integer, intent(in) :: itim !< time index on netcdf file
-      double precision, allocatable, intent(in) :: data_values(:) !< array for information at flow nodes {"location": "face", "shape": ["ndkx"]}
+      real(kind=dp), allocatable, intent(in) :: data_values(:) !< array for information at flow nodes {"location": "face", "shape": ["ndkx"]}
 
 !local
       integer :: ierr, ndxbnd
@@ -18371,15 +18337,16 @@ contains
 
 !> Transfrom vector information to matrix for 3D information on cell centres
    subroutine flow_node_vector_to_matrix(data_values, flow_node_index1, flow_node_index2, data_values_matrix)
+      use precision, only: dp
 
       use m_missing, only: dmiss
       use m_get_kbot_ktop
       use m_get_layer_indices
 
-      double precision, allocatable, intent(in) :: data_values(:) !< array for information at flow nodes {"location": "face", "shape": ["ndkx"]}
+      real(kind=dp), allocatable, intent(in) :: data_values(:) !< array for information at flow nodes {"location": "face", "shape": ["ndkx"]}
       integer, intent(in) :: flow_node_index1 !< start index (1:ndx) for transfer of data from vector to matrix format
       integer, intent(in) :: flow_node_index2 !< end index (1:ndx) for transfer of data from vector to matrix format
-      double precision, intent(out) :: data_values_matrix(:, :) !< array for information at flow nodes as matrix {"location": "face", "shape": ["num_layers","ndx"]}
+      real(kind=dp), intent(out) :: data_values_matrix(:, :) !< array for information at flow nodes as matrix {"location": "face", "shape": ["num_layers","ndx"]}
 
       integer :: k, kk, kb, kt, nlayb, nrlay
 

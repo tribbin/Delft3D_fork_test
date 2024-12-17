@@ -30,7 +30,18 @@
 !
 !
 
+module m_get2dnormal
+
+implicit none
+
+private
+
+public :: get2dnormal
+
+contains
+
  subroutine get2Dnormal(n1, xn1, yn1) ! get x and y components of land normal vector pointing upward.
+    use precision, only: dp
 
     use m_flowgeom ! = ok for all internal cells
     use m_flow
@@ -39,9 +50,8 @@
     use m_missing, only: dxymis
     use geometry_module, only: normalin
 
-    implicit none
     integer :: n1, k, L, LL, k3, k4
-    double precision :: xn1, yn1, a, aa, alf, xt, yt, slope
+    real(kind=dp) :: xn1, yn1, a, aa, alf, xt, yt, slope
 
     xn1 = 0d0; yn1 = 0d0; a = 0d0
     do k = 1, size(nd(n1)%ln)
@@ -64,3 +74,5 @@
        yn1 = yn1 / aa
     end if
  end subroutine get2Dnormal
+
+end module m_get2dnormal

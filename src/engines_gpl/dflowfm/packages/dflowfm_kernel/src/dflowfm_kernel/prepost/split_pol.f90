@@ -27,18 +27,27 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
 !> split polygon recursively into (Ni X Nj) smaller polygons, at most MAXsplit times, until polygons have at most NPLmax nodes
+module m_split_pol
+use m_split_pol_with_line, only: split_pol_with_line
+
+implicit none
+
+private
+
+public :: split_pol
+
+contains
+
  subroutine split_pol(Ni, Nj, NPLmax, MAXsplit)
+    use precision, only: dp
     use m_polygon
     use m_tpoly
     use m_alloc
     use m_missing
     use unstruc_messages
     use m_wrildb
-    implicit none
+    use m_addtopol, only: addtopol
 
     integer, intent(in) :: Ni
     integer, intent(in) :: Nj
@@ -49,12 +58,12 @@
 
     character(len=128) :: FNAM
 
-    double precision :: xmin, ymin, xmax, ymax
-    double precision :: xa, ya, xb, yb
+    real(kind=dp) :: xmin, ymin, xmax, ymax
+    real(kind=dp) :: xa, ya, xb, yb
 
     integer :: i, j, ipol, N, numpols
 
-    double precision, dimension(:), allocatable :: rwrk
+    real(kind=dp), dimension(:), allocatable :: rwrk
     integer, dimension(:), allocatable :: iwrk
     integer :: lrwk
 
@@ -64,13 +73,11 @@
     integer :: ierr
 
     integer, parameter :: NCCP = 5
-    double precision, dimension(NCCP) :: xccp, yccp
+    real(kind=dp), dimension(NCCP) :: xccp, yccp
 
     integer, dimension(0) :: nclan
 
     integer, parameter :: MAXLRWK = 1e9
-
-    external :: addtopol
 
     if (NPL < 3) return
 
@@ -198,3 +205,5 @@
 
     return
  end subroutine split_pol
+
+end module m_split_pol

@@ -31,6 +31,9 @@
 !> Manages the unstruc model definition for the active problem.
 module unstruc_model
 
+   use m_datum2, only: datum2
+   use m_setmodind, only: setmodind
+   use m_setgrainsizes, only: setgrainsizes
    use precision
    use properties
    use tree_data_types
@@ -178,9 +181,9 @@ module unstruc_model
    character(len=255) :: md_oplfile = ' ' !< [-] open process library dll/so file
    character(len=255) :: md_blmfile = ' ' !< [-] BLOOM aglae species definition file
    character(len=255) :: md_sttfile = ' ' !< statistics definition file
-   double precision :: md_thetav_waq = 0d0 !< thetav for waq
-   double precision :: md_dt_waqproc = 0d0 !< processes time step
-   double precision :: md_dt_waqbal = 0d0 !< mass balance output time step (old)
+   real(kind=dp) :: md_thetav_waq = 0d0 !< thetav for waq
+   real(kind=dp) :: md_dt_waqproc = 0d0 !< processes time step
+   real(kind=dp) :: md_dt_waqbal = 0d0 !< mass balance output time step (old)
    integer :: md_flux_int = 1 !< process fluxes integration option (1: WAQ, 2: D-Flow FM)
 
    ! TODO: reading for trachytopes is still within rdtrt, below was added for partitioning (when no initialization)
@@ -189,7 +192,7 @@ module unstruc_model
    character(len=255) :: md_trtlfile = ' ' !< File containing distribution of trachytope definitions
    integer :: md_mxrtrach = 8 !< Maximum recursion level for combined trachytope definitions
    character(len=255) :: md_trtcllfile = ' ' !< Overall calibration factor file for roughness from trachytopes (see also [calibration] block)
-   double precision :: md_mnhtrach = 0.1d0 !< Minimum water depth for roughness computations
+   real(kind=dp) :: md_mnhtrach = 0.1d0 !< Minimum water depth for roughness computations
    integer :: md_mthtrach = 1 !< Area averaging method, 1: Nikuradse k based, 2: Chezy C based (parallel and serial)
 
    character(len=255) :: md_mptfile = ' ' !< File (.mpt) containing fixed map output times w.r.t. RefDate (in TUnit)
@@ -238,7 +241,7 @@ module unstruc_model
    integer :: md_exportnet_bedlevel = 0 !< Export interpreted bed levels after initialization (1) or not (0)
    integer :: md_cutcells = 0
    integer :: npolf = 0 !< nr of polygonplotfiles saved with n key in editpol
-   integer :: md_usecaching = 1 !< Use the caching file if it exists (1) or not (0)
+   logical :: md_usecaching !< Use and/or generate cache file if true
 
    integer :: md_convertlongculverts = 0 !< convert culverts (and exit program) yes (1) or no (0)
    character(len=128) :: md_culvertprefix = ' ' !< prefix for generating long culvert files
@@ -368,7 +371,7 @@ contains
 
       md_cfgfile = ' '
 
-      md_usecaching = 1 !< Use the caching file if it exists (1) or not (0)
+      md_usecaching = .true. !< Use and/or generate cache file if true
 
       ! The following settings are intentionally *not* reset for each model.
       !md_snapshot_seqnr  = 0 ! not handy in practice, it destroys previous plots without warning
@@ -439,7 +442,7 @@ contains
 
       character(len=200), dimension(:), allocatable :: fnames
       character(len=1024) :: fnamesstring
-      double precision, dimension(2) :: tempbob
+      real(kind=dp), dimension(2) :: tempbob
 
       integer :: istat, minp, ifil, jadoorladen
 
@@ -467,7 +470,7 @@ contains
       end if
 
       ! load the caching file - if there is any
-      call loadCachingFile(md_ident, md_netfile, md_usecaching)
+      call load_caching_file(md_ident, md_netfile, md_usecaching)
 
       ! read and proces dflow1d model
       ! This routine is still used for Morphology model with network in INI-File (Willem Ottevanger)
@@ -726,9 +729,9 @@ contains
       use m_read_statistical_output, only: read_output_parameter_toggle
       use fm_deprecated_keywords, only: deprecated_mdu_keywords
       use m_deprecation, only: check_file_tree_for_deprecated_keywords
-      use precision
       use m_map_his_precision
       use m_qnerror
+      use m_densfm, only: densfm
 
       character(*), intent(in) :: filename !< Name of file to be read (the MDU file must be in current working directory).
       integer, intent(out) :: istat !< Return status (0=success)
@@ -739,16 +742,15 @@ contains
       logical :: dummylog
       character(len=1000) :: charbuf = ' '
       character(len=255) :: tmpstr, fnam, bnam
-      double precision, allocatable :: tmpdouble(:)
+      real(kind=dp), allocatable :: tmpdouble(:)
       integer :: ibuf, ifil
       integer :: i, n, iostat, readerr, ierror
       integer :: jadum
       real(hp) :: ti_rst_array(3), ti_map_array(3), ti_his_array(3), ti_wav_array(3), ti_waq_array(3), ti_classmap_array(3), ti_st_array(3), ti_com_array(3)
       character(len=200), dimension(:), allocatable :: fnames
-      double precision, external :: densfm
-      double precision :: tim
-      double precision :: sumlaycof
-      double precision, parameter :: tolSumLay = 1d-12
+      real(kind=dp) :: tim
+      real(kind=dp) :: sumlaycof
+      real(kind=dp), parameter :: tolSumLay = 1d-12
       integer, parameter :: maxLayers = 300
       integer :: major, minor
       integer :: ignore_value
@@ -841,10 +843,17 @@ contains
       call prop_get(md_ptr, 'geometry', 'Cutcelllist', md_cutcelllist, success)
       call prop_get(md_ptr, 'geometry', 'IniFieldFile', md_inifieldfile, success)
 
-      call prop_get(md_ptr, 'geometry', 'UseCaching', md_usecaching, success)
+      call prop_get(md_ptr, 'geometry', 'UseCaching', md_usecaching, success, value_parsed)
+      if (success .and. .not. value_parsed) then
+         call mess(LEVEL_ERROR, 'Did not recognise UseCaching value. It must be 0 or 1.')
+      end if
       ! Merge cmd line switches with mdu file settings
       if (iarg_usecaching /= -1) then
-         md_usecaching = iarg_usecaching
+         if (iarg_usecaching == 0) then
+            md_usecaching = .false.
+         else if (iarg_usecaching == 1) then
+            md_usecaching = .true.
+         end if
       end if
 
       call prop_get(md_ptr, 'geometry', 'FixedWeirFile', md_fixedweirfile, success)
@@ -1430,6 +1439,16 @@ contains
       call prop_get(md_ptr, 'veg', 'Cbveg', Cbveg)
       call prop_get(md_ptr, 'veg', 'Rhoveg', Rhoveg)
       call prop_get(md_ptr, 'veg', 'Stemheightstd', Stemheightstd)
+      call prop_get(md_ptr, 'veg', 'StemheightConvention', StemheightConvention)
+      select case (trim(str_tolower(StemheightConvention)))
+      case ('upward_from_bed')
+         stemheight_convention = UPWARD_FROM_BED
+      case ('downward_from_surface')
+         stemheight_convention = DOWNWARD_FROM_SURFACE
+      case default
+         call mess(LEVEL_ERROR, "Invalid value for [veg] StemheightConvention. Use 'upward_from_bed' or 'downward_from_surface'.")
+      end select
+
       call prop_get(md_ptr, 'veg', 'Densvegminbap', Densvegminbap)
 
       call prop_get(md_ptr, 'veg', 'Expchistem', expchistem)
@@ -2028,6 +2047,7 @@ contains
       call prop_get(md_ptr, 'output', 'Wrimap_fixed_weir_energy_loss', jamapfw, success)
       call prop_get(md_ptr, 'output', 'Wrimap_spiral_flow', jamapspir, success)
       call prop_get(md_ptr, 'output', 'Wrimap_numlimdt', jamapnumlimdt, success)
+      call prop_get(md_ptr, 'output', 'Wrixyz_numlimdt', write_numlimdt_file, success)
       call prop_get(md_ptr, 'output', 'Wrimap_taucurrent', jamaptaucurrent, success)
       call prop_get(md_ptr, 'output', 'Wrimap_z0', jamapz0, success)
       call prop_get(md_ptr, 'output', 'Wrimap_salinity', jamapsal, success)
@@ -2070,17 +2090,6 @@ contains
       jamapwav_hwav = 0
       jamapwav_twav = 0
       jamapwav_phiwav = 0
-      jamapwav_sxwav = 0
-      jamapwav_sywav = 0
-      jamapwav_sbxwav = 0
-      jamapwav_sbywav = 0
-      jamapwav_mxwav = 0
-      jamapwav_mywav = 0
-      jamapwav_dsurf = 0
-      jamapwav_dwcap = 0
-      jamapwav_distot = 0
-      jamapwav_uorb = 0
-
       call prop_get(md_ptr, 'output', 'Wrimap_DTcell', jamapdtcell, success)
       epswetout = epshs ! the same as numerical threshold to counts as 'wet'.
       call prop_get(md_ptr, 'output', 'Wrimap_wet_waterdepth_threshold', epswetout, success)
@@ -2251,9 +2260,14 @@ contains
       end if
 
       call prop_get(md_ptr, 'output', 'EulerVelocities', jaeulervel)
-      if ((jawave < 3 .or. flowWithoutWaves) .and. jaeulervel == 1) then
-         call mess(LEVEL_WARN, '''EulerVelocities'' is not compatible with the selected Wavemodelnr. ''EulerVelocities'' is set to zero.')
-         jaeulervel = 0
+      if (jaeulervel == 1) then
+         if (jawave < 3 .or. flowWithoutWaves) then
+            call mess(LEVEL_WARN, '''EulerVelocities'' is not compatible with the selected Wavemodelnr. ''EulerVelocities'' is set to 0.')
+            jaeulervel = 0
+         else if (jawavestokes == 0) then
+            call mess(LEVEL_WARN, '''EulerVelocities'' is set to 0, because 3Dstokesprofile is set to 0.')
+            jaeulervel = 0
+         end if
       end if
       !
       if (jawave == 4) then ! not for Delta Shell
@@ -2523,10 +2537,10 @@ contains
    subroutine createDirectionClasses(map_classes_ucdir, map_classes_ucdirstep)
       use MessageHandling, only: mess, LEVEL_FATAL
       use m_alloc, only: aerr
-      double precision, allocatable, intent(inout) :: map_classes_ucdir(:) !< the constructed classes
-      double precision, intent(in) :: map_classes_ucdirstep !< the input step size
+      real(kind=dp), allocatable, intent(inout) :: map_classes_ucdir(:) !< the constructed classes
+      real(kind=dp), intent(in) :: map_classes_ucdirstep !< the input step size
 
-      double precision, parameter :: wholeCircle = 360d0
+      real(kind=dp), parameter :: wholeCircle = 360d0
       integer :: n !< number of classes
       integer :: i, ierr
 
@@ -2663,7 +2677,7 @@ contains
       call prop_set(prop_ptr, 'geometry', 'ProfdefFile', trim(md_profdeffile), 'Channel profile definition file *_profdefinition.def with definition for all profile numbers')
       call prop_set(prop_ptr, 'geometry', 'ProfdefxyzFile', trim(md_profdefxyzfile), 'Channel profile definition file _profdefinition.def with definition for all profile numbers')
       call prop_set(prop_ptr, 'geometry', 'IniFieldFile', trim(md_inifieldfile), 'Initial values and parameter fields file')
-      call prop_set(prop_ptr, 'geometry', 'UseCaching', md_usecaching, 'Use caching for geometrical/network-related items (0: no, 1: yes)')
+      call prop_set(prop_ptr, 'geometry', 'UseCaching', merge(1, 0, md_usecaching), 'Use caching for geometrical/network-related items (0: no, 1: yes)')
 
       call prop_set(prop_ptr, 'geometry', 'Uniformwidth1D', wu1Duni, 'Uniform width for channel profiles not specified by profloc')
       if (writeall .or. hh1Duni /= 3d3) then
@@ -3457,6 +3471,9 @@ contains
          call prop_set(prop_ptr, 'veg', 'Cbveg', Cbveg, 'Stem stiffness coefficient , default 0.0 ()')
          call prop_set(prop_ptr, 'veg', 'Rhoveg', Rhoveg, 'Stem Rho, if > 0, -> bouyant stick procedure, default 0.0 (kg/m3)')
          call prop_set(prop_ptr, 'veg', 'Stemheightstd', Stemheightstd, 'Stem height standard deviation fraction, e.g. 0.1  ()')
+         if (stemheight_convention /= UPWARD_FROM_BED) then ! research keyword - only write to .dia if the research keyword is not set to the default value.
+            call prop_set(prop_ptr, 'veg', 'StemheightConvention', trim(StemheightConvention), 'Stem height convention: ''upward_from_bed'' or ''downward_from_surface''.')
+         end if
          if (kmx == 0) then
             call prop_set(prop_ptr, 'veg', 'Densvegminbap', Densvegminbap, 'Minimum vegetation density in Baptist formula  (1/m2)')
          end if
@@ -3806,6 +3823,10 @@ contains
          end if
          call prop_set(prop_ptr, 'output', 'NcWriteLatLon', ibuf, 'Write extra lat-lon coordinates for all projected coordinate variables in each NetCDF file (for CF-compliancy).')
       end if
+      if (writeall .or. write_numlimdt_file) then
+         call prop_set(prop_ptr, 'output', 'Wrixyz_numlimdt', merge(1, 0, write_numlimdt_file), &
+                       'Write the total number of times a cell was Courant limiting to <run_id>_numlimdt.xyz file (1: yes, 0: no).')
+      end if
       if (writeall .or. len_trim(unc_metadatafile) > 0) then
          call prop_set(prop_ptr, 'output', 'MetaDataFile', unc_metadatafile, 'Metadata NetCDF file with user-defined global dataset attributes (*_meta.nc).')
       end if
@@ -4075,9 +4096,9 @@ contains
       real(kind=hp), intent(in) :: time_interval_start !< Start of time output interval to be checked.
       real(kind=hp), intent(inout) :: time_interval !< Time output interval to be checked.
       real(kind=hp), intent(in) :: time_interval_end !< End of time output interval to be checked.
-      double precision, intent(in) :: user_time_step !< User specified time step (s) for external forcing update
+      real(kind=dp), intent(in) :: user_time_step !< User specified time step (s) for external forcing update
       character(*), intent(in) :: time_interval_name !< Name of the time interval parameter to check, to be used in the log message.
-      double precision, intent(in) :: time_start_user !< User specified time start (s) w.r.t. refdat
+      real(kind=dp), intent(in) :: time_start_user !< User specified time start (s) w.r.t. refdat
 
       logical :: is_error
 
@@ -4115,9 +4136,9 @@ contains
       implicit none
 
       real(kind=hp), intent(in) :: time_interval !< Time interval to be checked.
-      double precision, intent(in) :: user_time_step !< User specified time step (s) for external forcing update
+      real(kind=dp), intent(in) :: user_time_step !< User specified time step (s) for external forcing update
 
-      double precision :: nearest_user_time_step
+      real(kind=dp) :: nearest_user_time_step
 
       nearest_user_time_step = nint(time_interval / user_time_step) * user_time_step
       if (comparereal(nearest_user_time_step, time_interval, eps10) /= 0) then
@@ -4134,7 +4155,7 @@ contains
       implicit none
 
       character(*), intent(in) :: mdu_keyword !< Keyword in the mdu-file
-      double precision, intent(in) :: value !< Corresponding value
+      real(kind=dp), intent(in) :: value !< Corresponding value
 
       if (value < eps10) then
          call mess(LEVEL_ERROR, trim(mdu_keyword), ' should be larger than 0.')

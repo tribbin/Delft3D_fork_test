@@ -31,7 +31,18 @@
 !
 
 !< update runup values per dts
+module m_updatevaluesonrunupgauges
+
+implicit none
+
+private
+
+public :: updatevaluesonrunupgauges
+
+contains
+
 subroutine updateValuesOnRunupGauges()
+   use precision, only: dp
    use m_monitoring_runupgauges
    use m_missing
    use m_flow, only: s1, hs
@@ -39,12 +50,10 @@ subroutine updateValuesOnRunupGauges()
    use m_flowgeom, only: ln, bl
    use m_flowparameters, only: epshu
 
-   implicit none
-
    integer :: irug
    integer :: k1, k2
    integer :: L, il
-   double precision :: max_x, max_y, maxz, maxk
+   real(kind=dp) :: max_x, max_y, maxz, maxk
 
 !   update runup on gauge locations
    hs = max(s1 - bl, 0d0)
@@ -82,3 +91,5 @@ subroutine updateValuesOnRunupGauges()
    end do
 
 end subroutine updateValuesOnRunupGauges
+
+end module m_updatevaluesonrunupgauges

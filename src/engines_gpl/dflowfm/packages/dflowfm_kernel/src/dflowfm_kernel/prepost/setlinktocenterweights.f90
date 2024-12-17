@@ -29,45 +29,46 @@
 
 !
 !
+module m_setlinktocenterweights
+
+implicit none
+
+private
+
+public :: setlinktocenterweights
+
+contains
 
  subroutine setlinktocenterweights() ! set center related linkxy weights
-
+    use precision, only: dp
     use m_flow
     use m_netw
     use m_flowgeom
     use m_sferic
     use m_longculverts
-    implicit none
 
-    double precision :: wud, wuL1, wuL2, cs, sn
+    real(kind=dp) :: wud, wuL1, wuL2, cs, sn
     integer :: L, ierr, n, kk, n12, lnxmax
     integer :: k1, k2, LL
     integer :: ilongc, L1dlink
 
-    double precision :: aa1, wcw, alf
-    double precision, allocatable :: wwL(:)
+    real(kind=dp) :: aa1, wcw, alf
+    real(kind=dp), allocatable :: wwL(:)
 
-    double precision, allocatable :: wcxy(:, :) ! center weight factors (2,ndx) , only for normalising
-    double precision, allocatable :: wc(:) ! center weight factors (ndx)   , only for normalising
+    real(kind=dp), allocatable :: wcxy(:, :) ! center weight factors (2,ndx) , only for normalising
+    real(kind=dp), allocatable :: wc(:) ! center weight factors (ndx)   , only for normalising
 
-    double precision, external :: lin2nodx, lin2nody
+    real(kind=dp), external :: lin2nodx, lin2nody
 
-    if (allocated(wcx1)) deallocate (wcx1, wcy1, wcx2, wcy2)
+    wcx1 = 0
+    wcy1 = 0
+    wcx2 = 0
+    wcy2 = 0
+    wcL = 0
+
     if (allocated(wcxy)) deallocate (wcxy)
-    if (allocated(wcL)) deallocate (wcL)
-
-    allocate (wcx1(lnx), stat=ierr); wcx1 = 0
-    call aerr('wcx1(lnx)', ierr, lnx)
-    allocate (wcy1(lnx), stat=ierr); wcy1 = 0
-    call aerr('wcy1(lnx)', ierr, lnx)
-    allocate (wcx2(lnx), stat=ierr); wcx2 = 0
-    call aerr('wcx2(lnx)', ierr, lnx)
-    allocate (wcy2(lnx), stat=ierr); wcy2 = 0
-    call aerr('wcy2(lnx)', ierr, lnx)
     allocate (wcxy(2, ndx), stat=ierr); wcxy = 0
     call aerr('wcxy (2,ndx)', ierr, 2 * ndx)
-    allocate (wcL(2, Lnx), stat=ierr); wcL = 0
-    call aerr('wcL  (2,Lnx)', ierr, 2 * Lnx)
     allocate (wc(ndx), stat=ierr); wc = 0
     call aerr('wc     (ndx)', ierr, ndx)
 
@@ -245,3 +246,5 @@
     kfs = 0
 
  end subroutine setlinktocenterweights
+
+end module m_setlinktocenterweights

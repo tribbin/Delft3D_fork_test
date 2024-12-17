@@ -30,7 +30,18 @@
 !
 !
 
+module m_mergenet_sub
+
+implicit none
+
+private
+
+public :: mergenet
+
+contains
+
    subroutine MERGENET()
+      use precision, only: dp
       use m_netw
       use M_MERGENET ! NUMM JBLUNT
       use geometry_module, only: dbdistance
@@ -40,8 +51,7 @@
       use m_mergenodes
       use m_set_nod_adm
 
-      implicit none
-      double precision :: eps
+      real(kind=dp) :: eps
       integer :: ierr
       integer :: in1
       integer :: j
@@ -129,3 +139,5 @@
 
       return
    end subroutine MERGENET
+
+end module m_mergenet_sub

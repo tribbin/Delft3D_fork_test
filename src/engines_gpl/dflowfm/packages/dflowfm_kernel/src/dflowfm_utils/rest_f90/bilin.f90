@@ -30,24 +30,35 @@
 !
 !
 
+module m_bilin
+
+implicit none
+
+private
+
+public :: bilin
+
+contains
+
       subroutine BILIN(X, Y, Z, XP, YP, ZP)
-         implicit none
-         double precision :: r1
-         double precision :: r2
-         double precision :: x1
-         double precision :: x2
-         double precision :: xa
-         double precision :: xp
-         double precision :: xr
-         double precision :: xrm
-         double precision :: y1
-         double precision :: y2
-         double precision :: ya
-         double precision :: yp
-         double precision :: yr
-         double precision :: yrm
-         double precision :: zp
-         double precision :: X(4), Y(4), Z(4)
+         use precision, only: dp
+
+         real(kind=dp) :: r1
+         real(kind=dp) :: r2
+         real(kind=dp) :: x1
+         real(kind=dp) :: x2
+         real(kind=dp) :: xa
+         real(kind=dp) :: xp
+         real(kind=dp) :: xr
+         real(kind=dp) :: xrm
+         real(kind=dp) :: y1
+         real(kind=dp) :: y2
+         real(kind=dp) :: ya
+         real(kind=dp) :: yp
+         real(kind=dp) :: yr
+         real(kind=dp) :: yrm
+         real(kind=dp) :: zp
+         real(kind=dp) :: X(4), Y(4), Z(4)
 !     Bepaal relatieve ligging in cel.
 !     Twee coordinaten (xr,yr) van 0 tot 1.
 !     Bilineaire interpolatie
@@ -67,3 +78,5 @@
          ZP = XRM * YRM * Z(1) + XR * YRM * Z(2) + XR * YR * Z(3) + XRM * YR * Z(4)
          return
       end
+
+end module m_bilin

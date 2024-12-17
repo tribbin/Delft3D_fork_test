@@ -30,7 +30,18 @@
 !
 !
 
+module m_intdxstri
+
+implicit none
+
+private
+
+public :: intdxstri
+
+contains
+
       subroutine INTDXSTRI(XH, YH, DXS, NPH, JDLA)
+         use precision, only: dp
          use m_missing
          use m_samples
          use m_sferic, only: jsferic, jasfer3D
@@ -38,11 +49,10 @@
          use m_ec_basic_interpolation, only: triinterp2
          use fm_external_forcings_data, only: transformcoef
 
-         implicit none
          integer :: nph, jdla
-         double precision :: XH(NPH), YH(NPH), DXS(NPH)
+         real(kind=dp) :: XH(NPH), YH(NPH), DXS(NPH)
 
-         double precision :: dxsav
+         real(kind=dp) :: dxsav
          integer :: n
          integer :: nn
 
@@ -68,3 +78,5 @@
          end if
 
       end subroutine INTDXSTRI
+
+end module m_intdxstri

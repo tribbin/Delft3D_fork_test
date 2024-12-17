@@ -31,7 +31,18 @@
 !
 
 !> create pillar grid in polygon
+module m_pillargrid
+
+implicit none
+
+private
+
+public :: pillargrid
+
+contains
+
 subroutine pillargrid(ierror)
+   use precision, only: dp
    use m_grid
    use m_gridsettings
    use m_polygon
@@ -40,13 +51,11 @@ subroutine pillargrid(ierror)
    use geometry_module, only: dbdistance, get_startend
    use m_increase_grid
 
-   implicit none
-
    integer, intent(out) :: ierror ! error (1) or not (0)
 
    integer :: i, j, jstart, jend, num, ipol
 
-   double precision :: R0, R1, x0, y0, x1, y1, alpha, beta
+   real(kind=dp) :: R0, R1, x0, y0, x1, y1, alpha, beta
 
    ierror = 1
 
@@ -100,3 +109,5 @@ subroutine pillargrid(ierror)
 
    return
 end subroutine pillargrid
+
+end module m_pillargrid

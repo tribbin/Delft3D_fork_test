@@ -32,7 +32,18 @@
 
 !> network field move
 !!   Is is assumed that there is a backup copy of the grid.
+module m_netmodfld
+
+implicit none
+
+private
+
+public :: netmodfld
+
+contains
+
 subroutine netmodfld(xp, yp, kp)
+   use precision, only: dp
    use m_netw
    use m_grid
    use m_alloc
@@ -41,15 +52,13 @@ subroutine netmodfld(xp, yp, kp)
    use m_sferic
    use geometry_module, only: dbdistance
 
-   implicit none
-
-   double precision :: xp, yp !< coordinates that determine the influenced region
+   real(kind=dp) :: xp, yp !< coordinates that determine the influenced region
 
    integer :: kp !< center point index
 
-   double precision :: Dx0, Dy0, rsx, xn, yn, dist, frac
-   double precision :: xcen, ycen
-   double precision, external :: getDx, getDy
+   real(kind=dp) :: Dx0, Dy0, rsx, xn, yn, dist, frac
+   real(kind=dp) :: xcen, ycen
+   real(kind=dp), external :: getDx, getDy
 
    integer :: i
 
@@ -73,3 +82,5 @@ subroutine netmodfld(xp, yp, kp)
    end do
 
 end subroutine netmodfld
+
+end module m_netmodfld

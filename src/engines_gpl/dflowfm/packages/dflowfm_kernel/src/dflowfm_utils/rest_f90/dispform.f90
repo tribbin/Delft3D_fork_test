@@ -30,11 +30,22 @@
 !
 !
 
+module m_dispform
+
+implicit none
+
+private
+
+public :: dispform
+
+contains
+
       subroutine DISPFORM(value, fmt)
-         implicit none
+         use precision, only: dp
+
          integer :: n1
          integer :: n2
-         double precision :: value
+         real(kind=dp) :: value
          character fmt * (*)
 
          fmt = '(f9.3)'
@@ -59,3 +70,5 @@
 
          return
       end
+
+end module m_dispform

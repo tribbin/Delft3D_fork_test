@@ -38,7 +38,20 @@
 !! until a higher bottom (shore) is encountered, or a flood front from one
 !! of the other samples.
 !! Also used by flow_flowinit() for the <tt>WaterLevIniFile</tt> from the MDU.
+module m_flow_initfloodfill
+use m_in_flowcell, only: in_flowcell
+
+
+implicit none
+
+private
+
+public :: flow_initfloodfill
+
+contains
+
 subroutine flow_initfloodfill()
+   use precision, only: dp
    use m_samples
    use m_flow
    use m_flowgeom
@@ -47,13 +60,11 @@ subroutine flow_initfloodfill()
    use kdtree2Factory
    use m_find_flownode, only: find_nearest_flownodes_kdtree
 
-   implicit none
-
    integer :: i, iL, Lf, k, k2, nx
    integer, allocatable :: kcsfill(:)
    integer, allocatable :: ndqueue(:)
    integer, dimension(:), allocatable :: inodes
-   double precision, allocatable :: s1queue(:)
+   real(kind=dp), allocatable :: s1queue(:)
    integer :: iqcur, iqtail
    integer :: ierror
    integer :: jakdtree
@@ -148,3 +159,5 @@ subroutine flow_initfloodfill()
    if (allocated(inodes)) deallocate (inodes)
 
 end subroutine flow_initfloodfill
+
+end module m_flow_initfloodfill

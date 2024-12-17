@@ -30,21 +30,34 @@
 !
 !
 
-  subroutine POLTOLINES()
+module m_poltolines
+use m_setpoint, only: setpoint
 
+
+implicit none
+
+private
+
+public :: poltolines
+
+contains
+
+  subroutine POLTOLINES()
+     use m_isnode, only: isnode
+     use precision, only: dp
+     use m_connect, only: connect
      use m_netw
      use m_afmeting
      use gridoperations
      use m_cconstants
+     use m_dlength, only: dlength
 
-     implicit none
-     double precision :: ael
+     real(kind=dp) :: ael
      integer :: k
      integer :: k1
      integer :: k2
-     double precision :: rml
-     double precision :: zp
-     double precision :: DLENGTH
+     real(kind=dp) :: rml
+     real(kind=dp) :: zp
 
      AEL = PI * RDIAM * RDIAM / 4 ! RDIAM in mm
      do K = 1, NPL - 1
@@ -63,3 +76,5 @@
      end do
      return
   end subroutine POLTOLINES
+
+end module m_poltolines

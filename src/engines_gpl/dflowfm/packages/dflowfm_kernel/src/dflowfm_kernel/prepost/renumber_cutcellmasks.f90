@@ -30,7 +30,18 @@
 !
 !
 
+module m_renumber_cutcellmasks
+
+implicit none
+
+private
+
+public :: renumber_cutcellmasks
+
+contains
+
   subroutine renumber_cutcellmasks(perm)
+     use precision, only: dp
      use network_data, only: numL
      use m_cutcells
      implicit none
@@ -38,7 +49,7 @@
      integer, dimension(numL), intent(in) :: perm !< permuation array
 
      integer, dimension(:), allocatable :: idxL_bak
-     double precision, dimension(:), allocatable :: xdxL_bak, ydxL_bak
+     real(kind=dp), dimension(:), allocatable :: xdxL_bak, ydxL_bak
      integer, dimension(:), allocatable :: pdxL_bak
 
      integer :: i, ii, L, LL, num
@@ -88,3 +99,5 @@
 
      return
   end subroutine renumber_cutcellmasks
+
+end module m_renumber_cutcellmasks

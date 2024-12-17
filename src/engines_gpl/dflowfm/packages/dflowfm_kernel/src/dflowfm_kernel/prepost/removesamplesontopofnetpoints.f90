@@ -30,19 +30,30 @@
 !
 !
 
-   subroutine REMOVESAMPLESONTOPOFNETPOINTS(XS, YS, NS)
-      use m_netw
-      implicit none
-      integer :: ns
-      double precision :: XS(NS), YS(NS)
+module m_removesamplesontopofnetpoints
 
-      double precision :: dx
-      double precision :: dy
+implicit none
+
+private
+
+public :: removesamplesontopofnetpoints
+
+contains
+
+   subroutine REMOVESAMPLESONTOPOFNETPOINTS(XS, YS, NS)
+      use precision, only: dp
+      use m_netw
+
+      integer :: ns
+      real(kind=dp) :: XS(NS), YS(NS)
+
+      real(kind=dp) :: dx
+      real(kind=dp) :: dy
       integer :: jaontop
       integer :: k
       integer :: ks
       integer :: n
-      double precision :: tolnet
+      real(kind=dp) :: tolnet
       TOLNET = 0.1d0
       N = 0
       do KS = 1, NS
@@ -60,3 +71,5 @@
       end do
       NS = N
    end subroutine REMOVESAMPLESONTOPOFNETPOINTS
+
+end module m_removesamplesontopofnetpoints

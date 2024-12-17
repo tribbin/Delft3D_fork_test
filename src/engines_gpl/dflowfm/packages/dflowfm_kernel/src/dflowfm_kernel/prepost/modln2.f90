@@ -30,19 +30,30 @@
 !
 !
 
+module m_modln2
+
+implicit none
+
+private
+
+public :: modln2
+
+contains
+
       subroutine MODLN2(X, Y, Z, MMAX, NUMPI, MP, XP, YP, NPUT)
+         use m_get_polstartend, only: get_polstartend
+         use precision, only: dp
          use m_missing, only: dmiss
          use m_okay
          use m_dispnode
-         implicit none
 !     WIJZIG AANTAL PUNTEN OP EEN ENKELE LIJN
 !     DELETE , NPUT = -2
 !     OF INSERT, NPUT = -1
 !     DELETE ENTIRE LINE, -3
 !     DELETE ALL EXCEPT SELECTED LINE, -4
          integer :: MMAX, NUMPI, MP, nput
-         double precision :: X(MMAX), Y(MMAX), Z(MMAX)
-         double precision :: XP, YP, ZP
+         real(kind=dp) :: X(MMAX), Y(MMAX), Z(MMAX)
+         real(kind=dp) :: XP, YP, ZP
          integer :: i
          integer :: istart
          integer :: j
@@ -165,3 +176,5 @@
          call DISPNODE(MP)
          return
       end subroutine MODLN2
+
+end module m_modln2

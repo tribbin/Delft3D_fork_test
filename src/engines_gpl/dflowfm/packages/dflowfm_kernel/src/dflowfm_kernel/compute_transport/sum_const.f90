@@ -30,37 +30,50 @@
 !
 !
 
-subroutine sum_const(iter, vol1)
-   use m_transport
-   use m_flowgeom, only: Ndx
-   use m_flow, only: Ndkx
-   use m_get_kbot_ktop
+module m_sum_const
+
    implicit none
 
-   integer, intent(in) :: iter
-   double precision, dimension(Ndkx), intent(in) :: vol1
+   private
 
-   double precision, dimension(NUMCONST) :: sum
+   public :: sum_const
 
-   integer :: kk, k, kb, kt
-   integer :: j
+contains
 
-   sum = 0d0
+   subroutine sum_const(iter, vol1)
+      use precision, only: dp
+      use m_transport
+      use m_flowgeom, only: Ndx
+      use m_flow, only: Ndkx
+      use m_get_kbot_ktop
+      implicit none
 
-   do kk = 1, Ndx
-      call getkbotktop(kk, kb, kt)
-      do k = kb, kt
-         do j = 1, NUMCONST
-            sum(j) = sum(j) + vol1(k) * constituents(j, k)
+      integer, intent(in) :: iter
+      real(kind=dp), dimension(Ndkx), intent(in) :: vol1
+
+      real(kind=dp), dimension(NUMCONST) :: sum
+
+      integer :: kk, k, kb, kt
+      integer :: j
+
+      sum = 0d0
+
+      do kk = 1, Ndx
+         call getkbotktop(kk, kb, kt)
+         do k = kb, kt
+            do j = 1, NUMCONST
+               sum(j) = sum(j) + vol1(k) * constituents(j, k)
+            end do
          end do
       end do
-   end do
 
-   write (6, "(I5, ':')", advance="no") iter
-   do j = 1, NUMCONST
-      write (6, "(E25.15)", advance="no") sum(j)
-   end do
-   write (6, *)
+      write (6, "(I5, ':')", advance="no") iter
+      do j = 1, NUMCONST
+         write (6, "(E25.15)", advance="no") sum(j)
+      end do
+      write (6, *)
 
-   return
-end subroutine sum_const
+      return
+   end subroutine sum_const
+
+end module m_sum_const

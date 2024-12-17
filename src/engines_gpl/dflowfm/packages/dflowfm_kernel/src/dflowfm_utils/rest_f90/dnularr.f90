@@ -30,13 +30,24 @@
 !
 !
 
+module m_dnularr
+
+implicit none
+
+private
+
+public :: dnularr
+
+contains
+
       subroutine DNULARR(X, MMAX, NMAX)
-         implicit none
+         use precision, only: dp
+
          integer :: i
          integer :: j
          integer :: mmax
          integer :: nmax
-         double precision X(MMAX, NMAX)
+         real(kind=dp) X(MMAX, NMAX)
          do I = 1, MMAX
             do J = 1, NMAX
                X(I, J) = 0d0
@@ -44,3 +55,5 @@
          end do
          return
       end
+
+end module m_dnularr

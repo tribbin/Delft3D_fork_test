@@ -30,11 +30,22 @@
 !
 !
 
+module m_ecrtab
+
+implicit none
+
+private
+
+public :: ecrtab
+
+contains
+
       subroutine ECRTAB(X, MC, NC, MRGF, HALF, mmax, nmax)
+         use precision, only: dp
          use m_readyy
-         implicit none
-         double precision :: af
-         double precision :: half
+
+         real(kind=dp) :: af
+         real(kind=dp) :: half
          integer :: i
          integer :: j
          integer :: mc
@@ -43,7 +54,7 @@
          integer :: nc
          integer :: nmax
 !     SCHRIJFROUTINE RGF-FORMAT
-         double precision :: X(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX)
          do J = 1, NC
             AF = HALF + 0.5d0 * dble(J) / dble(NC)
             call READYY(' ', AF)
@@ -52,3 +63,5 @@
 888      format(' ETA= ', I4, 5es26.18:/(10x, 5es26.18))
          return
       end subroutine ECRTAB
+
+end module m_ecrtab

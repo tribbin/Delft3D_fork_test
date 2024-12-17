@@ -33,6 +33,8 @@
 !> Write tecplot output in already opened file
 !>   note: file is closed when tim==tstop
    subroutine tecplot_out(mtecfil, tim, Lwriheader)
+      use m_setvelocityfield, only: setvelocityfield
+      use precision, only: dp
 
       use m_flowgeom
       use m_flow
@@ -41,12 +43,12 @@
       implicit none
 
       integer :: mtecfil
-      double precision, intent(in) :: tim
+      real(kind=dp), intent(in) :: tim
       logical, intent(in) :: Lwriheader
 
       integer :: i, j, k, icell
       integer, dimension(4) :: inode
-      double precision, dimension(:), allocatable :: s1k, a1k, hk
+      real(kind=dp), dimension(:), allocatable :: s1k, a1k, hk
       character(len=256) :: zone
 
 ! Write header

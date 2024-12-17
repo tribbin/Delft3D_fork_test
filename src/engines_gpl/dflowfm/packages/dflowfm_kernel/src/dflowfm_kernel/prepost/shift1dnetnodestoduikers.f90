@@ -27,10 +27,19 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
+module m_shift1dnetnodestoduikers
+
+implicit none
+
+private
+
+public :: shift1dnetnodestoduikers
+
+contains
 
  subroutine shift1Dnetnodestoduikers()
+    use precision, only: dp
+    use m_closeto1dnetlink, only: closeto1dnetlink
     use m_netw
     use m_flowgeom
     use m_flow
@@ -43,9 +52,8 @@
     use m_reapol
     use m_wripol
 
-    implicit none
     integer :: minp, Ls, n, k1, k2, kL, kR, LnL
-    double precision :: x1, y1, z1, x2, y2, z2, xc, yc, XLS, YLS, dum, dis12, dis11, disL, disd, dis22, dis21, alf, zx, xL, yL, xR, yR, half, xkc, ykc
+    real(kind=dp) :: x1, y1, z1, x2, y2, z2, xc, yc, XLS, YLS, dum, dis12, dis11, disL, disd, dis22, dis21, alf, zx, xL, yL, xR, yR, half, xkc, ykc
     character(len=maxlength) :: pipefilein, pipefileout
     if (numL == 0) return
 
@@ -123,3 +131,5 @@
 
     return
  end subroutine shift1Dnetnodestoduikers
+
+end module m_shift1dnetnodestoduikers

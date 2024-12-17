@@ -30,20 +30,31 @@
 !
 !
 
+module m_refinelines
+
+implicit none
+
+private
+
+public :: refinelines
+
+contains
+
   subroutine REFINELINES()
+     use precision, only: dp
+     use m_connect, only: connect
      use m_netw
      use M_GRIDSETTINGS
      use m_missing, only: dmiss, jins
      use geometry_module, only: pinpok
      use m_del_elem
-     implicit none
 
      integer :: INL
      integer :: k1
      integer :: k2
      integer :: l
      integer :: lnu
-     double precision :: r0, XX, YY, ZZ
+     real(kind=dp) :: r0, XX, YY, ZZ
 
      if (MFAC <= 1) return
 
@@ -66,3 +77,5 @@
 
      return
   end subroutine REFINELINES
+
+end module m_refinelines

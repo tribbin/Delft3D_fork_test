@@ -32,6 +32,9 @@
 
    !> test iterative solver (as "mpitest")
    subroutine soltest(iCFL, icgsolver_loc, maxsubmatvecs, iepsdiff, iepscg)
+      use m_solve_guus, only: solve_matrix
+      use precision, only: dp
+      use m_update_matrix, only: update_matrix
       use m_partitioninfo
       use m_timer
       use unstruc_messages
@@ -41,6 +44,8 @@
       use m_reduce
       use m_flow
       use m_alloc
+      use m_flow_modelinit, only: flow_modelinit
+      use m_solve_guus, only: pack_matrix
       implicit none
 
       integer, intent(in) :: iCFL !< wave-based Courant number
@@ -49,17 +54,15 @@
       integer, intent(in) :: iepsdiff ! -10log(tolerance in Schwarz iterations) (if > 0)
       integer, intent(in) :: iepscg ! -10log(tolerance in inner iterations) (if > 0)
 
-      double precision, dimension(:), allocatable :: sex ! exact solution at cell centers
-      double precision, dimension(:), allocatable :: dmask ! used for masking ghost cells that are not being updated
+      real(kind=dp), dimension(:), allocatable :: sex ! exact solution at cell centers
+      real(kind=dp), dimension(:), allocatable :: dmask ! used for masking ghost cells that are not being updated
 
-      double precision :: CFL
-      double precision :: diffmax
+      real(kind=dp) :: CFL
+      real(kind=dp) :: diffmax
 
       integer :: NRUNS
       integer :: i, ii, irun
       integer :: ierror
-
-      integer, external :: flow_modelinit
 
       jarenumber = 0
       CFL = 10d0

@@ -30,20 +30,29 @@
 !
 !
 
-      subroutine TXTTIM()
-         use m_mtext
-         use m_devices
-         use m_textim
-         implicit none
-         integer :: l
+module m_txttim
 
-         L = len_trim(TXTIM)
-         if (L == 0) return
-         call IGRCHARSIZE(real(TXTIMSIZE), real(TXTIMSIZE))
-         call IGRCHARFONT(3)
-         call MTEXT(TXTIM, TXTIMX, TXTIMY, 35)
-         call IGRCHARFONT(1)
-         call SETTEXTSIZE()
+   implicit none
 
-         return
-      end
+contains
+
+   subroutine TXTTIM()
+      use m_settextsize
+      use m_mtext
+      use m_devices
+      use m_textim
+      implicit none
+      integer :: l
+
+      L = len_trim(TXTIM)
+      if (L == 0) return
+      call IGRCHARSIZE(real(TXTIMSIZE), real(TXTIMSIZE))
+      call IGRCHARFONT(3)
+      call MTEXT(TXTIM, TXTIMX, TXTIMY, 35)
+      call IGRCHARFONT(1)
+      call SETTEXTSIZE()
+
+      return
+   end
+
+end module m_txttim

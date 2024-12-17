@@ -31,7 +31,18 @@
 !
 
 ! make the dual mesh
+module m_make_dual_mesh
+
+implicit none
+
+private
+
+public :: make_dual_mesh
+
+contains
+
 subroutine make_dual_mesh()
+   use precision, only: dp
    use m_alloc
    use m_missing
    use network_data
@@ -41,9 +52,7 @@ subroutine make_dual_mesh()
    use m_makenetnodescoding
    use m_set_nod_adm
 
-   implicit none
-
-   double precision, dimension(:), allocatable :: xk_new, yk_new, zk_new
+   real(kind=dp), dimension(:), allocatable :: xk_new, yk_new, zk_new
    integer, dimension(:, :), allocatable :: kn_new
    integer, dimension(:), allocatable :: newnode ! new node on link
 
@@ -245,3 +254,5 @@ contains
    end subroutine increaselinks
 
 end subroutine make_dual_mesh
+
+end module m_make_dual_mesh

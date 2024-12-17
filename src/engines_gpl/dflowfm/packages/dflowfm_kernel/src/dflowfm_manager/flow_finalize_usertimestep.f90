@@ -33,7 +33,22 @@
 !> Finalizes the current user-timestep (monitoring and I/O).
 !!
 !! Should be called directly after a flow_run_usertimestep.
+module m_flow_finalize_usertimestep
+
+implicit none
+
+private
+
+public :: flow_finalize_usertimestep
+
+contains
+
 subroutine flow_finalize_usertimestep(iresult)
+   use m_flow_externaloutput, only: flow_externaloutput
+   use m_updatevaluesonrunupgauges_mpi, only: updatevaluesonrunupgauges_mpi
+   use m_updatevaluesonobservationstations, only: updatevaluesonobservationstations
+   use precision, only: dp
+   use m_filter
    use m_flowtimes
    use Timers
    use m_timer
@@ -50,13 +65,12 @@ subroutine flow_finalize_usertimestep(iresult)
    use fm_statistical_output, only: out_variable_set_his, out_variable_set_map, out_variable_set_clm
    use m_statistical_output, only: update_source_input
    use m_update_values_on_cross_sections, only: update_values_on_cross_sections
-   implicit none
+   use m_flow_trachy_needs_update
 
    integer, intent(out) :: iresult !< Error status, DFM_NOERR==0 if successful.
 
-   double precision :: tem_dif
+   real(kind=dp) :: tem_dif
    logical :: do_fourier
-   logical, external :: flow_trachy_needs_update
 
    iresult = DFM_GENERICERROR
 
@@ -151,3 +165,5 @@ subroutine flow_finalize_usertimestep(iresult)
    return ! Return with success.
 
 end subroutine flow_finalize_usertimestep
+
+end module m_flow_finalize_usertimestep

@@ -31,7 +31,19 @@
 !
 
 ! fill observation stations array
+module m_fill_valobs
+
+implicit none
+
+private
+
+public :: fill_valobs
+
+contains
+
 subroutine fill_valobs()
+   use precision, only: dp
+   use m_linkstocentercartcomp
    use m_flow
    use m_flowtimes
    use m_transport
@@ -56,22 +68,22 @@ subroutine fill_valobs()
    use m_get_ucx_ucy_eul_mag
    use m_get_link1
    use m_links_to_centers, only: links_to_centers
+   use m_setrho, only: setrhofixedp
 
    implicit none
 
    integer :: i, ii, j, kk, k, kb, kt, klay, L, LL, Lb, Lt, LLL, k1, k2, k3, n, nlayb, nrlay, nlaybL, nrlayLx
    integer :: link_id_nearest
    integer :: kmx_const, kk_const, nlyrs
-   double precision :: wavfac
-   double precision :: dens, prsappr, drhodz, rhomea
-   double precision :: ux, uy, um
-   double precision, allocatable :: wa(:, :)
-   double precision, allocatable :: frac(:, :)
-   double precision, allocatable :: poros(:)
-   double precision, external :: setrhofixedp
-   double precision, allocatable :: ueux(:)
-   double precision, allocatable :: ueuy(:)
-   double precision, allocatable :: vius(:) !< Flowlink-averaged horizontal viscosity (viu) at s-point
+   real(kind=dp) :: wavfac
+   real(kind=dp) :: dens, prsappr, drhodz, rhomea
+   real(kind=dp) :: ux, uy, um
+   real(kind=dp), allocatable :: wa(:, :)
+   real(kind=dp), allocatable :: frac(:, :)
+   real(kind=dp), allocatable :: poros(:)
+   real(kind=dp), allocatable :: ueux(:)
+   real(kind=dp), allocatable :: ueuy(:)
+   real(kind=dp), allocatable :: vius(:) !< Flowlink-averaged horizontal viscosity (viu) at s-point
 
    kmx_const = kmx
    nlyrs = 0
@@ -93,14 +105,15 @@ subroutine fill_valobs()
       allocate (wa(1:2, 1:max(kmx, 1)))
    end if
 
-   call getucxucyeulmag(ndkx, ueux, ueuy, ucmag, jaeulervel, jahisvelocity)
    if (jahistaucurrent > 0) then
-      if (jawave == 0 .or. flowWithoutWaves) then
+      if ((jawave == 0 .or. flowWithoutWaves)) then
+         call getucxucyeulmag(ndkx, ueux, ueuy, ucmag, jaeulervel, jahisvelocity)
          ! fill taus
          call gettaus(1, 1)
 
          ! get vector comps
          if (kmx == 0) then
+
             do k = 1, ndx
                workx(k) = taus(k) * ueux(k) / max(ucmag(k), 1d-4)
                worky(k) = taus(k) * ueuy(k) / max(ucmag(k), 1d-4)
@@ -562,3 +575,5 @@ subroutine fill_valobs()
    if (timon) call timstop(handle_extra(55))
    return
 end subroutine fill_valobs
+
+end module m_fill_valobs

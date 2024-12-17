@@ -30,15 +30,27 @@
 !
 !
 
+module m_nodtoall
+use m_setpoint, only: setpoint
+
+implicit none
+
+private
+
+public :: nodtoall
+
+contains
+
   subroutine NODTOALL()
+     use precision, only: dp
+     use m_addelem, only: addelem
      use m_netw
      use gridoperations
-     implicit none
 
      integer :: k
      integer :: k1
      integer :: n1
-     double precision :: XX, YY, ZZ
+     real(kind=dp) :: XX, YY, ZZ
      N1 = NUMK
      XX = 0.5d0; YY = 0.5d0; ZZ = 0d0
      call GIVENEWNODENUM(K1)
@@ -48,3 +60,5 @@
      end do
      return
   end subroutine NODTOALL
+
+end module m_nodtoall

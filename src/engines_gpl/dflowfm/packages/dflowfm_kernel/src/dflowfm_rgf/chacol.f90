@@ -30,14 +30,23 @@
 !
 !
 
+module m_chacol
+
+implicit none
+
+private
+
+public :: chacol
+
+contains
+
       subroutine CHACOL(X, mmax, nmax, J1, J2, NUMSPL)
-!     VERWISSEL KOLOM J1 EN J2
-!      USE DIMENS
-         implicit none
+         use precision, only: dp
+
          integer :: mmax, nmax, j1, j2, numspl
-         double precision :: X(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX)
          integer :: i
-         double precision :: xh
+         real(kind=dp) :: xh
 
          do I = 1, NUMSPL
             XH = X(I, J1)
@@ -46,3 +55,5 @@
          end do
          return
       end subroutine chacol
+
+end module m_chacol

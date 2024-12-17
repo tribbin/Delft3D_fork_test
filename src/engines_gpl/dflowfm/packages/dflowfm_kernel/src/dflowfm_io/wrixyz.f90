@@ -30,16 +30,29 @@
 !
 !
 
-      subroutine WRIXYZ(FILNAM, XS, YS, ZS, NS)
-         implicit none
-         character(LEN=*) :: FILNAM
-         integer :: NS
-         double precision :: XS(NS), YS(NS), ZS(NS)
-         integer :: I, MOUT
+module m_wrixyz
 
-         call NEWFIL(MOUT, FILNAM)
-         do I = 1, NS
-            write (MOUT, '(3(F16.7))') XS(I), YS(I), ZS(I)
-         end do
-         call DOCLOSE(MOUT)
-      end subroutine WRIXYZ
+   implicit none
+
+   private
+
+   public :: WRIXYZ
+
+contains
+
+   subroutine WRIXYZ(FILNAM, XS, YS, ZS, NS)
+      use precision, only: dp
+      implicit none
+      character(LEN=*) :: FILNAM
+      integer :: NS
+      real(kind=dp) :: XS(NS), YS(NS), ZS(NS)
+      integer :: I, MOUT
+
+      call NEWFIL(MOUT, FILNAM)
+      do I = 1, NS
+         write (MOUT, '(3(F16.7))') XS(I), YS(I), ZS(I)
+      end do
+      call DOCLOSE(MOUT)
+   end subroutine WRIXYZ
+
+end module m_wrixyz

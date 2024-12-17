@@ -30,35 +30,44 @@
 !
 !
 
+module m_mirrorcell
+
+implicit none
+
+private
+
+public :: mirrorcell
+
+contains
+
  !> Prepares a mirror cell as candidate for an open boundary cell, and a probe point 'uitsteker' for use in selectelset().
  !! This is done by determining a representative half cell size:
  !! dis = MAX(.5*sqrt(cell area), distance from circumcenter to edge)
  !! The mirrored circumcenter is obtained by projecting cell circumcenter onto edge, and from there extend by dis (i.e., half approximate cell 'width').
  !! The probe point is also obtained by projecting cell circumcenter onto edge, and from there extend by rrtol*dis (i.e., rrtol*apprimate cell 'width')
  subroutine mirrorcell(n, x3_, y3, x4_, y4, xci, yci, xcb, ycb, xmir, ymir, xx, yy) !
+    use precision, only: dp
     use m_netw ! bounday segment   !intern circumcentre, boundary circumcentre, mirrorpoint, cell corners
     use m_flowgeom
     use m_sferic
     use m_missing, only: dmiss, dxymis
     use geometry_module, only: normaloutchk, duitpl, dprodout, half, spher2locvec, xpav, dlinedis
 
-    implicit none
     integer, intent(in) :: n !< cell number (in 1:nump)
-    double precision, intent(in) :: x3_, y3, x4_, y4 !< net node coordinates of a boundary edge of this cell
-    double precision, intent(out) :: xci, yci !< cell circumcenter coordinates for this cell (i.e., xz(n), yz(n))
-    double precision, intent(out) :: xcb, ycb !< cell circumcenter coordinates for the 'mirror' cell
-    double precision, intent(out) :: xmir, ymir !< 'Uitsteker' probe point, used for testing for open boundary in selectelset
-    double precision, intent(out) :: xx(4), yy(4) !< Coordinates for mirrored cell contour (counter clockwise), contains x3,y3 and also x4,y4.
+    real(kind=dp), intent(in) :: x3_, y3, x4_, y4 !< net node coordinates of a boundary edge of this cell
+    real(kind=dp), intent(out) :: xci, yci !< cell circumcenter coordinates for this cell (i.e., xz(n), yz(n))
+    real(kind=dp), intent(out) :: xcb, ycb !< cell circumcenter coordinates for the 'mirror' cell
+    real(kind=dp), intent(out) :: xmir, ymir !< 'Uitsteker' probe point, used for testing for open boundary in selectelset
+    real(kind=dp), intent(out) :: xx(4), yy(4) !< Coordinates for mirrored cell contour (counter clockwise), contains x3,y3 and also x4,y4.
 
-    double precision :: dis, dis2, rx, ry, xd, yd
-    double precision :: x3, x4
-    double precision, external :: dprodin
+    real(kind=dp) :: dis, dis2, rx, ry, xd, yd
+    real(kind=dp) :: x3, x4
     integer :: ja, jadismxbnd = 0
 
-    double precision, dimension(1) :: rxloc, ryloc
-    double precision :: xref, yref
-    double precision :: x5, y5, x6, y6
-    double precision :: dout
+    real(kind=dp), dimension(1) :: rxloc, ryloc
+    real(kind=dp) :: xref, yref
+    real(kind=dp) :: x5, y5, x6, y6
+    real(kind=dp) :: dout
 
     ! call getcellWEIGHTEDcenter( n, xci, yci, zci )
     ! edge = dbdistance(x3,y3,x4,y4)
@@ -149,3 +158,5 @@
        xx(1) = x4; yy(1) = y4
     end if
  end subroutine mirrorcell
+
+end module m_mirrorcell

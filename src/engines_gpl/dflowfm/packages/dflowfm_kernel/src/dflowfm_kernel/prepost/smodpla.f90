@@ -27,18 +27,26 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
+module m_smodpla
+
+implicit none
+
+private
+
+public :: smodpla
+
+contains
 
       subroutine SMODPLA(DPLA, DXS, NPL) ! SMOOTH WITH DESIRED
+         use precision, only: dp
          use M_ALLOC
-         implicit none
-         integer :: npl
-         double precision :: DPLA(NPL), DXS(NPL)
-         double precision, allocatable :: DH(:)
 
-         double precision :: a1
-         double precision :: a2
+         integer :: npl
+         real(kind=dp) :: DPLA(NPL), DXS(NPL)
+         real(kind=dp), allocatable :: DH(:)
+
+         real(kind=dp) :: a1
+         real(kind=dp) :: a2
          integer :: k
          integer :: n
 
@@ -58,3 +66,5 @@
          deallocate (DH)
 
       end subroutine SMODPLA
+
+end module m_smodpla

@@ -30,7 +30,18 @@
 !
 !
 
+module m_flow_settidepotential
+
+implicit none
+
+private
+
+public :: flow_settidepotential
+
+contains
+
  subroutine flow_settidepotential(timmin)
+    use precision, only: dp
     use m_flow
     use m_flowgeom
     use m_flowtimes
@@ -39,11 +50,9 @@
     use unstruc_model
     use m_equatorial
 
-    implicit none
-
-    double precision :: timmin
+    real(kind=dp) :: timmin
     integer :: kk
-    double precision :: tt
+    real(kind=dp) :: tt
 
     call meteo_tidepotential(julrefdat, TIMmin, doodsonstart, doodsonstop, doodsoneps)
 
@@ -55,3 +64,5 @@
     end if
 
  end subroutine flow_settidepotential
+
+end module m_flow_settidepotential

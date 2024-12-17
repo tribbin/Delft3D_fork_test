@@ -31,7 +31,20 @@
 !
 
 !> copy netboundary to polygon, starting from a specified point
+module m_netboundtopoly
+
+implicit none
+
+private
+
+public :: netboundtopoly
+
+contains
+
 subroutine netboundtopoly(kstart)
+   use m_merge_polylines, only: merge_polylines
+   use m_flippo, only: flippo
+   use precision, only: dp
    use m_polygon
    use m_netw
    use m_alloc
@@ -39,15 +52,13 @@ subroutine netboundtopoly(kstart)
    use m_sferic, only: jsferic, jasfer3D
    use geometry_module, only: dprodout
 
-   implicit none
-
    integer, intent(in) :: kstart !< startnode
 
    integer, dimension(:), allocatable :: klist ! list of new startnodes
    integer :: nlist ! number of entries in list
    integer :: ilist ! position in list
 
-   double precision :: crs
+   real(kind=dp) :: crs
 
    integer :: iorient !  orientation of branch, net on left (1) or right (0) or do not consider (-1)
 
@@ -197,3 +208,5 @@ subroutine netboundtopoly(kstart)
 
    return
 end subroutine netboundtopoly
+
+end module m_netboundtopoly

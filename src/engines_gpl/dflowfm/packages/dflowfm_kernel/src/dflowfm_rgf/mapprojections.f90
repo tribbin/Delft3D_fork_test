@@ -30,7 +30,19 @@
 !
 !
 
+module m_mapprojections
+
+implicit none
+
+private
+
+public :: mapprojections
+
+contains
+
       subroutine MAPPROJECTIONS(IT, JA)
+         use m_mappro, only: mappro
+         use precision, only: dp
          use m_converparameters
          use M_MAPPROPARAMETERS
          use M_SFERIC
@@ -43,14 +55,14 @@
          use M_SAMPLES
          use M_SPLINES
          use m_qnerror
-         implicit none
+
          integer :: i
          integer :: ini
          integer :: it
          integer :: j
          integer :: ja
          integer :: k
-         double precision :: XG, YG
+         real(kind=dp) :: XG, YG
 
          INI = 1
          DELTX = 0d0
@@ -182,3 +194,5 @@
 
          return
       end subroutine MAPPROJECTIONS
+
+end module m_mapprojections

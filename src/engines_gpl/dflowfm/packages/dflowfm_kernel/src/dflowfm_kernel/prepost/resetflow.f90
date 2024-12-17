@@ -30,10 +30,23 @@
 !
 !
 
+module m_resetflow
+use m_reset_movobs, only: reset_movobs
+
+implicit none
+
+private
+
+public :: resetflow
+
+contains
+
  !> Resets the current flow- and time-state, but keeps al active parameter settings.
  !! To be called upon flow_modelinit().
  !! Upon program startup and loading of new model/MDU, call resetFullFlowModel() instead.
  subroutine resetFlow()
+    use m_xbeachwaves, only: xbeach_reset
+    use m_reset_sedtra, only: reset_sedtra
     use m_wind
     use m_flow
     use fm_external_forcings_data
@@ -101,3 +114,5 @@
     call reset_nearfieldData()
 
  end subroutine resetFlow
+
+end module m_resetflow

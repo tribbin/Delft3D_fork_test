@@ -30,21 +30,32 @@
 !
 !
 
-      subroutine MAKEPANELXY(JPANEL)
+module m_makepanelxy
+use m_dputar, only: dputar
 
+
+implicit none
+
+private
+
+public :: makepanelxy
+
+contains
+
+      subroutine MAKEPANELXY(JPANEL)
+         use precision, only: dp
          use m_netw
          use M_AFMETING
          use gridoperations
          use m_howtoview
          use m_cconstants
 
-         implicit none
          integer :: JPANEL
 
-         double precision :: ael
-         double precision :: cs
-         double precision :: dx
-         double precision :: dy
+         real(kind=dp) :: ael
+         real(kind=dp) :: cs
+         real(kind=dp) :: dx
+         real(kind=dp) :: dy
          integer :: i
          integer :: i2
          integer :: j
@@ -67,19 +78,19 @@
          integer :: numh
          integer :: numrb
          integer :: numv
-         double precision :: rmas
-         double precision :: rmk
-         double precision :: rml
-         double precision :: rnl
-         double precision :: sn
-         double precision :: x
-         double precision :: xkk
-         double precision :: y
-         double precision :: ykk
+         real(kind=dp) :: rmas
+         real(kind=dp) :: rmk
+         real(kind=dp) :: rml
+         real(kind=dp) :: rnl
+         real(kind=dp) :: sn
+         real(kind=dp) :: x
+         real(kind=dp) :: xkk
+         real(kind=dp) :: y
+         real(kind=dp) :: ykk
 
-     !    common / SET2 / REKMAX, DRUKMAX, NUMDIK, JOFREEZE
-         double precision DX1, DY1, DZ1
-         double precision :: DR(4)
+         !    common / SET2 / REKMAX, DRUKMAX, NUMDIK, JOFREEZE
+         real(kind=dp) DX1, DY1, DZ1
+         real(kind=dp) :: DR(4)
          integer :: INI, JaNET
          data INI/0/
          JaNET = 1 - JPANEL
@@ -315,3 +326,5 @@
 
          return
       end subroutine MAKEPANELXY
+
+end module m_makepanelxy

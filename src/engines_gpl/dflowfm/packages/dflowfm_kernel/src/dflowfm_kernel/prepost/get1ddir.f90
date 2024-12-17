@@ -30,21 +30,31 @@
 !
 !
 
+module m_get1ddir
+
+implicit none
+
+private
+
+public :: get1ddir
+
+contains
+
  !> Gets the tangential direction vector for a 1D flow node,
  !! based on direction of the last regular 1D link connected to it.
  !! NOTE: only makes sense when there's only one single regular 1D
  !! link connected (i.e., 1D endpoint, maybe connected with kcu=3
  !! type link to 2D grid cell).
  subroutine get1Ddir(n1, xt, yt)
+    use precision, only: dp
     use m_flowgeom
     use m_flow
     use m_sferic, only: jsferic, jasfer3D
     use m_missing, only: dmiss, dxymis
     use geometry_module, only: normalin, normalout
 
-    implicit none
     integer, intent(in) :: n1 !< 1D flow node number
-    double precision, intent(out) :: xt, yt !< x,y component of estimated tangential vector at this 1D flow node.
+    real(kind=dp), intent(out) :: xt, yt !< x,y component of estimated tangential vector at this 1D flow node.
 
     integer :: n2, k, L, LL, ka, kb, k1, k2
 
@@ -75,3 +85,5 @@
     end if
 
  end subroutine get1Ddir
+
+end module m_get1ddir

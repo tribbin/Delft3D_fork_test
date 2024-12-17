@@ -31,36 +31,46 @@
 !
 
 !>  compute the orientation of a cell by SVD
+module m_orthonet_compute_orientation
+use m_svdcmp, only: svdcmp
+
+implicit none
+
+private
+
+public :: orthonet_compute_orientation
+
+contains
+
 subroutine orthonet_compute_orientation(aspect, uu1, vv1, uu2, vv2, i)
+   use precision, only: dp
    use m_netw
    use m_sferic
    use m_alloc
    use m_qnerror
 
-   implicit none
-
    integer, intent(in) :: i !< netcell number
-   double precision, intent(out) :: aspect !< aspect ratio
-   double precision, intent(out) :: uu1, uu2 !< components of first orientation vector
-   double precision, intent(out) :: vv1, vv2 !< components of second orientation vector
+   real(kind=dp), intent(out) :: aspect !< aspect ratio
+   real(kind=dp), intent(out) :: uu1, uu2 !< components of first orientation vector
+   real(kind=dp), intent(out) :: vv1, vv2 !< components of second orientation vector
 
-   double precision, dimension(2, 2) :: B, Jacobian ! Jacobian matrix
+   real(kind=dp), dimension(2, 2) :: B, Jacobian ! Jacobian matrix
 
    integer, parameter :: M = 6 ! maximum nodes in cell
-   double precision, dimension(M, 2) :: A, R ! coefficient matrix
-   double precision, dimension(M) :: xi, eta, xminx0, yminy0, theta
-   double precision :: x0, y0, D
+   real(kind=dp), dimension(M, 2) :: A, R ! coefficient matrix
+   real(kind=dp), dimension(M) :: xi, eta, xminx0, yminy0, theta
+   real(kind=dp) :: x0, y0, D
 
    integer, dimension(M) :: knodes ! indices of the nodes
 
-   double precision, dimension(2, 2) :: C
+   real(kind=dp), dimension(2, 2) :: C
 
-   double precision, dimension(2, 2) :: UU, VV ! left and right singular vectors
-   double precision, dimension(2) :: S ! singular values
+   real(kind=dp), dimension(2, 2) :: UU, VV ! left and right singular vectors
+   real(kind=dp), dimension(2) :: S ! singular values
 
    integer :: j, k, N
 
-   double precision, parameter :: EPS = 1d-4
+   real(kind=dp), parameter :: EPS = 1d-4
 
 !--------------------------------------------------------------
 !  compute the Jacobian matrix J of net cell i
@@ -150,3 +160,5 @@ subroutine orthonet_compute_orientation(aspect, uu1, vv1, uu2, vv2, i)
    vv2 = UU(2, 2) * S(2)
 
 end subroutine orthonet_compute_orientation
+
+end module m_orthonet_compute_orientation

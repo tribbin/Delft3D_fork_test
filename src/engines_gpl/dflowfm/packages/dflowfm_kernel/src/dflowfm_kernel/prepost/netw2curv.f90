@@ -31,7 +31,20 @@
 !
 
 !> generate curvi-linear grid from net, growing from (xp,yp)
+module m_netw2curv
+
+implicit none
+
+private
+
+public :: netw2curv
+
+contains
+
 subroutine netw2curv(xp, yp)
+   use m_makecurvgrid, only: makecurvgrid
+   use precision, only: dp
+   use m_assign_icjc, only: assign_icjc
    use m_netw
    use m_grid
    use m_alloc
@@ -40,9 +53,7 @@ subroutine netw2curv(xp, yp)
    use gridoperations
    use m_set_nod_adm
 
-   implicit none
-
-   double precision :: xp, yp !< coordinates of starting point
+   real(kind=dp) :: xp, yp !< coordinates of starting point
 
    integer :: ierr
 
@@ -120,3 +131,5 @@ subroutine netw2curv(xp, yp)
    netstat = NETSTAT_CELLS_DIRTY
 
 end subroutine netw2curv
+
+end module m_netw2curv

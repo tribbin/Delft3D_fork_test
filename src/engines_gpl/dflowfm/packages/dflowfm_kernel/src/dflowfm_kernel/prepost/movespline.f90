@@ -31,15 +31,25 @@
 !
 
 !>    move a whole spline
+module m_movespline
+
+implicit none
+
+private
+
+public :: movespline
+
+contains
+
       subroutine movespline(ispline, inode, xp, yp)
+         use precision, only: dp
          use m_splines
-         implicit none
 
          integer, intent(in) :: ispline !< spline number
          integer, intent(in) :: inode !< spline control point
-         double precision, intent(in) :: xp, yp !< new active spline control point (np) coordinates
+         real(kind=dp), intent(in) :: xp, yp !< new active spline control point (np) coordinates
 
-         double precision :: dx, dy
+         real(kind=dp) :: dx, dy
 
          integer :: num
 
@@ -53,3 +63,5 @@
          end if
          return
       end subroutine movespline
+
+end module m_movespline

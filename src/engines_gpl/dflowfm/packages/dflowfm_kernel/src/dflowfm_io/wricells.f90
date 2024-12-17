@@ -29,19 +29,31 @@
 
 !
 !
+! It seems it is not used.
+module m_wricells
 
- subroutine wricells(mout) ! write flow cell surrounding netnodes
-    use m_netw
-    use m_flowgeom
+   implicit none
 
-    implicit none
-    integer :: mout, n, j
+   private
 
-    write (mout, '(A,I12)') 'NR of NETNODES           = ', numk ! nump = ndx
-    write (mout, '(A,I12)') 'NR of NETLINKS           = ', numL ! nump = ndx
-    write (mout, '(A,I12)') 'NR of internal FLOWCELLS = ', nump ! nump = ndx
-    do n = 1, nump
-       write (mout, '(10I10)') netcell(n)%n, (netcell(n)%NOD(j), j=1, netcell(n)%n)
-    end do
+   public :: wricells
 
- end subroutine wricells
+contains
+
+   subroutine wricells(mout) ! write flow cell surrounding netnodes
+      use m_netw
+      use m_flowgeom
+
+      implicit none
+      integer :: mout, n, j
+
+      write (mout, '(A,I12)') 'NR of NETNODES           = ', numk ! nump = ndx
+      write (mout, '(A,I12)') 'NR of NETLINKS           = ', numL ! nump = ndx
+      write (mout, '(A,I12)') 'NR of internal FLOWCELLS = ', nump ! nump = ndx
+      do n = 1, nump
+         write (mout, '(10I10)') netcell(n)%n, (netcell(n)%NOD(j), j=1, netcell(n)%n)
+      end do
+
+   end subroutine wricells
+
+end module m_wricells

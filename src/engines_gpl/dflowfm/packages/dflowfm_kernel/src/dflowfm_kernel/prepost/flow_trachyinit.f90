@@ -38,6 +38,16 @@
 !! Besides that certain sediment transport formulae require a
 !! Cf at the flow node, which can only accurately be deterimined if the
 !! values at net links are known.
+module m_flow_trachyinit
+
+implicit none
+
+private
+
+public :: flow_trachyinit
+
+contains
+
 subroutine flow_trachyinit()
    use grid_dimens_module
    use network_data, only: numl, lne, xk, yk, kn, lnn
@@ -48,6 +58,7 @@ subroutine flow_trachyinit()
    use m_flow, only: kmx, zslay, z0urou
    use m_flowtimes, only: dt_user
    use m_trachy ! (FM module containing trachy data structure)
+   use precision, only: dp
    use m_rdtrt ! (contains dimtrt)
    use m_trtrou ! (contains chktrt)
    use unstruc_files, only: mdia
@@ -63,16 +74,14 @@ subroutine flow_trachyinit()
    use geometry_module, only: dbdistance, half
    use m_vegetation, only: jabaptist
    !
-   implicit none
-   !
    integer, pointer :: ntrtcrs
    integer, pointer :: ntrtobs
    !
-   double precision :: xE, yE, xF, yF, x, y, dist
-   double precision, parameter :: dtol_trachy = 1d-4 !< tolerance for distance in finding net-link numbers based on xuL,yuL
+   real(kind=dp) :: xE, yE, xF, yF, x, y, dist
+   real(kind=dp), parameter :: dtol_trachy = 1d-4 !< tolerance for distance in finding net-link numbers based on xuL,yuL
    !
-   double precision, dimension(:), allocatable :: xuL !< xu points on net-links
-   double precision, dimension(:), allocatable :: yuL !< yu points on net-links
+   real(kind=dp), dimension(:), allocatable :: xuL !< xu points on net-links
+   real(kind=dp), dimension(:), allocatable :: yuL !< yu points on net-links
    !
    integer :: istat
    integer :: itt
@@ -87,7 +96,7 @@ subroutine flow_trachyinit()
    integer :: ddbval = 0
    integer :: threshold_abort_current
 
-   double precision :: dummy_tunit = 1d0
+   real(kind=dp) :: dummy_tunit = 1d0
    !
    logical :: lftrto
    logical :: error
@@ -359,3 +368,5 @@ subroutine flow_trachyinit()
    threshold_abort = threshold_abort_current
 
 end subroutine flow_trachyinit
+
+end module m_flow_trachyinit

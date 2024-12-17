@@ -30,15 +30,28 @@
 !
 !
 
-      subroutine DF0ISF1(X0, X1, KMAX)
-         implicit none
-         integer :: KMAX
-         double precision X0(KMAX), X1(KMAX)
+module m_df0isf1
 
-         integer :: K
+   implicit none
 
-         do K = 1, KMAX
-            X0(K) = X1(K)
-         end do
-         return
-      end subroutine DF0ISF1
+   private
+
+   public :: df0isf1
+
+contains
+
+   subroutine DF0ISF1(X0, X1, KMAX)
+      use precision, only: dp
+      implicit none
+      integer :: KMAX
+      real(kind=dp) X0(KMAX), X1(KMAX)
+
+      integer :: K
+
+      do K = 1, KMAX
+         X0(K) = X1(K)
+      end do
+      return
+   end subroutine DF0ISF1
+
+end module m_df0isf1

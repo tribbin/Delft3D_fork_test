@@ -30,12 +30,23 @@
 !
 !
 
+module m_makey1d
+
+implicit none
+
+private
+
+public :: makey1d
+
+contains
+
       subroutine MAKEY1D(XR, YR, MNMAX) ! terug naar graden SUBROUTINE MAKEY1D
+         use precision, only: dp
          use M_SFERIC
          use M_MISSING
-         implicit none
+
          integer :: mnmax
-         double precision :: XR(MNMAX), YR(MNMAX), FI2
+         real(kind=dp) :: XR(MNMAX), YR(MNMAX), FI2
          integer :: i
 
          do I = 1, MNMAX
@@ -47,3 +58,5 @@
          end do
          return
       end subroutine MAKEY1D
+
+end module m_makey1d

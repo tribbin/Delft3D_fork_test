@@ -30,22 +30,32 @@
 !
 !
 
+module m_which2dnetlinkwascrossed
+
+implicit none
+
+private
+
+public :: which2dnetlinkwascrossed
+
+contains
+
  !> Find the 2D netlink (edge of a given 2D net cell) that is intersected
  !! by another given netlink (typically a 1D2D net link).
  subroutine which2Dnetlinkwascrossed(NC1, K1, K2, L) ! find the crossed 2D link
+    use precision, only: dp
     use m_flowgeom
     use m_netw
     use geometry_module, only: cross
     use m_missing, only: dmiss
     use m_sferic, only: jsferic
 
-    implicit none
     integer, intent(in) :: NC1 !< Index of 2D netcell in which one end of a 1D2D link lies.
     integer, intent(in) :: K1, K2 !< Start+end index of 1D2D netlink
     integer, intent(out) :: L !< Resulting 2D netlink (edge of 2D grid cell), intersected by input netlink. 0 if not found.
 
     integer :: nn, kk, jacros, k3, k4, LL
-    double precision :: SL, SM, XCR, YCR, CRP
+    real(kind=dp) :: SL, SM, XCR, YCR, CRP
 
     L = 0
     nn = NETCELL(nc1)%N
@@ -63,3 +73,5 @@
     end do
 
  end subroutine which2Dnetlinkwascrossed ! TEMP STORE CROSSED 2d LINK IN LC
+
+end module m_which2dnetlinkwascrossed

@@ -30,19 +30,31 @@
 !
 !
 
+module m_tranfn
+
+implicit none
+
+private
+
+public :: tranfn
+
+contains
+
       subroutine TRANFN(X1, X2, X3, X4, &
                         Y1, Y2, Y3, Y4, &
                         mmax, nmax, imax, &
                         MFAC, NFAC, XRH, YRH)
+         use m_abrel, only: abrel
+         use precision, only: dp
          use m_missing
-         implicit none
+
          integer :: mmax, nmax, imax, mfac, nfac
-         double precision :: X1(IMAX), X2(IMAX), X3(IMAX), X4(IMAX), XRH(MMAX, NMAX), &
-            Y1(IMAX), Y2(IMAX), Y3(IMAX), Y4(IMAX), YRH(MMAX, NMAX), &
-            B1R(IMAX), B2R(IMAX), A1R(IMAX), A2R(IMAX)
+         real(kind=dp) :: X1(IMAX), X2(IMAX), X3(IMAX), X4(IMAX), XRH(MMAX, NMAX), &
+                          Y1(IMAX), Y2(IMAX), Y3(IMAX), Y4(IMAX), YRH(MMAX, NMAX), &
+                          B1R(IMAX), B2R(IMAX), A1R(IMAX), A2R(IMAX)
 
          integer :: I, J
-         double precision :: A1, A2, B1, B2, D, DX, DY, AIJ, BIJ, EX, EY, XA, YA, XB, YB, DEXY
+         real(kind=dp) :: A1, A2, B1, B2, D, DX, DY, AIJ, BIJ, EX, EY, XA, YA, XB, YB, DEXY
 !     1,2,B VERTICALEN, 3,4,A HORIZONTALEN
 
          call ABREL(X1, Y1, B1R, NFAC)
@@ -157,3 +169,5 @@
 
          return
       end subroutine TRANFN
+
+end module m_tranfn

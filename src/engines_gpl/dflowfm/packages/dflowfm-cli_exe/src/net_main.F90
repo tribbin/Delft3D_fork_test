@@ -97,7 +97,16 @@ program unstruc
    use m_editsplines
    use m_editsam
    use m_editnetw
-   
+   use m_read_commandline, only: read_commandline
+   use m_flow_modelinit, only: flow_modelinit
+   use m_makelongculverts_commandline, only: makelongculverts_commandline
+   use m_makenet_sub, only: makenet
+   use m_partition_from_commandline, only: partition_from_commandline
+   use m_refine_from_commandline, only: refine_from_commandline
+   use m_resetFullFlowModel, only: resetFullFlowModel
+   use m_dobatch, only: dobatch
+   use m_generatepartitionmdufile, only: generatepartitionmdufile
+
    implicit none
 
    integer :: KEY
@@ -115,11 +124,7 @@ program unstruc
    character(len=maxnamelen) :: md_flowgeomfile_base !< storing the user-defined flowgeom file
    character(len=maxnamelen) :: md_classmapfile_base !< storing the user-defined class map file
 
-   integer, external :: iget_jaopengl
-   integer, external :: read_commandline
-   integer, external :: flow_modelinit
-
-   double precision :: tstartall, tstopall ! just checking...
+   real(kind=dp) :: tstartall, tstopall ! just checking...
 
    call wall_clock_time(tstartall)
 

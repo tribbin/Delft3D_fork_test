@@ -30,10 +30,21 @@
 !
 !
 
+module m_dropwater
+
+implicit none
+
+private
+
+public :: dropwater
+
+contains
+
  !> Drop water *during* flow computation.
  !!
  !! Use idir=1 for adding water, -1 for lowering it.
  subroutine dropwater(xp, yp, idir)
+    use precision, only: dp
     use m_isocol
     use m_polygon
     use m_flowgeom
@@ -45,13 +56,12 @@
     use m_flow_f0isf1
     use m_pfiller
 
-    implicit none
-    double precision, intent(in) :: xp, yp !< Clicked point, which flow node to drop. If a polygon is active, drop all contained points, independent of xp, yp.
+    real(kind=dp), intent(in) :: xp, yp !< Clicked point, which flow node to drop. If a polygon is active, drop all contained points, independent of xp, yp.
     integer, intent(in) :: idir !< direction (1 for up, -1 for down)
 
     ! locals
     integer :: n, nn, in, ncol
-    double precision :: dropstep, s10
+    real(kind=dp) :: dropstep, s10
 
     if (ndx == 0) return
 
@@ -100,3 +110,5 @@
     validateon = .false.
 
  end subroutine dropwater
+
+end module m_dropwater

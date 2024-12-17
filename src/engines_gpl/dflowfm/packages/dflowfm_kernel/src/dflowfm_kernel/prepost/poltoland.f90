@@ -30,17 +30,30 @@
 !
 !
 
+module m_poltoland
+use m_toland, only: toland
+
+
+implicit none
+
+private
+
+public :: poltoland
+
+contains
+
       subroutine POLTOLAND(L1, L2) ! SHIFT POLYGON TO LANDBOUNDARY
+         use precision, only: dp
          use M_POLYGON
          use M_MISSING
          use M_LANDBOUNDARY
-         implicit none
+
          integer :: l1
          integer :: l2
 
          integer :: in
          integer :: l, j
-         double precision :: xp, yp, xpn, ypn, dis, rL
+         real(kind=dp) :: xp, yp, xpn, ypn, dis, rL
 
          IN = 1; if (L2 < L1) IN = -1
          do L = L1, L2, IN
@@ -53,3 +66,5 @@
          end do
 
       end subroutine POLTOLAND
+
+end module m_poltoland

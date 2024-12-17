@@ -31,24 +31,35 @@
 !
 
 !>    compute the nearest point on the land boundary
+module m_toland
+
+implicit none
+
+private
+
+public :: toland
+
+contains
+
       subroutine TOLAND(XX, YY, JSTART, JEND, JAINVIEW, XV, YV, DISMIN, JOUT, RLOUT) ! SHIFT 1 POINT TO LANDBOUNDARY
+         use precision, only: dp
          use M_LANDBOUNDARY
          use M_MISSING
          use M_POLYGON
          use geometry_module, only: pinpok
          use m_d_line_dis3
-         implicit none
-         double precision, intent(in) :: xx, yy !< coordinates of reference point
+
+         real(kind=dp), intent(in) :: xx, yy !< coordinates of reference point
          integer, intent(in) :: JSTART, JEND !< start end end node of land boundary segment respectively
          integer, intent(in) :: JAINVIEW !< nodes in view only (1) or not (0) or in polygon only (2)
-         double precision, intent(out) :: xv, yv !< coordinates of nearest point on land boundary
-         double precision, intent(out) :: dismin !< smallest distance to land boundary
+         real(kind=dp), intent(out) :: xv, yv !< coordinates of nearest point on land boundary
+         real(kind=dp), intent(out) :: dismin !< smallest distance to land boundary
          integer, intent(out) :: jout !< index of first node of poly segment on which the point is projected
-         double precision, intent(out) :: rLout !< scaled distance of projected point to node jout
+         real(kind=dp), intent(out) :: rLout !< scaled distance of projected point to node jout
 
-         integer :: j, ja, ina, inb, ithread
+         integer :: j, ja, ina, inb
          logical :: Ldoit
-         double precision :: xa, ya, xb, yb, dis, xn, yn, rL, rLdum
+         real(kind=dp) :: xa, ya, xb, yb, dis, xn, yn, rL, rLdum
 
 !      integer, parameter                 :: IMISS = -999999
 
@@ -67,7 +78,7 @@
 !
 
 !$OMP PARALLEL DO    &
-!$OMP PRIVATE(j,ja,ina,inb,Ldoit,xa,ya,xb,yb,dis,xn,yn,rL,rLdum,ithread)
+!$OMP PRIVATE(j,ja,ina,inb,Ldoit,xa,ya,xb,yb,dis,xn,yn,rL,rLdum)
          do J = JSTART, JEND - 1
             Xa = XLAN(J)
             Ya = YLAN(J)
@@ -123,3 +134,5 @@
 
          return
       end subroutine TOLAND
+
+end module m_toland

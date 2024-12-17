@@ -30,7 +30,19 @@
 !
 !
 
+module m_flow_allocflow
+use m_polygonlayering, only: polygonlayering
+
+implicit none
+
+private
+
+public :: flow_allocflow
+
+contains
+
  subroutine flow_allocflow() ! initialise flow model time independent parameters
+    use precision, only: dp
     use m_netw, only: kn
     use m_flowgeom
     use m_flow
@@ -54,15 +66,14 @@
     use m_get_zlayer_indices
     use m_get_zlayer_indices_bobL
 
-    implicit none
     integer :: ierr, n, k, mxn, j, kk, LL, L, k1, k2, k3, n1, n2, n3, n4, kb1, kb2, numkmin, numkmax, kbc1, kbc2
     integer :: nlayb, nrlay, nlayb1, nrlay1, nlayb2, nrlay2, Lb, Lt, mx, ltn, mpol, Lt1, Lt2, Ldn
     integer :: laybed, laytop, nrlayL, Lf, kuni, kb
     integer :: nlayb1L, nrlay1L, nlayb2L, nrlay2L
     integer :: ndx1d
 
-    double precision :: zmn, zmx, dzm ! for 3D
-    double precision :: gf, w1, w2, w3, zbt, zbb, dzb, gfi, gfk
+    real(kind=dp) :: zmn, zmx, dzm ! for 3D
+    real(kind=dp) :: gf, w1, w2, w3, zbt, zbb, dzb, gfi, gfk
     logical :: jawel
 
     if (ndx == 0) return
@@ -555,7 +566,7 @@
     call aerr('uqcx(ndkx) , uqcy(ndkx)', ierr, 2 * ndkx); uqcx = 0; uqcy = 0
     allocate (ucxq(ndkx), ucyq(ndkx), stat=ierr)
     call aerr('ucxq(ndkx) , ucyq(ndkx)', ierr, 2 * ndkx); ucxq = 0; ucyq = 0
-    if (jamapucvec == 1 .or. jamapucmag == 1 .or. jahisvelocity == 1 .or. len_trim(md_foufile) > 0 .or. allocated(map_classes_ucmag)) then
+    if (jamapucvec == 1 .or. jamapucmag == 1 .or. jahisvelocity == 1 .or. len_trim(md_foufile) > 0 .or. allocated(map_classes_ucmag) .or. jahistaucurrent > 0) then
        call realloc(ucmag, ndkx, keepExisting=.false.)
     end if
     allocate (qin(ndkx), vih(ndkx), stat=ierr)
@@ -1096,18 +1107,18 @@
        allocate (patm(ndx), stat=ierr)
        call aerr('patm(ndx)', ierr, ndx)
        patm(:) = 0d0
-       
+
        if (allocated(tair)) deallocate (tair)
        allocate (tair(ndx), stat=ierr)
        call aerr('tair(ndx)', ierr, ndx)
        tair(:) = 0d0
-       
+
        if (allocated(rhum)) deallocate (rhum)
        allocate (rhum(ndx), stat=ierr)
        call aerr('rhum(ndx)', ierr, ndx)
        rhum(:) = 0d0
     end if
-    
+
     if (jatem > 0) then
        if (allocated(tem1)) deallocate (tem1)
        allocate (tem1(ndkx), stat=ierr)
@@ -1325,3 +1336,5 @@
     end if
 
  end subroutine flow_allocflow
+
+end module m_flow_allocflow

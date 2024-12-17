@@ -30,8 +30,21 @@
 !
 !
 
- subroutine setprofs1D()
+module m_setprofs1d
 
+implicit none
+
+private
+
+public :: setprofs1d
+
+contains
+
+ subroutine setprofs1D()
+    use precision, only: dp
+    use m_closeto1dnetlink, only: closeto1dnetlink
+    use m_readprofilesloc
+    use m_readprofilesdef
     use m_flowgeom
     use m_flow
     use UNSTRUC_MODEL
@@ -47,9 +60,8 @@
     use m_qnerror
     use m_set_branch_lc
 
-    implicit none
     integer :: ierr, MINP, LS, L, K, IBR, LL, LA, K1, K2, KA, KB, NRL, KK, ja, ium
-    double precision :: XL, ALFA
+    real(kind=dp) :: XL, ALFA
     logical :: jawel
     character(len=256) :: fnam
     integer, allocatable :: LSAM(:) ! sample K IS ON NET LINK LSAM
@@ -58,23 +70,23 @@
     integer :: NSBRMX ! MX NR OF PROFILES ON BRANCH
     integer, allocatable :: IDX(:) ! INDEX ARR, SIZE = NSBRMX
     integer, allocatable :: KLH(:), KLHH(:) ! INDEX  ARR, + SORTED BY IDX
-    double precision, allocatable :: XLH(:) ! LENGTH ARR
-    double precision, allocatable :: ZLH(:) ! VALUE  ARR
+    real(kind=dp), allocatable :: XLH(:) ! LENGTH ARR
+    real(kind=dp), allocatable :: ZLH(:) ! VALUE  ARR
 
     type tKBSAM !< TEMP
        integer, allocatable :: KS(:) !< successive SAMPLE nrs ON BRANCH
     end type tKBSAM
     type(TKBSAM), dimension(:), allocatable :: KBSAM ! ARRAY OF SAMPLES PER BRANCH
 
-    double precision, dimension(:), allocatable :: XLLin
-    double precision, dimension(:), allocatable :: XLsam ! link and sample line distances
+    real(kind=dp), dimension(:), allocatable :: XLLin
+    real(kind=dp), dimension(:), allocatable :: XLsam ! link and sample line distances
 
-    double precision, dimension(:), allocatable :: distsam ! distance from sample to link
+    real(kind=dp), dimension(:), allocatable :: distsam ! distance from sample to link
     integer, dimension(:), allocatable :: iconnsam ! globally connected branch number associated with sample
 
-    double precision, dimension(:), allocatable :: zkk, wkk ! help interpolate zk in profiles if dmiss
+    real(kind=dp), dimension(:), allocatable :: zkk, wkk ! help interpolate zk in profiles if dmiss
 
-    double precision :: XLS, YLS, XLB, DXB, dum, ZA, ZB, wa, wb, zul, wul
+    real(kind=dp) :: XLS, YLS, XLB, DXB, dum, ZA, ZB, wa, wb, zul, wul
     integer :: kn3now
 
     if (jampi /= 1) then
@@ -393,3 +405,5 @@
     !call duikerstoprofs()
 
  end subroutine setprofs1D
+
+end module m_setprofs1d

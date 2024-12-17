@@ -30,18 +30,30 @@
 !
 !
 
+module m_tieldb
+
+implicit none
+
+private
+
+public :: tieldb
+
+contains
+
       ! SPvdP: TIELDB never called
       subroutine TIELDB()
+         use m_setpoint, only: setpoint
+         use precision, only: dp
+         use m_addelem, only: addelem
          use m_netw
          use m_missing
          use geometry_module, only: dpinpok, cross
          use m_sferic, only: jsferic
          use m_three_two
 
-         implicit none
-         double precision :: crp
+         real(kind=dp) :: crp
          integer :: in1, in2, jacros, k, k1, k2, k3, ku, L, Lnu
-         double precision :: sl, sm, xcr, ycr, z, zcr, x1, x2, y1, y2
+         real(kind=dp) :: sl, sm, xcr, ycr, z, zcr, x1, x2, y1, y2
          do L = 1, NUML
             K1 = KN(1, L)
             K2 = KN(2, L)
@@ -73,3 +85,5 @@
          end do
          return
       end subroutine TIELDB
+
+end module m_tieldb

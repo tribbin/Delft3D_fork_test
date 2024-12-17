@@ -32,13 +32,23 @@
 
 !> get mesh bounding box coordinates (useful for spherical, periodic coordinates)
 !>   2D part of the mesh only
+module m_get_meshbounds
+
+implicit none
+
+private
+
+public :: get_meshbounds
+
+contains
+
 subroutine get_meshbounds(xboundmin, xboundmax)
+   use precision, only: dp
    use network_data
-   implicit none
 
-   double precision, intent(out) :: xboundmin, xboundmax !< mesh bounding box x-coordinates
+   real(kind=dp), intent(out) :: xboundmin, xboundmax !< mesh bounding box x-coordinates
 
-   double precision :: x1, x2
+   real(kind=dp) :: x1, x2
 
    integer :: L, k1, k2
 
@@ -59,3 +69,5 @@ subroutine get_meshbounds(xboundmin, xboundmax)
 
    return
 end subroutine get_meshbounds
+
+end module m_get_meshbounds

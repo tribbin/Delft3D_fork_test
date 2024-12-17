@@ -31,13 +31,21 @@
 !
 
 !> grow ijc with blocksize to satisfy objective lower- and upperbound
-subroutine grow_ijc(lowold, uppold, lowobj, uppobj, init)
+module m_grow_ijc
 
+implicit none
+
+private
+
+public :: grow_ijc
+
+contains
+
+subroutine grow_ijc(lowold, uppold, lowobj, uppobj, init)
+   use precision, only: dp
    use m_alloc
    use m_grid
    use m_missing
-
-   implicit none
 
    integer, dimension(2), intent(inout) :: lowold, uppold !< current array sizes
    integer, dimension(2), intent(in) :: lowobj, uppobj !< objective array sizes
@@ -49,7 +57,7 @@ subroutine grow_ijc(lowold, uppold, lowobj, uppobj, init)
    integer, parameter :: IJCBLOCK = 100 ! block size in ijc
    integer, dimension(2), save :: blocklow ! lower blocksizes in ijc
    integer, dimension(2), save :: blockupp ! upper blocksizes in ijc
-   double precision, parameter :: FAC = 1.2 ! growfactor of blocksizes
+   real(kind=dp), parameter :: FAC = 1.2 ! growfactor of blocksizes
 
    if (init == 1) then
       blocklow = (/1, 1/)
@@ -86,3 +94,5 @@ subroutine grow_ijc(lowold, uppold, lowobj, uppobj, init)
    end if
 
 end subroutine grow_ijc
+
+end module m_grow_ijc

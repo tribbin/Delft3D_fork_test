@@ -30,19 +30,28 @@
 !
 !
 
+module m_copyldbtopol
+
+implicit none
+
+private
+
+public :: copyldbtopol
+
+contains
+
   subroutine COPYLDBTOPOL()
+     use precision, only: dp
      use m_polygon
      use m_missing
      use m_landboundary
      use geometry_module, only: dbpinpol
 
-     implicit none
-
      integer :: k
      integer :: mx
      integer :: in, num, isnew
 
-     double precision, allocatable, dimension(:) :: xdum, ydum, zdum
+     real(kind=dp), allocatable, dimension(:) :: xdum, ydum, zdum
 
      MX = MAXLAN
 !  call increasepol(maxlan, 0)
@@ -120,3 +129,5 @@
 
      return
   end subroutine COPYLDBTOPOL
+
+end module m_copyldbtopol

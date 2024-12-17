@@ -30,16 +30,26 @@
 !
 !
 
+module m_clospt
+
+implicit none
+
+private
+
+public :: clospt
+
+contains
+
       subroutine CLOSPT(X, Y, mmax, nmax, MC, NC, &
                         XL, YL, MV, NV)
+         use precision, only: dp
          use m_missing
-         implicit none
 
          integer :: mmax, nmax, mc, nc, mv, nv
-         double precision :: X(MMAX, NMAX), Y(MMAX, NMAX)
-         double precision :: xl, yl
+         real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX)
+         real(kind=dp) :: xl, yl
 
-         double precision :: rmin, r
+         real(kind=dp) :: rmin, r
          integer :: i, j
          RMIN = 1d+20
 
@@ -57,3 +67,5 @@
          end do
          return
       end subroutine clospt
+
+end module m_clospt

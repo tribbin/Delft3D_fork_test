@@ -29,6 +29,16 @@
 
 !
 !
+module m_solve_guus
+
+implicit none
+
+private
+
+public :: pack_matrix, reducept, solve_matrix
+
+contains
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -361,7 +371,7 @@
 
     implicit none
     integer j, n, iadres, jj, iad2, ierr
-    integer, external :: ijadr
+
     iadres = 0
     do n = 1, nodtot
        ia(n)%l = 0
@@ -426,7 +436,7 @@
 
     implicit none
     integer i, j, m, n, ijij, nn, ierr
-    integer, external :: ijadr
+
     do n = 1, nogauss
        ndn = noel(n)
        ijij = 0
@@ -467,7 +477,7 @@
 
     implicit none
     integer i, j, n, m, ierr
-    integer, external :: ijadr
+
     nocg = 0
     do i = 1, nodtot
        ndn = nbrstk(i)
@@ -506,7 +516,7 @@
     implicit none
 
     integer :: ndx
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
     integer :: itsol
     integer :: ierror ! error (1) or not (0)
 
@@ -617,27 +627,26 @@
  subroutine conjugategradientSAAD(righthandside, s1, ndx, its, jaini, jadosafe, ierror)
     use m_reduce
 ! use unstruc_messages
-    use M_SAAD
+    use m_saad, only: jasafe, nn, ngs, iao, sol, rhs, ao, jao, cgsaad
     use m_flowgeom, only: kfs
     use MessageHandling
     use m_flowparameters, only: Noderivedtypes
     use m_netw, only: xzw, yzw
     use unstruc_model, only: md_ident
     use m_qnerror
-    use m_calls_saad
-    
+
     implicit none
     integer :: ndx, its
-    double precision :: s1(ndx)
-    double precision, dimension(Ndx), intent(in) :: righthandside !< right-hand side, all cells
+    real(kind=dp) :: s1(ndx)
+    real(kind=dp), dimension(Ndx), intent(in) :: righthandside !< right-hand side, all cells
     integer, intent(in) :: jaini !< compute preconditioner and permutation (1) or not (0), or initialization only (-1), or ILU solve only (2)
     integer, intent(in) :: jadosafe !< thread-safe (1) or not (0), will set jasafe module variable
     integer, intent(out) :: ierror !< error (1) or not (0)
 
-    integer :: j, jj, n, ntot, na, nietnul, m
+    integer :: i, j, jj, n, ntot, na, nietnul, m
     integer :: minp, k
 
-    double precision :: res
+    real(kind=dp) :: res
 
     logical, save :: jaoutput = .false.
 
@@ -950,11 +959,11 @@
 
     implicit none
     integer :: ndx, ipre
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
 
     integer :: i, j, jj, n, ntot
-    double precision :: rkzki, rkzki0, pkapki, alfak, betak
-    double precision :: eps
+    real(kind=dp) :: rkzki, rkzki0, pkapki, alfak, betak
+    real(kind=dp) :: eps
 
 ! ddr (rechterlid), bbr (diag) , ccr (off diag), s1, row, row()%j, row()%a [AvD]
     if (nocg <= 0) return
@@ -1097,11 +1106,11 @@
 
     implicit none
     integer :: ndx
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
 
     integer i, ipre, j, jj, n
-    double precision :: rkzki, rkzki0, pkapki, alfak, betak
-    double precision :: eps
+    real(kind=dp) :: rkzki, rkzki0, pkapki, alfak, betak
+    real(kind=dp) :: eps
 
     if (nocg <= 0) return
 
@@ -1258,11 +1267,11 @@
 
     implicit none
     integer :: ndx
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
 
     integer i, ipre, j, jj, n
-    double precision :: rkzki, rkzki0, pkapki, alfak, betak
-    double precision :: eps
+    real(kind=dp) :: rkzki, rkzki0, pkapki, alfak, betak
+    real(kind=dp) :: eps
 
     if (nocg <= 0) return
 
@@ -1412,7 +1421,7 @@
     implicit none
 
     integer :: ndx
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
 
     integer m, n, np
     do n = nogauss, 1, -1
@@ -1432,7 +1441,7 @@
     implicit none
 
     integer :: ndx
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
 
     integer m, n
     do n = nogauss, 1, -1
@@ -1542,7 +1551,7 @@
  subroutine gauss_elimination
     use m_reduce
     implicit none
-    !double precision :: ccc(500)
+    !real(kind=dp) :: ccc(500)
     integer j, k, m, n, np, m1, nodm1, m1m2
     ccc = 0d0
     do n = 1, nogauss
@@ -1573,7 +1582,7 @@
  subroutine gauss_eliminationjipjan
     use m_reduce
     implicit none
-    !double precision :: ccc(500)
+    !real(kind=dp) :: ccc(500)
     integer j, k, m, n, m1, nodm1, m1m2, mm, jj
 
     ccc = 0d0
@@ -1609,6 +1618,7 @@
  end subroutine gauss_eliminationjipjan
 
  subroutine pack_matrix()
+    use m_setkfs, only: setkfs
     use m_reduce
     use m_flowgeom
     use m_flow
@@ -1667,8 +1677,8 @@
     use m_flowparameters, only: icgsolver, ipre, Noderivedtypes
     use m_partitioninfo
     use m_readyy
-    use m_calls_saad
-    
+    use m_saad, only: inisaad
+
     implicit none
 
     integer :: Ndx, Lnx
@@ -1872,7 +1882,7 @@
 
     implicit none
     integer :: ndx, ipre
-    double precision :: s1(ndx)
+    real(kind=dp) :: s1(ndx)
     integer, intent(out) :: nocgiter_loc
     integer, intent(out) :: ierror !< error (1) or not (0)
     character(len=100) :: message
@@ -1881,11 +1891,11 @@
     integer :: nopreconditioner
 
     integer :: i, j, jj, n, ntot
-    double precision :: rkzki, rkzki0, pkapki, alfak, betak
-    double precision :: eps
+    real(kind=dp) :: rkzki, rkzki0, pkapki, alfak, betak
+    real(kind=dp) :: eps
 
     ! BEGIN MPI
-    double precision :: eps_tmp, rkzki_tmp, pkapki_tmp
+    real(kind=dp) :: eps_tmp, rkzki_tmp, pkapki_tmp
     ! END MPI
 
     ierror = 0
@@ -2243,7 +2253,7 @@
     use m_partitioninfo
     use messagehandling, only: mess, LEVEL_ERROR
     use m_plotdots
-    use m_calls_saad
+    use m_saad, only: inisaad
     implicit none
 
     integer, dimension(:), allocatable :: imask
@@ -2375,40 +2385,39 @@
  subroutine testsolver(Ndx, s1, itsol, ierror)
     use m_partitioninfo
     use m_reduce
-    use m_saad
+    use m_saad, only: tol, ipar, fpar, nn, iao, sol, rhs, cgsaad
     use m_flowgeom, only: kfs
     use unstruc_messages
     use m_timer
     use m_flowparameters, only: jalogsolverconvergence
     use mpi
-    use m_calls_saad
     implicit none
 
     integer, intent(in) :: ndx
-    double precision, dimension(Ndx), intent(inout) :: s1
+    real(kind=dp), dimension(Ndx), intent(inout) :: s1
     integer, intent(out) :: itsol
     integer, intent(out) :: ierror
 
     character(len=128) :: message
 
-!    double precision, dimension(:), allocatable      :: bdum, cdum, ddum
+!    real(kind=dp), dimension(:), allocatable      :: bdum, cdum, ddum
 
-    double precision :: maxdiff
-    double precision :: res ! residual
-    double precision :: dum
-    double precision :: beta, val
-    
+    real(kind=dp) :: maxdiff
+    real(kind=dp) :: res ! residual
+    real(kind=dp) :: dum
+    real(kind=dp) :: beta, val
+
     integer, parameter :: MAXITER = 100
     integer :: iter, its
-    integer :: jj, n, na
+    integer :: i, jj, n, na
     integer :: iout
     integer :: ki, kb, L
 
     integer, parameter :: javerbose = 1
 
-    double precision, dimension(:), allocatable :: bbr_sav, ddr_sav
-    double precision, dimension(1) :: res_global
-    double precision :: res_global0, tolDD
+    real(kind=dp), dimension(:), allocatable :: bbr_sav, ddr_sav
+    real(kind=dp), dimension(1) :: res_global
+    real(kind=dp) :: res_global0, tolDD
     if (nocg <= 0) return
 
     ierror = 0
@@ -2678,3 +2687,5 @@
 
     return
  end subroutine testsolver
+
+end module m_solve_guus

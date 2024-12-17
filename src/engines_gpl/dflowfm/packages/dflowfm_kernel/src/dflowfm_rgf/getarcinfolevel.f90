@@ -30,10 +30,21 @@
 !
 !
 
+module m_getarcinfolevel
+
+implicit none
+
+private
+
+public :: getarcinfolevel
+
+contains
+
       subroutine getarcinfolevel(x, y, zzz)
+         use precision, only: dp
          use m_arcinfo
-         implicit none
-         double precision :: x, y, zzz
+
+         real(kind=dp) :: x, y, zzz
          ! locals
          integer :: m, n
 
@@ -42,3 +53,5 @@
          n = 2 + (y - y0) / dxa
          zzz = d(m, n)
       end subroutine getarcinfolevel
+
+end module m_getarcinfolevel

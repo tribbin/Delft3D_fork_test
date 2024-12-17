@@ -30,15 +30,26 @@
 !
 !
 
+module m_findk
+
+implicit none
+
+private
+
+public :: findk
+
+contains
+
    subroutine FINDK(XL, YL, ZL, KV)
+      use precision, only: dp
       use m_netw
       implicit none
-      double precision :: XL, YL, ZL
+      real(kind=dp) :: XL, YL, ZL
       integer :: KV
       integer :: k
 
-      double precision :: RMIN, R, &
-         DX, DY, DZ
+      real(kind=dp) :: RMIN, R, &
+                       DX, DY, DZ
       RMIN = 99d+20
 
       KV = 0
@@ -57,3 +68,5 @@
 
       return
    end subroutine FINDK
+
+end module m_findk

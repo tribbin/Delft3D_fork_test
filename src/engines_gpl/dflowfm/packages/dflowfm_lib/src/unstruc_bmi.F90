@@ -35,6 +35,22 @@
 #define no_warning_unused_variable(x) associate( x => x ); end associate
 
 module bmi
+   use m_flow_run_usertimestep, only: flow_run_usertimestep
+   use m_flow_run_sometimesteps, only: flow_run_sometimesteps
+   use m_flow_init_usertimestep, only: flow_init_usertimestep
+   use m_flow_finalize_usertimestep, only: flow_finalize_usertimestep
+   use m_updatevaluesonobservationstations, only: updatevaluesonobservationstations
+   use m_resetfullflowmodel, only: resetfullflowmodel
+   use m_partition_write_domains, only: partition_write_domains
+   use m_land_change_callback, only: land_change_callback
+   use m_inidat, only: inidat
+   use m_getstructureindex, only: getstructureindex
+   use m_getlateralindex, only: getlateralindex
+   use m_flow_run_single_timestep, only: flow_run_single_timestep
+   use m_flow_init_single_timestep, only: flow_init_single_timestep
+   use m_flow_finalize_single_timestep, only: flow_finalize_single_timestep
+   use m_update_zcgen_widths_and_heights, only: update_zcgen_widths_and_heights
+   use m_write_some_final_output, only: write_some_final_output
    use iso_c_binding
    use unstruc_api
    use m_gui ! this should be removed when jaGUI = 0 by default
@@ -63,6 +79,7 @@ module bmi
    use m_nearfield
    use m_VolumeTables, only: vltb, vltbonlinks, ndx1d
    use m_update_land_nodes
+   use m_find_name, only: find_name
 
    implicit none
 
@@ -88,7 +105,6 @@ module bmi
    real(c_double), target, allocatable, save :: TcrEro(:, :)
    real(c_double), target, allocatable, save :: TcrSed(:, :)
    integer, private :: iconst
-   integer, external :: findname
 
    integer(c_int), parameter :: var_count_compound = 11 ! pumps, weirs, orifices, gates, generalstructures, culverts, sourcesinks, dambreak, observations, crosssections, laterals ! TODO: AvD: temp, as long as this is not templated
 contains
@@ -484,7 +500,7 @@ contains
       !DEC$ ATTRIBUTES DLLEXPORT :: finalize
       use m_partitioninfo
 
-      call writesomefinaloutput()
+      call write_some_final_output()
 
       if (jampi == 1) then
 !        finalize before exit
@@ -778,7 +794,7 @@ contains
       end select
 
       if (numconst > 0) then
-         iconst = findname(numconst, const_names, var_name)
+         iconst = find_name(const_names, var_name)
       end if
       if (iconst /= 0) then
          type_name = "double"
@@ -851,7 +867,7 @@ contains
       end select
 
       if (numconst > 0) then
-         iconst = findname(numconst, const_names, var_name)
+         iconst = find_name(const_names, var_name)
       end if
       if (iconst /= 0) then
          rank = 1
@@ -983,7 +999,7 @@ contains
       include "bmi_get_var_shape.inc"
 
       if (numconst > 0) then
-         iconst = findname(numconst, const_names, var_name)
+         iconst = find_name(const_names, var_name)
       end if
       if (iconst /= 0) then
          shape(1) = ndkx
@@ -1293,7 +1309,7 @@ contains
       ! TODO: AvD: add returns to all auto generated cases to avoid unnecessary fall-through
 
       if (numconst > 0) then
-         iconst = findname(numconst, const_names, var_name)
+         iconst = find_name(const_names, var_name)
       end if
       if (iconst /= 0) then
          call realloc(const_t, (/ndkx, numconst/), keepExisting=.true.)
@@ -1315,11 +1331,10 @@ contains
       use m_laterals, only: numlatsg, qplat, qqlat, balat, qplatCum, qplatCumPre, qplatAve, qLatReal, qLatRealCum
       use m_laterals, only: qLatRealCumPre, qLatRealAve, n1latsg, n2latsg, nnlat, kclat
       use morphology_data_module, only: PARSOURCE_FIELD
+      use m_init_openmp, only: init_openmp
 
       character(kind=c_char), intent(in) :: c_var_name(*)
       type(c_ptr), value, intent(in) :: xptr
-
-      integer, external :: init_openmp
 
       character(kind=c_char), dimension(:), pointer :: x_0d_char_ptr => null()
       real(c_double), pointer :: x_0d_double_ptr
@@ -1583,7 +1598,7 @@ contains
       end select
 
       if (numconst > 0) then
-         iconst = findname(numconst, const_names, var_name)
+         iconst = find_name(const_names, var_name)
       end if
       if (iconst /= 0) then
          call c_f_pointer(xptr, x_1d_double_ptr, (/ndkx/))
@@ -1748,7 +1763,7 @@ contains
       end select
 
       if (numconst > 0) then
-         iconst = findname(numconst, const_names, var_name)
+         iconst = find_name(const_names, var_name)
       end if
       if (iconst /= 0) then
          call c_f_pointer(xptr, x_1d_double_ptr, (/c_count(1)/))
@@ -1806,9 +1821,9 @@ contains
       integer(c_int), pointer :: npli(:)
 
       integer :: i, npli_pts, nxln
-      double precision :: thdh
+      real(kind=dp) :: thdh
       logical :: with_z
-      double precision, dimension(:), allocatable :: dSL
+      real(kind=dp), dimension(:), allocatable :: dSL
       integer, dimension(:), allocatable :: iLnx, ipol
 
       ! The fortran name of the attribute name
@@ -1914,6 +1929,7 @@ contains
       use unstruc_messages
       use m_transport, only: NUMCONST, constituents, const_names, ISALT, ITEMP, ITRA1
       use m_update_values_on_cross_sections, only: update_values_on_cross_sections
+      use string_module, only: str_tolower
 
       character(kind=c_char), intent(in) :: c_var_name(*) !< Name of the set variable, e.g., 'pumps'
       character(kind=c_char), intent(in) :: c_item_name(*) !< Name of a single item's index/location, e.g., 'Pump01'
@@ -1930,10 +1946,10 @@ contains
       character(len=MAXSTRLEN) :: var_name
       character(len=MAXSTRLEN) :: item_name
       character(len=MAXSTRLEN) :: field_name
-      ! Store the name
-      var_name = char_array_to_string(c_var_name)
+      ! Store the name and convert var and field to lowercase to make them case-insensitive.
+      var_name = str_tolower(char_array_to_string(c_var_name))
       item_name = char_array_to_string(c_item_name)
-      field_name = char_array_to_string(c_field_name)
+      field_name = str_tolower(char_array_to_string(c_field_name))
 
       select case (var_name)
          ! PUMPS
@@ -1960,7 +1976,7 @@ contains
          end if
 
          select case (field_name)
-         case ("crest_level", "CrestLevel", "crestLevel")
+         case ("crestlevel")
             if (is_in_network) then
                x = get_crest_level_c_loc(network%sts%struct(item_index))
             else
@@ -1980,12 +1996,12 @@ contains
          end if
 
          select case (field_name)
-         case ("gateLowerEdgeLevel")
+         case ("gateloweredgelevel")
             if (is_in_network) then
                x = get_gate_lower_edge_level_c_loc(network%sts%struct(item_index))
             end if
             return
-         case ("crest_level", "CrestLevel", "crestLevel")
+         case ("crestlevel")
             if (is_in_network) then
                x = get_crest_level_c_loc(network%sts%struct(item_index))
             end if
@@ -1999,19 +2015,19 @@ contains
             return
          end if
          select case (field_name)
-         case ("sill_level", "CrestLevel")
+         case ("crestlevel")
             x = c_loc(zcgen((item_index - 1) * 3 + 1))
             return
-         case ("door_height", "GateHeight")
+         case ("gateheight")
             x = c_loc(generalstruc(item_index)%gatedoorheight)
             return
-         case ("lower_edge_level", "GateLowerEdgeLevel")
+         case ("gateloweredgelevel")
             x = c_loc(zcgen((item_index - 1) * 3 + 2))
             return
-         case ("opening_width", "GateOpeningWidth")
+         case ("gateopeningwidth")
             x = c_loc(zcgen((item_index - 1) * 3 + 3))
             return
-         case ("horizontal_opening_direction", "GateOpeningHorizontalDirection")
+         case ("gateopeninghorizontaldirection")
             ! TODO: RTC: AvD: get this from gate/genstru params
             return
          end select
@@ -2024,14 +2040,14 @@ contains
          end if
 
          select case (field_name)
-         case ("CrestLevel", "crestLevel")
+         case ("crestlevel")
             if (is_in_network) then
                x = get_crest_level_c_loc(network%sts%struct(item_index))
             else
                x = c_loc(zcgen((item_index - 1) * 3 + 1))
             end if
             return
-         case ("GateHeight", "gateHeight")
+         case ("gateheight")
             if (is_in_network) then
                x = get_gate_door_height_c_loc(network%sts%struct(item_index))
             else
@@ -2039,21 +2055,21 @@ contains
             end if
 
             return
-         case ("GateLowerEdgeLevel", "gateLowerEdgeLevel")
+         case ("gateloweredgelevel")
             if (is_in_network) then
                x = get_gate_lower_edge_level_c_loc(network%sts%struct(item_index))
             else
                x = c_loc(zcgen((item_index - 1) * 3 + 2))
             end if
             return
-         case ("GateOpeningWidth", "gateOpeningWidth")
+         case ("gateopeningwidth")
             if (is_in_network) then
                x = get_gate_opening_width_c_loc(network%sts%struct(item_index))
             else
                x = c_loc(zcgen((item_index - 1) * 3 + 3))
             end if
             return
-         case ("GateOpeningHorizontalDirection", "gateOpeningHorizontalDirection")
+         case ("gateopeninghorizontaldirection")
             ! TODO: RTC: AvD: get this from gate/genstru params
             return
          end select
@@ -2066,7 +2082,7 @@ contains
          end if
 
          select case (field_name)
-         case ("valveOpeningHeight")
+         case ("valveopeningheight")
             if (is_in_network) then
                x = get_valve_opening_height_c_loc(network%sts%struct(item_index))
             end if
@@ -2081,7 +2097,7 @@ contains
          end if
 
          select case (field_name)
-         case ("valveRelativeOpening")
+         case ("valverelativeopening")
             x = get_valve_relative_opening_c_loc(longculverts(item_index))
             return
          end select
@@ -2220,7 +2236,7 @@ contains
          case default
             !       assume this is a tracer
             !       get constituent number for this tracer
-            iconst = findname(NUMCONST, const_names, field_name)
+            iconst = find_name(const_names, field_name)
 
             if (iconst == 0) then
                !          tracer not found
@@ -2372,7 +2388,7 @@ contains
       case ('water_temperature')
          constituent_index = ITEMP
       case default
-         constituent_index = findname(NUMCONST, const_names, constituent_name)
+         constituent_index = find_name(const_names, constituent_name)
          if (iconst == 0) then
             !        tracer not found
             c_lateral_pointer = c_null_ptr
@@ -2945,8 +2961,8 @@ contains
 
       type(tface) :: cell
       integer :: edgeIndex
-      double precision :: linkX1, linkX2, linkY1, linkY2
-      double precision :: angle
+      real(kind=dp) :: linkX1, linkX2, linkY1, linkY2
+      real(kind=dp) :: angle
 
       real(c_double), target :: valuet
       type(c_ptr) :: xptr
@@ -3291,16 +3307,16 @@ contains
 !    integer                                 :: numc
 !    integer                                 :: n6
 !    real(c_double), pointer                 :: res(:)
-!    double precision, allocatable           :: sv(:,:)
+!    real(kind=dp), allocatable           :: sv(:,:)
 !    integer, allocatable                    :: ipsam(:)
-!    double precision, allocatable           :: cz(:,:)
-!    double precision, allocatable           :: cxx(:,:)
-!    double precision, allocatable           :: cyy(:,:)
+!    real(kind=dp), allocatable           :: cz(:,:)
+!    real(kind=dp), allocatable           :: cxx(:,:)
+!    real(kind=dp), allocatable           :: cyy(:,:)
 !    integer                                 :: meth
 !    integer                                 :: nmin
-!    double precision                        :: csize
+!    real(kind=dp)                        :: csize
 !    integer                                 :: i, j, k, IAVtmp, NUMMINtmp, INTTYPEtmp, ierr
-!    double precision                        :: RCELtmp
+!    real(kind=dp)                        :: RCELtmp
 !
 !    ! cache interpolation settings
 !    IAVtmp = IAV
@@ -3469,18 +3485,18 @@ contains
 
       real(c_double), pointer :: ptr(:) ! temporary pointer
 
-      double precision, dimension(:), target, allocatable, save :: xout, yout !< memory leak
+      real(kind=dp), dimension(:), target, allocatable, save :: xout, yout !< memory leak
       integer, dimension(:), target, allocatable, save :: feature_ids !< memory leak
       integer, dimension(:), target, allocatable :: dummy_ids !< temporary storage for snappnt
-      double precision, dimension(:), allocatable :: xintemp, yintemp
+      real(kind=dp), dimension(:), allocatable :: xintemp, yintemp
       integer :: ntemp
-      double precision, dimension(:), allocatable :: xin, yin
+      real(kind=dp), dimension(:), allocatable :: xin, yin
 
       ! Dambreak
       integer :: startIndex, i, noutSnapped, lstart, oldSize
-      double precision, dimension(:), target, allocatable :: xSnapped, ySnapped
-      double precision, allocatable, dimension(:, :) :: xSnappedLinks, ySnappedLinks
-      double precision :: start_location_x, start_location_y, x_breach, y_breach
+      real(kind=dp), dimension(:), target, allocatable :: xSnapped, ySnapped
+      real(kind=dp), allocatable, dimension(:, :) :: xSnappedLinks, ySnappedLinks
+      real(kind=dp) :: start_location_x, start_location_y, x_breach, y_breach
 
       c_ierror = 1
 
@@ -3801,8 +3817,8 @@ contains
       !return error code
       integer :: ierr
       !locals
-      double precision :: xa, ya, xb, yb, xm, ym, crpm, distanceStartPolygon
-      double precision, pointer :: xVerticesCoordinates(:), yVerticesCoordinates(:)
+      real(kind=dp) :: xa, ya, xb, yb, xm, ym, crpm, distanceStartPolygon
+      real(kind=dp), pointer :: xVerticesCoordinates(:), yVerticesCoordinates(:)
       integer :: l, k1, k2, crossed, isec
       integer, allocatable, target, save :: indexes(:) !as commented above, this is a memory leak of lnx integers
 

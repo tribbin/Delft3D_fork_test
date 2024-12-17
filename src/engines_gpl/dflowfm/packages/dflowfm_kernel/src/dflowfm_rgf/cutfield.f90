@@ -30,12 +30,23 @@
 !
 !
 
+module m_cutfield
+
+implicit none
+
+private
+
+public :: cutfield
+
+contains
+
       subroutine CUTFIELD(X, Y, mmax, nmax, MC, NC)
+         use precision, only: dp
          use m_missing
          use m_grid_block
-         implicit none
+
          integer :: mmax, nmax, mc, nc
-         double precision :: X(MMAX, NMAX), Y(MMAX, NMAX)
+         real(kind=dp) :: X(MMAX, NMAX), Y(MMAX, NMAX)
          integer :: i, j
 
          do I = 1, MC
@@ -50,3 +61,5 @@
          end do
          return
       end subroutine cutfield
+
+end module m_cutfield

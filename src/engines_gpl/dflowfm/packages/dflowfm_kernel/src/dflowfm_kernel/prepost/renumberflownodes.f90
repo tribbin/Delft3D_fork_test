@@ -30,6 +30,18 @@
 !
 !
 
+module m_renumberflownodes
+use m_renumber_cutcellmasks, only: renumber_cutcellmasks
+
+
+implicit none
+
+private
+
+public :: renumberflownodes
+
+contains
+
     !> Renumber flow nodes in an early stage.
     !! Called only from withing flow_geominit, it operates on lne, kn and netcell
     !! data. The actual construction of all flow_geom data remains exactly the
@@ -42,6 +54,7 @@
     !! Note: Only 2D cells/links are renumbered (so blocks 1:numl1D, and
     !! numl1D+1:numl remain intact). Also: boundary links are ignored.
     subroutine renumberFlowNodes()
+       use precision, only: dp
        use network_data
        use m_flowgeom
        use unstruc_messages
@@ -49,14 +62,14 @@
        use m_partitioninfo, only: idomain, iglobal_s
        use m_readyy
        use m_rcm
-       
+
        implicit none
 
        integer, allocatable :: adj_row(:)
        integer, allocatable :: adj(:)
        integer, allocatable :: perm(:), perm_inv(:), perm_lnk(:), perm_inv_lnk(:), idomain1(:), iglobal_s1(:)
        integer, allocatable :: i1(:)
-       double precision, allocatable :: xz1(:), yz1(:)
+       real(kind=dp), allocatable :: xz1(:), yz1(:)
        type(tface), allocatable :: tface1(:)
 
        integer, allocatable :: adj_tmp(:, :), adj_tmp2(:)
@@ -337,3 +350,5 @@
        netstat = NETSTAT_OK
 
     end subroutine renumberFlowNodes
+
+end module m_renumberflownodes

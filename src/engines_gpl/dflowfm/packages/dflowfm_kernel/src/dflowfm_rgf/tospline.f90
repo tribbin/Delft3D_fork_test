@@ -30,16 +30,27 @@
 !
 !
 
+module m_tospline
+
+implicit none
+
+private
+
+public :: tospline
+
+contains
+
        subroutine TOSPLINE(XX, YY, XV, YV)
+          use m_dismin, only: dismin
+          use precision, only: dp
           use M_SPLINES
           use m_spline
           use m_get_ij
-          implicit none
 
-          double precision :: XX, YY, XV, YV
+          real(kind=dp) :: XX, YY, XV, YV
 
-          double precision :: XI(maxsplen), XI2(maxsplen), YI(maxsplen), YI2(maxsplen)
-          double precision :: TV, DIS
+          real(kind=dp) :: XI(maxsplen), XI2(maxsplen), YI(maxsplen), YI2(maxsplen)
+          real(kind=dp) :: TV, DIS
           integer :: IN, NUMPI
 
           IN = 1 ! Pick first spline
@@ -52,3 +63,5 @@
           call DISMIN(XI, XI2, YI, YI2, XX, YY, NUMPI, DIS, TV, XV, YV)
           return
        end subroutine tospline
+
+end module m_tospline

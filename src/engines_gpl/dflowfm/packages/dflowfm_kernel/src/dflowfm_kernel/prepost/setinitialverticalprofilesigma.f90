@@ -30,16 +30,27 @@
 !
 !
 
+module m_setinitialverticalprofilesigma
+
+implicit none
+
+private
+
+public :: setinitialverticalprofilesigma
+
+contains
+
 subroutine setinitialverticalprofilesigma(yy, ny, filename) ! polyfil
+   use precision, only: dp
    use m_flowgeom
    use m_flow
    use m_polygon
    use m_reapol
    use m_get_kbot_ktop
-   implicit none
+
    integer :: ny
-   double precision :: xx(kmxx), xxx(kmxx)
-   double precision :: yy(ny)
+   real(kind=dp) :: xx(kmxx), xxx(kmxx)
+   real(kind=dp) :: yy(ny)
    character(*), intent(in) :: filename ! file name for polygonfile
 
    integer :: minp0, n, k, kb, kt, ktx
@@ -69,3 +80,5 @@ subroutine setinitialverticalprofilesigma(yy, ny, filename) ! polyfil
    call restorepol()
 
 end subroutine setinitialverticalprofilesigma
+
+end module m_setinitialverticalprofilesigma

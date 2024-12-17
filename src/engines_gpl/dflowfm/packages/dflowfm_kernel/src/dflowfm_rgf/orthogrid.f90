@@ -30,7 +30,25 @@
 !
 !
 
+module m_orthogrid
+use m_savegrd, only: savegrd
+use m_ortsor, only: ortsor
+
+implicit none
+
+private
+
+public :: orthogrid
+
+contains
+
       subroutine ORTHOGRID(M1, N1, M2, N2)
+         use m_makey, only: makey
+         use m_makef, only: makef
+         use m_getspl2, only: getspl2
+         use m_fixddboundaries, only: fixddboundaries
+         use m_atppar, only: atppar
+         use precision, only: dp
          use unstruc_colors
          use M_GRID
          use M_SFERIC
@@ -40,7 +58,7 @@
          use m_drawthis
          use m_qnerror
          use m_isitu
-         implicit none
+
          integer :: in
          integer :: it
          integer :: jdla
@@ -53,10 +71,10 @@
          integer :: ncr
          integer :: num
          integer :: nx
-         double precision :: rjac
+         real(kind=dp) :: rjac
 
-         double precision, dimension(:, :), allocatable :: XR, YR, XI2, XJ2, YI2, YJ2, &
-            A, B, C, D, E, ATP, XO, YO
+         real(kind=dp), dimension(:, :), allocatable :: XR, YR, XI2, XJ2, YI2, YJ2, &
+                                                        A, B, C, D, E, ATP, XO, YO
 
          integer :: M1, N1, M2, N2
 
@@ -128,3 +146,5 @@
 
          return
       end subroutine ORTHOGRID
+
+end module m_orthogrid

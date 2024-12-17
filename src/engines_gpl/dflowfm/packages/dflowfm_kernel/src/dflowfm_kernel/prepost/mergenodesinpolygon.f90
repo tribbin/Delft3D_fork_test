@@ -30,8 +30,21 @@
 !
 !
 
- subroutine MERGENODESINPOLYGON()
+module m_mergenodesinpolygon
+use m_rearrange_worldmesh, only: rearrange_worldmesh
 
+
+implicit none
+
+private
+
+public :: mergenodesinpolygon
+
+contains
+
+ subroutine MERGENODESINPOLYGON()
+    use m_get_meshbounds, only: get_meshbounds
+    use precision, only: dp
     use m_netw
     use kdtree2Factory
     use unstruc_messages
@@ -45,14 +58,12 @@
     use m_set_nod_adm
     use m_set_branch_lc
 
-    implicit none
-
     integer :: K, KK, KM, K1, K2, KA, KB, kn3, L, LL, JA
     integer :: JADUM
-    double precision :: DIST, DISMIN
+    real(kind=dp) :: DIST, DISMIN
     integer :: kint, Lint, in
 
-    double precision :: R2search ! squared search radius
+    real(kind=dp) :: R2search ! squared search radius
 
     integer :: NN
     integer :: numk_inpoly ! number of nodes in polygon
@@ -61,11 +72,11 @@
 
     integer :: itp, i, kkother, kother, nummerged, jadone, ierror, nrl1d
 
-    double precision, dimension(:), allocatable :: xx, yy ! coordinates of nodes in polygon
+    real(kind=dp), dimension(:), allocatable :: xx, yy ! coordinates of nodes in polygon
 
     integer, dimension(:), allocatable :: iperm ! permutation array
 
-    double precision :: xboundmin, xboundmax
+    real(kind=dp) :: xboundmin, xboundmax
 
     logical :: Lmerge
 
@@ -343,3 +354,5 @@
     end if
 
  end subroutine MERGENODESINPOLYGON
+
+end module m_mergenodesinpolygon

@@ -31,21 +31,29 @@
 !
 
 !> get the grid heights from the cross spline information
+module m_get_heights
+
+implicit none
+
+private
+
+public :: get_heights
+
+contains
+
 subroutine get_heights()
+   use precision, only: dp
    use m_comp_subheights
    use m_splines
    use m_spline2curvi
    use m_missing
    use m_alloc
 
-   implicit none
-
    integer :: is, j, js, k, kk, ks, kks, ncs, num, numj
    integer :: kL, kR ! left and right neighboring splines at the cross spline w.r.t. the center spline
    integer :: numnew
-   double precision, dimension(:), allocatable :: xlist, ylist
+   real(kind=dp), dimension(:), allocatable :: xlist, ylist
    logical :: Lorient
-   double precision, external :: splinelength_int
 
 !  allocate
    allocate (xlist(1), ylist(1))
@@ -114,3 +122,5 @@ subroutine get_heights()
 
    return
 end subroutine get_heights
+
+end module m_get_heights

@@ -32,7 +32,20 @@
 
 !>  regularise spline2curvi grid
 !>     note: there is an asymmetry, but this procedure is intended for regularisation only
+module m_regularise_spline2curvigrid
+use m_savegrd, only: savegrd
+
+
+implicit none
+
+private
+
+public :: regularise_spline2curvigrid
+
+contains
+
 subroutine regularise_spline2curvigrid()
+   use precision, only: dp
    use m_grid
    use m_spline2curvi, only: dtolLR
    use m_missing, only: dmiss
@@ -40,17 +53,15 @@ subroutine regularise_spline2curvigrid()
    use m_sferic, only: jsferic, jasfer3D
    use m_get_lr
 
-   implicit none
-
-   double precision :: xi
-   double precision :: dhmax, dtolLR_bak
+   real(kind=dp) :: xi
+   real(kind=dp) :: dhmax, dtolLR_bak
 
    integer :: i, j, iL, iR
    integer :: ih
 
    integer :: ierror
 
-   double precision, parameter :: FAC = 1d-1 ! regularisation parameter
+   real(kind=dp), parameter :: FAC = 1d-1 ! regularisation parameter
 
    call savegrd()
 
@@ -98,3 +109,5 @@ subroutine regularise_spline2curvigrid()
 
    return
 end subroutine regularise_spline2curvigrid
+
+end module m_regularise_spline2curvigrid

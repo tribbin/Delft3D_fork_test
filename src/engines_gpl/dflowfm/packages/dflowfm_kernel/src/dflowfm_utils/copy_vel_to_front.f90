@@ -31,23 +31,32 @@
 !
 
 !> copy growth velocities to the front, and add points in the front at corners
+module m_copy_vel_to_front
+
+implicit none
+
+private
+
+public :: copy_vel_to_front
+
+contains
+
 subroutine copy_vel_to_front(mc, j, vel, ifront, nf, numf, xf, yf, velf, idxf)
+   use precision, only: dp
    use m_missing
    use m_qnerror
-
-   implicit none
 
    integer, intent(in) :: mc !< number of grid points
    integer, intent(in) :: j !< grid layer
 
-   double precision, dimension(2, mc), intent(in) :: vel !  growth velocity vector at grid layer, per node
+   real(kind=dp), dimension(2, mc), intent(in) :: vel !  growth velocity vector at grid layer, per node
 
    integer, dimension(mc), intent(inout) :: ifront !< active nodes (1) or not (0)
 
    integer, intent(inout) :: nf !< front dimension
    integer, intent(in) :: numf !< array size
-   double precision, dimension(numf), intent(inout) :: xf, yf !< front point coordinates
-   double precision, dimension(2, numf), intent(inout) :: velf !< front growth velocity vectors
+   real(kind=dp), dimension(numf), intent(inout) :: xf, yf !< front point coordinates
+   real(kind=dp), dimension(2, numf), intent(inout) :: velf !< front growth velocity vectors
    integer, dimension(2, numf), intent(inout) :: idxf !< (i,j)-indices of front points
    integer :: i, ii, iprev, jprev, inext, jnext, num
 
@@ -102,3 +111,5 @@ subroutine copy_vel_to_front(mc, j, vel, ifront, nf, numf, xf, yf, velf, idxf)
 
    return
 end subroutine copy_vel_to_front
+
+end module m_copy_vel_to_front

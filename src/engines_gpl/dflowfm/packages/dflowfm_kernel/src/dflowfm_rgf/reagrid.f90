@@ -30,6 +30,16 @@
 !
 !
 
+module m_reagrid
+
+implicit none
+
+private
+
+public :: reagrid
+
+contains
+
       !> Read a curvilinear grid to (ascii) grd-file.
       !! NOTE: reads 'old' (RGFGrid 3.x) and 'new' format (RGFGrid 4.x)
       !!
@@ -42,6 +52,14 @@
       !! Next line should be mmax, nmax
       !! That ends the header, start reading coordinates in the usual fashion.
       subroutine REAgrid(Mrgf, FILNAM, ja)
+         use precision, only: dp
+         use m_reaweir, only: reaweir
+         use m_reathd2pli, only: reathd2pli
+         use m_reaobs2stat, only: reaobs2stat
+         use m_reamdd, only: reamdd
+         use m_reacrs
+         use m_reabot
+         use m_reabnd2pol
          use M_SFERIC
          use m_grid
          use M_MISSING, notinuse => xymis ! AvD: temp
@@ -57,11 +75,9 @@
          use m_isitu
          use m_ecrrea
 
-         implicit none
-
          character(LEN=*) :: FILNAM
          integer :: MRGF, JA
-         double precision :: xymis
+         real(kind=dp) :: xymis
 
          integer :: Mbnd, mbca, mobs, mout
 
@@ -304,3 +320,5 @@
          return
 
       end subroutine REAgrid
+
+end module m_reagrid

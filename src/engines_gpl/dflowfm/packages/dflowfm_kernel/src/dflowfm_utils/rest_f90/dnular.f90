@@ -30,13 +30,26 @@
 !
 !
 
+module m_dnular
+
+implicit none
+
+private
+
+public :: dnular
+
+contains
+
       subroutine DNULAR(X, MMAX)
-         implicit none
+         use precision, only: dp
+
          integer :: i
          integer :: mmax
-         double precision X(MMAX)
+         real(kind=dp) X(MMAX)
          do I = 1, MMAX
             X(I) = 0d0
          end do
          return
       end
+
+end module m_dnular

@@ -31,7 +31,19 @@
 !
 
 !> "Casulli"-type refinement of quads
+module m_refinequads_casulli
+
+implicit none
+
+private
+
+public :: refinequads_casulli
+
+contains
+
 subroutine refinequads_casulli
+   use m_mark_cells_crossed_by_poly, only: mark_cells_crossed_by_poly
+   use precision, only: dp
    use m_getlink_gui
    use m_confrm
    use m_netw
@@ -45,14 +57,12 @@ subroutine refinequads_casulli
    use m_set_nod_adm
    use m_cirr
 
-   implicit none
-
    integer, allocatable, dimension(:, :) :: newnodes ! four new nodes per existing link
    integer, allocatable, dimension(:) :: kc_old ! copy of kc
 
    type(tadm) :: adm ! structure with administration
 
-   double precision :: xc, yc, xp, yp
+   real(kind=dp) :: xc, yc, xp, yp
 
    integer :: Lstart
 
@@ -365,20 +375,22 @@ contains
 
 !> create and store the new nodes in directional refinequads_casulli
    subroutine makenodes_directional(xp, yp, Lstart, ierror)
+      use precision, only: dp
+      use m_assign_icjc, only: assign_icjc
       use m_confrm
       use unstruc_colors, only: ncolln
       use m_tek_link
 
       implicit none
 
-      double precision, intent(in) :: xp, yp !> coordinates of clicked point
+      real(kind=dp), intent(in) :: xp, yp !> coordinates of clicked point
       integer, intent(in) :: Lstart !> clicked link number
       integer, intent(out) :: ierror !> error (1) or not (0)
 
       integer, dimension(:), allocatable :: linkmask
       integer, dimension(:), allocatable :: ic, jc
 
-      double precision :: x0, y0, xnew, ynew, xc, yc
+      real(kind=dp) :: x0, y0, xnew, ynew, xc, yc
 
       integer :: k1, k2, L, Link, iSE, iexit, idiff, jdiff
 
@@ -757,6 +769,7 @@ contains
 !!
 !!    important: first store the non-boundary nodes
    subroutine store_newnode(k0, L1_, L2_, knew, newnodes)
+      use m_icommon, only: common_cell_for_two_net_links
 
       implicit none
 
@@ -768,8 +781,6 @@ contains
       integer :: L1, L2
       integer :: iLR1, iLR2, iSE1, iSE2, ipoint1, ipoint2
       integer :: icell
-
-      integer, external :: common_cell_for_two_net_links
 
 !     if L1.eq.0 or L2.eq.0 or L1.eq.L2 and L1 or L2 is a boundary link, store at the "ghost"-side
       L1 = L1_
@@ -865,3 +876,5 @@ contains
 
 end subroutine refinequads_casulli
 
+
+end module m_refinequads_casulli

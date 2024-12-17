@@ -62,6 +62,7 @@
 !
 module m_netw
 
+   use m_clearflowmodelinputs, only: clearflowmodelinputs
    use network_data
    use m_alloc
    implicit none
@@ -69,6 +70,7 @@ module m_netw
 contains
 
    subroutine loadNetwork(filename, istat, jadoorladen)
+      use precision, only: dp
 
       use unstruc_netcdf, only: unc_read_net, unc_write_net, md5_net_file
       use unstruc_messages
@@ -88,7 +90,7 @@ contains
       integer :: iDumk
       integer :: iDuml
 
-      ! double precision, allocatable, save :: zkold(:)
+      ! real(kind=dp), allocatable, save :: zkold(:)
 
       integer :: K0, L0, NUMKN, NUMLN
       logical :: jawel

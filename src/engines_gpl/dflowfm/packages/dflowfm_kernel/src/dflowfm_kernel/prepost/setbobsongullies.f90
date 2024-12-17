@@ -30,7 +30,18 @@
 !
 !
 
+module m_setbobsongullies
+
+implicit none
+
+private
+
+public :: setbobsongullies
+
+contains
+
  subroutine setbobsongullies() ! override bobs along pliz's, jadykes == 0: only heights, 1 = also dyke attributes
+    use precision, only: dp
     use m_netw
     use m_flowgeom
     use m_flow
@@ -46,14 +57,12 @@
     use m_reapol
     use m_find_crossed_links_kdtree2
 
-    implicit none
-
     integer :: i, k, L, n1, n2, nt, minp, lastfoundk, kL, kint, kf, jacros
     integer :: iL, numLL, numcrossedLinks, ierror, jakdtree = 1, ja2pt
-    double precision :: SL, SM, XCR, YCR, CRP, Xa, Ya, Xb, Yb, zc, af, width
-    double precision, allocatable :: dSL(:)
+    real(kind=dp) :: SL, SM, XCR, YCR, CRP, Xa, Ya, Xb, Yb, zc, af, width
+    real(kind=dp), allocatable :: dSL(:)
     integer, allocatable :: iLink(:), iPol(:)
-    double precision :: t0, t1
+    real(kind=dp) :: t0, t1
     character(len=128) :: mesg
 
     if (len_trim(md_gulliesfile) == 0) then
@@ -179,3 +188,5 @@
     end if
 
  end subroutine setbobsongullies
+
+end module m_setbobsongullies

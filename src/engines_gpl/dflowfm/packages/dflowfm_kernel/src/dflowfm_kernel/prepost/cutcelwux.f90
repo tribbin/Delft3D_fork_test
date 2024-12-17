@@ -30,138 +30,153 @@
 !
 !
 
-  subroutine CUTCELWUx(n12)
-     use m_netw
-     use M_FLOWGEOM
-     use m_missing, only: dmiss, JINS
-     use m_polygon, only: NPL, xpl, ypl, zpl
-     use geometry_module, only: dbpinpol, dbdistance
-     use m_sferic, only: jsferic, jasfer3D
-     use m_readyy
+module m_cutcelwux
+use m_darean, only: darean
 
-     implicit none
-     integer :: N12
-     integer :: ja, KMOD
-     integer :: K, K1, K2, L, LL, N, NN, LF, IC, LLU, IN
-     integer, allocatable :: KNP(:)
 
-     double precision :: XM, YM, XXC(8), YYC(8), DAREA, DLENGTH, DLENMX
+   implicit none
 
-     call READYY('CUTCELWU', 0d0)
+   private
 
-     IN = -1
-     do K = 1, NUMK ! LOKAAL BINNEN BUITEN POLYGON, IN REKENGEBIED = 0
-        call DBPINPOL(XK(K), YK(K), IN, dmiss, jins, NPL, xpl, ypl, zpl)
-        KC(K) = IN
-     end do
+   public :: cutcelwux
 
-     allocate (KNP(NUMP)); KNP = 0
+contains
 
-     do N = 1, NUMP
-        NN = netcell(N)%N
-        if (NN == 4) then
-           do K = 1, NN
-              K1 = NETCELL(N)%NOD(K)
-              if (KC(K1) == 1) then
-                 KNP(N) = 1
-              end if
-           end do
-        end if
-     end do
+   subroutine CUTCELWUx(n12)
+      use precision, only: dp
+      use m_crosslinkpoly, only: crosslinkpoly
+      use m_netw
+      use M_FLOWGEOM
+      use m_missing, only: dmiss, JINS
+      use m_polygon, only: NPL, xpl, ypl, zpl
+      use geometry_module, only: dbpinpol, dbdistance
+      use m_sferic, only: jsferic, jasfer3D
+      use m_readyy
 
-     KMOD = max(1, NUMP / 100)
+      integer :: N12
+      integer :: ja, KMOD
+      integer :: K, K1, K2, L, LL, N, NN, LF, IC, LLU, IN
+      integer, allocatable :: KNP(:)
 
-     do N = 1, NUMP
+      real(kind=dp) :: XM, YM, XXC(8), YYC(8), DAREA, DLENGTH, DLENMX
 
-        if (mod(n, KMOD) == 0) call READYY('CUTCELWU', dble(n) / dble(nump))
+      call READYY('CUTCELWU', 0d0)
 
-        if (KNP(N) == 1) then ! AT LEAST 1 POINT INSIDE POLYGON, SO CHECK CUTC
+      IN = -1
+      do K = 1, NUMK ! LOKAAL BINNEN BUITEN POLYGON, IN REKENGEBIED = 0
+         call DBPINPOL(XK(K), YK(K), IN, dmiss, jins, NPL, xpl, ypl, zpl)
+         KC(K) = IN
+      end do
 
-           NN = netcell(N)%N
+      allocate (KNP(NUMP)); KNP = 0
 
-           IC = 0
-           do LL = 1, NN
+      do N = 1, NUMP
+         NN = netcell(N)%N
+         if (NN == 4) then
+            do K = 1, NN
+               K1 = NETCELL(N)%NOD(K)
+               if (KC(K1) == 1) then
+                  KNP(N) = 1
+               end if
+            end do
+         end if
+      end do
 
-              L = netcell(N)%LIN(LL)
+      KMOD = max(1, NUMP / 100)
 
-              if (LNN(L) <= 1) then
-                 cycle
-              else
-                 if (N12 == 5) LF = LNE2LN(L)
-              end if
+      do N = 1, NUMP
 
-              ! SPvdP: cell next to net boundary may be cut, and not necessarily at the boundary. So need to include boundary link too
-              ! Lf = lne2ln(L)
+         if (mod(n, KMOD) == 0) call READYY('CUTCELWU', dble(n) / dble(nump))
 
-              LLU = LL + 1; if (LLU > NN) LLU = 1
-              K1 = NETCELL(N)%NOD(LL)
-              K2 = NETCELL(N)%NOD(LLU)
+         if (KNP(N) == 1) then ! AT LEAST 1 POINT INSIDE POLYGON, SO CHECK CUTC
 
-              call CROSSLINKPOLY(L, 0, 0, (/0/), (/0/), XM, YM, JA)
+            NN = netcell(N)%N
 
-              if (JA == 1) then
+            IC = 0
+            do LL = 1, NN
 
-                 if (N12 == 5) then ! OP DEZE MANIER UITSTEL AANPASSING TOT NA DE WEGINGEN VAN LINK CENTER/CORNER WEIGHTS
+               L = netcell(N)%LIN(LL)
 
-                    if (KC(K1) == 1) then !  .and. kc(k2).ne.1 ) THEN       ! 1 OUTSIDE
-                       IC = IC + 1; XXC(IC) = XM; YYC(IC) = YM
-                       IC = IC + 1; XXC(IC) = XK(K2); YYC(IC) = YK(K2)
-                       WU(LF) = DBDISTANCE(XM, YM, XK(K2), YK(K2), jsferic, jasfer3D, dmiss)
-                    else ! if ( kc(k1).ne.1 .and. kc(k2).eq.1 ) then
-                       if (IC == 0) then
-                          IC = IC + 1; XXC(IC) = XK(K1); YYC(IC) = YK(K1)
-                       end if
-                       IC = IC + 1; XXC(IC) = XM; YYC(IC) = YM
-                       WU(LF) = DBDISTANCE(XM, YM, XK(K1), YK(K1), jsferic, jasfer3D, dmiss)
-                       !else if ( kc(k1).eq.1 .and. kc(k2).eq.1  .and. Lf.gt.0 ) then
-                       !  wu(Lf) = 0d0
-                    end if
-                 else if (N12 == 4) then
-                    kfs(n) = 1 ! temporary cutcell flag, TO CHANGE LINKTOCENTER AND LINKTOCORNERSWEIGHTING FOR CUTCELLS
-                 end if
+               if (LNN(L) <= 1) then
+                  cycle
+               else
+                  if (N12 == 5) LF = LNE2LN(L)
+               end if
 
-              else
-                 if (KC(K1) == 0 .and. KC(K2) == 0) then
-                    if (N12 == 5) then
-                       if (IC == 0) then
-                          IC = IC + 1; XXC(IC) = XK(K1); YYC(IC) = YK(K1)
-                       end if
-                       IC = IC + 1; XXC(IC) = XK(K2); YYC(IC) = YK(K2)
-                    end if
-                 else if (N12 == 4) then
-                    LNN(L) = 0
-                 end if
-              end if
+               ! SPvdP: cell next to net boundary may be cut, and not necessarily at the boundary. So need to include boundary link too
+               ! Lf = lne2ln(L)
 
-           end do
-           if (N12 == 5 .and. IC > 0) then
+               LLU = LL + 1; if (LLU > NN) LLU = 1
+               K1 = NETCELL(N)%NOD(LL)
+               K2 = NETCELL(N)%NOD(LLU)
 
-              call dAREAN(XXC, YYC, IC, DAREA, DLENGTH, DLENMX) ! AREA AND LENGTH OF POLYGON
-              BA(N) = max(DAREA, BAMIN) ! ; BAI(N) = 1D0/BA(N)    ! BAI ZIT IN ADVECTIEWEGING
-              deallocate (ND(N)%X, ND(N)%Y)
-              allocate (ND(N)%X(IC), ND(N)%Y(IC))
-              ND(N)%X(1:IC) = XXC(1:IC)
-              ND(N)%Y(1:IC) = YYC(1:IC)
+               call CROSSLINKPOLY(L, 0, 0, (/0/), (/0/), XM, YM, JA)
 
-           end if
-        end if
+               if (JA == 1) then
 
-     end do
+                  if (N12 == 5) then ! OP DEZE MANIER UITSTEL AANPASSING TOT NA DE WEGINGEN VAN LINK CENTER/CORNER WEIGHTS
 
-     if (n12 == 51) then
+                     if (KC(K1) == 1) then !  .and. kc(k2).ne.1 ) THEN       ! 1 OUTSIDE
+                        IC = IC + 1; XXC(IC) = XM; YYC(IC) = YM
+                        IC = IC + 1; XXC(IC) = XK(K2); YYC(IC) = YK(K2)
+                        WU(LF) = DBDISTANCE(XM, YM, XK(K2), YK(K2), jsferic, jasfer3D, dmiss)
+                     else ! if ( kc(k1).ne.1 .and. kc(k2).eq.1 ) then
+                        if (IC == 0) then
+                           IC = IC + 1; XXC(IC) = XK(K1); YYC(IC) = YK(K1)
+                        end if
+                        IC = IC + 1; XXC(IC) = XM; YYC(IC) = YM
+                        WU(LF) = DBDISTANCE(XM, YM, XK(K1), YK(K1), jsferic, jasfer3D, dmiss)
+                        !else if ( kc(k1).eq.1 .and. kc(k2).eq.1  .and. Lf.gt.0 ) then
+                        !  wu(Lf) = 0d0
+                     end if
+                  else if (N12 == 4) then
+                     kfs(n) = 1 ! temporary cutcell flag, TO CHANGE LINKTOCENTER AND LINKTOCORNERSWEIGHTING FOR CUTCELLS
+                  end if
+
+               else
+                  if (KC(K1) == 0 .and. KC(K2) == 0) then
+                     if (N12 == 5) then
+                        if (IC == 0) then
+                           IC = IC + 1; XXC(IC) = XK(K1); YYC(IC) = YK(K1)
+                        end if
+                        IC = IC + 1; XXC(IC) = XK(K2); YYC(IC) = YK(K2)
+                     end if
+                  else if (N12 == 4) then
+                     LNN(L) = 0
+                  end if
+               end if
+
+            end do
+            if (N12 == 5 .and. IC > 0) then
+
+               call dAREAN(XXC, YYC, IC, DAREA, DLENGTH, DLENMX) ! AREA AND LENGTH OF POLYGON
+               BA(N) = max(DAREA, BAMIN) ! ; BAI(N) = 1D0/BA(N)    ! BAI ZIT IN ADVECTIEWEGING
+               deallocate (ND(N)%X, ND(N)%Y)
+               allocate (ND(N)%X(IC), ND(N)%Y(IC))
+               ND(N)%X(1:IC) = XXC(1:IC)
+               ND(N)%Y(1:IC) = YYC(1:IC)
+
+            end if
+         end if
+
+      end do
+
+      if (n12 == 51) then
 !    SPvdP: disable flow-links that are associated to disabled net-links
-        do Lf = 1, Lnx
-           L = abs(ln2lne(Lf))
-           if (L > 0) then
-              if (lnn(L) == 0) then
-                 wu(Lf) = 0d0
-              end if
-           end if
-        end do
-     end if
+         do Lf = 1, Lnx
+            L = abs(ln2lne(Lf))
+            if (L > 0) then
+               if (lnn(L) == 0) then
+                  wu(Lf) = 0d0
+               end if
+            end if
+         end do
+      end if
 
-     deallocate (KNP)
+      deallocate (KNP)
 
-     call READYY('CUTCELWU', -1d0)
+      call READYY('CUTCELWU', -1d0)
 
-  end subroutine CUTCELwux
+   end subroutine CUTCELwux
+
+end module m_cutcelwux

@@ -30,12 +30,23 @@
 !
 !
 
+module m_makef
+
+implicit none
+
+private
+
+public :: makef
+
+contains
+
       subroutine MAKEF(XR, YR, MMAX, NMAX) ! naar rekenvlak SUBROUTINE MAKEF
+         use precision, only: dp
          use M_SFERIC
          use M_MISSING
-         implicit none
+
          integer :: mmax, nmax
-         double precision :: XR(MMAX, NMAX), YR(MMAX, NMAX), FI2
+         real(kind=dp) :: XR(MMAX, NMAX), YR(MMAX, NMAX), FI2
          integer :: i, j
          do I = 1, MMAX
             do J = 1, NMAX
@@ -49,3 +60,5 @@
          end do
          return
       end subroutine MAKEF
+
+end module m_makef

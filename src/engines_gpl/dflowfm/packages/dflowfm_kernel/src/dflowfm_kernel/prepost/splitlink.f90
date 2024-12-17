@@ -31,7 +31,21 @@
 !
 
 !> split a link, make new cells and update administration
+module m_splitlink
+
+implicit none
+
+private
+
+public :: splitlink
+
+contains
+
 subroutine splitlink(xp, yp, L_, dcosmin, jatek, ierror)
+   use m_mergecells, only: mergecells
+   use m_makecell, only: makecell
+   use precision, only: dp
+   use m_dellink, only: dellink
    use m_dcirr
    use m_netw
    use network_data, only: xzw, yzw
@@ -46,17 +60,15 @@ subroutine splitlink(xp, yp, L_, dcosmin, jatek, ierror)
    use m_tek_link
    use m_is_link
 
-   implicit none
-
-   double precision, intent(in) :: xp, yp !< clicked point coordinates (used if L.eq.0)
+   real(kind=dp), intent(in) :: xp, yp !< clicked point coordinates (used if L.eq.0)
    integer, intent(in) :: L_ !< link number (used if L_.ne.0)
-   double precision, intent(in) :: dcosmin !< parallelogram cosine tolerance
+   real(kind=dp), intent(in) :: dcosmin !< parallelogram cosine tolerance
    integer, intent(in) :: jatek !< plot new links (1) or not (0)
    integer, intent(out) :: ierror ! error (1) or not (0)
 
-   double precision :: zp ! link z-value
+   real(kind=dp) :: zp ! link z-value
 
-   double precision :: zzz, dcos1, dcos2, dcos3
+   real(kind=dp) :: zzz, dcos1, dcos2, dcos3
 
    integer :: L ! link number
    integer :: ic1, icL, icR ! cell numbers
@@ -452,3 +464,5 @@ contains
       return
    end subroutine replace_intarrayelem
 end subroutine splitlink
+
+end module m_splitlink

@@ -30,12 +30,20 @@
 !
 !
 
-      subroutine wait()
-         implicit none
-         integer :: key
-         call INFLUSH()
-10       continue
-         call INKEYEVENTIMM(KEY)
-         if (KEY /= -999 .and. KEY /= -32387) return
-         goto 10
-      end
+module m_wait
+
+   implicit none
+
+contains
+
+   subroutine wait()
+      implicit none
+      integer :: key
+      call INFLUSH()
+10    continue
+      call INKEYEVENTIMM(KEY)
+      if (KEY /= -999 .and. KEY /= -32387) return
+      goto 10
+   end
+
+end module m_wait

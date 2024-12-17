@@ -30,12 +30,23 @@
 !
 !
 
+module m_x0isx1
+
+implicit none
+
+private
+
+public :: x0isx1
+
+contains
+
       subroutine X0ISX1(X0, Y0, Z0, X1, Y1, Z1, KMAX)
-         implicit none
+         use precision, only: dp
+
          integer :: KMAX
-         double precision :: X0(KMAX), X1(KMAX), &
-            Y0(KMAX), Y1(KMAX), &
-            Z0(KMAX), Z1(KMAX)
+         real(kind=dp) :: X0(KMAX), X1(KMAX), &
+                          Y0(KMAX), Y1(KMAX), &
+                          Z0(KMAX), Z1(KMAX)
          integer :: K
 
          do K = 1, KMAX
@@ -45,3 +56,5 @@
          end do
          return
       end subroutine X0ISX1
+
+end module m_x0isx1

@@ -30,9 +30,23 @@
 !
 !
 
+module m_ortsor
+use m_sor, only: sor
+
+implicit none
+
+private
+
+public :: ortsor
+
+contains
+
       subroutine ORTSOR(XR, YR, A, B, C, D, E, ATP, M1, N1, M2, N2, &
                         XI2, YI2, XJ2, YJ2, XO, YO, &
                         RJAC)
+         use m_makey2, only: makey2
+         use m_bndsmt, only: bndsmt
+         use precision, only: dp
          use unstruc_colors
          use m_sferic
          use m_grid
@@ -41,21 +55,21 @@
          use m_drawthis
          use m_readyy
          use m_tek_grd
-         implicit none
+
          integer :: i
          integer :: key
          integer :: m1
          integer :: m2
          integer :: n1
          integer :: n2
-         double precision :: rjac
+         real(kind=dp) :: rjac
 
-         double precision :: XR(MMAX, NMAX), YR(MMAX, NMAX), &
-            XI2(MMAX, NMAX), XJ2(MMAX, NMAX), &
-            YI2(MMAX, NMAX), YJ2(MMAX, NMAX), &
-            XO(MMAX, NMAX), YO(MMAX, NMAX), &
-            A(MMAX, NMAX), B(MMAX, NMAX), C(MMAX, NMAX), &
-            D(MMAX, NMAX), E(MMAX, NMAX), ATP(MMAX, NMAX)
+         real(kind=dp) :: XR(MMAX, NMAX), YR(MMAX, NMAX), &
+                          XI2(MMAX, NMAX), XJ2(MMAX, NMAX), &
+                          YI2(MMAX, NMAX), YJ2(MMAX, NMAX), &
+                          XO(MMAX, NMAX), YO(MMAX, NMAX), &
+                          A(MMAX, NMAX), B(MMAX, NMAX), C(MMAX, NMAX), &
+                          D(MMAX, NMAX), E(MMAX, NMAX), ATP(MMAX, NMAX)
 
          do I = 1, ITBND
 
@@ -80,3 +94,5 @@
          end do
          return
       end subroutine ORTSOR
+
+end module m_ortsor

@@ -30,14 +30,24 @@
 !
 !
 
+module m_timestepanalysis
+
+implicit none
+
+private
+
+public :: timestepanalysis
+
+contains
+
  subroutine timestepanalysis(dtsc_loc)
+    use precision, only: dp
     use m_flow
     use m_flowtimes
     use m_partitioninfo
     use unstruc_model, only: md_ident
-    implicit none
 
-    double precision, intent(in) :: dtsc_loc
+    real(kind=dp), intent(in) :: dtsc_loc
 
     integer, save :: mout = 0
 
@@ -71,3 +81,5 @@
 
     return
  end subroutine timestepanalysis
+
+end module m_timestepanalysis

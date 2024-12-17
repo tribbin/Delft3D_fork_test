@@ -31,7 +31,18 @@
 !
 
 !>  smooth the link-based aspect ratios (SLR/R01) along parallel and perpendicular mesh lines (obsolete)
+module m_orthonet_smooth_aspect
+
+implicit none
+
+private
+
+public :: orthonet_smooth_aspect
+
+contains
+
 subroutine orthonet_smooth_aspect(aspect, iexit)
+   use precision, only: dp
    use m_netw
    use m_orthosettings
    use unstruc_messages
@@ -42,9 +53,7 @@ subroutine orthonet_smooth_aspect(aspect, iexit)
    use m_qnerror
    use m_ktext
 
-   implicit none
-
-   double precision, dimension(numL) :: aspect !< aspect ratio at the links
+   real(kind=dp), dimension(numL) :: aspect !< aspect ratio at the links
    integer :: iexit !< 1 if no errors have occured
 
    integer, save :: NMKMAX = 4 ! maximum of neighbors considered
@@ -52,13 +61,13 @@ subroutine orthonet_smooth_aspect(aspect, iexit)
    integer, dimension(:, :), allocatable :: kkL ! neighboring link
    integer, dimension(:, :), allocatable :: ww ! weights of neighboring links
 
-   double precision :: ATPF1, cosphi, maxcosphi
-   double precision :: x1, y1, x2, y2, x3, y3
-   double precision :: dum, ww1
+   real(kind=dp) :: ATPF1, cosphi, maxcosphi
+   real(kind=dp) :: x1, y1, x2, y2, x3, y3
+   real(kind=dp) :: dum, ww1
 
    character(len=51) :: numstr
 
-   double precision, parameter :: COSMIN = 0.5d0, COSMAX = 0.0d0, EPS = 1d-8
+   real(kind=dp), parameter :: COSMIN = 0.5d0, COSMAX = 0.0d0, EPS = 1d-8
 
    integer :: kk, num, k1, k2, k3, nn, kk1, L1, nummax
 
@@ -243,3 +252,5 @@ subroutine orthonet_smooth_aspect(aspect, iexit)
 
    deallocate (nmkx, kkL, ww)
 end subroutine
+
+end module m_orthonet_smooth_aspect

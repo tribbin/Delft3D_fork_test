@@ -30,7 +30,19 @@
 !
 !
 
+module m_setbedlevelfromextfile
+use m_setbedlevelfromnetfile, only: setbedlevelfromnetfile
+
+implicit none
+
+private
+
+public :: setbedlevelfromextfile
+
+contains
+
 subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old cell centre bottom level file
+   use precision, only: dp
    use timespace_data
    use timespace
    use unstruc_model
@@ -49,9 +61,7 @@ subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old ce
    use m_deprecation, only: check_file_tree_for_deprecated_keywords
    use fm_location_types, only: UNC_LOC_S, UNC_LOC_U, UNC_LOC_CN
    use m_delpol
-   implicit none
-
-   logical, external :: timespaceinitialfield_mpi
+   use m_timespaceinitialfield_mpi
 
    logical :: bl_set_from_zkuni = .false.
    integer :: ja, ja1, ja2, method, iprimpos
@@ -63,7 +73,7 @@ subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old ce
    character(len=256) :: filename
    character(len=64) :: varname
 ! character(len=1)   :: operand
-! double precision   :: transformcoef(25) !< Transform coefficients a+b*x
+! real(kind=dp)   :: transformcoef(25) !< Transform coefficients a+b*x
 
    type(tree_data), pointer :: inifield_ptr !< tree of inifield-file's [Initial] or [Parameter] blocks
    type(tree_data), pointer :: node_ptr
@@ -97,7 +107,7 @@ subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old ce
    if (mext /= 0 .or. len_trim(md_inifieldfile) > 0) then
       ! 0.a Prepare masks for 1D/2D distinctions
       kc_size_store = size(kc)
-      allocate (kcc(mx), kc1d(mx), kc2d(max(lnxi,mx))); kcc = 1; kc1D = 0; kc2D = 0
+      allocate (kcc(mx), kc1d(mx), kc2d(max(lnxi, mx))); kcc = 1; kc1D = 0; kc2D = 0
       call realloc(kc, mx, keepExisting=.false., fill=0)
 
       do L = 1, numL1D
@@ -268,3 +278,5 @@ subroutine setbedlevelfromextfile() ! setbedlevels()  ! check presence of old ce
    end if
 
 end subroutine setbedlevelfromextfile ! setbottomlevels
+
+end module m_setbedlevelfromextfile

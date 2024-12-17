@@ -31,21 +31,31 @@
 !
 
 !> merge polylines
-subroutine merge_polylines()
+module m_merge_polylines
+use m_modln2, only: modln2
 
+implicit none
+
+private
+
+public :: merge_polylines
+
+contains
+
+subroutine merge_polylines()
+   use m_mergepoly, only: mergepoly
+   use precision, only: dp
    use m_polygon
    use m_missing
    use geometry_module, only: dbdistance, get_startend
    use m_sferic, only: jsferic, jasfer3D
 
-   implicit none
-
-   double precision :: xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2
+   real(kind=dp) :: xstart1, ystart1, xend1, yend1, xstart2, ystart2, xend2, yend2
 
    integer :: jpoint1, jstart1, jend1, jpoint2, jstart2, jend2
    integer :: ipol1, ipol2
 
-   double precision, parameter :: dtol = 1d-2
+   real(kind=dp), parameter :: dtol = 1d-2
 
    jpoint1 = 1
    do while (jpoint1 < NPL)
@@ -129,3 +139,5 @@ subroutine merge_polylines()
 
    return
 end subroutine merge_polylines
+
+end module m_merge_polylines

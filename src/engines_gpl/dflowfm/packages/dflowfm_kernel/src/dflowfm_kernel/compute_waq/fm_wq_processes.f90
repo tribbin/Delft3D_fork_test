@@ -27,6 +27,8 @@
 !-------------------------------------------------------------------------------
 
 subroutine fm_wq_processes_ini_sub()
+   use m_add_bndtracer, only: add_bndtracer
+   use m_getkbotktopmax
    use m_fm_wq_processes
    use m_alloc
    use unstruc_messages
@@ -363,6 +365,7 @@ subroutine fm_wq_processes_ini_sub()
 end subroutine fm_wq_processes_ini_sub
 
 subroutine fm_wq_processes_ini_proc()
+   use m_getkbotktopmax
    use m_fm_wq_processes
    use m_wq_processes_initialise
    use m_wq_processes_pmsa_size
@@ -894,6 +897,7 @@ end subroutine fm_wq_processes_ini_proc
 
 !! @return Integer result status (0 if successful)
 subroutine dfm_waq_initexternalforcings(iresult)
+   use precision, only: dp
    use fm_external_forcings
    use m_alloc
    use fm_external_forcings_data
@@ -908,15 +912,16 @@ subroutine dfm_waq_initexternalforcings(iresult)
    use m_meteo
    use m_ec_instance
    use dfm_error
-   use processes_input
    use m_fm_wq_processes
    use timers
    use unstruc_files, only: resolvePath
    use fm_location_types, only: UNC_LOC_S
    use m_delpol
    use m_get_kbot_ktop
+   use m_find_name, only: find_name
 
    implicit none
+
    integer, intent(out) :: iresult
 
    character(len=256) :: filename, sourcemask
@@ -924,8 +929,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
    integer :: klocal, waqseg2D, waqseglay
    character(len=NAMTRACLEN) :: qidnam
    character(len=20) :: waqinput
-   double precision, allocatable :: viuh(:) ! temporary variable
-   integer, external :: findname
+   real(kind=dp), allocatable :: viuh(:) ! temporary variable
 
    integer(4), save :: ithndl = 0
 
@@ -974,7 +978,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
             end if
 
             if (qid(1:12) == 'waqparameter') then
-               ipa = findname(num_spatial_parameters, paname, waqinput)
+               ipa = find_name(paname, waqinput)
 
                if (ipa == 0) then
                   num_spatial_parameters = num_spatial_parameters + 1
@@ -1010,7 +1014,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
                deallocate (viuh)
 
             elseif (qid(1:16) == 'waqsegmentnumber') then
-               ipa = findname(num_spatial_parameters, paname, waqinput)
+               ipa = find_name(paname, waqinput)
 
                if (ipa == 0) then
                   num_spatial_parameters = num_spatial_parameters + 1
@@ -1060,7 +1064,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
 
             else if (qid(1:11) == 'waqfunction') then
 
-               ifun = findname(num_time_functions, funame, waqinput)
+               ifun = find_name(funame, waqinput)
 
                if (ifun == 0) then
                   num_time_functions = num_time_functions + 1
@@ -1071,7 +1075,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
 
             else if (qid(1:18) == 'waqsegmentfunction') then
 
-               isfun = findname(num_spatial_time_fuctions, sfunname, waqinput)
+               isfun = find_name(sfunname, waqinput)
 
                if (isfun == 0) then
                   num_spatial_time_fuctions = num_spatial_time_fuctions + 1
@@ -1081,7 +1085,7 @@ subroutine dfm_waq_initexternalforcings(iresult)
                success = .true.
 
             else if (qid(1:17) == 'waqmonitoringarea') then
-               imna = findname(nomon, monname, waqinput)
+               imna = find_name(monname, waqinput)
 
                if (imna == 0) then
                   nomon = nomon + 1
@@ -1248,19 +1252,18 @@ subroutine add_wqbot(wqbotnam, wqbotunit, iwqbot, janew)
    !> add waq bottom substance
    use m_flowgeom
    use m_flow, only: Ndkx
-   use fm_external_forcings_data, only: numtracers, trnames
+   use fm_external_forcings_data, only: trnames
    use m_fm_wq_processes
    use m_alloc
    use m_missing
    use unstruc_messages
+   use m_find_name, only: find_name
    implicit none
 
    character(len=*), intent(in) :: wqbotnam
    character(len=20), intent(in) :: wqbotunit
    integer, intent(out) :: iwqbot
    integer, intent(out) :: janew
-
-   integer, external :: findname
 
    integer :: itrac
 
@@ -1274,8 +1277,8 @@ subroutine add_wqbot(wqbotnam, wqbotunit, iwqbot, janew)
       allocate (trnames(0))
    end if
 
-   iwqbot = findname(numwqbots, wqbotnames, wqbotnam)
-   itrac = findname(numtracers, trnames, wqbotnam)
+   iwqbot = find_name(wqbotnames, wqbotnam)
+   itrac = find_name(trnames, wqbotnam)
 
    if (itrac /= 0) then
       call mess(LEVEL_ERROR, 'add_wqbot: water quality bottom variable named '''//trim(wqbotnam)//''' already exists as a tracer.')
@@ -1297,6 +1300,7 @@ subroutine add_wqbot(wqbotnam, wqbotunit, iwqbot, janew)
 end subroutine add_wqbot
 
 subroutine fm_wq_processes_step(dt, time)
+   use precision, only: dp
    use m_fm_wq_processes
    use m_wq_processes_proces
    use m_mass_balance_areas
@@ -1306,8 +1310,8 @@ subroutine fm_wq_processes_step(dt, time)
 
    implicit none
 
-   double precision, intent(in) :: dt !< timestep for waq in seconds
-   double precision, intent(in) :: time !< time     for waq in seconds
+   real(kind=dp), intent(in) :: dt !< timestep for waq in seconds
+   real(kind=dp), intent(in) :: time !< time     for waq in seconds
 
    integer :: ipoiconc
 
@@ -1359,6 +1363,9 @@ end subroutine fm_wq_processes_step
 
 subroutine copy_data_from_fm_to_wq_processes(time)
    !  copy data from D-FlowFM to WAQ
+   use precision, only: dp
+   use m_getfetch, only: getfetch
+   use m_getkbotktopmax
    use m_flowgeom, only: Ndxi, ba
    use m_flow, only: vol1, ucx, ucy
    use m_flowtimes, only: irefdate, tunit
@@ -1373,9 +1380,9 @@ subroutine copy_data_from_fm_to_wq_processes(time)
    use m_get_link1
    implicit none
 
-   double precision, intent(in) :: time !< time     for waq in seconds
+   real(kind=dp), intent(in) :: time !< time     for waq in seconds
 
-   double precision :: u10, dir, wdir, FetchL, FetchD
+   real(kind=dp) :: u10, dir, wdir, FetchL, FetchD
    integer :: isys, iconst, iwqbot
    integer :: ipoisurf, ipoitau, ipoivel
    integer :: ipoivol, ipoiconc, ipoisal, ipoitem
@@ -1684,6 +1691,7 @@ end subroutine copy_data_from_fm_to_wq_processes
 
 subroutine copy_data_from_wq_processes_to_fm(dt, tim)
    !  copy data from WAQ to D-FlowFM
+   use m_getkbotktopmax
    use m_missing, only: dmiss
    use m_flowgeom, only: Ndxi, ba
    use m_flow, only: vol1
@@ -1697,8 +1705,8 @@ subroutine copy_data_from_wq_processes_to_fm(dt, tim)
 
    implicit none
 
-   double precision, intent(in) :: dt
-   double precision, intent(in) :: tim
+   real(kind=dp), intent(in) :: dt
+   real(kind=dp), intent(in) :: tim
 
    integer :: isys, iconst, iwqbot
    integer :: ivar, iarr, iv_idx
@@ -1829,6 +1837,7 @@ logical function wq_processes_mydomain(iseg)
 end function wq_processes_mydomain
 
 logical function reduce_sum_wq_processes(size_wq_processes_data, wq_processes_data)
+   use precision, only: dp
 
    use m_partitioninfo
 
@@ -1837,8 +1846,8 @@ logical function reduce_sum_wq_processes(size_wq_processes_data, wq_processes_da
    integer :: size_wq_processes_data
    real :: wq_processes_data(size_wq_processes_data)
 
-   double precision :: mpi_wq_processes_data(size_wq_processes_data)
-   double precision :: mpi_wq_processes_data_reduce(size_wq_processes_data)
+   real(kind=dp) :: mpi_wq_processes_data(size_wq_processes_data)
+   real(kind=dp) :: mpi_wq_processes_data_reduce(size_wq_processes_data)
 
    if (jampi == 1) then
       mpi_wq_processes_data = dble(wq_processes_data)

@@ -31,7 +31,18 @@
 !
 
 !> merge grids from spline2curvi
+module m_merge_spline2curvigrids
+
+implicit none
+
+private
+
+public :: merge_spline2curvigrids
+
+contains
+
 subroutine merge_spline2curvigrids()
+   use precision, only: dp
    use m_grid
    use m_alloc
    use m_missing
@@ -39,9 +50,7 @@ subroutine merge_spline2curvigrids()
    use m_sferic, only: jsferic, jasfer3D
    use m_increase_grid
 
-   implicit none
-
-   double precision, dimension(:, :), allocatable :: xcnew, ycnew
+   real(kind=dp), dimension(:, :), allocatable :: xcnew, ycnew
 
    integer, dimension(2) :: iupperold, ilowerold, iupper, ilower
 
@@ -53,7 +62,7 @@ subroutine merge_spline2curvigrids()
 
    logical :: Lconnected
 
-   double precision, parameter :: dtol = 1d-6
+   real(kind=dp), parameter :: dtol = 1d-6
 
 !  allocate
    allocate (xcnew(1, 1), ycnew(1, 1))
@@ -147,3 +156,5 @@ subroutine merge_spline2curvigrids()
 
    return
 end subroutine merge_spline2curvigrids
+
+end module m_merge_spline2curvigrids

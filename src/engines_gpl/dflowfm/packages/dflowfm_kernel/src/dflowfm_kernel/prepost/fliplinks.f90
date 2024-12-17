@@ -32,7 +32,20 @@
 
 !> flip links in quads, when appropriate
 !>   note: we look for a local optimum, which is not necessarily the global one
+module m_fliplinks
+use m_triangulate_cells, only: triangulate_cells
+
+implicit none
+
+private
+
+public :: fliplinks
+
+contains
+
 subroutine fliplinks()
+   use m_find_nearest_meshline, only: find_nearest_meshline
+   use precision, only: dp
    use m_confrm
    use m_comp_ntopo
    use m_netw
@@ -64,20 +77,19 @@ subroutine fliplinks()
 
    integer :: L1L, L1R, L2L, L2R ! other links in triangles connected to link L
 
-   integer :: jacross ! check if two diagonals of a quadrilateral cross 
+   integer :: jacross ! check if two diagonals of a quadrilateral cross
    integer :: jatriangulate ! triangulate all cells prior to link flippingz
    integer :: jalandbound ! take land boundaries into account or not
 
    integer :: maxlin
 
-   double precision :: sl, sm, xcr, ycr, crp ! used in cross check
+   real(kind=dp) :: sl, sm, xcr, ycr, crp ! used in cross check
 
-   double precision :: beta, Etot, Emin ! Monte-Carlo parameters
+   real(kind=dp) :: beta, Etot, Emin ! Monte-Carlo parameters
 
    logical :: Lflip
 
-   integer, external :: nmk_opt
-   double precision, external :: rand
+   real(kind=dp), external :: rand
 
    if (jaswan /= 1) then
 
@@ -288,3 +300,5 @@ subroutine fliplinks()
    return
 
 end subroutine fliplinks
+
+end module m_fliplinks

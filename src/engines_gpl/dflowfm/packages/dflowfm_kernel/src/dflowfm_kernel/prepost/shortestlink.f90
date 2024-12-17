@@ -27,20 +27,28 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
+module m_shortestlink
 
-  double precision function SHORTESTLINK(K)
+implicit none
+
+private
+
+public :: shortestlink
+
+contains
+
+  real(kind=dp) function SHORTESTLINK(K)
+     use precision, only: dp
      use m_netw
-     implicit none
+     use m_dlength, only: dlength
+
      integer :: K
 
      integer :: k1
      integer :: k2
      integer :: l1
-     double precision :: r1
+     real(kind=dp) :: r1
      integer :: KK, NX
-     double precision :: DLENGTH
 
      SHORTESTLINK = 1d9
      NX = size(NOD(K)%LIN)
@@ -56,3 +64,5 @@
      end do
      return
   end function SHORTESTLINK
+
+end module m_shortestlink

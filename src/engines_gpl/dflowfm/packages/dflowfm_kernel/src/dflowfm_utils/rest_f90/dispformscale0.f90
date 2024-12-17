@@ -30,12 +30,23 @@
 !
 !
 
+module m_dispformscale0
+
+implicit none
+
+private
+
+public :: dispformscale0
+
+contains
+
       subroutine DISPFORMscale0(value, fmt)
+         use precision, only: dp
          use m_scalepos
-         implicit none
+
          integer :: n1
          integer :: n2
-         double precision :: value
+         real(kind=dp) :: value
          character fmt * (*)
 
          fmt = '(f9.3)'
@@ -60,3 +71,5 @@
          if (NDEC > 0) write (fmt(5:5), '(i1)') NDEC
          return
       end
+
+end module m_dispformscale0

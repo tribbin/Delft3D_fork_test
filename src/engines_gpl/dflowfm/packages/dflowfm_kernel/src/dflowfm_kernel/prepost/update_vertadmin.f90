@@ -31,18 +31,28 @@
 !
 
 !> update the z-layer administration in parallel computations
-!>    check bl and kmxn
-!>    update kmxn, kmxL
+!!    check bl and kmxn
+!!    update kmxn, kmxL
+module m_update_vertadmin
+
+implicit none
+
+private
+
+public :: update_vertadmin
+
+contains
+
 subroutine update_vertadmin()
+   use precision, only: dp
    use m_partitioninfo
    use m_flowgeom
    use m_flow
    use unstruc_messages
-   implicit none
 
    character(len=128) :: mesg
 
-   double precision, dimension(:, :), allocatable :: dum
+   real(kind=dp), dimension(:, :), allocatable :: dum
 
    integer :: k, L
    integer :: ierror
@@ -156,3 +166,5 @@ subroutine update_vertadmin()
 
    return
 end subroutine update_vertadmin
+
+end module m_update_vertadmin

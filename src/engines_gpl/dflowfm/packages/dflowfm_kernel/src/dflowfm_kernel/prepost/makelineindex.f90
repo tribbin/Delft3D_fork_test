@@ -31,14 +31,25 @@
 !
 
 !>  indentify the points in an array
+module m_makelineindex
+
+implicit none
+
+private
+
+public :: makelineindex
+
+contains
+
     subroutine makelineindex(num, x, idx)
+       use precision, only: dp
        use m_missing
        use geometry_module, only: get_startend
 
        implicit none
 
        integer, intent(inout) :: num !< array size
-       double precision, dimension(num), intent(in) :: x !< line array
+       real(kind=dp), dimension(num), intent(in) :: x !< line array
        integer, dimension(num), intent(out) :: idx !< idx array
 
        integer :: nidx, ipoint
@@ -84,3 +95,5 @@
 
        return
     end subroutine
+
+end module m_makelineindex

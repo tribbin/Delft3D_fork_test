@@ -30,7 +30,49 @@
 !
 !
 
+module m_flow_geominit
+use m_darean, only: darean
+use m_dumpnetlink, only: dumpnetlink
+use m_which2dnetlinkwascrossed, only: which2dnetlinkwascrossed
+use m_thindams_on_netgeom, only: thindams_on_netgeom
+use m_sort_flowlinks_ccw, only: sort_flowlinks_ccw
+use m_setwallorientations, only: setwallorientations
+use m_setprofs1d, only: setprofs1d
+use m_setlinktocornerweights, only: setlinktocornerweights
+use m_setlinktocenterweights, only: setlinktocenterweights
+use m_setcornertolinkorientations, only: setcornertolinkorientations
+use m_setcentertolinkorientations, only: setcentertolinkorientations
+use m_setbobsonroofs, only: setbobsonroofs
+use m_setbedlevelfromextfile, only: setbedlevelfromextfile
+use m_setaifu, only: setaifu
+use m_renumberflownodes, only: renumberflownodes
+use m_remove_unused_nodes_and_links, only: remove_unused_nodes_and_links
+use m_reanumlimdt, only: reanumlimdt
+use m_preparecells, only: preparecells
+use m_make_orthocenters, only: make_orthocenters
+use m_makethindamadmin, only: makethindamadmin
+use m_iadvecini, only: iadvecini
+use m_getdxofconnectedkcu1, only: getdxofconnectedkcu1
+
+implicit none
+
+private
+
+public :: flow_geominit
+
+contains
+
  subroutine flow_geominit(iphase) ! initialise flow geometry
+    use m_fixedweirs_on_flowgeom, only: fixedweirs_on_flowgeom
+    use precision, only: dp
+    use m_cutcell_list, only: cutcell_list
+    use m_checknetwork, only: checknetwork
+    use m_allocate_linktocenterweights, only: allocate_linktocenterweights
+    use m_add_boundarynetcells, only: add_boundarynetcells
+    use m_addexternalboundarypoints, only: addexternalboundarypoints
+    use m_xbeachwaves, only: xbeach_makethetagrid
+    use m_setisnbnodisnblin, only: setisnbnodisnblin
+    use m_load1d2dlinkfile
     use m_allocateandset2dnodexyarrays
     use m_allocateandset1dnodexyarrays
     use m_netw
@@ -88,15 +130,15 @@
     integer :: m, n, k, k1, k2, k3, k4, L, Lf, LL, LLL, ierr, nn, ja, kh, numswap, n12, La
     integer :: n1, n2, n1a, n2a, ja1D, ka, kb, k1n, k2n
     integer :: nc1, nc2, nex
-    double precision :: sig ! for bottom level help
-    double precision :: dxn1e ! node 1 - edge distance
-    double precision :: dxn2e ! node 2 - edge distance
-    double precision :: x12, y12 ! link center coordinates
-    double precision :: rn, rt ! for link L, normal and tangent base vectors
-    double precision :: rnl, rtl ! for other links LL, normal and tangent base vectors
-    double precision :: ortho, avortho ! inner product of link and face
-    double precision :: af ! only for subr readyy
-    double precision :: xx(6), yy(6) ! for skewness
+    real(kind=dp) :: sig ! for bottom level help
+    real(kind=dp) :: dxn1e ! node 1 - edge distance
+    real(kind=dp) :: dxn2e ! node 2 - edge distance
+    real(kind=dp) :: x12, y12 ! link center coordinates
+    real(kind=dp) :: rn, rt ! for link L, normal and tangent base vectors
+    real(kind=dp) :: rnl, rtl ! for other links LL, normal and tangent base vectors
+    real(kind=dp) :: ortho, avortho ! inner product of link and face
+    real(kind=dp) :: af ! only for subr readyy
+    real(kind=dp) :: xx(6), yy(6) ! for skewness
     logical :: isbadlink ! Bad link (e.g. too short)
     logical :: noncrossinglink ! At least 1 1D2D link fails to cross a 2D cell face
     character(len=5) :: txt
@@ -105,14 +147,14 @@
     integer :: nw, L1, L2, LLA ! wall stuff
     integer :: icn ! corner stuff
     integer :: kk1, kk2, kk3 ! banf stuff
-    double precision :: dlength, dlenmx, dxorgL
-    double precision :: rrr, cs, sn, dis, xn, yn, xt, yt, rl, sf, hdx, alfa, dxlim, dxlink
-    double precision :: phase
-    double precision :: xref, yref
+    real(kind=dp) :: dlength, dlenmx, dxorgL
+    real(kind=dp) :: rrr, cs, sn, dis, xn, yn, xt, yt, rl, sf, hdx, alfa, dxlim, dxlink
+    real(kind=dp) :: phase
+    real(kind=dp) :: xref, yref
     integer :: jaend
-    double precision :: weirheight, weirlength
+    real(kind=dp) :: weirheight, weirlength
 
-    double precision, allocatable :: banh(:), rr(:) ! temp
+    real(kind=dp), allocatable :: banh(:), rr(:) ! temp
     integer, allocatable :: nbanh(:, :), nr(:) ! temp
 
     integer, dimension(:), allocatable :: nw_temp
@@ -121,12 +163,12 @@
 ! character(len=200), dimension(:), allocatable :: fnames
 ! integer                                       :: ifil
 
-    double precision :: xh, yh
+    real(kind=dp) :: xh, yh
 
     integer :: jaidomain, jaiglobal_s, ierror
     integer :: numl2D
 
-    double precision, external :: cosphiu
+    real(kind=dp), external :: cosphiu
 
     numl2D = numl - numl1D
 
@@ -1068,7 +1110,7 @@
     if (numlimdt_baorg > 0) then ! if prev_numlimdt(k) > numlimdt_baorg then ba(k) = baorg(k) in cutcell
        call reanumlimdt()
     end if
-    call cutcell_list(n12, 3)  ! CUT CELLS, N12 = 5, WU AND BA ADAPTATION
+    call cutcell_list(n12, 3) ! CUT CELLS, N12 = 5, WU AND BA ADAPTATION
     numlimdt = 0
 ! deallocate(kfs) ; allocate(kfs(ndx)) ! SPvdP: removed, since (1) uninitialized and (2) kfs needed in "setlinktocenterweights" later
 
@@ -1217,6 +1259,8 @@
     mxwalls = nw
 
     call setwallorientations()
+
+    call allocate_linktocenterweights()
     call setlinktocenterweights()
 
 !-------------------------------------------------- CELL CORNER RELATED -----------------------------------------------
@@ -1474,3 +1518,5 @@
     end if
 
  end subroutine flow_geominit
+
+end module m_flow_geominit

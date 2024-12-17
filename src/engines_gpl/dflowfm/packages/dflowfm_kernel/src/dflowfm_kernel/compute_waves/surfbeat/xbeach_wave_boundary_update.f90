@@ -30,6 +30,7 @@
 !
 !
 module wave_boundary_update_module
+   use precision, only: dp
    use wave_boundary_datastore
    !
    implicit none
@@ -79,7 +80,7 @@ module wave_boundary_update_module
       integer, dimension(:), pointer :: WDindex ! Index of wave train component locations on wave directional bin axis
       integer, dimension(:), pointer :: PRindex ! Index of wave train components to be phase-resolved (rather than
       ! using energy balance)
-      double complex, dimension(:, :), pointer :: CompFn ! Fourier components of the wave trains
+      complex(kind=dp), dimension(:, :), pointer :: CompFn ! Fourier components of the wave trains
       character(1024) :: Efilename, qfilename, nhfilename
       real(dp), dimension(:, :), pointer :: zsits ! time series of total surface elevation for nonhspectrum==1
       real(dp), dimension(:, :), pointer :: uits ! time series of depth-averaged horizontal east velocity nonhspectrum==1 or swkhmin>0
@@ -1295,6 +1296,7 @@ contains
    ! ------------- Interpolate to standard spectrum ---------------
    ! --------------------------------------------------------------
    subroutine interpolate_spectrum(ibnd, specin, specinterp, fmax)
+      use precision, only: dp
 
       use interp
 
@@ -1311,9 +1313,9 @@ contains
       real(dp) :: hm0pre, hm0post, Sfnow, factor, tempt0
       real(dp), dimension(:, :), allocatable :: Stemp
 
-      double precision, parameter :: dtol = 1d-16
+      real(kind=dp), parameter :: dtol = 1d-16
 
-      double precision :: xcycle
+      real(kind=dp) :: xcycle
 
       ! allocate size of f,ang,Sf and S arrays in specinterp
       allocate (specinterp%f(nfint))
@@ -1468,6 +1470,7 @@ contains
    ! ----------- Merge all separate spectra into one --------------
    ! -------------- average spectrum for other use ----------------
    subroutine generate_combined_spectrum(ibnd, specinterp, combspec)
+      use precision, only: dp
 
       implicit none
       integer, intent(in) :: ibnd
@@ -1478,7 +1481,7 @@ contains
       real(dp), dimension(3) :: peakSd, peakang
       real(dp), dimension(:), allocatable :: tempSf
 
-      double precision, parameter :: dtol = 1d-16
+      real(kind=dp), parameter :: dtol = 1d-16
 
       allocate (combspec%f(nfint))
       allocate (combspec%Sf(nfint))
@@ -1556,6 +1559,7 @@ contains
    end subroutine generate_combined_spectrum
 
    subroutine generate_combined_spectrum_weighted(ibnd, npb, kL, kR, wL, wR, specinterp, combspec)
+      use precision, only: dp
 
       implicit none
       integer, intent(in) :: ibnd
@@ -1568,7 +1572,7 @@ contains
       real(dp), dimension(3) :: peakSd, peakang
       real(dp), dimension(:), allocatable :: tempSf
 
-      double precision, parameter :: dtol = 1d-16
+      real(kind=dp), parameter :: dtol = 1d-16
 
       allocate (combspec%f(nfint))
       allocate (combspec%Sf(nfint))
@@ -1829,6 +1833,7 @@ contains
    ! ----------- Small subroutine to determine -----------------
    ! ------------ representative wave period -------------------
    subroutine tpDcalc(Sf, f, Trep, trepfac, switch)
+      use precision, only: dp
 
       implicit none
 
@@ -1839,7 +1844,7 @@ contains
 
       real(dp), dimension(:), allocatable :: temp
 
-      double precision, parameter :: dtol = 1d-16
+      real(kind=dp), parameter :: dtol = 1d-16
 
       allocate (temp(size(Sf)))
       temp = 0.d0
@@ -2604,10 +2609,10 @@ contains
                   ! Depth-average velocity in wave direction:
                   U = 1.d0 / hb0 * wp%wgen(ik) * wp%A(j, ik) * &
                       sin(wp%wgen(ik) * wp%tin(it) &
-                           - wp%kgen(ik) * (sin(wp%thetagen(ik)) * disty(j) &
-                                            + cos(wp%thetagen(ik)) * distx(j)) &
-                           + wp%phigen(ik) &
-                           ) * &
+                          - wp%kgen(ik) * (sin(wp%thetagen(ik)) * disty(j) &
+                                           + cos(wp%thetagen(ik)) * distx(j)) &
+                          + wp%phigen(ik) &
+                          ) * &
                       1.d0 / wp%kgen(ik)
 
                   ! Eastward component:
@@ -2757,7 +2762,7 @@ contains
          chk2 = cosh(wp%kgen(m + 1:K) * hb0)
 
          D(m, 1:K - m) = -par_g * wp%kgen(1:K - m) * wp%kgen(m + 1:K) * cos(deltheta(m, 1:K - m)) / 2.d0 / term1 + &
-                         +term2**2 / (par_g * 2) + par_g * term2 / &
+                         term2**2 / (par_g * 2) + par_g * term2 / &
                          ((par_g * k3(m, 1:K - m) * tanh(k3(m, 1:K - m) * hb0) - (term2new)**2) * term1) * &
                          (term2 * ((term1)**2 / par_g / par_g - wp%kgen(1:K - m) * wp%kgen(m + 1:K) * cos(deltheta(m, 1:K - m))) &
                           - 0.50d0 * ((-wp%wgen(1:K - m)) * wp%kgen(m + 1:K)**2 / (chk2**2) + wp%wgen(m + 1:K) * wp%kgen(1:K - m)**2 / (chk1**2)))
@@ -2977,6 +2982,7 @@ contains
    end subroutine generate_nhtimeseries_file
 
    subroutine set_stationary_spectrum(ibnd, combspec)
+      use precision, only: dp
       use m_sferic
       use m_physcoef
       use interp
@@ -2986,8 +2992,8 @@ contains
       integer, intent(in) :: ibnd
       type(spectrum), intent(in) :: combspec
 
-      double precision :: xcycle
-      double precision, dimension(:), allocatable :: angcart, Sdcart, eet
+      real(kind=dp) :: xcycle
+      real(kind=dp), dimension(:), allocatable :: angcart, Sdcart, eet
       integer :: j
 
       allocate (angcart(combspec%nang))

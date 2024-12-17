@@ -31,17 +31,25 @@
 !
 
 ! update cellmask from samples
-subroutine samples_to_cellmask()
+module m_samples_to_cellmask
 
+implicit none
+
+private
+
+public :: samples_to_cellmask
+
+contains
+
+subroutine samples_to_cellmask()
+   use precision, only: dp
    use network_data
    use m_samples
    use m_missing, only: jins, dmiss
    use geometry_module, only: pinpok
 
-   implicit none
-
    integer :: i, in, k, kk, n, nn
-   double precision :: xx(6), yy(6)
+   real(kind=dp) :: xx(6), yy(6)
 
    if (allocated(cellmask)) deallocate (cellmask)
    allocate (cellmask(nump1d2d)); cellmask = 0
@@ -77,3 +85,5 @@ subroutine samples_to_cellmask()
 
    return
 end subroutine samples_to_cellmask
+
+end module m_samples_to_cellmask

@@ -30,9 +30,26 @@
 !
 !
 
+module m_sectr
+use m_switch, only: switch
+
+implicit none
+
+private
+
+public :: sectr
+
+contains
+
      subroutine SECTR(X, Y, TIJ, mmax, nmax, imax, &
                       merr, NUMI, &
                       NUMSPL, NUMPX, NTYP, MN12, XI, YI, XJ, YJ)
+        use m_sect3r, only: sect3r
+        use m_nums, only: nums
+        use m_checkspl, only: checkspl
+        use m_charow, only: charow
+        use m_chacol, only: chacol
+        use precision, only: dp
         use unstruc_colors
         use unstruc_messages
         use unstruc_display
@@ -43,18 +60,17 @@
         use m_numpold
         use m_get_ij
 
-        implicit none
         integer :: mmax, nmax, imax
-        double precision, dimension(mmax, nmax), intent(inout) :: X, Y
-        double precision, dimension(mmax, nmax), intent(out) :: TIJ
+        real(kind=dp), dimension(mmax, nmax), intent(inout) :: X, Y
+        real(kind=dp), dimension(mmax, nmax), intent(out) :: TIJ
         integer, intent(out) :: merr, numi, numspl, numpx
         integer, dimension(imax) :: NTYP
         integer, dimension(imax, 3), intent(out) :: MN12
-        double precision, dimension(imax), intent(out) :: XI, YI, XJ, YJ
+        real(kind=dp), dimension(imax), intent(out) :: XI, YI, XJ, YJ
 
 !      INTEGER :: NTYP(IMAX), MN12(IMAX,3)
         character TEX1 * 4, TEX2 * 4
-        double precision :: crp, ti, tj, xspc, yspc
+        real(kind=dp) :: crp, ti, tj, xspc, yspc
         integer :: mcs, ncs, i, j, numpi, j2, ionbenoemd, numpj, numcro, &
                    L, jachange, icount, JK, maxm, maxn, jjlast, jj, iilast, ii
         integer :: jadubbel
@@ -355,3 +371,5 @@
 
         return
      end subroutine sectr
+
+end module m_sectr

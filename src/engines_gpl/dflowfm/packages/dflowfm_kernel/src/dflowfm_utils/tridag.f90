@@ -29,13 +29,21 @@
 
 !
 !
+module m_tridag
 
-! =================================================================================================
-! =================================================================================================
+implicit none
+
+private
+
+public :: tridag
+
+contains
+
  subroutine tridag(a, b, c, d, e, u, n)
-    implicit none
+    use precision, only: dp
+
     integer :: n, j
-    double precision :: a(n), b(n), c(n), d(n), e(n), u(n), bet, accur = 1d-15
+    real(kind=dp) :: a(n), b(n), c(n), d(n), e(n), u(n), bet, accur = 1d-15
 
     bet = b(1)
     u(1) = d(1) / bet
@@ -52,3 +60,5 @@
        u(j) = u(j) - e(j + 1) * u(j + 1)
     end do
  end subroutine tridag
+
+end module m_tridag

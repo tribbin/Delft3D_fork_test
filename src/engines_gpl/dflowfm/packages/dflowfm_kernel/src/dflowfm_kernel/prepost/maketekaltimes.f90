@@ -30,13 +30,24 @@
 !
 !
 
+module m_maketekaltimes
+
+implicit none
+
+private
+
+public :: maketekaltimes
+
+contains
+
    subroutine maketekaltimes()
+      use precision, only: dp
       use m_flowtimes
       use time_module, only: seconds_to_datetimestring
-      implicit none
+
       logical :: jawel
       integer :: minp, mout, i, k
-      double precision :: tim, a(30)
+      real(kind=dp) :: tim, a(30)
 
       character(len=20) dateandtime
 
@@ -95,3 +106,5 @@
       end if
 
    end subroutine maketekaltimes
+
+end module m_maketekaltimes

@@ -27,11 +27,19 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
+module m_setwallorientations
+
+implicit none
+
+private
+
+public :: setwallorientations
+
+contains
 
  !> set wall to flowlinks and wall to flownode oientations
  subroutine setwallorientations()
+    use precision, only: dp
     use m_flowgeom
     use network_data, only: xk, yk
     use m_sferic
@@ -39,9 +47,7 @@
     use m_missing, only: dmiss
     use geometry_module, only: half, spher2locvec
 
-    implicit none
-
-    double precision :: xh, yh
+    real(kind=dp) :: xh, yh
 
     integer :: k1, k3, k4
     integer :: L1, L2
@@ -91,3 +97,5 @@
 
     return
  end subroutine setwallorientations
+
+end module m_setwallorientations

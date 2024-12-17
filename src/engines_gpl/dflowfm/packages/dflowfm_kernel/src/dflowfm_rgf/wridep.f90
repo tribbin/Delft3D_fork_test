@@ -30,12 +30,23 @@
 !
 !
 
+module m_wridep
+
+implicit none
+
+private
+
+public :: wridep
+
+contains
+
       subroutine WRIDEP(MMDD, ZC, M1, N1, MC, NC, mmax, nmax)
+         use precision, only: dp
          use m_readyy
-         implicit none
+
          integer :: MMDD, M1, N1, MC, NC, mmax, nmax, n, m
-         double precision :: ZC(mmax, nmax)
-         double precision :: AF
+         real(kind=dp) :: ZC(mmax, nmax)
+         real(kind=dp) :: AF
 
          call READYY('Writing Depth File ', 0d0)
          do N = N1, NC
@@ -47,3 +58,5 @@
          call DOCLOSE(MMDD)
          return
       end
+
+end module m_wridep
