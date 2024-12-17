@@ -1061,7 +1061,7 @@ contains
       use network_data
       use m_sobekdfm
       use m_alloc
-      use string_module
+      use string_module, only: str_token
       use m_cell_geometry ! TODO: UNST-1705: temp, replace by m_flowgeom
       use unstruc_model
       use unstruc_channel_flow, only: network
@@ -2437,6 +2437,7 @@ contains
       use m_General_Structure, only: update_widths
       use m_transport, only: NUMCONST, ISALT, ITEMP
       use m_laterals, only: qplat, incoming_lat_concentration, num_layers
+      use string_module, only: str_token
 
       character(kind=c_char), intent(in) :: c_var_name(*) !< Name of the set variable, e.g., 'pumps'
       character(kind=c_char), intent(in) :: c_item_name(*) !< Name of a single item's index/location, e.g., 'Pump01'
@@ -2452,11 +2453,15 @@ contains
 
       integer :: iostat
       integer :: i_layer
+      integer :: constituent_index
 
       ! The fortran name of the attribute name
       character(len=MAXSTRLEN) :: var_name
       character(len=MAXSTRLEN) :: item_name
       character(len=MAXSTRLEN) :: field_name
+      character(len=MAXSTRLEN) :: constituent_name
+      character(len=MAXSTRLEN) :: direction_string
+
       ! Store the name
       var_name = char_array_to_string(c_var_name)
       item_name = char_array_to_string(c_item_name)
@@ -2658,25 +2663,39 @@ contains
          end if
          select case (field_name)
          case ("water_discharge")
+            ! this case statement can only be reached in case of 3D laterals, 
+            ! so no check on (apply_transport(item_index) == 1) is needed here
             call c_f_pointer(xptr, x_1d_double_ptr, [num_layers])
             do i_layer = 1,num_layers
                qplat(i_layer,item_index) = x_1d_double_ptr(i_layer)
             enddo
             return
-         case ("water_salinity")
-            call c_f_pointer(xptr, x_1d_double_ptr, [num_layers])
-            do i_layer = 1,num_layers
-               incoming_lat_concentration(i_layer,ISALT,item_index) = x_1d_double_ptr(i_layer)
-            enddo
-            return
-         case ("water_temperature")
-            call c_f_pointer(xptr, x_1d_double_ptr, [num_layers])
-            do i_layer = 1,num_layers
-               incoming_lat_concentration(i_layer,ITEMP,item_index) = x_1d_double_ptr(i_layer)
-            enddo
-            return
          end select
-
+         
+         constituent_name = field_name
+         call str_token(constituent_name, direction_string, DELIMS='/')
+         ! set value is only possible for incoming direction
+         if (direction_string == 'incoming') then 
+            constituent_name = constituent_name(2:)
+            ! Find constituent index
+            select case (constituent_name)
+            case ('water_salinity')
+               constituent_index = ISALT
+            case ('water_temperature')
+               constituent_index = ITEMP
+            case default
+               constituent_index = find_name(const_names, constituent_name)
+               if (iconst == 0) then
+                  !        tracer not found
+                  return
+               end if
+            end select
+            call c_f_pointer(xptr, x_1d_double_ptr, [num_layers])
+            do i_layer = 1,num_layers
+               incoming_lat_concentration(i_layer,constituent_index,item_index) = x_1d_double_ptr(i_layer)
+            enddo
+            return
+         end if 
          ! NOTE: observations and crosssections are read-only!
       end select
    end subroutine set_compound_field
