@@ -45,6 +45,7 @@ object WindowsBuild : BuildType({
         mergeTargetStep {
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
             dockerImagePlatform = ScriptBuildStep.ImagePlatform.Windows
+            dockerPull = true
         }
         python {
             name = "Determine product by branch prefix"
@@ -61,6 +62,7 @@ object WindowsBuild : BuildType({
             }
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
             dockerImagePlatform = PythonBuildStep.ImagePlatform.Windows
+            dockerPull = true
         }
         script {
             name = "Add version attributes"
@@ -71,6 +73,7 @@ object WindowsBuild : BuildType({
             """.trimIndent()
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
             dockerImagePlatform = ScriptBuildStep.ImagePlatform.Windows
+            dockerPull = true
         }
         script {
             name = "Build"
@@ -83,6 +86,7 @@ object WindowsBuild : BuildType({
             """.trimIndent()
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
             dockerImagePlatform = ScriptBuildStep.ImagePlatform.Windows
+            dockerPull = true
             dockerRunParameters = "--memory %teamcity.agent.hardware.memorySizeMb%m --cpus %teamcity.agent.hardware.cpuCount%"
         }
     }
