@@ -12,7 +12,6 @@ object WindowsBuild : BuildType({
     templates(
         TemplateMergeRequest,
         TemplateDetermineProduct,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -45,6 +44,10 @@ object WindowsBuild : BuildType({
     }
 
     steps {
+        mergeTargetStep {
+            dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
+            dockerImagePlatform = ScriptBuildStep.ImagePlatform.Windows
+        }
         script {
             name = "Add version attributes"
             workingDir = "./src/version_includes"

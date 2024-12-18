@@ -4,14 +4,13 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.failureConditions.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 
 object LinuxCollect : BuildType({
 
     templates(
         TemplateMergeRequest,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -34,6 +33,7 @@ object LinuxCollect : BuildType({
     }
 
     steps {
+        mergeTargetStep {}
         exec {
             name = "Run artifacts_cleaner.py"
             path = "/usr/bin/python3"

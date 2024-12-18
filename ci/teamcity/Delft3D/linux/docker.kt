@@ -3,15 +3,14 @@ package Delft3D.linux
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 import Delft3D.linux.thirdParty.*
 
 object LinuxDocker : BuildType({
 
     templates(
         TemplateMergeRequest,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -26,6 +25,7 @@ object LinuxDocker : BuildType({
     }
 
     steps {
+        mergeTargetStep {}
         script {
             name = "Remove system libraries"
             workingDir = "dimrset/lib"

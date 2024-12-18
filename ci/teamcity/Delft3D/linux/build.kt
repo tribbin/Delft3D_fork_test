@@ -4,15 +4,14 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.failureConditions.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 
 object LinuxBuild : BuildType({
 
     templates(
         TemplateMergeRequest,
         TemplateDetermineProduct,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -43,6 +42,7 @@ object LinuxBuild : BuildType({
     }
 
     steps {
+        mergeTargetStep {}
         script {
             name = "Add version attributes"
             workingDir = "./src/version_includes"

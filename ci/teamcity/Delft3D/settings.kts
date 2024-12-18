@@ -20,7 +20,6 @@ project {
 
     template(TemplateMergeRequest)
     template(TemplateDetermineProduct)
-    template(TemplateMergeTarget)
     template(TemplatePublishStatus)
     template(TemplateMonitorPerformance)
 
