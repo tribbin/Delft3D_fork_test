@@ -4,14 +4,12 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.failureConditions.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 
 object WindowsBuild : BuildType({
-
     templates(
         TemplateMergeRequest,
-        TemplateDetermineProduct,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -47,6 +45,22 @@ object WindowsBuild : BuildType({
         mergeTargetStep {
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
             dockerImagePlatform = ScriptBuildStep.ImagePlatform.Windows
+        }
+        python {
+            name = "Determine product by branch prefix"
+            command = script {
+                content="""
+                    if "%product%" == "dummy_value":
+                        if "merge-request" in "%teamcity.build.branch%":
+                            product = "%teamcity.pullRequest.source.branch%".split("/")[0]
+                            print(f"##teamcity[setParameter name='product' value='{product}']")
+                        else:
+                            product = "%teamcity.build.branch%".split("/")[0]
+                            print(f"##teamcity[setParameter name='product' value='{product}']")
+                """.trimIndent()
+            }
+            dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
+            dockerImagePlatform = PythonBuildStep.ImagePlatform.Windows
         }
         script {
             name = "Add version attributes"
