@@ -32,7 +32,7 @@ object WindowsCollect : BuildType({
     }
 
     steps {
-        mergeTargetStep {}
+        mergeTargetBranch {}
         python {
             name = "Run artifacts_cleaner.py"
             command = file {

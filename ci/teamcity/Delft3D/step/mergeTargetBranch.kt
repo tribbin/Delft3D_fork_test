@@ -3,7 +3,7 @@ package Delft3D.step
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 
-fun BuildSteps.mergeTargetStep(init: ScriptBuildStep.() -> Unit): ScriptBuildStep {
+fun BuildSteps.mergeTargetBranch(init: ScriptBuildStep.() -> Unit): ScriptBuildStep {
     val result = ScriptBuildStep(init)
     step(result)
     result.name = "Merge target into branch"

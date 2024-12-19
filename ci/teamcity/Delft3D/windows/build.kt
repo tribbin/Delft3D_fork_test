@@ -42,7 +42,7 @@ object WindowsBuild : BuildType({
     }
 
     steps {
-        mergeTargetStep {
+        mergeTargetBranch {
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-buildtools-windows:vs2019-oneapi2023"
             dockerImagePlatform = ScriptBuildStep.ImagePlatform.Windows
             dockerPull = true

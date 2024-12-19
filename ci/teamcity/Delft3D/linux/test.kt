@@ -72,7 +72,7 @@ object LinuxTest : BuildType({
     }
 
     steps {
-        mergeTargetStep {}
+        mergeTargetBranch {}
         python {
             name = "Run TestBench.py"
             workingDir = "test/deltares_testbench/"

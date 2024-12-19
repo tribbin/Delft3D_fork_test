@@ -25,7 +25,7 @@ object LinuxDocker : BuildType({
     }
 
     steps {
-        mergeTargetStep {}
+        mergeTargetBranch {}
         script {
             name = "Remove system libraries"
             workingDir = "dimrset/lib"
