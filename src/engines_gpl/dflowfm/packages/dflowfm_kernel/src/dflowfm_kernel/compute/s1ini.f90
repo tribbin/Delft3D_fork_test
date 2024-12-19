@@ -62,7 +62,7 @@ contains
       real(kind=dp) :: aufu, auru, tetau
       real(kind=dp) :: ds, hsk, Qeva_ow, Qeva_icept, Qrain, Qicept, Qextk, aloc
       logical :: isGhost
-      integer :: i_layer
+      integer :: i_layer, layer_index
 
       bb = 0d0
       ccr = 0d0
@@ -227,6 +227,11 @@ contains
                         qqlat(i_layer, k1) = 0d0
                      end if
                      qin(k) = qin(k) + qqlat(i_layer, k1)
+                     if (kmx > 0) then
+                        layer_index = min(kbot(k)-1+i_layer,ktop(k))
+                        qin(layer_index) = qin(layer_index) + qqlat(i_layer, k1)
+                     end if
+                     
                   end do
                end do
             end do
