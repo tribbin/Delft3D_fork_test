@@ -41,7 +41,7 @@ image.
 ### Build
 From the delft3d repository root:
 ```bash
-docker build . -f ci/dockerfiles/buildtools.Dockerfile -t localhost/buildtools:$TAG --build-arg INTEL_ONEAPI_VERSION=2024
+docker build . -f ci/dockerfiles/linux/buildtools.Dockerfile -t localhost/buildtools:$TAG --build-arg INTEL_ONEAPI_VERSION=2024
 ```
 Note: Passing the build arguments is not necessary if the default value is required.
 
@@ -112,7 +112,7 @@ involving third party libraries. In addition, aggressive compiler optimizations 
 ### Build
 From the delft3d repository root:
 ```bash
-docker build . -f ci/dockerfiles/dependencies.Dockerfile -t localhost/dependencies:$TAG \
+docker build . -f ci/dockerfiles/linux/dependencies.Dockerfile -t localhost/dependencies:$TAG \
     --build-arg INTEL_ONEAPI_VERSION=2024 \
     --build-arg INTEL_FORTRAN_COMPILER=ifort \
     --build-arg DEBUG=0
@@ -156,7 +156,7 @@ a suitable version of the `dependencies` image (One that contains the right vers
 ### Build
 From the delft3d repository root:
 ```bash
-docker build . -f ci/dockerfiles/dimrset.Dockerfile \
+docker build . -f ci/dockerfiles/linux/dimrset.Dockerfile \
     -t localhost/dimrset:$TAG \
     --build-arg INTEL_ONEAPI_VERSION=2024 \
     --build-arg INTEL_FORTRAN_COMPILER=ifort \

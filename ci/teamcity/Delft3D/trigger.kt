@@ -2,8 +2,8 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 import Delft3D.linux.*
 import Delft3D.windows.*
 
@@ -12,7 +12,6 @@ object Trigger : BuildType({
     templates(
         TemplateMergeRequest,
         TemplateDetermineProduct,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -36,7 +35,7 @@ object Trigger : BuildType({
     }
 
     steps {
-
+        mergeTargetBranch {}
         python {
             name = "Retrieve Linux Testbench XMLs from CSV"
             command = file {
