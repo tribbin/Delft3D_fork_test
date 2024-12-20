@@ -31,6 +31,7 @@
 !
 
 module m_editnetw
+   use m_stopint, only: stopint
    use m_create_samples_in_triangle, only: create_samples_in_triangle
    use m_flow_spatietimestep, only: flow_spatietimestep
    use m_splitlink, only: splitlink

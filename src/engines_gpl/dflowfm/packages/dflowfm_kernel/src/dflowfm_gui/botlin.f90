@@ -30,6 +30,8 @@
 !
 !
 module m_botlin
+use m_stopint, only: stopint
+
    implicit none
 contains
    subroutine BOTLIN(JA, NUMB, KEY)

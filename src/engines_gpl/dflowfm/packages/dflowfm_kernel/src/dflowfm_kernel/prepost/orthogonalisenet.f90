@@ -32,6 +32,8 @@
 
 !> net orthogonalisation and smoothing
 module m_orthogonalisenet
+use m_spher2loc, only: spher2loc
+use m_loc2spher, only: loc2spher
 use m_svdcmp, only: svdcmp
 use m_sortlinks, only: sortlinks
 use m_snap_to_landboundary, only: snap_to_landboundary

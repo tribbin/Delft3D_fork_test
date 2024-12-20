@@ -31,6 +31,8 @@
 !
 
 module m_reagrid
+use m_reaarc, only: reaarc
+
 
 implicit none
 

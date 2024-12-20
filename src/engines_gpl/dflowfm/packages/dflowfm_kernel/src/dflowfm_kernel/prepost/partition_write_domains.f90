@@ -33,6 +33,9 @@
 !> write the network domains to file
 !>    it is assumed that the domain coloring "idomain" is available
 module m_partition_write_domains
+use m_savecells, only: savecells
+use m_restorecells, only: restorecells
+
 
 implicit none
 

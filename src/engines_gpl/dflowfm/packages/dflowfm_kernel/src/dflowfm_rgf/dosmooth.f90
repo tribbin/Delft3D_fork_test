@@ -31,6 +31,7 @@
 !
 
 module m_dosmooth
+use m_putarr, only: putarr
 use m_ortpro2, only: ortpro2
 
 

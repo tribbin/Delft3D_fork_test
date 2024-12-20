@@ -31,6 +31,8 @@
 !
 
 module m_readarcsets
+use m_reaarc, only: reaarc
+
 
 implicit none
 

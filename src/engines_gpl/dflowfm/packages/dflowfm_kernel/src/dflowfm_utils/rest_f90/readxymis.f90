@@ -30,6 +30,16 @@
 !
 !
 
+module m_readxymis
+
+implicit none
+
+private
+
+public :: readxymis
+
+contains
+
       subroutine READXYMIS(MINP)
          use M_MISSING
          implicit none
@@ -49,3 +59,5 @@
          return
 888      call READERROR('READING MISSING VALUE XY, BUT GETTING', REC, MINP)
       end
+
+end module m_readxymis

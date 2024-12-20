@@ -106,6 +106,8 @@ program unstruc
    use m_resetFullFlowModel, only: resetFullFlowModel
    use m_dobatch, only: dobatch
    use m_generatepartitionmdufile, only: generatepartitionmdufile
+   use m_soltest, only: soltest
+   use m_start_program, only: start_program
 
    implicit none
 

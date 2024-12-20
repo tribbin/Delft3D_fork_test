@@ -46,6 +46,8 @@ contains
     use m_flowgeom
     use m_sferic
     use m_longculverts
+    use m_lin2nodx, only: lin2nodx
+    use m_lin2nody, only: lin2nody
 
     real(kind=dp) :: wud, wuL1, wuL2, cs, sn
     integer :: L, ierr, n, kk, n12, lnxmax
@@ -57,8 +59,6 @@ contains
 
     real(kind=dp), allocatable :: wcxy(:, :) ! center weight factors (2,ndx) , only for normalising
     real(kind=dp), allocatable :: wc(:) ! center weight factors (ndx)   , only for normalising
-
-    real(kind=dp), external :: lin2nodx, lin2nody
 
     wcx1 = 0
     wcy1 = 0

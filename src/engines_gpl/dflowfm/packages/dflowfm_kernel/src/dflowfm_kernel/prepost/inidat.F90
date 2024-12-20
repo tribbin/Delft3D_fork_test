@@ -28,6 +28,8 @@
 !-------------------------------------------------------------------------------
     
 module m_inidat
+use m_wrilan, only: wrilan
+use m_ininumbers, only: ininumbers
 use m_wrirgf, only: wrirgf
 use m_maketekaltimes, only: maketekaltimes
 
@@ -285,6 +287,7 @@ contains
       use m_reasam
       use m_loadbitmap
       use m_reagrid, only: reagrid
+      use m_read_samples_from_arcinfo, only: read_samples_from_arcinfo
 
       character inarg * (*), EXT * 4
       logical JAWEL

@@ -29,6 +29,9 @@
 
 !> Finalizes a single time step, should be called directly after flow_run_single_timestep
 module m_flow_finalize_single_timestep
+use m_updatevaluesonsourcesinks, only: updatevaluesonsourcesinks
+use m_updatecumulativeinflow, only: updatecumulativeinflow
+use m_updatebalance, only: updatebalance
 use m_flow_validatestate, only: flow_validatestate
 use m_updatevaluesonrunupgauges_mpi, only: updatevaluesonrunupgauges_mpi
 use m_updatevaluesonrunupgauges, only: updatevaluesonrunupgauges

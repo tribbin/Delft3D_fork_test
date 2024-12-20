@@ -30,6 +30,8 @@
 !
 !
 module unstruc_api
+   use m_updatevaluesonsourcesinks, only: updatevaluesonsourcesinks
+   use m_updatebalance, only: updatebalance
    use m_flow_usertimestep, only: flow_usertimestep
    use m_flow_externaloutput, only: flow_externaloutput
    use m_updatevaluesonrunupgauges_mpi, only: updatevaluesonrunupgauges_mpi

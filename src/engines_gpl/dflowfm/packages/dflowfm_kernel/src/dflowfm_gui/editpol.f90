@@ -31,6 +31,9 @@
 !
 
 module m_editpol
+   use m_stopint, only: stopint
+   use m_pol2curvi_tri, only: pol2curvi_tri
+   use m_pol2curvi, only: pol2curvi
    use m_dropzout, only: dropzout
    use m_dropwater, only: dropwater
    use m_dropk, only: dropk

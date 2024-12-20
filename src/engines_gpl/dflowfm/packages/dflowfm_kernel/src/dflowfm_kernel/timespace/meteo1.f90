@@ -6013,6 +6013,8 @@ contains
       use m_reapol
       use m_delsam
       use m_reasam
+      use m_read_samples_from_arcinfo, only: read_samples_from_arcinfo
+      use m_read_samples_from_geotiff, only: read_samples_from_geotiff
 
       implicit none
 
@@ -6046,7 +6048,6 @@ contains
 
       real(kind=dp), allocatable :: xxx(:), yyy(:)
       integer, allocatable :: LnnL(:), Lorg(:)
-      logical, external :: read_samples_from_geotiff
 
       real(kind=dp) :: zz
 

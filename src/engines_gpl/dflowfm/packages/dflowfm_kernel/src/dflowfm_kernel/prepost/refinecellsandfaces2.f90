@@ -32,6 +32,7 @@
 
 !> refine cells by splitting links
 module m_refinecellsandfaces2
+use m_tidysamples, only: tidysamples
 use m_inworld, only: inworld
 use m_remove_isolated_hanging_nodes, only: remove_isolated_hanging_nodes
 

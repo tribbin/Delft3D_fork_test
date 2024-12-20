@@ -67,6 +67,14 @@ contains
       use m_horvic3
       use m_cor2linx, only: cor2linx
       use m_cor2liny, only: cor2liny
+      use m_lin2nodx, only: lin2nodx
+      use m_lin2nody, only: lin2nody
+      use m_nod2linx, only: nod2linx
+      use m_nod2liny, only: nod2liny
+      use m_nod2wallx, only: nod2wallx
+      use m_nod2wally, only: nod2wally
+      use m_wall2linx, only: wall2linx
+      use m_wall2liny, only: wall2liny
 
       implicit none
 
@@ -89,9 +97,6 @@ contains
       real(kind=dp) :: DRL, nuhroller
 
       real(kind=dp) :: dxiAu, vicc, vlban, fcLL
-
-      real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody
-      real(kind=dp), external :: nod2wallx, nod2wally, wall2linx, wall2liny
 
       integer :: number_limited_links
       real(kind=dp) :: viscocity_max_limit

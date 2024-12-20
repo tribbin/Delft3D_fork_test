@@ -30,35 +30,27 @@
 !
 !
 
-module m_imisarrr
+module m_set_get_mdia
 
 implicit none
 
 private
 
-public :: imisarrr
+public :: setmdia,  getmdia
 
-contains
+   interface setmdia
+      module subroutine setmdia(mdi)
+         implicit none
+         integer, intent(in) :: mdi
+      end subroutine setmdia
+   end interface setmdia
 
-      subroutine IMISARRR(IH, NUMQ, MMAX, NMAX)
-         use M_MISSING
+   interface getmdia
+      module subroutine getmdia(mdi)
+         implicit none
+         integer, intent(out) :: mdi
+      end subroutine getmdia
+   end interface getmdia
 
-         integer :: i
-         integer :: j
-         integer :: k
-         integer :: mmax
-         integer :: nmax
-         integer :: numq
-         integer IH(NUMQ, MMAX, NMAX)
+end module m_set_get_mdia
 
-         do K = 1, NUMQ
-            do I = 1, MMAX
-               do J = 1, NMAX
-                  IH(K, I, J) = dmiss
-               end do
-            end do
-         end do
-         return
-      end
-
-end module m_imisarrr

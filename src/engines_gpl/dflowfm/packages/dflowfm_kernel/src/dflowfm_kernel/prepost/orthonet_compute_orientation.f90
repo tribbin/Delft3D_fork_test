@@ -32,6 +32,7 @@
 
 !>  compute the orientation of a cell by SVD
 module m_orthonet_compute_orientation
+use m_spher2loc, only: spher2loc
 use m_svdcmp, only: svdcmp
 
 implicit none

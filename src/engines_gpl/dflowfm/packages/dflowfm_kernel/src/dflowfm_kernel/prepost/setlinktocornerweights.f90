@@ -49,6 +49,8 @@ contains
     use m_sferic, only: jsferic, jasfer3D
     use m_missing, only: dmiss, dxymis
     use gridoperations
+    use m_lin2corx, only: lin2corx
+    use m_lin2cory, only: lin2cory
 
     real(kind=dp) :: ax, ay, wuL, wud, csa, sna
     integer :: k, L, ierr, nx
@@ -57,8 +59,6 @@ contains
 
     real(kind=dp), allocatable :: wcnxy(:, :) ! corner weight factors (2,numk) , only for normalising
     integer, dimension(:), allocatable :: jacorner ! corner node (1) or not (0), dim(numk)
-
-    real(kind=dp), external :: lin2corx, lin2cory
 
     if (allocated(wcnx3)) deallocate (wcnx3, wcny3, wcnx4, wcny4)
     if (allocated(wcnxy)) deallocate (wcnxy)

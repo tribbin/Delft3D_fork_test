@@ -93,6 +93,15 @@ contains
       use m_readarcinfo, only: readarcinfo
       use m_reagrid, only: reagrid
       use m_wrirgf, only: wrirgf
+      use m_parsekerst, only: parsekerst
+      use m_read_land_boundary_netcdf, only: read_land_boundary_netcdf
+      use m_read_samples_from_arcinfo, only: read_samples_from_arcinfo
+      use m_read_samples_from_dem, only: read_samples_from_dem
+      use m_read_samples_from_geotiff, only: read_samples_from_geotiff
+      use m_stopint, only: stopint
+      use m_wrilan, only: wrilan
+      use m_wricrs, only: wricrs
+      use m_reapol_nampli, only: reapol_nampli
 
       integer :: NUM, NWHAT, KEY
       integer :: ja, ierr
@@ -102,7 +111,6 @@ contains
       integer :: i, ierror
       integer :: ipli
       logical :: jawel
-      logical, external :: read_samples_from_geotiff
 
       interface
          subroutine realan(mlan, antot)

@@ -31,13 +31,22 @@
 !
 
 !> debugging subroutine
+module m_inipole
+
+implicit none
+
+private
+
+public :: inipole
+
+contains
+
 subroutine inipole(japole)
    use precision, only: dp
    use unstruc_model
    use m_flow
    use m_flowgeom
    use m_sferic
-   implicit none
 
    integer, intent(in) :: japole !< pole (1) or equator (0)
 
@@ -62,3 +71,5 @@ subroutine inipole(japole)
 
    return
 end subroutine inipole
+
+end module m_inipole

@@ -3979,11 +3979,11 @@ contains
 !! OutputDir has been read already.
    subroutine switch_dia_file()
       use system_utils, only: makedir
+      use m_set_get_mdia, only: setmdia, getmdia
       implicit none
       integer :: mdia2, mdia, ierr
       character(len=256) :: rec
       logical :: line_copied
-      external :: getmdia, setmdia
 
       call makedir(getoutputdir()) ! No problem if it exists already.
 

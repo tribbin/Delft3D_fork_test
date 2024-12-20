@@ -31,6 +31,8 @@
 !
 
 module m_wrirgf
+use m_wriarc, only: wriarc
+
 
 implicit none
 

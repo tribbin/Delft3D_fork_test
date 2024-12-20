@@ -31,6 +31,8 @@
 !
 
 module m_sectr
+use m_nularr, only: nularr
+use m_inular, only: inular
 use m_switch, only: switch
 
 implicit none

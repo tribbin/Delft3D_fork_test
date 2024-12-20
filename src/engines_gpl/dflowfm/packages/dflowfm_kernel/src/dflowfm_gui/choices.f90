@@ -69,6 +69,9 @@
 ! subroutines from net.F90
 !----------------------------------------------------------------------
 module m_choices
+   use m_zerolan, only: zerolan
+   use m_stopint, only: stopint
+   use m_smooth_samples_from_gui, only: smooth_samples_from_gui
    use m_scherm, only: scherm
    use m_copy_sam2dots, only: copy_sam2dots
    use m_copy_dots2sam, only: copy_dots2sam

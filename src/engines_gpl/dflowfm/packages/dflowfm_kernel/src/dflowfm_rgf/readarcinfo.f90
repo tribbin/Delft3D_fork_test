@@ -31,6 +31,8 @@
 !
 
 module m_readarcinfo
+use m_reaarc, only: reaarc
+
 
 implicit none
 

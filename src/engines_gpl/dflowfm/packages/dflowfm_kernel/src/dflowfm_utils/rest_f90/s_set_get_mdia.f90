@@ -29,12 +29,28 @@
 
 !
 !
+submodule(m_set_get_mdia) set_get_mdia
 
- subroutine getmdia(mdi) ! thanks herman
-    use unstruc_files
-    implicit none
-    integer :: mdi
+   implicit none
 
-    mdi = mdia
+contains
 
- end subroutine getmdia
+   module subroutine setmdia(mdi) ! thanks herman, again
+      use unstruc_files, only: mdia
+
+      integer, intent(in) :: mdi
+
+      mdia = mdi
+
+   end subroutine setmdia
+
+   module subroutine getmdia(mdi) ! thanks herman
+      use unstruc_files, only: mdia
+
+      integer, intent(out) :: mdi
+
+      mdi = mdia
+
+   end subroutine getmdia
+
+end submodule set_get_mdia

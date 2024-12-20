@@ -30,10 +30,20 @@
 !
 !
 
+module m_re0rcinfodimensions
+
+implicit none
+
+private
+
+public :: re0rcinfodimensions
+
+contains
+
       subroutine RE0RCINFODIMENSIONS(MINP, MMAX, NMAX, DX, X0, Y0)
          use precision, only: dp
          use m_readarcinfoheader
-         implicit none
+
          real(kind=dp) :: dx
          integer :: ja
          integer :: larc
@@ -69,3 +79,5 @@
 
 888      call ERROR('LOOKING FOR ARC-INFO FILENAME, BUT GETTING:', REC, ' ')
       end
+
+end module m_re0rcinfodimensions

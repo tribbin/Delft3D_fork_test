@@ -30,6 +30,16 @@
 !
 !
 
+module m_wricrs
+
+implicit none
+
+private
+
+public :: wricrs
+
+contains
+
       !> Writes active cross sections to a polyline file.
       subroutine wricrs(mpol)
          use m_copycrosssectionstopol, only: copycrosssectionstopol
@@ -37,7 +47,7 @@
          use m_polygon
          use m_missing
          use m_wripol
-         implicit none
+
          integer :: mpol
 
          call savepol()
@@ -55,3 +65,5 @@
          call restorepol()
 
       end subroutine wricrs
+
+end module m_wricrs

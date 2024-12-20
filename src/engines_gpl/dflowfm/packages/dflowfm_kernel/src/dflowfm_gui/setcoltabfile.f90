@@ -31,6 +31,7 @@
 !
 
 subroutine SETCOLTABFILE(FILNAM, JASECOND)
+   use m_sysorlocalfil, only: sysorlocalfil
    use m_qnmessage
    use m_filemenu
    use unstruc_colors

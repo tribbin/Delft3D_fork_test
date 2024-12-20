@@ -31,6 +31,7 @@
 !
 !>  override bobs along pliz's, jadykes == 0: only heights, 1 = also dyke attributes
 module m_setfixedweirs
+use m_reapol_nampli, only: reapol_nampli
 use m_setfixedweirscheme3onlink, only: setfixedweirscheme3onlink
 
 implicit none

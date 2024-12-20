@@ -30,6 +30,9 @@
 !
 !
 module m_wrisam
+use m_wriarcsam, only: wriarcsam
+use m_wriarc, only: wriarc
+
    implicit none
 contains
    subroutine WRISAM(MSAM)

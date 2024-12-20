@@ -291,6 +291,7 @@ contains
       use messageHandling
       use dfm_error
       use m_polygon
+      use m_reapol_nampli, only: reapol_nampli
       implicit none
       character(len=*), intent(in) :: filename
 

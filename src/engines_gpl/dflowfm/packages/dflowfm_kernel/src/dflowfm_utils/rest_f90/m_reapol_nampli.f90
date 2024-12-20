@@ -30,11 +30,22 @@
 !
 !
 
- subroutine setmdia(mdi) ! thanks herman, again
-    use unstruc_files
-    implicit none
-    integer :: mdi
+module m_reapol_nampli
 
-    mdia = mdi
+implicit none
 
- end subroutine setmdia
+private
+
+public :: reapol_nampli
+    
+   interface reapol_nampli
+      module subroutine reapol_nampli(mpol, jadoorladen, janampl, ipli)
+         implicit none
+         integer :: mpol
+         integer, intent(in) :: jadoorladen !< Append to existing polygons (intended to read multiple crs files)
+         integer, intent(in) :: janampl !< Store the pli-name as crosssection name
+         integer, intent(inout) :: ipli
+      end subroutine reapol_nampli
+    end interface reapol_nampli
+    
+end module m_reapol_nampli

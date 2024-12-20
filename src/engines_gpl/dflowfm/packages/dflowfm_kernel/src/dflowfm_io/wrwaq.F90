@@ -435,6 +435,7 @@ contains
       use unstruc_model
       use time_module, only: ymd2jul
       use m_dateandtimenow
+      use m_timdat, only: timdat
 
       implicit none
       !

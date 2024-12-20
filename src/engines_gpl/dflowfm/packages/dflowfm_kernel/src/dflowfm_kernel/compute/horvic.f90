@@ -45,6 +45,10 @@ contains
       use m_sferic
       use m_cor2linx, only: cor2linx
       use m_cor2liny, only: cor2liny
+      use m_lin2nodx, only: lin2nodx
+      use m_lin2nody, only: lin2nody
+      use m_nod2linx, only: nod2linx
+      use m_nod2liny, only: nod2liny
 
       implicit none
 
@@ -59,8 +63,6 @@ contains
 
       real(kind=dp) :: txx_k12, tyy_k12
       integer :: ik1, ik2, in3, in4
-
-      real(kind=dp), external :: nod2linx, nod2liny, lin2nodx, lin2nody
 
       horvic = 0d0
       csL = csu(L); snL = snu(L)

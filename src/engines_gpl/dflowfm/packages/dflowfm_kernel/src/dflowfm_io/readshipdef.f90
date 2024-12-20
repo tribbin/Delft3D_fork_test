@@ -31,6 +31,8 @@
 !
 
 module m_readshipdef
+use m_reaarc, only: reaarc
+
 
    implicit none
 

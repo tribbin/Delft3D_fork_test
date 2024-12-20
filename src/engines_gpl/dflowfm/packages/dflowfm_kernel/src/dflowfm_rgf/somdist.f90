@@ -31,6 +31,7 @@
 !
 
 module m_somdist
+use m_inularr, only: inularr
 
 implicit none
 
