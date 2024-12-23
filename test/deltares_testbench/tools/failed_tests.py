@@ -4,10 +4,12 @@ import re
 import shutil
 import sys
 
+from src.utils.comparers.end_result import EndResult
+
 
 def get_failed_tests(filename):
     # Regular expression pattern to match the test case lines
-    pattern = r"\|(.*?)\|.*?\|(ERROR|NOK)"
+    pattern = rf"\|(.*?)\|.*?\|({EndResult.ERROR.value}|{EndResult.NOK.value})"
     failed_tests = []
 
     with open(filename, "r") as file:
