@@ -104,10 +104,12 @@ subroutine fill_valobs()
       if (allocated(wa)) deallocate (wa)
       allocate (wa(1:2, 1:max(kmx, 1)))
    end if
+   
+   ! get velocities here (and not at velocity writing) in in case gettaus needs them
+   call getucxucyeulmag(ndkx, ueux, ueuy, ucmag, jaeulervel, jahisvelocity)
 
    if (jahistaucurrent > 0) then
       if ((jawave == 0 .or. flowWithoutWaves)) then
-         call getucxucyeulmag(ndkx, ueux, ueuy, ucmag, jaeulervel, jahisvelocity)
          ! fill taus
          call gettaus(1, 1)
 
