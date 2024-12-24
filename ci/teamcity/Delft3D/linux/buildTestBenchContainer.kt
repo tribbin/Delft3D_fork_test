@@ -88,9 +88,9 @@ object LinuxBuildTestbenchContainer : BuildType({
 
     features {
         dockerSupport {
-            cleanupPushedImages = true
             loginToRegistry = on {
-                dockerRegistryId = "DOCKER_REGISTRY_DELFT3D_DEV"
+                // dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
+                dockerRegistryId = "PROJECT_EXT_133"
             }
         }
     }
