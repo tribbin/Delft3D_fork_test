@@ -85,7 +85,7 @@ object LinuxPyTest : BuildType({
     }
 
     dependencies {
-        dependency(AbsoluteId("Dimr_DimrCollectors_Alma8_TestbenchContainer")) {
+        dependency(AbsoluteId("LinuxTestbenchContainer")) {
             snapshot {
             }
 
