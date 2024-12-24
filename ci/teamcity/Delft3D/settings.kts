@@ -55,11 +55,13 @@ project {
         buildType(WindowsBuild)
         buildType(WindowsCollect)
         buildType(WindowsTest)
+        buildType(WindowsPyTest)
         buildTypesOrder = arrayListOf(
             WindowsBuildEnvironment,
             WindowsBuild,
             WindowsCollect,
-            WindowsTest
+            WindowsTest,
+            WindowsPyTest
         )
     }
 
