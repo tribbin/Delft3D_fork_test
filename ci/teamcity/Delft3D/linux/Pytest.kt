@@ -25,7 +25,6 @@ object LinuxPyTest : BuildType({
 
     steps {
         python {
-            id = "python_runner"
             pythonVersion = customPython {
                 executable = "python3.9"
             }
@@ -38,7 +37,6 @@ object LinuxPyTest : BuildType({
         }
         script {
             name = "Ruff format check"
-            id = "Ruff_format_check"
             scriptContent = """
                 cd /data
                 ruff format --check .

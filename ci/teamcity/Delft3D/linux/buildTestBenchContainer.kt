@@ -26,7 +26,6 @@ object LinuxBuildTestbenchContainer : BuildType({
     steps {
         python {
             name = "Check merge conflicts"
-            id = "Check_merge_conflicts"
 
             conditions {
                 contains("teamcity.build.branch", "merge-requests")
@@ -62,7 +61,6 @@ object LinuxBuildTestbenchContainer : BuildType({
         mergeTargetBranch {}
         dockerCommand {
             name = "Build docker testbench container"
-            id = "Generate_docker_testbench_container"
             commandType = build {
                 source = file {
                     path = "test/deltares_testbench/ci/dockerfiles/testbench.Dockerfile"
@@ -75,14 +73,12 @@ object LinuxBuildTestbenchContainer : BuildType({
         }
         dockerCommand {
             name = "Push docker testbench container"
-            id = "Push_docker_testbench_container"
             commandType = push {
                 namesAndTags = "containers.deltares.nl/delft3d/test/testbench:testbench-%build.vcs.number%"
             }
         }
         script {
             name = "Create artifact"
-            id = "Create_artifact"
             scriptContent = """
                 file="container.txt"
                 echo "containers.deltares.nl/delft3d/test/testbench:testbench-%build.vcs.number%" > ${'$'}file
