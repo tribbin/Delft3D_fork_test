@@ -14,7 +14,7 @@ version = "2024.12"
 project {
     params {
         password("delft3d-dev-secret", "credentialsJSON:75eb18ff-a859-4d78-aa74-206d10865c2e")
-        password("delft3d-secret", "credentialsJSON:75eb18ff-a859-4d78-aa74-206d10865c2e")
+        password("delft3d-secret", "credentialsJSON:eb73cbd9-d17e-4bbe-ab3e-fdabe1eeddb0")
         param("product", "dummy_value")
     }
 
