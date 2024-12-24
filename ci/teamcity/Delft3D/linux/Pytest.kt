@@ -1,4 +1,4 @@
-package Delft3D.windows
+package Delft3D.linux
 
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
@@ -7,7 +7,7 @@ import jetbrains.buildServer.configs.kotlin.failureConditions.*
 import Delft3D.template.*
 import Delft3D.step.*
 
-object WindowsPyTest : BuildType({
+object LinuxPyTest : BuildType({
     templates(
         TemplateMergeRequest,
         TemplatePublishStatus,

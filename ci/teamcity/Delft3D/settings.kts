@@ -39,11 +39,13 @@ project {
         buildType(LinuxCollect)
         buildType(LinuxDocker)
         buildType(LinuxTest)
+        buildType(LinuxPyTest)
         buildTypesOrder = arrayListOf(
             LinuxBuild,
             LinuxCollect,
             LinuxDocker,
-            LinuxTest
+            LinuxTest,
+            LinuxPyTest
         )
     }
 
@@ -55,13 +57,11 @@ project {
         buildType(WindowsBuild)
         buildType(WindowsCollect)
         buildType(WindowsTest)
-        buildType(WindowsPyTest)
         buildTypesOrder = arrayListOf(
             WindowsBuildEnvironment,
             WindowsBuild,
             WindowsCollect,
-            WindowsTest,
-            WindowsPyTest
+            WindowsTest
         )
     }
 
