@@ -148,8 +148,6 @@ contains
                   XPL(N) = XN
                   YPL(N) = YN
 
-                  ! CALL RCIRC( XPL(N), YPL(N) )
-                  ! CALL WAIT ()
                   exit
                end if
             end do

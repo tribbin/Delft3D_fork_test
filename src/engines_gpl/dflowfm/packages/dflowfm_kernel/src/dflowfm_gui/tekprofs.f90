@@ -362,9 +362,6 @@ contains
          jabruv = 1
          if (jabruv > 0) then
 
-            !call TEKFN(6,11, 1, tem1(kt:kt) , hcref(kt-kb+1)  , 1, 0d0, 86400.d0, -200d0, 600d0, KLPROF, '-200 - 600 WATT' , 0, 2 , 0d0,kplot)
-            !CALL TEKHEATS( time1)
-
             do k = kb, kt - 1
                kk = k - kb + 1
                prsappr = ag * rhomean * (zws(kt) - zws(k))

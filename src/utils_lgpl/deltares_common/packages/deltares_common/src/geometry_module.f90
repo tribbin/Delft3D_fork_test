@@ -2718,7 +2718,6 @@ module geometry_module
                      endif
                      ! ds   = -alf*dotp(xccf - xe3,yccf - ye3, tex, tey)  ! - sign not present in given formula
                      ! call cirr(xccf,yccf,31)
-                     ! call waitesc()
                   endif
                enddo
                if (k > 1 .and. abs(xccf-xccfo) < eps .and. abs(yccf-yccfo) < eps) then

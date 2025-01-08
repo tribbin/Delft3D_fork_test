@@ -1064,12 +1064,6 @@ contains
 !        fix for global. spherical coordinates
          call get_cellpolygon(k, MMAX, nn, 1d0, xv, yv, LnnL, Lorg, zz)
 
-!          BEGIN DEBUG
-!           call tekpoly(nn,xv,yv,31)
-!           call toemaar()
-!           call tekpoly(nn,xv,yv,1)
-!          END DEBUG
-
 !        find the number of hanging nodes
          num = 0 ! number of non-hanging nodes
          numbrothers = 0 ! number of hanging nodes

@@ -152,9 +152,6 @@ contains
               if (JA == 1) call MERGENODESINPOLYGON()
            end if
 
-!     merge boundary nodes
-!      call mergenet()
-
            call readyy('Merging networks', -1d0)
 
         end if

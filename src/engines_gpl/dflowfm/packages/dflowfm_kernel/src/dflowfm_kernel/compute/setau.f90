@@ -71,8 +71,6 @@ contains
 
     real(kind=dp), parameter :: FAC23 = 0.6666666666667d0
 
-    ! call writesluices()
-
     if (kmx == 0) then
 
        if (nonlin == 0) then

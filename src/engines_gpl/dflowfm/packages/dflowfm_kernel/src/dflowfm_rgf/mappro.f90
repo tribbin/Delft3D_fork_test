@@ -86,12 +86,6 @@ contains
             if (ITYPE == 0) then ! except for itype = 0
                call TRAROT(XX, YY, XG, YG)
             else if (ITYPE == 1) then ! UTM
-!            xp(1) = xx
-!            yp(1) = yy
-!            ierr = pjf90_transform(proj_magsirwest,proj_latlon, 1, 1, xp, yp, null())
-!            xg = xp(1)*RAD_TO_DEG
-!            yg = yp(1)*RAD_TO_DEG
-               !CALL UTMGEO(XX,YY,XG,YG,IZONE,IERR) ! IZONE = input !TMP disable
                call UTMGEO2(XX, YY, XG, YG, IZONE, IHEM) ! IZONE = input !TMP disable
             else if (ITYPE == 2) then ! Amersfoorts
                call RDGEO(XX, YY, XG, YG, 0)

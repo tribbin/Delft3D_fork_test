@@ -187,8 +187,6 @@ contains
             end do
          end do
 
-!     CALL WAITESC()
-
 !     DE VERTICALEN
          do IR = 1, MC
             IN = 0

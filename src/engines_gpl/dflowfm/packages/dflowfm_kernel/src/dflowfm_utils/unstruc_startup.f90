@@ -488,8 +488,6 @@ contains
          k = k + 1
          call IGRPALETTERGB(ICL, IRED, IGREEN, IBLUE)
       end do
-!     CALL READXYMIS(MINI)
-!     CALL READAMISS(MINI)
 
       TXLIN = ' ' ! alle drie leeg
 

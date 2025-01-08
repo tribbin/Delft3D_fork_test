@@ -156,7 +156,6 @@ contains
          end do
 
          ! CALL TEKGRD(XRH,YRH,MM,NN,1,1,MM,NN,31,2,KEY,MM)
-         ! CALL WAITESC()
 
          do I = 1, MM ! EVEN TERUGGEZET
             do J = 1, NN
@@ -212,7 +211,6 @@ contains
             ! hier nog een bnd lus zeker weten goed!
 
             ! CALL TEKGRD(XRH,YRH,MM,NN,1,1,MM,NN,31,2,KEY,MM)
-            ! CALL WAITESC()
 
          end do
 

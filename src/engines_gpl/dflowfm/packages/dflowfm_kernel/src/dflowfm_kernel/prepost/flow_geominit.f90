@@ -121,6 +121,7 @@ contains
     use m_dlinedis2
     use m_ini_sferic
     use m_set_bobs
+    use m_cosphiu, only: cosphiu
 
     implicit none
 
@@ -169,8 +170,6 @@ contains
 
     integer :: jaidomain, jaiglobal_s, ierror
     integer :: numl2D
-
-    real(kind=dp), external :: cosphiu
 
     numl2D = numl - numl1D
 

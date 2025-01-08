@@ -154,14 +154,9 @@ contains
 
                call mapToPolyline(XPLO, YPLO, DPL, NO, XH, YH, DPLA, NPL) ! HAAL HUIDIGE PUNTEN OP
                ! CALL DISP2C(dble(XH), dble(YH), NPL, 0.5*RCIR, 50+8*KK)
-               ! CALL WAITESC()
                call averageDiff(DPLA, DXA, NPL) ! GET ACTUELE GRIDSIZE
                DXS = DXYMIS
-               !IF (NS .GE. 3) THEN                                 ! ALS ER SAMPLES ZIJN, DAN ZIJN ZE HET GRIDSIZE CONTROL FIELD
-               !   NPH = NPL ; NPL = 0
-               !   CALL INTDXSTRI(XH,YH,DXS,NPH,JDLA)
-               !   NPL = NPH                                        ! ROEIEN OMHEEN DE NPL CONSTRUCTIE IN TRIINT
-               !ELSE
+
                call interpOnPolyline(DPLA, DXS, NPL, DXS1, DXS2) ! TRIANGLESIZE, TRIANGLESIZE)      ! INTERPOLATE STREEFGRIDSIZE ! LATER TRIANGULATIE
                !ENDIF
                do N = 1, NPL ! EN VOOR DE VEILIGHEID:

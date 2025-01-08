@@ -130,7 +130,6 @@ contains
 
      deallocate (KC2, LC2)
 
-     !   CALL REMZEROS()
      return
   end subroutine COPYTRANS
 

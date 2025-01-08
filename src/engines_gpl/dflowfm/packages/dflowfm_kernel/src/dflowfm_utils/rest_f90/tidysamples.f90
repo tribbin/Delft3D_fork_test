@@ -51,7 +51,6 @@ contains
          integer, dimension(NS), intent(out) :: IPSAM !< permutation array (increasing x-coordinate)
          integer, intent(in) :: MXSAM, MYSAM !< structured sample data dimensions (>0) or unstructured (0)
          real(kind=dp), allocatable :: xs_copy(:)
-!      IF (NS .GT. 1) CALL RSORT3(XS,YS,ZS,NS)
 
          xs_copy = xs
          call sort_index(xs_copy, IPSAM)

@@ -63,7 +63,6 @@ contains
 
      if (jsfertek > 0) then
         rcy = cr * dyh * ra * dg2rd
-        ! call setrcirxy(xp,yp,rcx,rcy)
      end if
 
      KP = 0

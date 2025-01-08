@@ -117,21 +117,6 @@ contains
       end if
 
       if (md_mapformat == IFORMAT_TECPLOT .or. md_mapformat == IFORMAT_NETCDF_AND_TECPLOT) then ! TecPlot output
-         !if (mtecfil /= 0 .and. it_map_tec == 0) then
-         !   call doclose(mtecfil)
-         !end if
-
-         !if (it_map_tec == 0) then
-         !     if (ti_split > 0d0) then
-         !         filnam = defaultFilename('tec', timestamp=time_split0)
-         !     else
-         !         filnam = defaultFilename('tec')
-         !     end if
-         !   call newfil(mtecfil, filnam)
-         !endif
-
-         !call tecplot_out(mtecfil, tim, it_map_tec==0)
-
 !      write grid in Tecplot format only once
          if (it_map_tec == 0) then
             filnam = defaultFilename('net.plt')
