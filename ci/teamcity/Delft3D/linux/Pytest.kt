@@ -38,7 +38,6 @@ object LinuxPyTest : BuildType({
         script {
             name = "Ruff format check"
             scriptContent = """
-                cd /data
                 ruff format --check .
                 ruff check --output-format=junit --output-file=logs/ruff_check_results.xml --select F4,F5,F6,F7,W,I
             """.trimIndent()
