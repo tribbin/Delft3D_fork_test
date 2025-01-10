@@ -1,6 +1,8 @@
 from enum import Enum
+from functools import total_ordering
 
 
+@total_ordering
 class EndResult(Enum):
     """Enum representing the result status."""
 
@@ -14,6 +16,12 @@ class EndResult(Enum):
             return NotImplemented
         order = ["ERROR", "NOK", "OK"]
         return order.index(self.value) < order.index(other.value)
+
+    def __eq__(self, other: "EndResult") -> bool:
+        """Check if two EndResult instances are equal."""
+        if not isinstance(other, EndResult):
+            return NotImplemented
+        return self.value == other.value
 
     @classmethod
     def from_string(cls, string: str) -> "EndResult":
