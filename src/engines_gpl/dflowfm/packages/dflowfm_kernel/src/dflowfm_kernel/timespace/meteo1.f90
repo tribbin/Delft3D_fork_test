@@ -785,7 +785,7 @@ contains
       use m_GlobalParameters, only: INDTP_2D
       use m_partitioninfo
       use kdtree2Factory
-      use unstruc_messages
+      use messagehandling, only: LEVEL_INFO, mess
       use m_find_flownode, only: find_nearest_flownodes_kdtree
       use m_wall_clock_time
       use m_in_flowcell, only: in_flowcell
@@ -5737,7 +5737,7 @@ contains
       use m_alloc
       use m_missing
       use dfm_error
-      use unstruc_messages
+      use messagehandling, only: LEVEL_WARN, mess
       use m_delpol
       use m_reapol
       use m_filez, only: oldfil
@@ -6281,7 +6281,6 @@ module m_meteo
    use m_ship
    use fm_external_forcings_data
    use processes_input, only: num_time_functions, funame, funinp, nosfunext, sfunname, sfuninp
-   use unstruc_messages
    use m_observations_data, only: xyobs
    use string_module
    use m_sediment, only: stm_included, stmpar
@@ -7040,6 +7039,7 @@ contains
    !> Construct and initialize a new Instance of the EC-module.
    subroutine initialize_ec_module()
       use m_sferic
+      use unstruc_messages, only: callback_msg
       implicit none
       ! FM re-initialize call: First destroy the EC-module instance.
       if (associated(ecInstancePtr)) then

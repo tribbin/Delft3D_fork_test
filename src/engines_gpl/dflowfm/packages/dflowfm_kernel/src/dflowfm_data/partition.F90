@@ -926,7 +926,6 @@ contains
 !> find original cell numbers for the current subset of cells.
 !! Typically used for reconstructing the global cell numbers for all cells in the current partition.
    subroutine find_original_cell_numbers(L2Lorg, Lne_org, iorg)
-      use unstruc_messages
       use network_data, only: nump, nump1d2d, numL, lnn, lne, numl1d, netcell, xzw, yzw
       use m_flowgeom, only: xz, yz
       use unstruc_channel_flow, only: network
@@ -1093,7 +1092,7 @@ contains
 !             and "s"-type ghosts are cell-based only
    subroutine partition_set_ghostlevels(idmn, numlay_cell, numlay_node, jaboundary, ierror)
       use network_data, only: nump1d2d
-      use unstruc_messages
+      use messagehandling, only: LEVEL_INFO, LEVEL_ERROR, mess
       implicit none
 
       integer, intent(in) :: idmn !< domain number
@@ -2015,7 +2014,7 @@ contains
 !> fix orientation of send flow-links, opposite orientation will have negative indices
    subroutine partition_fixorientation_ghostlist(ierror)
       use m_flowgeom, only: Lnx, Lnxi, csu, snu, Ln, Ndx
-      use unstruc_messages
+      use messagehandling, only: LEVEL_INFO, LEVEL_ERROR, mess
       implicit none
 
       character(len=128) :: message
@@ -2828,7 +2827,7 @@ contains
    subroutine partition_make_globalnumbers(ierror)
       use m_flowgeom, only: Ndxi, Ndx, Ln, Lnxi, Lnx
       use m_alloc
-      use unstruc_messages
+      use messagehandling, only: LEVEL_ERROR, mess
       implicit none
 
       integer, intent(out) :: ierror
@@ -3462,7 +3461,7 @@ contains
 !>   reduce: take global cell with lowest dist
    subroutine reduce_kobs(N, kobs, xobs, yobs, jaoutside)
       use m_flowgeom, only: xz, yz, nd
-      use unstruc_messages
+      use messagehandling, only: LEVEL_ERROR, mess
       use geometry_module, only: pinpok, dbdistance
       use m_missing, only: jins, dmiss
       use m_sferic, only: jsferic, jasfer3D
@@ -4591,7 +4590,7 @@ contains
       use m_polygon
       use m_tpoly
       use m_sferic
-      use unstruc_messages
+      use messagehandling, only: LEVEL_WARN, mess
       use gridoperations
       use m_copynetboundstopol
       implicit none
@@ -5592,7 +5591,7 @@ contains
    subroutine partition_reduce_mirrorcells(Nx, kce, ke, ierror)
       use network_data
       use m_alloc
-      use unstruc_messages
+      use messagehandling, only: LEVEL_INFO, LEVEL_ERROR, mess
       use geometry_module, only: dbdistance
       use m_missing, only: dmiss
       use m_sferic, only: jsferic, jasfer3D
@@ -5913,7 +5912,7 @@ contains
       use m_flowgeom
       use m_alloc
       use m_missing
-      use unstruc_messages
+      use messagehandling, only: LEVEL_ERROR, mess
 
       integer, intent(in) :: itype !< type: 0: flownode, 1: flowlink
       integer, intent(in) :: NDIM !< number of unknowns per flownode/link

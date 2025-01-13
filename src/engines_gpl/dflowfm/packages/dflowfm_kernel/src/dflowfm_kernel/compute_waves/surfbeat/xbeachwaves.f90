@@ -3204,7 +3204,7 @@ contains
       use m_physcoef, only: ag, rhomean
       use fm_external_forcings_data
       use m_alloc
-      use unstruc_messages
+      use messagehandling, only: LEVEL_ERROR, mess
       use m_xbeach_errorhandling
       use m_missing
       use m_partitioninfo

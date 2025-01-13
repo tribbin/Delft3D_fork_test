@@ -379,6 +379,7 @@ contains
 !! number. File-open attempts will not continue indefinitely (program may stop).
    subroutine inidia(basename)
       use unstruc_model
+      use unstruc_messages, only: initMessaging
 
       character(len=*) :: basename
 

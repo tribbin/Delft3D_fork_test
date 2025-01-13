@@ -61,7 +61,7 @@ contains
       use m_ec_interpolationsettings
       use m_missing
       use m_alloc
-      use unstruc_messages
+      use messagehandling, only: LEVEL_INFO, mess
       use m_gui
       use kdtree2Factory
       use m_sferic

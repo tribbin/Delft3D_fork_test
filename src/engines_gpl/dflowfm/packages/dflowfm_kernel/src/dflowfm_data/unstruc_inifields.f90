@@ -39,7 +39,7 @@ module unstruc_inifields
    use m_setinitialverticalprofile, only: setinitialverticalprofile
    use m_add_tracer, only: add_tracer
    use m_setzcs, only: setzcs
-   use unstruc_messages
+   use messagehandling, only: msgbuf, warn_flush, err_flush
    use properties
    use string_module, only: str_lower, strcmpi
    use precision_basics, only: dp

@@ -47,7 +47,8 @@ contains
       use m_commandline_option
       use unstruc_model
       use m_gui
-      use unstruc_messages
+      use messagehandling, only: stringtolevel
+      use unstruc_messages, only: loglevel_StdOut, loglevel_file
       use string_module, only: str_lower, str_tolower
       use m_samples_refine
       use m_partitioninfo

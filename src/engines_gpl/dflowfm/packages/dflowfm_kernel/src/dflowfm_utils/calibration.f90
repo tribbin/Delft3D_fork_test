@@ -114,7 +114,7 @@ contains
 
    subroutine read_cldfile(md_cldfile, clddata, phase)
       use precision, only: dp
-      use unstruc_messages
+      use messagehandling, only: LEVEL_INFO, LEVEL_ERROR, mess, errmsg
       use m_missing, only: dmiss, intmiss
       use unstruc_files, only: mdia
       use system_utils, only: exifil
@@ -469,7 +469,7 @@ contains
 
    subroutine read_cllfile(md_cllfile, clddata, phase)
       use precision, only: dp
-      use unstruc_messages
+      use messagehandling, only: LEVEL_INFO, LEVEL_ERROR, mess, errmsg
       use m_missing, only: intmiss
       use unstruc_files, only: mdia
       use system_utils, only: exifil
@@ -748,7 +748,6 @@ contains
 
    subroutine update_clddata()
       use precision, only: dp
-      use unstruc_messages
       use m_monitoring_crosssections
       use m_observations_data, only: valobs, IPNT_S1
 
