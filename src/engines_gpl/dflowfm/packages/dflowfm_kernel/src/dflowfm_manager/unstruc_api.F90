@@ -30,6 +30,8 @@
 !
 !
 module unstruc_api
+   use m_updatevaluesonsourcesinks, only: updatevaluesonsourcesinks
+   use m_updatebalance, only: updatebalance
    use m_flow_usertimestep, only: flow_usertimestep
    use m_flow_externaloutput, only: flow_externaloutput
    use m_updatevaluesonrunupgauges_mpi, only: updatevaluesonrunupgauges_mpi
@@ -114,6 +116,9 @@ contains
       use m_monitoring_crosssections
       use unstruc_model
       use m_qn_read_error
+      use m_filez, only: oldfil, doclose, newfil
+      use m_upotukinueaa, only: upotukinueaa
+
       implicit none
       integer :: ierr, minp, mout, L1, istat, i
       integer :: MODE, NUM, NWHAT, KEY
@@ -201,7 +206,7 @@ contains
    integer function flow() result(iresult)
       use dfm_error
       use unstruc_display
-      use unstruc_messages
+      use messagehandling, only: warn_flush
       use unstruc_display
       use unstruc_model
       integer :: jastop

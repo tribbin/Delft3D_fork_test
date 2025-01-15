@@ -33,12 +33,14 @@
 !> write the network domains to file
 !>    it is assumed that the domain coloring "idomain" is available
 module m_partition_write_domains
+   use m_savecells, only: savecells
+   use m_restorecells, only: restorecells
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: partition_write_domains
+   public :: partition_write_domains
 
 contains
 
@@ -54,6 +56,7 @@ contains
       use system_utils, only: find_last_slash
       use m_qnerror
       use m_wripol
+      use m_filez, only: newfil
 
       character(len=*), intent(in) :: netfilename !< filename of whole network
       integer, intent(in) :: icgsolver !< intended solver

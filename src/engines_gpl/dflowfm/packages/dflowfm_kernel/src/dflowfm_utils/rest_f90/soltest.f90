@@ -30,14 +30,24 @@
 !
 !
 
+module m_soltest
+
+   implicit none
+
+   private
+
+   public :: soltest
+
+contains
+
    !> test iterative solver (as "mpitest")
    subroutine soltest(iCFL, icgsolver_loc, maxsubmatvecs, iepsdiff, iepscg)
+      use m_make_matrix, only: make_matrix
       use m_solve_guus, only: solve_matrix
       use precision, only: dp
       use m_update_matrix, only: update_matrix
       use m_partitioninfo
       use m_timer
-      use unstruc_messages
       use m_flowgeom
       use network_data, only: xzw
       use m_flowparameters
@@ -46,7 +56,6 @@
       use m_alloc
       use m_flow_modelinit, only: flow_modelinit
       use m_solve_guus, only: pack_matrix
-      implicit none
 
       integer, intent(in) :: iCFL !< wave-based Courant number
       integer, intent(in) :: icgsolver_loc ! icgsolver (if > 0)
@@ -218,12 +227,6 @@
          write (6, '(a,E9.2,a,E9.2)') ' WC-time solver   [s]: ', gettimer(1, ITOTALSOL), ' CPU-time solver   [s]: ', gettimer(0, ITOTALSOL)
          write (6, '(a,E9.2,a,E9.2)') ' WC-time MPI comm [s]: ', gettimer(1, IMPICOMM), ' CPU-time MPI comm [s]: ', gettimer(0, IMPICOMM)
       end if
-!         call mpi_barrier(DFM_COMM_DFMWORLD,ierr)
-
-!      call writemesg('Wallclock times')
-!      call printall(numt, t(3,:), tnams)
-!      call writemesg('CPU times')
-!      call printall(numt, tcpu(3,:), tnams)
 
 1234  continue
 
@@ -232,3 +235,5 @@
 
       return
    end subroutine soltest
+
+end module m_soltest

@@ -5,8 +5,8 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 
 import Trigger
 import CsvProcessor
@@ -15,7 +15,6 @@ object LinuxTest : BuildType({
 
     templates(
         TemplateMergeRequest,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -73,6 +72,7 @@ object LinuxTest : BuildType({
     }
 
     steps {
+        mergeTargetBranch {}
         python {
             name = "Run TestBench.py"
             workingDir = "test/deltares_testbench/"

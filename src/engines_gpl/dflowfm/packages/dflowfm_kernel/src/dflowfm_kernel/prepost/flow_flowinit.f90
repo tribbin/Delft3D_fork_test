@@ -127,6 +127,7 @@ contains
       use m_meteo, only: initialize_ec_module
       use m_observations, only: read_moving_stations
       use m_solve_guus, only: reducept
+      use m_upotukinueaa, only: upotukinueaa
 
       implicit none
 
@@ -209,7 +210,7 @@ contains
          return
       end if
       call mess(LEVEL_INFO, 'Done initializing external forcings.')
-      
+
       ! it has to be called after EC module initialization
       call read_moving_stations(md_obsfile)
 
@@ -666,6 +667,7 @@ contains
       use m_samples, only: NS, restoresam, savesam
       use MessageHandling, only: LEVEL_WARN, mess
       use m_reasam
+      use m_filez, only: oldfil
 
       implicit none
 
@@ -829,6 +831,7 @@ contains
       use dfm_error
       use m_set_bobs
       use m_flow_obsinit
+      use m_filez, only: oldfil
 
       implicit none
 
@@ -1658,6 +1661,7 @@ contains
       use m_rho_eckart, only: rho_eckart
       use m_corioliskelvin, only: corioliskelvin, oceaneddy
       use m_model_specific, only: equatorial, poiseuille
+      use m_filez, only: newfil
 
       implicit none
 

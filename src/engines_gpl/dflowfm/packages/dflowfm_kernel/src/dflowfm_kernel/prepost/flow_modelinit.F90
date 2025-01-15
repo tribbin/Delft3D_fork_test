@@ -84,7 +84,7 @@ contains
     use unstruc_files, only: mdia
     use unstruc_netcdf
     use MessageHandling
-    use m_flowparameters, only: jawave, jatrt, jacali, jasedtrails, jajre, modind, jaextrapbl, Corioadamsbashfordfac, flow_solver, FLOW_SOLVER_SRE
+    use m_flowparameters, only: jawave, jatrt, jacali, flowWithoutWaves, jasedtrails, jajre, modind, jaextrapbl, Corioadamsbashfordfac, flow_solver, FLOW_SOLVER_SRE
     use dfm_error
     use m_fm_wq_processes, only: jawaqproc
     use m_vegetation
@@ -126,7 +126,7 @@ contains
     use m_flow_obsinit
     use m_set_model_boundingbox, only: set_model_boundingbox
     use m_init_openmp, only: init_openmp
-    !
+usem_fm_wq_processes_sub,only:fm_wq_processes_ini_proc,fm_wq_processes_ini_sub,fm_wq_processes_stepusem_tauwavefetch,only:tauwavefetch    !
     ! To raise floating-point invalid, divide-by-zero, and overflow exceptions:
     ! Activate the following line (See also statements below)
     !use ifcore

@@ -27,7 +27,11 @@
 !
 !-------------------------------------------------------------------------------
 
- subroutine setextforcechkadvec()
+module m_setextforcechkadvec
+
+   implicit none
+
+privatepublic::setextforcechkadveccontains subroutine setextforcechkadvec()
     use precision, only: dp
     use m_get_spiralforce
     use m_get_spiral3d
@@ -48,8 +52,6 @@
     use m_get_Lbot_Ltop
     use m_get_cz
     use m_links_to_centers, only: links_to_centers
-
-    implicit none
 
     integer :: L, LL, Lb, Lt, k1, k2, kt1, kt2
     real(kind=dp) :: dptot, tidp, trshcorioi, dzt, dztm, alf
@@ -346,3 +348,5 @@
     end if
 
  end subroutine setextforcechkadvec
+
+end module m_setextforcechkadvec

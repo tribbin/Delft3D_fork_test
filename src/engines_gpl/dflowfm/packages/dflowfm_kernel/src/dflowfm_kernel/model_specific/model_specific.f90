@@ -453,6 +453,8 @@ contains
       use m_monitoring_crosssections
       use m_flowtimes
       use unstruc_model, only: getoutputdir
+      use m_filez, only: oldfil, newfil
+
       implicit none
       integer, intent(in) :: j12
       integer :: k, L, num, Lweir, ncgentst

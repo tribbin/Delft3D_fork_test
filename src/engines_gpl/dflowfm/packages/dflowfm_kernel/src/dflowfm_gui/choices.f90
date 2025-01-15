@@ -69,6 +69,10 @@
 ! subroutines from net.F90
 !----------------------------------------------------------------------
 module m_choices
+   use m_delete_dry_points_and_areas, only: delete_dry_points_and_areas
+   use m_zerolan, only: zerolan
+   use m_stopint, only: stopint
+   use m_smooth_samples_from_gui, only: smooth_samples_from_gui
    use m_scherm, only: scherm
    use m_copy_sam2dots, only: copy_sam2dots
    use m_copy_dots2sam, only: copy_dots2sam
@@ -139,6 +143,7 @@ module m_choices
    use m_copygridtosam
    use m_copyzlintosamples
    use m_connecthangingnodes, only: connecthangingnodes, removelinksofhangingnodes, makeZKbedlevels
+   use m_partition_to_idomain, only: partition_to_idomain
 
    implicit none
 
@@ -234,13 +239,10 @@ contains
             call SAVENET()
             call REFINEQUADS()
          else if (NWHAT == 12) then
-            ! CALL quadsTOTRI()
             call SAVENET()
             call REFINEQUADS_casulli()
          else if (NWHAT == 13) then
-!         CALL RELINK()
 !         CALL SAVENET()
-!         CALL REFINECELLSANDFACES() !  REFINECELLSONLY()
             call SAVENET()
             call REFINECELLSANDFACES2() !  REFINECELLSONLY()
          else if (NWHAT == 14) then

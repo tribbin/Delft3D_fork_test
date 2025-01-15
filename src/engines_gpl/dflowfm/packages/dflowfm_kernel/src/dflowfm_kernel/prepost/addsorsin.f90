@@ -31,7 +31,7 @@
 !
 
 module m_addsorsin
-use m_reallocsrc, only: reallocsrc
+   use m_reallocsrc, only: reallocsrc
 
    implicit none
 
@@ -50,13 +50,14 @@ contains
       use m_GlobalParameters, only: INDTP_ALL
 
       use m_missing
-      use unstruc_messages
+      use messagehandling, only: msgbuf, warn_flush
       use dfm_error
       use geometry_module, only: normalin
       use m_sferic, only: jsferic, jasfer3D
       use MessageHandling, only: IdLen
       use m_find_flownode, only: find_nearest_flownodes
       use m_reapol
+      use m_filez, only: oldfil
 
       character(len=*), intent(in) :: filename
       real(kind=dp), intent(in) :: area

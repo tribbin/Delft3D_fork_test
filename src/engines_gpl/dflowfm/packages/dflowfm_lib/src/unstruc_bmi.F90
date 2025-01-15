@@ -35,6 +35,7 @@
 #define no_warning_unused_variable(x) associate( x => x ); end associate
 
 module bmi
+   use m_cosphiunetcheck, only: cosphiunetcheck
    use m_flow_run_usertimestep, only: flow_run_usertimestep
    use m_flow_run_sometimesteps, only: flow_run_sometimesteps
    use m_flow_init_usertimestep, only: flow_init_usertimestep
@@ -225,7 +226,7 @@ contains
       !DEC$ ATTRIBUTES DLLEXPORT :: initialize
 
       use iso_c_binding, only: c_char
-
+      use m_solve_petsc, only: startpetsc
       use unstruc_model
       use unstruc_files
       use m_partitioninfo
@@ -1326,7 +1327,7 @@ contains
       ! Return a pointer to the variable
       use unstruc_model
       use m_partitioninfo, only: jampi
-      use MessageHandling
+      use unstruc_messages, only: loglevel_file, loglevel_stdout, initMessaging
       use iso_c_binding, only: c_double, c_char, c_bool, c_loc, c_f_pointer
       use m_laterals, only: numlatsg, qplat, qqlat, balat, qplatCum, qplatCumPre, qplatAve, qLatReal, qLatRealCum
       use m_laterals, only: qLatRealCumPre, qLatRealAve, n1latsg, n2latsg, nnlat, kclat
@@ -1822,7 +1823,6 @@ contains
       !DEC$ ATTRIBUTES DLLEXPORT :: dfm_add_features
       use iso_c_binding, only: c_double, c_int, c_char, c_loc, c_f_pointer
       use iso_c_utils
-      use unstruc_messages
       use m_polygon
       use dfm_error
       use kdtree2Factory
@@ -1946,7 +1946,6 @@ contains
       use m_1d_structures
       use m_wind
       use unstruc_channel_flow, only: network
-      use unstruc_messages
       use m_transport, only: NUMCONST, constituents, const_names, ISALT, ITEMP, ITRA1
       use m_update_values_on_cross_sections, only: update_values_on_cross_sections
       use string_module, only: str_tolower
@@ -2439,7 +2438,6 @@ contains
       !DEC$ ATTRIBUTES DLLEXPORT :: set_compound_field
       use iso_c_binding, only: c_double, c_char, c_loc, c_f_pointer
       use iso_c_utils
-      use unstruc_messages
       use m_strucs
       use m_1d_structures
       use m_wind
@@ -3741,6 +3739,7 @@ contains
       use m_netw
       use m_commandline_option
       use unstruc_model, only: md_pmethod
+      use m_partition_METIS_to_idomain, only: partition_METIS_to_idomain
 
       character(kind=c_char), intent(in) :: c_netfile_in(MAXSTRLEN)
       character(kind=c_char), intent(in) :: c_netfile_out(MAXSTRLEN)
@@ -3806,6 +3805,7 @@ contains
       use m_netw
       use m_commandline_option
       use m_reapol
+      use m_filez, only: newfil
 
       character(kind=c_char), intent(in) :: c_netfile_in(MAXSTRLEN)
       character(kind=c_char), intent(in) :: c_netfile_out(MAXSTRLEN)

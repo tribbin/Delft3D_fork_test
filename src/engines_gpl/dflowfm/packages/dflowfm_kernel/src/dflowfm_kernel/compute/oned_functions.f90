@@ -493,7 +493,6 @@ contains
       use m_flowgeom
       use m_flowtimes
       use messagehandling
-      use unstruc_messages
       use unstruc_channel_flow
       use m_1d_structures
       use m_cross_helper
@@ -757,6 +756,7 @@ contains
       use m_qnerror
       use m_wripol
       use m_wrisam
+      use m_filez, only: doclose, newfil
 
       character(len=*), intent(in) :: basename !< Basename for the profdef/loc output files.
 

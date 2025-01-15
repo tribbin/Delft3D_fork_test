@@ -31,16 +31,16 @@
 !
 
 module m_makenet_sub
-use m_pol2netparams, only: pol2netparams
-use m_del_grid_outside_pol, only: del_grid_outside_pol
-use m_getdeltay, only: getdeltay
-use m_mergenodesinpolygon, only: mergenodesinpolygon
+   use m_pol2netparams, only: pol2netparams
+   use m_del_grid_outside_pol, only: del_grid_outside_pol
+   use m_getdeltay, only: getdeltay
+   use m_mergenodesinpolygon, only: mergenodesinpolygon
 
-implicit none
+   implicit none
 
-private
+   private
 
-public :: makenet
+   public :: makenet
 
 contains
 
@@ -62,6 +62,7 @@ contains
       use m_set_nod_adm
       use m_increase_grid
       use m_dbdistance_hk
+      use m_filez, only: doclose, newfil
 
       integer, intent(in) :: japaramscreen !< Load parameter screen or not (1/0)
       real(kind=dp) :: ael, cs, dx, dy, hs

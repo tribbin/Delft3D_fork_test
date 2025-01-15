@@ -101,7 +101,9 @@ contains
 !! \param  arr 2D array with raster elevation data (in dem_info\%elevUnitOfMeasure units).
    subroutine read_dem_file(filename, dem_info, xarr, yarr, arr)
       use precision, only: dp
-      use unstruc_messages
+      use messagehandling, only: msgbuf, msg_flush
+      use m_filez, only: message
+
       character(len=*), intent(in) :: filename
       type(DEMInfo), intent(inout) :: dem_info
       real(kind=dp), allocatable, intent(out) :: xarr(:, :), yarr(:, :)
@@ -172,6 +174,8 @@ contains
 !! \param fp Opened DEM file pointer, pointing to beginning (start of A-type record).
 !! \param dem_info struct in which the DEM meta-info will be stored.
    subroutine read_dem_header(fp, dem_info)
+      use m_filez, only: message
+
       integer, intent(in) :: fp
       type(DEMInfo), intent(inout) :: dem_info
 !
@@ -297,7 +301,7 @@ contains
 !! \param arr(:,:) 2D array to store elevation raster data in.
    subroutine read_dem_data(fp, dem_info, arr)
       use precision, only: dp
-      use unstruc_messages
+      use messagehandling, only: msgbuf, msg_flush
       use m_readyy
       integer, intent(in) :: fp
       type(DEMInfo), intent(inout) :: dem_info
