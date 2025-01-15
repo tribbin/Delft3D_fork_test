@@ -57,7 +57,7 @@ module tree_data_types
       character(len=1), dimension(:), pointer :: node_data => null()
       character(len=1), dimension(:), pointer :: node_data_type => null()
       integer :: node_visit !< Zeroed upon construction, incremented upon node_data request (properties.f90: prop_get_string)
-      type(tree_data_ptr), dimension(:), pointer :: child_nodes
+      type(tree_data_ptr), dimension(:), pointer :: child_nodes => null()
       type(tree_data), pointer :: bf_next_node => null() ! Breadth-first next node (same level)
    end type
 
