@@ -26,10 +26,7 @@ module math_utils
     implicit none
 
     private
-    public :: greatest_common_divisor, salinity_from_chloride, chlorinity_from_sal
-
-    real(kind = real_wp), parameter  :: sal0 = 0.03  ! g/kg
-    real(kind = real_wp), parameter  :: gtcl = 1.805 !
+    public :: greatest_common_divisor
 
 contains
 
@@ -62,50 +59,5 @@ contains
         end do
 
     end subroutine greatest_common_divisor
-
-    ! Auxiliary function: convert chlorinity to salinity
-    ! based on temperature
-    !
-    ! It might be useful to have the converse available,
-    ! so here is a copy of the original code from SALCHL:
-    !
-    ! DENS = 1000. + 0.7 * SAL / (1 - SAL / 1000.) &
-    !         - 0.0061 * (TEMP - 4.0) * (TEMP - 4.0)
-    ! !
-    ! IF (SAL <= SAL0) THEN
-    !     SAL = 0.0
-    ! ELSE
-    !     SAL = SAL - SAL0
-    ! ENDIF
-    ! !
-    ! !     g/m3 = (g/kg)*(kg/m3)/(g/g)
-    ! !
-    ! CL = SAL * DENS / GTCL
-    !
-    subroutine salinity_from_chloride( cl, temp, sal, density )
-        real(kind = real_wp), intent(in)  :: cl
-        real(kind = real_wp), intent(in)  :: temp
-        real(kind = real_wp), intent(out) :: sal
-        real(kind = real_wp), intent(out) :: density
-
-        density = 1000.0 + 0.7 * cl / 1000.0 * gtcl &
-                  - 0.0061 * (temp - 4.0) * (temp - 4.0)
-        sal = cl * gtcl / density + sal0
-
-    end subroutine salinity_from_chloride
-
-    function chlorinity_from_sal( sal, temp ) result(cl)
-        real(kind = real_wp), intent(in)  :: sal
-        real(kind = real_wp), intent(in)  :: temp
-        real(kind = real_wp)              :: cl
-
-        real(kind = real_wp)              :: density
-
-        density = 1000. + 0.7 * sal / (1 - sal / 1000.) &
-                  - 0.0061 * (temp - 4.0) * (temp - 4.0)
-
-        cl = max( 0.0_real_wp, sal - sal0 ) * density / gtcl
-
-    end function chlorinity_from_sal
 
 end module math_utils

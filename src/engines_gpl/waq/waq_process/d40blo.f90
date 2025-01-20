@@ -23,7 +23,7 @@
 module m_d40blo
     use m_waq_precision
     use m_set_effi
-    use math_utils, only: chlorinity_from_sal
+    use chemical_utils, only: chlorinity_from_sal
 
     implicit none
     private

@@ -2174,11 +2174,10 @@ inpupr,inpuit,inpunm,inpude,inpudo,inpusx
 "EnCocMrt  ","ExtVl     ",   9,"N","x",1
 "EnCocMrt  ","Depth     ",  10,"N","x",1
 "EnCocMrt  ","SpMrtEnCoc",  11,"Y","x",1
-"SaturCO2  ","Salinity  ",   1,"Y","x",1
-"SaturCO2  ","Temp      ",   2,"Y","x",1
-"SaturCO2  ","SWSatCO2  ",   3,"Y","x",1
-"SaturCO2  ","Salinity  ",   4,"Y","x",1
-"SaturCO2  ","PCO2      ",   5,"Y","x",1
+"SaturCO2  ","Temp      ",   1,"Y","x",1
+"SaturCO2  ","SWSatCO2  ",   2,"Y","x",1
+"SaturCO2  ","Salinity  ",   3,"Y","x",1
+"SaturCO2  ","PCO2      ",   4,"Y","x",1
 "RearCO2   ","DisCO2    ",   1,"N","x",1
 "RearCO2   ","Depth     ",   2,"N","x",1
 "RearCO2   ","Temp      ",   3,"Y","x",1
@@ -2271,10 +2270,9 @@ inpupr,inpuit,inpunm,inpude,inpudo,inpusx
 "Nitrif_NH4","CFLNIT    ",  16,"Y","x",1
 "Nitrif_NH4","CurvNit   ",  17,"Y","x",1
 "Nitrif_NH4","DELT      ",  18,"N","x",1
-"SaturOXY  ","Salinity  ",   1,"Y","x",1
-"SaturOXY  ","Temp      ",   2,"Y","x",1
-"SaturOXY  ","SWSatOXY  ",   3,"Y","x",1
-"SaturOXY  ","Salinity  ",   4,"Y","x",1
+"SaturOXY  ","Temp      ",   1,"Y","x",1
+"SaturOXY  ","SWSatOXY  ",   2,"Y","x",1
+"SaturOXY  ","Salinity  ",   3,"Y","x",1
 "RearOXY   ","OXY       ",   1,"Y","x",1
 "RearOXY   ","Depth     ",   2,"N","x",1
 "RearOXY   ","Temp      ",   3,"Y","x",1
