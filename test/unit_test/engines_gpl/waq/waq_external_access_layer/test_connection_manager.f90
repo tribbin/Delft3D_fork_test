@@ -238,6 +238,8 @@ contains
         type(connection_data), allocatable :: new_connection
 
         real(kind=dp), pointer :: dummy_pointer
+        
+        nullify(dummy_pointer)
 
         new_connection = connection_data( &
                          exchange_name=exchange_name, &
