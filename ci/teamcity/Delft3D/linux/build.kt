@@ -61,8 +61,7 @@ object LinuxBuild : BuildType({
                 . /opt/intel/oneapi/setvars.sh
                 export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${'$'}{LD_LIBRARY_PATH}
                 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:${'$'}{PKG_CONFIG_PATH}
-                export FC=mpiifort CXX=mpicxx CC=mpiicx
-                
+                export FC=mpi%intel_fortran_compiler% CXX=mpicxx CC=mpiicx                
                 cmake ./src/cmake -G %generator% -D CONFIGURATION_TYPE:STRING=%build_configuration% -D CMAKE_BUILD_TYPE=%build_type% -B build_%build_configuration% -D CMAKE_INSTALL_PREFIX=%install_dir%
                 
                 cd build_%build_configuration%
