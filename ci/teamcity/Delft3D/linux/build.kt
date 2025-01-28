@@ -13,7 +13,8 @@ object LinuxBuild : BuildType({
         TemplateMergeRequest,
         TemplateDetermineProduct,
         TemplatePublishStatus,
-        TemplateMonitorPerformance
+        TemplateMonitorPerformance,
+        TemplateFailureCondition
     )
 
     name = "Build"
@@ -101,24 +102,6 @@ object LinuxBuild : BuildType({
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
             }
-        }
-    }
-
-    failureConditions {
-        executionTimeoutMin = 60
-        errorMessage = true
-        failOnText {
-            conditionType = BuildFailureOnText.ConditionType.REGEXP
-            pattern = "Artifacts path .* not found"
-            failureMessage = "Artifacts are missing"
-            reverse = false
-        }
-        failOnText {
-            conditionType = BuildFailureOnText.ConditionType.CONTAINS
-            pattern = "Failed to resolve artifact dependency"
-            failureMessage = "Unable to collect all dependencies"
-            reverse = false
-            stopBuildOnFailure = true
         }
     }
 

@@ -29,6 +29,7 @@ project {
     template(TemplateDetermineProduct)
     template(TemplatePublishStatus)
     template(TemplateMonitorPerformance)
+    template(TemplateFailureCondition)
 
     subProject {
         id("Linux")
