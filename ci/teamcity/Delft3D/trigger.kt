@@ -31,7 +31,7 @@ object Trigger : BuildType({
 
         param("matrix_list_lnx64", "dummy_value")
         param("matrix_list_win64", "dummy_value")
-        param("product", "dummy_value")
+        param("product", "auto-select")
     }
 
     steps {
@@ -57,8 +57,8 @@ object Trigger : BuildType({
 
             conditions {
                 doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
-                doesNotEqual("product", "none")
-                doesNotEqual("product", "qp")
+                doesNotEqual("product", "none-testbench")
+                doesNotEqual("product", "qp-testbench")
             }
 
             scriptContent = """
@@ -94,8 +94,8 @@ object Trigger : BuildType({
 
             conditions {
                 doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
-                doesNotEqual("product", "none")
-                doesNotEqual("product", "qp")
+                doesNotEqual("product", "none-testbench")
+                doesNotEqual("product", "qp-testbench")
             }
             
             scriptContent = """

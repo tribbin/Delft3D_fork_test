@@ -1,3 +1,6 @@
+# FM testbench is currently identical to 'all'.
+# This can/will become shorter when we implement code-change based logic.
+
 # Specify the modules to be included
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/dimr_configuration.cmake)
@@ -41,4 +44,4 @@ if(UNIX)
 endif()
 
 # Project name must be at the end of the configuration: it might get a name when including other configurations and needs to overwrite that
-project(all)
+project(fm)

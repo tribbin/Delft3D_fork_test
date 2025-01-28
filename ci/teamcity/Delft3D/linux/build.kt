@@ -13,27 +13,27 @@ object LinuxBuild : BuildType({
         TemplateMergeRequest,
         TemplateDetermineProduct,
         TemplatePublishStatus,
-        TemplateMonitorPerformance
+        TemplateMonitorPerformance,
+        TemplateFailureCondition
     )
 
     name = "Build"
-    buildNumberPattern = "%build.vcs.number%"
+    buildNumberPattern = "%product%: %build.vcs.number%"
     description = "Linux build."
 
     allowExternalStatus = true
     artifactRules = """
         #teamcity:symbolicLinks=as-is
         **/*.log => logging
-        %install_dir%/** => oss_artifacts_lnx64_%build.vcs.number%.tar.gz!lnx64
+        build_%product%/install/** => oss_artifacts_lnx64_%build.vcs.number%.tar.gz!lnx64
     """.trimIndent()
 
     params {
         param("intel_oneapi_version", "2023")
         param("intel_fortran_compiler", "ifort")
         param("generator", """"Unix Makefiles"""")
-        param("install_dir", "build_all/install")
         param("build_type", "Release")
-        param("build_configuration", "all")
+        select("product", "auto-select", display = ParameterDisplay.PROMPT, options = listOf("auto-select", "all-testbench", "fm-suite", "d3d4-suite", "fm-testbench", "d3d4-testbench", "waq-testbench", "part-testbench", "rr-testbench", "wave-testbench", "swan-testbench"))
     }
 
     vcs {
@@ -61,11 +61,11 @@ object LinuxBuild : BuildType({
                 . /opt/intel/oneapi/setvars.sh
                 export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${'$'}{LD_LIBRARY_PATH}
                 export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:${'$'}{PKG_CONFIG_PATH}
-                export FC=mpiifort CXX=mpicxx CC=mpiicx
+                export FC=mpi%intel_fortran_compiler% CXX=mpicxx CC=mpiicx
                 
-                cmake ./src/cmake -G %generator% -D CONFIGURATION_TYPE:STRING=%build_configuration% -D CMAKE_BUILD_TYPE=%build_type% -B build_%build_configuration% -D CMAKE_INSTALL_PREFIX=%install_dir%
+                cmake ./src/cmake -G %generator% -D CONFIGURATION_TYPE:STRING=%product% -D CMAKE_BUILD_TYPE=%build_type% -B build_%product% -D CMAKE_INSTALL_PREFIX=build_%product%/install
                 
-                cd build_%build_configuration%
+                cd build_%product%
                 cmake --build . -j --target install --config %build_type%
             """.trimIndent()
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-third-party-libs:oneapi-%intel_oneapi_version%-%intel_fortran_compiler%-release"
@@ -85,9 +85,9 @@ object LinuxBuild : BuildType({
                 LIBESMF=`ldd ${'$'}{ESMFRWG} | grep libesmf.so | awk '{print ${'$'}3}'`
                 LIBCILKRTS=`ldd ${'$'}{ESMFRWG} | grep libcilkrts.so | awk '{print ${'$'}3}'`
                 
-                cp -rf ${'$'}{ESMFRWG}                                         %install_dir%/bin                               &>/dev/null
-                cp -rf ${'$'}{LIBESMF}                                         %install_dir%/lib                               &>/dev/null
-                cp -rf ${'$'}{LIBCILKRTS}                                      %install_dir%/lib                               &>/dev/null
+                cp -rf ${'$'}{ESMFRWG}    build_%product%/install/bin &>/dev/null
+                cp -rf ${'$'}{LIBESMF}    build_%product%/install/lib &>/dev/null
+                cp -rf ${'$'}{LIBCILKRTS} build_%product%/install/lib &>/dev/null
             """.trimIndent()
         }
     }
@@ -102,24 +102,6 @@ object LinuxBuild : BuildType({
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
             }
-        }
-    }
-
-    failureConditions {
-        executionTimeoutMin = 60
-        errorMessage = true
-        failOnText {
-            conditionType = BuildFailureOnText.ConditionType.REGEXP
-            pattern = "Artifacts path .* not found"
-            failureMessage = "Artifacts are missing"
-            reverse = false
-        }
-        failOnText {
-            conditionType = BuildFailureOnText.ConditionType.CONTAINS
-            pattern = "Failed to resolve artifact dependency"
-            failureMessage = "Unable to collect all dependencies"
-            reverse = false
-            stopBuildOnFailure = true
         }
     }
 
