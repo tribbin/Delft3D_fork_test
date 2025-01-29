@@ -9,7 +9,7 @@ object TemplateDetermineProduct : Template({
     description = "Determine branch prefix for selecting testbenches to run."
 
     params {
-        param("product", "dummy_value")
+        param("product", "auto-select")
     }
 
     steps {
@@ -17,13 +17,15 @@ object TemplateDetermineProduct : Template({
             name = "Determine product by branch prefix"
             command = script {
                 content="""
-                    if "%product%" == "dummy_value":
+                    if "%product%" == "auto-select":
                         if "merge-request" in "%teamcity.build.branch%":
                             product = "%teamcity.pullRequest.source.branch%".split("/")[0]
-                            print(f"##teamcity[setParameter name='product' value='{product}']")
                         else:
                             product = "%teamcity.build.branch%".split("/")[0]
-                            print(f"##teamcity[setParameter name='product' value='{product}']")
+                        if product == "main":
+                            product = "all"
+                        print(f"##teamcity[setParameter name='product' value='{product}-testbench']")
+                        print(f"##teamcity[buildNumber '{product}: %build.vcs.number%']")
                 """.trimIndent()
             }
         }

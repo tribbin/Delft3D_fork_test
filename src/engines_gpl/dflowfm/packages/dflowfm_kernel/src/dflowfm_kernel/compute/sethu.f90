@@ -29,6 +29,7 @@
 
 !
 module m_sethu
+   use m_getblu_from_bob, only: getblu_from_bob
    use m_fill_onlywetlinks, only: fill_onlywetlinks
    use precision, only: dp
    use m_setveg, only: setveg

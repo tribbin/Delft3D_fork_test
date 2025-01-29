@@ -5,8 +5,8 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 
 import Trigger
 import CsvProcessor
@@ -15,7 +15,6 @@ object WindowsTest : BuildType({
 
     templates(
         TemplateMergeRequest,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -69,6 +68,7 @@ object WindowsTest : BuildType({
     }
 
     steps {
+        mergeTargetBranch {}
         python {
             name = "Run TestBench.py"
             workingDir = "test/deltares_testbench/"
@@ -105,6 +105,7 @@ object WindowsTest : BuildType({
                 call :kill_program dimr.exe
                 call :kill_program mpiexec.exe
                 call :kill_program hydra_pmi_proxy.exe
+                call :kill_program mormerge.exe
                 set errorlevel=0
                 goto :eof
                 

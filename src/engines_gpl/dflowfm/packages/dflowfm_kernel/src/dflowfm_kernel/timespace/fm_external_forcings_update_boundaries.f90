@@ -35,6 +35,7 @@ contains
 
 !> set boundary conditions
    module subroutine set_external_forcings_boundaries(time, iresult)
+      use m_setzminmax, only: setzminmax
       use precision, only: dp
       use m_update_dambreak_breach, only: update_dambreak_breach
       use m_setsigmabnds, only: setsigmabnds
@@ -56,6 +57,7 @@ contains
       use unstruc_channel_flow
       use m_oned_functions
       use m_obs_on_flowgeom, only: obs_on_flowgeom
+      use unstruc_messages, only: callback_msg
 
       implicit none
 

@@ -2,8 +2,8 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 import Delft3D.linux.*
 import Delft3D.windows.*
 
@@ -12,7 +12,6 @@ object Trigger : BuildType({
     templates(
         TemplateMergeRequest,
         TemplateDetermineProduct,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
@@ -32,11 +31,11 @@ object Trigger : BuildType({
 
         param("matrix_list_lnx64", "dummy_value")
         param("matrix_list_win64", "dummy_value")
-        param("product", "dummy_value")
+        param("product", "auto-select")
     }
 
     steps {
-
+        mergeTargetBranch {}
         python {
             name = "Retrieve Linux Testbench XMLs from CSV"
             command = file {
@@ -58,9 +57,8 @@ object Trigger : BuildType({
 
             conditions {
                 doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
-                doesNotEqual("product", "none")
-                doesNotEqual("product", "qp")
-                doesNotEqual("product", "d3d4")
+                doesNotEqual("product", "none-testbench")
+                doesNotEqual("product", "qp-testbench")
             }
 
             scriptContent = """
@@ -96,9 +94,8 @@ object Trigger : BuildType({
 
             conditions {
                 doesNotContain("teamcity.build.triggeredBy", "Snapshot dependency")
-                doesNotEqual("product", "none")
-                doesNotEqual("product", "qp")
-                doesNotEqual("product", "d3d4")
+                doesNotEqual("product", "none-testbench")
+                doesNotEqual("product", "qp-testbench")
             }
             
             scriptContent = """

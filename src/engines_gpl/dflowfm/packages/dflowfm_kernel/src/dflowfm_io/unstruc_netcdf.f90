@@ -46,16 +46,17 @@ module unstruc_netcdf
    use m_reconstruct_cc_stokesdrift, only: reconstruct_cc_stokesdrift
    use precision
    use netcdf
-   use unstruc_messages
+   use messagehandling, only: LEVEL_WARN, mess, dbg_flush, warn_flush
    use dflowfm_version_module
    use io_ugrid
    use m_sediment
-   use string_module
+   use string_module, only: str_toupper, strcmpi
    use io_netcdf_acdd
    use time_module
    use m_debug
    use m_readyy
    use m_qnerror
+   use netcdf_utils, only: ncu_sanitize_name
 
    implicit none
 
@@ -753,6 +754,7 @@ contains
    function unc_meta_fill_placeholders(valuetext) result(ierr)
       use dfm_error
       use dflowfm_version_module, only: product_name
+      use string_module, only: replace_string
 
       character(len=:), allocatable, intent(inout) :: valuetext !< attribute value text, placeholders will be replaced in-place.
       integer :: ierr !< Result status (DFM_NOERR if successful)
@@ -836,7 +838,6 @@ contains
       use m_missing
       use fm_location_types
 
-      use string_module, only: strcmpi
       implicit none
       integer, intent(in) :: ncid
       type(t_unc_timespace_id), intent(in) :: id_tsp !< Map file and other NetCDF ids.
@@ -2411,7 +2412,7 @@ contains
 !> Puts global attributes in NetCDF data set.
 !! This includes: institution, Conventions, etc.
    subroutine unc_addglobalatts(ncid)
-      !use unstruc_model, only : md_ident
+      use messagehandling, only : err_flush
       integer, intent(in) :: ncid
 
       character(len=8) :: cdate
@@ -3514,8 +3515,7 @@ contains
             j = i - ITRA1 + 1
             tmpstr = const_names(i)
             ! Forbidden chars in NetCDF names: space, /, and more.
-            call replace_char(tmpstr, 32, 95)
-            call replace_char(tmpstr, 47, 95)
+            call ncu_sanitize_name(tmpstr)
             if (kmx > 0) then
                ierr = nf90_def_var(irstfile, trim(tmpstr), nf90_double, (/id_laydim, id_flowelemdim, id_timedim/), id_tr1(j))
             else
@@ -3540,9 +3540,7 @@ contains
          call realloc(id_rwqb, numwqbots, keepExisting=.false., fill=0)
          do j = 1, numwqbots
             tmpstr = wqbotnames(j)
-            ! Forbidden chars in NetCDF names: space, /, and more.
-            call replace_char(tmpstr, 32, 95)
-            call replace_char(tmpstr, 47, 95)
+            call ncu_sanitize_name(tmpstr)
             if (is_wq_bot_3d) then
                ierr = nf90_def_var(irstfile, trim(tmpstr)//'_3D', nf90_double, (/id_laydim, id_flowelemdim, id_timedim/), id_rwqb(j))
             else
@@ -5245,7 +5243,7 @@ contains
       use m_flowparameters, only: jatrt, ibedlevtyp
       use m_mass_balance_areas
       use m_fm_wq_processes
-      use m_xbeach_data
+      use m_xbeach_data, hminlw_xb => hminlw
       use m_transportdata
       use m_alloc
       use m_waves, hminlw_waves => hminlw
@@ -5271,6 +5269,7 @@ contains
       use m_reconstruct_sed_transports
       use m_get_ucx_ucy_eul_mag
       use m_get_cz
+      use messagehandling, only : err_flush
 
       implicit none
 
@@ -5289,7 +5288,7 @@ contains
       character(16) :: dxname
       character(64) :: dxdescr
       character(15) :: transpunit
-      real(kind=dp) :: rhol, mortime, wavfac
+      real(kind=dp) :: rhol, mortime, wavfac, hmlwL, huL
       real(kind=dp) :: moravg, dmorft, dmorfs, rhodt
       real(kind=dp) :: um, ux, uy, dzu
       real(kind=dp), dimension(:, :), allocatable :: poros, toutputx, toutputy, sxtotori, sytotori
@@ -5365,6 +5364,16 @@ contains
       end if
 
       call realloc(mapids%id_const, (/MAX_ID_VAR, NUMCONST/), keepExisting=.false.)
+
+      ! Set correct limiting depth for waves
+      if (jawave > 0) then
+         select case (jawave)
+         case (4)
+            hmlwL = hminlw_xb
+         case default
+            hmlwL = hminlw_waves
+         end select
+      end if
 
       ! Use nr of dimensions in netCDF file a quick check whether vardefs were written
       ! before in previous calls.
@@ -5651,9 +5660,7 @@ contains
             call realloc(mapids%id_const, (/MAX_ID_VAR, NUMCONST/), keepExisting=.false., fill=0)
             do j = ITRA1, ITRAN
                tmpstr = const_names(j)
-               ! Forbidden chars in NetCDF names: space, /, and more.
-               call replace_char(tmpstr, 32, 95)
-               call replace_char(tmpstr, 47, 95)
+               call ncu_sanitize_name(tmpstr)
                ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_const(:, j), nc_precision, iLocS, trim(tmpstr), &
                                       '', trim(const_names(j))//' in flow element', const_units(j), jabndnd=jabndnd_)
             end do
@@ -5667,9 +5674,7 @@ contains
             call realloc(mapids%id_wqb, (/3, numwqbots/), keepExisting=.false., fill=0)
             do j = 1, numwqbots
                tmpstr = wqbotnames(j)
-               ! Forbidden chars in NetCDF names: space, /, and more.
-               call replace_char(tmpstr, 32, 95)
-               call replace_char(tmpstr, 47, 95)
+               call ncu_sanitize_name(tmpstr)
                ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_wqb(:, j), nc_precision, UNC_LOC_S, trim(tmpstr), &
                                       '', trim(wqbotnames(j))//' in flow element', wqbotunits(j), jabndnd=jabndnd_)
             end do
@@ -5677,9 +5682,7 @@ contains
                call realloc(mapids%id_wqb3d, (/3, numwqbots/), keepExisting=.false., fill=0)
                do j = 1, numwqbots
                   tmpstr = wqbotnames(j)
-                  ! Forbidden chars in NetCDF names: space, /, and more.
-                  call replace_char(tmpstr, 32, 95)
-                  call replace_char(tmpstr, 47, 95)
+                  call ncu_sanitize_name(tmpstr)
                   ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_wqb3d(:, j), nc_precision, UNC_LOC_S3D, trim(tmpstr)//'_3D', &
                                          '', trim(wqbotnames(j))//' in flow element (3D)', wqbotunits(j), jabndnd=jabndnd_)
                end do
@@ -7544,18 +7547,20 @@ contains
                if (kmx == 0) then
                   do L = 1, lnx
                      k1 = ln(1, L); k2 = ln(2, L)
-                     windx(k1) = windx(k1) + wcx1(L) * wavfu(L) * hu(L) * rhomean
-                     windx(k2) = windx(k2) + wcx2(L) * wavfu(L) * hu(L) * rhomean
-                     windy(k1) = windy(k1) + wcy1(L) * wavfu(L) * hu(L) * rhomean
-                     windy(k2) = windy(k2) + wcy2(L) * wavfu(L) * hu(L) * rhomean
-                     wavout(L) = wavfu(L) * hu(L) * rhomean ! stack
-                     wavout2(L) = wavfv(L) * hu(L) * rhomean
+                     huL = max(hu(L), hmlwL)
+                     windx(k1) = windx(k1) + wcx1(L) * wavfu(L) * huL * rhomean
+                     windx(k2) = windx(k2) + wcx2(L) * wavfu(L) * huL * rhomean
+                     windy(k1) = windy(k1) + wcy1(L) * wavfu(L) * huL * rhomean
+                     windy(k2) = windy(k2) + wcy2(L) * wavfu(L) * huL * rhomean
+                     wavout(L) = wavfu(L) * huL * rhomean ! stack
+                     wavout2(L) = wavfv(L) * huL * rhomean
                   end do
                else
                   do L = 1, lnx
                      k1 = ln(1, L); k2 = ln(2, L)
                      call getLbotLtop(L, Lb, Lt)
                      if (Lt < Lb) cycle
+                     huL = max(hu(L), hmlwL)
                      do LL = Lb, Lt
                         if (LL == Lb) then
                            dzu = hu(Lb)
@@ -7568,8 +7573,8 @@ contains
                         windy(k1) = windy(k1) + wcy1(L) * wavfu(LL) * dzu * rhomean
                         windy(k2) = windy(k2) + wcy2(L) * wavfu(LL) * dzu * rhomean
                         ! depth dependent
-                        wavout(LL) = wavfu(LL) * hu(L) * rhomean ! stack
-                        wavout2(LL) = wavfv(LL) * hu(L) * rhomean
+                        wavout(LL) = wavfu(LL) * huL * rhomean ! stack
+                        wavout2(LL) = wavfv(LL) * huL * rhomean
                      end do
                   end do
                end if
@@ -8462,9 +8467,7 @@ contains
             if (jamapconst > 0 .and. ITRA1 > 0) then
                do j = ITRA1, ITRAN
                   tmpstr = const_names(j)
-                  ! Forbidden chars in NetCDF names: space, /, and more.
-                  call replace_char(tmpstr, 32, 95)
-                  call replace_char(tmpstr, 47, 95)
+                  call ncu_sanitize_name(tmpstr)
                   if (kmx > 0) then !        3D
                      ierr = nf90_def_var(imapfile, trim(tmpstr), nf90_double, (/id_laydim(iid), id_flowelemdim(iid), id_timedim(iid)/), id_const(iid, j))
                   else
@@ -8488,9 +8491,7 @@ contains
                call realloc(id_wqb, (/3, numwqbots/), keepExisting=.false., fill=0)
                do j = 1, numwqbots
                   tmpstr = wqbotnames(j)
-                  ! Forbidden chars in NetCDF names: space, /, and more.
-                  call replace_char(tmpstr, 32, 95)
-                  call replace_char(tmpstr, 47, 95)
+                  call ncu_sanitize_name(tmpstr)
                   ierr = nf90_def_var(imapfile, trim(tmpstr), nf90_double, (/id_flowelemdim(iid), id_timedim(iid)/), id_wqb(iid, j))
                   ierr = nf90_put_att(imapfile, id_wqb(iid, j), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_wqb(iid, j), 'standard_name', trim(tmpstr))
@@ -8503,9 +8504,7 @@ contains
                   call realloc(id_wqb3d, (/3, numwqbots/), keepExisting=.false., fill=0)
                   do j = 1, numwqbots
                      tmpstr = wqbotnames(j)
-                     ! Forbidden chars in NetCDF names: space, /, and more.
-                     call replace_char(tmpstr, 32, 95)
-                     call replace_char(tmpstr, 47, 95)
+                     call ncu_sanitize_name(tmpstr)
                      ierr = nf90_def_var(imapfile, trim(tmpstr)//'_3D', nf90_double, (/id_laydim(iid), id_flowelemdim(iid), id_timedim(iid)/), id_wqb3d(iid, j))
                      ierr = nf90_put_att(imapfile, id_wqb3d(iid, j), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                      ierr = nf90_put_att(imapfile, id_wqb3d(iid, j), 'standard_name', trim(tmpstr))
@@ -8719,9 +8718,7 @@ contains
                   !
                   do j = ISED1, ISEDN
                      tmpstr = const_names(j)
-                     ! Forbidden chars in NetCDF names: space, /, and more.
-                     call replace_char(tmpstr, 32, 95)
-                     call replace_char(tmpstr, 47, 95)
+                     call ncu_sanitize_name(tmpstr)
                      if (kmx > 0) then !        3D
                         ierr = nf90_def_var(imapfile, trim(tmpstr), nf90_double, (/id_laydim(iid), id_flowelemdim(iid), id_timedim(iid)/), id_const(iid, j))
                      else
@@ -9510,9 +9507,7 @@ contains
          if (ITRA1 > 0) then
             do j = ITRA1, ITRAN
                tmpstr = const_names(j)
-               ! Forbidden chars in NetCDF names: space, /, and more.
-               call replace_char(tmpstr, 32, 95)
-               call replace_char(tmpstr, 47, 95)
+               call ncu_sanitize_name(tmpstr)
                ierr = nf90_inq_varid(imapfile, trim(tmpstr), id_const(iid, j))
             end do
          end if
@@ -9550,9 +9545,7 @@ contains
                if (stmpar%lsedsus > 0) then
                   do j = ISED1, ISEDN
                      tmpstr = const_names(j)
-                     ! Forbidden chars in NetCDF names: space, /, and more.
-                     call replace_char(tmpstr, 32, 95)
-                     call replace_char(tmpstr, 47, 95)
+                     call ncu_sanitize_name(tmpstr)
                      ierr = nf90_inq_varid(imapfile, trim(tmpstr), id_const(iid, j))
                   end do
                end if
@@ -11999,7 +11992,7 @@ contains
       use netcdf_utils, only: ncu_get_att
       use m_sferic
       use m_missing
-      use unstruc_messages
+      use unstruc_messages, only: threshold_abort, MAXERRPRINT
       use MessageHandling
       use dfm_error
       use m_alloc
@@ -12417,11 +12410,11 @@ contains
          do l = 1, ncontacts
             if (contacttype(L) < 3) then
                numerr = numerr + 1
-               if (numerr <= maxerrprint) then
+               if (numerr <= MAXERRPRINT) then
                   write (msgbuf, '(a,a,a,i0,a,i0,a)') 'Error while reading net file ''', trim(filename), ''', contact type of link ', &
                      L, ' is not valid: ', contacttype(L), '. Should be >= 3.'
                   call warn_flush()
-               elseif (numerr == maxerrprint + 1) then
+               elseif (numerr == MAXERRPRINT + 1) then
                   call mess(LEVEL_WARN, 'Skipping more errors of this type...')
                end if
 
@@ -12691,7 +12684,7 @@ contains
    subroutine md5_net_file(numlstart, numlcount)
       use network_data, only: kn, numl
       use md5_checksum
-      use unstruc_messages
+      use unstruc_messages, only: loglevel_StdOut, loglevel_file
 
       integer, optional, intent(in) :: numlstart !< Start index of links to start checking. Optional, default: 1.
       integer, optional, intent(in) :: numlcount !< Total count of links to check. Optional, default: numl.
@@ -13355,7 +13348,7 @@ contains
       ! Read qa (flow link), optional: only from rst file, so no error check
       ierr = get_var_and_shift(imapfile, 'qa', qa, tmpvar1, UNC_LOC_U3D, kmx, Lstart, um%lnx_own, it_read, um%jamergedmap, &
                                um%ilink_own, um%ilink_merge)
-    
+
       ! Read ucxq (flow elem), optional: only from rst file, so no error check
       ucxyq_read_rst = .true.
 
@@ -13376,12 +13369,12 @@ contains
 
       ! Read ucx (flow elem), optional: only from rst file, so no error check
       ierr = get_var_and_shift(imapfile, 'ucx', ucx, tmpvar1, tmp_loc, kmx, kstart, um%ndxi_own, 1, um%jamergedmap, &
-                              um%inode_own, um%inode_merge)
-      
+                               um%inode_own, um%inode_merge)
+
       ! Read ucy (flow elem), optional: only from rst file, so no error check
       ierr = get_var_and_shift(imapfile, 'ucy', ucy, tmpvar1, tmp_loc, kmx, kstart, um%ndxi_own, 1, um%jamergedmap, &
-                              um%inode_own, um%inode_merge)
-      
+                               um%inode_own, um%inode_merge)
+
       ! Read rho (flow elem), optional: only from rst file and when sediment and `idens` is true, so no error check
       rho_read_rst = .true.
 
@@ -13702,10 +13695,8 @@ contains
          do iconst = ITRA1, ITRAN
             i = iconst - ITRA1 + 1
             tmpstr = const_names(iconst)
-            ! Forbidden chars in NetCDF names: space, /, and more.
-            call replace_char(tmpstr, 32, 95)
-            call replace_char(tmpstr, 47, 95)
-!         tracer exists in restart file
+            call ncu_sanitize_name(tmpstr)
+            ! tracer exists in restart file
             if (kmx > 0) then
                tmp_loc = UNC_LOC_S3D
             else
@@ -13727,9 +13718,7 @@ contains
          call realloc(tmpvar1D, ndkx, keepExisting=.false., fill=0.0d0)
          do iwqbot = 1, numwqbots
             tmpstr = wqbotnames(iwqbot)
-            ! Forbidden chars in NetCDF names: space, /, and more.
-            call replace_char(tmpstr, 32, 95)
-            call replace_char(tmpstr, 47, 95)
+            call ncu_sanitize_name(tmpstr)
             if (is_wq_bot_3d) then
                tmp_loc = UNC_LOC_S3D
                tmpstr1 = trim(tmpstr)//'_3D'
@@ -14305,6 +14294,7 @@ contains
       use m_flowgeom, only: ndxi, lnx, ln, ndx
       use fm_external_forcings_data, only: ibnd_own, kbndz, ndxbnd_own, jaoldrstfile
       use m_wrisam
+      use m_filez, only: newfil
 
       character(len=*), intent(in) :: filename !< Name of NetCDF file.
       integer, intent(in) :: imapfile
@@ -16854,7 +16844,6 @@ contains
    subroutine find_flownodesorlinks_merge(n, x, y, n_loc, n_own, iloc_own, iloc_merge, janode, jaerror2sam, inode_merge2loc)
       use precision, only: dp
       use kdtree2Factory
-      use unstruc_messages
       use m_flowgeom
       use network_data
       use m_missing, only: dmiss
@@ -16989,7 +16978,6 @@ contains
       use precision, only: dp
       use network_data, only: xzw, yzw
       use m_flowgeom, only: xu, yu
-      use unstruc_messages
       use m_missing, only: dmiss
       use geometry_module, only: dbdistance
       use m_sferic, only: jsferic, jasfer3D
@@ -18225,9 +18213,7 @@ contains
       do i = ISED1, ISEDN
          j = i - ISED1 + 1
          tmpstr = const_names(i)
-         ! Forbidden chars in NetCDF names: space, /, and more.
-         call replace_char(tmpstr, 32, 95)
-         call replace_char(tmpstr, 47, 95)
+         call ncu_sanitize_name(tmpstr)
          ierr = nf90_def_var(irstfile, trim(tmpstr)//trim(stradd), nf90_double, id1, id_sf1(j))
          ierr = nf90_put_att(irstfile, id_sf1(j), 'coordinates', trim(strcord))
          ierr = nf90_put_att(irstfile, id_sf1(j), 'standard_name', trim(tmpstr)//trim(stradd)//' mass concentration')
@@ -18244,7 +18230,7 @@ contains
 
       use m_flow, only: kmx, ndkx
       use m_transport, only: ISED1, ISEDN, const_names
-      use unstruc_messages, only: mess, LEVEL_WARN
+      use messagehandling, only: mess, LEVEL_WARN
       use m_alloc, only: realloc
       use m_partitioninfo, only: um
       use fm_location_types, only: UNC_LOC_S3D, UNC_LOC_S
@@ -18276,9 +18262,7 @@ contains
       tmpvar1D = 0.0d0
       do i = ISED1, ISEDN
          tmpstr = const_names(i)
-         ! Forbidden chars in NetCDF names: space, /, and more.
-         call replace_char(tmpstr, 32, 95)
-         call replace_char(tmpstr, 47, 95)
+         call ncu_sanitize_name(tmpstr)
          ! concentrations exists in restart file
          ierr = get_var_and_shift(imapfile, trim(tmpstr)//trim(stradd), tmpvar1D, tmpvar1, tmp_loc, kmx, kstart, kcount, it_read, um%jamergedmap, um%inode_own, um%inode_merge, target_shift)
          if (ierr /= nf90_noerr) then
