@@ -621,8 +621,10 @@ contains
             number_polyline_points = size(thin_dams(i)%xp)
             write (lun) number_flow_links, number_polyline_points
             write (lun) thin_dams(i)%np, thin_dams(i)%lnx
+            if (number_polyline_points > 0) then
             write (lun) thin_dams(i)%xp(1:number_polyline_points), thin_dams(i)%yp(1:number_polyline_points), &
                thin_dams(i)%zp(1:number_polyline_points)
+            end if
             if (thin_dams(i)%lnx > 0) then
                write (lun) thin_dams(i)%ln(1:number_flow_links), thin_dams(i)%indexp(1:number_flow_links), &
                   thin_dams(i)%wfp(1:number_flow_links), thin_dams(i)%xk(1:2, 1:number_flow_links), &
