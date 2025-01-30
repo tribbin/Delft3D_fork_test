@@ -380,7 +380,7 @@ contains
       pairs(2)%value = 2
       pairs(3)%key = 'LAYER'
       pairs(3)%value = 3
-      pairs(4)%key = 'friction_type'
+      pairs(4)%key = 'IFRCTYP'
       pairs(4)%value = 3
       pairs(5)%key = 'AVERAGINGTYPE'
       pairs(5)%value = 4

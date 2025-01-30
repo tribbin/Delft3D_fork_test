@@ -101,7 +101,7 @@ contains
             if (jaconveyance2D > 0) then
 
                jaconv = min(2, jaconveyance2D)
-               call getprof2d(hpr1, wu2, b21, ai, frcn, friction_type, widu, aru, aconvu, jaconv, beta, deltaa, hyr)
+               call getprof2d(hpr1, wu2, b21, ai, frcn, friction_type, widu, aru, aconvu, jaconv, beta, deltaa, hyr, L)
 
                if (frcn > 0) then
                   cfuhi(L) = aifu(L) * ag * aconvu

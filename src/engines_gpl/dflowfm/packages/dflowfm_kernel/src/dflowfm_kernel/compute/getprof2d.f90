@@ -32,18 +32,30 @@
 module m_get_prof2d
    implicit none
 contains
-   subroutine getprof2D(hpr, wu2, dz, ai, frcn, friction_type, wid, ar, aconv, jaconv, beta, deltaa, hyr)
+   subroutine getprof2D(hpr, wu2, dz, ai, frcn, friction_type, wid, ar, aconv, jaconv, beta, deltaa, hyr, L)
       use precision, only: dp
       use m_flow, only: slotw2D, u1, v
       use m_get_chezy, only: get_chezy
 
-      real(kind=dp), intent(in) :: hpr, wu2, dz, ai, frcn
-      real(kind=dp), intent(out) :: wid, ar, aconv ! aconv = (a/conv)**2
-      integer, intent(in) :: friction_type, jaconv
+      real(kind=dp), intent(in) :: hpr
+      real(kind=dp), intent(in) :: wu2
+      real(kind=dp), intent(in) :: dz
+      real(kind=dp), intent(in) :: ai
+      real(kind=dp), intent(in) :: frcn
+      integer, intent(in) :: friction_type
+      real(kind=dp), intent(out) :: wid
+      real(kind=dp), intent(out) :: ar
+      real(kind=dp), intent(out) :: aconv ! aconv = (a/conv)**2
+      integer, intent(in) :: jaconv
+      real(kind=dp), intent(in) :: beta
+      real(kind=dp), intent(in) :: deltaa
+      real(kind=dp), intent(out) :: hyr
+      integer, intent(in) :: L
+
       real(kind=dp) :: d83 = 2.666666d0, d16 = 0.166666d0, d23 = 0.666666d0, d43 = 1.333333d0
-      real(kind=dp) :: hp2, Cz, cman, per, hyr, hav, conv, beta, deltaa
+      real(kind=dp) :: hp2, Cz, cman, per, hav, conv
       real(kind=dp) :: d38 = 0.375d0, d311 = 0.27272727d0, hpr83, hp283
-      integer :: jac, L
+      integer :: jac
 
       ! for jaconv >= 1, this routine gets conveyance, but without friction surface to horizontal plane surface ratio influence on conveyance
       ! this constant value, (1+(dz/dy)**2)**0.25 is computed once and is volume cell based instead of link based
