@@ -253,7 +253,7 @@ contains
 !> Reads observation cross sections and adds them to the normal crs adm
 !! Two file types are supported: *_crs.pli and *_crs.ini.
    subroutine loadObservCrossSections(filename, jadoorladen)
-      use unstruc_messages
+      use messagehandling, only: LEVEL_WARN, LEVEL_ERROR, mess
       use m_readObservCrossSections, only: readObservCrossSections
       use unstruc_channel_flow, only: network
 
@@ -291,6 +291,9 @@ contains
       use messageHandling
       use dfm_error
       use m_polygon
+      use m_reapol_nampli, only: reapol_nampli
+      use m_filez, only: oldfil, doclose
+
       implicit none
       character(len=*), intent(in) :: filename
 

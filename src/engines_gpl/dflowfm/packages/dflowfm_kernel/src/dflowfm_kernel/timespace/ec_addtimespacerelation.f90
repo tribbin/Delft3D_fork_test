@@ -40,6 +40,7 @@ contains
                                                    tgt_data1, tgt_data2, tgt_data3, tgt_data4, &
                                                    tgt_item1, tgt_item2, tgt_item3, tgt_item4, &
                                                    multuni1, multuni2, multuni3, multuni4)
+      use m_fm_wq_processes_sub, only: get_waqinputname
       use m_ec_module, only: ecFindFileReader, ec_filetype_to_conv_type ! TODO: Refactor this private data access (UNST-703).
       use m_ec_filereader_read, only: ecParseARCinfoMask
       use m_flowparameters, only: jawave
@@ -52,6 +53,7 @@ contains
       use fm_external_forcings_utils, only: get_tracername, get_sedfracname
       use timespace_read, only: maxnamelen
       use precision, only: dp
+      use unstruc_messages, only: callback_msg
 
       character(len=*), intent(in) :: name !< Name for the target Quantity, possibly compounded with a tracer name.
       real(kind=dp), dimension(:), intent(in) :: x !< Array of x-coordinates for the target ElementSet.

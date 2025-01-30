@@ -47,8 +47,10 @@ contains
       use m_flowgeom
       use m_flow
       use m_flowtimes
-      use unstruc_messages
+      use messagehandling, only: LEVEL_ERROR, mess
       use m_partitioninfo
+      use m_nod2linx, only: nod2linx
+      use m_nod2liny, only: nod2liny
       implicit none
 
       real(kind=dp) :: GradHinUc, dum, Lambda, dfac
@@ -57,8 +59,6 @@ contains
 
       integer :: k, k1, k2, L
       integer :: ierror
-
-      real(kind=dp), external :: nod2linx, nod2liny
 
 !     compute water depth gradient, based on cell-centered date
       hs = s1 - bl

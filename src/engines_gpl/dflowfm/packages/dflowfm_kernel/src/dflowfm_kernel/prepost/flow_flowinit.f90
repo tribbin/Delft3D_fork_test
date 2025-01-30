@@ -30,6 +30,19 @@
 !
 !
 module m_flow_flowinit
+   use m_statisticsini, only: statisticsini
+   use m_setzminmax, only: setzminmax
+   use m_flow_settidepotential, only: flow_settidepotential
+   use m_set_saltem_nudge, only: set_saltem_nudge
+   use m_set_nudgerate, only: set_nudgerate
+   use m_setvelocityfield, only: setvelocityfield
+   use m_setupwslopes, only: setupwslopes
+   use m_setstruclink, only: setstruclink
+   use m_setpillars, only: setpillars
+   use m_setinitialverticalprofile, only: setinitialverticalprofile
+   use m_setfixedweirs, only: setfixedweirs
+   use m_setbobs_fixedweirs, only: setbobs_fixedweirs
+   use m_flow_setstarttime, only: flow_setstarttime
    use m_flow_initfloodfill, only: flow_initfloodfill
    use m_fill_valobs, only: fill_valobs
    use m_fill_onlywetlinks, only: fill_onlywetlinks
@@ -113,6 +126,8 @@ contains
       use m_volsur
       use m_meteo, only: initialize_ec_module
       use m_observations, only: read_moving_stations
+      use m_solve_guus, only: reducept
+      use m_upotukinueaa, only: upotukinueaa
 
       implicit none
 
@@ -652,6 +667,7 @@ contains
       use m_samples, only: NS, restoresam, savesam
       use MessageHandling, only: LEVEL_WARN, mess
       use m_reasam
+      use m_filez, only: oldfil
 
       implicit none
 
@@ -815,6 +831,7 @@ contains
       use dfm_error
       use m_set_bobs
       use m_flow_obsinit
+      use m_filez, only: oldfil
 
       implicit none
 
@@ -1304,8 +1321,10 @@ contains
             hwav = hwavcom
          end if
          hwav = min(hwav, gammax * hs)
+         twav = twavcom
          !
          if (jawave == 7) then
+            !
             call transform_wave_physics_hp(hwavcom, phiwav, twavcom, hs, &
                                & sxwav, sywav, mxwav, mywav, &
                                & distot, dsurf, dwcap, &
@@ -1360,7 +1379,6 @@ contains
             call tauwave()
          end if
       end if
-
    end subroutine set_wave_modelling
 
 !> initialize_salinity_from_bottom_or_top
@@ -1643,6 +1661,7 @@ contains
       use m_rho_eckart, only: rho_eckart
       use m_corioliskelvin, only: corioliskelvin, oceaneddy
       use m_model_specific, only: equatorial, poiseuille
+      use m_filez, only: newfil
 
       implicit none
 

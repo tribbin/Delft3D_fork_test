@@ -61,7 +61,8 @@ contains
       use m_longculverts, only: nlongculverts
       use m_partitioninfo, only: jampi
       use string_module, only: strcmpi
-
+      use messagehandling, only: IDLEN
+      
       implicit none
       logical :: status
       integer :: i, L, Lf, kb, ierr, k, kbi, n
@@ -359,7 +360,7 @@ contains
    !> Update dambreak administration.
    subroutine update_dambreak_administration(ndambreaksignals, L1dambreaksg, L2dambreaksg, dambridx, lftopol)
       use precision_basics, only: dp
-      use MessageHandling, only: Idlen, msg_flush, msgbuf, err_flush
+      use messagehandling, only: IDLEN, msg_flush, msgbuf, err_flush
       use m_missing, only: dmiss, dxymis
       use dfm_error, only: DFM_NOERR
       use geometry_module, only: dbdistance, normalout, comp_breach_point
@@ -593,6 +594,7 @@ contains
 !> Initializes controllers that force structures in case the file version of the structure file is equal to 1.
 !! This function will become obsolete in the future.
    function flow_init_structurecontrol_old() result(status)
+      use m_setfixedweirscheme3onlink, only: setfixedweirscheme3onlink
       use dfm_error
       use m_hash_search
       use m_alloc
@@ -617,6 +619,7 @@ contains
       use m_qnerror
       use m_read_property, only: read_property
       use m_togeneral, only: togeneral
+      use unstruc_messages, only: callback_msg
 
       implicit none
       logical :: status

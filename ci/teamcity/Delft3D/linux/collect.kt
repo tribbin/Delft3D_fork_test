@@ -4,20 +4,19 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.failureConditions.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 
 object LinuxCollect : BuildType({
 
     templates(
         TemplateMergeRequest,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
 
     name = "Collect"
-    buildNumberPattern = "%build.vcs.number%"
+    buildNumberPattern = "%dep.${LinuxBuild.id}.product%: %build.vcs.number%"
     description = "DIMRset collector for Linux."
 
     allowExternalStatus = true
@@ -34,10 +33,14 @@ object LinuxCollect : BuildType({
     }
 
     steps {
+        mergeTargetBranch {}
         exec {
             name = "Run artifacts_cleaner.py"
             path = "/usr/bin/python3"
             arguments = "src/scripts_lgpl/artifacts_cleaner.py --product dimrset --root ."
+            conditions {
+                equals("dep.${LinuxBuild.id}.product", "fm-suite")
+            }
         }
         exec {
             name = "Generate list of version numbers (from what-strings)"
@@ -91,13 +94,19 @@ object LinuxCollect : BuildType({
                 artifactRules = "oss_artifacts_lnx64_*.tar.gz!lnx64/** => lnx64"
             }
         }
-        artifacts(AbsoluteId("Delft3DSobek_OssBuilds_Alma8LinuxTest_FbcToolsBuildOssX64Alma8CMakeReleaseLinux64")) {
-            buildRule = lastSuccessful()
-            artifactRules = """
-                FBCTools*.tar.gz!bin/* => lnx64/bin
-                FBCTools*.tar.gz!lib/* => lnx64/lib
-                FBCTools*.tar.gz!share/* => lnx64/share/drtc
-            """.trimIndent()
+        dependency(AbsoluteId("Delft3DSobek_OssBuilds_Alma8LinuxTest_FbcToolsBuildOssX64Alma8CMakeReleaseLinux64")) {
+            snapshot {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
+            }
+            artifacts {
+                buildRule = lastSuccessful()
+                artifactRules = """
+                    FBCTools*.tar.gz!bin/* => lnx64/bin
+                    FBCTools*.tar.gz!lib/* => lnx64/lib
+                    FBCTools*.tar.gz!share/* => lnx64/share/drtc
+                """.trimIndent()
+            }
         }
     }
     requirements {

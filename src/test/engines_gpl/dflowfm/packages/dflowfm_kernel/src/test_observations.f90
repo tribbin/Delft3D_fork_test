@@ -106,6 +106,7 @@ subroutine test_read_snapped_obs_points
     use m_partitioninfo, only: jampi
     use ifport
     use m_flow_modelinit, only: flow_modelinit
+    use m_resetfullflowmodel, only: resetfullflowmodel
     !
     ! Locals
     integer, parameter                           :: N_OBS_POINTS = 4

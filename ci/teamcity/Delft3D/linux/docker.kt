@@ -3,21 +3,20 @@ package Delft3D.linux
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
-
 import Delft3D.template.*
+import Delft3D.step.*
 import Delft3D.linux.thirdParty.*
 
 object LinuxDocker : BuildType({
 
     templates(
         TemplateMergeRequest,
-        TemplateMergeTarget,
         TemplatePublishStatus,
         TemplateMonitorPerformance
     )
 
     name = "Docker Build"
-    buildNumberPattern = "%build.vcs.number%"
+    buildNumberPattern = "%dep.${LinuxBuild.id}.product%: %build.vcs.number%"
     description = "Build DIMRset Linux container."
 
     vcs {
@@ -26,6 +25,7 @@ object LinuxDocker : BuildType({
     }
 
     steps {
+        mergeTargetBranch {}
         script {
             name = "Remove system libraries"
             workingDir = "dimrset/lib"
@@ -135,6 +135,7 @@ object LinuxDocker : BuildType({
             artifactRules = """
                 intelmpi.tar.gz!/bin/hydra_* => intel/mpi/bin/
                 intelmpi.tar.gz!/bin/mpiexec* => intel/mpi/bin/
+                intelmpi.tar.gz!/bin/mpirun => intel/mpi/bin/
                 intelmpi.tar.gz!/lib  => intel/mpi/lib
             """.trimIndent()
         }

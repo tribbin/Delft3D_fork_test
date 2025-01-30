@@ -33,7 +33,7 @@ module m_fourier_analysis
 !     * ucx en ucy on (1:#nods) is altijd de diepte gemiddelde, ook in 2d (dan is het de enige snelheid)
 
    use precision
-   use string_module, only: str_lower
+   use string_module, only: str_lower, strsplit
    use unstruc_netcdf
    use m_flow, only: kmx
    use m_alloc
@@ -296,7 +296,6 @@ contains
       use precision
       use mathconsts
       use string_module
-      use unstruc_messages
       use m_flowtimes, only: Tudunitstr
       implicit none
       !
@@ -1295,7 +1294,6 @@ contains
    subroutine fouini(lunfou, success, time_unit_user, time_unit_kernel)
    !!--declarations----------------------------------------------------------------
       use precision
-      use unstruc_messages
       !
       implicit none
       !
