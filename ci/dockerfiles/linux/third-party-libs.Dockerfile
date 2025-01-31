@@ -490,6 +490,39 @@ cmake --build . --target install
 popd
 EOF-gdal
 
+FROM base as esmf
+
+COPY --from=compression-libs --link /usr/local/ /usr/local/
+COPY --from=netcdf --link /usr/local/ /usr/local/
+
+RUN --mount=type=cache,target=/var/cache/src/ <<"EOF-esmf"
+set -eo pipefail
+
+URL='https://github.com/esmf-org/esmf/archive/refs/tags/v8.8.0.tar.gz'
+BASEDIR=$(basename -s '.tar.gz' "$URL")
+if [[ -d "/var/cache/src/${BASEDIR}" ]]; then
+    echo "CACHED ${BASEDIR}"
+else
+    echo "Fetching ${URL}..."
+    wget -q -O - "$URL" | tar -xzf - -C '/var/cache/src'
+fi
+
+pushd "/var/cache/src/${BASEDIR}"
+
+export ESMF_DIR="/var/cache/src/${BASEDIR}"
+export ESMF_COMM=mpiuni # we do not need mpi per se
+export ESMF_OPTLEVEL=2
+export ESMF_NETCDF=split
+export ESMF_NETCDF_INCLUDE=/usr/local/include
+export ESMF_NETCDF_LIBPATH=/usr/local/lib
+export ESMF_INSTALL_PREFIX=/usr/local
+export ESMF_CXXSTD=sysdefault # some C++ libraries require gcc posix extensions, specifically the sigaction definition
+
+make -j8
+make install
+popd
+EOF-esmf
+
 FROM base AS all
 
 COPY --from=uuid --link /usr/local /usr/local/
