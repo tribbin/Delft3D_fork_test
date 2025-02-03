@@ -57,10 +57,6 @@ object LinuxCollect : BuildType({
                 cp -av /opt/apps/intelmkl/2023.1.0/mkl/2023.1.0/lib/intel64/libmkl_def*.so* .
                 cp -av /opt/apps/intelmkl/2023.1.0/mkl/2023.1.0/lib/intel64/libmkl_intel_thread.so* .
                 cp -av /opt/apps/intelmkl/2023.1.0/mkl/2023.1.0/lib/intel64/libmkl_sequential.so* .
-                cp -av /opt/apps/netcdf/4.9.2_4.6.1_intel2023.1.0/lib/libnetcdff.so* .
-                cp -av /opt/apps/netcdf/4.9.2_4.6.1_intel2023.1.0/lib/libnetcdf.so* .
-                cp -av /opt/apps/hdf5/1.14.0_intel2023.1.0/lib/libhdf5.so* .
-                cp -av /opt/apps/hdf5/1.14.0_intel2023.1.0/lib/libhdf5_hl.so* .
             """.trimIndent()
         }
     }

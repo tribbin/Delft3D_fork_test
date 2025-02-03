@@ -59,14 +59,12 @@ object LinuxBuild : BuildType({
                 #!/bin/bash
                 set -eo pipefail
                 . /opt/intel/oneapi/setvars.sh
-                export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:${'$'}{LD_LIBRARY_PATH}
-                export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig:${'$'}{PKG_CONFIG_PATH}
+                export LD_LIBRARY_PATH=/usr/local/lib:${'$'}{LD_LIBRARY_PATH}
+                export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:${'$'}{PKG_CONFIG_PATH}
                 export FC=mpi%intel_fortran_compiler% CXX=mpicxx CC=mpiicx
-                
-                cmake ./src/cmake -G %generator% -D CONFIGURATION_TYPE:STRING=%product% -D CMAKE_BUILD_TYPE=%build_type% -B build_%product% -D CMAKE_INSTALL_PREFIX=build_%product%/install
-                
-                cd build_%product%
-                cmake --build . -j --target install --config %build_type%
+
+                cmake -S ./src/cmake -G %generator% -D CONFIGURATION_TYPE:STRING=%product% -D CMAKE_BUILD_TYPE=%build_type% -B build_%product% -D CMAKE_INSTALL_PREFIX=build_%product%/install
+                cmake --build build_%product% --parallel --target install --config %build_type%
             """.trimIndent()
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-third-party-libs:oneapi-%intel_oneapi_version%-%intel_fortran_compiler%-release"
             dockerImagePlatform = ScriptBuildStep.ImagePlatform.Linux
