@@ -44,7 +44,7 @@ dnf install --assumeyes \
 
 if [[ $INTEL_ONEAPI_VERSION = "2023" ]]; then
     # ifx: error #10417: Problem setting up the Intel(R) Compiler compilation environment. Requires 'install path' setting gathered from 'gcc'
-    dnf install --assumeyes gcc
+    dnf install --assumeyes gcc gcc-c++
     # For some reason, in oneapi 2023, the latest symlink is not set correctly.
     ln --symbolic --force --no-target-directory /opt/intel/oneapi/mpi/2021.13 /opt/intel/oneapi/mpi/latest
 fi
