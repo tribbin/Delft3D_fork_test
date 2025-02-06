@@ -49,11 +49,11 @@ elif [[ $INTEL_ONEAPI_VERSION = "2024" ]]; then
     intel-oneapi-common-oneapi-vars-2024.2.1 \
     intel-oneapi-common-vars-2024.2.1 \
     intel-oneapi-compiler-dpcpp-cpp-2024.2.1 \
-    intel-oneapi-dpcpp-cpp-2024.2.1 \
+    intel-oneapi-dpcpp-cpp-2024.2-2024.2.1 \
     intel-oneapi-libdpstd-devel-2022.6.1 \
-    intel-oneapi-compiler-fortran-common-2024.2.1 \
+    intel-oneapi-compiler-fortran-common-2024.2-2024.2.1 \
     intel-oneapi-compiler-fortran-runtime-2024.2.1 \
-    intel-oneapi-compiler-shared-2024.2.1 \
+    intel-oneapi-compiler-shared-2024.2-2024.2.1 \
     intel-oneapi-compiler-fortran-2024.2.1 \
     intel-oneapi-mkl-classic-devel-2024.2.2 \
     intel-oneapi-mkl-sycl-devel-2024.2.2 \
