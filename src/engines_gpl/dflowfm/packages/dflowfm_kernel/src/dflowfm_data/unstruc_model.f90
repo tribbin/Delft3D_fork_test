@@ -246,7 +246,7 @@ module unstruc_model
 
    integer :: md_convertlongculverts = 0 !< convert culverts (and exit program) yes (1) or no (0)
    character(len=128) :: md_culvertprefix = ' ' !< prefix for generating long culvert files
-   character(len=128) :: md_dambreak_widening_method  !< method for dambreak widening
+   character(len=128) :: md_dambreak_widening_method !< method for dambreak widening
 
 !   map file output format
    integer, parameter :: NUMFORMATS = 4
@@ -1710,20 +1710,18 @@ contains
       call prop_get(md_ptr, 'hydrology', 'InterceptionModel', interceptionmodel)
 
 ! Time
-      call prop_get(md_ptr, 'time', 'RefDate', refdat)
+      call prop_get(md_ptr, 'Time', 'refDate', refdat)
       read (refdat, *) irefdate
       success = ymd2modified_jul(irefdate, refdate_mjd)
       if (.not. success) then
-         call mess(LEVEL_ERROR, 'Something went wrong in conversion from RefDate to Modified Julian Date')
+         call mess(LEVEL_ERROR, 'Something went wrong in conversion from refDate to Modified Julian Date')
       end if
-      call prop_get(md_ptr, 'time', 'Tzone', Tzone)
-      call prop_get(md_ptr, 'time', 'Tunit', md_tunit)
-      call prop_get(md_ptr, 'time', 'TStart', tstart_user)
+      call prop_get(md_ptr, 'Time', 'tZone', Tzone)
+      call prop_get(md_ptr, 'Time', 'tUnit', md_tunit)
+      call prop_get(md_ptr, 'Time', 'tStart', tstart_user)
       tstart_user = max(tstart_user, 0d0)
-      tstart_tlfsmo_user = tstart_user
-      call prop_get(md_ptr, 'time', 'TStartTlfsmo', tstart_tlfsmo_user)
-      call prop_get(md_ptr, 'time', 'TStop', tstop_user)
-      select case (md_tunit) ! tfac added here for use in sedmorinit
+      call prop_get(md_ptr, 'Time', 'tStop', tstop_user)
+      select case (md_tunit)
       case ('D')
          tfac = 3600d0 * 24d0
       case ('H')
@@ -1733,85 +1731,102 @@ contains
       case default
          tfac = 1d0
       end select
-      tstart_tlfsmo_user = tstart_tlfsmo_user * tfac
       tstart_user = tstart_user * tfac
       tstop_user = tstop_user * tfac
 
       call setTUDUnitString()
 
-      call prop_get(md_ptr, 'time', 'DtUser', dt_user)
+      call prop_get(md_ptr, 'Time', 'dtUser', dt_user)
       if (dt_user <= 0) then
          dt_user = 300d0
          dt_max = 60d0
          ja_timestep_auto = 1
       end if
 
-      call prop_get(md_ptr, 'time', 'DtNodal', dt_nodal)
+      call prop_get(md_ptr, 'Time', 'dtNodal', dt_nodal)
 
-      call prop_get(md_ptr, 'time', 'DtMax', dt_max)
+      call prop_get(md_ptr, 'Time', 'dtMax', dt_max)
       if (dt_max > dt_user) then
          dt_max = dt_user
-         write (msgbuf, '(a,f9.3)') 'DtMax should be <= DtUser. It has been reset to: ', dt_max
+         write (msgbuf, '(a,f9.3)') 'dtMax should be <= dtUser. It has been reset to: ', dt_max
          call msg_flush()
       end if
 
       ! 1.02: Don't read [time] AutoTimestep (ja_timestep_auto) from MDU anymore.
       ! ibuf = 1
-      call prop_get(md_ptr, 'time', 'AutoTimestep', ja_timestep_auto, success)
-      call prop_get(md_ptr, 'time', 'Autotimestepdiff', jadum, success)
+      call prop_get(md_ptr, 'Time', 'autoTimeStep', ja_timestep_auto, success)
+      call prop_get(md_ptr, 'Time', 'autoTimeStepDiff', jadum, success)
       if (success .and. jadum /= 0) then
-         call mess(LEVEL_ERROR, 'Autotimestepdiff not supported')
+         call mess(LEVEL_ERROR, 'autoTimeStepDiff not supported')
       end if
-      call prop_get(md_ptr, 'time', 'Autotimestepvisc', ja_timestep_auto_visc, success)
+      call prop_get(md_ptr, 'Time', 'autoTimeStepVisc', ja_timestep_auto_visc, success)
       if (success .and. ja_timestep_auto_visc /= 0) then
          if (ja_timestep_auto_visc /= 1234) then
 !         hide feature
-            call mess(LEVEL_ERROR, 'Autotimestepvisc not supported')
+            call mess(LEVEL_ERROR, 'autoTimeStepVisc not supported')
          else
             ja_timestep_auto_visc = 1
          end if
       end if
 
-      call prop_get(md_ptr, 'time', 'AutoTimestepNoStruct', ja_timestep_nostruct, success)
-      call prop_get(md_ptr, 'time', 'AutoTimestepNoQout', ja_timestep_noqout, success)
+      call prop_get(md_ptr, 'Time', 'autoTimeStepNoStruct', ja_timestep_nostruct, success)
+      call prop_get(md_ptr, 'Time', 'autoTimeStepNoQout', ja_timestep_noqout, success)
 
-      call prop_get(md_ptr, 'time', 'Dtfacmax', dtfacmax)
+      call prop_get(md_ptr, 'Time', 'dtFacMax', dt_fac_max)
 
-      call prop_get(md_ptr, 'time', 'DtInit', dt_init)
+      call prop_get(md_ptr, 'Time', 'dtInit', dt_init)
 
-      call prop_get(md_ptr, 'time', 'Timestepanalysis', jatimestepanalysis)
+      call prop_get(md_ptr, 'Time', 'timeStepAnalysis', ja_time_step_analysis)
 
-      Startdatetime = ' '
-      call prop_get(md_ptr, 'time', 'Startdatetime', Startdatetime, success)
-      if (len_trim(Startdatetime) > 0 .and. success) then
-         call datetimestring_to_seconds(Startdatetime, refdat, tim, iostat)
+      call prop_get(md_ptr, 'Time', 'startDateTime', start_date_time, success)
+      if (len_trim(start_date_time) > 0 .and. success) then
+         call datetimestring_to_seconds(start_date_time, refdat, tim, iostat)
          if (iostat == 0) then
             Tstart_user = tim
          end if
       end if
 
-      Stopdatetime = ' '
-      call prop_get(md_ptr, 'time', 'Stopdatetime', Stopdatetime, success)
-      if (len_trim(Stopdatetime) > 0 .and. success) then
-         call datetimestring_to_seconds(Stopdatetime, refdat, tim, iostat)
+      ! Set default tstart_tlfsmo_user after possible start_date_time
+      call prop_get(md_ptr, 'Time', 'tStartTlfsmo', tstart_tlfsmo_user, success)
+      if (success) then
+         tstart_tlfsmo_user = tstart_tlfsmo_user * tfac
+      else
+         tstart_tlfsmo_user = tstart_user
+      end if
+
+      call prop_get(md_ptr, 'Time', 'startDateTimeTlfsmo', start_date_time_tlfsmo, success)
+      if (len_trim(start_date_time_tlfsmo) > 0 .and. success) then
+         call datetimestring_to_seconds(start_date_time_tlfsmo, refdat, tim, iostat)
+         if (iostat == 0) then
+            tstart_tlfsmo_user = tim
+         end if
+      end if
+
+      if (tstart_tlfsmo_user > tstart_user) then
+         tstart_tlfsmo_user = tstart_user
+         call mess(LEVEL_WARN, 'tStartTlfsmo should be <= tStart. tStartTlfsmo has been reset to tStart.')
+      end if
+
+      call prop_get(md_ptr, 'Time', 'stopDateTime', stop_date_time, success)
+      if (len_trim(stop_date_time) > 0 .and. success) then
+         call datetimestring_to_seconds(stop_date_time, refdat, tim, iostat)
          if (iostat == 0) then
             Tstop_user = tim
          end if
       end if
 
       ! Set update frequency for the time dependent roughness from frictFile.
-      call prop_get(md_ptr, 'time', 'UpdateRoughnessInterval', dt_UpdateRoughness)
-      if (dt_UpdateRoughness < dt_User) then
-         ! NOTE: dt_UpdateRoughness must at least be >= DTMax, but we'll enforce DTUser, because that makes more sense anyway.
-         call SetMessage(LEVEL_ERROR, 'The value of "UpdateRoughnessInterval" must be equal to or larger than the user time step.')
+      call prop_get(md_ptr, 'Time', 'updateRoughnessInterval', dt_update_roughness)
+      if (dt_update_roughness < dt_User) then
+         ! NOTE: dt_update_roughness must at least be >= dt_max, but we'll enforce dt_user, because that makes more sense anyway.
+         call SetMessage(LEVEL_ERROR, 'The value of "updateRoughnessInterval" must be equal to or larger than the user time step.')
       end if
       !
       ! TIDAL TURBINES: Insert calls to rdturbine and echoturbine here (use the structure_turbines variable defined in m_structures)
       !
 ! Restart information
       call prop_get(md_ptr, 'restart', 'RestartFile', md_restartfile, success)
-      restartdatetime = 'yyyymmddhhmmss'
-      call prop_get(md_ptr, 'restart', 'RestartDateTime', restartdatetime, success)
+      call prop_get(md_ptr, 'restart', 'RestartDateTime', restart_date_time, success)
       call prop_get(md_ptr, 'restart', 'RstIgnoreBl', jarstignorebl, success)
 
 ! External forcings
@@ -3602,34 +3617,34 @@ contains
       end if
 
       ! Time
-      call prop_set(prop_ptr, 'time', 'RefDate', refdat, 'Reference date (yyyymmdd)')
-      call prop_set(prop_ptr, 'time', 'Tzone', Tzone, 'Time zone assigned to input time series')
-      call prop_set(prop_ptr, 'time', 'DtUser', dt_user, 'Time interval (s) for external forcing update')
+      call prop_set(prop_ptr, 'Time', 'refDate', refdat, 'Reference date (yyyymmdd)')
+      call prop_set(prop_ptr, 'Time', 'tZone', Tzone, 'Time zone assigned to input time series')
+      call prop_set(prop_ptr, 'Time', 'dtUser', dt_user, 'Time interval (s) for external forcing update')
       if (writeall .or. dt_nodal > 0d0) then
-         call prop_set(prop_ptr, 'time', 'DtNodal', dt_nodal, 'Time interval (s) for updating nodal factors in astronomical boundary conditions')
+         call prop_set(prop_ptr, 'Time', 'dtNodal', dt_nodal, 'Time interval (s) for updating nodal factors in astronomical boundary conditions')
       end if
-      call prop_set(prop_ptr, 'time', 'DtMax', dt_max, 'Maximum computation timestep (s)')
-      call prop_set(prop_ptr, 'time', 'Dtfacmax', dtfacmax, 'Max timestep increase factor ( )')
-      call prop_set(prop_ptr, 'time', 'DtInit', dt_init, 'Initial computation timestep (s)')
+      call prop_set(prop_ptr, 'Time', 'dtMax', dt_max, 'Maximum computation timestep (s)')
+      call prop_set(prop_ptr, 'Time', 'dtFacMax', dt_fac_max, 'Max timestep increase factor ( )')
+      call prop_set(prop_ptr, 'Time', 'dtInit', dt_init, 'Initial computation timestep (s)')
 
-      call prop_set(prop_ptr, 'time', 'Timestepanalysis', jatimestepanalysis, '0=no, 1=see file *.steps')
+      call prop_set(prop_ptr, 'Time', 'timeStepAnalysis', ja_time_step_analysis, '0=no, 1=see file *.steps')
 
       if (writeall .or. ja_timestep_auto /= 1) then
-         call prop_set(prop_ptr, 'time', 'AutoTimestep', ja_timestep_auto, '0 = no, 1 = 2D (hor. out), 3=3D (hor. out), 5 = 3D (hor. inout + ver. inout), smallest dt')
+         call prop_set(prop_ptr, 'Time', 'autoTimeStep', ja_timestep_auto, '0 = no, 1 = 2D (hor. out), 3=3D (hor. out), 5 = 3D (hor. inout + ver. inout), smallest dt')
       end if
       if (writeall .and. ja_timestep_auto_visc /= 1) then
-         call prop_set(prop_ptr, 'time', 'Autotimestepvisc', ja_timestep_auto_visc, '0 = no, 1 = yes (Time limitation based on explicit diffusive term)')
+         call prop_set(prop_ptr, 'Time', 'autoTimeStepVisc', ja_timestep_auto_visc, '0 = no, 1 = yes (Time limitation based on explicit diffusive term)')
       end if
 
       if (writeall .or. ja_timestep_nostruct /= 0) then
-         call prop_set(prop_ptr, 'time', 'AutoTimestepNoStruct', ja_timestep_nostruct, '0 = no, 1 = yes (Exclude structure links (and neighbours) from time step limitation)')
+         call prop_set(prop_ptr, 'Time', 'autoTimeStepNoStruct', ja_timestep_nostruct, '0 = no, 1 = yes (Exclude structure links (and neighbours) from time step limitation)')
       end if
 
       if (writeall .or. ja_timestep_noqout /= 1) then
-         call prop_set(prop_ptr, 'time', 'AutoTimestepNoQout', ja_timestep_noqout, '0 = no, 1 = yes (Exclude negative qin terms from time step limitation)')
+         call prop_set(prop_ptr, 'Time', 'autoTimeStepNoQout', ja_timestep_noqout, '0 = no, 1 = yes (Exclude negative qin terms from time step limitation)')
       end if
 
-      call prop_set(prop_ptr, 'time', 'Tunit', md_tunit, 'Time unit for start/stop times (D, H, M or S)')
+      call prop_set(prop_ptr, 'Time', 'tUnit', md_tunit, 'Time unit for start/stop times (D, H, M or S)')
       ! Also in readMDU, but Interacter may have changed md_tunit
       select case (md_tunit)
       case ('D')
@@ -3641,25 +3656,29 @@ contains
       case default
          tfac = 1d0
       end select
-      call prop_set(prop_ptr, 'time', 'TStart', tstart_user / tfac, 'Start time w.r.t. RefDate (in TUnit)')
-      call prop_set(prop_ptr, 'time', 'TStop', tstop_user / tfac, 'Stop  time w.r.t. RefDate (in TUnit)')
-      call prop_set(prop_ptr, 'time', 'TStartTlfsmo', tstart_tlfsmo_user / tfac, 'Start time of smoothing of boundary conditions (Tlfsmo) w.r.t. RefDate (in TUnit)')
+      call prop_set(prop_ptr, 'Time', 'tStart', tstart_user / tfac, 'Start time w.r.t. refDate (in tUnit)')
+      call prop_set(prop_ptr, 'Time', 'tStop', tstop_user / tfac, 'Stop time w.r.t. refDate (in tUnit)')
+      call prop_set(prop_ptr, 'Time', 'tStartTlfsmo', tstart_tlfsmo_user / tfac, 'Start time for smoothing boundary conditions (Tlfsmo) w.r.t. refDate (in tUnit)')
 
-      if (len_trim(Startdatetime) > 0) then
-         call prop_set(prop_ptr, 'time', 'Startdatetime', trim(Startdatetime), 'Computation Startdatetime (yyyymmddhhmmss), when specified, overrides Tstart')
+      if (len_trim(start_date_time) > 0) then
+         call prop_set(prop_ptr, 'Time', 'startDateTime', trim(start_date_time), 'Computation start datetime (yyyymmddhhmmss). When specified, it overrides tStart')
       end if
 
-      if (len_trim(Stopdatetime) > 0) then
-         call prop_set(prop_ptr, 'time', 'Stopdatetime', trim(Stopdatetime), 'Computation Stopdatetime  (yyyymmddhhmmss), when specified, overrides Tstop')
+      if (len_trim(stop_date_time) > 0) then
+         call prop_set(prop_ptr, 'Time', 'stopDateTime', trim(stop_date_time), 'Computation stop datetime (yyyymmddhhmmss). When specified, it overrides tStop')
       end if
 
-      if (writeall .or. Dt_UpdateRoughness /= 86400d0) then
-         call prop_set(prop_ptr, 'time', 'UpdateRoughnessInterval', Dt_UpdateRoughness, 'Update interval for time dependent roughness parameters (in s)')
+      if (len_trim(start_date_time_tlfsmo) > 0) then
+         call prop_set(prop_ptr, 'Time', 'startDateTimeTlfsmo', trim(start_date_time_tlfsmo), 'Computation start datetime for smoothing boundary conditions (Tlfsmo) (yyyymmddhhmmss). When specified, it overrides tStartTlfsmo')
+      end if
+
+      if (writeall .or. dt_update_roughness /= 86400d0) then
+         call prop_set(prop_ptr, 'Time', 'updateRoughnessInterval', dt_update_roughness, 'Update interval for time dependent roughness parameters (in s)')
       end if
 
 ! Restart settings
       call prop_set(prop_ptr, 'restart', 'RestartFile', trim(md_restartfile), 'Restart netcdf-file, either *_rst.nc or *_map.nc')
-      call prop_set(prop_ptr, 'restart', 'RestartDateTime', trim(restartdatetime), 'Restart date and time (yyyymmddhhmmss) when restarting from *_map.nc')
+      call prop_set(prop_ptr, 'restart', 'RestartDateTime', trim(restart_date_time), 'Restart date and time (yyyymmddhhmmss) when restarting from *_map.nc')
       call prop_set(prop_ptr, 'restart', 'RstIgnoreBl', jarstignorebl, 'Flag indicating whether bed level from restart should be ignored (0=no (default), 1=yes)')
 
 ! External forcings

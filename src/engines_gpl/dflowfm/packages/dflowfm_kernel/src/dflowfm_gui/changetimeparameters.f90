@@ -174,7 +174,7 @@ contains
       call IFormPutDouble(2 * i, dt_init, '(F10.3)'); i = i + 1
       call IFormPutDouble(2 * i, time1, '(F10.3)'); i = i + 1
       call IFormPutDouble(2 * i, Tlfsmo, '(F10.3)'); i = i + 1
-      call IFormPutDouble(2 * i, Dtfacmax, '(F10.3)'); i = i + 1
+      call IFormPutDouble(2 * i, dt_fac_max, '(F10.3)'); i = i + 1
       call IFormPutDouble(2 * i, Tspinupturblogprof, '(F10.3)'); i = i + 1
 
       ! Display the form with numeric fields left justified
@@ -227,7 +227,7 @@ contains
             call IFormGetDouble(2 * i, dt_init); i = i + 1
             call IFormGetDouble(2 * i, Time1); i = i + 1
             call IFormGetDouble(2 * i, Tlfsmo); i = i + 1
-            call IFormGetDouble(2 * i, Dtfacmax); i = i + 1
+            call IFormGetDouble(2 * i, dt_fac_max); i = i + 1
             call IFormGetDouble(2 * i, Tspinupturblogprof); i = i + 1
 
             if (dt_max > dt_user) then

@@ -59,7 +59,7 @@ module m_flowtimes
 
    real(kind=dp) :: dts !< internal computational timestep (s)
    real(kind=dp) :: dtsc !< max timstep of limiting point kkcflmx, zero if larger than dt_max
-   real(kind=dp) :: dtfacmax !< max dts increase factor
+   real(kind=dp) :: dt_fac_max !< max dts increase factor
    real(kind=dp) :: dti !< inverse  computational timestep (1/s)
    real(kind=dp) :: dtprev !< previous computational timestep (s)  (1s is a bit like sobek)
    real(kind=dp) :: dtmin !< dt < dtmin : surely crashed
@@ -73,7 +73,7 @@ module m_flowtimes
    real(kind=dp) :: time1 !< current   julian (s) of s1  ! and of course, time1 = time0 + dt
    real(kind=dp) :: tim1bnd !< last time boundary signals were given
    real(kind=dp) :: tim1fld !< last time field    signals were given
-   integer :: jatimestepanalysis = 0
+   integer :: ja_time_step_analysis = 0
    real(kind=dp), allocatable :: dtcell(:) !< time step per cell based on CFL (s), size:ndkx
    real(kind=dp), allocatable :: time_wetground(:) !< Cumulative time when water is above ground level, size: ndxi (now only for 1d, later also for 2d)
 
@@ -187,9 +187,10 @@ module m_flowtimes
 
    character(len=20) :: rundat0 !< start and end date (wallclock) of computer run
    character(len=20) :: rundat2 !< start and end date (wallclock) of computer run format = _yymmddhhmmss
-   character(len=20) :: restartdatetime = ' ' !< desired time to be taken from restart map files
-   character(len=14) :: Startdatetime = ' ' !< optional replacement of Tstart_user
-   character(len=14) :: Stopdatetime = ' ' !< optional replacement of Tstop_user
+   character(len=20) :: restart_date_time = ' ' !< desired time to be taken from restart map files
+   character(len=14) :: start_date_time = ' ' !< optional replacement of Tstart_user
+   character(len=14) :: start_date_time_tlfsmo = ' ' !< optional replacement of TstartTlfsmo_user
+   character(len=14) :: stop_date_time = ' ' !< optional replacement of Tstop_user
    integer :: jarestart !< use restart yes/no, 1/0
 
    real(kind=dp) :: tlfsmo = 0d0 !< fourier bnd smoothing times
@@ -199,7 +200,7 @@ module m_flowtimes
    real(kind=dp) :: Tspinupturblogprof = 0d0 !< From Tstart to Tstart+Tspinupturblogprof, Turbulent profiles based on log profiles
    !< 0d0 = No
    real(kind=dp) :: alfaspin
-   real(kind=dp) :: dt_UpdateRoughness !< Update interval for time dependent roughness values (from frictFile).
+   real(kind=dp) :: dt_update_roughness !< Update interval for time dependent roughness values (from frictFile).
    real(kind=dp) :: times_update_roughness(2) !< Time window for wich the current time dependent roughness values (from FrictFile) are valid.
 
 contains
@@ -218,7 +219,7 @@ contains
       dtminhis = 9d9 !< smallest timestep within most recent his interval
       dt_init = 1d0
       dt_trach = 1200d0 !< User specified DtTrt Trachytope roughness update time interval (s)
-      dtfacmax = 1.1d0 !< default setting
+      dt_fac_max = 1.1d0 !< default setting
       ja_timestep_auto = 1 !< Use CFL-based dt (with dt_max as upper bound)
       ja_timestep_auto_visc = 0 !< Use explicit time step restriction based on viscosity term
       ja_timestep_nostruct = 0 !< Exclude (structure) links without advection from the time step limitation
@@ -272,7 +273,7 @@ contains
 
       tmini = -1d9 !< initial time for updating the 4 above
 
-      dt_UpdateRoughness = 86400d0
+      dt_update_roughness = 86400d0
 
       ! Wall clock timers are restarted here already, because some timers are started *prior* to flow_modelinit().
       call reset_timers()
