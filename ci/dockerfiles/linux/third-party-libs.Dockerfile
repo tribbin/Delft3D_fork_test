@@ -549,7 +549,6 @@ export ESMF_COMPILER=intel
 export ESMF_C=icx
 export ESMF_CXX=icpx
 export ESMF_F90=${INTEL_FORTRAN_COMPILER}
-export ESMF_OPTLEVEL=2
 export ESMF_NETCDF=split
 export ESMF_NETCDF_INCLUDE=/usr/local/include
 export ESMF_NETCDF_LIBPATH=/usr/local/lib
@@ -560,6 +559,13 @@ export ESMF_INSTALL_HEADERDIR=include
 export ESMF_INSTALL_MODDIR=include
 export ESMF_INSTALL_DOCDIR=doc
 export ESMF_CXXSTD=sysdefault
+
+if [[ $DEBUG = "0" ]]; then
+    export ESMF_BOPT=O
+    export ESMF_OPTLEVEL=2
+else
+    export ESMF_BOPT=g
+fi
 
 make --jobs=8
 make install
