@@ -27,7 +27,7 @@ object WindowsBuild : BuildType({
     """.trimIndent()
 
     params {
-        param("intel_fortran_compiler", "ifx")
+        param("intel_fortran_compiler", "ifort")
         param("enable_code_coverage_flag", "OFF")
         param("container.tag", "vs2022-intel2024")
         param("generator", """"Visual Studio 17 2022"""")
