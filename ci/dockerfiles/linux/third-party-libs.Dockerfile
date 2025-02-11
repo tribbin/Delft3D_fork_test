@@ -371,7 +371,7 @@ RUN --mount=type=cache,target=/var/cache/src/,id=netcdf-c-${CACHE_ID_SUFFIX} <<"
 set -eo pipefail
 source /opt/intel/oneapi/setvars.sh
 
-URL='https://downloads.unidata.ucar.edu/netcdf-c/4.9.2/netcdf-c-4.9.2.tar.gz'
+URL='https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.2.tar.gz'
 BASEDIR=$(basename -s '.tar.gz' "$URL")
 if [[ -d "/var/cache/src/${BASEDIR}" ]]; then
     echo "CACHED ${BASEDIR}"
