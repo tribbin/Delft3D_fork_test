@@ -93,7 +93,6 @@ module m_flowgeom
    type(tnode), allocatable :: nd(:) !< (ndx) flow node administration
    integer, allocatable, target :: kcs(:) !< node code permanent
    integer, allocatable, target :: kfs(:) !< [-] node code flooding {"shape": ["ndx"]}
-   integer, allocatable, target :: kfs_cutcell(:) !< [-] cutcell flag {"shape": ["ndx"]}
 
    real(kind=dp), allocatable, target :: bare(:) !< [m2] bottom area, for rain and evaporaton {"location": "face", "shape": ["ndx"]}
    real(kind=dp), allocatable :: bai(:) !< inv bottom area (m2), if < 0 use table in node type
@@ -160,15 +159,14 @@ module m_flowgeom
    real(kind=dp), allocatable :: wcnx4(:) !< link weights (lnx) for corner velocities k4
    real(kind=dp), allocatable :: wcny4(:) !< link weights (lnx) for corner velocities k4
 
+   double precision, allocatable :: csb(:, :) !< cosine orientation from left/right neighboring flownode to flowlink, left/right as ln
+   double precision, allocatable :: snb(:, :) !< sine   orientation from left/right neighboring flownode to flowlink, left/right as ln
    double precision, dimension(:, :), allocatable :: wcnxy ! corner weight factors (2,numk) , only for normalising
    integer, dimension(:), allocatable :: jacorner ! corner node (1) or not (0), dim(numk)
 
    double precision, allocatable :: wwL(:) !< wall contribution to link weights wcl
    double precision, allocatable :: wcxy(:, :) !< center weight factors (2,ndx) , only for normalising
    double precision, allocatable :: wc(:) !< center weight factors (ndx)   , only for normalising
-
-   double precision, allocatable :: csb(:, :) !< cosine orientation from left/right neighboring flownode to flowlink, left/right as ln
-   double precision, allocatable :: snb(:, :) !< sine   orientation from left/right neighboring flownode to flowlink, left/right as ln
 
    real(kind=dp), allocatable :: csbn(:, :) !< cosine orientation from left/right netnode to flowlink, left/right as lncn
    real(kind=dp), allocatable :: snbn(:, :) !< sine   orientation from left/right netnode to flowlink, left/right as lncn
