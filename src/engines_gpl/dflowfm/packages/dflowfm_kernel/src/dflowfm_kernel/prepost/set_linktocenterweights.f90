@@ -62,7 +62,7 @@ contains
       use m_lin2nody, only: lin2nody
 
       real(kind=dp) :: wud, wuL1, wuL2, cs, sn
-      integer :: L, ierr, n, kk, n12, lnxmax
+      integer :: L, n, kk, n12, lnxmax
       integer :: k1, k2, LL
       integer :: ilongc, L1dlink
 
@@ -73,21 +73,15 @@ contains
       wcx2 = 0
       wcy2 = 0
       wcL = 0
-
-      if (allocated(wcxy)) deallocate (wcxy)
-      allocate (wcxy(2, ndx), stat=ierr); wcxy = 0
-      call aerr('wcxy (2,ndx)', ierr, 2 * ndx)
-      allocate (wc(ndx), stat=ierr); wc = 0
-      call aerr('wc     (ndx)', ierr, ndx)
+      wcxy = 0
+      wc = 0
 
       do L = 1, lnx
 
          if (kcu(L) == 3) cycle ! no contribution from 1D2D internal links
 
          k1 = ln(1, L); k2 = ln(2, L) !left and right node
-         wud = wu(L) * dx(L) !flow surface area
-!    cs   = csu(L)
-!    sn   = snu(L)
+         wud = wu(L) * dx(L) !flow surface area at link
 
          wuL1 = acl(L) * wud ! 2d center factor
          wcL(1, L) = wuL1

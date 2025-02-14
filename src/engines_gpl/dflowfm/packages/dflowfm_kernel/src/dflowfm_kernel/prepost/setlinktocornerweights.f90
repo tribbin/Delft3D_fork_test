@@ -216,8 +216,14 @@ contains
       integer :: k, L
       integer :: k1, k2
 
-      if (allocated(wcnx3)) deallocate (wcnx3, wcny3, wcnx4, wcny4)
+      if (allocated(wcnx3)) deallocate (wcnx3)
+      if (allocated(wcny3)) deallocate (wcny3)
+      if (allocated(wcnx4)) deallocate (wcnx4)
+      if (allocated(wcny4)) deallocate (wcny4)
       if (allocated(wcnxy)) deallocate (wcnxy)
+      if (allocated(wcLn)) deallocate (wcLn)
+      if (allocated(jacorner)) deallocate (jacorner)
+      
       allocate (wcnx3(lnx), stat=ierr); 
       call aerr('wcnx3(lnx) ', ierr, lnx)
       allocate (wcny3(lnx), stat=ierr); 
@@ -226,7 +232,6 @@ contains
       call aerr('wcnx4(lnx) ', ierr, lnx)
       allocate (wcny4(lnx), stat=ierr); 
       call aerr('wcny4(lnx) ', ierr, lnx)
-      if (allocated(wcLn)) deallocate (wcLn)
       allocate (wcLn(2, lnx), stat=ierr); 
       call aerr('wcLn(2,lnx)', ierr, lnx)
       allocate (wcnxy(3, numk), stat=ierr); 
@@ -274,7 +279,12 @@ contains
          end if
       end do
 
-      if (allocated(cscnw)) deallocate (cscnw, sncnw, kcnw, nwalcnw, sfcnw)
+      if (allocated(cscnw)) deallocate (cscnw)
+      if (allocated(sncnw)) deallocate (sncnw)
+      if (allocated(kcnw)) deallocate (kcnw)
+      if (allocated(nwalcnw)) deallocate (nwalcnw)
+      if (allocated(sfcnw)) deallocate (sfcnw)
+      
       allocate (cscnw(nrcnw), stat=ierr); 
       call aerr('cscnw(nrcnw)', ierr, nrcnw)
       allocate (sncnw(nrcnw), stat=ierr); 
