@@ -67,7 +67,7 @@ module m_flowparameters
                                                         !! 3 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
                                                         !! 4 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
 
-   integer :: ja_Perot_weight_update !> Perot weight update for 1D nodes (0: no (default), 1: yes)
+   integer :: Perot_weight_update !> Perot weight update for 1D nodes (0: no (default), 1: yes)
 
    integer :: jacomp = 1 !! same now for netnodes, 0 = default, 1 = use cs, sn in weighting, 2=regular scalar x,y interpolation based on banf
 
@@ -677,7 +677,7 @@ contains
       ! 5 : uc*Vc     = sum(u dxa W hu ), Vc = dxa W hu based volume in cell
       ! 6 : as 5, also for Coriolis
 
-      ja_Perot_weight_update = PEROT_STATIC ! update Perot weights for 1D nodes (0: no (default), 1: yes)
+      Perot_weight_update = PEROT_STATIC ! update Perot weights for 1D nodes (0: no (default), 1: yes)
 
       icorio = 5 ! Coriolis weigthing
       ! (Tx,Ty) = tangential unit vector at u-point

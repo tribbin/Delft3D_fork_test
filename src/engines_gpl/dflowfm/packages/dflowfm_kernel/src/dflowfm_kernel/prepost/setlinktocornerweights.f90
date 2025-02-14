@@ -43,7 +43,7 @@ contains
 
    subroutine setlinktocornerweights() ! set corner related link x- and y weights
       use precision, only: dp
-      use m_flow, only: ja_Perot_weight_update, PEROT_STATIC, jacomp, irov
+      use m_flow, only: Perot_weight_update, PEROT_STATIC, jacomp, irov
       use m_netw, only: nmk, numk, nod, lnn, xk, yk, kn
       use m_flowgeom, only: wcnx3, wcny3, wcnx4, wcny4, wcln, lnx1d, lnx, lncn, wcnxy, kcu, wu, dx, csu, snu, acn, cscnw, sncnw, jacorner, kcnw, lne2ln
       use geometry_module, only: normalin
@@ -199,7 +199,7 @@ contains
 
       end do
 
-      if (ja_Perot_weight_update == PEROT_STATIC) then
+      if (Perot_weight_update == PEROT_STATIC) then
          deallocate (wcnxy, acn, jacorner)
       end if
 

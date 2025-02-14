@@ -36,7 +36,7 @@ module m_setlinktocenterweights
    use m_flowgeom
    use m_sferic
    use m_longculverts
-   use m_flowparameters, only: ja_Perot_weight_update
+   use m_flowparameters, only: Perot_weight_update
 
    implicit none
 
@@ -242,7 +242,7 @@ contains
 
       end do
 
-      if (ja_Perot_weight_update == PEROT_STATIC) then
+      if (Perot_weight_update == PEROT_STATIC) then
          deallocate (wcxy)
          deallocate (wc)
          if (allocated(wwL)) then

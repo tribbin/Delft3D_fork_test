@@ -1273,7 +1273,7 @@ contains
       end if
 
       call prop_get(md_ptr, 'numerics', 'PerotType', Perot_type)
-      call prop_get(md_ptr, 'numerics', 'PerotWeightUpdate', ja_Perot_weight_update, success)
+      call prop_get(md_ptr, 'numerics', 'PerotWeightUpdate', Perot_weight_update, success)
 
       call prop_get(md_ptr, 'numerics', 'Oceaneddysizefrac', Oceaneddysizefrac)
       call prop_get(md_ptr, 'numerics', 'Oceaneddysize', Oceaneddysize)
@@ -3289,7 +3289,7 @@ contains
       end if
 
       call prop_set(prop_ptr, 'numerics', 'PerotType', Perot_type)
-      call prop_set(prop_ptr, 'numerics', 'PerotWeightUpdate', ja_Perot_weight_update, 'Perot weight update for 1D nodes (0: no (default), 1: yes)')
+      call prop_set(prop_ptr, 'numerics', 'PerotWeightUpdate', Perot_weight_update, 'Perot weight update for 1D nodes (0: no (default), 1: yes)')
 
       if (Oceaneddyamp > 0d0) then
          call prop_set(prop_ptr, 'numerics', 'Oceaneddysizefrac', Oceaneddysizefrac)
