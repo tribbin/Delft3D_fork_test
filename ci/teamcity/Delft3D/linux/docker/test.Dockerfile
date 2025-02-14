@@ -10,6 +10,7 @@ ADD test/deltares_testbench/pip/lnx-requirements.txt /tmp/lnx-requirements.txt
 
 # Install system dependencies and clean up packages afterwards
 RUN <<"EOF"
+    set -eo pipefail
     dnf update --assumeyes
     dnf install --assumeyes python39 expect
     dnf clean all
@@ -18,9 +19,10 @@ EOF
 
 # Install pip
 RUN <<"EOF"
+    set -eo pipefail
     curl https://bootstrap.pypa.io/get-pip.py | python3.9 -
-    python3.9 --module pip install --upgrade pip
-    python3.9 --module pip install --requirement "/tmp/lnx-requirements.txt"
+    python3.9 -m pip install --upgrade pip
+    python3.9 -m pip install --requirement "/tmp/lnx-requirements.txt"
     rm --verbose "/tmp/lnx-requirements.txt"
 EOF
 

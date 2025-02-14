@@ -13,8 +13,9 @@ EOF
 
 # Install pip
 RUN <<"EOF"
+    set -eo pipefail
     curl https://bootstrap.pypa.io/get-pip.py | python3.9 -
-    python3.9 --module pip install --upgrade pip
+    python3.9 -m pip install --upgrade pip
 EOF
 
 CMD [ "python3.9" ]
