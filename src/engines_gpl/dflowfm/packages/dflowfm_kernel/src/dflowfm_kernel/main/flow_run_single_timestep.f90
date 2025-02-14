@@ -49,6 +49,9 @@ contains
       use m_step_reduce_transport_morpho, only: step_reduce_transport_morpho
       use m_step_reduce_hydro, only: step_reduce_hydro
       use m_update_flowanalysis_parameters, only: updateFlowAnalysisParameters
+      use m_setlinktocornerweights, only: setlinktocornerweights
+      use m_setlinktocenterweights, only: setlinktocenterweights
+         
       use m_flow
       use timers
       use m_flowgeom
@@ -112,10 +115,8 @@ contains
          iresult = DFM_NOERR
       end if
 
-      return ! Return with success
-
       if (Perot_weight_update == PEROT_UPDATE) then
-         call setlinktocornerweights()
+         !call setlinktocornerweights()
          call setlinktocenterweights()
       end if
 
