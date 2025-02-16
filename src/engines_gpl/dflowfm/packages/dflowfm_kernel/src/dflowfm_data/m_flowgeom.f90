@@ -175,8 +175,8 @@ module m_flowgeom
    real(kind=dp), dimension(:, :), allocatable :: csbup !< cosine orientation from upwind cell to flowlink
    real(kind=dp), dimension(:, :), allocatable :: snbup !< sine   orientation from upwind cell to flowlink
 
-   real(kind=dp), dimension(11, :), allocatable :: csbw(:, :) !< cosine orientation from left/right flowlink to wall (netlink), left/right as in walls(10,:) (left), walls (right)
-   real(kind=dp), dimension(11, :), allocatable :: snbw(:, :) !< sine   orientation from left/right flowlink to wall (netlink), left/right as in walls(10,:) (left), walls (right)
+   real(kind=dp), dimension(:, :), allocatable :: csbw !< cosine orientation from left/right flowlink to wall (netlink), left/right as in walls(10,:) (left), walls (right)
+   real(kind=dp), dimension(:, :), allocatable :: snbw !< sine   orientation from left/right flowlink to wall (netlink), left/right as in walls(10,:) (left), walls (right)
 
    real(kind=dp), dimension(:), allocatable :: csbwn !< cosine orientation from flownode to wall (netlink)
    real(kind=dp), dimension(:), allocatable :: snbwn !< sine   orientation from flownode to wall (netlink)
