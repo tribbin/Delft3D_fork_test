@@ -67,7 +67,7 @@ contains
       allocate (wcxy(2, ndx), stat=ierr); 
       call aerr('wcxy (2,ndx)', ierr, 2 * ndx)
       allocate (wc(ndx), stat=ierr); 
-      call aerr('wc     (ndx)', ierr, ndx)      
+      call aerr('wc     (ndx)', ierr, ndx)
 
    end subroutine allocatelinktocenterweights
 

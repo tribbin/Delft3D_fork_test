@@ -58,7 +58,7 @@ contains
       if (allocated(wcnxy)) deallocate (wcnxy)
       if (allocated(wcLn)) deallocate (wcLn)
       if (allocated(jacorner)) deallocate (jacorner)
-      
+
       allocate (wcnx3(lnx), stat=ierr); 
       call aerr('wcnx3(lnx) ', ierr, lnx)
       allocate (wcny3(lnx), stat=ierr); 
@@ -119,7 +119,7 @@ contains
       if (allocated(kcnw)) deallocate (kcnw)
       if (allocated(nwalcnw)) deallocate (nwalcnw)
       if (allocated(sfcnw)) deallocate (sfcnw)
-      
+
       allocate (cscnw(nrcnw), stat=ierr); 
       call aerr('cscnw(nrcnw)', ierr, nrcnw)
       allocate (sncnw(nrcnw), stat=ierr); 

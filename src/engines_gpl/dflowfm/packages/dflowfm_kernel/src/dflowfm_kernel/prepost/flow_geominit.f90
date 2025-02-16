@@ -946,7 +946,7 @@ contains
             wu(L) = dbdistance(xk(k3), yk(k3), xk(k4), yk(k4), jsferic, jasfer3D, dmiss) ! set 2D link width
          end if
       end do
-      
+
       if (jampi > 0) then
          ! WU of orphan 1D2D links must come from neighbouring partition.
          call update_ghosts(ITYPE_U, 1, lnx, wu, ierror, ignore_orientation=.true.)
@@ -1057,7 +1057,7 @@ contains
             bai(n) = 1d0 / ba(n) ! initially, ba based on 'max wet envelopes', take bai used in linktocentreweights
          end if
       end do
-      
+
       ! call message ('cutcell call 4',' ',' ')
       if (allocated(kfs)) deallocate (kfs)
       fnam = '*.cut'
@@ -1502,5 +1502,5 @@ contains
       end if
 
    end subroutine flow_geominit
-   
+
 end module m_flow_geominit

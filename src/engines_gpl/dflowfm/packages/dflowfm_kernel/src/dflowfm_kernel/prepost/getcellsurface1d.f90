@@ -34,19 +34,19 @@ module m_getcellsurface1d
    implicit none
 
    private
-   
+
    public :: getcellsurface1d
 
 contains
 
    !> Computes the bottom area of a cell for 1d coordinates.
    subroutine getcellsurface1d(ba, bai)
-   
+
       use m_flowgeom, only: n1Dend, lnx, ndx2d, dx, wu, ln, lnxi, mx1dend, kcu, ndx1Db, ndx
       use precision, only: dp
-      
-      implicit none   
-      
+
+      implicit none
+
       real(kind=dp), dimension(ndx), intent(inout) :: ba
       real(kind=dp), dimension(ndx), intent(inout) :: bai
 
@@ -59,13 +59,13 @@ contains
 
       do L = 1, lnx ! for all links, set area
          if (kcu(L) == 1 .or. kcu(L) == -1 .or. kcu(L) == 4 .or. kcu(L) == 5 .or. kcu(L) == 7) then
-             k1 = ln(1, L)
-             k2 = ln(2, L)
+            k1 = ln(1, L)
+            k2 = ln(2, L)
             if (k1 > ndx2d) ba(k1) = 0
             if (k2 > ndx2d) ba(k2) = 0
-         end if       
+         end if
       end do
-      
+
       do L = 1, lnx ! for all links, set area
          if (kcu(L) == 1 .or. kcu(L) == -1 .or. kcu(L) == 4 .or. kcu(L) == 5 .or. kcu(L) == 7) then
             ! TODO: UNST-6592: consider excluding ghost links here and do an mpi_allreduce sum later
@@ -75,7 +75,7 @@ contains
             if (k1 > ndx2d) ba(k1) = ba(k1) + hdx * wu(L) ! todo, on 1d2d nodes, choose appropriate wu1DUNI = min ( wu1DUNI, intersected 2D face)
             if (k2 > ndx2d) ba(k2) = ba(k2) + hdx * wu(L)
          end if
-      end do      
+      end do
 
       do L = lnxi + 1, Lnx
          k1 = ln(1, L)
@@ -93,7 +93,7 @@ contains
             bai(n) = 1d0 / ba(n) ! initially, ba based on 'max wet envelopes', take bai used in linktocentreweights
          end if
       end do
-      
+
    end subroutine getcellsurface1d
-   
+
 end module m_getcellsurface1d
