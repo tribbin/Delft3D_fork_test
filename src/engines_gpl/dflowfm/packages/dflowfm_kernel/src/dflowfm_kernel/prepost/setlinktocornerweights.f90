@@ -28,8 +28,8 @@
 !-------------------------------------------------------------------------------
 
 !
-!
-
+!> @file setlinktocornerweights.f90
+!! Subroutine for allocating corner related link x- and y weights.
 module m_setlinktocornerweights
 
    implicit none
@@ -44,7 +44,7 @@ contains
       use precision, only: dp
       use m_flow, only: Perot_weight_update, PEROT_STATIC, jacomp, irov
       use m_netw, only: nmk, numk, nod, lnn, xk, yk, kn
-      use m_flowgeom, only: wcnx3, wcny3, wcnx4, wcny4, wcln, lnx1d, lnx, lncn, wcnxy, kcu, wu, dx, csu, snu, acn, cscnw, sncnw, jacorner, kcnw, lne2ln
+      use m_flowgeom, only: wcnx3, wcny3, wcnx4, wcny4, wcln, lnx1d, lnx, lncn, kcu, wu, dx, csu, snu, acn, cscnw, sncnw, jacorner, kcnw, lne2ln
       use geometry_module, only: normalin
       use m_sferic, only: jsferic, jasfer3D
       use m_missing, only: dxymis
@@ -53,6 +53,7 @@ contains
       use m_lin2cory, only: lin2cory
 
       real(kind=dp) :: ax, ay, wuL, wud, csa, sna
+      real(kind=dp), dimension(3, numk) :: wcnxy ! corner weight factors (3,numk), only for normalising
       integer :: k, L, nx
       integer :: k3, k4
       integer :: ka, kb, LL
@@ -195,7 +196,7 @@ contains
       end do
 
       if (Perot_weight_update == PEROT_STATIC) then
-         deallocate (wcnxy, acn, jacorner)
+         deallocate (acn, jacorner)
       end if
 
    end subroutine setlinktocornerweights

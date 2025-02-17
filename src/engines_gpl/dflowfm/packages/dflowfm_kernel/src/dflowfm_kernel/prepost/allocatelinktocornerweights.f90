@@ -28,7 +28,8 @@
 !-------------------------------------------------------------------------------
 
 !
-!
+!> @file allocatelinktocornerweights.f90
+!! Subroutines for allocating corner related link x- and y weights.
 
 module m_allocatelinktocornerweights
 
@@ -38,9 +39,10 @@ module m_allocatelinktocornerweights
 
    public :: allocatelinktocornerweights
 
-contains
+    contains
 
-   subroutine allocatelinktocornerweights() ! allocate corner related link x- and y weights
+   !> Allocate corner related link x- and y weights
+   subroutine allocatelinktocornerweights() 
       use m_flowgeom, only: wcnx3, wcny3, wcnx4, wcny4, wcLn, cscnw, sncnw, kcnw, nwalcnw, sfcnw, lnx, nrcnw, wcnxy, jacorner, lne2ln
       use m_netw, only: numk, numl, kn, lnn
       use m_alloc
@@ -55,7 +57,6 @@ contains
       if (allocated(wcny3)) deallocate (wcny3)
       if (allocated(wcnx4)) deallocate (wcnx4)
       if (allocated(wcny4)) deallocate (wcny4)
-      if (allocated(wcnxy)) deallocate (wcnxy)
       if (allocated(wcLn)) deallocate (wcLn)
       if (allocated(jacorner)) deallocate (jacorner)
 
@@ -69,8 +70,6 @@ contains
       call aerr('wcny4(lnx) ', ierr, lnx)
       allocate (wcLn(2, lnx), stat=ierr); 
       call aerr('wcLn(2,lnx)', ierr, lnx)
-      allocate (wcnxy(3, numk), stat=ierr); 
-      call aerr('wcnxy(3,numk)', ierr, 3 * numk)
       allocate (jacorner(numk), stat=ierr)
       call aerr('jacorner(numk)', ierr, numk)
 
@@ -107,8 +106,6 @@ contains
 
       nrcnw = 0
       do k = 1, numk ! set up admin for corner velocity alignment at closed walls
-
-!    if ( nmk(k) - int(wcnxy (3,k)) == 2 ) then ! two more netlinks than flowlinks to this corner
          if (jacorner(k) == 1) then
             nrcnw = nrcnw + 1 ! cnw = cornerwall point (netnode)
          end if

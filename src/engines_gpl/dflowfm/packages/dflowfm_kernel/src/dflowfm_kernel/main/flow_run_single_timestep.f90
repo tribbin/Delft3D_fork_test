@@ -121,10 +121,6 @@ contains
          call setlinktocenterweights()
       end if
 
-      return ! Return with success
-888   continue
-      ! Error
-
    end subroutine flow_run_single_timestep
 
 end module m_flow_run_single_timestep

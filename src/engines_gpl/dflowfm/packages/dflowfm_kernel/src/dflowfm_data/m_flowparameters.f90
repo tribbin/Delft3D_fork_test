@@ -59,16 +59,16 @@ module m_flowparameters
    integer :: lincontin !< 0 = no, 1 = yes linear continuity
 
    integer :: Perot_type !< Perot weigthing type of cell center velocities ucx, ucy
-                                                        !! in vectoren:
+                                                        !! in vectors:
                                                         !! 0 : uc*sum(w) = sum (u W)
                                                         !! 1 : uc*A      = sum(u dxa W)
                                                         !! 2 : uc*A*hs   = sum(u dxa W hu ), ie waterdepth dependent
-                                                        !! unused options:
-                                                        !! 2 : uc*V      = sum(q dxa      ), ie waterdepth dependent
-                                                        !! 3 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
-                                                        !! 4 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
-                                                        !! 5 : uc*Vc     = sum(u dxa W hu ), Vc = dxa W hu based volume in cell
-                                                        !! 6 : as 5, also for Coriolis
+                                                        ! To do: Check unused options (UNST-8641)
+                                                        ! 2 : uc*V      = sum(q dxa      ), ie waterdepth dependent
+                                                        ! 3 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
+                                                        ! 4 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
+                                                        ! 5 : uc*Vc     = sum(u dxa W hu ), Vc = dxa W hu based volume in cell
+                                                        ! 6 : as 5, also for Coriolis
    integer, parameter :: NOT_DEFINED = -1
    integer, parameter :: PEROT_WIDTH_BASED = 0 !< uc*sum(w) = sum (u W)
    integer, parameter :: PEROT_AREA_BASED = 1 !< uc*A      = sum(u dxa W)

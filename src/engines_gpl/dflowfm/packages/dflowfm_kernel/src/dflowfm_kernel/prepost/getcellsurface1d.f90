@@ -28,7 +28,9 @@
 !-------------------------------------------------------------------------------
 
 !
-!
+!> @file getcellsurface1d.f90
+!! Subroutines to compute bottom are of a cell for 1D.
+
 module m_getcellsurface1d
 
    implicit none
@@ -57,7 +59,7 @@ contains
       integer n
       real(kind=dp) :: hdx
 
-      do L = 1, lnx ! for all links, set area
+      do L = 1, lnx ! for all 1d links, set area at neighbouring flow nodes to zero
          if (kcu(L) == 1 .or. kcu(L) == -1 .or. kcu(L) == 4 .or. kcu(L) == 5 .or. kcu(L) == 7) then
             k1 = ln(1, L)
             k2 = ln(2, L)
@@ -66,7 +68,7 @@ contains
          end if
       end do
 
-      do L = 1, lnx ! for all links, set area
+      do L = 1, lnx ! for all 1d links, add half the flowlink length*width to the neighbouring flow nodes
          if (kcu(L) == 1 .or. kcu(L) == -1 .or. kcu(L) == 4 .or. kcu(L) == 5 .or. kcu(L) == 7) then
             ! TODO: UNST-6592: consider excluding ghost links here and do an mpi_allreduce sum later
             hdx = 0.5d0 * dx(L)
@@ -77,17 +79,20 @@ contains
          end if
       end do
 
+      ! set outside flow node area at 1d boundary links to inside flow area
       do L = lnxi + 1, Lnx
          k1 = ln(1, L)
          k2 = ln(2, L)
          ba(k1) = ba(k2) ! set bnd ba to that of inside point
       end do
 
+      ! for hanging 1d nodes set the value to twice the original
       do k = 1, mx1Dend
          k1 = n1Dend(k)
          ba(k1) = 2d0 * ba(k1)
       end do
 
+      ! compute inverse area of 1D nodes 
       do n = ndx2D + 1, ndx1Db
          if (ba(n) > 0d0) then
             bai(n) = 1d0 / ba(n) ! initially, ba based on 'max wet envelopes', take bai used in linktocentreweights

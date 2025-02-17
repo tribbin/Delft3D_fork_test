@@ -28,30 +28,18 @@
 !-------------------------------------------------------------------------------
 
 !
-!
+!> @file setlinktocenterweights.f90
+!! Subroutine for allocating center related link x- and y weights.
 module m_setlinktocenterweights
-
-   use m_flow
-   use m_netw
-   use m_flowgeom
-   use m_sferic
-   use m_longculverts
-   use m_flowparameters, only: Perot_weight_update
 
    implicit none
 
-   double precision :: wud, wuL1, wuL2, cs, sn
-   integer :: L, n, kk, n12, lnxmax
-   integer :: k1, k2, LL
-   integer :: ilongc, L1dlink
-   private
-
-   double precision :: aa1, wcw, alf
    public :: setlinktocenterweights
 
-contains
-
-   subroutine setlinktocenterweights() ! set center related linkxy weights
+    contains
+    
+   !> set center related linkxy weights
+   subroutine setlinktocenterweights() 
       use precision, only: dp
       use m_flow
       use m_netw
@@ -67,6 +55,7 @@ contains
       integer :: ilongc, L1dlink
 
       real(kind=dp) :: aa1, wcw, alf
+      real(kind=dp), dimension(2, ndx) :: wcxy !< center weight factors (2,ndx) , only for normalising
 
       wcx1 = 0
       wcy1 = 0

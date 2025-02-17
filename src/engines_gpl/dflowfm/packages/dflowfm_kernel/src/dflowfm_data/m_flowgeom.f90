@@ -161,11 +161,9 @@ module m_flowgeom
 
    real(kind=dp), dimension(:, :), allocatable :: csb !< cosine orientation from left/right neighboring flownode to flowlink, left/right as ln
    real(kind=dp), dimension(:, :), allocatable :: snb !< sine   orientation from left/right neighboring flownode to flowlink, left/right as ln
-   real(kind=dp), dimension(:, :), allocatable :: wcnxy ! corner weight factors (2,numk) , only for normalising
    integer, dimension(:), allocatable :: jacorner ! corner node (1) or not (0), dim(numk)
 
    real(kind=dp), dimension(:), allocatable :: wwL !< wall contribution to link weights wcl
-   real(kind=dp), dimension(:, :), allocatable :: wcxy !< center weight factors (2,ndx) , only for normalising
    real(kind=dp), dimension(:), allocatable :: wc !< center weight factors (ndx)   , only for normalising
 
    real(kind=dp), dimension(:, :), allocatable :: csbn !< cosine orientation from left/right netnode to flowlink, left/right as lncn
