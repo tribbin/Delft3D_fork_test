@@ -41,13 +41,13 @@ target_compile_options(${executable_name} PRIVATE ${waq_default_flags})
 if(UNIX)
     message(STATUS "netcdf lib dir is ${NETCDF_LIBRARY_DIRS}")
     target_link_directories(${executable_name} PRIVATE ${NETCDF_LIBRARY_DIRS})
+    target_link_libraries(${executable_name} PRIVATE PkgConfig::NETCDF)
 endif(UNIX)
 
 if (WIN32)
    target_compile_definitions(${executable_name} PRIVATE WIN64)
 endif(WIN32)
 
-target_link_libraries(${executable_name} netcdf)
 if (WIN32)
     # Set linker properties
     target_link_directories(${executable_name}

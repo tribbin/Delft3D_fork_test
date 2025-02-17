@@ -41,16 +41,9 @@ if (WIN32)
     target_link_libraries(${executable_name} ${oss_dependencies})
 endif(WIN32)
 
-if(UNIX)
-    message(STATUS "netcdf lib dir is ${NETCDF_LIBRARY_DIRS}")
-    target_link_directories(${executable_name} PRIVATE ${NETCDF_LIBRARY_DIRS})
-endif(UNIX)
-
 if (WIN32)
    target_compile_definitions(${executable_name} PRIVATE WIN64)
 endif(WIN32)
-
-target_link_libraries(${executable_name} netcdf)
 
 if (WIN32)
     # Set linker properties

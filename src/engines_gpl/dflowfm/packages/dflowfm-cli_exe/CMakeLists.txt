@@ -39,9 +39,11 @@ if(UNIX)
     # the `pkg_check_modules` function is created with this call
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(PETSC REQUIRED IMPORTED_TARGET PETSc)
+    pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
 
     target_link_libraries(${executable_name} PRIVATE
          PkgConfig::PETSC
+         PkgConfig::NETCDF
          interacter_stub
     )
 endif(UNIX)
@@ -65,9 +67,6 @@ target_link_libraries(${executable_name} PRIVATE
 )
 
 if(UNIX)
-    message(STATUS "netcdf lib dir is ${NETCDF_LIBRARY_DIRS}")
-    target_link_directories(${executable_name} PRIVATE ${NETCDF_LIBRARY_DIRS})
-
     message(STATUS "Setting target_compile_definitions in Unix")
     target_compile_definitions(${executable_name} PRIVATE "HAVE_DISPLAY=0;HAVE_MPI;HAVE_PETSC")
     set_property(TARGET ${executable_name} PROPERTY LINKER_LANGUAGE Fortran)
@@ -84,15 +83,13 @@ set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/${src_path}/net_main.F90
                             PROPERTIES COMPILE_OPTIONS "${file_preprocessor_flag}")
 
 
-
-target_link_libraries(${executable_name} PRIVATE netcdf)
-
 if (WIN32)
     include_directories(${mpi_module_path}
                         ${petsc_libdir}
                         ${tecplot_path}
                         ${version_include_dir}
     )
+    target_link_libraries(${executable_name} PRIVATE netcdf)
 
     # Set linker properties
     message(STATUS "Setting linker properties in windows")
