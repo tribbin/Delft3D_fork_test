@@ -1272,7 +1272,8 @@ contains
          sdu_update_s1 = 0
       end if
 
-      call prop_get(md_ptr, 'numerics', 'PerotType', iperot)
+      call prop_get(md_ptr, 'numerics', 'PerotType', Perot_type)
+      call prop_get(md_ptr, 'numerics', 'PerotWeightUpdate', Perot_weight_update, success)
 
       call prop_get(md_ptr, 'numerics', 'Oceaneddysizefrac', Oceaneddysizefrac)
       call prop_get(md_ptr, 'numerics', 'Oceaneddysize', Oceaneddysize)
@@ -3287,6 +3288,9 @@ contains
          call prop_set(prop_ptr, 'numerics', 'EpsMaxlevm', epsmaxlevm, 'Stop criterium for Nested Newton loop in non-linear iteration')
       end if
 
+      call prop_set(prop_ptr, 'numerics', 'PerotType', Perot_type)
+      call prop_set(prop_ptr, 'numerics', 'PerotWeightUpdate', Perot_weight_update, 'Perot weight update for 1D nodes (0: no (default), 1: yes)')
+
       if (Oceaneddyamp > 0d0) then
          call prop_set(prop_ptr, 'numerics', 'Oceaneddysizefrac', Oceaneddysizefrac)
          call prop_set(prop_ptr, 'numerics', 'Oceaneddysize', Oceaneddysize)
@@ -3304,8 +3308,9 @@ contains
       end if
 
       call prop_set(prop_ptr, 'numerics', 'FlowSolver', trim(md_flow_solver), 'Flow solver.')
+      call prop_set(prop_ptr, 'numerics', 'Numlimdt_baorg', Numlimdt_baorg, 'if previous numlimdt > Numlimdt_baorg keep original cell area ba in cutcell')
 
-! Physics
+      ! Physics
       call prop_set(prop_ptr, 'physics', 'UnifFrictCoef', frcuni, 'Uniform friction coefficient (0: no friction)')
       call prop_set(prop_ptr, 'physics', 'UnifFrictType', ifrctypuni, 'Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: idem, WAQUA style)')
       call prop_set(prop_ptr, 'physics', 'UnifFrictCoef1D', frcuni1D, 'Uniform friction coefficient in 1D links (0: no friction)')
