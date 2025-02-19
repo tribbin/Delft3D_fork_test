@@ -31,7 +31,7 @@ def has_signtool(developer_promt) -> bool:
         return False
 
 
-def get_signing_authority(filepath, developer_promt) -> str:
+def get_signing_authority(filepath, developer_promt) -> tuple:
     try:
         result = subprocess.run(
             [
@@ -53,9 +53,9 @@ def get_signing_authority(filepath, developer_promt) -> str:
             for line in cut_off.splitlines():
                 if "Issued to:" in line:
                     issuer = line.split("Issued to:")[1].strip()
-            return f"Verified (Issued to: {issuer})"
+            return "Verified", f"{issuer}"
         else:
-            return "Not Verified"
+            return "Not Verified", ""
     except Exception as e:
         return f"Error: {e}"
 
@@ -79,18 +79,28 @@ def check_signing_status(
     developer_promt,
 ) -> tuple:
     filepath = os.path.join(directory, file)
-    signing_status = get_signing_authority(filepath, developer_promt)
+    status, issued_to = get_signing_authority(filepath, developer_promt)
     if file in [item["file"] for item in files_that_should_be_signed_with_issued_to]:
-        if "Verified" in signing_status:
-            return f"File is correctly signed: {file} by {signing_status}", True
+        if status == "Verified":
+            for item in files_that_should_be_signed_with_issued_to:
+                if item["file"] == file:
+                    break
+            expected_issued_to = item["Issued to"]
+            if expected_issued_to == issued_to:
+                return f"File is correctly signed: {file} by {issued_to}", True
+            else:
+                return (
+                    f"File is not correctly signed: {file} by {expected_issued_to} but by {issued_to}",
+                    False,
+                )
         else:
             return f"File should be signed but is not: {file}", False
     elif file in files_that_should_not_be_signed:
-        if "Not Verified" in signing_status:
+        if status == "Not Verified":
             return f"File is correctly not signed: {file}", True
         else:
             return (
-                f"File should not be signed but is: {file} by {signing_status}",
+                f"File should not be signed but is: {file} by {issued_to}",
                 False,
             )
     return "", True

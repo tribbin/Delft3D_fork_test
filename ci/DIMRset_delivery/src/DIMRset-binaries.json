@@ -37,10 +37,6 @@
             "Issued to": "Stichting Deltares"
         },
         {
-            "file": "bin\\mpiexec.exe",
-            "Issued to": "Stichting Deltares"
-        },
-        {
             "file": "bin\\swan_mpi.exe",
             "Issued to": "Stichting Deltares"
         },
@@ -65,40 +61,8 @@
             "Issued to": "Stichting Deltares"
         },
         {
-            "file": "bin\\cpuinfo.exe",
-            "Issued to": "Intel Corporation"
-        },
-        {
             "file": "bin\\ESMF_RegridWeightGen.exe",
             "Issued to": "Stichting Deltares"
-        },
-        {
-            "file": "bin\\hydra_bstrap_proxy.exe",
-            "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "bin\\hydra_pmi_proxy.exe",
-            "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "bin\\hydra_service.exe",
-            "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "bin\\IMB-MPI1.exe",
-            "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "bin\\IMB-NBC.exe",
-            "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "bin\\IMB-RMA.exe",
-            "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "bin\\impi_info.exe",
-            "Issued to": "Intel Corporation"
         },
         {
             "file": "bin\\maptonetcdf.exe",
@@ -137,16 +101,60 @@
             "Issued to": "Stichting Deltares"
         },
         {
-            "file": "lib\\cilkrts20.dll",
-            "Issued to": "Intel Corporation"
-        },
-        {
             "file": "lib\\cosumo_bmi.dll",
-            "Issued to": "Intel Corporation"
+            "Issued to": "Stichting Deltares"
         },
         {
             "file": "lib\\gridgeom.dll",
             "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\io_netcdf.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\plugin_culvert.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\plugin_delftflow_traform.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "bin\\mpiexec.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\cpuinfo.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\hydra_bstrap_proxy.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\hydra_pmi_proxy.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\hydra_service.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\IMB-MPI1.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\IMB-NBC.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\IMB-RMA.exe",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "bin\\impi_info.exe",
+            "Issued to": "Intel Corporation"
         },
         {
             "file": "lib\\ifdlg100.dll",
@@ -154,10 +162,6 @@
         },
         {
             "file": "lib\\impi.dll",
-            "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "lib\\io_netcdf.dll",
             "Issued to": "Intel Corporation"
         },
         {
@@ -245,6 +249,14 @@
             "Issued to": "Intel Corporation"
         },
         {
+            "file": "lib\\svml_dispmd.dll",
+            "Issued to": "Intel Corporation"
+        },
+        {
+            "file": "lib\\cilkrts20.dll",
+            "Issued to": "Intel(R) Software Development Products"
+        },
+        {
             "file": "lib\\msvcp100.dll",
             "Issued to": "Microsoft Corporation"
         },
@@ -262,18 +274,6 @@
         },
         {
             "file": "lib\\msvcr90.dll",
-            "Issued to": "Microsoft Corporation"
-        },
-        {
-            "file": "lib\\plugin_culvert.dll",
-            "Issued to": "Stichting Deltares"
-        },
-        {
-            "file": "lib\\plugin_delftflow_traform.dll",
-            "Issued to": "Stichting Deltares"
-        },
-        {
-            "file": "lib\\svml_dispmd.dll",
             "Issued to": "Microsoft Corporation"
         },
         {
