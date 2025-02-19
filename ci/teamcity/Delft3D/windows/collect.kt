@@ -17,7 +17,7 @@ object WindowsCollect : BuildType({
 
     name = "Collect"
     buildNumberPattern = "%dep.${WindowsBuild.id}.product%: %build.vcs.number%"
-    description = "DIMRset collector for Linux."
+    description = "DIMRset collector for Windows."
 
     allowExternalStatus = true
     artifactRules = """
