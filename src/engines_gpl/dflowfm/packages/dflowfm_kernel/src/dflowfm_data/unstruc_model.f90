@@ -687,7 +687,7 @@ contains
       use m_flowgeom !,              only : wu1Duni, bamin, rrtol, jarenumber, VillemonteCD1, VillemonteCD2
       use m_flowtimes
       use m_flowparameters
-      use m_adjust_bobs_on_dambreak_breach, only: dambreakWidening, DBW_SYMM, DBW_PROP, DBW_SYMM_ASYMM
+      use m_Dambreak, only: set_dambreak_widening_method
       use m_waves, only: rouwav, gammax, hminlw, jauorb, jahissigwav, jamapsigwav
       use m_wind ! ,                  only : icdtyp, cdb, wdb,
       use network_data, only: zkuni, Dcenterinside, removesmalllinkstrsh, cosphiutrsh, circumcenter_method
@@ -1420,17 +1420,7 @@ contains
       md_dambreak_widening_method = ''
       call prop_get(md_ptr, 'physics', 'BreachGrowth', md_dambreak_widening_method)
       call str_lower(md_dambreak_widening_method)
-      select case (md_dambreak_widening_method)
-      case ('symmetric')
-         dambreakWidening = DBW_SYMM
-      case ('proportional')
-         dambreakWidening = DBW_PROP
-      case ('symmetric-asymmetric', '')
-         dambreakWidening = DBW_SYMM_ASYMM
-         md_dambreak_widening_method = 'symmetric-asymmetric'
-      case default
-         call mess(LEVEL_ERROR, 'Invalid value specified for breach growth.')
-      end select
+      call set_dambreak_widening_method(md_dambreak_widening_method)
 
       ierror = DFM_NOERR
       call fm_ice_read(md_ptr, ierror)
