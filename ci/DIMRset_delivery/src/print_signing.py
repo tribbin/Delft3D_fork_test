@@ -40,6 +40,7 @@ def get_signing_authority(filepath, developer_promt) -> str:
                 signtool,
                 "verify",
                 "/pa",
+                "/v",
                 filepath,
             ],
             capture_output=True,
@@ -47,7 +48,12 @@ def get_signing_authority(filepath, developer_promt) -> str:
             shell=True,
         )
         if "Successfully verified" in result.stdout:
-            return "Verified"
+            issuer = ""
+            cut_off = result.stdout.split("The signature is timestamped")[0]
+            for line in cut_off.splitlines():
+                if "Issued to:" in line:
+                    issuer = line.split("Issued to:")[1].strip()
+            return f"Verified (Issued to: {issuer})"
         else:
             return "Not Verified"
     except Exception as e:
@@ -75,15 +81,18 @@ def check_signing_status(
     filepath = os.path.join(directory, file)
     signing_status = get_signing_authority(filepath, developer_promt)
     if file in files_that_should_be_signed:
-        if signing_status == "Verified":
-            return f"File is correctly signed: {file}", True
+        if "Verified" in signing_status:
+            return f"File is correctly signed: {file} by {signing_status}", True
         else:
             return f"File should be signed but is not: {file}", False
     elif file in files_that_should_not_be_signed:
-        if signing_status == "Verified":
-            return f"File should not be signed but is: {file}", False
-        else:
+        if "Not Verified" in signing_status:
             return f"File is correctly not signed: {file}", True
+        else:
+            return (
+                f"File should not be signed but is: {file} by {signing_status}",
+                False,
+            )
     return "", True
 
 
