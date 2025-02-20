@@ -97,11 +97,12 @@ contains
          end if
       end do
 
+      ! maybe this part is not necessary anymore if we set sed to zero in extract_constituents
       if (stm_included) then
          if (stmpar%morpar%bedupd .and. time1 >= tstart_user + stmpar%morpar%tmor * tfac) then
             if (ISED1 /= 0) then
                do k = 1, ndx
-                  if (hs(k) < stmpar%morpar%sedthr) then
+                  if (hs(k) <= stmpar%morpar%sedthr) then ! in erosed: hs > sedthr kfsed=1
                      do jsed = 1, mxgr
                         iconst = ISED1 + jsed - 1
                         call getkbotktop(k, kb, kt)
