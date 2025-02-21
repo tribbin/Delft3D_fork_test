@@ -4634,13 +4634,13 @@ contains
                      call getkbotktop(kk, kb, kt)
                      call getlayerindices(kk, nlayb, nrlay)
                      do k = kb, kt
-                        work1(k - kb + nlayb, kk) = sed(j - ISED1 + 1, k)
+                        work1(k - kb + nlayb, kk) = constituents(j, k)
                      end do !k
                   end do !kk
                   ierr = nf90_put_var(irstfile, id_sf1(j - ISED1 + 1), work1(1:kmx, 1:ndxi), (/1, 1, itim/), (/kmx, ndxi, 1/))
                else !2D
                   do kk = 1, ndxi
-                     dum(kk) = sed(j - ISED1 + 1, kk)
+                     dum(kk) = constituents(j, kk)
                   end do !kk
                   ierr = nf90_put_var(irstfile, id_sf1(j - ISED1 + 1), dum, (/1, itim/), (/ndxi, 1/))
                end if !kmx
@@ -4659,12 +4659,12 @@ contains
                         call getkbotktop(kk, kb, kt)
                         call getlayerindices(kk, nlayb, nrlay)
                         do k = kb, kt
-                           work1(k - kb + nlayb, i) = sed(j - ISED1 + 1, k)
+                           work1(k - kb + nlayb, i) = constituents(j, k)
                         end do !k
                      end do !kk
                      ierr = nf90_put_var(irstfile, id_sf1_bnd(j - ISED1 + 1), work1(1:kmx, 1:ndxbnd), (/1, 1, itim/), (/kmx, ndxbnd, 1/))
                   else !2D
-                     dum = sed(j - ISED1 + 1, ndxi + 1:ndx)
+                     dum = constituents(j, ndxi + 1:ndx)
                      ierr = nf90_put_var(irstfile, id_sf1_bnd(j - ISED1 + 1), dum, (/1, itim/), (/ndxbnd, 1/))
                   end if !kmx
                end do !j
@@ -6441,11 +6441,11 @@ contains
          !    !
          !    if (allocated(debugarr2d)) then
          !       ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg2d, nf90_double, UNC_LOC_S, 'debug2d', 'debug2d', 'debug2d', '-', dimids = (/ -2, mapids%id_tsp%id_sedtotdim,-1 /), jabndnd=jabndnd_) ! not CF
-         !    endif
+         !    end if
          !    !
          !    if (allocated(debugarr3d)) then
-         !       !ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg3d, nf90_double, UNC_LOC_S, 'debug3d', 'debug3d', 'debug3d', '-', dimids = (/ -2, -1 /), jabndnd=jabndnd_) ! not CF
-         !    endif
+         !       ! ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg3d, nf90_double, UNC_LOC_S3D, 'debug3d', 'debug3d', 'debug3d', '-', dimids = (/ -2, -1 /), jabndnd=jabndnd_) ! not CF
+         !    end if
          ! endif
 
          if (timon) call timstop(handle_extra(71))
@@ -7725,19 +7725,18 @@ contains
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cfcl, UNC_LOC_L, cfclval, jabndnd=jabndnd_)
       end if
 
-      ! JRE debug variables
-      if (jawritedebug /= 0) then
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg1d, UNC_LOC_U, debugarr1d(1:lnx), jabndnd=jabndnd_)
-
-         if (allocated(debugarr2d)) then
-            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg2d, UNC_LOC_S, debugarr2d(1:ndxndxi, :), jabndnd=jabndnd_)
-         end if
-
-         if (allocated(debugarr3d)) then
-            !ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg3d, UNC_LOC_L, cfclval, jabndnd=jabndnd_)
-         end if
-
-      end if
+      ! debug variables
+      ! if (jawritedebug /= 0) then
+      !    ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg1d, UNC_LOC_U, debugarr1d(1:lnx), jabndnd=jabndnd_)
+      ! 
+      !    if (allocated(debugarr2d)) then
+      !       ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg2d, UNC_LOC_S, debugarr2d(1:ndxndxi, :), jabndnd=jabndnd_)
+      !    end if
+      ! 
+      !    if (allocated(debugarr3d)) then
+      !       ! ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_dbg3d, UNC_LOC_S3D, debugarr3d, jabndnd=jabndnd_)
+      !    end if
+      ! end if
 
       ! water quality bottom variables
       if (numwqbots > 0) then
