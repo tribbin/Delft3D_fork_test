@@ -36,6 +36,15 @@ object Sign : BuildType({
                     }
                 """.trimIndent()
             }
+        }        
+        powerShell {
+            name = "Remove tclkitsh852.exe"
+            platform = PowerShellStep.Platform.x64
+            workingDir = "to_sign"
+            scriptMode = script {
+                // We cannot sing this binary, see: https://wiki.tcl-lang.org/page/SDX+under+Windows
+                content = """Remove-Item -Path bin\\tclkitsh852.exe -Force""".trimIndent()
+            }
         }
         powerShell {
             name = "Sign"
