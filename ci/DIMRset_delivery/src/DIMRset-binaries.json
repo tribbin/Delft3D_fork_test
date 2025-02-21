@@ -287,91 +287,341 @@
         {
             "file": "lib\\vcruntime140_1.dll",
             "Issued to": "Microsoft Corporation"
+        },
+        {
+            "file": "bin\\tclkitsh852.exe",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygaec-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygbrotlicommon-1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygbrotlidec-1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygbz2-1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygcom_err-2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygcrypto-1.0.0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygcrypto-1.1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygcrypto-3.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygcurl-4.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygdf-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyggcc_s-seh-1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyggcrypt-20.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyggfortran-5.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyggomp-1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyggpg-error-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyggsasl-18.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyggssapi_krb5-2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyghdf5-310.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyghdf5_hl-310.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygiconv-2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygidn-12.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygidn2-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygintl-8.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygjpeg-8.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygk5crypto-3.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygkrb5-3.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygkrb5support-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyglber-2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygldap-2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cyglzma-5.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygmfhdf-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygnetcdf-19.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygnetcdff-7.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygnghttp2-14.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygntlm-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygpsl-5.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygquadmath-0.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygsasl2-3.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygssh2-1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygssl-3.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygstdc++-6.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygsz-2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygunistring-5.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygwin1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygxml2-2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygz.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygzip-5.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\cygzstd-1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\expat.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\freexl.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\gdal300.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\geos.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\geos_c.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\hdf.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\hdf5.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\hdf5_cpp.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\hdf5_hl.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\hdf5_hl_cpp.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\hdf5_tools.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\iconv.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\jpeg.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\libexpat.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\libcurl.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\libmysql.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\libpetsc.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\libpq.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\libxml2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\mfhdf.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\pthreadGC2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\pthreadVC2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\spatialite.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\sqlite3.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\tecio.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\xdr.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\xerces-c_3_1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\xerces-c_3_1D.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\xerces-c_3_2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\netcdf.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\openjp2.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\zlib1.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\proj.dll",
+            "Issued to": "Stichting Deltares"
+        },
+        {
+            "file": "lib\\proj_6_1.dll",
+            "Issued to": "Stichting Deltares"
         }
     ],
     "Not signed": [
-        "bin\\tclkitsh852.exe",
-        "lib\\cygaec-0.dll",
-        "lib\\cygbrotlicommon-1.dll",
-        "lib\\cygbrotlidec-1.dll",
-        "lib\\cygbz2-1.dll",
-        "lib\\cygcom_err-2.dll",
-        "lib\\cygcrypto-1.0.0.dll",
-        "lib\\cygcrypto-1.1.dll",
-        "lib\\cygcrypto-3.dll",
-        "lib\\cygcurl-4.dll",
-        "lib\\cygdf-0.dll",
-        "lib\\cyggcc_s-seh-1.dll",
-        "lib\\cyggcrypt-20.dll",
-        "lib\\cyggfortran-5.dll",
-        "lib\\cyggomp-1.dll",
-        "lib\\cyggpg-error-0.dll",
-        "lib\\cyggsasl-18.dll",
-        "lib\\cyggssapi_krb5-2.dll",
-        "lib\\cyghdf5-310.dll",
-        "lib\\cyghdf5_hl-310.dll",
-        "lib\\cygiconv-2.dll",
-        "lib\\cygidn-12.dll",
-        "lib\\cygidn2-0.dll",
-        "lib\\cygintl-8.dll",
-        "lib\\cygjpeg-8.dll",
-        "lib\\cygk5crypto-3.dll",
-        "lib\\cygkrb5-3.dll",
-        "lib\\cygkrb5support-0.dll",
-        "lib\\cyglber-2.dll",
-        "lib\\cygldap-2.dll",
-        "lib\\cyglzma-5.dll",
-        "lib\\cygmfhdf-0.dll",
-        "lib\\cygnetcdf-19.dll",
-        "lib\\cygnetcdff-7.dll",
-        "lib\\cygnghttp2-14.dll",
-        "lib\\cygntlm-0.dll",
-        "lib\\cygpsl-5.dll",
-        "lib\\cygquadmath-0.dll",
-        "lib\\cygsasl2-3.dll",
-        "lib\\cygssh2-1.dll",
-        "lib\\cygssl-3.dll",
-        "lib\\cygstdc++-6.dll",
-        "lib\\cygsz-2.dll",
-        "lib\\cygunistring-5.dll",
-        "lib\\cygwin1.dll",
-        "lib\\cygxml2-2.dll",
-        "lib\\cygz.dll",
-        "lib\\cygzip-5.dll",
-        "lib\\cygzstd-1.dll",
-        "lib\\expat.dll",
-        "lib\\freexl.dll",
-        "lib\\gdal300.dll",
-        "lib\\geos.dll",
-        "lib\\geos_c.dll",
-        "lib\\hdf.dll",
-        "lib\\hdf5.dll",
-        "lib\\hdf5_cpp.dll",
-        "lib\\hdf5_hl.dll",
-        "lib\\hdf5_hl_cpp.dll",
-        "lib\\hdf5_tools.dll",
-        "lib\\iconv.dll",
-        "lib\\jpeg.dll",
-        "lib\\libexpat.dll",
-        "lib\\libcurl.dll",
-        "lib\\libmysql.dll",
-        "lib\\libpetsc.dll",
-        "lib\\libpq.dll",
-        "lib\\libxml2.dll",
-        "lib\\mfhdf.dll",
-        "lib\\pthreadGC2.dll",
-        "lib\\pthreadVC2.dll",
-        "lib\\spatialite.dll",
-        "lib\\sqlite3.dll",
-        "lib\\tecio.dll",
-        "lib\\xdr.dll",
-        "lib\\xerces-c_3_1.dll",
-        "lib\\xerces-c_3_1D.dll",
-        "lib\\xerces-c_3_2.dll",
-        "lib\\netcdf.dll",
-        "lib\\openjp2.dll",
-        "lib\\zlib1.dll",
-        "lib\\proj.dll",
-        "lib\\proj_6_1.dll"
+
     ]
 }
