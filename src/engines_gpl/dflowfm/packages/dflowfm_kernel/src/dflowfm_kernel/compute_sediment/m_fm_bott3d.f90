@@ -2054,6 +2054,11 @@ contains
 
     subroutine fm_diffusion_active_layer()
       use precision, only: dp
+      use m_ade2d, only: fm_ade2d
+      use m_fm_erosed, only: lsedtot, tratyp, stmpar
+      use m_flowgeom, only: lnx, ndx
+      use sediment_basics_module, only: has_bedload
+      use m_alloc, only: realloc
       
    !!
    !! I/O
@@ -2064,12 +2069,30 @@ contains
    !!
    !! Local variables
    !!
-
-      !integer :: nm
+      real(kind=dp), dimension(:), allocatable :: uadv
+      real(kind=dp), dimension(:), allocatable :: qadv
+      real(kind=dp), dimension(:), allocatable :: sour
+      real(kind=dp), dimension(:), allocatable :: sink
+      
+      integer :: l
+      integer :: ierror
 
    !!
    !! Execute
    !!
+      
+      ierror = 0
+      
+      call realloc(uadv, lnx, keepExisting=.false., fill=0d0)
+      call realloc(qadv, lnx, keepExisting=.false., fill=0d0)
+      call realloc(sour, ndx, keepExisting=.false., fill=0d0)
+      call realloc(sink, ndx, keepExisting=.false., fill=0d0)
+      
+      do l = 1, lsedtot
+         if (has_bedload(tratyp(l))) then
+            call fm_ade2d(stmpar%morlyr%state%msed(l,1,:), uadv, qadv, sour, sink, 4, ierror)   
+         end if
+      end do
       
     end subroutine fm_diffusion_active_layer
     
