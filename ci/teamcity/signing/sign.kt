@@ -65,8 +65,9 @@ object Sign : BuildType({
             artifacts {
                 cleanDestination = true
                 artifactRules = """
-                    ?:*_x64_*.zip!/x64/**/*.exe => to_sign
-                    ?:*_x64_*.zip!/x64/**/*.dll => to_sign
+                    ?:*_x64_*.zip!/x64/bin/** => to_sign/bin
+                    ?:*_x64_*.zip!/x64/lib/** => to_sign/lib
+                    ?:*_x64_*.zip!/x64/share/** => to_sign/share
                 """.trimIndent()
             }
         }
