@@ -1436,7 +1436,7 @@ contains
          target_location_type = UNC_LOC_S3D
 
       case ('initialwaterlevel')
-         target_array = s1
+         target_array => s1
          target_location_type = UNC_LOC_S
       case default
          write (msgbuf, '(5a)') 'Wrong block in file ''', trim(inifilename), &
