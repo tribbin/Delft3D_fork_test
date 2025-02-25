@@ -149,6 +149,7 @@ contains
 
             if (numgen > 0) then
                istat = initialize_structure_links(pstru, numgen, kegen(1:numgen), wu)
+               call apply_teta_is_0_to_neighbours(kegen(1:numgen), numgen, teta)
             else
                call reallocP(pstru%linknumbers, 0)
                istat = DFM_NOERR
@@ -738,6 +739,7 @@ contains
 
          if (numgen > 0) then
             istat = initialize_structure_links(pstru, numgen, kegen(1:numgen), wu)
+            call apply_teta_is_0_to_neighbours(kegen(1:numgen), numgen, teta)
          else
             call reallocP(pstru%linknumbers, 0)
             istat = DFM_NOERR
@@ -1961,5 +1963,27 @@ contains
       if (allocated(cgenidx)) deallocate (cgenidx)
 
    end function flow_init_structurecontrol_old
+
+   subroutine apply_teta_is_0_to_neighbours(links, numlinks, teta   )
+
+      use m_flowgeom, only: nd, ln
+
+      integer, intent(in) :: links(:)
+      integer, intent(in) :: numlinks
+      real(kind=dp), dimension(:), intent(inout) :: teta
+
+      ! set teta to 1 for a
+      integer i, nn, n12, kk, LL, L
+      do i = 1, numlinks
+         do nn = 1, 2
+            n12 = ln(nn, abs(links(i)))
+            do kk = 1, nd(n12)%lnx ! and flag non-21 links to perot incoming only
+               LL = abs(nd(n12)%ln(kk))
+               teta(LL) = 1d0
+            end do
+         end do
+
+      end do
+end subroutine apply_teta_is_0_to_neighbours
 
 end submodule flow_init_structurecontrol_implementation
