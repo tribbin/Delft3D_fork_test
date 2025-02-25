@@ -32,7 +32,7 @@
 
 module m_adjust_bobs_for_dams_and_structs
    use m_switchiadvnearlink, only: switchiadvnearlink
-   use m_adjust_bobs_on_dambreak_breach, only: adjust_bobs_on_dambreak_breach
+   use m_dambreak_breach, only: adjust_bobs_on_dambreak_breach
 
    implicit none
 
@@ -170,7 +170,7 @@ contains
             if (istru /= 0 .and. L1dambreaksg(n) <= L2dambreaksg(n)) then
                ! Update the crest/bed levels
                call adjust_bobs_on_dambreak_breach(network%sts%struct(istru)%dambreak%width, &
-                                                 & maximumDambreakWidths(n), &
+                                                 & network%sts%struct(istru)%dambreak%maximumWidth, &
                                                  & network%sts%struct(istru)%dambreak%crl, &
                                                  & LStartBreach(n), &
                                                  & L1dambreaksg(n), &

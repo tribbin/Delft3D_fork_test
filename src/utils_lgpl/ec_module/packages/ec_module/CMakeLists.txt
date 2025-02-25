@@ -25,7 +25,6 @@ add_library(${library_name} ${meteo_sources} ${sources})
                          kdtree_wrapper
                          io_netcdf
                          io_netcdf_data
-                         netcdf4
                          netcdff)
 
 
@@ -44,7 +43,10 @@ set_target_properties (${library_name} PROPERTIES FOLDER utils_lgpl/ec_module)
 string(TOUPPER ${CONFIGURATION_TYPE} configuration_type)
 if ( ${configuration_type} STREQUAL "DFLOWFM" OR
      ${configuration_type} STREQUAL "DELFT3D4" OR
-     ${configuration_type} STREQUAL "ALL" OR
+     ${configuration_type} STREQUAL "FM-SUITE" OR
+     ${configuration_type} STREQUAL "D3D4-SUITE" OR
+     ${configuration_type} STREQUAL "ALL-TESTBENCH" OR
+     ${configuration_type} STREQUAL "FM-TESTBENCH" OR
      ${configuration_type} STREQUAL "TOOLS" )
 
     set(library_name ec_module_dll)

@@ -267,15 +267,15 @@ contains
    !> Allocates and initializes all "valstruct"(:,:) arrays.
    !! Used for history output and/or restart file output for hydraulic structures.
    subroutine init_structure_hisvalues()
-      use fm_external_forcings_data, only: ncgensg, ngatesg, ncdamsg, ngategen, ngenstru, nweirgen, ndambreaksignals
+      use fm_external_forcings_data, only: npumpsg, ncgensg, ngatesg, ncdamsg, ngategen, ngenstru, nweirgen, ndambreaksignals
       use m_alloc
       use m_flowtimes, only: ti_rst
       use m_longculverts, only: nlongculverts
       implicit none
 
-      if ((ti_rst > 0 .or. jahispump > 0) .and. network%sts%numpumps > 0) then
+      if ((ti_rst > 0 .or. jahispump > 0) .and. npumpsg > 0) then
          if (allocated(valpump)) deallocate (valpump)
-         allocate (valpump(NUMVALS_PUMP, network%sts%numpumps))
+         allocate (valpump(NUMVALS_PUMP, npumpsg))
          valpump = 0.0_dp
       end if
       if (ti_rst > 0 .or. jahiscgen > 0) then

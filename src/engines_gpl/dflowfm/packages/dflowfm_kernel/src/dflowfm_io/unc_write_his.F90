@@ -144,7 +144,6 @@ contains
       integer :: ntot, i, j, ierr, nNodeTot, nNodes, k1, k2, nlinks
 
       character(len=255) :: filename
-      character(len=25) :: transpunit
       character(len=1024) :: statcoordstring, local_statcoordstring
       integer :: ndims
       integer :: jawrizc = 0
@@ -483,21 +482,6 @@ contains
             call definencvar(ihisfile, id_checkmon, nc_precision, (/id_laydim, id_timedim/), 'checkerboard_monitor', 'Checkerboard mode monitor', unit='m s-1')
             call definencvar(ihisfile, id_num_timesteps, nf90_int, (/id_timedim/), 'num_timesteps')
             call definencvar(ihisfile, id_comp_time, nc_precision, (/id_timedim/), 'comp_time')
-         end if
-
-         ! set sediment transport unit after modelinit
-         if (jahissed > 0 .and. jased > 0 .and. stm_included) then
-            select case (stmpar%morpar%moroutput%transptype)
-            case (0)
-               transpunit = 'kg s-1 m-1'
-            case (1)
-               transpunit = 'm3 s-1 m-1'
-            case (2)
-               transpunit = 'm3 s-1 m-1'
-            end select
-            do ivar = IDX_HIS_SBCX, IDX_HIS_SSCY
-               config_set_his%configs(ivar)%unit = transpunit
-            end do
          end if
 
          ! WAQ statistic outputs are kept outside of the statistical output framework

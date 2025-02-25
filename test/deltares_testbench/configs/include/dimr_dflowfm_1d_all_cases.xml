@@ -818,6 +818,28 @@
 			</file>
 		</checks>
 	</testCase>
+	<testCase name="e02_f105_c45_bifurcation_perot_static" ref="dimr_default">
+		<path version="2025-02-16T07:45:53.285000">e02_dflowfm/f105_cross-sections/c45_bifurcation_perot_static</path>
+		<checks>
+			<file name="DFM_OUTPUT_Flow1D/Flow1D_map.nc" type="netCDF">
+				<parameters>
+					<parameter name="mesh1d_s1" toleranceAbsolute="0.0001" />
+					<parameter name="mesh1d_u1" toleranceAbsolute="0.0001" />
+				</parameters>
+			</file>
+		</checks>
+	</testCase>
+	<testCase name="e02_f105_c46_bifurcation_perot_update" ref="dimr_default">
+		<path version="2025-02-16T07:46:04.453000">e02_dflowfm/f105_cross-sections/c46_bifurcation_perot_update</path>
+		<checks>
+			<file name="DFM_OUTPUT_Flow1D/Flow1D_map.nc" type="netCDF">
+				<parameters>
+					<parameter name="mesh1d_s1" toleranceAbsolute="0.0001" />
+					<parameter name="mesh1d_u1" toleranceAbsolute="0.0001" />
+				</parameters>
+			</file>
+		</checks>
+	</testCase>
 	<testCase name="e02_f106_c01_weir" ref="dimr_default">
 		<path version="2024-01-11T13:00:00">e02_dflowfm/f106_hydraulic-structures/c01_Weir</path>
 		<checks>

@@ -297,7 +297,7 @@ contains
    subroutine allocate_structure_arrays(nstr, widths, lftopol, pumpidx, gateidx, cdamidx, cgenidx, dambridx)
       use precision_basics, only: dp
       use m_alloc, only: realloc
-      use fm_external_forcings_data, only: dambreakLinksEffectiveLength, dambreakLinksActualLength, dambreakPolygons
+      use fm_external_forcings_data, only: dambreakPolygons, dambreakLinksEffectiveLength, dambreakLinksActualLength
       use network_data, only: numl
 
       integer, intent(in) :: nstr !< nstr is the number of (potential) structures
@@ -375,13 +375,14 @@ contains
 
       use m_flowgeom, only: ln, kcu, wu, lncn, snu, csu
       use m_inquire_flowgeom, only: findnode
-      use fm_external_forcings_data, only: dambreakLinksEffectiveLength, &
-                                           maximumDambreakWidths, kdambreak, LStartBreach, waterLevelsDambreakDownStream, waterLevelsDambreakUpStream, &
-                                           breachDepthDambreak, breachWidthDambreak, dambreak_ids, activeDambreakLinks, normalVelocityDambreak, dambreakAveraging, &
-                                           dambreakLevelsAndWidthsFromTable, breachWidthDerivativeDambreak, waterLevelJumpDambreak, dambreakLocationsUpstreamMapping, &
-                                           dambreakLocationsUpstream, dambreakAverigingUpstreamMapping, nDambreakLocationsUpstream, nDambreakAveragingUpstream, &
-                                           dambreakLocationsDownstreamMapping, dambreakLocationsDownstream, dambreakAverigingDownstreamMapping, &
-                                           nDambreakLocationsDownstream, nDambreakAveragingDownstream, dambreaks, ndambreaklinks
+      use fm_external_forcings_data, only: kdambreak, LStartBreach, &
+                                           dambreak_ids, activeDambreakLinks, &
+                                           dambreakLevelsAndWidthsFromTable, &
+                                           dambreaks, ndambreaklinks, dambreakLinksEffectiveLength
+      use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, breachDepthDambreak, breachWidthDambreak, &
+                                          add_dambreaklocation_upstream, add_dambreaklocation_downstream, &
+                                          add_averaging_upstream_signal, add_averaging_downstream_signal
+      use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
       use m_alloc, only: realloc
 
       integer, intent(in) :: ndambreaksignals !< ndambreaksignals is the number of dambreak signals.
@@ -406,27 +407,15 @@ contains
 
       ndambreaklinks = l2dambreaksg(ndambreaksignals)
 
-      call realloc(maximumDambreakWidths, ndambreaksignals, fill=0.0_dp)
       call realloc(kdambreak, [3, ndambreaklinks], fill=0)
       call realloc(dambreaks, ndambreaksignals, fill=0)
       call realloc(LStartBreach, ndambreaksignals, fill=-1)
-      call realloc(waterLevelsDambreakDownStream, ndambreaksignals, fill=0.0_dp)
-      call realloc(waterLevelsDambreakUpStream, ndambreaksignals, fill=0.0_dp)
+      call allocate_and_initialize_dambreak_data(ndambreaksignals)
       call realloc(breachDepthDambreak, ndambreaksignals, fill=0.0_dp)
       call realloc(breachWidthDambreak, ndambreaksignals, fill=0.0_dp)
       call realloc(dambreak_ids, ndambreaksignals)
       call realloc(activeDambreakLinks, ndambreaklinks, fill=0)
-      call realloc(normalVelocityDambreak, ndambreaksignals)
-      call realloc(dambreakAveraging, [2, ndambreaksignals], fill=0.0_dp)
       call realloc(dambreakLevelsAndWidthsFromTable, ndambreaksignals * 2, fill=0.0_dp)
-      call realloc(breachWidthDerivativeDambreak, ndambreaksignals, fill=0.0_dp)
-      call realloc(waterLevelJumpDambreak, ndambreaksignals, fill=0.0_dp)
-      call realloc(dambreakLocationsUpstreamMapping, ndambreaksignals, fill=0)
-      call realloc(dambreakLocationsUpstream, ndambreaksignals, fill=0)
-      call realloc(dambreakAverigingUpstreamMapping, ndambreaksignals, fill=0)
-      call realloc(dambreakLocationsDownstreamMapping, ndambreaksignals, fill=0)
-      call realloc(dambreakLocationsDownstream, ndambreaksignals, fill=0)
-      call realloc(dambreakAverigingDownstreamMapping, ndambreaksignals, fill=0)
 
       do n = 1, ndambreaksignals
          associate (pstru => network%sts%struct(dambridx(n)))
@@ -466,8 +455,9 @@ contains
                ! set initial phase, width, crest level, coefficents if algorithm is 1
                dambreak%phase = 0
                dambreak%width = 0.0_dp
+               dambreak%maximumWidth = 0.0_dp
                dambreak%crl = dambreak%crestLevelIni
-               if (dambreak%algorithm == 3) then
+               if (dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then
                   ! Time-interpolated value will be placed in zcgen((n-1)*3+1) when calling ec_gettimespacevalue.
                   qid = 'dambreakLevelsAndWidths'
                   if (index(trim(dambreak%levelsAndWidths)//'|', '.tim|') > 0) then
@@ -477,8 +467,8 @@ contains
                end if
 
                ! inquire if the water level upstream has to be taken from a location or be a result of averaging
-               if (dambreak%algorithm == 2 & ! 2: Needed for computation and output
-                   .or. dambreak%algorithm == 3) then ! 3: Needed for output only.
+               if (dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
+                   .or. dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
                   xla = dambreak%waterLevelUpstreamLocationX
                   yla = dambreak%waterLevelUpstreamLocationY
                   if (dambreak%waterLevelUpstreamNodeId /= '') then
@@ -488,26 +478,21 @@ contains
                            ''' in dambreak ''', trim(dambreak_ids(n)), '''.'
                         call err_flush()
                      else
-                        nDambreakLocationsUpstream = nDambreakLocationsUpstream + 1
-                        dambreakLocationsUpstreamMapping(nDambreakLocationsUpstream) = n
-                        dambreakLocationsUpstream(nDambreakLocationsUpstream) = k
+                        call add_dambreaklocation_upstream(n,k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        nDambreakLocationsUpstream = nDambreakLocationsUpstream + 1
-                        dambreakLocationsUpstreamMapping(nDambreakLocationsUpstream) = n
-                        dambreakLocationsUpstream(nDambreakLocationsUpstream) = k
+                        call add_dambreaklocation_upstream(n,k)                        
                      end if
                   else
-                     nDambreakAveragingUpstream = nDambreakAveragingUpstream + 1
-                     dambreakAverigingUpstreamMapping(nDambreakAveragingUpstream) = n
+                     call add_averaging_upstream_signal(n)
                   end if
                end if
 
                ! inquire if the water level downstream has to be taken from a location or be a result of averaging
-               if (dambreak%algorithm == 2 & ! 2: Needed for computation and output
-                   .or. dambreak%algorithm == 3) then ! 3: Needed for output only.
+               if (dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
+                   .or. dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
                   xla = dambreak%waterLevelDownstreamLocationX
                   yla = dambreak%waterLevelDownstreamLocationY
                   if (dambreak%waterLevelDownstreamNodeId /= '') then
@@ -517,20 +502,15 @@ contains
                            ''' in dambreak ''', trim(dambreak_ids(n)), '''.'
                         call err_flush()
                      else
-                        nDambreakLocationsDownstream = nDambreakLocationsDownstream + 1
-                        dambreakLocationsDownstreamMapping(nDambreakLocationsDownstream) = n
-                        dambreakLocationsDownstream(nDambreakLocationsDownstream) = k
+                        call add_dambreaklocation_downstream(n,k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        nDambreakLocationsDownstream = nDambreakLocationsDownstream + 1
-                        dambreakLocationsDownstreamMapping(nDambreakLocationsDownstream) = n
-                        dambreakLocationsDownstream(nDambreakLocationsDownstream) = k
+                        call add_dambreaklocation_downstream(n,k)
                      end if
                   else
-                     nDambreakAveragingDownstream = nDambreakAveragingDownstream + 1
-                     dambreakAverigingDownstreamMapping(nDambreakAveragingDownstream) = n
+                     call add_averaging_downstream_signal(n)
                   end if
                end if
 
@@ -582,7 +562,7 @@ contains
                   end if
 
                   ! Sum the length of the intersected flow links (required to bound maximum breach width)
-                  maximumDambreakWidths(n) = maximumDambreakWidths(n) + dambreakLinksEffectiveLength(k)
+                  dambreak%maximumWidth = dambreak%maximumWidth + dambreakLinksEffectiveLength(k)
                end do
 
                ! Now we can deallocate the polygon
@@ -620,6 +600,11 @@ contains
       use m_read_property, only: read_property
       use m_togeneral, only: togeneral
       use unstruc_messages, only: callback_msg
+      use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, breachDepthDambreak, breachWidthDambreak, &
+         add_dambreaklocation_upstream, add_dambreaklocation_downstream, add_averaging_upstream_signal, &
+         add_averaging_downstream_signal
+      use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
+      use fm_external_forcings_data, only: dambreakLinksEffectiveLength, dambreakLinksActualLength
 
       implicit none
       logical :: status
@@ -1690,11 +1675,11 @@ contains
 !
       if (ndambreaksignals > 0) then
 
-         if (allocated(maximumDambreakWidths)) deallocate (maximumDambreakWidths)
-         allocate (maximumDambreakWidths(ndambreaksignals))
-         maximumDambreakWidths = 0.0_dp
+         call allocate_and_initialize_dambreak_data(ndambreaklinks) 
+         
          if (allocated(kdambreak)) deallocate (kdambreak)
          allocate (kdambreak(3, ndambreaklinks), stat=ierr) ! the last row stores the actual
+         ! kdambreak is an integer array? This is flow_init_structurecontrol_old so will be removed soon
          kdambreak = 0.0_dp
          if (allocated(dambreaks)) deallocate (dambreaks)
          allocate (dambreaks(ndambreaksignals))
@@ -1703,14 +1688,6 @@ contains
          if (allocated(LStartBreach)) deallocate (LStartBreach)
          allocate (LStartBreach(ndambreaksignals))
          LStartBreach = -1
-
-         if (allocated(waterLevelsDambreakDownStream)) deallocate (waterLevelsDambreakDownStream)
-         allocate (waterLevelsDambreakDownStream(ndambreaksignals))
-         waterLevelsDambreakDownStream = 0.0_dp
-
-         if (allocated(waterLevelsDambreakUpStream)) deallocate (waterLevelsDambreakUpStream)
-         allocate (waterLevelsDambreakUpStream(ndambreaksignals))
-         waterLevelsDambreakUpStream = 0.0_dp
 
          if (allocated(breachDepthDambreak)) deallocate (breachDepthDambreak)
          allocate (breachDepthDambreak(ndambreaksignals))
@@ -1727,61 +1704,9 @@ contains
          allocate (activeDambreakLinks(ndambreaklinks))
          activeDambreakLinks = 0
 
-         if (allocated(normalVelocityDambreak)) deallocate (normalVelocityDambreak)
-         allocate (normalVelocityDambreak(ndambreaksignals))
-         normalVelocityDambreak = 0.0_dp
-
-         if (allocated(dambreakAveraging)) deallocate (dambreakAveraging)
-         allocate (dambreakAveraging(2, ndambreaksignals))
-         dambreakAveraging = 0.0_dp
-
          if (allocated(dambreakLevelsAndWidthsFromTable)) deallocate (dambreakLevelsAndWidthsFromTable)
          allocate (dambreakLevelsAndWidthsFromTable(ndambreaksignals * 2))
          dambreakLevelsAndWidthsFromTable = 0.0_dp
-
-         if (allocated(breachWidthDerivativeDambreak)) deallocate (breachWidthDerivativeDambreak)
-         allocate (breachWidthDerivativeDambreak(ndambreaksignals))
-         breachWidthDerivativeDambreak = 0.0_dp
-
-         if (allocated(waterLevelJumpDambreak)) deallocate (waterLevelJumpDambreak)
-         allocate (waterLevelJumpDambreak(ndambreaksignals))
-         waterLevelJumpDambreak = 0.0_dp
-
-         if (allocated(waterLevelJumpDambreak)) deallocate (waterLevelJumpDambreak)
-         allocate (waterLevelJumpDambreak(ndambreaksignals))
-         waterLevelJumpDambreak = 0.0_dp
-
-         ! dambreak upstream
-         if (allocated(dambreakLocationsUpstreamMapping)) deallocate (dambreakLocationsUpstreamMapping)
-         allocate (dambreakLocationsUpstreamMapping(ndambreaksignals))
-         dambreakLocationsUpstreamMapping = 0.0_dp
-
-         if (allocated(dambreakLocationsUpstream)) deallocate (dambreakLocationsUpstream)
-         allocate (dambreakLocationsUpstream(ndambreaksignals))
-         dambreakLocationsUpstream = 0.0_dp
-
-         if (allocated(dambreakAverigingUpstreamMapping)) deallocate (dambreakAverigingUpstreamMapping)
-         allocate (dambreakAverigingUpstreamMapping(ndambreaksignals))
-         dambreakAverigingUpstreamMapping = 0.0_dp
-
-         nDambreakLocationsUpstream = 0
-         nDambreakAveragingUpstream = 0
-
-         ! dambreak downstream
-         if (allocated(dambreakLocationsDownstreamMapping)) deallocate (dambreakLocationsDownstreamMapping)
-         allocate (dambreakLocationsDownstreamMapping(ndambreaksignals))
-         dambreakLocationsDownstreamMapping = 0.0_dp
-
-         if (allocated(dambreakLocationsDownstream)) deallocate (dambreakLocationsDownstream)
-         allocate (dambreakLocationsDownstream(ndambreaksignals))
-         dambreakLocationsDownstream = 0.0_dp
-
-         if (allocated(dambreakAverigingDownstreamMapping)) deallocate (dambreakAverigingDownstreamMapping)
-         allocate (dambreakAverigingDownstreamMapping(ndambreaksignals))
-         dambreakAverigingDownstreamMapping = 0.0_dp
-
-         nDambreakLocationsDownstream = 0
-         nDambreakAveragingDownstream = 0
 
          do n = 1, ndambreaksignals
             do k = L1dambreaksg(n), L2dambreaksg(n)
@@ -1855,8 +1780,9 @@ contains
                ! set initial phase, width, crest level, coefficents if algorithm is 1
                network%sts%struct(istrtmp)%dambreak%phase = 0
                network%sts%struct(istrtmp)%dambreak%width = 0.0_dp
+               network%sts%struct(istrtmp)%dambreak%maximumWidth = 0.0_dp
                network%sts%struct(istrtmp)%dambreak%crl = network%sts%struct(istrtmp)%dambreak%crestLevelIni
-               if (network%sts%struct(istrtmp)%dambreak%algorithm == 3) then
+               if (network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then
                   ! Time-interpolated value will be placed in zcgen((n-1)*3+1) when calling ec_gettimespacevalue.
                   qid = 'dambreakLevelsAndWidths'
                   network%sts%struct(istrtmp)%dambreak%levelsAndWidths = trim(network%sts%struct(istrtmp)%dambreak%levelsAndWidths)
@@ -1868,8 +1794,8 @@ contains
                end if
 
                ! inquire if the water level upstream has to be taken from a location or be a result of averaging
-               if (network%sts%struct(istrtmp)%dambreak%algorithm == 2 & ! 2: Needed for computation and output
-                   .or. network%sts%struct(istrtmp)%dambreak%algorithm == 3) then ! 3: Needed for output only.
+               if (network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
+                   .or. network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
                   xla = network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamLocationX
                   yla = network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamLocationY
                   if (network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamNodeId /= '') then
@@ -1879,26 +1805,21 @@ contains
                            ''' in dambreak ''', trim(strid), '''.'
                         call err_flush()
                      else
-                        nDambreakLocationsUpstream = nDambreakLocationsUpstream + 1
-                        dambreakLocationsUpstreamMapping(nDambreakLocationsUpstream) = n
-                        dambreakLocationsUpstream(nDambreakLocationsUpstream) = k
+                        call add_dambreaklocation_upstream(n,k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        nDambreakLocationsUpstream = nDambreakLocationsUpstream + 1
-                        dambreakLocationsUpstreamMapping(nDambreakLocationsUpstream) = n
-                        dambreakLocationsUpstream(nDambreakLocationsUpstream) = k
+                        call add_dambreaklocation_upstream(n,k)
                      end if
                   else
-                     nDambreakAveragingUpstream = nDambreakAveragingUpstream + 1
-                     dambreakAverigingUpstreamMapping(nDambreakAveragingUpstream) = n
+                     call add_averaging_upstream_signal(n)
                   end if
                end if
 
                ! inquire if the water level downstream has to be taken from a location or be a result of averaging
-               if (network%sts%struct(istrtmp)%dambreak%algorithm == 2 & ! 2: Needed for computation and output
-                   .or. network%sts%struct(istrtmp)%dambreak%algorithm == 3) then ! 3: Needed for output only.
+               if (network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
+                   .or. network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
                   xla = network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamLocationX
                   yla = network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamLocationY
                   if (network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamNodeId /= '') then
@@ -1908,20 +1829,15 @@ contains
                            ''' in dambreak ''', trim(strid), '''.'
                         call err_flush()
                      else
-                        nDambreakLocationsDownstream = nDambreakLocationsDownstream + 1
-                        dambreakLocationsDownstreamMapping(nDambreakLocationsDownstream) = n
-                        dambreakLocationsDownstream(nDambreakLocationsDownstream) = k
+                        call add_dambreaklocation_downstream(n,k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        nDambreakLocationsDownstream = nDambreakLocationsDownstream + 1
-                        dambreakLocationsDownstreamMapping(nDambreakLocationsDownstream) = n
-                        dambreakLocationsDownstream(nDambreakLocationsDownstream) = k
+                        call add_dambreaklocation_downstream(n,k)
                      end if
                   else
-                     nDambreakAveragingDownstream = nDambreakAveragingDownstream + 1
-                     dambreakAverigingDownstreamMapping(nDambreakAveragingDownstream) = n
+                     call add_averaging_downstream_signal(n)
                   end if
                end if
 
@@ -1992,7 +1908,7 @@ contains
                end if
 
                ! Sum the length of the intersected flow links (required to bound maximum breach width)
-               maximumDambreakWidths(n) = maximumDambreakWidths(n) + dambreakLinksEffectiveLength(k)
+               network%sts%struct(istrtmp)%dambreak%maximumWidth = network%sts%struct(istrtmp)%dambreak%maximumWidth + dambreakLinksEffectiveLength(k)
             end do
 
             ! Now we can deallocate the polygon

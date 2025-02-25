@@ -44,22 +44,15 @@ set(oss_dependencies_general    deltares_common
                                 morphology_kernel)
 # Add dependencies
 if (UNIX)
-    # the `pkg_check_modules` function is created with this call
-    find_package(PkgConfig REQUIRED)
-
-    # these calls create special `PkgConfig::<MODULE>` variables
-    pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
-
     set(oss_dependencies ${oss_dependencies_general}
                          netcdff)
 
     target_link_libraries(${library_name}
          ${oss_dependencies}
-         PkgConfig::NETCDF)
+    )
 endif(UNIX)
 if (WIN32)
     set(oss_dependencies ${oss_dependencies_general}
-                        netcdf4
                         netcdff)
 
 endif(WIN32)
@@ -71,5 +64,5 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${source_files})
 set_target_properties (${library_name} PROPERTIES FOLDER engines_gpl/flow2d3d)
 
 # Change project flags at the end of this file
-target_compile_options(${library_name} PRIVATE "${qauto_threaded_flags}")
+target_compile_options(${library_name} PRIVATE ${qauto_threaded_flags})
 target_compile_options(${library_name} PRIVATE "SHELL:$<$<CONFIG:Debug>:${check_nobounds_flag}>")

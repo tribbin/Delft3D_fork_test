@@ -41,7 +41,7 @@ contains
       use properties, only: get_version_number, prop_file
       use tree_structures, only: tree_data, tree_create, tree_destroy, tree_num_nodes, tree_count_nodes_byname, tree_get_name
       use messageHandling, only: warn_flush, err_flush, msgbuf, LEVEL_FATAL
-      use fm_external_forcings_data, only: nbndz, itpenz, nbndu, itpenu, thrtt, num_lat_ini_blocks
+      use fm_external_forcings_data, only: nbndz, itpenz, nbndu, itpenu, thrtt, set_lateral_count_in_external_forcings_file
       use m_flowgeom, only: ba
       use m_laterals, only: balat, qplat, lat_ids, n1latsg, n2latsg, kclat, numlatsg, nnlat
       use string_module, only: str_tolower
@@ -197,7 +197,7 @@ contains
 
       call check_file_tree_for_deprecated_keywords(bnd_ptr, deprecated_ext_keywords, istat, prefix='While reading '''//trim(file_name)//'''')
 
-      num_lat_ini_blocks = numlatsg !save number of laterals to module variable
+      call set_lateral_count_in_external_forcings_file(numlatsg) !save number of laterals to module variable
 
       call tree_destroy(bnd_ptr)
       if (allocated(thrtt)) then
@@ -621,13 +621,18 @@ contains
       use m_laterals, only: ILATTP_1D, ILATTP_2D, ILATTP_ALL
       use m_missing, only: dmiss
       use tree_data_types, only: tree_data
-      use timespace, only: convert_method_string_to_integer, get_default_method_for_file_type, update_method_in_case_extrapolation, convert_file_type_string_to_integer
+      use timespace, only: convert_method_string_to_integer, get_default_method_for_file_type, &
+         update_method_with_weightfactor_fallback, update_method_in_case_extrapolation, &
+         convert_file_type_string_to_integer
       use fm_external_forcings_data, only: filetype, transformcoef, kx, tair_available, dewpoint_available
       use fm_external_forcings, only: allocatewindarrays
       use fm_location_types, only: UNC_LOC_S, UNC_LOC_U
-      use m_wind, only: airdensity, jawindstressgiven, jaspacevarcharn, ja_airdensity, japatm, jawind, jarain, jaqin, jaqext, jatair, jaclou, jarhum, solrad_available, longwave_available, ec_pwxwy_x, ec_pwxwy_y, ec_pwxwy_c, ec_charnock, wcharnock, rain, qext
+      use m_wind, only: airdensity, jawindstressgiven, jaspacevarcharn, ja_airdensity, japatm, jawind, jarain, &
+         jaqin, jaqext, jatair, jaclou, jarhum, solrad_available, longwave_available, ec_pwxwy_x, ec_pwxwy_y, ec_pwxwy_c, &
+         ec_charnock, wcharnock, rain, qext
       use m_flowgeom, only: ndx, lnx, xz, yz
-      use m_flowparameters, only: btempforcingtypA, btempforcingtypC, btempforcingtypH, btempforcingtypL, btempforcingtypS, itempforcingtyp
+      use m_flowparameters, only: btempforcingtypA, btempforcingtypC, btempforcingtypH, btempforcingtypL, btempforcingtypS, &
+         itempforcingtyp
       use timespace, only: timespaceinitialfield
       use m_meteo, only: ec_addtimespacerelation
       use dfm_error, only: DFM_NOERR
@@ -699,6 +704,7 @@ contains
       call prop_get(node_ptr, '', 'interpolationMethod ', interpolation_method, is_successful)
       if (is_successful) then
          method = convert_method_string_to_integer(interpolation_method)
+         call update_method_with_weightfactor_fallback(forcing_file_type, method)
       else
          method = get_default_method_for_file_type(forcing_file_type)
       end if
