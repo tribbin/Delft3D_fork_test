@@ -14,36 +14,19 @@ object Sign : BuildType({
 
     steps {
         powerShell {
-            name = "Remove already signed binaries"
+            name = "Move already signed binaries"
             platform = PowerShellStep.Platform.x64
-            workingDir = "to_sign"
-            scriptMode = script {
-                content = """
-                    ${'$'}files = Get-ChildItem -Path . -Recurse -Include *.exe,*.dll | Where-Object { -not ${'$'}_.PSIsContainer }
-                    
-                    foreach (${'$'}file in ${'$'}files) {
-                        try {
-                            # Check if the file is signed
-                            ${'$'}signature = Get-AuthenticodeSignature -FilePath ${'$'}file.FullName
-                            if (${'$'}signature.Status -eq 'Valid') {
-                                # Remove the signed file
-                                Remove-Item -Path ${'$'}file.FullName -Force
-                                Write-Output "Removed signed file: ${'$'}(${'$'}file.FullName)"
-                            }
-                        } catch {
-                            Write-Output "Error processing file: ${'$'}(${'$'}file.FullName)"
-                        }
-                    }
-                """.trimIndent()
+            scriptMode = file {
+                path = "ci/teamcity/signing/move_signed_bins.ps1"
             }
-        }        
+            scriptArgs = "-source to_sign -destination signed"
+        }
         powerShell {
-            name = "Remove tclkitsh852.exe"
+            name = "Move exception binary tclkitsh852.exe"
             platform = PowerShellStep.Platform.x64
-            workingDir = "to_sign"
             scriptMode = script {
                 // We cannot sing this binary, see: https://wiki.tcl-lang.org/page/SDX+under+Windows
-                content = """Remove-Item -Path bin\\tclkitsh852.exe -Force""".trimIndent()
+                content = """Move-Item -Path to_sign\\bin\\tclkitsh852.exe -Destination dont_sign\\bin\\tclkitsh852.exe -Force""".trimIndent()
             }
         }
         powerShell {
@@ -54,6 +37,21 @@ object Sign : BuildType({
                 content = """
                     Get-ChildItem -Path . -Recurse -Include *.exe,*.dll | Foreach { signtool sign /v /debug /fd SHA256 /tr "http://timestamp.acs.microsoft.com" /td SHA256 /dlib "C:\ProgramData\Microsoft\MicrosoftTrustedSigningClientTools\Azure.CodeSigning.Dlib.dll" /dmdf "C:\ProgramData\Microsoft\MicrosoftTrustedSigningClientTools\metadata.json" ${'$'}_.fullname }
                 """.trimIndent()
+            }
+        }
+        powerShell {
+            name = "Move back signed binaries"
+            platform = PowerShellStep.Platform.x64
+            scriptMode = file {
+                path = "ci/teamcity/signing/move_signed_bins.ps1"
+            }
+            scriptArgs = "-source signed -destination to_sign"
+        }
+        powerShell {
+            name = "Move back exception binary tclkitsh852.exe"
+            platform = PowerShellStep.Platform.x64
+            scriptMode = script {
+                content = """Move-Item -Path dont_sign\\bin\\tclkitsh852.exe -Destination to_sign\\bin\\tclkitsh852.exe -Force""".trimIndent()
             }
         }
     }
