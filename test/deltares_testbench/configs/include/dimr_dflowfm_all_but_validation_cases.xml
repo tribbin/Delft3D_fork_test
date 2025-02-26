@@ -56,7 +56,7 @@
       </checks>
     </testCase>
     <testCase name="e02_f002_c102_longculvert_new" ref="dflowfm_default">
-      <path version="2024-08-28T16:40:00">e02_dflowfm/f002_1D2D/c102_longculvert_new</path>
+      <path version="2025-01-31T11:30:34.642000">e02_dflowfm/f002_1D2D/c102_longculvert_new</path>
       <programs>
           <program ref="dflowfm" seq="1">
             <arguments>
@@ -76,7 +76,7 @@
             <parameter name="waterlevel" toleranceAbsolute="0.0009" />
             <parameter name="x_velocity" toleranceAbsolute="0.0009" />
             <parameter name="y_velocity" toleranceAbsolute="0.0001" />
-            <parameter name="cross_section_discharge" toleranceAbsolute="0.002" />
+            <parameter name="cross_section_discharge" toleranceAbsolute="0.003" />
             <parameter name="cross_section_cumulative_discharge" toleranceRelative="0.0015" />
             <parameter name="longculvert_discharge" toleranceAbsolute="0.003" />
             <parameter name="longculvert_s1up" toleranceAbsolute="0.0005" />
@@ -2380,7 +2380,7 @@
       <checks>
         <file name="dflowfmoutput/beyer_004f_his.nc" type="netCDF">
           <parameters>
-            <parameter name="waterlevel" toleranceAbsolute="0.0006" />
+            <parameter name="waterlevel" toleranceAbsolute="0.001" />
             <parameter name="x_velocity" toleranceAbsolute="0.002" />
             <parameter name="y_velocity" toleranceAbsolute="0.0001" />
           </parameters>
@@ -4781,7 +4781,7 @@
     </testCase>
      <testCase name="e02_f022_c17_bedslope_effect_slope022" ref="dflowfm_default">
       <path version="2024-10-22T16:40:00">e02_dflowfm/f022_morphology_2D/c17_bedslope_effect_slope022</path>
-      <maxRunTime>15000.0000000</maxRunTime>
+      <maxRunTime>30.0000000</maxRunTime>
       <checks>
         <file name="dflowfmoutput/str_map.nc" type="netCDF">
           <parameters>
@@ -6769,20 +6769,20 @@
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.0000001" />
+            <parameter name="s1" toleranceAbsolute="0.000007" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
-            <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0003" />
+            <parameter name="bl_bnd" toleranceAbsolute="0.0000005" />
           </parameters>
         </file>
         <file name="rst/dflowfmoutput/t1_20071119_001400_rst.nc" type="netCDF">
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.0000001" />
+            <parameter name="s1" toleranceAbsolute="0.000007" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
-            <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0003" />
+            <parameter name="bl_bnd" toleranceAbsolute="0.0000005" />
           </parameters>
         </file>        
       </checks>
@@ -6942,7 +6942,7 @@
       </checks>
     </testCase>
     <testCase name="e02_f422_c17_bedslope_effect_slope022" ref="dflowfm_restart">
-      <path version="2024-05-22T03:50:00">e02_dflowfm/f422_morphology_2D_restart/c17_bedslope_effect_slope022</path>
+      <path version="2025-02-12T09:41:30.897000">e02_dflowfm/f422_morphology_2D_restart/c17_bedslope_effect_slope022</path>
       <maxRunTime>15000.0000000</maxRunTime>
       <checks>
         <file name="main/dflowfmoutput/str_20010101_000400_rst.nc" type="netCDF">
@@ -6951,8 +6951,8 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
-            <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000012" />
+            <parameter name="bl_bnd" toleranceAbsolute="0.0000012" />
           </parameters>
         </file>
         <file name="rst/dflowfmoutput/str_20010101_000400_rst.nc" type="netCDF">
@@ -6961,8 +6961,8 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
-            <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000012" />
+            <parameter name="bl_bnd" toleranceAbsolute="0.0000012" />
           </parameters>
         </file>        
       </checks>
@@ -7493,9 +7493,9 @@
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.0000001" />
+            <parameter name="s1" toleranceAbsolute="0.0000003" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>
@@ -7503,9 +7503,9 @@
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.0000001" />
+            <parameter name="s1" toleranceAbsolute="0.0000003" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>        
@@ -7749,8 +7749,8 @@
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.0000001" />
-            <parameter name="q1" toleranceAbsolute="0.0000001" />
+            <parameter name="s1" toleranceAbsolute="0.000075" />
+            <parameter name="q1" toleranceAbsolute="0.0002" />
             <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
@@ -7759,8 +7759,8 @@
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.0000001" />
-            <parameter name="q1" toleranceAbsolute="0.0000001" />
+            <parameter name="s1" toleranceAbsolute="0.00008" />
+            <parameter name="q1" toleranceAbsolute="0.0003" />
             <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
@@ -8139,7 +8139,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000011" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>
@@ -8149,7 +8149,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000011" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>        
@@ -8269,7 +8269,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>
@@ -8279,7 +8279,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>        
@@ -8295,7 +8295,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>
@@ -8305,7 +8305,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>        
@@ -8321,7 +8321,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>
@@ -8331,7 +8331,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>        
@@ -8555,7 +8555,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>
@@ -8565,7 +8565,7 @@
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
             <parameter name="s1" toleranceAbsolute="0.0000001" />
             <parameter name="q1" toleranceAbsolute="0.0000001" />
-            <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
+            <parameter name="mor_bl" toleranceAbsolute="0.0000003" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
         </file>        

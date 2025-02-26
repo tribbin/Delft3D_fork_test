@@ -40,7 +40,7 @@ contains
       use m_flowgeom, only: ln, wu, bob
       use m_flow
       use m_structures
-      use fm_external_forcings_data, only: ngenstru
+      use fm_external_forcings_data, only: ngenstru, dambreakLinksActualLength 
       use m_partitioninfo
       use m_flowtimes
       use m_missing, only: dmiss
@@ -49,6 +49,8 @@ contains
       use m_compound
       use m_GlobalParameters
       use m_longculverts, only: nlongculverts, longculverts, newculverts
+      use m_dambreak_breach, only: waterLevelsDambreakUpStream, waterLevelsDambreakDownStream, normalVelocityDambreak, & 
+            breachWidthDerivativeDambreak, waterLevelJumpDambreak
 
       integer :: i, n, L, Lf, La, ierr, k, ku, kd, istru, nlinks
       real(kind=dp) :: dir

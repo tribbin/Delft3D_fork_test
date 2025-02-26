@@ -1614,7 +1614,7 @@ contains
             ! Number of netlinks can be > number of flowlinks, if there are closed edges.
             numl2d = numl - numl1d
             ! Write default_value on all remaining edges in 2d mesh (i.e. closed edges).
-            ierr = nf90_put_var(ncid, id_var(2), (/default_value/), start=(/1, lnx2d + 1, id_tsp%idx_curtime/), count=(/kmx, numl2d - lnx2d, 1/), map=(/0/)) ! Use map = 0 to write a single value on multiple edges in file.
+            ierr = nf90_put_var(ncid, id_var(2), (/default_value/), start=(/1, lnx2d + 1, id_tsp%idx_curtime/), count=(/kmx, numl2d - lnx2d, 1/), map=(/0,0,0/)) ! Use map = 0 to write a single value on multiple edges in file.
          end if
 
       case (UNC_LOC_W) ! Vertical velocity point location on all layer interfaces.
@@ -2414,7 +2414,7 @@ contains
 !> Puts global attributes in NetCDF data set.
 !! This includes: institution, Conventions, etc.
    subroutine unc_addglobalatts(ncid)
-      use messagehandling, only : err_flush
+      use messagehandling, only: err_flush
       integer, intent(in) :: ncid
 
       character(len=8) :: cdate
@@ -5270,8 +5270,9 @@ contains
       use m_reconstruct_ucz
       use m_reconstruct_sed_transports
       use m_get_ucx_ucy_eul_mag
-      use m_get_cz
-      use messagehandling, only : err_flush
+      use m_get_chezy, only: get_chezy
+      use messagehandling, only: err_flush
+      use m_nudge, only: nudge_rate, nudge_tem, nudge_sal
 
       implicit none
 
@@ -7666,7 +7667,7 @@ contains
       if (jamap_chezy_links > 0) then
          do LL = 1, lnx
             if (frcu(LL) > 0d0) then
-               call getcz(hu(LL), frcu(LL), ifrcutp(LL), czu(LL), LL) ! in gettaus czu is calculated but not stored
+               czu(LL) = get_chezy(hu(LL), frcu(LL), u1(LL), v(LL), ifrcutp(LL)) ! in gettaus czu is calculated but not stored
             end if
          end do
       end if
@@ -8012,7 +8013,7 @@ contains
       use m_reconstruct_ucz
       use m_reconstruct_sed_transports
       use m_get_ucx_ucy_eul_mag
-      use m_get_cz
+      use m_get_chezy, only: get_chezy
 
       implicit none
 
@@ -9859,7 +9860,7 @@ contains
          if (jamap_chezy_links > 0) then
             do LL = 1, lnx
                if (frcu(LL) > 0d0) then
-                  call getcz(hu(LL), frcu(LL), ifrcutp(LL), czu(LL), LL)
+                  czu(LL) = get_chezy(hu(LL), frcu(LL), u1(LL), v(LL), ifrcutp(LL))
                end if
             end do
          end if
@@ -13221,7 +13222,7 @@ contains
       call readyy('Reading map data', 0.10d0)
 
       iostat = 0
-      call datetimestring_to_seconds(restartdatetime(1:14), refdat, trefdat_rst, iostat) ! result: refdatnew in seconds  w.r.t. absolute MDU refdat
+      call datetimestring_to_seconds(restart_date_time(1:14), refdat, trefdat_rst, iostat) ! result: refdatnew in seconds  w.r.t. absolute MDU refdat
       mdu_has_date = (iostat == 0)
 
       if (nt_read == 1 .and. .not. mdu_has_date) then
@@ -13229,9 +13230,9 @@ contains
          ! only a single time snapshot in file: directly use it.
          it_read = 1
       else
-         ! Restart from *_map.nc and select time snapshot based on MDU RestartDateTime value.
+         ! Restart from *_map.nc and select time snapshot based on MDU restartDateTime value.
          if (.not. mdu_has_date) then
-            call mess(LEVEL_WARN, 'Missing RestartDateTime in MDU file. Will not read from map file '''//trim(filename)//'''.')
+            call mess(LEVEL_WARN, 'Missing restartDateTime in MDU file. Will not read from map file '''//trim(filename)//'''.')
             ierr = DFM_WRONGINPUT
             goto 999
          end if
@@ -13254,7 +13255,7 @@ contains
          call check_error(ierr, 'time')
          call readyy('Reading map data', 0.20d0)
 
-         ! Find last map time <= restartdatetime
+         ! Find last map time <= restart_date_time
          it_read = 0
          do L = nt_read, 1, -1
             if (maptimes(L) + trefdat_map <= trefdat_rst) then
@@ -13263,11 +13264,11 @@ contains
             end if
          end do
 
-         ! If no map time was found <= restartdatetime, issue warning
+         ! If no map time was found <= restart_date_time, issue warning
          if (it_read == 0) then
             ! TODO: warning
             ! And stop, because no suitable restart time found.
-            call mess(LEVEL_WARN, 'No suitable restart time found in '''//trim(filename)//''' for requested RestartDateTime='//trim(restartdatetime)//'.')
+            call mess(LEVEL_WARN, 'No suitable restart time found in '''//trim(filename)//''' for requested restartDateTime='//trim(restart_date_time)//'.')
             ierr = DFM_WRONGINPUT
             goto 999
          end if
