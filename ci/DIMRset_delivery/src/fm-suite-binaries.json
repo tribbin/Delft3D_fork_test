@@ -157,15 +157,11 @@
             "Issued to": "Intel Corporation"
         },
         {
-            "file": "lib\\ifdlg100.dll",
-            "Issued to": "Intel Corporation"
-        },
-        {
             "file": "lib\\impi.dll",
             "Issued to": "Intel Corporation"
         },
         {
-            "file": "lib\\libchkp.dll",
+            "file": "lib\\libiomp5md_db.dll",
             "Issued to": "Intel Corporation"
         },
         {
@@ -221,10 +217,6 @@
             "Issued to": "Intel Corporation"
         },
         {
-            "file": "lib\\mkl_avx.2.dll",
-            "Issued to": "Intel Corporation"
-        },
-        {
             "file": "lib\\mkl_avx2.2.dll",
             "Issued to": "Intel Corporation"
         },
@@ -251,10 +243,6 @@
         {
             "file": "lib\\svml_dispmd.dll",
             "Issued to": "Intel Corporation"
-        },
-        {
-            "file": "lib\\cilkrts20.dll",
-            "Issued to": "Intel(R) Software Development Products"
         },
         {
             "file": "lib\\msvcp100.dll",
