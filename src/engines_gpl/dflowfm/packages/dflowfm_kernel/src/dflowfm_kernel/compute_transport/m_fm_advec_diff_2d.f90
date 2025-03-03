@@ -111,7 +111,6 @@ module m_fm_advec_diff_2d
       call realloc(dumy, ndx, keepExisting=.true., fill=0d0)
 
 !  construct advective velocity field --> uadv, qadv, mind the orientation (>0 from ln(1,L) to ln(2,L))
-      !qadv=uadv
       do L = 1, lnx
          k1 = ln(1, L)
          k2 = ln(2, L)
