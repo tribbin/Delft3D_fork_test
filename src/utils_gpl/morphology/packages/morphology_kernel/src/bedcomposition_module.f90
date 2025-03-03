@@ -157,7 +157,7 @@ type bedcomp_settings
     real(fp) , dimension(:)   , pointer :: thexlyr   ! thickness of exchange layer
     real(fp) , dimension(:)   , pointer :: thtrlyr   ! thickness of transport layer
     real(fp) , dimension(:)   , pointer :: zdiff     ! depth below bed level for which diffusion coefficients are defined, units : m
-    real(fp) , dimension(:)   , pointer :: ladiff    ! diffusion coefficient of the active layer, units : m2/s
+    real(fp) , dimension(:)   , pointer :: aldiff    ! diffusion coefficient of the active layer, units : m2/s
     ! 
     ! logicals
     !
@@ -2454,6 +2454,8 @@ function bedcomp_getpointer_fp_1darray(this, variable, val) result (istat)
        val => this%settings%thtrlyr
     case ('diffusion_levels','zdiff')
        val => this%settings%zdiff
+    case ('active_layer_diffusion','aldiff')
+       val => this%settings%aldiff
     case default
        val => NULL()
     end select

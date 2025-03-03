@@ -102,6 +102,7 @@ contains
       real(fp), pointer :: thlalyr
       real(fp), dimension(:), pointer :: thexlyr
       real(fp), dimension(:), pointer :: thtrlyr
+      real(fp), dimension(:), pointer :: aldiff
       real(fp), pointer :: ttlalpha
       real(fp), pointer :: ttlmin
       real(fp), dimension(:, :), pointer :: kdiff
@@ -127,6 +128,7 @@ contains
       character(256), pointer :: flcomp
       character(256), pointer :: ttlfil
       character(256), pointer :: telfil
+      character(256), pointer :: aldifffil
 !
 !! executable statements -------------------------------------------------------
 !
@@ -405,18 +407,84 @@ contains
              any_active_layer_diffusion=.true.
          endif
          if (any_active_layer_diffusion) then
-            txtput1 = 'Diffusion in active layer model activated'
-            select case(active_layer_diffusion)
+            !
+            !YES diffusion in active-layer mode    
+            !
+            txtput1 = 'Diffusion in active-layer model activated'
+            write (lundia, '(a)') txtput1
+            
+            select case(active_layer_diffusion)                
             case(1)
-               txtput2 = '   Const. in polygon'
+               !
+               ! constant value or xy-val file (use of flag `ALDiff`)
+               !
+               !
+               !get memory
+               istat = bedcomp_getpointer_realfp(morlyr, 'ALDiff',ALDiff)
+               if (istat /= 0) then
+                  errmsg = 'Memory problem in RDMORLYR'
+                  call write_error(errmsg, unit=lundia)
+                  error = .true.
+                  return
+               end if
+               !
+               !check if file or value
+               aldifffil = ''
+               call prop_get(mor_ptr, 'Underlayer', 'ALDiff', aldifffil)
+               if (aldifffil == ' ') aldifffil = 'dummyname'
+               inquire (file=aldifffil, exist=ex)
+               
+               if (ex) then
+                  !
+                  ! read data from file
+                  !
+                  txtput1 = 'Active-layer diffusion from file'
+                  write (lundia, '(3a)') txtput1, ':', aldifffil
+                  !
+                  call depfil_stm(lundia, error, aldifffil, fmttmp, &
+                                & ALDiff, 1, 1, griddim, errmsg)
+                  if (error) then
+                     call write_error(errmsg, unit=lundia)
+                     errmsg = 'Unable to read active-layer diffusion from file'//trim(ttlfil)
+                     call write_error(errmsg, unit=lundia)
+                     return
+                  end if
+               else
+                  !
+                  ! constant value
+                  !
+                  ttlfil = ' '
+                  call prop_get(mor_ptr, 'Underlayer', 'ALDiff', ALDiff(1))
+                  if (ALDiff(1) <= 0) then
+                     errmsg = 'ALDiff should be positive in '//trim(filmor)
+                     call write_error(errmsg, unit=lundia)
+                     error = .true.
+                     return
+                  end if
+                  do it = nmlb, nmub
+                     ALDiff(it) = ALDiff(1)
+                  end do
+                  !
+                  txtput1 = 'Constant active-layer diffusion'
+                  write (lundia, '(2a,e20.4)') txtput1, ':', ALDiff(1)
+               end if
             case default
+               !
+               ! Nothing specified
+               !
                txtput2 = '                   ?'
+               write (lundia, '(a)') txtput2
             endselect
-            write (lundia, '(3a)') txtput1, ':', txtput2
          else
-             txtput1 = 'Diffusion in active layer model deactivated'
-             write (lundia, '(a)') txtput1
+            !
+            !NO diffusion in active-layer mode    
+            !
+            txtput1 = 'Diffusion in active-layer model deactivated'
+            write (lundia, '(a)') txtput1
          endif
+         
+         
+         
       case default
       end select
       !
