@@ -30,17 +30,17 @@
 !
 !
 
-module m_ade2d
+module m_fm_advec_diff_2d
 
    implicit none
 
    private
 
-   public :: fm_ade2d
+   public :: fm_advec_diff_2d
    
     contains
     
-    subroutine fm_ade2d(thevar, uadv, qadv, sour, sink, limityp, ierror)
+    subroutine fm_advec_diff_2d(thevar, uadv, qadv, sour, sink, limityp, ierror)
       use m_transport, only: dxiau
       use m_flowgeom, only: Ndx, Lnx, ln, ba ! static mesh information
       use m_flow, only: Ndkx, Lnkx, kbot, ktop, Lbot, Ltop, kmxn, kmxL
@@ -132,5 +132,5 @@ module m_ade2d
       ierror = 0
 1234  continue
       return
-   end subroutine fm_ade2d
-end module m_ade2d
+   end subroutine fm_advec_diff_2d
+end module m_fm_advec_diff_2d

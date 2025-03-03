@@ -304,7 +304,7 @@ contains
       use m_alloc
       use message_module
       use m_get_Lbot_Ltop
-      use m_ade2d, only: fm_ade2d
+      use m_fm_advec_diff_2d, only: fm_advec_diff_2d
       !
       implicit none
       !
@@ -636,7 +636,7 @@ contains
             kb = ln(1, L); ki = ln(2, L)
             dh(1, kb) = dh(1, ki)
          end do
-         call fm_ade2d(dh, ubedformu, qbedformn, sour, sink, 4, ierror)
+         call fm_advec_diff_2d(dh, ubedformu, qbedformn, sour, sink, 4, ierror)
       end do
       !
       dts = dtsori

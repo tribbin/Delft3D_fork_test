@@ -2055,7 +2055,7 @@ contains
     !> Apply diffusion to sediment mass in the active layer. 
     subroutine fm_diffusion_active_layer()
       use precision, only: dp
-      use m_ade2d, only: fm_ade2d
+      use m_fm_advec_diff_2d, only: fm_advec_diff_2d
       use m_fm_erosed, only: lsedtot, tratyp, stmpar
       use m_flowgeom, only: lnx, ndx
       use sediment_basics_module, only: has_bedload
@@ -2090,7 +2090,7 @@ contains
       
       do l = 1, lsedtot
          if (has_bedload(tratyp(l))) then
-            call fm_ade2d(stmpar%morlyr%state%msed(l,1,:), uadv, qadv, sour, sink, 4, ierror)   
+            call fm_advec_diff_2d(stmpar%morlyr%state%msed(l,1,:), uadv, qadv, sour, sink, 4, ierror)   
          end if
       end do
       
