@@ -233,12 +233,12 @@ subroutine wrsedh(lundia    ,error     ,filename  ,ithisc    ,ntruv     , &
          endif
          call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZDPS', ' ', io_prec       , 1, dimids=(/iddim_nostat/), longname='Morphological depth at station (zeta point)', unit='m', attribs=(/idatt_sta/) )
          if (lsedtot > 0) then
-            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSBU', ' ', io_prec       , 2, dimids=(/iddim_nostat, iddim_lsedtot/), longname='Bed load transport in u-direction at station (zeta point)', unit=moroutput%transpunit, attribs=(/idatt_sta/) )
-            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSBV', ' ', io_prec       , 2, dimids=(/iddim_nostat, iddim_lsedtot/), longname='Bed load transport in v-direction at station (zeta point)', unit=moroutput%transpunit, attribs=(/idatt_sta/) )
+            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSBU', ' ', io_prec       , 2, dimids=(/iddim_nostat, iddim_lsedtot/), longname='Bed load transport in u-direction at station (zeta point)', unit=moroutput%unit_transp_per_cell, attribs=(/idatt_sta/) )
+            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSBV', ' ', io_prec       , 2, dimids=(/iddim_nostat, iddim_lsedtot/), longname='Bed load transport in v-direction at station (zeta point)', unit=moroutput%unit_transp_per_cell, attribs=(/idatt_sta/) )
          endif
          if (lsed > 0) then
-           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSSU', ' ', io_prec     , 2, dimids=(/iddim_nostat, iddim_lsed/), longname='Susp. load transport in u-direction at station (zeta point)', unit=moroutput%transpunit, attribs=(/idatt_sta/) )
-           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSSV', ' ', io_prec     , 2, dimids=(/iddim_nostat, iddim_lsed/), longname='Susp. load transport in v-direction at station (zeta point)', unit=moroutput%transpunit, attribs=(/idatt_sta/) )
+           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSSU', ' ', io_prec     , 2, dimids=(/iddim_nostat, iddim_lsed/), longname='Susp. load transport in u-direction at station (zeta point)', unit=moroutput%unit_transp_per_cell, attribs=(/idatt_sta/) )
+           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZSSV', ' ', io_prec     , 2, dimids=(/iddim_nostat, iddim_lsed/), longname='Susp. load transport in v-direction at station (zeta point)', unit=moroutput%unit_transp_per_cell, attribs=(/idatt_sta/) )
            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'ZRCA', ' ', io_prec     , 2, dimids=(/iddim_nostat, iddim_lsed/), longname='Near-bed reference concentration of sediment at station', unit='kg/m3', attribs=(/idatt_sta/) )
            !
            if (moroutput%sourcesink) then
@@ -277,19 +277,17 @@ subroutine wrsedh(lundia    ,error     ,filename  ,ithisc    ,ntruv     , &
        ! his-sed-series: cross-sections
        !
        if (ntruv > 0) then
-         transpcrsunit = moroutput%transpunit(1:2) // '/s'
          if (lsedtot > 0) then
-            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SBTR', ' ', io_prec       , 2, dimids=(/iddim_ntruv, iddim_lsedtot/), longname='Instantaneous bed load transport through section', unit=transpcrsunit, attribs=(/idatt_tra/) )
+            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SBTR', ' ', io_prec       , 2, dimids=(/iddim_ntruv, iddim_lsedtot/), longname='Instantaneous bed load transport through section', unit=moroutput%unit_transp_per_crs, attribs=(/idatt_tra/) )
          endif
          if (lsed > 0) then         
-           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SSTR', ' ', io_prec     , 2, dimids=(/iddim_ntruv, iddim_lsed/), longname='Instantaneous susp. load transport through section', unit=transpcrsunit, attribs=(/idatt_tra/) )
+           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SSTR', ' ', io_prec     , 2, dimids=(/iddim_ntruv, iddim_lsed/), longname='Instantaneous susp. load transport through section', unit=moroutput%unit_transp_per_crs, attribs=(/idatt_tra/) )
          endif
-         transpcrsunit = moroutput%transpunit(1:2)
          if (lsedtot > 0) then
-            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SBTRC', ' ', io_prec      , 2, dimids=(/iddim_ntruv, iddim_lsedtot/), longname='Cumulative bed load transport through section', unit=transpcrsunit, attribs=(/idatt_tra/) )
+            call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SBTRC', ' ', io_prec      , 2, dimids=(/iddim_ntruv, iddim_lsedtot/), longname='Cumulative bed load transport through section', unit=moroutput%unit_transp, attribs=(/idatt_tra/) )
          endif
          if (lsed > 0) then
-           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SSTRC', ' ', io_prec    , 2, dimids=(/iddim_ntruv, iddim_lsed/), longname='Cumulative susp. load transport through section', unit=transpcrsunit, attribs=(/idatt_tra/) )
+           call addelm(gdp, lundia, FILOUT_HIS, grnam5, 'SSTRC', ' ', io_prec    , 2, dimids=(/iddim_ntruv, iddim_lsed/), longname='Cumulative susp. load transport through section', unit=moroutput%unit_transp, attribs=(/idatt_tra/) )
          endif
        endif
        !

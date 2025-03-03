@@ -122,8 +122,8 @@ subroutine wrmorst(lundia    ,error     ,mmax      ,nmaxus    ,lsedtot   , &
            call addelm(gdp, lundia, FILOUT_MAP, grpnam, 'DMSEDCUM', ' ', io_prec      , 3, dimids=(/iddim_n, iddim_m, iddim_lsedtot/), longname='Accumulated net sedimentation flux', unit='kg/m2', acl='z')
         endif
         !
-        moroutput%statunt(3) = moroutput%transpunit ! bed load
-        moroutput%statunt(4) = moroutput%transpunit ! suspended load
+        moroutput%statunt(3) = moroutput%unit_transp_per_cell ! bed load
+        moroutput%statunt(4) = moroutput%unit_transp_per_cell ! suspended load
         do iq = 1,4
             if (moroutput%statflg(1,iq)>0) then
                 call local_def(moroutput%statflg(:,iq),moroutput%statqnt(iq),moroutput%statnam(iq),moroutput%statunt(iq))

@@ -621,8 +621,8 @@ contains
             ierr = unc_def_var_map(sedids%ncid, sedids%id_tsp, sedids%id_dmsedcum, nf90_double, UNC_LOC_S, 'dmsedcum', 'net sedimentation flux over time interval', '', 'kg m-2', dimids=(/-2, sedids%id_tsp%id_sedtotdim, -1/))
          end if
          !
-         stmpar%morpar%moroutput%statunt(3) = trim(stmpar%morpar%moroutput%transpunit) ! bed load
-         stmpar%morpar%moroutput%statunt(4) = trim(stmpar%morpar%moroutput%transpunit) ! suspended load
+         stmpar%morpar%moroutput%statunt(3) = trim(stmpar%morpar%moroutput%unit_transp_per_cell) ! bed load
+         stmpar%morpar%moroutput%statunt(4) = trim(stmpar%morpar%moroutput%unit_transp_per_cell) ! suspended load
          !
          ! Conditional defs based on requested output. This can be improved, I guess... Runtime variable definition would be nice to have :)
          !

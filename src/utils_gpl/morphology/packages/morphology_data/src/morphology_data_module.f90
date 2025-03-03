@@ -230,7 +230,9 @@ type moroutputtype
     integer :: transptype      ! 0 = mass
                                ! 1 = volume including pores
                                ! 2 = volume excluding pores
-    character(len=30) :: transpunit
+    character(len=30) :: unit_transp
+    character(len=30) :: unit_transp_per_cell
+    character(len=30) :: unit_transp_per_crs
     !
     character(len=30), dimension(4) :: statqnt = (/"H1  ","UV  ","SBUV","SSUV"/)
     character(len=30), dimension(4) :: statnam = (/"water depth              ", &
@@ -1706,7 +1708,9 @@ subroutine initmoroutput(moroutput, def)
     endif
     !
     moroutput%transptype  = 2
-    moroutput%transpunit  = 'm3 s-1 m-1'
+    moroutput%unit_transp = 'm3'
+    moroutput%unit_transp_per_cell  = 'm3 s-1 m-1'
+    moroutput%unit_transp_per_crs   = 'm3 s-1'
     !
     moroutput%statflg(:,:) = 0
     moroutput%nstatqnt     = 0
