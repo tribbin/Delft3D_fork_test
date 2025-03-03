@@ -96,7 +96,7 @@ module m_fm_advec_diff_2d
 
       !BEGIN
       
-      ierror = 1
+      ierror = 0
 
       !allocate
       call realloc(jaupdate   , ndx, keepExisting=.true., fill=1) !update all flownodes
@@ -133,8 +133,6 @@ module m_fm_advec_diff_2d
       call comp_fluxhor3D(NUMCONST, limityp, ndx, lnx, uadv, qadv, sqi, ba, kbot, lbot, ltop, kmxn, kmxL, var, dif, sigdif, duml, NSUBSTEPS, jahorupdate, ndeltasteps, jaupdateconst, fluxhor, dummy_ndx, dummy_ndx, 1, dxiAu)
       call comp_sumhorflux(1, 0, lnkx, ndkx, lbot, ltop, fluxhor, sumhorflux)
       call solve_2D(1, ndx, ba, kbot, ktop, sumhorflux, fluxver, const_sour, const_sink, 1, jaupdate, ndeltasteps, var, rhs)
-      ierror = 0
-1234  continue
-      return
+
    end subroutine fm_advec_diff_2d
 end module m_fm_advec_diff_2d
