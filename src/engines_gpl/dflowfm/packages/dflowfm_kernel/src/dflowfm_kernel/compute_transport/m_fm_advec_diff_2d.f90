@@ -62,12 +62,12 @@ module m_fm_advec_diff_2d
       integer, parameter, dimension(NUMCONST) :: JAUPDATECONST = 1 !< flag for updating constituent (1) or not (0)
       
       !input/output
-      real(kind=dp), dimension(1, ndx), intent(inout) :: var  !< variable to be tranported [unit]
+      real(kind=dp), dimension(ndx),    intent(inout) :: var  !< variable to be tranported [unit]
       real(kind=dp), dimension(lnx),    intent(in)    :: uadv !< flow-field face-normal velocities (`u1`) [m/s]
       real(kind=dp), dimension(lnx),    intent(in)    :: qadv !< flow-field discharges (`q1`) [m^2/s]
       real(kind=dp), dimension(ndx),    intent(in)    :: sour !< variable source [unit/s]
       real(kind=dp), dimension(ndx),    intent(in)    :: sink !< variable linear-term sink [1/s]
-      real(kind=dp), dimension(1, lnx), intent(in)    :: diff !< diffusion coefficient [m/s^2]
+      real(kind=dp), dimension(lnx),    intent(in)    :: diff !< diffusion coefficient [m/s^2]
       integer, intent(in) :: limityp !< flag for limiter type (>0) or upwind (0)
       integer, intent(out) :: ierror !< flag for error (1) or not (0)
 
@@ -79,10 +79,11 @@ module m_fm_advec_diff_2d
       real(kind=dp), dimension(:, :), allocatable :: fluxver !vertical fluxes
       real(kind=dp), dimension(:, :), allocatable :: const_sour !variable source
       real(kind=dp), dimension(:, :), allocatable :: const_sink !variable linear-term sink
+      real(kind=dp), dimension(:, :), allocatable :: const_var  !variable to be transported
+      real(kind=dp), dimension(:, :), allocatable :: const_diff !diffusion coefficient
       real(kind=dp), dimension(:, :), allocatable :: rhs !right-hand side
       
-      real(kind=dp), dimension(:), allocatable :: diff_const !sum of molecular and user-specified diffusion coefficient
-      real(kind=dp), dimension(:), allocatable :: sigdif !diffusion factor applied to viscosity (1/(Prandtl number) for heat, 1/(Schmidt number) for mass)
+      real(kind=dp), dimension(:), allocatable :: dummy !dummy array used for scalar diffusion
       
       !local: space
       integer, dimension(:), allocatable :: jaupdate !mask for flownode update: 1=yes, 0=no
@@ -104,8 +105,7 @@ module m_fm_advec_diff_2d
       call realloc(ndeltasteps, ndx, keepExisting=.true., fill=1) !it is only used if `NSUBSTEPS`>1, which is not the case.
       call realloc(jahorupdate, lnx, keepExisting=.true., fill=1) !update all horizontal fluxes
 
-      call realloc(diff_const   , 1, keepExisting=.true., fill=0d0) !no diffusion
-      call realloc(sigdif, 1, keepExisting=.true., fill=0d0) !no diffusion
+      call realloc(dummy , 1, keepExisting=.true., fill=0d0) !no diffusion (it is not used anyway because we pass the optional input `const_diff`)
       
       call realloc(fluxhor, (/1, lnx/), keepExisting=.true., fill=0d0)
       
@@ -127,13 +127,16 @@ module m_fm_advec_diff_2d
       end do
 
       !reshape (we only have one constituent)
+      const_var =RESHAPE(var ,shape=(/1, ndx/))
       const_sour=RESHAPE(sour,shape=(/1, ndx/))
       const_sink=RESHAPE(sink,shape=(/1, ndx/))
+      
+      const_diff=RESHAPE(diff,shape=(/1, lnx/))
 
       call comp_dxiAu()
-      call comp_fluxhor3D(NUMCONST, limityp, ndx, lnx, uadv, qadv, sqi, ba, kbot, lbot, ltop, kmxn, kmxL, var, diff_const, sigdif, duml, NSUBSTEPS, jahorupdate, ndeltasteps, jaupdateconst, fluxhor, dummy_ndx, dummy_ndx, 1, dxiAu, difsedsp=diff)
+      call comp_fluxhor3D(NUMCONST, limityp, ndx, lnx, uadv, qadv, sqi, ba, kbot, lbot, ltop, kmxn, kmxL, const_var, dummy, dummy, duml, NSUBSTEPS, jahorupdate, ndeltasteps, jaupdateconst, fluxhor, dummy_ndx, dummy_ndx, 1, dxiAu, difsedsp=const_diff)
       call comp_sumhorflux(1, 0, lnkx, ndkx, lbot, ltop, fluxhor, sumhorflux)
-      call solve_2D(1, ndx, ba, kbot, ktop, sumhorflux, fluxver, const_sour, const_sink, 1, jaupdate, ndeltasteps, var, rhs)
+      call solve_2D(1, ndx, ba, kbot, ktop, sumhorflux, fluxver, const_sour, const_sink, 1, jaupdate, ndeltasteps, const_var, rhs)
 
    end subroutine fm_advec_diff_2d
 end module m_fm_advec_diff_2d

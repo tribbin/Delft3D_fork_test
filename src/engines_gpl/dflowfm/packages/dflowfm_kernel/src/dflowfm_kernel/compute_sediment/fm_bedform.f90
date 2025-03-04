@@ -363,11 +363,11 @@ contains
       real(fp), dimension(:, :), pointer :: e_sbn
       real(fp), dimension(:, :), pointer :: e_sbt
 
-      real(kind=dp), dimension(:, :), allocatable :: dh
+      real(kind=dp), dimension(:), allocatable :: dh
       real(kind=dp), dimension(:), allocatable :: uxbf
       real(kind=dp), dimension(:), allocatable :: uybf
       real(kind=dp), dimension(:), allocatable :: ubedformu
-      real(kind=dp), dimension(:,:), allocatable :: diff
+      real(kind=dp), dimension(:), allocatable :: diff
 !
 !! executable statements -------------------------------------------------------
 !
@@ -398,12 +398,12 @@ contains
       lsedtot => stmpar%lsedtot
       tcmp => stmpar%morpar%tcmp
       !
-      call realloc(dh, (/1, Ndx/), keepExisting=.false., fill=0d0)
+      call realloc(dh,   ndx, keepExisting=.false., fill=0d0)
       call realloc(uxbf, ndx, keepExisting=.false., fill=0d0)
       call realloc(uybf, ndx, keepExisting=.false., fill=0d0)
       call realloc(sour, ndx, keepExisting=.false., fill=0d0)
       call realloc(sink, ndx, keepExisting=.false., fill=0d0)
-      call realloc(diff, (/1, lnx /), keepExisting=.false., fill=0d0)
+      call realloc(diff, lnx, keepExisting=.false., fill=0d0)
       call realloc(ubedformu, lnx, keepExisting=.false., fill=0d0)
       !
       ! The time step used for the bedform adaptation depends on the
@@ -628,7 +628,7 @@ contains
       !
 
       do k = 1, ndxi
-         dh(1, k) = duneheight(k)
+         dh(k) = duneheight(k)
       end do
 
       dtsori = dts
@@ -637,14 +637,14 @@ contains
       do n = 1, nsteps
          do L = lnxi + 1, lnx ! Neumann conditions
             kb = ln(1, L); ki = ln(2, L)
-            dh(1, kb) = dh(1, ki)
+            dh(kb) = dh(ki)
          end do
          call fm_advec_diff_2d(dh, ubedformu, qbedformn, sour, sink, diff, 4, ierror)
       end do
       !
       dts = dtsori
       do k = 1, ndx
-         duneheight(k) = dh(1, k)
+         duneheight(k) = dh(k)
       end do
 
       deallocate (dh, STAT=istat)
