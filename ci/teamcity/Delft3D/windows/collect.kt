@@ -17,7 +17,7 @@ object WindowsCollect : BuildType({
 
     name = "Collect"
     buildNumberPattern = "%dep.${WindowsBuild.id}.product%: %build.vcs.number%"
-    description = "DIMRset collector for Linux."
+    description = "DIMRset collector for Windows."
 
     allowExternalStatus = true
     artifactRules = """
@@ -48,6 +48,20 @@ object WindowsCollect : BuildType({
             command = file {
                 filename = """ci/DIMRset_delivery/scripts/list_all_what_strings.py"""
                 scriptArguments = "--srcdir x64 --output dimrset_version_x64.txt"
+            }
+        }
+        python {
+            name = "Verify (un)signed binaries and directory structure"
+            command = file {
+                filename = "ci/DIMRset_delivery/src/validate_signing.py"
+                scriptArguments = """
+                    "ci\\DIMRset_delivery\\src\\%dep.${WindowsBuild.id}.product%-binaries.json" 
+                    "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools\\VsDevCmd.bat" 
+                    "x64"
+                """.trimIndent()
+            }
+            conditions {
+                equals("dep.${WindowsBuild.id}.product", "fm-suite")
             }
         }
     }
