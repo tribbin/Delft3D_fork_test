@@ -148,6 +148,8 @@ module m_sediment
    integer :: jaceneqtr = 2 !< equilibrium transport in cell centre=1, in net nodes=2
    integer :: jgrtek = 1 !< grainsize fraction nr to plot
    integer :: numintverticaleinstein = 10 !< number of vertical intervals in einstein integrals
+   
+   real(kind=dp), allocatable :: aldiff_links(:, :) !< active-layer diffusion at links
 
 contains
 

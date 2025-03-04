@@ -2097,6 +2097,12 @@ function allocmorlyr(this) result (istat)
     if (istat == 0) allocate (state%sedshort(nfrac,nmlb:nmub), stat = istat)
     if (istat == 0) state%sedshort = 0.0_fp
     !
+    if (settings%any_active_layer_diffusion) then
+       if (istat == 0) allocate (settings%aldiff(nmlb:nmub), stat = istat)
+       if (istat == 0) settings%aldiff = 0.0_fp
+    endif 
+    !    
+    !
     ! WARNING: Do not allocate this%work here
     ! For some reason it needs to be allocated/deallocated in updmorlyr/gettoplyr
     !
@@ -2203,6 +2209,8 @@ function clrmorlyr(this) result (istat)
        if (associated(settings%phi))       deallocate(settings%phi    , STAT = istat)
        if (associated(settings%rhofrac))   deallocate(settings%rhofrac, STAT = istat)
        if (associated(settings%sigphi))    deallocate(settings%sigphi , STAT = istat)
+       !
+       if (associated(settings%aldiff))   deallocate(settings%aldiff  , STAT = istat)
        !
        deallocate(this%settings, STAT = istat)
        nullify(this%settings)

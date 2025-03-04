@@ -2060,6 +2060,7 @@ contains
       use m_flowgeom, only: lnx, ndx
       use sediment_basics_module, only: has_bedload
       use m_alloc, only: realloc
+      use m_sediment, only: aldiff_links
       
    !!
    !! I/O
@@ -2069,10 +2070,10 @@ contains
    !!
    !! Local variables
    !!
-      real(kind=dp), dimension(:), allocatable :: uadv
-      real(kind=dp), dimension(:), allocatable :: qadv
-      real(kind=dp), dimension(:), allocatable :: sour
-      real(kind=dp), dimension(:), allocatable :: sink
+      real(kind=dp), dimension(:)  , allocatable :: uadv
+      real(kind=dp), dimension(:)  , allocatable :: qadv
+      real(kind=dp), dimension(:)  , allocatable :: sour
+      real(kind=dp), dimension(:)  , allocatable :: sink
       
       integer :: l
       integer :: ierror
@@ -2090,7 +2091,7 @@ contains
       
       do l = 1, lsedtot
          if (has_bedload(tratyp(l))) then
-            call fm_advec_diff_2d(stmpar%morlyr%state%msed(l,1,:), uadv, qadv, sour, sink, 4, ierror)   
+            call fm_advec_diff_2d(stmpar%morlyr%state%msed(l,1,:), uadv, qadv, sour, sink, aldiff_links, 4, ierror)   
          end if
       end do
       
