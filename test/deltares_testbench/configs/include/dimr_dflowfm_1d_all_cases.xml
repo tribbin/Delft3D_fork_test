@@ -863,7 +863,7 @@
 		</checks>
 	</testCase>
 	<testCase name="e02_f106_c02_orifice" ref="dimr_default">
-		<path version="2024-01-11T13:00:00">e02_dflowfm/f106_hydraulic-structures/c02_Orifice</path>
+		<path version="2025-02-27T14:56:10.754000">e02_dflowfm/f106_hydraulic-structures/c02_Orifice</path>
 		<checks>
 			<file name="DFM_OUTPUT_Flow1D/Flow1D_map.nc" type="netCDF">
 				<parameters>
@@ -884,7 +884,7 @@
 		</checks>
 	</testCase>
 	<testCase name="e02_f106_c03_culvert" ref="dimr_default">
-		<path version="2024-04-19T13:10:00">e02_dflowfm/f106_hydraulic-structures/c03_Culvert</path>
+		<path version="2025-02-27T14:56:26.197000">e02_dflowfm/f106_hydraulic-structures/c03_Culvert</path>
 		<checks>
 			<file name="DFM_OUTPUT_Flow1D/Flow1D_map.nc" type="netCDF">
 				<parameters>
@@ -929,7 +929,7 @@
 		</checks>
 	</testCase>
 	<testCase name="e02_f106_c05_Bridge" ref="dimr_default">
-		<path version="2024-09-17T13:08:00">e02_dflowfm/f106_hydraulic-structures/c05_Bridge</path>
+		<path version="2025-02-27T14:56:43.089000">e02_dflowfm/f106_hydraulic-structures/c05_Bridge</path>
 		<checks>
 			<file name="DFM_OUTPUT_flowFM/flowFM_map.nc" type="netCDF">
 				<parameters>
@@ -972,7 +972,7 @@
 		</checks>
 	</testCase>
 	<testCase name="e02_f106_c07_Compound" ref="dimr_default">
-		<path version="2024-01-11T13:00:00">e02_dflowfm/f106_hydraulic-structures/c07_Compound</path>
+		<path version="2025-02-27T14:56:55.447000">e02_dflowfm/f106_hydraulic-structures/c07_Compound</path>
 		<checks>
 			<file name="DFM_OUTPUT_compound/compound_map.nc" type="netCDF">
 				<parameters>
@@ -1062,7 +1062,7 @@
 		</checks>
 	</testCase>
 	<testCase name="e02_f106_c09_Inverted_siphon" ref="dimr_default">
-		<path version="2025-02-14T03:10:00">e02_dflowfm/f106_hydraulic-structures/c09_Inverted_siphon</path>
+		<path version="2025-02-27T14:57:07.109000">e02_dflowfm/f106_hydraulic-structures/c09_Inverted_siphon</path>
 		<checks>
 			<file name="DFM_OUTPUT_Flow1D/Flow1D_map.nc" type="netCDF">
 				<parameters>
@@ -1149,7 +1149,7 @@
 		</checks>
 	</testCase>
 	<testCase name="e02_f106_c23_AllowedFlowDir" ref="dimr_default">
-		<path version="2024-01-11T13:00:00">e02_dflowfm/f106_hydraulic-structures/c23_AllowedFlowDir</path>
+		<path version="2025-03-03T08:49:30.978000">e02_dflowfm/f106_hydraulic-structures/c23_AllowedFlowDir</path>
 		<checks>
 			<file name="DFM_OUTPUT_model/model_map.nc" type="netCDF">
 				<parameters>
@@ -1428,7 +1428,7 @@
 		</checks>
 	</testCase>
 	<testCase name="e02_f107_c10_Equal1D_Equal2D_Rural_Lateral_Links_Dambreak" ref="dimr_default">
-		<path version="2024-11-25T11:30:00">e02_dflowfm/f107_1d2d_validation/c10_Equal1D_Equal2D_Rural_Lateral_Links_Dambreak</path>
+		<path version="2025-03-03T08:49:52.499000">e02_dflowfm/f107_1d2d_validation/c10_Equal1D_Equal2D_Rural_Lateral_Links_Dambreak</path>
 		<checks>
 			<file name="DFM_OUTPUT_1D2D/1D2D_map.nc" type="netCDF">
 				<parameters>

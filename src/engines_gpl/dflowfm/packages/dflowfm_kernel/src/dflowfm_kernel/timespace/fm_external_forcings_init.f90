@@ -652,7 +652,7 @@ contains
       logical :: invert_mask
       logical :: is_variable_name_available
       logical :: is_extrapolation_allowed
-      character(len=INI_KEY_LEN) :: variable_name
+      character(len=INI_VALUE_LEN) :: variable_name
       character(len=INI_VALUE_LEN) :: interpolation_method, forcing_file, forcing_file_type, item_type, quantity, target_mask_file
       character(len=1) :: oper
       real(dp) :: max_search_radius
@@ -1076,7 +1076,7 @@ contains
       case (UNC_LOC_U)
          target_num_points = lnx
          target_x => xu(1:target_num_points)
-         target_x => yu(1:target_num_points)
+         target_y => yu(1:target_num_points)
       case default
          ierr = DFM_NOTIMPLEMENTED
       end select

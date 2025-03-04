@@ -149,6 +149,7 @@ contains
 
             if (numgen > 0) then
                istat = initialize_structure_links(pstru, numgen, kegen(1:numgen), wu)
+               call apply_teta_is_1_to_neighbours(kegen(1:numgen), numgen, teta)
             else
                call reallocP(pstru%linknumbers, 0)
                istat = DFM_NOERR
@@ -738,6 +739,7 @@ contains
 
          if (numgen > 0) then
             istat = initialize_structure_links(pstru, numgen, kegen(1:numgen), wu)
+            call apply_teta_is_1_to_neighbours(kegen(1:numgen), numgen, teta)
          else
             call reallocP(pstru%linknumbers, 0)
             istat = DFM_NOERR
@@ -1961,5 +1963,28 @@ contains
       if (allocated(cgenidx)) deallocate (cgenidx)
 
    end function flow_init_structurecontrol_old
+
+   !> Set teta to 1 for all links that are connected to an upstream or downstream node of a general structure link.
+   subroutine apply_teta_is_1_to_neighbours(links, num_links, teta   )
+
+      use m_flowgeom, only: nd, ln
+
+      integer, dimension(:), intent(in) :: links !< Array with flow links on hydraulic structures.
+      integer, intent(in) :: num_links !< Length of input array links.
+      real(kind=dp), dimension(:), intent(inout) :: teta !< Theta-values of time integration for all flow links.
+
+      ! set teta to 1 for a
+      integer :: i, nn, n12, kk, LL
+      do i = 1, num_links
+         do nn = 1, 2
+            n12 = ln(nn, abs(links(i)))
+            do kk = 1, nd(n12)%lnx
+               LL = abs(nd(n12)%ln(kk))
+               teta(LL) = 1.0_dp
+            end do
+         end do
+
+      end do
+end subroutine apply_teta_is_1_to_neighbours
 
 end submodule flow_init_structurecontrol_implementation
