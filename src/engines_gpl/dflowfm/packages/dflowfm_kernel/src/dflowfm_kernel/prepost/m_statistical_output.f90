@@ -40,6 +40,7 @@ module m_statistical_output
    public :: update_statistical_output, update_source_input, add_stat_output_items, &
              initialize_statistical_output, reset_statistical_output, finalize_average
    public :: t_output_variable_set, t_output_variable_item, t_output_quantity_config, process_data_interface_double
+   public :: SO_CURRENT, SO_AVERAGE, SO_MAX, SO_MIN, SO_NONE
 
    !> Realloc memory cross-section definition or cross-sections
    interface realloc
