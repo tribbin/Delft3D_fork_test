@@ -32,7 +32,7 @@ object WindowsBuild : BuildType({
         param("generator", """"Visual Studio 17 2022"""")
         param("enable_code_coverage_flag", "OFF")
         param("env.PATH", """%env.PATH%;"C:/Program Files/CMake/bin/"""")
-        param("build_type", "Release")
+        select("build_type", "Release", display = ParameterDisplay.PROMPT, options = listOf("Release", "Debug"))
         select("product", "auto-select", display = ParameterDisplay.PROMPT, options = listOf("auto-select", "all-testbench", "fm-suite", "d3d4-suite", "fm-testbench", "d3d4-testbench", "waq-testbench", "part-testbench", "rr-testbench", "wave-testbench", "swan-testbench"))
     }
 

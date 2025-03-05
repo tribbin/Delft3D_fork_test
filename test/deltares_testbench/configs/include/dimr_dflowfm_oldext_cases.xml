@@ -2616,7 +2616,7 @@
       </checks>
     </testCase>
     <testCase name="e02_f009_c052_zandloper10m_inflowcut_villemonte" ref="dflowfm_default">
-      <path version="2025-02-27T14:06:54.496000">e02_dflowfm/f009_weirs/c052_zandloper10m_inflowcut_villemonte</path>
+      <path version="2024-01-11T16:40:00">e02_dflowfm/f009_weirs/c052_zandloper10m_inflowcut_villemonte</path>
       <maxRunTime>30.0</maxRunTime>
       <checks>
         <file name="dflowfmoutput/zandloper_cut_inflowcut_his.nc" type="netCDF">
@@ -7749,8 +7749,8 @@
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.000075" />
-            <parameter name="q1" toleranceAbsolute="0.0002" />
+            <parameter name="s1" toleranceAbsolute="0.000012" />
+            <parameter name="q1" toleranceAbsolute="0.0001" />
             <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
@@ -7759,8 +7759,8 @@
           <parameters>
             <parameter name="time" toleranceAbsolute="0.0000001" />
             <parameter name="timestep" toleranceAbsolute="0.0000001" />
-            <parameter name="s1" toleranceAbsolute="0.00008" />
-            <parameter name="q1" toleranceAbsolute="0.0003" />
+            <parameter name="s1" toleranceAbsolute="0.000012" />
+            <parameter name="q1" toleranceAbsolute="0.000062" />
             <parameter name="mor_bl" toleranceAbsolute="0.0000001" />
             <parameter name="bl_bnd" toleranceAbsolute="0.0000001" />
           </parameters>
