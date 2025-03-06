@@ -20,6 +20,9 @@ project {
         param("delft3d-dev-user", "robot${'$'}delft3d-dev+push-pull")
         password("delft3d-dev-secret", "credentialsJSON:75eb18ff-a859-4d78-aa74-206d10865c2e")
 
+        param("s3_dsctestbench_accesskey", DslContext.getParameter("s3_dsctestbench_accesskey"))
+        password("s3_dsctestbench_secret", "credentialsJSON:7e8a3aa7-76e9-4211-a72e-a3825ad1a160")
+
         param("product", "dummy_value")
     }
 
@@ -30,6 +33,9 @@ project {
     template(TemplatePublishStatus)
     template(TemplateMonitorPerformance)
     template(TemplateFailureCondition)
+    template(TemplateValidationDocumentation)
+    template(TemplateFunctionalityDocumentation)
+    template(TemplateDownloadFromS3)
 
     subProject {
         id("Linux")
@@ -86,12 +92,25 @@ project {
         )
     }
 
+    subProject {
+        id("Documentation")
+        name = "Documentation"
+
+        buildType(ValidationDocumentMatrix)
+        buildType(FunctionalityDocumentMatrix)
+        buildTypesOrder = arrayListOf(
+            ValidationDocumentMatrix,
+            FunctionalityDocumentMatrix
+        )
+    }
+
     subProject(VerschilanalyseProject)
 
     subProjectsOrder = arrayListOf(
         RelativeId("Linux"),
         RelativeId("Windows"),
-        VerschilanalyseProject
+        VerschilanalyseProject,
+        RelativeId("Documentation")
     )
 
     buildType(Trigger)
@@ -116,6 +135,17 @@ project {
             url = "https://containers.deltares.nl/harbor/projects/21/repositories"
             userName = "%delft3d-dev-user%"
             password = "%delft3d-dev-secret%"
+        }
+        awsConnection {
+            id = "doc_download_connection"
+            name = "Deltares MinIO connection"
+            credentialsType = static {
+                accessKeyId = DslContext.getParameter("s3_dsctestbench_accesskey")
+                secretAccessKey = "credentialsJSON:7e8a3aa7-76e9-4211-a72e-a3825ad1a160"
+                useSessionCredentials = false
+            }
+            allowInSubProjects = true
+            allowInBuilds = true
         }
     }
 }
