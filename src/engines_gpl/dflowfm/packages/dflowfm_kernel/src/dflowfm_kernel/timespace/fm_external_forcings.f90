@@ -910,9 +910,7 @@ contains
          end if
          itpez(nbndz + 1:nbndz + numz) = itpbn
 
-         if (numz > 0) then
-            call addopenbndsection(numz, kez(nbndz + 1:nbndz + numz), filename, IBNDTP_ZETA)
-         end if
+         call addopenbndsection(numz, kez(nbndz + 1:nbndz + numz), filename, IBNDTP_ZETA)
 
          ! When present, set custom geometry for open boundaries (bed level for bndz and/or width1D for 1D bndz/u).
          ! Only for z:
