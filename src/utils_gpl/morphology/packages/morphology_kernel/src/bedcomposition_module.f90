@@ -162,7 +162,6 @@ type bedcomp_settings
     ! logicals
     !
     logical :: exchlyr    !  flag for use of exchange layer (underlayer bookkeeping system)
-    logical :: any_active_layer_diffusion !  Flag set to true if any method for applying diffusion to the active layer is on
     !
     ! characters
     !
@@ -1980,7 +1979,6 @@ function initmorlyr(this) result (istat)
     settings%theulyr        = rmissval
     settings%thlalyr        = rmissval
     settings%updbaselyr     = 1
-    settings%any_active_layer_diffusion = .false.
     settings%active_layer_diffusion = 0
     !
     nullify(settings%kdiff)
@@ -2097,7 +2095,7 @@ function allocmorlyr(this) result (istat)
     if (istat == 0) allocate (state%sedshort(nfrac,nmlb:nmub), stat = istat)
     if (istat == 0) state%sedshort = 0.0_fp
     !
-    if (settings%any_active_layer_diffusion) then
+    if (settings%active_layer_diffusion > 0) then
        if (istat == 0) allocate (settings%aldiff(nmlb:nmub), stat = istat)
        if (istat == 0) settings%aldiff = 0.0_fp
     endif 
@@ -2309,8 +2307,6 @@ function bedcomp_getpointer_logical_scalar(this, variable, val) result (istat)
        val => this%settings%exchlyr
     case ('track_mass_shortage')
        val => this%settings%morlyrnum%track_mass_shortage
-    case ('any_active_layer_diffusion')
-       val => this%settings%any_active_layer_diffusion
     case default
        val => NULL()
     end select

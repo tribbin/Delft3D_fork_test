@@ -95,7 +95,6 @@ contains
       !
       logical, pointer :: exchlyr
       logical, pointer :: track_shortage
-      logical, pointer :: any_active_layer_diffusion
       real(fp), pointer :: bed
       real(fp), pointer :: minmass
       real(fp), pointer :: theulyr
@@ -162,7 +161,6 @@ contains
       if (istat == 0) istat = bedcomp_getpointer_integer(morlyr, 'Ndiff', ndiff)
       if (istat == 0) istat = bedcomp_getpointer_integer(morlyr, 'IDiffusion', idiffusion)
       if (istat == 0) istat = bedcomp_getpointer_integer(morlyr, 'active_layer_diffusion', active_layer_diffusion)
-      if (istat == 0) istat = bedcomp_getpointer_logical(morlyr, 'any_active_layer_diffusion', any_active_layer_diffusion)
       if (istat /= 0) then
          errmsg = 'Memory problem in RDMORLYR'
          call write_error(errmsg, unit=lundia)
@@ -404,9 +402,6 @@ contains
          ! Diffusion in active-layer model
          !
          call prop_get(mor_ptr, 'Underlayer', 'IALDiff', active_layer_diffusion)
-         if (active_layer_diffusion>0) then
-             any_active_layer_diffusion=.true.
-         endif
       case default
       end select
       !
@@ -615,87 +610,83 @@ contains
          !
          ! Active-layer diffusion
          !
-         if (any_active_layer_diffusion) then
+         select case(active_layer_diffusion)                
+         case (0)
+            !
+            !NO diffusion in active-layer model    
+            !
+            txtput1 = 'Diffusion in active-layer model'
+            write (lundia, '(3a)') txtput1, ':', '                  NO'   
+         case(1)
             !
             !YES diffusion in active-layer mode    
             !
             txtput1 = 'Diffusion in active-layer model'
             write (lundia, '(3a)') txtput1, ':', '                 YES'
+            !
+            ! constant value or xy-val file (use of flag `ALDiff`)
+            !
+            !
+            !get memory
+            istat = bedcomp_getpointer_realfp(morlyr, 'ALDiff',ALDiff)
+            if (istat /= 0) then
+               errmsg = 'Memory problem in RDMORLYR'
+               call write_error(errmsg, unit=lundia)
+               error = .true.
+               return
+            end if
+            !
+            !check if file or value
+            aldifffil = ''
+            call prop_get(mor_ptr, 'Underlayer', 'ALDiff', aldifffil)
+            if (aldifffil == ' ') aldifffil = 'dummyname'
+            inquire (file=aldifffil, exist=ex)
             
-            select case(active_layer_diffusion)                
-            case(1)
+            if (ex) then
                !
-               ! constant value or xy-val file (use of flag `ALDiff`)
+               ! read data from file
                !
+               txtput1 = 'Active-layer diffusion from file'
+               write (lundia, '(3a)') txtput1, ':', aldifffil
                !
-               !get memory
-               istat = bedcomp_getpointer_realfp(morlyr, 'ALDiff',ALDiff)
-               if (istat /= 0) then
-                  errmsg = 'Memory problem in RDMORLYR'
+               call depfil_stm(lundia, error, aldifffil, fmttmp, &
+                             & ALDiff, 1, 1, griddim, errmsg)
+               if (error) then
+                  call write_error(errmsg, unit=lundia)
+                  errmsg = 'Unable to read active-layer diffusion from file'//trim(aldifffil)
+                  call write_error(errmsg, unit=lundia)
+                  return
+               end if
+            else
+               !
+               ! constant value
+               !
+               aldifffil = ' '
+               call prop_get(mor_ptr, 'Underlayer', 'ALDiff', ALDiff(1))
+               if (ALDiff(1) <= 0) then
+                  errmsg = 'ALDiff should be positive in '//trim(filmor)
                   call write_error(errmsg, unit=lundia)
                   error = .true.
                   return
                end if
+               do it = nmlb, nmub
+                  ALDiff(it) = ALDiff(1)
+               end do
                !
-               !check if file or value
-               aldifffil = ''
-               call prop_get(mor_ptr, 'Underlayer', 'ALDiff', aldifffil)
-               if (aldifffil == ' ') aldifffil = 'dummyname'
-               inquire (file=aldifffil, exist=ex)
-               
-               if (ex) then
-                  !
-                  ! read data from file
-                  !
-                  txtput1 = 'Active-layer diffusion from file'
-                  write (lundia, '(3a)') txtput1, ':', aldifffil
-                  !
-                  call depfil_stm(lundia, error, aldifffil, fmttmp, &
-                                & ALDiff, 1, 1, griddim, errmsg)
-                  if (error) then
-                     call write_error(errmsg, unit=lundia)
-                     errmsg = 'Unable to read active-layer diffusion from file'//trim(aldifffil)
-                     call write_error(errmsg, unit=lundia)
-                     return
-                  end if
-               else
-                  !
-                  ! constant value
-                  !
-                  aldifffil = ' '
-                  call prop_get(mor_ptr, 'Underlayer', 'ALDiff', ALDiff(1))
-                  if (ALDiff(1) <= 0) then
-                     errmsg = 'ALDiff should be positive in '//trim(filmor)
-                     call write_error(errmsg, unit=lundia)
-                     error = .true.
-                     return
-                  end if
-                  do it = nmlb, nmub
-                     ALDiff(it) = ALDiff(1)
-                  end do
-                  !
-                  txtput1 = 'Constant active-layer diffusion'
-                  write (lundia, '(2a,e20.4)') txtput1, ':', ALDiff(1)
-               end if
-            case default
-               !
-               ! CASE NOT DEALT WITH
-               !
-               errmsg = 'Method for diffusion in active-layer model should be 1 in file'//trim(filmor)
-               call write_error(errmsg, unit=lundia)
-               error = .true.
-               return
-            endselect
-         else
+               txtput1 = 'Constant active-layer diffusion'
+               write (lundia, '(2a,e20.4)') txtput1, ':', ALDiff(1)
+            end if
+         case default
             !
-            !NO diffusion in active-layer model    
+            ! CASE NOT DEALT WITH
             !
-            txtput1 = 'Diffusion in active-layer model'
-            write (lundia, '(3a)') txtput1, ':', '                  NO'
-         endif
-         
+            errmsg = 'Method for diffusion in active-layer model should be 1 in file'//trim(filmor)
+            call write_error(errmsg, unit=lundia)
+            error = .true.
+            return
+         endselect !active_layer_diffusion        
       case default
-      end select
+      end select !iunderlyr
       !
       ! Boundary conditions
       !

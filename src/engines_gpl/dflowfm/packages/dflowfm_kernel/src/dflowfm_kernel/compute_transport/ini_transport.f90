@@ -135,7 +135,7 @@ contains
          allocate_transport=.true.
       endif
       if (jased > 0 .and. stm_included) then
-         if (stmpar%morlyr%settings%any_active_layer_diffusion) then !`morlyr` is undefined if `jased=0`, but it is associated, so you cannot check `associated`.
+         if (stmpar%morlyr%settings%active_layer_diffusion > 0) then !`morlyr` is undefined if `jased=0`, but it is associated, so you cannot check `associated`.
             allocate_transport=.true.
          endif
       endif

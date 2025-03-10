@@ -524,19 +524,18 @@ contains
       !
       ! Active-layer diffusion
       !
-      if (stmpar%morlyr%settings%any_active_layer_diffusion) then
-         select case (stmpar%morlyr%settings%active_layer_diffusion)
-         case (1)
-             !The array read from the morphology module `rdmorlyr` is at cell centres because that routine is general
-             !for D3D4 and FM, however, diffusion in FM is at links. Here we transform it.
-             allocate(aldiff_links(1,lnx_mor))
-             aldiff=>stmpar%morlyr%settings%aldiff
-             do l=1,lnx_mor
-                 aldiff_links(1,l)=max(aldiff(ln_mor(1,l)),aldiff(ln_mor(2,l)))
-             enddo
-         case default
-         end select
-      endif
+      select case (stmpar%morlyr%settings%active_layer_diffusion)
+      case (1)
+          !The array read from the morphology module `rdmorlyr` is at cell centres because that routine is general
+          !for D3D4 and FM, however, diffusion in FM is at links. Here we transform it.
+          allocate(aldiff_links(1,lnx_mor))
+          aldiff=>stmpar%morlyr%settings%aldiff
+          do l=1,lnx_mor
+              aldiff_links(1,l)=max(aldiff(ln_mor(1,l)),aldiff(ln_mor(2,l)))
+          enddo
+      case default
+         ! if 0, do nothing.
+      end select
    
 1234  return
    end subroutine flow_sedmorinit

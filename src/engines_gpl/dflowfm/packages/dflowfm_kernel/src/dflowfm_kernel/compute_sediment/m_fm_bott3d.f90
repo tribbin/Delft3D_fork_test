@@ -93,7 +93,6 @@ contains
 
       real(kind=dp), parameter :: DAY2SEC = 86400.0_dp !< seconds in a day
       real(kind=dp), parameter :: H2SEC = 3600.0_dp !< seconds in an hour
-      logical, parameter :: ACTIVE_LAYER_DIFFUSION_ON = .true. !< 0=NO diffusion in active layer; 1=YES diffusion in active layer
       logical, parameter :: AVALANCHE_ON = .true.
       logical, parameter :: AVALANCHE_OFF = .false.
       logical, parameter :: SLOPECOR_ON = .true.
@@ -111,14 +110,12 @@ contains
       real(kind=dp) :: timhr
 
       logical, pointer :: cmpupd
-      logical, pointer :: any_active_layer_diffusion
 
    !!
    !! Point
    !!
 
       cmpupd => stmpar%morpar%cmpupd
-      any_active_layer_diffusion => stmpar%morlyr%settings%any_active_layer_diffusion
 
    !!
    !! Execute
@@ -224,7 +221,7 @@ contains
             !
             ! Diffuse fractions in active layer
             !
-            if (any_active_layer_diffusion == ACTIVE_LAYER_DIFFUSION_ON) then
+            if (stmpar%morlyr%settings%active_layer_diffusion > 0) then
                call fm_diffusion_active_layer() 
             endif
             !
