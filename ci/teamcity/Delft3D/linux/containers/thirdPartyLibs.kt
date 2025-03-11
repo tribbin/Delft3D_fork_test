@@ -64,13 +64,6 @@ object LinuxThirdPartyLibs : BuildType({
             scriptContent = Util.readScript(script)
         }
         dockerCommand {
-            name = "Pull cache images"
-            commandType = other {
-                subCommand = "pull"
-                commandArgs = "%harbor_repo%:%env.BACKUP_IMAGE_TAG%-cache"
-            }
-        }
-        dockerCommand {
             name = "Build"
             commandType = build {
                 source = file {
