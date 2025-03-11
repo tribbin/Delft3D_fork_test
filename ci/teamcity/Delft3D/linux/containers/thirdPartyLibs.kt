@@ -33,6 +33,7 @@ object LinuxThirdPartyLibs : BuildType({
         param("env.DEBUG", "")
         param("env.BUILDTOOLS_IMAGE_TAG", "")
         param("env.IMAGE_TAG", "")
+        param("env.BACKUP_IMAGE_TAG", "")
         param("env.CACHE_FROM_ARGS", "")
         param("env.JIRA_ISSUE_ID", "")
     }
