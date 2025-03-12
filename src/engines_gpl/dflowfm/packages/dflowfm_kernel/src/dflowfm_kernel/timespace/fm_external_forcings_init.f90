@@ -55,6 +55,7 @@ contains
       use dfm_error, only: DFM_NOERR, DFM_WRONGINPUT
       use m_alloc, only: realloc
       use unstruc_messages, only: threshold_abort
+      use m_reallocsrc, only: reallocsrc
 
       character(len=*), intent(in) :: external_force_file_name !< file name for new external forcing boundary blocks
       integer, intent(inout) :: iresult !< integer error code. Intent(inout) to preserve earlier errors.
@@ -71,7 +72,7 @@ contains
       character(len=INI_VALUE_LEN) :: fnam, base_dir
       integer :: k, n, k1
       integer :: ib, ibqh, ibt
-      integer :: maxlatsg
+      integer :: maxlatsg, max_num_src
       integer :: major, minor
       character(len=:), allocatable :: file_name
       integer, allocatable :: itpenzr(:), itpenur(:)
@@ -139,6 +140,12 @@ contains
          call realloc(lat_ids, maxlatsg, keepExisting=.false.)
          call realloc(n1latsg, maxlatsg, keepExisting=.false., fill=0)
          call realloc(n2latsg, maxlatsg, keepExisting=.false., fill=0)
+      end if
+
+      ! Allocate source-sink related arrays now, just once, because otherwise realloc's in the loop would destroy target arrays in ecInstance.
+      max_num_src = tree_count_nodes_byname(bnd_ptr, 'sourcesink')
+      if (max_num_src > 0) then
+         call reallocsrc(max_num_src, 0)
       end if
 
       ib = 0
@@ -945,6 +952,9 @@ contains
       use unstruc_files, only: resolvePath
       use m_transport, only: NAMLEN, NUMCONST, const_names, ISALT, ITEMP, ISED1, ISEDN, ISPIR, ITRA1, ITRAN
       use netcdf_utils, only: ncu_sanitize_name
+      use m_missing, only: dmiss
+      use m_addsorsin, only: addsorsin, addsorsin_from_polyline_file
+      use dfm_error, only: DFM_NOERR
 
       type(tree_data), pointer, intent(in) :: node_ptr !< Tree structure containing the sourcesink block.
       character(len=*), intent(in) :: base_dir !< Base directory of the ext file.
@@ -970,6 +980,7 @@ contains
       integer :: ierr
       logical :: is_successful
       logical :: is_read
+      logical :: have_location_file
 
       is_successful = .false.
 
@@ -982,8 +993,8 @@ contains
       end if
       call prop_get(node_ptr, '', 'name', sourcesink_name, is_read)
 
-      call prop_get(node_ptr, '', 'locationFile', location_file, is_read)
-      if (is_read) then
+      call prop_get(node_ptr, '', 'locationFile', location_file, have_location_file)
+      if (have_location_file) then
          call resolvePath(location_file, base_dir)
       else
          call prop_get(node_ptr, '', 'numCoordinates', num_coordinates, is_read)
@@ -1008,6 +1019,8 @@ contains
       end if
 
       ! read optional vertical profiles.
+      z_range_source(:) = dmiss
+      z_range_sink(:) = dmiss
       call prop_get(node_ptr, '', 'zSource', z_range_source, num_range_points, is_read)
       call prop_get(node_ptr, '', 'zSink', z_range_sink, num_range_points, is_read)
 
@@ -1019,7 +1032,22 @@ contains
       end if
 
       ! read optional value 'area' to compute the momentum released
+      area = 0.0_dp
       call prop_get(node_ptr, '', 'area', area, is_read)
+
+      if (have_location_file) then
+         call addsorsin_from_polyline_file(location_file, sourcesink_id, z_range_source, z_range_sink, area, ierr)
+      else
+         call addsorsin(sourcesink_id, x_coordinates, y_coordinates, &
+                     z_range_source, z_range_sink, area, ierr)
+      end if
+      
+      if (ierr /= DFM_NOERR) then
+         write (msgbuf, '(5a)') 'Error while processing ''', trim(file_name), ''': [', trim(group_name), ']. ' &
+            // 'Source sink with id='//trim(sourcesink_id)//'. could not be added.'
+         call err_flush()
+         return
+      end if
 
       ! Constituents (salinity, temperature, sediments, tracers) may have a timeseries file
       ! specifying the difference in concentration added by the source/sink.

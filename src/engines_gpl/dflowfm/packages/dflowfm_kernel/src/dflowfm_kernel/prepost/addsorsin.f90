@@ -47,7 +47,7 @@ contains
    !> Add a source(-sink) to the model based on geometry given in a polyline file.
    !!
    !! This subroutine is a wrapper around addsorsin, mainly taking care of reading the polyline file.
-   subroutine addsorsin_from_polyline_file(polyline_file, z_source, z_sink, area, ierr)
+   subroutine addsorsin_from_polyline_file(polyline_file, name, z_source, z_sink, area, ierr)
       use dfm_error, only: DFM_NOERR, DFM_WRONGINPUT
       use m_filez, only: oldfil
       use m_polygon, only: xpl, ypl, zpl, npl, dzL
@@ -56,6 +56,7 @@ contains
       use MessageHandling, only: IDLEN
 
       character(len=*), intent(in) :: polyline_file !< Name of the polyline file, either with x,y values only (*.pli), or including z-values (*.pliz).
+      character(len=*), optional, intent(in) :: name !< Name of the source-sink. When not present, name is based on the polyline filename instead.
       real(kind=dp), dimension(:), optional, intent(in) :: z_source !< Vertical position of the source, Z-value(s) in m (1 for point or 2 for range).
       real(kind=dp), dimension(:), optional, intent(in) :: z_sink !< Vertical position of the source, Z-value(s) in m (1 for point or 2 for range).
       real(kind=dp), intent(in) :: area !< Area of the source/sink, in m2. Set to 0.0 for momentum-free point sources.
@@ -67,7 +68,7 @@ contains
       real(kind=dp), dimension(:), allocatable :: z_source_, z_sink_
       logical :: have_z_range
       character(len=0) :: path, ext
-      character(len=IDLEN) :: stem
+      character(len=IDLEN) :: name_
 
       ierr = DFM_WRONGINPUT
 
@@ -120,10 +121,14 @@ contains
          end if
       end if
 
-      call split_filename(polyline_file, path, stem, ext)
+      if (present(name)) then
+         name_ = name
+      else
+         call split_filename(polyline_file, path, name_, ext)
+      end if
 
       ! Add the source/sink to the model based on prepared polyline data.
-      call addsorsin(stem, xpl(1:npl), ypl(1:npl), z_source_, z_sink_, area, ierr)
+      call addsorsin(trim(name_), xpl(1:npl), ypl(1:npl), z_source_, z_sink_, area, ierr)
 
    end subroutine addsorsin_from_polyline_file
 
