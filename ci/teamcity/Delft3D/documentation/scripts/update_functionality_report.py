@@ -36,8 +36,11 @@ def auto_generate_functionality_latex_files(engine_folder: str) -> None:
 
             print(f"{folder_name}")
             funtionality_case_file = os.path.join(doc_dir, "chapters", "testcases.tex")
-            write_file_with_auto_generated_header(funtionality_case_file)
-            append_table_of_contents(functionality_overview_file, folder_name)
+            if os.path.exists(funtionality_case_file):
+                write_file_with_auto_generated_header(funtionality_case_file)
+                append_table_of_contents(functionality_overview_file, folder_name)
+            else:
+                print(f"ERROR: {funtionality_case_file} does not exist; skipped.")
 
             case_names = os.listdir(folder_name)
             for case_name in case_names:
