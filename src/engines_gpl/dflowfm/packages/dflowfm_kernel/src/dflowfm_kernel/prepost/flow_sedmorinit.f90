@@ -60,7 +60,6 @@ contains
       use m_flowparameters, only: jasecflow, ibedlevtyp, jasal, jatem, eps4
       use m_bedform, only: bfmpar, bfm_included
       use unstruc_channel_flow
-      use m_branch
       use m_oned_functions, only: gridpoint2cross
       use m_fm_morstatistics
       use timespace_parameters, only: LOCTP_POLYGON_FILE
@@ -70,7 +69,8 @@ contains
       use m_mormerge
       use m_fm_erosed, only: ndx_mor, ndxi_mor, lnx_mor, lnxi_mor, nd_mor, ln_mor, ndkx_mor
       use m_f1dimp, only: f1dimp_initialized
-
+      use m_alloc, only: realloc, reallocp
+      
       use m_mormerge_mpi
       use m_partitioninfo, only: jampi, my_rank, ndomains, DFM_COMM_DFMWORLD
       use m_xbeach_data, only: gammaxxb
@@ -82,7 +82,7 @@ contains
       character(12) :: chstr !< temporary string representation for chainage
       character(40) :: errstr
       type(bedbndtype), dimension(:), pointer :: morbnd
-      integer :: k, i, j, isus, ifrac, isusmud, isussand, isf, Lf, npnt, j0, ierr
+      integer :: k, i, j, isus, ifrac, isusmud, isussand, isf, Lf, npnt, j0, ierr, l
       integer :: ic !< cross section index
       integer :: icd !< cross section definition index
       integer :: ibr, nbr, pointscount, k1, ltur_
@@ -92,7 +92,6 @@ contains
       integer, dimension(:), allocatable :: node_processed !< flag (connection) nodes processed while checking cross sections
       type(t_branch), pointer :: pbr
       integer :: outmorphopol !opposite of inmorphopol
-
 !! executable statements -------------------------------------------------------
 !
 !   activate morphology if sediment file has been specified in the mdu file
@@ -521,6 +520,23 @@ contains
          end if
       end if
 
+      !
+      ! Active-layer diffusion
+      !
+      select case (stmpar%morlyr%settings%active_layer_diffusion)
+      case (1)
+          !The array read from the morphology module `rdmorlyr` is at cell centres because that routine is general
+          !for D3D4 and FM, however, diffusion in FM is at links. Here we transform it.
+          allocate(aldiff_links(1,lnx_mor))
+          associate (aldiff=>stmpar%morlyr%settings%aldiff)
+             do l=1,lnx_mor
+                 aldiff_links(1,l)=max(aldiff(ln_mor(1,l)),aldiff(ln_mor(2,l)))
+             enddo
+          end associate !aldiff
+      case default
+         ! if 0, do nothing.
+      end select
+   
 1234  return
    end subroutine flow_sedmorinit
 
