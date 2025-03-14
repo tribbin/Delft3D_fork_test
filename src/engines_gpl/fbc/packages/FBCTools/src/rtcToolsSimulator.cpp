@@ -74,11 +74,11 @@ void rtcToolsSimulator::simulate(int iStep)
     double *stateNew = tsMatrix->getState(iStep);
 
 	// rules statetransfer
-	int nRule = schema->getNRule();
-    rule **ru = schema->getRules();
+	int numberOfRules = schema->getNRule();
+    rule **HydraulicRules = schema->getRules();
 	try {
-		for (int i=0; i<nRule; i++) {
-			ru[i]->stateTransfer(stateOld, stateNew, t, dt);
+		for (int i=0; i<numberOfRules; i++) {
+			HydraulicRules[i]->stateTransfer(stateOld, stateNew, t, dt);
 		}
 	} catch (exception &e) {
 		piDiagInterface::addLine(1, "void rtcToolsSimulator::simulate(int iStep) - error during rule state transfer execution - " + string(e.what()), RTCTOOLSSIMULATOR_CODE);
@@ -112,52 +112,33 @@ void rtcToolsSimulator::simulate(int iStep)
         throw;
     }
 
-
-    // for each output store if an active rule acting on it is already active
-    std::map<int, bool> ruleIsActiveOnOutput;
-    char buffer[50];
-    utils::time2datetimestring(tsMatrix->getTimes()[iStep], buffer);
+    std::map<int, string> ActiveOutputsWithRuleName;
+    char currentTime[50];
+    utils::time2datetimestring(tsMatrix->getTimes()[iStep], currentTime);
     try 
     {
-        for (int i = 0; i < nRule; i++) 
+        for (int i = 0; i < numberOfRules; i++) 
         {
-            const bool isRuleActive = ru[i]->isActive();
-
-            if (isRuleActive)
+            if (HydraulicRules[i]->isActive())
             {
-                // cout << "Time=: " << string(buffer) << "    Active rule: " << ru[i]->getName() << endl;
-                int outputMap = ru[i]->getIYOut();
-                if (ruleIsActiveOnOutput.count(outputMap))
+                const auto idOutput = HydraulicRules[i]->getIYOut();
+                if (ActiveOutputsWithRuleName.count(idOutput))
                 {
-                    string message;
-                    map<string, int> scalarIDMap = schema->getTsTensor()->getScalarIDMap();
+                    const auto & idMaps = schema->getTsTensor()->getScalarIDMap();
+					const auto idMap = std::find_if(idMaps.cbegin(), idMaps.cend(), 
+                        [idOutput](const std::pair<string, int>& element) { return element.second == idOutput; });
 
-                    // loop over the map, int is not the key of scalarIDMap
-                    string outputName;
-                    for (auto it = scalarIDMap.begin(); it != scalarIDMap.end(); it++)
-                    {
-                        if (it->second == outputMap)
-                        {
-                            outputName = it->first;
-                            break;
-                        }
-                    }
-
-                    message = "More than one rule active at time "+ string(buffer) +" for "+ outputName;
-                    throw message;
+                    throw std::runtime_error(string(currentTime) + " " + HydraulicRules[i]->getName() + " is going to enable "
+                        + idMap->first + " when it is already enabled in " + ActiveOutputsWithRuleName[idOutput]);
                 }
 
-                // some rules (e.g. unitDelay) do not have an assigned control point
-                if (outputMap != -1)
+                // ignore unitDelay rule that does not have an assigned control point
+                if (idOutput != -1)
                 {
-                    ruleIsActiveOnOutput[outputMap] = true;
+                    ActiveOutputsWithRuleName[idOutput] = HydraulicRules[i]->getName();
                 }
 
-                ru[i]->solve(stateOld, stateNew, t, dt);
-            }
-            else
-            {
-               // cout << "Time=: " << string(buffer) << "  Inactive rule: " << ru[i]->getName() << endl;
+                HydraulicRules[i]->solve(stateOld, stateNew, t, dt);
             }
         }
     }
@@ -203,8 +184,8 @@ void rtcToolsSimulator::evaluateGradient(int iStart, int iEnd)
     int nComponent = schema->getNComponent();
     component **co = schema->getComponents();
 
-	int nRule = schema->getNRule();
-    rule **ru = schema->getRules();
+	int numberOfRules = schema->getNRule();
+    rule **HydraulicRules = schema->getRules();
 
 	int nTrigger = schema->getNTrigger();
     trigger **tr = schema->getTriggers();
@@ -236,9 +217,9 @@ void rtcToolsSimulator::evaluateGradient(int iStart, int iEnd)
 		}
 
 		// reverse rule loop
-		for (int i=nRule-1; i>=0; i--) {
-			if (ru[i]->isActive()) {
-				ru[i]->solveDer(stateOld, stateNew, t, dt, dStateOld, dStateNew);
+		for (int i=numberOfRules-1; i>=0; i--) {
+			if (HydraulicRules[i]->isActive()) {
+				HydraulicRules[i]->solveDer(stateOld, stateNew, t, dt, dStateOld, dStateNew);
 			}
 		}
     }

@@ -76,7 +76,7 @@ public:
 	// time series related
 	int getNSeries() { return nSeries; };
 	vector<string> getSeriesIDs() { return seriesID; };
-	map<string,int> getScalarIDMap() { return scalarIDMap; }
+	map<string,int> & getScalarIDMap() { return scalarIDMap; }
 	map<string,pair<int,int> > getVectorIDMap() { return vectorIDMap; }
 	int getScalarIndex(string s);
 	int getScalarIndex(string s, bool implicit);
