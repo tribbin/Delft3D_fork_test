@@ -1612,7 +1612,7 @@ contains
       use m_sediment, only: stm_included
       use m_turbulence, only: rhowat
       use m_get_kbot_ktop, only: getkbotktop
-      use m_setrho, only: set_density
+      use m_setrho, only: set_potential_density
 
       implicit none
 
@@ -1624,7 +1624,7 @@ contains
       if (jainirho == INITIALIZE) then
          do cell = 1, ndx
             if (.not. rho_read_rst) then
-               call set_density(cell)
+               call set_potential_density(potential_density, cell)
             end if
             if (stm_included) then
                call getkbotktop(cell, bottom_cell, top_cell)
@@ -1634,7 +1634,12 @@ contains
             end if
          end do
       end if
-
+      
+      if (density_is_pressure_dependent()) then
+          rho => in_situ_density
+      else
+          rho => potential_density
+      end if
    end subroutine initialise_density_at_cell_centres
 
 !> apply hardcoded specific input

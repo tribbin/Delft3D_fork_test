@@ -38,118 +38,122 @@ module m_setrho
 
    private
 
-   public :: set_density, set_pressure_dependent_density, setrhofixedp, get_sal_and_temp
+   public :: set_potential_density, set_pressure_dependent_density, setrhofixedp, get_sal_and_temp
 
 contains
 
-   !> fill rho of one column
-   subroutine set_density(kk)
+   !> Fill potential density of one column
+   subroutine set_potential_density(potential_density, cell_index_2d)
       use m_densfm, only: densfm, add_sediment_effect_to_density
       use precision, only: dp
-      use m_flow, only: rho, density_is_pressure_dependent, kmxn
+      use m_flow, only: rho, kmxn
       use m_get_kbot_ktop, only: getkbotktop
 
-      integer, intent(in) :: kk !< horizontal cell index (1:ndx)
+      real(kind=dp), dimension(:), intent(out) :: potential_density !< Potential density of fluid
+      integer, intent(in) :: cell_index_2d !< Horizontal cell index (1:ndx)
 
-      real(kind=dp) :: sal, temp
+      real(kind=dp) :: salinity, temperature
       integer :: k_bot, k_top
-      integer :: k ! vertical cell index (e.g., k_bot:k_top)
+      integer :: cell_index_3d ! vertical cell index (e.g., k_bot:k_top)
 
-      call getkbotktop(kk, k_bot, k_top)
+      call getkbotktop(cell_index_2d, k_bot, k_top)
       if (k_top < k_bot) then
          return
       end if
 
-      do k = k_bot, k_top
-         call get_sal_and_temp(k, sal, temp)
-         rho(k) = densfm(sal, temp)
-         call add_sediment_effect_to_density(rho(k), k)
-         rho(k) = min(rho(k), RHO_MAX) ! check overshoots at thin water layers
-         rho(k) = max(rho(k), RHO_MIN) !
+      do cell_index_3d = k_bot, k_top
+         call get_sal_and_temp(cell_index_3d, salinity, temperature)
+         potential_density(cell_index_3d) = densfm(salinity, temperature)
+         call add_sediment_effect_to_density(potential_density(cell_index_3d), cell_index_3d)
+         ! check overshoots at thin water layers
+         potential_density(cell_index_3d) = min(potential_density(cell_index_3d), RHO_MAX)
+         potential_density(cell_index_3d) = max(potential_density(cell_index_3d), RHO_MIN)
       end do
 
-      do k = k_top + 1, k_bot + kmxn(kk) - 1
-         rho(k) = rho(k_top)
+      do cell_index_3d = k_top + 1, k_bot + kmxn(cell_index_2d) - 1
+         potential_density(cell_index_3d) = potential_density(k_top)
       end do
 
-   end subroutine set_density
+   end subroutine set_potential_density
 
-   !> Fill rho of one column
-   subroutine set_pressure_dependent_density(kk)
+   !> Fill in-situ density of one column
+   subroutine set_pressure_dependent_density(in_situ_density, cell_index_2d)
       use precision, only: dp
       use m_flow, only: rho, density_is_pressure_dependent, kmxn, zws
       use m_get_kbot_ktop, only: getkbotktop
       use m_physcoef, only: Maxitpresdens, ag
       use m_densfm, only: densfm, add_sediment_effect_to_density
 
-      integer, intent(in) :: kk !< horizontal cell index (1:ndx)
+      real(kind=dp), dimension(:), intent(out) :: in_situ_density !< Pressure dependent density of fluid
+      integer, intent(in) :: cell_index_2d !< Horizontal cell index (1:ndx)
 
-      real(kind=dp) :: sal, temp, cell_pressure_upper_interface, cell_pressure_lower_interface, dz
+      real(kind=dp) :: salinity, temperature, cell_pressure_upper_interface, cell_pressure_lower_interface, dz
       integer :: k_bot, k_top, i
-      integer :: k ! vertical cell index (e.g., k_bot:k_top)
+      integer :: cell_index_3d ! vertical cell index (e.g., k_bot:k_top)
 
-      call getkbotktop(kk, k_bot, k_top)
+      call getkbotktop(cell_index_2d, k_bot, k_top)
       if (k_top < k_bot) then
          return
       end if
 
       cell_pressure_upper_interface = 0.0_dp ! surface value is 0 bar in unesco, not 1 bar
-      do k = k_top, k_bot, -1
-         call get_sal_and_temp(k, sal, temp)
-         dz = zws(k) - zws(k - 1)
+      do cell_index_3d = k_top, k_bot, -1
+         call get_sal_and_temp(cell_index_3d, salinity, temperature)
+         dz = zws(cell_index_3d) - zws(cell_index_3d - 1)
          do i = 1, Maxitpresdens
-            cell_pressure_lower_interface = cell_pressure_upper_interface + ag * dz * rho(k)
-            rho(k) = densfm(sal, temp, 0.5_dp * (cell_pressure_lower_interface + cell_pressure_upper_interface))
+            cell_pressure_lower_interface = cell_pressure_upper_interface + ag * dz * in_situ_density(cell_index_3d)
+            in_situ_density(cell_index_3d) = densfm(salinity, temperature, 0.5_dp * (cell_pressure_lower_interface + cell_pressure_upper_interface))
          end do
          cell_pressure_upper_interface = cell_pressure_lower_interface
-         call add_sediment_effect_to_density(rho(k), k)
-         rho(k) = min(rho(k), RHO_MAX) ! check overshoots at thin water layers
-         rho(k) = max(rho(k), RHO_MIN)
+         call add_sediment_effect_to_density(in_situ_density(cell_index_3d), cell_index_3d)
+         ! Check overshoots at thin water layers
+         in_situ_density(cell_index_3d) = min(in_situ_density(cell_index_3d), RHO_MAX)
+         in_situ_density(cell_index_3d) = max(in_situ_density(cell_index_3d), RHO_MIN)
       end do
 
-      do k = k_top + 1, k_bot + kmxn(kk) - 1
-         rho(k) = rho(k_top)
+      do cell_index_3d = k_top + 1, k_bot + kmxn(cell_index_2d) - 1
+         in_situ_density(cell_index_3d) = in_situ_density(k_top)
       end do
    end subroutine set_pressure_dependent_density
 
-   real(kind=dp) function setrhofixedp(k, p0)
+   real(kind=dp) function setrhofixedp(cell_index_3d, p0)
       use precision, only: dp
       use m_densfm, only: densfm, add_sediment_effect_to_density
 
       implicit none
 
-      integer, intent(in) :: k !< cell number
+      integer, intent(in) :: cell_index_3d !< cell number
       real(kind=dp), intent(in) :: p0 !< some given pressure
 
-      real(kind=dp) :: sal, temp
+      real(kind=dp) :: salinity, temperature
 
-      call get_sal_and_temp(k, sal, temp)
+      call get_sal_and_temp(cell_index_3d, salinity, temperature)
 
-      setrhofixedp = densfm(sal, temp, p0)
+      setrhofixedp = densfm(salinity, temperature, p0)
 
-      call add_sediment_effect_to_density(setrhofixedp, k)
+      call add_sediment_effect_to_density(setrhofixedp, cell_index_3d)
    end function setrhofixedp
 
-   subroutine get_sal_and_temp(k, sal, temp)
+   subroutine get_sal_and_temp(cell_index_3d, salinity, temperature)
       use precision, only: dp
       use m_flow, only: jasal, jatem, backgroundsalinity, backgroundwatertemperature
       use m_transport, only: isalt, itemp, constituents
 
       implicit none
 
-      integer, intent(in) :: k !< cell index
-      real(kind=dp), intent(out) :: sal, temp
+      integer, intent(in) :: cell_index_3d !< cell index
+      real(kind=dp), intent(out) :: salinity, temperature
 
       if (jasal > 0) then
-         sal = max(0.0_dp, constituents(isalt, k))
+         salinity = max(0.0_dp, constituents(isalt, cell_index_3d))
       else
-         sal = backgroundsalinity
+         salinity = backgroundsalinity
       end if
 
       if (jatem > 0) then
-         temp = max(-5.0_dp, constituents(itemp, k))
+         temperature = max(-5.0_dp, constituents(itemp, cell_index_3d))
       else
-         temp = backgroundwatertemperature
+         temperature = backgroundwatertemperature
       end if
    end subroutine get_sal_and_temp
 

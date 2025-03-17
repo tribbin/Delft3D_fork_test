@@ -47,7 +47,7 @@ contains
 !! high order limited terms to uqcx, uqcy
    subroutine transport()
       use precision, only: dp
-      use m_setrho, only: set_density, set_pressure_dependent_density
+      use m_setrho, only: set_potential_density, set_pressure_dependent_density
       use m_getverticallyaveraged
       use m_flowgeom, only: ln, ndxi, lnxi, ndx, lnx, ba, mxban, nban, banf, ban, xz
       use m_flow, only: density_is_pressure_dependent, jasal, maxitverticalforestersal, jatem, maxitverticalforestertem, limtyptm, &
@@ -224,12 +224,12 @@ contains
       !$OMP PARALLEL DO    &
       !$OMP PRIVATE(kk)
       do kk = 1, ndx
-         call set_density(kk)
+         call set_potential_density(rho, kk)
       end do
       !$OMP END PARALLEL DO
 
       if (density_is_pressure_dependent()) then
-         ! rhop(:) = rho(:) ! the above, via set_density(), calculated rho is the potential density (function of salinity and temperature)
+         ! rhop(:) = rho(:) ! the above, via set_potential_density(), calculated rho is the potential density (function of salinity and temperature)
          !$OMP PARALLEL DO    &
          !$OMP PRIVATE(kk)
          do kk = 1, ndx
