@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 rem Default arguments.
 rem No default value means that the option is a flag that is either on or off.
 rem A variable that can have arguments requires a default value (can be "")
-set config=dflowfm
+set config=fm-suite
 set build=
 set vs=0
 set coverage=
@@ -422,18 +422,18 @@ rem =======================
     echo [OPTIONS]: space separated list of options, sometimes followed by a value, in any order
     echo.
     echo -config ^<CONFIG^>:
-    echo   all     (default) : All CMaked products that are in fm-suite and d3d4-suite combined
-    echo   fm-suite          : D-Flow FM, D-WAQ, D-Waves, DIMR
-    echo   d3d4-suite        : Delft3D-FLOW, Delft3D-WAQ, Delft3D-PART, Delft3D-WAVE
-    echo   dflowfm_interacter: D-Flow FM with Interacter
-    echo   dflowfm           : D-Flow FM without Interacter
-    echo   dimr              : DIMR
-    echo   drr               : D-RR
-    echo   dwaq              : D-WAQ
-    echo   dwaves            : D-Waves
-    echo   flow2d3d          : Delft3D-FLOW
-    echo   swan              : SWAN
-    echo   fbc               : FBC-tools
+    echo   all                : All products that are in fm-suite and d3d4-suite combined
+    echo   fm-suite (default) : D-Flow FM, D-WAQ, D-Waves, DIMR
+    echo   d3d4-suite         : Delft3D-FLOW, Delft3D-WAQ, Delft3D-PART, Delft3D-WAVE
+    echo   dflowfm_interacter : D-Flow FM with Interacter
+    echo   dflowfm            : D-Flow FM without Interacter
+    echo   dimr               : DIMR
+    echo   drr                : D-RR
+    echo   dwaq               : D-WAQ
+    echo   dwaves             : D-Waves
+    echo   flow2d3d           : Delft3D-FLOW
+    echo   swan               : SWAN
+    echo   fbc                : FBC-tools
     echo   tests
     echo   tools
     echo   tools_gpl

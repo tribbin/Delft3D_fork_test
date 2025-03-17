@@ -194,6 +194,7 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio")
 endif(CMAKE_GENERATOR MATCHES "Visual Studio")
 
 # Basic (single-component) configurations
+set(all_configuration "ALL")
 set(dflowfm_configuration "DFLOWFM")
 set(dflowfm_configuration_interacter "DFLOWFM_INTERACTER")
 set(tests_configuration "TESTS")
@@ -242,6 +243,7 @@ if(NOT (${configuration_type} STREQUAL ${tests_configuration}
      OR ${configuration_type} STREQUAL ${fm-suite_configuration}
      OR ${configuration_type} STREQUAL ${d3d4-suite_configuration}
      OR ${configuration_type} STREQUAL ${testbench-all_configuration}
+     OR ${configuration_type} STREQUAL ${all_configuration}
      OR ${configuration_type} STREQUAL ${testbench-fm_configuration}
      OR ${configuration_type} STREQUAL ${testbench-d3d4_configuration}
      OR ${configuration_type} STREQUAL ${testbench-rr_configuration}
@@ -337,7 +339,7 @@ endif()
 ### Composed configurations for testbenches
 
 # ALL configuration
-if(${configuration_type} STREQUAL ${testbench-all_configuration})
+if(${configuration_type} STREQUAL ${testbench-all_configuration} OR ${configuration_type} STREQUAL ${all_configuration})
     message(STATUS "Generating solution for all testbenches ...")
     include(configurations/testbench/all_configuration.cmake)
 endif()
@@ -381,7 +383,7 @@ endif()
 # TC configuration
 if(${configuration_type} STREQUAL ${testbench-tc_configuration})
     message(STATUS "Generating solution for tc testbench ...")
-    include(configurations/testbench/tc_configuration.cmake)
+    include(configurations/testbench/waq_configuration.cmake)
 endif()
 
 # QUICKPLOT configuration

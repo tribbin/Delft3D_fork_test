@@ -75,10 +75,10 @@ void rtcToolsSimulator::simulate(int iStep)
 
 	// rules statetransfer
 	int numberOfRules = schema->getNRule();
-    rule **HydraulicRules = schema->getRules();
+    rule **hydraulicRules = schema->getRules();
 	try {
 		for (int i=0; i<numberOfRules; i++) {
-			HydraulicRules[i]->stateTransfer(stateOld, stateNew, t, dt);
+			hydraulicRules[i]->stateTransfer(stateOld, stateNew, t, dt);
 		}
 	} catch (exception &e) {
 		piDiagInterface::addLine(1, "void rtcToolsSimulator::simulate(int iStep) - error during rule state transfer execution - " + string(e.what()), RTCTOOLSSIMULATOR_CODE);
@@ -112,33 +112,33 @@ void rtcToolsSimulator::simulate(int iStep)
         throw;
     }
 
-    std::map<int, string> ActiveOutputsWithRuleName;
+    std::map<int, string> activeOutputsWithRuleName;
     char currentTime[50];
     utils::time2datetimestring(tsMatrix->getTimes()[iStep], currentTime);
     try 
     {
         for (int i = 0; i < numberOfRules; i++) 
         {
-            if (HydraulicRules[i]->isActive())
+            if (hydraulicRules[i]->isActive())
             {
-                const auto idOutput = HydraulicRules[i]->getIYOut();
-                if (ActiveOutputsWithRuleName.count(idOutput))
+                const auto idOutput = hydraulicRules[i]->getIYOut();
+                if (activeOutputsWithRuleName.count(idOutput))
                 {
                     const auto & idMaps = schema->getTsTensor()->getScalarIDMap();
-					const auto idMap = std::find_if(idMaps.cbegin(), idMaps.cend(), 
+                    const auto idMap = std::find_if(idMaps.cbegin(), idMaps.cend(), 
                         [idOutput](const std::pair<string, int>& element) { return element.second == idOutput; });
 
-                    throw std::runtime_error(string(currentTime) + " " + HydraulicRules[i]->getName() + " is going to enable "
-                        + idMap->first + " when it is already enabled in " + ActiveOutputsWithRuleName[idOutput]);
+                    throw std::runtime_error(string(currentTime) + " " + hydraulicRules[i]->getName() + " is going to enable "
+                        + idMap->first + " when it is already enabled in " + activeOutputsWithRuleName[idOutput]);
                 }
 
                 // ignore unitDelay rule that does not have an assigned control point
                 if (idOutput != -1)
                 {
-                    ActiveOutputsWithRuleName[idOutput] = HydraulicRules[i]->getName();
+                    activeOutputsWithRuleName[idOutput] = hydraulicRules[i]->getName();
                 }
 
-                HydraulicRules[i]->solve(stateOld, stateNew, t, dt);
+                hydraulicRules[i]->solve(stateOld, stateNew, t, dt);
             }
         }
     }
@@ -185,7 +185,7 @@ void rtcToolsSimulator::evaluateGradient(int iStart, int iEnd)
     component **co = schema->getComponents();
 
 	int numberOfRules = schema->getNRule();
-    rule **HydraulicRules = schema->getRules();
+    rule **hydraulicRules = schema->getRules();
 
 	int nTrigger = schema->getNTrigger();
     trigger **tr = schema->getTriggers();
@@ -218,8 +218,8 @@ void rtcToolsSimulator::evaluateGradient(int iStart, int iEnd)
 
 		// reverse rule loop
 		for (int i=numberOfRules-1; i>=0; i--) {
-			if (HydraulicRules[i]->isActive()) {
-				HydraulicRules[i]->solveDer(stateOld, stateNew, t, dt, dStateOld, dStateNew);
+			if (hydraulicRules[i]->isActive()) {
+				hydraulicRules[i]->solveDer(stateOld, stateNew, t, dt, dStateOld, dStateNew);
 			}
 		}
     }
