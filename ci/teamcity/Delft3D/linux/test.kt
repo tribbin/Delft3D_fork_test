@@ -136,7 +136,7 @@ object LinuxTest : BuildType({
                 onDependencyFailure = FailureAction.FAIL_TO_START
             }
         }
-        dependency(LinuxDocker) {
+        dependency(LinuxRunEnvironmentContainers) {
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL

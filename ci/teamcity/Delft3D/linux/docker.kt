@@ -7,9 +7,9 @@ import Delft3D.template.*
 import Delft3D.step.*
 import Delft3D.linux.containers.*
 
-object LinuxDocker : BuildType({
+object LinuxRunEnvironmentContainers : BuildType({
 
-    description = "Build the Delft3D container image and an image for running the testbenches."
+    description = "Build two separate container images: one for running the Delft3D software and the other for executing its tests."
 
     templates(
         TemplateMergeRequest,
@@ -17,7 +17,7 @@ object LinuxDocker : BuildType({
         TemplateMonitorPerformance
     )
 
-    name = "Docker Build"
+    name = "Run-environment Containers"
     buildNumberPattern = "%dep.${LinuxBuild.id}.product%: %build.vcs.number%"
 
     vcs {
@@ -66,7 +66,7 @@ object LinuxDocker : BuildType({
             """.trimIndent()
         }
         dockerCommand {
-            name = "Docker build DIMRset image"
+            name = "Docker build run-environment image"
             commandType = build {
                 source = file {
                     path = "ci/teamcity/Delft3D/linux/docker/build.Dockerfile"
@@ -86,7 +86,7 @@ object LinuxDocker : BuildType({
             }
         }
         dockerCommand {
-            name = "Docker build testbench image"
+            name = "Docker build testbench-environment image"
             commandType = build {
                 source = file {
                     path = "ci/teamcity/Delft3D/linux/docker/test.Dockerfile"
