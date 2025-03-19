@@ -1553,7 +1553,7 @@ contains
          do kk = 1, Ndxi
             call getkbotktopmax(kk, kb, kt, ktmax)
             call getkbotktop(kk, kb, kt)
-            process_space_real(ipoiradsurf + kb - kbx:ipoiradsurf + ktmax - kbx) = qrad(kk)
+            process_space_real(ipoiradsurf + kb - kbx:ipoiradsurf + ktmax - kbx) = solar_radiation(kk)
          end do
       end if
 

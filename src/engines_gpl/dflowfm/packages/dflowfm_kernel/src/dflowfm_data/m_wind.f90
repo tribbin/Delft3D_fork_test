@@ -57,6 +57,7 @@ module m_wind
    real(kind=dp), allocatable, target :: clou(:) !< air cloudiness        (%)
    real(kind=dp), allocatable, target :: airdensity(:) !< air density           (kg/m3)
    real(kind=dp), allocatable, target :: qrad(:) !< solar radiation       (W/m2)
+   real(kind=dp), dimension(:), allocatable :: solar_radiation !< solar radiation (W/m2) incl. albedo correction
    real(kind=dp), allocatable, target :: longwave(:) !< long wave radiation   (W/m2)
    real(kind=dp), allocatable :: heatsrc(:) !< resulting 2D or 3D heat source per cell (Km3/s)
    real(kind=dp), allocatable :: heatsrc0(:) !< resulting 2D or 3D heat source per cell, only set at timeuser (Km3/s)

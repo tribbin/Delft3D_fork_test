@@ -1390,6 +1390,7 @@ contains
       call prop_get(md_ptr, 'physics', 'Tempmax', Tempmax)
       call prop_get(md_ptr, 'physics', 'Tempmin', Tempmin)
       call prop_get(md_ptr, 'physics', 'Allowcoolingbelowzero', Jaallowcoolingbelowzero)
+      call prop_get(md_ptr, 'physics', 'Albedo', albedo)
 
       call prop_get(md_ptr, 'physics', 'Salimax', Salimax)
       call prop_get(md_ptr, 'physics', 'Salimin', Salimin)
@@ -3392,6 +3393,9 @@ contains
          end if
          if (writeall .or. Jaallowcoolingbelowzero /= 0) then
             call prop_set(prop_ptr, 'physics', 'Allowcoolingbelowzero', Jaallowcoolingbelowzero, '0 = no, 1 = yes')
+         end if
+         if (writeall) then
+            call prop_set(prop_ptr, 'physics', 'Albedo', albedo, 'Albedo (reflection) coefficient')
          end if
          if (writeall .or. surftempsmofac > 0d0) then
             call prop_set(prop_ptr, 'physics', 'Surftempsmofac', Surftempsmofac, 'Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no')

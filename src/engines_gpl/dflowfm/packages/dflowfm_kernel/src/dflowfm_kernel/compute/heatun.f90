@@ -50,7 +50,7 @@ contains
       use m_get_kbot_ktop
       use m_get_link1
       use m_wind, only: japatm, jaevap, longwave_available, relativewind, tair, wx, wy, rhum, clou, patm, heatsrc0, qrad, &
-         solrad_available, tbed, rhoair, longwave, evap, cdwcof
+                        solar_radiation, solrad_available, tbed, rhoair, longwave, evap, cdwcof
 
       implicit none
 
@@ -168,13 +168,9 @@ contains
          if (japatm > 0) then
             presn = 1d-2 * patm(n)
          end if
+
          ! Solar radiation restricted by presence of clouds and reflection of water surface (albedo)
          if (solrad_available) then
-            if (ja_solar_radiation_factor > 0) then
-               if (comparereal(solar_radiation_factor(n), dmiss) /= 0) then
-                  qrad(n) = qrad(n) * solar_radiation_factor(n) ! qrad is adjusted (and not qsun) as it is used in fm_wq_processes
-               end if
-            end if
             qsun = qrad(n) * (1d0 - albedo)
          else ! Calculate solar radiation from cloud coverage specified in file
             if (jsferic == 1) then
@@ -186,6 +182,13 @@ contains
                qsun = 0d0
             end if
          end if
+
+         if (ja_solar_radiation_factor > 0) then
+            if (comparereal(solar_radiation_factor(n), dmiss) /= 0) then
+               qsun = qsun * solar_radiation_factor(n)
+            end if
+         end if
+         solar_radiation(n) = qsun ! solar_radiation is passed on to fm_wq_processes
 
          rcpiba = rcpi * ba(n)
          qsn = qsun * rcpiba

@@ -65,8 +65,8 @@ contains
       use m_get_zlayer_indices
       use m_get_zlayer_indices_bobL
       use m_filez, only: oldfil
-      use m_wind, only: jarain, jaevap, jaqext, ja_computed_airdensity, clou, rain, evap, tair, heatsrc, heatsrc0, & 
-         longwave, patm, rhum, qrad, tbed, rhoair, qext, qextreal, vextcum, cdwcof
+      use m_wind, only: jarain, jaevap, jaqext, ja_computed_airdensity, clou, rain, evap, tair, heatsrc, heatsrc0, &
+                        longwave, patm, rhum, qrad, solar_radiation, tbed, rhoair, qext, qextreal, vextcum, cdwcof
       use m_nudge, only: nudge_tem, nudge_sal, nudge_time, nudge_rate
       use m_polygonlayering, only: polygonlayering
 
@@ -1145,6 +1145,10 @@ contains
             allocate (qrad(ndx), stat=ierr)
             call aerr('qrad(ndx)', ierr, ndx)
             qrad = 0d0
+            if (allocated(solar_radiation)) deallocate (solar_radiation)
+            allocate (solar_radiation(ndx), stat=ierr)
+            call aerr('solar_radiation(ndx)', ierr, ndx)
+            solar_radiation(:) = 0d0
             if (allocated(longwave)) deallocate (longwave)
             if (Soiltempthick > 0) then
                if (allocated(tbed)) deallocate (tbed)
