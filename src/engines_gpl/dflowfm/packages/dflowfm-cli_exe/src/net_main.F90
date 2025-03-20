@@ -313,7 +313,6 @@ program unstruc
       if (len_trim(md_ident) > 0) then ! partitionmduparse
          call partition_from_commandline(md_netfile, md_Ndomains, md_jacontiguous, md_icgsolver, md_pmethod, md_genpolygon, md_partugrid, md_partseed)
          L = index(md_netfile, '_net') - 1
-         md_mdu = md_ident
          if (len_trim(md_restartfile) > 0) then ! If there is a restart file
             L_merge = index(md_restartfile, '_merged')
             if (L_merge > 0) then
@@ -356,7 +355,7 @@ program unstruc
             if (len_trim(md_classmapfile_base) > 0) then
                md_classmap_file = md_classmapfile_base(1:index(md_classmapfile_base, '.nc', back=.true.) - 1)//'_'//sdmn_loc//".nc"
             end if
-            call generatePartitionMDUFile(trim(md_ident)//'.mdu', trim(md_mdu)//'_'//sdmn_loc//'.mdu')
+            call generatePartitionMDUFile(trim(md_ident)//'.mdu', trim(md_ident)//'_'//sdmn_loc//'.mdu')
          end do
       else
          call partition_from_commandline(md_netfile, md_ndomains, md_jacontiguous, md_icgsolver, md_pmethod, md_genpolygon, md_partugrid, md_partseed)

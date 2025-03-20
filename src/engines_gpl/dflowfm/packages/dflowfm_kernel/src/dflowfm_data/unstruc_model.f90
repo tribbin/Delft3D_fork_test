@@ -103,7 +103,6 @@ module unstruc_model
 
    character(len=64), target :: md_ident = ' ' !< Identifier of the model, used as suggested basename for some files. (runid)
 
-   character(len=64) :: md_mdu = ' ' !< similar, used in parsing parsing commandline
    character(len=64) :: md_ident_sequential = ' ' !< Sequential model identifier, used for parallel outputdir
 
    character(len=64) :: md_specific = ' ' !< Optional 'model specific ID', read from MDU, to enable certain custom runtime function calls (instead of via MDU name/md_ident).
@@ -288,7 +287,6 @@ contains
       network%initialized = .false.
 
       md_ident = ' '
-      md_mdu = ' ' ! TODO: AvD: I believe the (newer) md_mdu may be an unnecessary duplicate of md_ident_sequential
       md_ident_sequential = ' '
       md_tunit = 'S'
 
