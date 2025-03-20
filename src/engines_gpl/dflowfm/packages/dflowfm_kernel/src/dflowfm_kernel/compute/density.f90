@@ -32,7 +32,7 @@
 
 module m_setrho
    use precision_basics, only: dp
-   use m_densfm, only: RHO_MIN, RHO_MAX
+   use m_density_formulas, only: RHO_MIN, RHO_MAX
 
    implicit none
 
@@ -44,9 +44,9 @@ contains
 
    !> Fill potential density of one column
    subroutine set_potential_density(potential_density, cell_index_2d)
-      use m_densfm, only: densfm, add_sediment_effect_to_density
+      use m_density_formulas, only: densfm, add_sediment_effect_to_density
       use precision, only: dp
-      use m_flow, only: rho, kmxn
+      use m_flow, only: kmxn
       use m_get_kbot_ktop, only: getkbotktop
 
       real(kind=dp), dimension(:), intent(out) :: potential_density !< Potential density of fluid
@@ -79,10 +79,10 @@ contains
    !> Fill in-situ density of one column
    subroutine set_pressure_dependent_density(in_situ_density, cell_index_2d)
       use precision, only: dp
-      use m_flow, only: rho, density_is_pressure_dependent, kmxn, zws
+      use m_flow, only: kmxn, zws
       use m_get_kbot_ktop, only: getkbotktop
       use m_physcoef, only: Maxitpresdens, ag
-      use m_densfm, only: densfm, add_sediment_effect_to_density
+      use m_density_formulas, only: densfm, add_sediment_effect_to_density
 
       real(kind=dp), dimension(:), intent(out) :: in_situ_density !< Pressure dependent density of fluid
       integer, intent(in) :: cell_index_2d !< Horizontal cell index (1:ndx)
@@ -118,7 +118,7 @@ contains
 
    real(kind=dp) function setrhofixedp(cell_index_3d, p0)
       use precision, only: dp
-      use m_densfm, only: densfm, add_sediment_effect_to_density
+      use m_density_formulas, only: densfm, add_sediment_effect_to_density
 
       implicit none
 

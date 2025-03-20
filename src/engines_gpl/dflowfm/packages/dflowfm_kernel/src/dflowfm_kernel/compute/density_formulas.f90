@@ -30,7 +30,7 @@
 !
 !
 
-module m_densfm
+module m_density_formulas
    use precision_basics, only: dp
 
    implicit none
@@ -52,8 +52,6 @@ contains
       use precision, only: dp
       use m_physcoef, only: sal, temp, rhomean
       use m_flow, only: idensform
-      use m_rho_eckart, only: rho_eckart
-      use m_rho_unesco, only: rho_unesco
 
       real(kind=dp) :: sal, temp
 
@@ -96,6 +94,21 @@ contains
       rho_unesco83 = sigma + 1d3
 
    end function rho_unesco83
+
+   real(kind=dp) function rho_Eckart(sal, temp)
+      use precision, only: dp
+      real(kind=dp) :: sal, temp
+      real(kind=dp) :: cp1, clam1, temp2
+      real(kind=dp) :: cp0, clam0, clam
+
+      temp2 = temp * temp
+      cp0 = 5890.0d0 + 38.00d0 * temp - 0.3750d0 * temp2
+      clam = 1779.5d0 + 11.25d0 * temp - 0.0745d0 * temp2
+      clam0 = 3.8d0 + 0.01d0 * temp
+      cp1 = cp0 + 3.0d0 * saL
+      clam1 = clam - clam0 * saL
+      rho_Eckart = 1000.0d0 * cp1 / (0.698d0 * cp1 + clam1)
+   end function rho_Eckart
 
    function svan(S4, T4, P04, SIGMA)
       !==============================================================================!
@@ -290,7 +303,7 @@ contains
       end if
    end subroutine add_sediment_effect_to_density
 
-end module m_densfm
+end module m_density_formulas
 
 !   subroutine checkunesco83()
 !      use precision, only: dp

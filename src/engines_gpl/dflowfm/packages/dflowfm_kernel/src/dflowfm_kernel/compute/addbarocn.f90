@@ -105,7 +105,7 @@ contains
       use m_transport, only: ISALT, ITEMP, constituents
       use m_physcoef, only: rhomean
       use m_get_kbot_ktop
-      use m_densfm, only: densfm
+      use m_density_formulas, only: densfm
 
       implicit none
       integer, intent(in) :: n

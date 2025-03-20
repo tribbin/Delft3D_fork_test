@@ -43,8 +43,8 @@ module m_transport_sub
 
 contains
 
-!> transport for now, advect salinity and add
-!! high order limited terms to uqcx, uqcy
+   !> transport for now, advect salinity and add
+   !! high order limited terms to uqcx, uqcy
    subroutine transport()
       use precision, only: dp
       use m_setrho, only: set_potential_density, set_pressure_dependent_density

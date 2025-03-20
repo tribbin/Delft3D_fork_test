@@ -1659,7 +1659,7 @@ contains
       use m_ini_sferic
       use m_set_bobs
       use m_get_czz0
-      use m_rho_eckart, only: rho_eckart
+      use m_density_formulas, only: rho_eckart
       use m_corioliskelvin, only: corioliskelvin, oceaneddy
       use m_model_specific, only: equatorial, poiseuille
       use m_filez, only: newfil
