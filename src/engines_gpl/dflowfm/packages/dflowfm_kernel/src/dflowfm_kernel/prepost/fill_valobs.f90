@@ -70,6 +70,7 @@ contains
       use m_links_to_centers, only: links_to_centers
       use m_setrho, only: setrhofixedp
       use m_wind, only: wx, wy, jawind, japatm, patm, jarain, rain, airdensity, tair, rhum, clou
+      use m_turbulence, only: in_situ_density, potential_density
 
       implicit none
 
@@ -408,10 +409,10 @@ contains
                end if
                if ((jasal > 0 .or. jatem > 0 .or. jased > 0) .and. jahisrho > 0) then
                   if (is_density_pressure_dependent) then
-                     valobs(i, IPNT_RHOP + klay - 1) = setrhofixedp(kk, 0d0)
-                     valobs(i, IPNT_RHO + klay - 1) = rho(kk)
+                     valobs(i, IPNT_RHOP + klay - 1) = in_situ_density(kk)
+                     valobs(i, IPNT_RHO + klay - 1) = potential_density(kk)
                   else
-                     valobs(i, IPNT_RHOP + klay - 1) = rho(kk)
+                     valobs(i, IPNT_RHOP + klay - 1) = potential_density(kk)
                   end if
                end if
                if (jahisvelocity > 0) then
