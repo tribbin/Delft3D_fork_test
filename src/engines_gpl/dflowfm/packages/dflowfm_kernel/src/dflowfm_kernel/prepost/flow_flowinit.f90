@@ -1822,7 +1822,7 @@ contains
                call getkbotktop(k, kb, kt)
                do kk = kb, kt
                   sa1(kk) = 10d0
-                  rho1 = rho_Eckart(sa1(kk), backgroundwatertemperature)
+                  rho1 = rho_eckart(sa1(kk), backgroundwatertemperature)
                end do
             else
                !s1(k) = bl(k) + 0.5d0*( s1(k)-bl(k) )*sqrt(rho1/998.200)   ! rho = 1020 etc
