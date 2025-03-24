@@ -49,6 +49,7 @@ contains
       use m_get_link_neighboring_cell_coords
       use m_movabs
       use m_lnabs
+      use stdlib_sorting, only: sort_index
 
       type(kdtree_instance), intent(inout) :: treeinst
       integer, intent(in) :: NPL !< polyline length
@@ -63,7 +64,11 @@ contains
       integer, dimension(nLinks), intent(inout) :: iLink !< crossed flowlinks
       integer, dimension(nLinks), intent(inout) :: iPol !< polygon section
       real(kind=dp), dimension(nLinks), intent(inout) :: dSL !< polygon section cross location
+
       integer, intent(out) :: ierror !< ierror (1) or not (0)
+
+      integer, dimension(nLinks) :: new_index !< index of sorted iPol
+      real(kind=dp), dimension(nLinks) :: dSL_copy !< polygon section cross location
 
       real(kind=dp), dimension(:), allocatable :: x, y
 
@@ -81,6 +86,10 @@ contains
       integer :: jacros, kint
       integer :: LnxiORLnx
       integer :: isactive
+      integer :: Lp
+      integer :: n
+      integer :: n_start
+      integer :: n_end
 
       ierror = 1
 
@@ -229,6 +238,25 @@ contains
                dSL(numcrossedLinks) = SL
             end if
          end do
+      end do
+
+      dSL_copy = dSL
+
+      Lp = iLink(1)
+      n_start = 1
+      do n = 1, numcrossedLinks
+         L = iLink(n)
+         n_end = n - 1
+         if (L > Lp) then
+            if (n_end > n_start + 1) then
+               call sort_index(iPol(n_start:n_end), new_index(n_start:n_end))
+               do k = n_start, n_end
+                  dSL(k) = dSL_copy(n_start - 1 + new_index(k))
+               end do
+            end if
+            n_start = n
+            Lp = iLink(n)
+         end if
       end do
 
       call readyy(' ', -1d0)
