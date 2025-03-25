@@ -26,7 +26,7 @@ object LinuxThirdPartyLibs : BuildType({
         param("intel_oneapi_version", "2024")
         param("reverse.dep.${LinuxBuildTools.id}.intel_oneapi_version", "2024")
         param("intel_fortran_compiler", "ifx")
-        param("build_type", "release")
+        select("build_type", "Release", display = ParameterDisplay.PROMPT, options = listOf("Release", "RelWithDebInfo", "Debug"))
         param("harbor_repo", "containers.deltares.nl/delft3d-dev/delft3d-third-party-libs")
 
         // Environment variables that must be overwritten in the build.
@@ -44,10 +44,7 @@ object LinuxThirdPartyLibs : BuildType({
                     +:ci/dockerfiles/linux/buildtools.Dockerfile
                     +:ci/dockerfiles/linux/third-party-libs.Dockerfile
                 """.trimIndent()
-                branchFilter = """
-                    +:<default>
-                    +:merge-requests/*
-                """.trimIndent()
+                branchFilter = "+:<default>"
             }
         }
     }

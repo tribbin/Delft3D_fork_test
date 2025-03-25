@@ -480,6 +480,7 @@ type morpar_type
                            !  3: 
     integer :: telform     !  switch for thickness of exchange layer
                            !  1: fixed (user-spec.) thickness
+    
     !
     ! pointers
     !
@@ -524,6 +525,7 @@ type morpar_type
     character(256) :: mmsyncfilnam !  name of output file for synchronisation of mormerge run
     character(256) :: telfil       !  name of file containing exchange layer thickness
     character(256) :: ttlfil       !  name of file containing transport layer thickness
+    character(256) :: aldifffil    !  name of file containing active-layer diffusion
     character(256) :: flsthetsd    !  name of file containing dry cell erosion factor
     !
 end type morpar_type
@@ -1450,6 +1452,7 @@ subroutine nullmorpar(morpar)
     character(256)                       , pointer :: mmsyncfilnam
     character(256)                       , pointer :: ttlfil
     character(256)                       , pointer :: telfil
+    character(256)                       , pointer :: aldifffil
     character(256)                       , pointer :: flsthetsd
     type (bedbndtype)     , dimension(:) , pointer :: morbnd
     type (cmpbndtype)     , dimension(:) , pointer :: cmpbnd
@@ -1550,6 +1553,7 @@ subroutine nullmorpar(morpar)
     mmsyncfilnam        => morpar%mmsyncfilnam
     ttlfil              => morpar%ttlfil
     telfil              => morpar%telfil
+    aldifffil           => morpar%aldifffil
     flsthetsd           => morpar%flsthetsd
     !
     istat = 0
@@ -1586,6 +1590,7 @@ subroutine nullmorpar(morpar)
     mmsyncfilnam       = ' '
     ttlfil             = ' '
     telfil             = ' '
+    aldifffil          = ' '
     flsthetsd          = ' '
     !
     morfac             = 1.0_fp

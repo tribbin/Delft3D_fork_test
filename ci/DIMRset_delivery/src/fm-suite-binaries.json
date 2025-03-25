@@ -245,10 +245,6 @@
             "issuedTo": "Intel Corporation"
         },
         {
-            "file": "lib\\msvcp100.dll",
-            "issuedTo": "Microsoft Corporation"
-        },
-        {
             "file": "lib\\msvcp140.dll",
             "issuedTo": "Microsoft Corporation"
         },
@@ -265,15 +261,7 @@
             "issuedTo": "Microsoft Corporation"
         },
         {
-            "file": "lib\\vcomp100.dll",
-            "issuedTo": "Microsoft Corporation"
-        },
-        {
             "file": "lib\\vcruntime140.dll",
-            "issuedTo": "Microsoft Corporation"
-        },
-        {
-            "file": "lib\\vcruntime140_1.dll",
             "issuedTo": "Microsoft Corporation"
         },
         {
@@ -574,10 +562,6 @@
         },
         {
             "file": "lib\\xerces-c_3_1.dll",
-            "issuedTo": "Stichting Deltares"
-        },
-        {
-            "file": "lib\\xerces-c_3_1D.dll",
             "issuedTo": "Stichting Deltares"
         },
         {

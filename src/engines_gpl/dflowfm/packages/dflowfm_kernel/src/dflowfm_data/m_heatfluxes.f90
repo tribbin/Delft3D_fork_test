@@ -32,14 +32,13 @@
 
 module m_heatfluxes
    use precision, only: dp
-   use physicalconsts
+   use physicalconsts, only: CtoKelvin, stf
    implicit none
 
    real(kind=dp) :: albedo ! reflection coefficient of water () at average incidence angle of 60 deg,
    ! (albedo is .025 at angle 0 deg, 0.13 at angle 70 deg)
    real(kind=dp) :: em ! Emissivity ()
    real(kind=dp) :: cpa ! Specific heat air   [J/kg/K]
-   real(kind=dp) :: rcpa !
    real(kind=dp) :: cpw ! Specific heat water [J/kg/K]
    real(kind=dp) :: rcpi ! m3K/J
    real(kind=dp) :: emstf ! Em*Stf [W/m^2/K^4]
@@ -77,15 +76,13 @@ contains
 
    subroutine default_heatfluxes()
       use m_physcoef, only: rhomean
-      use m_wind, only: rhoair
       !< Heat flux model constants
-      albedo = 0.06d0 !< reflection coefficient of water () at average incidence angle of 60 deg,
+      albedo = 0.06_dp !< reflection coefficient of water () at average incidence angle of 60 deg,
       !< (albedo is .025 at angle 0 deg, 0.13 at angle 70 deg)
-      em = 0.985d0 !< Emissivity ()
-      cpa = 1004d0 !< Specific heat air   [J/kg/K]
-      rcpa = rhoair * cpa !
-      cpw = 3986d0 !< Specific heat water [J/kg/K]
-      rcpi = 1d0 / (rhomean * cpw) !< [m3K/J] or mKs2/kg
+      em = 0.985_dp !< Emissivity ()
+      cpa = 1004.0_dp !< Specific heat air   [J/kg/K]
+      cpw = 3986.0_dp !< Specific heat water [J/kg/K]
+      rcpi = 1.0_dp / (rhomean * cpw) !< [m3K/J] or mKs2/kg
       emstf = em * stf
 
       jamapheatflux = 0

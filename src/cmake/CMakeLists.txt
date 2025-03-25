@@ -194,6 +194,7 @@ if (CMAKE_GENERATOR MATCHES "Visual Studio")
 endif(CMAKE_GENERATOR MATCHES "Visual Studio")
 
 # Basic (single-component) configurations
+set(all_configuration "ALL")
 set(dflowfm_configuration "DFLOWFM")
 set(dflowfm_configuration_interacter "DFLOWFM_INTERACTER")
 set(tests_configuration "TESTS")
@@ -206,6 +207,7 @@ set(tools_configuration "TOOLS")
 set(tools_gpl_configuration "TOOLS_GPL")
 set(drr_configuration "DRR")
 set(rtc_configuration "RTC")
+set(fbc_configuration "FBC")
 
 # Combined (multi-component) configurations for running specific testbenches
 # These are equivalent to our branch-prefixes
@@ -237,9 +239,11 @@ if(NOT (${configuration_type} STREQUAL ${tests_configuration}
      OR ${configuration_type} STREQUAL ${tools_gpl_configuration}
      OR ${configuration_type} STREQUAL ${drr_configuration}
      OR ${configuration_type} STREQUAL ${rtc_configuration}
+     OR ${configuration_type} STREQUAL ${fbc_configuration}
      OR ${configuration_type} STREQUAL ${fm-suite_configuration}
      OR ${configuration_type} STREQUAL ${d3d4-suite_configuration}
      OR ${configuration_type} STREQUAL ${testbench-all_configuration}
+     OR ${configuration_type} STREQUAL ${all_configuration}
      OR ${configuration_type} STREQUAL ${testbench-fm_configuration}
      OR ${configuration_type} STREQUAL ${testbench-d3d4_configuration}
      OR ${configuration_type} STREQUAL ${testbench-rr_configuration}
@@ -326,18 +330,18 @@ if(${configuration_type} STREQUAL ${drr_configuration})
     include(configurations/components/drr_configuration.cmake)
 endif()
 
+# FBC configuration
+if(${configuration_type} STREQUAL ${fbc_configuration})
+    message(STATUS "Generating solution for FBC-tools ...")
+    include(configurations/components/fbc_configuration.cmake)
+endif()
+
 ### Composed configurations for testbenches
 
 # ALL configuration
-if(${configuration_type} STREQUAL ${testbench-all_configuration})
+if(${configuration_type} STREQUAL ${testbench-all_configuration} OR ${configuration_type} STREQUAL ${all_configuration})
     message(STATUS "Generating solution for all testbenches ...")
     include(configurations/testbench/all_configuration.cmake)
-endif()
-
-# FM configuration
-if(${configuration_type} STREQUAL ${testbench-fm_configuration})
-    message(STATUS "Generating solution for fm testbench ...")
-    include(configurations/testbench/fm_configuration.cmake)
 endif()
 
 # D3D4 configuration
@@ -373,7 +377,7 @@ endif()
 # TC configuration
 if(${configuration_type} STREQUAL ${testbench-tc_configuration})
     message(STATUS "Generating solution for tc testbench ...")
-    include(configurations/testbench/tc_configuration.cmake)
+    include(configurations/testbench/waq_configuration.cmake)
 endif()
 
 # QUICKPLOT configuration
@@ -385,7 +389,7 @@ endif()
 ### Composed configurations for releases
 
 # Delft3D-FM suite configuration (dimr, dflowfm, dwaq, dwaves, and some tools)
-if(${configuration_type} STREQUAL ${fm-suite_configuration})
+if(${configuration_type} STREQUAL ${fm-suite_configuration} OR ${configuration_type} STREQUAL ${testbench-fm_configuration})
     message(STATUS "Generating solution for Delft3D-FM ...")
     include(configurations/suites/fm_configuration.cmake)
 endif()
