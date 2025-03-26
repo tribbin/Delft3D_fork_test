@@ -5,8 +5,8 @@ from pathlib import Path
 
 from ci_tools.example_utils.logger import Logger, LogLevel
 
-EXAMPLES_DIR = Path("examples/dflowfm")
-APPTAINER_DIR = Path("src/scripts_lgpl/singularity")
+EXAMPLES_RELATIVE_DIR = Path("examples/dflowfm")
+APPTAINER_RELATIVE_DIR = Path("src/scripts_lgpl/singularity")
 
 
 def parse_arguments() -> Namespace:
@@ -103,6 +103,20 @@ def copy_examples(example_directory: Path, apptainer_directory: Path, dest_dir: 
     return 0
 
 
+def get_base_directory_ci_python_scripts(relative_path: str) -> Path:
+    """Get the base directory of the repository.
+
+    Returns
+    -------
+        Path: returns the base directory of the repository
+    """
+    full_file_path = Path(relative_path).resolve()
+    module_file_path = Path(relative_path)
+    remove_part = "\\ci\\python\\" + str(module_file_path)
+    base_dir = Path(str(full_file_path).replace(remove_part, ""))
+    return base_dir
+
+
 if __name__ == "__main__":
     arguments = parse_arguments()
     dest_dir = Path(arguments.dest_dir)
@@ -110,12 +124,16 @@ if __name__ == "__main__":
 
     logger.log(f"Copy examples to location {dest_dir}")
 
+    base_dir = get_base_directory_ci_python_scripts(__file__)
+    examples_dir = base_dir / EXAMPLES_RELATIVE_DIR
+    apptainer_dir = base_dir / APPTAINER_RELATIVE_DIR
+
     logger.log("Create destination directory.")
     if create_destination_directory(dest_dir, logger):
         sys.exit(1)
 
     logger.log("Copy files from the examples directory to the destination.")
-    if copy_examples(EXAMPLES_DIR, APPTAINER_DIR, dest_dir, logger):
+    if copy_examples(examples_dir, apptainer_dir, dest_dir, logger):
         sys.exit(1)
 
     logger.log("Copy completed.")
