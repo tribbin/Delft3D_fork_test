@@ -591,12 +591,12 @@ contains
 
       num_bc_ini_blocks = 0
       if (ext_force_bnd_used) then
-         ! first read the bc file (new file format for boundary conditions)
+         ! first read the ini-format *.ext external forcings file (default file format for boundary conditions)
          call read_location_files_from_boundary_blocks(trim(md_extfile_new), nx, kce, num_bc_ini_blocks, &
                                                        numz, numu, nums, numtm, numsd, numt, numuxy, numn, num1d2d, numqh, numw, numtr, numsf)
       end if
 
-      do while (ja_ext_force == 1) ! read *.ext file
+      do while (ja_ext_force == 1) ! read legacy format *.ext file
 
          call readprovider(mext, qid, filename, filetype, method, operand, transformcoef, ja_ext_force, varname)
          call resolvePath(filename, md_extfile_dir)

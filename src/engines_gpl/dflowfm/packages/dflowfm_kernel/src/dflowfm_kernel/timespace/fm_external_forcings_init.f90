@@ -286,6 +286,15 @@ contains
          num_items_in_block = size(node_ptr%child_nodes)
       end if
 
+      ! Perform dummy-reads of supported keywords to prevent them from being reported as unused input.
+      ! The keywords below were already read in read_location_files_from_boundary_blocks().
+      call prop_get(node_ptr, '', 'returnTime', property_value)
+      call prop_get(node_ptr, '', 'return_time', property_value)
+      call prop_get(node_ptr, '', 'openBoundaryTolerance', property_value)
+      call prop_get(node_ptr, '', 'nodeId', property_value)
+      call prop_get(node_ptr, '', 'bndWidth1D', property_value)
+      call prop_get(node_ptr, '', 'bndBlDepth', property_value)
+
       ! Now loop over all key-value pairs, to support reading *multiple* lines with forcingFile=...
       do j = 1, num_items_in_block
          block_ptr => node_ptr%child_nodes(j)%node_ptr
@@ -293,12 +302,7 @@ contains
          property_name = trim(tree_get_name(block_ptr))
          call tree_get_data_string(block_ptr, property_value, is_successful)
          if (is_successful) then
-            if (property_name == 'quantity') then
-               quantity = property_value ! We already knew this
-            else if (strcmpi(property_name, 'locationFile')) then
-               location_file = property_value ! We already knew this
-               call resolvePath(location_file, base_dir)
-            else if (strcmpi(property_name, 'forcingFile')) then
+            if (strcmpi(property_name, 'forcingFile')) then
                forcing_file = property_value
                call resolvePath(forcing_file, base_dir)
                if (oper /= 'O' .and. oper /= '+') then
@@ -341,24 +345,6 @@ contains
                end if
                res = res .and. is_successful ! Remember any previous errors.
                oper = '-'
-            else if (property_name == 'operand') then
-               continue
-            else if (property_name == 'returntime' .or. property_name == 'return_time') then
-               continue ! used elsewhere to set Thatcher-Harleman delay
-            else if (property_name == 'openboundarytolerance') then
-               continue ! used in findexternalboundarypoints/readlocationfiles... to set search distance. Not relevant here.
-            else if (property_name == 'nodeid') then
-               continue
-            else if (property_name == 'bndwidth1d') then
-               continue
-            else if (property_name == 'bndbldepth') then
-               continue
-            else
-               ! res remains unchanged: support ignored lines in ext file.
-               write (msgbuf, '(9a)') 'Unrecognized line in file ''', file_name, ''' for block [', group_name, ']: ', &
-                  trim(property_name), ' = ', trim(property_value), '. Ignoring this line.'
-               call warn_flush()
-               cycle
             end if
          end if
       end do
