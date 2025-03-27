@@ -691,6 +691,7 @@ contains
    function ug_def_var(ncid, id_var, id_dims, itype, iloctype, mesh_name, var_name, standard_name, long_name, &
                        units, cell_method, cell_measures, crs, ifill, dfill, writeopts, do_deflate) result(ierr)
       use precision, only: sp
+      use netcdf_utils, only: ncu_ensure_define_mode, ncu_restore_mode
 
       integer, intent(in) :: ncid          !< NetCDF dataset id
       integer, intent(out) :: id_var        !< Created NetCDF variable id.
@@ -712,21 +713,16 @@ contains
       integer :: ierr          !< Result status (UG_NOERR==NF90_NOERR) if successful.
 
       character(len=len_trim(mesh_name)) :: prefix
-      integer :: wasInDefine
+      logical :: wasInDefine
       logical :: add_latlon
 
       logical :: do_deflate_
 
       ierr = UG_SOMEERR
 
-      wasInDefine = 0
+      ierr = ncu_ensure_define_mode(ncid, wasInDefine)
 
-      ierr = nf90_redef(ncid)
-      if (ierr == nf90_eindefine) then
-         wasInDefine = 1 ! Was still in define mode.
-      end if
-
-      if (ierr /= nf90_noerr .and. ierr /= nf90_eindefine) then
+      if (ierr /= nf90_noerr) then
          goto 888
       end if
 
@@ -836,10 +832,7 @@ contains
          ierr = nf90_put_att(ncid, id_var, '_FillValue', real(dfill, sp))
       end if
 
-      ! Leave the dataset in the same mode as we got it.
-      if (wasInDefine == 0) then
-         ierr = nf90_enddef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, wasInDefine)
 
       ! Check for any remaining native NetCDF errors
       if (ierr /= nf90_noerr) then
