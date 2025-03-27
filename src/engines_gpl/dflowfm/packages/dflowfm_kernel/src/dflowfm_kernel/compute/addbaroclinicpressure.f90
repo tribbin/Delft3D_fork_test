@@ -31,7 +31,6 @@
 !
 
 module m_addbaroclinicpressure
-   use m_addbarocn, only: addbarocn, addbarocnorg, addbarocnrho_w
 
    implicit none
 
@@ -44,6 +43,7 @@ contains
    subroutine addbaroclinicpressure()
       use precision, only: dp
       use m_addbarocl, only: addbarocL, addbarocLrho_w
+      use m_addbarocn, only: addbarocn, addbarocnrho_w
       use m_addbaroc, only: addbaroc
       use m_flowgeom, only: lnxi, lnx, ndx
       use m_flow, only: hu, kmx
