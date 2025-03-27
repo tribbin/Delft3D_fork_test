@@ -1392,7 +1392,7 @@ contains
       call prop_get(md_ptr, 'physics', 'Salimax', Salimax)
       call prop_get(md_ptr, 'physics', 'Salimin', Salimin)
       call prop_get(md_ptr, 'physics', 'Surftempsmofac', Surftempsmofac)
-      call prop_get(md_ptr, 'physics', 'RhoairRhowater', jaroro)
+      call prop_get(md_ptr, 'physics', 'RhoairRhowater', wind_stress_water_density_option)
       call prop_get(md_ptr, 'physics', 'Heat_eachstep', jaheat_eachstep)
       call prop_get(md_ptr, 'physics', 'Soiltempthick', Soiltempthick)
       if (soiltempthick > 0.0_dp) then
@@ -3399,8 +3399,8 @@ contains
          if (writeall .or. jaheat_eachstep > 0) then
             call prop_set(prop_ptr, 'physics', 'Heat_eachstep', jaheat_eachstep, '1=heat each timestep, 0=heat each usertimestep')
          end if
-         if (writeall .or. jaroro > 0) then
-            call prop_set(prop_ptr, 'physics', 'RhoairRhowater', jaroro, 'windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow(), 2=rhoa0()/rhow(), 3=rhoa10()/Rhow()')
+         if (writeall .or. wind_stress_water_density_option > 0) then
+            call prop_set(prop_ptr, 'physics', 'RhoairRhowater', wind_stress_water_density_option, 'windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow()')
          end if
 
          if (writeall .or. janudge > 0 .or. jainiwithnudge > 0) then

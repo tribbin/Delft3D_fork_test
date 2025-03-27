@@ -58,7 +58,7 @@ module m_heatfluxes
    integer :: jamapheatflux !< write heatfluxes to map
    integer :: jaRichardsononoutput !< write Richardson nr to his
    integer :: jaSecchisp !< Spatial Secchi 0,1
-   integer :: jaRoro !< Use roair(n)/rho(ntop) in windstress 0,1
+   integer :: wind_stress_water_density_option !< Use rhomean or rhow in windstress: 0,1
 
    real(kind=dp), allocatable, target :: Qsunmap(:) !< [W/m2] solar radiation reaching water surface {"location": "face", "shape": ["ndx"]}
    real(kind=dp), allocatable :: Qevamap(:)
@@ -70,7 +70,6 @@ module m_heatfluxes
 
    real(kind=dp), allocatable :: Rich(:)
    real(kind=dp), allocatable :: Secchisp(:)
-   real(kind=dp), allocatable :: Roair(:)
 
 contains
 
@@ -87,7 +86,7 @@ contains
 
       jamapheatflux = 0
       jaRichardsononoutput = 0
-      jaroro = 0
+      wind_stress_water_density_option = 0
 
    end subroutine default_heatfluxes
 

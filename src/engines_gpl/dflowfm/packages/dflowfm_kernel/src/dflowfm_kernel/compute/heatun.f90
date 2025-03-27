@@ -39,7 +39,7 @@ contains
 
    subroutine heatun(n, timhr, qsno)
       use m_flow, only: kmx, hs, epshstem, surftempsmofac, solar_radiation_factor, em, stf, albedo, sfr, &
-          zws, Secchidepth2, jaroro, roair, jamapheatflux, jahisheatflux, Qtotmap, Qsunmap, Qevamap, Qconmap, &
+          zws, Secchidepth2, jamapheatflux, jahisheatflux, Qtotmap, Qsunmap, Qevamap, Qconmap, &
           Qlongmap, Qfrevamap, Qfrconmap, Qsunav, Qlongav, Qconav, Qevaav, Qfrconav, Qfrevaav, BACKGROUND_AIR_PRESSURE, &
           BACKGROUND_HUMIDITY, BACKGROUND_CLOUDINESS, dalton, stanton, ucx, ucy, ktop, jatem, fwind, rcpi, ja_solar_radiation_factor, &
           jaSecchisp, zab, Secchisp, Soiltempthick, jadelvappos, tkelvn, ag, rhomean
@@ -308,15 +308,6 @@ contains
          Qfree = 0.0_dp; Qfrcon = 0.0_dp; Qfreva = 0.0_dp ! Contribution by free convection:
          rhoa0 = ((presn - pvtwmx) / rdry + pvtwmx / rvap) / (Tsurf + Tkelvn)
          rhoa10 = ((presn - pvtahu) / rdry + pvtahu / rvap) / (Tairn + Tkelvn)
-         if (jaroro > 0) then
-            if (jaroro == 2) then
-               roair(n) = rhoa0
-            else if (jaroro == 3) then
-               roair(n) = rhoa10
-            else if (jaroro == 4) then
-               roair(n) = 0.5_dp * (rhoa10 + rhoa0)
-            end if
-         end if
          gred = 2.0_dp * ag * (rhoa10 - rhoa0) / (rhoa0 + rhoa10)
          if (gred > 0.0_dp) then ! Ri= (gred/DZ)/ (du/dz)2, Ri>0.25 stable
             wfree = gred * xnuair / pr2
