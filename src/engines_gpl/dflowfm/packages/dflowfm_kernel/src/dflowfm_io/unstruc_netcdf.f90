@@ -5912,7 +5912,7 @@ contains
                !
                if (kmx > 0) then
                   if (stmpar%morpar%moroutput%suvcor) then
-                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_scrn, nc_precision, UNC_LOC_U, 'e_scrn', '', 'Near-bed transport correction in face-normal direction', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+                     ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_scrn, nc_precision, UNC_LOC_U, 'e_scrn', '', 'Near-bed transport correction in face-normal direction', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
                   end if
                end if
                !
@@ -5939,14 +5939,14 @@ contains
 
             ! default sediment transport output (suspended and bedload) on flow links
             if (stmpar%lsedsus > 0) then
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssn, nc_precision, UNC_LOC_U, 'ssn', '', 'Suspended load transport, n-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sst, nc_precision, UNC_LOC_U, 'sst', '', 'Suspended load transport, t-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssn, nc_precision, UNC_LOC_U, 'ssn', '', 'Suspended load transport, n-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sst, nc_precision, UNC_LOC_U, 'sst', '', 'Suspended load transport, t-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
 
             end if
 
             if (stmpar%lsedtot > 0) then
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbn, nc_precision, UNC_LOC_U, 'sbn', '', 'Bed load transport, n-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbt, nc_precision, UNC_LOC_U, 'sbt', '', 'Bed load transport, t-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbn, nc_precision, UNC_LOC_U, 'sbn', '', 'Bed load transport, n-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbt, nc_precision, UNC_LOC_U, 'sbt', '', 'Bed load transport, t-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
             end if
 
             if (stmpar%morpar%moroutput%dzduuvv) then ! bedslope
@@ -5973,54 +5973,54 @@ contains
 
             if (stmpar%morpar%moroutput%sbcuv) then
                if (stmpar%morpar%moroutput%rawtransports) then ! if either of these is true, the reconstruction is done outside this subroutine, invalidating Willem's approach to have 'unspoiled' transports
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcx, nc_precision, UNC_LOC_S, 'sbcx', '', 'Bed load transport due to currents, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcy, nc_precision, UNC_LOC_S, 'sbcy', '', 'Bed load transport due to currents, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcx, nc_precision, UNC_LOC_S, 'sbcx', '', 'Bed load transport due to currents, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcy, nc_precision, UNC_LOC_S, 'sbcy', '', 'Bed load transport due to currents, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
                end if
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcx_reconstructed, nc_precision, UNC_LOC_S, 'sbcx_reconstructed', '', 'Bed load transport due to currents (reconstructed), x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcy_reconstructed, nc_precision, UNC_LOC_S, 'sbcy_reconstructed', '', 'Bed load transport due to currents (reconstructed), y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcx_reconstructed, nc_precision, UNC_LOC_S, 'sbcx_reconstructed', '', 'Bed load transport due to currents (reconstructed), x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbcy_reconstructed, nc_precision, UNC_LOC_S, 'sbcy_reconstructed', '', 'Bed load transport due to currents (reconstructed), y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
             end if
 
             if (stmpar%morpar%moroutput%sbwuv) then
                if (stmpar%morpar%moroutput%rawtransports) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwx, nc_precision, UNC_LOC_S, 'sbwx', '', 'Bed load transport due to waves, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwy, nc_precision, UNC_LOC_S, 'sbwy', '', 'Bed load transport due to waves, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwx, nc_precision, UNC_LOC_S, 'sbwx', '', 'Bed load transport due to waves, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwy, nc_precision, UNC_LOC_S, 'sbwy', '', 'Bed load transport due to waves, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
                end if
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwx_reconstructed, nc_precision, UNC_LOC_S, 'sbwx_reconstructed', '', 'Bed load transport due to waves (reconstructed), x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwy_reconstructed, nc_precision, UNC_LOC_S, 'sbwy_reconstructed', '', 'Bed load transport due to waves (reconstructed), y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwx_reconstructed, nc_precision, UNC_LOC_S, 'sbwx_reconstructed', '', 'Bed load transport due to waves (reconstructed), x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwy_reconstructed, nc_precision, UNC_LOC_S, 'sbwy_reconstructed', '', 'Bed load transport due to waves (reconstructed), y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
             end if
 
             if (stmpar%morpar%moroutput%sscuv) then ! This differs from Delft3D 4
                if (stmpar%morpar%moroutput%rawtransports) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscx, nc_precision, UNC_LOC_S, 'sscx', '', 'Suspended load transport due to currents, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscy, nc_precision, UNC_LOC_S, 'sscy', '', 'Suspended load transport due to currents, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscx, nc_precision, UNC_LOC_S, 'sscx', '', 'Suspended load transport due to currents, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscy, nc_precision, UNC_LOC_S, 'sscy', '', 'Suspended load transport due to currents, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
                end if
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscx_reconstructed, nc_precision, UNC_LOC_S, 'sscx_reconstructed', '', 'Suspended load transport due to currents (reconstructed), x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscy_reconstructed, nc_precision, UNC_LOC_S, 'sscy_reconstructed', '', 'Suspended load transport due to currents (reconstructed), y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscx_reconstructed, nc_precision, UNC_LOC_S, 'sscx_reconstructed', '', 'Suspended load transport due to currents (reconstructed), x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sscy_reconstructed, nc_precision, UNC_LOC_S, 'sscy_reconstructed', '', 'Suspended load transport due to currents (reconstructed), y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
             end if
 
             if (stmpar%morpar%moroutput%sswuv) then
                if (stmpar%morpar%moroutput%rawtransports) then
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswx, nc_precision, UNC_LOC_S, 'sswx', '', 'Suspended load transport due to waves, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
-                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswy, nc_precision, UNC_LOC_S, 'sswy', '', 'Suspended load transport due to waves, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswx, nc_precision, UNC_LOC_S, 'sswx', '', 'Suspended load transport due to waves, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+                  ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswy, nc_precision, UNC_LOC_S, 'sswy', '', 'Suspended load transport due to waves, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
                end if
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswx_reconstructed, nc_precision, UNC_LOC_S, 'sswx_reconstructed', '', 'Suspended load transport due to waves (reconstructed), x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswy_reconstructed, nc_precision, UNC_LOC_S, 'sswy_reconstructed', '', 'Suspended load transport due to waves (reconstructed), y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswx_reconstructed, nc_precision, UNC_LOC_S, 'sswx_reconstructed', '', 'Suspended load transport due to waves (reconstructed), x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sswy_reconstructed, nc_precision, UNC_LOC_S, 'sswy_reconstructed', '', 'Suspended load transport due to waves (reconstructed), y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedsusdim, -1], jabndnd=jabndnd_)
             end if
 
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxtot, nc_precision, UNC_LOC_S, 'sxtot', '', 'Total sediment transport in flow cell center (reconstructed), x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sytot, nc_precision, UNC_LOC_S, 'sytot', '', 'Total sediment transport in flow cell center (reconstructed), y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sxtot, nc_precision, UNC_LOC_S, 'sxtot', '', 'Total sediment transport in flow cell center (reconstructed), x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sytot, nc_precision, UNC_LOC_S, 'sytot', '', 'Total sediment transport in flow cell center (reconstructed), y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
 
             ! Time averaged sediment transport values
             if (stmpar%morpar%moroutput%cumavg) then
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxcum, nc_precision, UNC_LOC_S, 'sbxcum', '', 'Time-averaged bed load transport, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbycum, nc_precision, UNC_LOC_S, 'sbycum', '', 'Time-averaged bed load transport, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssxcum, nc_precision, UNC_LOC_S, 'ssxcum', '', 'Time-averaged suspended load transport, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssycum, nc_precision, UNC_LOC_S, 'ssycum', '', 'Time-averaged suspended load transport, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxcum, nc_precision, UNC_LOC_S, 'sbxcum', '', 'Time-averaged bed load transport, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbycum, nc_precision, UNC_LOC_S, 'sbycum', '', 'Time-averaged bed load transport, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssxcum, nc_precision, UNC_LOC_S, 'ssxcum', '', 'Time-averaged suspended load transport, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssycum, nc_precision, UNC_LOC_S, 'ssycum', '', 'Time-averaged suspended load transport, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim, -1], jabndnd=jabndnd_)
             else
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxcum, nc_precision, UNC_LOC_S, 'sbxcum', '', 'Time-averaged bed load transport, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbycum, nc_precision, UNC_LOC_S, 'sbycum', '', 'Time-averaged bed load transport, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssxcum, nc_precision, UNC_LOC_S, 'ssxcum', '', 'Time-averaged suspended load transport, x-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
-               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssycum, nc_precision, UNC_LOC_S, 'ssycum', '', 'Time-averaged suspended load transport, y-component', stmpar%morpar%moroutput%unit_transp_per_cell, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbxcum, nc_precision, UNC_LOC_S, 'sbxcum', '', 'Time-averaged bed load transport, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbycum, nc_precision, UNC_LOC_S, 'sbycum', '', 'Time-averaged bed load transport, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssxcum, nc_precision, UNC_LOC_S, 'ssxcum', '', 'Time-averaged suspended load transport, x-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
+               ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ssycum, nc_precision, UNC_LOC_S, 'ssycum', '', 'Time-averaged suspended load transport, y-component', stmpar%morpar%moroutput%unit_transport_rate, dimids=[-2, mapids%id_tsp%id_sedtotdim], jabndnd=jabndnd_)
             end if
 
             select case (stmpar%morlyr%settings%iunderlyr)
@@ -8687,12 +8687,12 @@ contains
                      ierr = nf90_def_var(imapfile, 'e_scrn', nf90_double, [id_flowlinkdim(iid), id_sedsusdim(iid), id_timedim(iid)], id_scrn(iid))
                      ierr = nf90_put_att(imapfile, id_scrn(iid), 'coordinates', 'FlowLink_xu FlowLink_yu')
                      ierr = nf90_put_att(imapfile, id_scrn(iid), 'long_name', 'Near-bed transport correction in face-normal direction')
-                     ierr = nf90_put_att(imapfile, id_scrn(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                     ierr = nf90_put_att(imapfile, id_scrn(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                      !ierr = nf90_def_var(imapfile, 'e_scrt' , nf90_double, [ id_flowlinkdim(iid) , id_sedsusdim(iid) , id_timedim(iid) ] , id_scrt(iid))
                      !ierr = nf90_put_att(imapfile, id_scrt(iid) ,  'coordinates'  , 'FlowLink_xu FlowLink_yu')
                      !ierr = nf90_put_att(imapfile, id_scrt(iid) ,  'long_name'    , 'Near-bed transport correction face-tangential direction')
-                     !ierr = nf90_put_att(imapfile, id_scrt(iid) ,  'units'        , stmpar%morpar%moroutput%unit_transp_per_cell)
+                     !ierr = nf90_put_att(imapfile, id_scrt(iid) ,  'units'        , stmpar%morpar%moroutput%unit_transport_rate)
                   end if
                   !
                   ! Suspended fractions
@@ -8749,99 +8749,99 @@ contains
                   ierr = nf90_def_var(imapfile, 'sbcx', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbcx(iid))
                   ierr = nf90_put_att(imapfile, id_sbcx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbcx(iid), 'long_name', 'bed load transport due to currents, x-component')
-                  ierr = nf90_put_att(imapfile, id_sbcx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbcx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sbcy', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbcy(iid))
                   ierr = nf90_put_att(imapfile, id_sbcy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbcy(iid), 'long_name', 'bed load transport due to currents, y-component')
-                  ierr = nf90_put_att(imapfile, id_sbcy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbcy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sbcx_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbcx_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sbcx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbcx(iid), 'long_name', 'bed load transport due to currents (reconstructed), x-component')
-                  ierr = nf90_put_att(imapfile, id_sbcx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbcx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sbcy_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbcy_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sbcy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbcy(iid), 'long_name', 'bed load transport due to currents (reconstructed), y-component')
-                  ierr = nf90_put_att(imapfile, id_sbcy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbcy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
                end if
 
                if (stmpar%morpar%moroutput%sbwuv) then
                   ierr = nf90_def_var(imapfile, 'sbwx', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbwx(iid))
                   ierr = nf90_put_att(imapfile, id_sbwx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbwx(iid), 'long_name', 'bed load transport due to waves, x-component')
-                  ierr = nf90_put_att(imapfile, id_sbwx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbwx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sbwy', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbwy(iid))
                   ierr = nf90_put_att(imapfile, id_sbwy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbwy(iid), 'long_name', 'bed load transport due to waves, y-component')
-                  ierr = nf90_put_att(imapfile, id_sbwy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbwy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sbwx_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbwx_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sbwx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbwx(iid), 'long_name', 'bed load transport due to waves (reconstructed), x-component')
-                  ierr = nf90_put_att(imapfile, id_sbwx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbwx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sbwy_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sbwy_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sbwy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sbwy(iid), 'long_name', 'bed load transport due to waves (reconstructed), y-component')
-                  ierr = nf90_put_att(imapfile, id_sbwy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sbwy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
                end if
 
                if (stmpar%morpar%moroutput%sswuv) then
                   ierr = nf90_def_var(imapfile, 'sswx', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sswx(iid))
                   ierr = nf90_put_att(imapfile, id_sswx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sswx(iid), 'long_name', 'suspended load transport due to waves, x-component')
-                  ierr = nf90_put_att(imapfile, id_sswx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sswx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sswy', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sswy(iid))
                   ierr = nf90_put_att(imapfile, id_sswy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sswy(iid), 'long_name', 'suspended load transport due to waves, y-component')
-                  ierr = nf90_put_att(imapfile, id_sswy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sswy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sswx_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sswx_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sswx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sswx(iid), 'long_name', 'suspended load transport due to waves (reconstructed), x-component')
-                  ierr = nf90_put_att(imapfile, id_sswx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sswx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sswy_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sswy_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sswy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sswy(iid), 'long_name', 'suspended load transport due to waves (reconstructed), y-component')
-                  ierr = nf90_put_att(imapfile, id_sswy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sswy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
                end if
 
                if (stmpar%morpar%moroutput%sscuv) then
                   ierr = nf90_def_var(imapfile, 'sscx', nf90_double, [id_flowelemdim(iid), id_sedsusdim(iid), id_timedim(iid)], id_sscx(iid))
                   ierr = nf90_put_att(imapfile, id_sscx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sscx(iid), 'long_name', 'suspended load transport due to currents, x-component')
-                  ierr = nf90_put_att(imapfile, id_sscx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sscx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sscy', nf90_double, [id_flowelemdim(iid), id_sedsusdim(iid), id_timedim(iid)], id_sscy(iid))
                   ierr = nf90_put_att(imapfile, id_sscy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sscy(iid), 'long_name', 'suspended load transport due to currents, y-component')
-                  ierr = nf90_put_att(imapfile, id_sscy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sscy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sscx_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedsusdim(iid), id_timedim(iid)], id_sscx_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sscx(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sscx(iid), 'long_name', 'suspended load transport due to currents (reconstructed), x-component')
-                  ierr = nf90_put_att(imapfile, id_sscx(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sscx(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                   ierr = nf90_def_var(imapfile, 'sscy_reconstructed', nf90_double, [id_flowelemdim(iid), id_sedsusdim(iid), id_timedim(iid)], id_sscy_reconstructed(iid))
                   ierr = nf90_put_att(imapfile, id_sscy(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                   ierr = nf90_put_att(imapfile, id_sscy(iid), 'long_name', 'suspended load transport due to currents (reconstructed), y-component')
-                  ierr = nf90_put_att(imapfile, id_sscy(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+                  ierr = nf90_put_att(imapfile, id_sscy(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
                end if
 
                ierr = nf90_def_var(imapfile, 'sxtot', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sxtot(iid))
                ierr = nf90_put_att(imapfile, id_sxtot(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                ierr = nf90_put_att(imapfile, id_sxtot(iid), 'long_name', 'total sediment transport in flow cell center, x-component')
-               ierr = nf90_put_att(imapfile, id_sxtot(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+               ierr = nf90_put_att(imapfile, id_sxtot(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                ierr = nf90_def_var(imapfile, 'sytot', nf90_double, [id_flowelemdim(iid), id_sedtotdim(iid), id_timedim(iid)], id_sytot(iid))
                ierr = nf90_put_att(imapfile, id_sytot(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')
                ierr = nf90_put_att(imapfile, id_sytot(iid), 'long_name', 'total sediment transport in flow cell center, y-component')
-               ierr = nf90_put_att(imapfile, id_sytot(iid), 'units', stmpar%morpar%moroutput%unit_transp_per_cell)
+               ierr = nf90_put_att(imapfile, id_sytot(iid), 'units', stmpar%morpar%moroutput%unit_transport_rate)
 
                ierr = nf90_def_var(imapfile, 'mor_bl', nf90_double, [id_flowelemdim(iid), id_timedim(iid)], id_morbl(iid))
                ierr = nf90_put_att(imapfile, id_morbl(iid), 'coordinates', 'FlowElem_xcc FlowElem_ycc')

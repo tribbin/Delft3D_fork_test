@@ -184,11 +184,11 @@ subroutine wrsedmavg(lundia    ,error     ,filename  ,itmapc    ,mmax      , &
        !
        ! map-avg-series
        !
-       call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SBUUA', ' ', io_prec    , 3, dimids=(/iddim_n , iddim_mc, iddim_lsedtot/), longname='Average bed-load transport u-direction (u point)', unit=moroutput%unit_transp_per_cell, acl='u')
-       call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SBVVA', ' ', io_prec    , 3, dimids=(/iddim_nc, iddim_m , iddim_lsedtot/), longname='Average bed-load transport v-direction (v point)', unit=moroutput%unit_transp_per_cell, acl='v')
+       call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SBUUA', ' ', io_prec    , 3, dimids=(/iddim_n , iddim_mc, iddim_lsedtot/), longname='Average bed-load transport u-direction (u point)', unit=moroutput%unit_transport_rate, acl='u')
+       call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SBVVA', ' ', io_prec    , 3, dimids=(/iddim_nc, iddim_m , iddim_lsedtot/), longname='Average bed-load transport v-direction (v point)', unit=moroutput%unit_transport_rate, acl='v')
        if (lsed > 0) then
-          call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SSUUA', ' ', io_prec , 3, dimids=(/iddim_n , iddim_mc, iddim_lsed/), longname='Average suspended-load transport u-direction (u point)', unit=moroutput%unit_transp_per_cell, acl='u')
-          call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SSVVA', ' ', io_prec , 3, dimids=(/iddim_nc, iddim_m , iddim_lsed/), longname='Average suspended-load transport v-direction (v point)', unit=moroutput%unit_transp_per_cell, acl='v')
+          call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SSUUA', ' ', io_prec , 3, dimids=(/iddim_n , iddim_mc, iddim_lsed/), longname='Average suspended-load transport u-direction (u point)', unit=moroutput%unit_transport_rate, acl='u')
+          call addelm(gdp, lundia, FILOUT_MAP, grnam7, 'SSVVA', ' ', io_prec , 3, dimids=(/iddim_nc, iddim_m , iddim_lsed/), longname='Average suspended-load transport v-direction (v point)', unit=moroutput%unit_transport_rate, acl='v')
        endif
        !
        group6%grp_dim = iddim_group

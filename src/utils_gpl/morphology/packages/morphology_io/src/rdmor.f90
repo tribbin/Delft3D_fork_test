@@ -851,13 +851,13 @@ subroutine read_morphology_output_options(mor_ptr, moroutput, lsedtot, filmor, l
     end if
     select case (moroutput%transptype)
     case (0)
-        moroutput%unit_transp = 'kg'
-        moroutput%unit_transp_per_cell = 'kg s-1 m-1'
-        moroutput%unit_transp_per_crs  = 'kg s-1'
+        moroutput%unit_sediment_amount = 'kg'
+        moroutput%unit_transport_rate = 'kg s-1 m-1'
+        moroutput%unit_transport_per_crs  = 'kg s-1'
     case (1, 2)
-        moroutput%unit_transp = 'm3'
-        moroutput%unit_transp_per_cell = 'm3 s-1 m-1'
-        moroutput%unit_transp_per_crs  = 'm3 s-1'
+        moroutput%unit_sediment_amount = 'm3'
+        moroutput%unit_transport_rate = 'm3 s-1 m-1'
+        moroutput%unit_transport_per_crs  = 'm3 s-1'
     end select
     !
     call prop_get(mor_ptr, 'Output', 'BedTranspAtFlux'             , moroutput%sbuuvv)
