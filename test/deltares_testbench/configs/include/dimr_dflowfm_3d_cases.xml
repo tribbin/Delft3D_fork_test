@@ -1432,7 +1432,7 @@
     </testCase>
 
     <testCase name="e02_f900_c201_Lock_exchange_kepsilon_sigma_equi_3d" ref="dflowfm_default">
-      <path version="2024-01-11T16:30:00">e02_dflowfm/f900_lock_exchange/c201_Lock_exchange_kepsilon_sigma_equi_3d</path>
+      <path version="2025-03-27T14:28:05.914000">e02_dflowfm/f900_lock_exchange/c201_Lock_exchange_kepsilon_sigma_equi_3d</path>
       <maxRunTime>15000.0000000</maxRunTime>
       <checks>
         <file name="dflowfmoutput/tst_map.nc" type="netCDF">
@@ -1447,7 +1447,7 @@
     </testCase>
 
     <testCase name="e02_f900_c201_Lock_exchange_ktau_sigma_equi_3d" ref="dflowfm_default">
-      <path version="2024-01-11T16:30:00">e02_dflowfm/f900_lock_exchange/c201_Lock_exchange_ktau_sigma_equi_3d</path>
+      <path version="2025-03-27T14:30:44.578000">e02_dflowfm/f900_lock_exchange/c201_Lock_exchange_ktau_sigma_equi_3d</path>
       <maxRunTime>15000.0000000</maxRunTime>
       <checks>
         <file name="dflowfmoutput/tst_map.nc" type="netCDF">
