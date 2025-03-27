@@ -45,10 +45,12 @@ contains
       use precision, only: dp
       use m_addbarocl, only: addbarocL, addbarocLrho_w
       use m_addbaroc, only: addbaroc
-      use m_flowgeom
-      use m_flow
+      use m_flowgeom, only: lnxi, lnx, ndx
+      use m_flow, only: hu, kmx
+      use m_turbulence, only: rvdn, grn
       use m_flowtimes
       use m_get_Lbot_Ltop
+      use m_physcoef, only: jabarocponbnd, jarhointerfaces
 
       implicit none
       integer :: LL, Lb, Lt, n, lnxbc
