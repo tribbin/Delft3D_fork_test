@@ -364,7 +364,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine == 1) then
+      if (jaInDefine) then
          ierr = nf90_redef(igeomfile)
       end if
 

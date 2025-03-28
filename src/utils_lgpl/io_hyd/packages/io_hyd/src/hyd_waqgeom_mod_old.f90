@@ -355,7 +355,7 @@ subroutine unc_addglobalatts(ncid, version_full)
     ierr = nf90_put_att(ncid, nf90_global,  'Conventions', 'CF-1.5:Deltares-0.1')
 
     ! Leave the dataset in the same mode as we got it.
-    if (jaInDefine == 1) then
+    if (jaInDefine) then
         ierr = nf90_redef(ncid)
     end if
 end subroutine unc_addglobalatts
@@ -916,7 +916,7 @@ subroutine unc_write_waqgeom_filepointer(igeomfile)
     !call readyy('Writing flow geometry data',1d0)
 
     ! Leave the dataset in the same mode as we got it.
-    if (jaInDefine == 1) then
+    if (jaInDefine) then
         ierr = nf90_redef(igeomfile)
     end if
 
@@ -1887,7 +1887,7 @@ function ug_write_mesh_arrays(ncid, meshids, meshName, dim, dataLocs, numNode, n
    end if
 
    ! Leave the dataset in the same mode as we got it.
-   if (wasInDefine == 1) then
+   if (wasInDefine) then
       ierr = nf90_redef(ncid)
    end if
 

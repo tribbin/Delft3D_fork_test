@@ -11184,7 +11184,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine == 1) then
+      if (jaInDefine) then
          ierr = nf90_redef(inetfile)
       end if
 
@@ -11967,7 +11967,7 @@ contains
       ! * for parallel: add 'FlowElemDomain', 'FlowLinkDomain', 'FlowElemGlobalNr'
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine == 1) then
+      if (jaInDefine) then
          ierr = nf90_redef(ncid)
       end if
 
@@ -15444,7 +15444,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine == 1) then
+      if (jaInDefine) then
          ierr = nf90_redef(ncid)
       end if
       if (timon) call timstop(handle_extra(69))
@@ -15825,7 +15825,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine == 1) then
+      if (jaInDefine) then
          ierr = nf90_redef(ncid)
       end if
       if (timon) call timstop(handle_extra(69))
@@ -16148,7 +16148,7 @@ contains
       !call readyy('Writing flow geometry data',1d0)
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine == 1) then
+      if (jaInDefine) then
          ierr = nf90_redef(igeomfile)
       end if
 
