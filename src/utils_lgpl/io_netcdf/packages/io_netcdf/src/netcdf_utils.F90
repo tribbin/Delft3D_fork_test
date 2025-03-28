@@ -233,7 +233,8 @@ function ncu_ensure_define_mode(ncid, originally_in_define) result(ierr)
    integer :: ierrloc
 
    ierr = nf90_noerr
-
+   
+   ierrloc = nf90_redef(ncid)
    if (.not. ncu_has_format_classic(ncid)) then
       ! NetCDF4/non-classic dataset, no need to put in define mode explicitly.
       originally_in_define = .true. ! Dummy value, NetCDF4 driver takes care of this, no need to restore.
@@ -241,8 +242,6 @@ function ncu_ensure_define_mode(ncid, originally_in_define) result(ierr)
    else
       ! Put dataset in define mode (possibly again)
       originally_in_define = .false.
-
-      ierrloc = nf90_redef(ncid)
       if (ierrloc == nf90_eindefine) then
          originally_in_define = .true.
       else 
@@ -271,7 +270,8 @@ function ncu_ensure_data_mode(ncid, originally_in_define) result(ierr)
    integer :: ierrloc
 
    ierr = nf90_noerr
-
+   ierrloc = nf90_enddef(ncid)
+   
    if (.not. ncu_has_format_classic(ncid)) then
       ! NetCDF4/non-classic dataset, no need to put in data mode explicitly.
       originally_in_define = .false. ! Dummy value, NetCDF4 driver takes care of this, no need to restore.
@@ -280,7 +280,6 @@ function ncu_ensure_data_mode(ncid, originally_in_define) result(ierr)
       ! Put dataset in data mode (possibly again)
       originally_in_define = .true.
 
-      ierrloc = nf90_enddef(ncid)
       if (ierrloc == nf90_enotindefine) then
          originally_in_define = .false.
       else
