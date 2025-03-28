@@ -28,7 +28,6 @@
 !-------------------------------------------------------------------------------
 
 module m_addbaroc
-
    implicit none
 
    private
@@ -53,7 +52,7 @@ contains
       k1 = ln(1, LL); k2 = ln(2, LL)
       barocl = ag * (rho(k1) - rho(k2)) * hu(LL) * dxi(LL) / ((rho(k2) + rho(k1)))
       if (jarhoxu > 0) then
-         rhou(LL) = 0.5d0 * (rho(k2) + rho(k1))
+         rhou(LL) = 0.5_dp * (rho(k2) + rho(k1))
       end if
       adve(LL) = adve(LL) - barocL
    end subroutine addbaroc

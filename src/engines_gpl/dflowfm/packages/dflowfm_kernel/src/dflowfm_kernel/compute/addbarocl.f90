@@ -27,11 +27,7 @@
 !
 !-------------------------------------------------------------------------------
 
-! $Id: addbarocl.f90 142295 2023-01-10 08:25:27Z klapwijk $
-! $HeadURL: https://svn.oss.deltares.nl/repos/delft3d/trunk/src/engines_gpl/dflowfm/packages/dflowfm_kernel/src/dflowfm_kernel/compute/addbarocl.f90 $
-
 module m_addbarocl
-
    implicit none
 
    private
@@ -42,20 +38,21 @@ contains
 
    subroutine addbarocL(LL, Lb, Lt)
       use precision, only: dp
-      use m_flowgeom
-      use m_flow
-      use m_flowtimes
+      use m_turbulence, only: kmxx, rho, rhou, rvdn, grn
+      use m_flowgeom, only: ln, dx
+      use m_flow, only: zws, numtopsig, kmxn, ktop
+      use m_flowparameters, only: jarhoxu
+      use m_physcoef, only: rhomean
 
-      implicit none
       integer, intent(in) :: LL, Lb, Lt
 
       integer :: L, k1, k2, k1t, k2t, k, kt, kz, ktz, insigpart, morelayersleft
       real(kind=dp) :: gradpu(kmxx), rhovol(kmxx), gr3
       real(kind=dp) :: rv1, rv2, gr1, gr2, rvk, grk, fzu, fzd, dzz, rhow0, rhow1
 
-      gradpu(1:Lt - Lb + 1) = 0d0
+      gradpu(1:Lt - Lb + 1) = 0.0_dp
 
-      if (zws(ln(1, Lt)) - zws(ln(1, Lb)) < 0.1d0 .or. zws(ln(2, Lt)) - zws(ln(2, Lb)) < 0.1d0) then
+      if (zws(ln(1, Lt)) - zws(ln(1, Lb)) < 0.1_dp .or. zws(ln(2, Lt)) - zws(ln(2, Lb)) < 0.1_dp) then
          return ! no baroclinic pressure in thin water layers
       end if
 
@@ -81,9 +78,9 @@ contains
             k1t = ktop(ln(1, LL)); k2t = ktop(ln(2, LL))
          end if
 
-         rhovol(L - Lb + 1) = 0.5d0 * ((zws(k1t) - zws(k1 - 1)) * rho(k1) + (zws(k2t) - zws(k2 - 1)) * rho(k2))
+         rhovol(L - Lb + 1) = 0.5_dp * ((zws(k1t) - zws(k1 - 1)) * rho(k1) + (zws(k2t) - zws(k2 - 1)) * rho(k2))
          if (jarhoxu > 0) then
-            rhou(L) = rhovol(L - Lb + 1) / (0.5d0 * (zws(k1t) - zws(k1 - 1) + zws(k2t) - zws(k2 - 1)))
+            rhou(L) = rhovol(L - Lb + 1) / (0.5_dp * (zws(k1t) - zws(k1 - 1) + zws(k2t) - zws(k2 - 1)))
          end if
          rhovol(L - Lb + 1) = rhovol(L - Lb + 1) * dx(LL)
 
@@ -103,9 +100,9 @@ contains
             end if
 
             if (ktz - kz > 0) then ! shallow side extrapolates, coeffs based on shallow side:
-               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1)); fzd = 1d0 - fzu
+               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1)); fzd = 1.0_dp - fzu
                rhow1 = fzu * rho(k + 1) + fzd * rho(k)
-               rhow0 = 2d0 * rho(k) - rhow1
+               rhow0 = 2.0_dp * rho(k) - rhow1
             else ! one layerr
                rhow1 = rho(k)
                rhow0 = rhow1
@@ -116,17 +113,17 @@ contains
             if (insigpart == 0) then
                dzz = zws(kz) - zws(kz - 1) ! shallow side
 
-               rhovol(1) = dzz * 0.5d0 * (rho(k) + rho(kz)) * dx(LL)
+               rhovol(1) = dzz * 0.5_dp * (rho(k) + rho(kz)) * dx(LL)
                if (jarhoxu > 0) then
-                  rhou(L) = 0.5d0 * (rho(k) + rho(kz))
+                  rhou(L) = 0.5_dp * (rho(k) + rho(kz))
                end if
 
             else
                dzz = zws(k) - zws(k - 1) ! deep side
             end if
 
-            rvk = rvdn(k + 1) + 0.5d0 * dzz * (rhow1 + rhow0)
-            grk = (rvdn(k + 1) + 0.5d0 * dzz * (2d0 * rhow1 + rhow0) / 3d0) * dzz
+            rvk = rvdn(k + 1) + 0.5_dp * dzz * (rhow1 + rhow0)
+            grk = (rvdn(k + 1) + 0.5_dp * dzz * (2.0_dp * rhow1 + rhow0) / 3.0_dp) * dzz
 
             if (morelayersleft == 1) then ! k1=deepest
                rv1 = rvk; gr1 = grk
@@ -135,13 +132,13 @@ contains
             end if
 
             if (insigpart == 0) then
-               gr3 = 0d0 ! no skewness for zlay jump at bed
+               gr3 = 0.0_dp ! no skewness for zlay jump at bed
             else
-               gr3 = 0.5d0 * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
+               gr3 = 0.5_dp * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
             end if
 
          else
-            gr3 = 0.5d0 * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
+            gr3 = 0.5_dp * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
          end if
 
          gradpu(L - Lb + 1) = gradpu(L - Lb + 1) + gr1 - gr2 + gr3
@@ -151,28 +148,27 @@ contains
       end do
 
       call barocLtimeint(gradpu, rhovol, LL, Lb, Lt)
-
    end subroutine addbarocL
 
    subroutine addbarocLrho_w(LL, Lb, Lt)
       use precision, only: dp
-      use m_flowgeom
-      use m_flow
-      use m_flowtimes
+      use m_turbulence, only: kmxx, rho, rhou, rvdn, grn, rhosww
+      use m_flowgeom, only: ln, dx
+      use m_flow, only: zws, numtopsig, kmxn, ktop
+      use m_flowparameters, only: jarhoxu
       use m_transport, only: ISALT, ITEMP, constituents
-      use m_physcoef, only: rhomean
+      use m_physcoef, only: rhomean, maxitpresdens, ag, apply_thermobaricity
       use m_density, only: calculate_density
 
-      implicit none
       integer, intent(in) :: LL, Lb, Lt
 
       integer :: L, k1, k2, k1t, k2t, k, kt, kz, ktz, insigpart, morelayersleft, i
       real(kind=dp) :: gradpu(kmxx), rhovol(kmxx), gr3
       real(kind=dp) :: rv1, rv2, gr1, gr2, rvk, grk, saw0, saw1, tmw0, tmw1, fzu, fzd, dzz, rhow0, rhow1, pdb, p0d
 
-      gradpu(1:Lt - Lb + 1) = 0d0
+      gradpu(1:Lt - Lb + 1) = 0.0_dp
 
-      if (zws(ln(1, Lt)) - zws(ln(1, Lb)) < 0.1d0 .or. zws(ln(2, Lt)) - zws(ln(2, Lb)) < 0.1d0) then
+      if (zws(ln(1, Lt)) - zws(ln(1, Lb)) < 0.1_dp .or. zws(ln(2, Lt)) - zws(ln(2, Lb)) < 0.1_dp) then
          return ! no baroclini pressure in thin water layers
       end if
 
@@ -198,9 +194,9 @@ contains
             k1t = ktop(ln(1, LL)); k2t = ktop(ln(2, LL))
          end if
 
-         rhovol(L - Lb + 1) = 0.5d0 * ((zws(k1t) - zws(k1 - 1)) * rho(k1) + (zws(k2t) - zws(k2 - 1)) * rho(k2))
+         rhovol(L - Lb + 1) = 0.5_dp * ((zws(k1t) - zws(k1 - 1)) * rho(k1) + (zws(k2t) - zws(k2 - 1)) * rho(k2))
          if (jarhoxu > 0) then
-            rhou(L) = rhovol(L - Lb + 1) / (0.5d0 * (zws(k1t) - zws(k1 - 1) + zws(k2t) - zws(k2 - 1)))
+            rhou(L) = rhovol(L - Lb + 1) / (0.5_dp * (zws(k1t) - zws(k1 - 1) + zws(k2t) - zws(k2 - 1)))
          end if
          rhovol(L - Lb + 1) = rhovol(L - Lb + 1) * dx(LL)
 
@@ -220,9 +216,9 @@ contains
             end if
 
             if (ktz - kz > 0) then ! shallow side extrapolates, coeffs based on shallow side:
-               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1)); fzd = 1d0 - fzu
+               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1)); fzd = 1.0_dp - fzu
                rhow1 = fzu * rho(k + 1) + fzd * rho(k)
-               rhow0 = 2d0 * rho(k) - rhow1
+               rhow0 = 2.0_dp * rho(k) - rhow1
             else ! one layer
                rhow1 = rho(k)
                rhow0 = rhow1
@@ -233,9 +229,9 @@ contains
             if (insigpart == 0) then
                dzz = zws(kz) - zws(kz - 1) ! shallow side
 
-               rhovol(1) = dzz * 0.5d0 * (rho(k) + rho(kz)) * dx(LL)
+               rhovol(1) = dzz * 0.5_dp * (rho(k) + rho(kz)) * dx(LL)
                if (jarhoxu > 0) then
-                  rhou(L) = 0.5d0 * (rho(k) + rho(kz))
+                  rhou(L) = 0.5_dp * (rho(k) + rho(kz))
                end if
 
             else
@@ -244,23 +240,23 @@ contains
 
             saw1 = fzu * constituents(isalt, k + 1) + fzd * constituents(isalt, k)
             tmw1 = fzu * constituents(itemp, k + 1) + fzd * constituents(itemp, k)
-            saw0 = 2d0 * constituents(isalt, k) - saw1
-            tmw0 = 2d0 * constituents(itemp, k) - tmw1
+            saw0 = 2.0_dp * constituents(isalt, k) - saw1
+            tmw0 = 2.0_dp * constituents(itemp, k) - tmw1
 
             if (.not. apply_thermobaricity) then
                rhow0 = calculate_density(saw0, tmw0) - rhomean
             else
                pdb = (zws(ktz) - zws(kz - 1)) * rhomean
-               rvk = rvdn(k + 1) + 0.5d0 * dzz * (rhosww(k) + rhosww(k - 1))
+               rvk = rvdn(k + 1) + 0.5_dp * dzz * (rhosww(k) + rhosww(k - 1))
                do i = 1, maxitpresdens
                   p0d = ag * (rvk + pdb) ! total pressure
                   rhow0 = calculate_density(saw0, tmw0, p0d) - rhomean
-                  rvk = rvdn(k + 1) + 0.5d0 * dzz * (rhosww(k) + rhow0)
+                  rvk = rvdn(k + 1) + 0.5_dp * dzz * (rhosww(k) + rhow0)
                end do
             end if
 
-            rvk = rvdn(k + 1) + 0.5d0 * dzz * (rhosww(k) + rhow0)
-            grk = (rvdn(k + 1) + 0.5d0 * dzz * (2d0 * rhosww(k) + rhow0) / 3d0) * dzz
+            rvk = rvdn(k + 1) + 0.5_dp * dzz * (rhosww(k) + rhow0)
+            grk = (rvdn(k + 1) + 0.5_dp * dzz * (2.0_dp * rhosww(k) + rhow0) / 3.0_dp) * dzz
 
             if (morelayersleft == 1) then ! k1=deepest
                rv1 = rvk; gr1 = grk
@@ -269,13 +265,13 @@ contains
             end if
 
             if (insigpart == 0) then
-               gr3 = 0d0 ! no skewness for zlay jump at bed
+               gr3 = 0.0_dp ! no skewness for zlay jump at bed
             else
-               gr3 = 0.5d0 * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
+               gr3 = 0.5_dp * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
             end if
 
          else
-            gr3 = 0.5d0 * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
+            gr3 = 0.5_dp * (rv1 + rv2) * (zws(k1 - 1) - zws(k2 - 1))
          end if
 
          gradpu(L - Lb + 1) = gradpu(L - Lb + 1) + gr1 - gr2 + gr3
@@ -289,10 +285,10 @@ contains
 
    subroutine barocLtimeint(gradpu, rhovol, LL, Lb, Lt)
       use precision, only: dp
-      use m_flow
-      use m_flowtimes
-
-      implicit none
+      use m_flow, only: adve, kmxL
+      use m_flowtimes, only: dts, dtprev
+      use m_turbulence, only: kmxx, dpbdx0
+      use m_physcoef, only: ag
 
       integer :: LL, Lb, Lt
       real(kind=dp) :: gradpu(kmxx), rhovol(kmxx)
@@ -300,13 +296,12 @@ contains
       integer :: L
       real(kind=dp) :: barocL, ft
 
-      ! This is identical to addbaroc, that will be removed at some moment
-      ft = 0.5d0 * dts / dtprev
+      ft = 0.5_dp * dts / dtprev
       do L = Lb, Lt
-         if (rhovol(L - Lb + 1) > 0d0) then
+         if (rhovol(L - Lb + 1) > 0.0_dp) then
             barocl = ag * gradpu(L - Lb + 1) / rhovol(L - Lb + 1)
-            if (dpbdx0(L) /= 0d0) then
-               adve(L) = adve(L) - (1d0 + ft) * barocl + ft * dpbdx0(L)
+            if (dpbdx0(L) /= 0.0_dp) then
+               adve(L) = adve(L) - (1.0_dp + ft) * barocl + ft * dpbdx0(L)
             else
                adve(L) = adve(L) - barocl
             end if
@@ -315,7 +310,7 @@ contains
       end do
 
       do L = Lt + 1, Lb + kmxL(LL) - 1
-         dpbdx0(L) = 0d0
+         dpbdx0(L) = 0.0_dp
       end do
    end subroutine barocLtimeint
 end module m_addbarocl
