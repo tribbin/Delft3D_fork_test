@@ -33,6 +33,7 @@
 module m_sedtrails_netcdf
    use m_sedtrails_data
    use unstruc_netcdf
+   use netcdf_utils, only: ncu_ensure_define_mode, ncu_ensure_data_mode, ncu_restore_mode
 
    implicit none
 
@@ -364,9 +365,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine) then
-         ierr = nf90_redef(igeomfile)
-      end if
+      ierr = ncu_restore_mode(igeomfile, jaInDefine)
 
    end subroutine sedtrails_unc_write_flowgeom_filepointer
 

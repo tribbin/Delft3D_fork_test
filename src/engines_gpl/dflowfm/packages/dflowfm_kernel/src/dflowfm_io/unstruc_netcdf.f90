@@ -56,7 +56,7 @@ module unstruc_netcdf
    use m_debug
    use m_readyy
    use m_qnerror
-   use netcdf_utils, only: ncu_sanitize_name, ncu_ensure_data_mode, ncu_ensure_define_mode
+   use netcdf_utils, only: ncu_sanitize_name, ncu_ensure_data_mode, ncu_ensure_define_mode, ncu_restore_mode
 
    implicit none
 
@@ -2451,9 +2451,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine == 0) then
-         ierr = nf90_enddef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, jaInDefine)
    end subroutine unc_addglobalatts
 
 ! TODO: AvD: add these  (incrementally) to map/his files:
@@ -11184,9 +11182,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine) then
-         ierr = nf90_redef(inetfile)
-      end if
+      ierr = ncu_restore_mode(inetfile, jaInDefine)
 
       if (allocated(ibndlink)) then
          deallocate (ibndlink)
@@ -11967,9 +11963,7 @@ contains
       ! * for parallel: add 'FlowElemDomain', 'FlowLinkDomain', 'FlowElemGlobalNr'
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine) then
-         ierr = nf90_redef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, jaInDefine)
 
       !call readyy('Writing flow geometry data',-1d0)
       call readyy('Writing net data', -1d0)
@@ -15444,9 +15438,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine) then
-         ierr = nf90_redef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, jaInDefine)
       if (timon) call timstop(handle_extra(69))
 
       !call readyy('Writing flow geometry data',-1d0)
@@ -15825,9 +15817,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine) then
-         ierr = nf90_redef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, jaInDefine)
       if (timon) call timstop(handle_extra(69))
 
       ierr = nf90_sync(ncid)
@@ -16148,9 +16138,7 @@ contains
       !call readyy('Writing flow geometry data',1d0)
 
       ! Leave the dataset in the same mode as we got it.
-      if (jaInDefine) then
-         ierr = nf90_redef(igeomfile)
-      end if
+      ierr = ncu_restore_mode(igeomfile, jaInDefine)
 
       !call readyy('Writing flow geometry data',-1d0)
    end subroutine unc_write_flowgeom_filepointer

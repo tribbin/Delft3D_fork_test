@@ -46,7 +46,7 @@ module io_ugrid
    use m_ug_mesh
    use m_ug_network
    use m_ug_contacts
-   use netcdf_utils, only: ncu_ensure_define_mode
+   use netcdf_utils, only: ncu_ensure_data_mode, ncu_ensure_define_mode, ncu_restore_mode
    use precision, only: dp
 
    implicit none
@@ -278,9 +278,8 @@ contains
       ierr = nf90_put_att(ncid, nf90_global, 'Conventions', trim(UG_CONV_CF)//' '//trim(UG_CONV_UGRID)//' '//trim(UG_CONV_DELTARES))
 
       ! Leave the dataset in the same mode as we got it.
-      if (wasInDefine == 0) then
-         ierr = nf90_enddef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, wasInDefine)
+      
    end function ug_addglobalatts
 
 ! -- COORDINATES ------------
@@ -1475,9 +1474,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (wasInDefine) then
-         ierr = nf90_redef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, wasInDefine)
 
       ierr = UG_NOERR
       return ! Return with success
@@ -3350,9 +3347,7 @@ contains
       ierr = nf90_put_var(igeomfile, id_edgetype, edge_type)
 
       ! Leave the dataset in the same mode as we got it.
-      if (was_in_define_mode == 1) then
-         ierr = nf90_redef(igeomfile)
-      end if
+      ierr = ncu_restore_mode(igeomfile, was_in_define_mode)
 
    end subroutine write_edge_type_variable
 
@@ -4144,9 +4139,7 @@ contains
       end if
 
       ! Leave the dataset in the same mode as we got it.
-      if (wasInDefine) then
-         ierr = nf90_redef(ncid)
-      end if
+      ierr = ncu_restore_mode(ncid, wasInDefine)
 
       ierr = UG_NOERR
       return ! Return with success
@@ -5137,9 +5130,7 @@ contains
       end do
 
       ! Leave the dataset in the same mode as we got it.
-      if (.not. wasInDefine) then
-         ierr = nf90_enddef(ncidout)
-      end if
+      ierr = ncu_restore_mode(ncidin, wasInDefine)
 
    end function ug_clone_network_definition
 
@@ -5199,9 +5190,7 @@ contains
       end do
 
       ! Leave the dataset in the same mode as we got it.
-      if (wasInDefine) then
-         ierr = nf90_redef(ncidout)
-      end if
+      ierr = ncu_restore_mode(ncidin, wasInDefine)
 
    end function ug_clone_network_data
 
@@ -5296,9 +5285,7 @@ contains
       end do
 
       ! Leave the dataset in the same mode as we got it.
-      if (.not. wasInDefine) then
-         ierr = nf90_enddef(ncidout)
-      end if
+      ierr = ncu_restore_mode(ncidin, wasInDefine)
 
    end function ug_clone_contact_definition
 

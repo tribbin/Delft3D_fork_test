@@ -839,9 +839,7 @@ contains
       ierr = nf90_put_var(igeomfile, id_facedomainnumber, idomain)
 
       ! Leave the dataset in the same mode as we got it.
-      if (was_in_define_mode == 1) then
-         ierr = nf90_redef(igeomfile)
-      end if
+      ierr = ncu_restore_mode(igeomfile, was_in_define_mode)
 
    end subroutine write_face_domain_number_variable
 
@@ -877,9 +875,8 @@ contains
       ierr = nf90_put_var(igeomfile, id_faceglobalnumber, iglobal_s)
 
       ! Leave the dataset in the same mode as we got it.
-      if (was_in_define_mode == 1) then
-         ierr = nf90_redef(igeomfile)
-      end if
+      ierr = ncu_restore_mode(igeomfile, was_in_define_mode)
+      
    end subroutine write_face_global_number_variable
 
 !> Creates and initializes mesh geometry that contains the 2D (layered) unstructured network and edge type array.
