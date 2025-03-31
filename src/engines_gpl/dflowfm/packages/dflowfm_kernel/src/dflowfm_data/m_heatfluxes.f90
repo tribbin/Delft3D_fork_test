@@ -32,14 +32,13 @@
 
 module m_heatfluxes
    use precision, only: dp
-   use physicalconsts
+   use physicalconsts, only: CtoKelvin, stf
    implicit none
 
    real(kind=dp) :: albedo ! reflection coefficient of water () at average incidence angle of 60 deg,
    ! (albedo is .025 at angle 0 deg, 0.13 at angle 70 deg)
    real(kind=dp) :: em ! Emissivity ()
    real(kind=dp) :: cpa ! Specific heat air   [J/kg/K]
-   real(kind=dp) :: rcpa !
    real(kind=dp) :: cpw ! Specific heat water [J/kg/K]
    real(kind=dp) :: rcpi ! m3K/J
    real(kind=dp) :: emstf ! Em*Stf [W/m^2/K^4]
@@ -59,7 +58,7 @@ module m_heatfluxes
    integer :: jamapheatflux !< write heatfluxes to map
    integer :: jaRichardsononoutput !< write Richardson nr to his
    integer :: jaSecchisp !< Spatial Secchi 0,1
-   integer :: jaRoro !< Use roair(n)/rho(ntop) in windstress 0,1
+   integer :: wind_stress_water_density_option !< Use rhomean or rhow in windstress: 0,1
 
    real(kind=dp), allocatable, target :: Qsunmap(:) !< [W/m2] solar radiation reaching water surface {"location": "face", "shape": ["ndx"]}
    real(kind=dp), allocatable :: Qevamap(:)
@@ -71,26 +70,23 @@ module m_heatfluxes
 
    real(kind=dp), allocatable :: Rich(:)
    real(kind=dp), allocatable :: Secchisp(:)
-   real(kind=dp), allocatable :: Roair(:)
 
 contains
 
    subroutine default_heatfluxes()
       use m_physcoef, only: rhomean
-      use m_wind, only: rhoair
       !< Heat flux model constants
-      albedo = 0.06d0 !< reflection coefficient of water () at average incidence angle of 60 deg,
+      albedo = 0.06_dp !< reflection coefficient of water () at average incidence angle of 60 deg,
       !< (albedo is .025 at angle 0 deg, 0.13 at angle 70 deg)
-      em = 0.985d0 !< Emissivity ()
-      cpa = 1004d0 !< Specific heat air   [J/kg/K]
-      rcpa = rhoair * cpa !
-      cpw = 3986d0 !< Specific heat water [J/kg/K]
-      rcpi = 1d0 / (rhomean * cpw) !< [m3K/J] or mKs2/kg
+      em = 0.985_dp !< Emissivity ()
+      cpa = 1004.0_dp !< Specific heat air   [J/kg/K]
+      cpw = 3986.0_dp !< Specific heat water [J/kg/K]
+      rcpi = 1.0_dp / (rhomean * cpw) !< [m3K/J] or mKs2/kg
       emstf = em * stf
 
       jamapheatflux = 0
       jaRichardsononoutput = 0
-      jaroro = 0
+      wind_stress_water_density_option = 0
 
    end subroutine default_heatfluxes
 
