@@ -95,6 +95,7 @@ contains
 
       integer, parameter :: KEEP_PLI_NAMES = 1
       integer :: number_of_plis
+      logical :: include_fixed_weir_below_bob ! Tabellenboek or Villemonte weirs add weirs with a minimal height of 0.1 m even if they lie below the bob levels
 
       if (len_trim(md_fixedweirfile) == 0) then
          ifixedweirscheme = 0
@@ -105,6 +106,8 @@ contains
       if (ifixedweirscheme == 8) jatabellenboekorvillemonte = 1
       if (ifixedweirscheme == 9) jatabellenboekorvillemonte = 2
 
+      include_fixed_weir_below_bob = (ifixedweirscheme == 8 .or. ifixedweirscheme == 9)
+      
       call readyy('Setfixedweirs', 0d0)
 
       allocate (ihu(lnx)); ihu = 0
@@ -281,7 +284,7 @@ contains
 
          ! if ( (zc > bobL .and. zc > zcrest(L)) .or. ( (ifixedweirscheme == 8 .or. ifixedweirscheme == 9) .and. ifirstweir(L) == 1) ) then   ! For Villemonte and Tabellenboek fixed weirs under bed level are also possible
 
-         if ((zc > bobL .and. zc > zcrest(L)) .or. ifirstweir(L) == 1) then ! For Villemonte and Tabellenboek fixed weirs under bed level are also possible
+         if (((zc > bobL .or. include_fixed_weir_below_bob) .and. zc > zcrest(L)) .or. ifirstweir(L) == 1) then ! For Villemonte and Tabellenboek fixed weirs under bed level are also possible
 
             ! Set whether this is the first time that for this link weir values are set:
             ! As a result, only the first fixed weir under the bed level is used
