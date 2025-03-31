@@ -6339,6 +6339,9 @@ module m_meteo
    integer, target :: item_weir_crestLevel !< Unique Item id of the structure file's 'weir crestLevel' quantity
    integer, target :: item_orifice_crestLevel !< Unique Item id of the structure file's 'orifice crestLevel' quantity
    integer, target :: item_orifice_gateLowerEdgeLevel !< Unique Item id of the structure file's 'orifice gateLowerEdgeLevel' quantity
+   integer, target :: item_gate_crestLevel !< Unique Item id of the structure file's 'gate crestLevel' quantity
+   integer, target :: item_gate_gateLowerEdgeLevel !< Unique Item id of the structure file's 'gate gateLowerEdgeLevel' quantity
+   integer, target :: item_gate_gateOpeningWidth !< Unique Item id of the structure file's 'gate gateOpeningWidth' quantity
    integer, target :: item_general_structure_crestLevel !< Unique Item id of the structure file's 'general structure crestLevel' quantity
    integer, target :: item_general_structure_gateLowerEdgeLevel !< Unique Item id of the structure file's 'general structure gateLowerEdgeLevel' quantity
    integer, target :: item_general_structure_crestWidth !< Unique Item id of the structure file's 'general structure crestWidth' quantity
@@ -6509,6 +6512,9 @@ contains
       item_weir_crestLevel = ec_undef_int
       item_orifice_crestLevel = ec_undef_int
       item_orifice_gateLowerEdgeLevel = ec_undef_int
+      item_gate_crestLevel = ec_undef_int
+      item_gate_gateLowerEdgeLevel = ec_undef_int
+      item_gate_gateOpeningWidth = ec_undef_int
       item_general_structure_crestLevel = ec_undef_int
       item_general_structure_gateLowerEdgeLevel = ec_undef_int
       item_general_structure_crestWidth = ec_undef_int
@@ -6874,6 +6880,15 @@ contains
          !dataPtr1  => null() ! flow1d structure has its own data structure
       case ('orifice_gateLowerEdgeLevel') ! flow1d orifice
          itemPtr1 => item_orifice_gateLowerEdgeLevel
+         !dataPtr1  => null() ! flow1d structure has its own data structure
+      case ('gate_crestLevel') ! flow1d gate
+         itemPtr1 => item_gate_crestLevel
+         !dataPtr1  => null() ! flow1d structure has its own data structure
+      case ('gate_gateLowerEdgeLevel') ! flow1d gate
+         itemPtr1 => item_gate_gateLowerEdgeLevel
+         !dataPtr1  => null() ! flow1d structure has its own data structure
+      case ('gate_gateOpeningWidth') ! flow1d gate
+         itemPtr1 => item_gate_gateOpeningWidth
          !dataPtr1  => null() ! flow1d structure has its own data structure
       case ('general_structure_crestLevel') ! flow1d general structure
          itemPtr1 => item_general_structure_crestLevel
