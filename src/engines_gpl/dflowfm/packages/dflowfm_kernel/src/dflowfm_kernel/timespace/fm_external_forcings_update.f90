@@ -661,7 +661,7 @@ contains
 
    end subroutine retrieve_rainfall
 
-!> update_network_data
+   !> update_network_data
    subroutine update_network_data(time_in_seconds)
       use precision, only: dp
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
@@ -685,6 +685,12 @@ contains
       if (network%sts%numOrifices > 0) then
          call get_timespace_value_by_item(item_orifice_crestLevel, time_in_seconds)
          call get_timespace_value_by_item(item_orifice_gateLowerEdgeLevel, time_in_seconds)
+      end if
+
+      if (network%sts%numGates > 0) then
+         call get_timespace_value_by_item(item_gate_crestLevel, time_in_seconds)
+         call get_timespace_value_by_item(item_gate_gateLowerEdgeLevel, time_in_seconds)
+         call get_timespace_value_by_item(item_gate_gateOpeningWidth, time_in_seconds)
       end if
 
       if (network%sts%numGeneralStructures > 0) then
