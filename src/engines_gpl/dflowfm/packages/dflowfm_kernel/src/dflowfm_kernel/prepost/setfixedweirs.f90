@@ -96,8 +96,6 @@ contains
       integer, parameter :: KEEP_PLI_NAMES = 1
       integer :: number_of_plis
       logical :: include_fixed_weir_below_bob ! Tabellenboek or Villemonte weirs add weirs with a minimal height of 0.1 m even if they lie below the bob levels
-      real(kind=dp) :: zt ! temporary variable for swapping toe heights
-      real(kind=dp) :: dzs ! temporary variable for swapping minimum sill heights
 
       if (len_trim(md_fixedweirfile) == 0) then
          ifixedweirscheme = 0
@@ -411,8 +409,6 @@ contains
                   if (xn * csu(L) + yn * snu(L) < 0d0) then ! check left/right
                      zh = taludd(L); taludd(L) = taludu(L); taludu(L) = zh
                      zh = zhd; zhd = zhu; zhu = zh
-                     zt = ztoeu(L); ztoeu(L) = ztoed(L); ztoed(L) = zt
-                     dzs = dzsillu(L); dzsillu(L) = dzsilld(L); dzsilld(L) = dzs
                   end if
                   !
                   ! lowest toe is applied
