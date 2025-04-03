@@ -159,7 +159,7 @@ contains
             call reapol_nampli(minp, jadoorladen, KEEP_PLI_NAMES, number_of_plis)
             if (jawriteDFMinterpretedvalues > 0) then
                call newfil(mout, trim(getoutputdir())//'DFM_interpreted_fxwvalues_'//fnames(ifil) (n1 + 1:n2)//trim(sd)//'.xyz')
-               write (mout, '(a)') '* xu yu crest width xk3 yk3 xk4 yk4 crestlevxw shlxw shrxw crestlxw taludlxw taludrxw vegxw iweirtxw csu snu L'
+               write (mout, '(a)') '* xu yu crest width xk3 yk3 xk4 yk4 crestlevxw shlxw shrxw crestlxw taludlxw taludrxw vegxw iweirtxw csu snu L bob1 bob2 u1'
             end if
             jadoorladen = 1
          end do
@@ -624,7 +624,7 @@ contains
             L = lnfxw(i)
             k3 = lncn(1, L); k4 = lncn(2, L)
             if (L > 0) then
-               write (mout, '(18(f24.4), i6)') xu(L), yu(L), bob(1, L), wu(L), xk(k3), yk(k3), xk(k4), yk(k4), crestlevxw(i), shlxw(i), shrxw(i), crestlxw(i), taludlxw(i), taludrxw(i), vegxw(i), iweirtxw(i), csu(L), snu(L), L
+               write (mout, '(18(f24.4), i6)') xu(L), yu(L), bob(1, L), wu(L), xk(k3), yk(k3), xk(k4), yk(k4), crestlevxw(i), shlxw(i), shrxw(i), crestlxw(i), taludlxw(i), taludrxw(i), vegxw(i), iweirtxw(i), csu(L), snu(L), L, bob(1,L), bob(2,L), u1(L)
             end if
          end do
          call doclose(mout)
