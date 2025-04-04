@@ -246,7 +246,7 @@
         },
         {
             "file": "lib\\msvcp140.dll",
-            "issuedTo": "Microsoft Corporation"
+            "issuedTo": "Microsoft Windows Software Compatibility Publisher"
         },
         {
             "file": "lib\\msvcp90.dll",
@@ -262,7 +262,7 @@
         },
         {
             "file": "lib\\vcruntime140.dll",
-            "issuedTo": "Microsoft Corporation"
+            "issuedTo": "Microsoft Windows Software Compatibility Publisher"
         },
         {
             "file": "lib\\cygaec-0.dll",
