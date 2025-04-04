@@ -463,10 +463,10 @@
       INCNUM(1:MXINCL) = 0                                                BJXX
       INCLEV = 1                                                          BJXX
       LOBST = .FALSE.                                                     BJXX
-      LOGCOM(1:6) = .FALSE.                                               BJXX
+      LOGCOM(1:7) = .FALSE.                                               BJXX
       IENT = 0       ! number of entries to this subr                     BJXX
       LWINDR = 0     ! if non-zero, there is wind                         BJXX
-      LWINDM = 3     ! type of wind growth formulation                    BJXX
+      LWINDM = 5     ! type of wind growth formulation                    BJXX
       SWELLSET = .FALSE.                                                  BJXX
       WCAPSET  = .FALSE.                                                  BJXX
 !
