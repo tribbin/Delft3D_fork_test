@@ -114,12 +114,12 @@ object LinuxRuntimeContainers : BuildType({
     features {
         dockerSupport {
             loginToRegistry = on {
-                dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
+                dockerRegistryId = "DOCKER_REGISTRY_DELFT3D_DEV"
             }
         }
         dockerSupport {
             loginToRegistry = on {
-                dockerRegistryId = "DOCKER_REGISTRY_DELFT3D_DEV"
+                dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
             }
         }
     }
