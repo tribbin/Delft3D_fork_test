@@ -306,7 +306,7 @@ contains
          water_height_no_weir = max(upstream_water_level - blu(link), water_height)
          ucx_up = ucx(upstream_cell)
          ucy_up = ucy(upstream_cell)
-         u_in = abs(u1(link))
+         u_in = u1(link)
 
       end subroutine calculate_u_in_and_upstream_ucx_ucy
 
