@@ -196,12 +196,12 @@ contains
       call wall_clock_time(t_extra(2, 3))
 
       call wall_clock_time(t_extra(1, 4))
-      if (ierror == 0) then ! find_crossed_links_kdtree2 succeeded 
+      if (ierror == 0) then ! find_crossed_links_kdtree2 succeeded
          do iL = 1, intersection_count
             L = iLink(il)
             iLcr(L) = 1
          end do
-      else                  ! find_crossed_links_kdtree2 did not succeed
+      else ! find_crossed_links_kdtree2 did not succeed
          n = 0; Lastfoundk = 0
          do L = 1, lnxi
 
@@ -650,14 +650,10 @@ contains
          call find_1d2d_fixedweirs(iLink, intersection_count)
       end if
 
-1234  continue
-
 ! deallocate
-      if (jakdtree == 1) then
-         if (allocated(iLink)) deallocate (iLink)
-         if (allocated(iPol)) deallocate (iPol)
-         if (allocated(dSL)) deallocate (dSL)
-      end if
+      if (allocated(iLink)) deallocate (iLink)
+      if (allocated(iPol)) deallocate (iPol)
+      if (allocated(dSL)) deallocate (dSL)
 
    contains
 
