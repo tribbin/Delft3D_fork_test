@@ -53,7 +53,7 @@ contains
             n12 = ln(nn, L)
             do kk = 1, nd(n12)%lnx ! and flag non-21 links to perot incoming only
                LL = abs(nd(n12)%ln(kk))
-               if (iadv(LL) < 21 .or. iadv(LL) > 25) then
+               if (iadv(LL) < IADV_SUBGRID .or. iadv(LL) > 25) then
                   iadv(LL) = 4
                end if
                teta(LL) = 1d0

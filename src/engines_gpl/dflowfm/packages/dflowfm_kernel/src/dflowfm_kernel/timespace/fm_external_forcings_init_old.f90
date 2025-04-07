@@ -1502,7 +1502,7 @@ contains
                xy2cdam(1, n) = xz(kbi)
                xy2cdam(2, n) = yz(kbi)
 
-               iadv(Lf) = 21
+               iadv(Lf) = IADV_SUBGRID
                call setfixedweirscheme3onlink(Lf)
             end do
          end do
@@ -1628,7 +1628,7 @@ contains
                xy2cgen(1, n) = xz(kbi)
                xy2cgen(2, n) = yz(kbi)
 
-               iadv(Lf) = 22 ! iadv = general
+               iadv(Lf) = IADV_GENERAL_STRUCTURE ! iadv = general
                call setfixedweirscheme3onlink(Lf)
             end do
          end do

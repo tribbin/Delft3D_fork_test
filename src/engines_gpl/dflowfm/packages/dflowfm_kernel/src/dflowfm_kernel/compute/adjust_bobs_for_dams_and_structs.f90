@@ -110,7 +110,7 @@ contains
             k2 = ln(2, L)
             bob(1, L) = max(zcdamn, bob0(1, L))
             bob(2, L) = max(zcdamn, bob0(2, L))
-            iadv(L) = 22
+            iadv(L) = IADV_GENERAL_STRUCTURE
             call switchiadvnearlink(L)
             if (pstru%type == ST_CULVERT) then
                ! Culverts remain on the given invert level. The Bobs and bed level will be changed in case the invert level

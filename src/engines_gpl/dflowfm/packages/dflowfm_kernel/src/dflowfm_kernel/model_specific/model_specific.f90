@@ -482,7 +482,7 @@ contains
 
       Lweir = 0
       do L = 1, lnx
-         if (iadv(L) == 21 .or. iadv(L) >= 23 .and. iadv(L) <= 25) then
+         if (iadv(L) == IADV_SUBGRID .or. iadv(L) >= 23 .and. iadv(L) <= 25) then
             crestlev = min(bob(1, L), bob(2, L))
             Lweir = L; exit
          end if

@@ -281,6 +281,15 @@ module m_flowgeom
 
    integer, dimension(:), allocatable :: structuresAndWeirsList !< List containing flow links on which a structure or fixed weir is located.
 
+   integer, parameter :: IADV_ORIGINAL_LATERAL_OVERFLOW = 8
+   integer, parameter :: IADV_SUBGRID = 21
+   integer, parameter :: IADV_GENERAL_STRUCTURE = 22
+   integer, parameter :: IADV_RAJARATNAM = 23
+   integer, parameter :: IADV_TABELLENBOEK = 24
+   integer, parameter :: IADV_VILLEMONTE = 25
+      
+   
+   
 contains
 !> Sets ALL (scalar) variables in this module to their default values.
 !! For a reinit prior to flow computation, call reset_flowgeom() instead.

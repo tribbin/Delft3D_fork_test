@@ -112,7 +112,7 @@ contains
 
       if (ifixedweirscheme >= 3 .and. ifixedweirscheme <= 5) then
          do L = 1, lnxi
-            if (iadv(L) == 21) then
+            if (iadv(L) == IADV_SUBGRID) then
                if (u0(L) > 0) then
                   kd = ln(2, L); ku = ln(1, L)
                else

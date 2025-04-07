@@ -400,7 +400,7 @@ contains
                   else if (iweirt(k) == 2) then
                      iadv(L) = 25; jatabellenboekorvillemonte = 1 !  Villemonte
                   else
-                     iadv(L) = 21 !  Subgrid, ifixedweirscheme = 6 or 7
+                     iadv(L) = IADV_SUBGRID !  Subgrid, ifixedweirscheme = 6 or 7
                   end if
                   !
                   ! If link is reversed, exchange ground height levels and taluds
@@ -432,7 +432,7 @@ contains
                      dzsillu(L) = max(0.0d0, zc - blu(L)); dzsilld(L) = max(0.0d0, zc - blu(L)) ! if not specified then estimate
                      zcrest(L) = zc
                   else
-                     iadv(L) = 21 !  Ifixedweirscheme 6
+                     iadv(L) = IADV_SUBGRID !  Ifixedweirscheme 6
                   end if
                end if
             else
@@ -529,7 +529,7 @@ contains
          if (ihu(L) > 0) then
             nfxw = nfxw + 1 ! TODO: HK: incorrect/inconsistent use of nfxw: upon reading the pliz file it is nr of polylines, now it becomes the total number of flow links crossed by a fixed weir.
 
-            if (iadv(L) == 21) then
+            if (iadv(L) == IADV_SUBGRID) then
                call setfixedweirscheme3onlink(L)
                if (ifixedweirscheme == 7) then
                   iadv(L) = 23

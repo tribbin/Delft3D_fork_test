@@ -83,7 +83,6 @@ module m_flow_flowinit
    integer, parameter :: LATERAL_1D2D_LINK = 3
    integer, parameter :: STREET_INLET_1D2D_LINK = 5
    integer, parameter :: ROOF_GUTTER_1D2D_LINK = 7
-   integer, parameter :: ORIGINAL_LATERAL_OVERFLOW_ADVECTION = 8
    integer, parameter :: BOUNDARY_1D = -1
    integer, parameter :: SET_ZWS0 = 1
    logical, parameter :: INITIALIZATION_PHASE = .true.
@@ -622,9 +621,9 @@ contains
       if (Slopedrop2D > 0d0) then !todo, uitsluitende test maken
          do link = lnx1D + 1, lnxi
             if (iadv(link) /= OFF .and. &
-                .not. (iadv(link) >= 21 .and. iadv(link) <= 25) .and. &
+                .not. (iadv(link) >= IADV_SUBGRID .and. iadv(link) <= 25) .and. &
                 dxi(link) * abs(bl(ln(1, link)) - bl(ln(2, link))) > Slopedrop2D) then ! Not for fixed weirs itself.
-               iadv(link) = ORIGINAL_LATERAL_OVERFLOW_ADVECTION
+               iadv(link) = IADV_ORIGINAL_LATERAL_OVERFLOW
             end if
          end do
       end if
@@ -646,10 +645,10 @@ contains
                if (iadveccorr1D2D == 2) then
                   iadv(link) = OFF
                else
-                  iadv(link) = ORIGINAL_LATERAL_OVERFLOW_ADVECTION
+                  iadv(link) = IADV_ORIGINAL_LATERAL_OVERFLOW
                end if
             else if (kcu(link) == STREET_INLET_1D2D_LINK .or. kcu(link) == ROOF_GUTTER_1D2D_LINK) then
-               iadv(link) = ORIGINAL_LATERAL_OVERFLOW_ADVECTION
+               iadv(link) = IADV_ORIGINAL_LATERAL_OVERFLOW
             end if
          end if
       end do
