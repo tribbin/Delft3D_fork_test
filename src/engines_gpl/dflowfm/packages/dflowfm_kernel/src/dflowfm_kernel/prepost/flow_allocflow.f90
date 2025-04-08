@@ -88,7 +88,7 @@ contains
          longwave, patm, rhum, qrad, tbed, qext, qextreal, vextcum, cdwcof
       use m_nudge, only: nudge_tem, nudge_sal, nudge_time, nudge_rate
       use m_polygonlayering, only: polygonlayering
-      use m_turbulence, only: potential_density, in_situ_density
+      use m_turbulence, only: potential_density, in_situ_density, difwws, Prandtl_Richardson, richs
       use m_physcoef, only: apply_thermobaricity
 
       integer :: ierr, n, k, mxn, j, kk, LL, L, k1, k2, k3, n1, n2, n3, n4, kb1, kb2, numkmin, numkmax, kbc1, kbc2
@@ -954,6 +954,8 @@ contains
          call aerr('vicwwu   (Lnkx)', ierr, Lnkx); vicwwu = 0d0
          allocate (vicwws(ndkx), stat=ierr)
          call aerr('vicwws   (ndkx)', ierr, ndkx); vicwws = 0d0
+         allocate (difwws(ndkx), stat=ierr)
+         call aerr('difwws   (ndkx)', ierr, ndkx); difwws = 0d0
 
          if (allocated(turkinepsws)) then
             deallocate (turkinepsws)
@@ -1252,10 +1254,14 @@ contains
 
       end if
 
-      if (idensform > 0 .and. jaRichardsononoutput > 0) then
+      if (idensform > 0 .and. (jaRichardsononoutput > 0 .or. Prandtl_Richardson == .true.)) then
          if (allocated(rich)) deallocate (rich)
          allocate (rich(lnkx), stat=ierr)
          call aerr('rich(lnkx)', ierr, lnkx); rich = 0d0
+         if (Prandtl_Richardson == .true.) then
+            allocate (richs(ndkx), stat=ierr)
+            call aerr('richs(ndkx)', ierr, ndkx); richs = 0d0
+         end if
       else
          jaRichardsononoutput = 0
       end if

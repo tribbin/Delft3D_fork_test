@@ -1172,6 +1172,23 @@ contains
       call prop_get(md_ptr, 'numerics', 'cstbnd', jacstbnd)
       call prop_get(md_ptr, 'numerics', 'Maxitverticalforestertem', Maxitverticalforestertem)
       call prop_get(md_ptr, 'numerics', 'Turbulencemodel', Iturbulencemodel)
+
+      call prop_get(md_ptr, 'numerics', 'c1e', c1e, success, value_parsed)
+      if (success .AND. value_parsed) then
+         call calculate_derived_coefficients_turbulence_c1e()
+      end if
+      call prop_get(md_ptr, 'numerics', 'c3eStable', c3e_stable)
+      if (c3e_stable > 0.0d0) then
+         call mess(LEVEL_ERROR, 'c3eStable should be <= 0')
+      end if
+      call prop_get(md_ptr, 'numerics', 'c3eUnstable', c3e_unstable)
+      if (c3e_unstable < 0.0d0) then
+         call mess(LEVEL_ERROR, 'c3eUnstable should be >= 0')
+      end if
+      call prop_get(md_ptr, 'numerics', 'Prandtl_Richardson', Prandtl_Richardson)
+      call prop_get(md_ptr, 'numerics', 'Prt0', Prt0)
+      call prop_get(md_ptr, 'numerics', 'Ri_inf', Ri_inf)
+
       call prop_get(md_ptr, 'numerics', 'Turbulenceadvection', javakeps)
       call prop_get(md_ptr, 'numerics', 'Jadrhodz', jadrhodz)
       call prop_get(md_ptr, 'numerics', 'FacLaxTurb', turbulence_lax_factor)
@@ -1179,6 +1196,7 @@ contains
       call prop_get(md_ptr, 'numerics', 'FacLaxTurbHor', turbulence_lax_horizontal)
       call prop_get(md_ptr, 'numerics', 'EpsTKE', epstke)
       call prop_get(md_ptr, 'numerics', 'EpsEPS', epseps)
+      call prop_get(md_ptr, 'numerics', 'EpsLimitMethod', eps_limit_method)
 
       call prop_get(md_ptr, 'numerics', 'Eddyviscositybedfacmax', Eddyviscositybedfacmax)
       call prop_get(md_ptr, 'numerics', 'AntiCreep', jacreep)
@@ -3124,6 +3142,24 @@ contains
 
       if (writeall .or. kmx > 0) then
          call prop_set(prop_ptr, 'numerics', 'Turbulencemodel', Iturbulencemodel, 'Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)')
+         if (c1e /= (c2e - vonkar**2 / (sigeps * sqcmukep))) then
+            call prop_set(prop_ptr, 'numerics', 'c1e', c1e, 'c1e')
+         end if
+         if (c3e_stable /= 0.0_dp) then
+            call prop_set(prop_ptr, 'numerics', 'c3eStable', c3e_stable, 'c3e_stable. Default: 0.0')
+         end if
+         if (c3e_unstable /= (c2e - vonkar**2 / (sigeps * sqcmukep))) then
+            call prop_set(prop_ptr, 'numerics', 'c3eUnstable', c3e_unstable, 'c3e_unstable. Default: c3eUnstable = c1e = c2e - vonkar**2 / (sigeps * sqcmukep) = 1.49...')
+         end if
+         if (Prandtl_Richardson /= .false.) then
+            call prop_set(prop_ptr, 'numerics', 'Prandtl_Richardson', Prandtl_Richardson, 'Make the Prandtl-Schmidt number dependent on the Richardson number in the case of stable stratification (1: yes, 0: no)')
+         end if
+         if (Prt0 /= 0.74_dp) then
+            call prop_set(prop_ptr, 'numerics', 'Prt0', Prt0, 'Used in "Prt = Prt0 * exp(richs(k) / (Prt0 * Ri_inf)) + richs(k) / Ri_inf"')
+         end if
+         if (Ri_inf /= 0.25_dp) then
+            call prop_set(prop_ptr, 'numerics', 'Ri_inf', Ri_inf, 'Used in "Prt = Prt0 * exp(richs(k) / (Prt0 * Ri_inf)) + richs(k) / Ri_inf"')
+         end if
       end if
 
       if (writeall .or. (javakeps /= 3 .and. kmx > 0)) then
@@ -3146,6 +3182,9 @@ contains
 
       if (writeall .or. (epseps > 1.0e-32_dp .and. kmx > 0)) then
          call prop_set(prop_ptr, 'numerics', 'EpsEPS', epseps, '(EPS=max(EPS,EpsEPS), default=1d-32, (or TAU))')
+      end if
+      if (eps_limit_method /= 1) then
+         call prop_set(prop_ptr, 'numerics', 'EpsLimitMethod', eps_limit_method, 'Method to limit EPS (1: EPS=max(EPS, EpsEPS), 2: EPS=max(EPS, sqrt(0.045) * epstke * sqrt(bruva * sigrho)))')
       end if
 
       if (writeall .or. Eddyviscositybedfacmax > 0 .and. kmx > 0) then

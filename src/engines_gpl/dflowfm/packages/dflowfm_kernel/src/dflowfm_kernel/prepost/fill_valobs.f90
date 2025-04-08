@@ -472,6 +472,7 @@ contains
                   valobs(i, IPNT_ZWS + klay - 1) = zws(kk)
                   if (iturbulencemodel >= 2 .and. jahistur > 0) then
                      valobs(i, IPNT_VICWWS + klay - 1) = vicwws(kk)
+                     valobs(i, IPNT_DIFWWS + klay - 1) = difwws(kk)
                   end if
                   if ((jasal > 0 .or. jatem > 0 .or. jased > 0) .and. jahisrho > 0) then
                      if (zws(kt) - zws(kb - 1) > epshu .and. kk > kb - 1 .and. kk < kt) then
@@ -485,6 +486,10 @@ contains
                         valobs(i, IPNT_BRUV + klay - 1) = -ag * drhodz / rhomea
                      end if
                   end if
+                  if (idensform > 0 .and. jaRichardsononoutput > 0 .and. Prandtl_Richardson == .true.) then
+                     valobs(i, IPNT_RICHS + klay - 1) = richs(kk)
+                  end if
+
                   if (IVAL_WS1 > 0) then
                      do j = IVAL_WS1, IVAL_WSN
                         ii = j - IVAL_WS1 + 1
