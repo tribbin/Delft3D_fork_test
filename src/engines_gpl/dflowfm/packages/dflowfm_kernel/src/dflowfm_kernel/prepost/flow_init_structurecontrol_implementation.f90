@@ -62,7 +62,7 @@ contains
       use m_partitioninfo, only: jampi
       use string_module, only: strcmpi
       use messagehandling, only: IDLEN
-      
+
       implicit none
       logical :: status
       integer :: i, L, Lf, kb, ierr, k, kbi, n
@@ -381,8 +381,8 @@ contains
                                            dambreakLevelsAndWidthsFromTable, &
                                            dambreaks, ndambreaklinks, dambreakLinksEffectiveLength
       use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, breachDepthDambreak, breachWidthDambreak, &
-                                          add_dambreaklocation_upstream, add_dambreaklocation_downstream, &
-                                          add_averaging_upstream_signal, add_averaging_downstream_signal
+                                   add_dambreaklocation_upstream, add_dambreaklocation_downstream, &
+                                   add_averaging_upstream_signal, add_averaging_downstream_signal
       use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
       use m_alloc, only: realloc
 
@@ -479,12 +479,12 @@ contains
                            ''' in dambreak ''', trim(dambreak_ids(n)), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_upstream(n,k)
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_upstream(n,k)                        
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else
                      call add_averaging_upstream_signal(n)
@@ -503,12 +503,12 @@ contains
                            ''' in dambreak ''', trim(dambreak_ids(n)), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else
                      call add_averaging_downstream_signal(n)
@@ -602,8 +602,8 @@ contains
       use m_togeneral, only: togeneral
       use unstruc_messages, only: callback_msg
       use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, breachDepthDambreak, breachWidthDambreak, &
-         add_dambreaklocation_upstream, add_dambreaklocation_downstream, add_averaging_upstream_signal, &
-         add_averaging_downstream_signal
+                                   add_dambreaklocation_upstream, add_dambreaklocation_downstream, add_averaging_upstream_signal, &
+                                   add_averaging_downstream_signal
       use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
       use fm_external_forcings_data, only: dambreakLinksEffectiveLength, dambreakLinksActualLength
 
@@ -1677,8 +1677,8 @@ contains
 !
       if (ndambreaksignals > 0) then
 
-         call allocate_and_initialize_dambreak_data(ndambreaklinks) 
-         
+         call allocate_and_initialize_dambreak_data(ndambreaklinks)
+
          if (allocated(kdambreak)) deallocate (kdambreak)
          allocate (kdambreak(3, ndambreaklinks), stat=ierr) ! the last row stores the actual
          ! kdambreak is an integer array? This is flow_init_structurecontrol_old so will be removed soon
@@ -1807,12 +1807,12 @@ contains
                            ''' in dambreak ''', trim(strid), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_upstream(n,k)
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_upstream(n,k)
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else
                      call add_averaging_upstream_signal(n)
@@ -1831,12 +1831,12 @@ contains
                            ''' in dambreak ''', trim(strid), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else
                      call add_averaging_downstream_signal(n)
@@ -1965,7 +1965,7 @@ contains
    end function flow_init_structurecontrol_old
 
    !> Set teta to 1 for all links that are connected to an upstream or downstream node of a general structure link.
-   subroutine apply_teta_is_1_to_neighbours(links, num_links, teta   )
+   subroutine apply_teta_is_1_to_neighbours(links, num_links, teta)
 
       use m_flowgeom, only: nd, ln
 
@@ -1985,6 +1985,6 @@ contains
          end do
 
       end do
-end subroutine apply_teta_is_1_to_neighbours
+   end subroutine apply_teta_is_1_to_neighbours
 
 end submodule flow_init_structurecontrol_implementation

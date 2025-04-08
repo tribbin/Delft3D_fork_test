@@ -31,16 +31,16 @@
 !
 module m_find_crossed_links_kdtree2
    implicit none
-   
+
    integer, parameter :: ITYPE_NETLINK_DUAL = 1
    integer, parameter :: ITYPE_FLOWLINK = 2
    integer, parameter :: ITYPE_NETLINK = 3
    integer, parameter :: ITYPE_FLOWLINK_1D_DUAL = 4
-   
+
    integer, parameter :: BOUNDARY_NONE = 0
    integer, parameter :: BOUNDARY_ALL = 1
    integer, parameter :: BOUNDARY_2D = 2
-   
+
 contains
 !---------------------------------------------------------------
 ! the following subroutines use kdtree2
@@ -268,7 +268,7 @@ contains
       integer, dimension(n_links_polyline_nodes), intent(in) :: iLink !< crossed flowlinks
       integer, dimension(n_links_polyline_nodes), intent(inout) :: iPol !< polygon section
       real(kind=dp), dimension(n_links_polyline_nodes), intent(inout) :: dSL !< polygon section cross location
-      integer, intent(in) :: n_links_polyline_nodes  !< array_size e.g. number of links ( Lnx for flowlinks, numL for netlinks) or npl for number of polyline nodes
+      integer, intent(in) :: n_links_polyline_nodes !< array_size e.g. number of links ( Lnx for flowlinks, numL for netlinks) or npl for number of polyline nodes
       integer, intent(in) :: intersection_count !< number of link intersections
 
       integer, dimension(n_links_polyline_nodes) :: new_index !< index of sorted iPol

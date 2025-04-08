@@ -289,8 +289,7 @@ module m_flowgeom
    integer, parameter :: IADV_VILLEMONTE_WEIR = 25
    integer, parameter :: IADV_PURE1D_FM = 103
    integer, parameter :: IADV_PURE1D_SOBEK = 104
-   
-   
+
 contains
 !> Sets ALL (scalar) variables in this module to their default values.
 !! For a reinit prior to flow computation, call reset_flowgeom() instead.
