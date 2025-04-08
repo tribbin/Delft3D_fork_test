@@ -86,7 +86,6 @@ contains
       integer :: ierror
       integer :: num_intersections
 
-      integer :: jakdtree = 1
       character(len=5) :: sd
       character(len=200), allocatable :: fnames(:)
       integer, allocatable :: start_npl_for_files(:)
