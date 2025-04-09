@@ -93,15 +93,15 @@ contains
       if (timon) call timstrt("fill_valobs", handle_extra(55))
       !
       if (.not. allocated(ueux)) then
-         call realloc(ueux, ndkx, keepExisting=.false., fill=0d0)
-         call realloc(ueuy, ndkx, keepExisting=.false., fill=0d0)
+         call realloc(ueux, ndkx, keepExisting=.false., fill=0.0_dp)
+         call realloc(ueuy, ndkx, keepExisting=.false., fill=0.0_dp)
       end if
       !
       if (jawave > 0) then
          if (jahissigwav == 0) then
-            wavfac = 1d0
+            wavfac = 1.0_dp
          else
-            wavfac = sqrt(2d0)
+            wavfac = sqrt(2.0_dp)
          end if
          if (allocated(wa)) deallocate (wa)
          allocate (wa(1:2, 1:max(kmx, 1)))
@@ -188,7 +188,7 @@ contains
             end if
 
             if (jawave > 0 .and. .not. flowWithoutWaves) then
-               wa = 0d0
+               wa = 0.0_dp
                call linkstocentercartcomp(k, ustokes, wa) ! wa now 2*1 value or 2*1 vertical slice
             end if
 
@@ -208,8 +208,8 @@ contains
 
             valobs(i, IPNT_CMX) = cmxobs(i)
             if (jawind > 0) then
-               valobs(i, IPNT_wx) = 0d0
-               valobs(i, IPNT_wy) = 0d0
+               valobs(i, IPNT_wx) = 0.0_dp
+               valobs(i, IPNT_wy) = 0.0_dp
                do LL = 1, nd(k)%lnx
                   LLL = abs(nd(k)%ln(LL))
                   k1 = ln(1, LLL); k2 = ln(2, LLL)
@@ -230,7 +230,7 @@ contains
                valobs(i, IPNT_WAVEH) = hwav(k) * wavfac
                valobs(i, IPNT_WAVET) = twav(k)
                if (.not. flowWithoutWaves) then
-                  valobs(i, IPNT_WAVED) = modulo(270d0 - phiwav(k), 360d0) ! Direction from
+                  valobs(i, IPNT_WAVED) = modulo(270.0_dp - phiwav(k), 360.0_dp) ! Direction from
                   valobs(i, IPNT_WAVEL) = rlabda(k)
                   valobs(i, IPNT_WAVEU) = uorb(k)
                end if
@@ -298,13 +298,13 @@ contains
                            frac(l, n) = stmpar%morlyr%state%msed(l, n, k) / (dens * stmpar%morlyr%state%svfrac(n, k) * &
                                                                              stmpar%morlyr%state%thlyr(n, k))
                         else
-                           frac(l, n) = 0d0
+                           frac(l, n) = 0.0_dp
                         end if
                      end do
                   end do
                   !
                   if (stmpar%morlyr%settings%iporosity > 0) then
-                     poros = 1d0 - stmpar%morlyr%state%svfrac(:, k)
+                     poros = 1.0_dp - stmpar%morlyr%state%svfrac(:, k)
                   end if
                   !
                   do klay = 1, nlyrs
@@ -375,7 +375,7 @@ contains
                klay = kk - kb + nlayb
 
                if (model_is_3D()) then
-                  valobs(i, IPNT_ZCS + klay - 1) = 0.5d0 * (zws(kk) + zws(kk - 1))
+                  valobs(i, IPNT_ZCS + klay - 1) = 0.5_dp * (zws(kk) + zws(kk - 1))
                end if
 
                if (jahisvelocity > 0 .or. jahisvelvec > 0) then
@@ -416,7 +416,7 @@ contains
                if (jahisvelocity > 0) then
                   valobs(i, IPNT_UMAG + klay - 1) = ucmag(kk)
                end if
-               valobs(i, IPNT_QMAG + klay - 1) = 0.5d0 * (squ(kk) + sqi(kk))
+               valobs(i, IPNT_QMAG + klay - 1) = 0.5_dp * (squ(kk) + sqi(kk))
 
                if (kmx == 0) then
                   kmx_const = 1 ! to make numbering below work
@@ -478,11 +478,11 @@ contains
                      if (zws(kt) - zws(kb - 1) > epshu .and. kk > kb - 1 .and. kk < kt) then
                         if (apply_thermobaricity) then
                            prsappr = ag * rhomean * (zws(kt) - zws(kk))
-                           drhodz = (density_at_cell(kk + 1, prsappr) - density_at_cell(kk, prsappr)) / max(0.5d0 * (zws(kk + 1) - zws(kk - 1)), epshs)
+                           drhodz = (density_at_cell(kk + 1, prsappr) - density_at_cell(kk, prsappr)) / max(0.5_dp * (zws(kk + 1) - zws(kk - 1)), epshs)
                         else
-                           drhodz = (rho(kk + 1) - rho(kk)) / max(0.5d0 * (zws(kk + 1) - zws(kk - 1)), epshs)
+                           drhodz = (rho(kk + 1) - rho(kk)) / max(0.5_dp * (zws(kk + 1) - zws(kk - 1)), epshs)
                         end if
-                        rhomea = 0.5d0 * (rho(kk + 1) + rho(kk))
+                        rhomea = 0.5_dp * (rho(kk + 1) + rho(kk))
                         valobs(i, IPNT_BRUV + klay - 1) = -ag * drhodz / rhomea
                      end if
                   end if
@@ -535,11 +535,11 @@ contains
 
 !        Infiltration
             if ((infiltrationmodel == DFM_HYD_INFILT_CONST .or. infiltrationmodel == DFM_HYD_INFILT_HORTON) .and. jahisinfilt > 0) then
-               valobs(i, IPNT_INFILTCAP) = infiltcap(k) * 1d3 * 3600d0 ! m/s -> mm/hr
-               if (ba(k) > 0d0) then
-                  valobs(i, IPNT_INFILTACT) = infilt(k) / ba(k) * 1d3 * 3600d0 ! m/s -> mm/hr
+               valobs(i, IPNT_INFILTCAP) = infiltcap(k) * 1d3 * 3600.0_dp ! m/s -> mm/hr
+               if (ba(k) > 0.0_dp) then
+                  valobs(i, IPNT_INFILTACT) = infilt(k) / ba(k) * 1d3 * 3600.0_dp ! m/s -> mm/hr
                else
-                  valobs(i, IPNT_INFILTACT) = 0d0
+                  valobs(i, IPNT_INFILTACT) = 0.0_dp
                end if
             end if
 
