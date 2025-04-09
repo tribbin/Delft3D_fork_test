@@ -452,7 +452,7 @@ contains
                ! set initial phase, width, crest level, coefficents if algorithm is 1
                dambreak%phase = 0
                dambreak%width = 0.0_dp
-               dambreak%maximum_width  = 0.0_dp
+               dambreak%maximum_width = 0.0_dp
                dambreak%crest_level = dambreak%crest_level_ini
                if (dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then
                   ! Time-interpolated value will be placed in zcgen((n-1)*3+1) when calling ec_gettimespacevalue.
@@ -559,7 +559,7 @@ contains
                   end if
 
                   ! Sum the length of the intersected flow links (required to bound maximum breach width)
-                  dambreak%maximum_width  = dambreak%maximum_width  + db_link_effective_width(k)
+                  dambreak%maximum_width = dambreak%maximum_width + db_link_effective_width(k)
                end do
 
                ! Now we can deallocate the polygon
@@ -1674,7 +1674,7 @@ contains
       if (n_db_signals > 0) then
 
          call allocate_and_initialize_dambreak_data(n_db_links)
-         
+
          if (allocated(db_link_ids)) deallocate (db_link_ids)
          allocate (db_link_ids(3, n_db_links), stat=ierr) ! the last row stores the actual
          ! db_link_ids is an integer array? This is flow_init_structurecontrol_old so will be removed soon
@@ -1778,7 +1778,7 @@ contains
                ! set initial phase, width, crest level, coefficents if algorithm is 1
                network%sts%struct(istrtmp)%dambreak%phase = 0
                network%sts%struct(istrtmp)%dambreak%width = 0.0_dp
-               network%sts%struct(istrtmp)%dambreak%maximum_width  = 0.0_dp
+               network%sts%struct(istrtmp)%dambreak%maximum_width = 0.0_dp
                network%sts%struct(istrtmp)%dambreak%crest_level = network%sts%struct(istrtmp)%dambreak%crest_level_ini
                if (network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then
                   ! Time-interpolated value will be placed in zcgen((n-1)*3+1) when calling ec_gettimespacevalue.
@@ -1906,7 +1906,7 @@ contains
                end if
 
                ! Sum the length of the intersected flow links (required to bound maximum breach width)
-               network%sts%struct(istrtmp)%dambreak%maximum_width  = network%sts%struct(istrtmp)%dambreak%maximum_width  + db_link_effective_width(k)
+               network%sts%struct(istrtmp)%dambreak%maximum_width = network%sts%struct(istrtmp)%dambreak%maximum_width + db_link_effective_width(k)
             end do
 
             ! Now we can deallocate the polygon

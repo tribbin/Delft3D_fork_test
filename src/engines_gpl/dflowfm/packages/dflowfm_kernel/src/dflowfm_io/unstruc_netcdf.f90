@@ -15171,7 +15171,7 @@ contains
          call mess(LEVEL_ERROR, 'Could not put header in flow geometry file.')
          call check_error(ierr)
          return
-      end if      
+      end if
       if (jsferic == 1) then
          crs%epsg_code = 4326
       end if

@@ -168,7 +168,7 @@ contains
             if (istru /= 0 .and. db_first_link(n) <= db_last_link(n)) then
                ! Update the crest/bed levels
                call adjust_bobs_on_dambreak_breach(network%sts%struct(istru)%dambreak%width, &
-                                                 & network%sts%struct(istru)%dambreak%maximum_width , &
+                                                 & network%sts%struct(istru)%dambreak%maximum_width, &
                                                  & network%sts%struct(istru)%dambreak%crest_level, &
                                                  & breach_start_link(n), &
                                                  & db_first_link(n), &
