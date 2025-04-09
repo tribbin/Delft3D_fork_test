@@ -103,15 +103,14 @@ module m_turbulence
    real(kind=dp), allocatable :: vicwwu(:) ! vertical eddy viscosity (m2/s) at layer interface at u point
    real(kind=dp), allocatable, target :: vicwws(:) !< [m2/s] vertical eddy viscosity at layer interface at s point {"location": "face", "shape": ["ndkx"]}
 
-   real(kind=dp), allocatable, dimension(:), target :: in_situ_density !< Pressure dependent water density at cell centres (kg/m3)
-   real(kind=dp), allocatable, dimension(:), target :: potential_density !< Potential water density at cell centres (kg/m3)
-   real(kind=dp), dimension(:), pointer :: rho !< Water density at cell centres (kg/m3)
-   real(kind=dp), allocatable, dimension(:) :: rho0 !< Water density at cell centres (kg/m3), previous time step
-   real(kind=dp), allocatable, dimension(:) :: rhosww !< deviatoric density at vertical interfaces, w points (kg/m3)
-   real(kind=dp), allocatable, dimension(:) :: rhowat !< density at cell centres (kg/m3), only salt and temp
-   real(kind=dp), allocatable, dimension(:) :: dpbdx0 !< previous step baroclinic pressure gradient, at u points
-   real(kind=dp), allocatable, dimension(:) :: rvdn !< help integral of (rho-rhomean)*deltaz at pressure points (kg/m2)
-   real(kind=dp), allocatable, dimension(:) :: grn !< help integral of vertical baroclinic pressure integral at pressure points  (kg/m)
+   real(kind=dp), allocatable, dimension(:), target :: in_situ_density ! Pressure dependent water density at cell centres (kg/m3)
+   real(kind=dp), allocatable, dimension(:), target :: potential_density ! Potential water density at cell centres (kg/m3)
+   real(kind=dp), dimension(:), pointer :: rho ! Water density at cell centres (kg/m3)
+   real(kind=dp), allocatable, dimension(:) :: rhosww ! deviatoric density at vertical interfaces, w points (kg/m3)
+   real(kind=dp), allocatable, dimension(:) :: rhowat ! density at cell centres (kg/m3), only salt and temp
+   real(kind=dp), allocatable, dimension(:) :: dpbdx0 ! previous step baroclinic pressure gradient, at u points
+   real(kind=dp), allocatable, dimension(:) :: rvdn ! help integral of (rho-rhomean)*deltaz at pressure points (kg/m2)
+   real(kind=dp), allocatable, dimension(:) :: grn ! help integral of vertical baroclinic pressure integral at pressure points  (kg/m)
 
    real(kind=dp), allocatable, dimension(:) :: rhou !< density at flow links (kg/m3)
 
