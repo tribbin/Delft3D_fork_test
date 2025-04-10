@@ -75,7 +75,7 @@ contains
       real(kind=dp) :: zmin, zmax
       real(kind=dp) :: h0, b0, z00, zinc, cz, ustbref, ustwref, zint, z1, dz2, zz
       real(kind=dp) :: tkebot, tkesur, tkewin
-      real(kind=dp) :: epsbot, epssur, dzkap, sqcf, ulx, sg, drhodz, rhomea, rhop0, prsappr
+      real(kind=dp) :: epsbot, epssur, dzkap, sqcf, ulx, sg, drhodz, rhomea
       real(kind=dp) :: VMAX2, VMIN2
       integer :: is, Ls, LLs, Lbs, Lts
       integer :: jabruv
@@ -307,8 +307,7 @@ contains
             if (jasal > 0 .and. jatem > 0 .and. idensform < 0) then
                if (idensform == DENSITY_OPTION_UNESCO83 .and. apply_thermobaricity) then
                   do k = kb, kt
-                     rhop0 = density_at_cell(k, 0d0)
-                     dijdij(k - kb + 1) = rhop0
+                     dijdij(k - kb + 1) = potential_density(k)
                   end do
                   call getvminmax(5, vmin, vmax, dijdij(1:km), km)
                   call TEKFN(5, 10, 1, dijdij(1:km), hcref, km, vmin, vmax, zmin, zmax, KLPROF, 'rhopot', 1, 2, 0d0, kplot)
@@ -365,8 +364,7 @@ contains
 
             do k = kb, kt - 1
                kk = k - kb + 1
-               prsappr = ag * rhomean * (zws(kt) - zws(k))
-               drhodz = (density_at_cell(k + 1, prsappr) - density_at_cell(k, prsappr)) / (0.5d0 * (zws(k + 1) - zws(k - 1)))
+               drhodz = (rho(k + 1) - rho(k)) / (0.5d0 * (zws(k + 1) - zws(k - 1)))
                rhomea = 0.5d0 * (rho(k + 1) + rho(k))
                dijdij(kk) = -ag * drhodz / rhomea
             end do
