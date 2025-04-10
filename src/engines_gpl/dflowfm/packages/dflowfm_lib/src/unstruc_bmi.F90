@@ -850,12 +850,16 @@ contains
       !DEC$ ATTRIBUTES DLLEXPORT :: get_var_rank
 
       use iso_c_binding, only: c_int, c_char
-
+      use string_module, only: str_token
+      
       character(kind=c_char), intent(in) :: c_var_name(*)
       integer(c_int), intent(out) :: rank
 
       ! The fortran name of the attribute name
       character(len=strlen(c_var_name)) :: var_name
+      character(len=strlen(c_var_name)) :: tmp_var_name
+      character(len=strlen(c_var_name)) :: varset_name !< For parsing compound variable names.
+      
       ! Store the name
       var_name = char_array_to_string(c_var_name, strlen(c_var_name))
 
@@ -872,11 +876,16 @@ contains
          rank = 2
       case ("tem1Surf")
          rank = 1
-      case default 
-      rank=1
-         
       end select
 
+      ! Try to parse variable name as slash-separated id (e.g., 'laterals/sealock_A/water_discharge')
+      tmp_var_name = var_name
+      call str_token(tmp_var_name, varset_name, DELIMS='/')
+      select case (varset_name)
+      case ('pumps', 'weirs', 'orifices', 'gates', 'generalstructures', 'culverts', 'sourcesinks', 'dambreak', 'observations', 'crosssections', 'laterals')
+          rank=1
+      end select
+      
       if (numconst > 0) then
          iconst = find_name(const_names, var_name)
       end if
