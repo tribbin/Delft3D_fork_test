@@ -922,6 +922,8 @@ contains
       var_name = char_array_to_string(c_var_name, strlen(c_var_name))
       shape = [0, 0, 0, 0, 0, 0]
 
+      include "bmi_get_var_shape.inc"
+            
       ! NOTE: report the shape below in row-major order (so, C-style, not FORTRAN-style)
       select case (var_name)
       case ("netelemnode")
@@ -1017,8 +1019,6 @@ contains
       case default
       SHAPE(1) = 1
       end select
-
-      include "bmi_get_var_shape.inc"
 
       if (numconst > 0) then
          iconst = find_name(const_names, var_name)
