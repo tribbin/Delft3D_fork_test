@@ -28,7 +28,7 @@ class ExportJiraIssueId : ScriptBuildStep {
 
         conditions {
             exists("teamcity.build.branch")
-            doesNotEqual("teamcity.build.branch", "refs/heads/main")
+            equals("teamcity.build.branch.is_default", "false")
         }
         name = "Export the Jira issue id"
 

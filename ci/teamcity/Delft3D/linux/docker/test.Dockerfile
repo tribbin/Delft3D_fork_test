@@ -1,4 +1,4 @@
-FROM runtime-environment
+FROM dimrset
 
 ENV PIP_ROOT_USER_ACTION=ignore
 ENV PIP_NO_CACHE_DIR=1

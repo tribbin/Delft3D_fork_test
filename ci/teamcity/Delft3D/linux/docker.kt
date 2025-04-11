@@ -5,11 +5,11 @@ import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import Delft3D.template.*
 import Delft3D.step.*
-import Delft3D.linux.containers.*
+import Delft3D.linux.thirdParty.*
 
-object LinuxRuntimeContainers : BuildType({
+object LinuxDocker : BuildType({
 
-    description = "Build two separate container images: one for running the Delft3D software and the other for executing its tests."
+    description = "Build the Delft3D container image and an image for running the testbenches."
 
     templates(
         TemplateMergeRequest,
@@ -17,7 +17,7 @@ object LinuxRuntimeContainers : BuildType({
         TemplateMonitorPerformance
     )
 
-    name = "Runtime-environment Containers"
+    name = "Docker Build"
     buildNumberPattern = "%dep.${LinuxBuild.id}.product%: %build.vcs.number%"
 
     vcs {
@@ -63,6 +63,7 @@ object LinuxRuntimeContainers : BuildType({
             name = "Set execute rights"
             scriptContent = """
                 chmod a+x dimrset/bin/*
+                chmod a+x intel/mpi/bin/*
             """.trimIndent()
         }
         script {
@@ -72,35 +73,34 @@ object LinuxRuntimeContainers : BuildType({
             """.trimIndent()
         }
         dockerCommand {
-            name = "Docker build runtime-environment image"
+            name = "Docker build DIMRset image"
             commandType = build {
                 source = file {
-                    path = "ci/teamcity/Delft3D/linux/docker/runtimeEnvironment.Dockerfile"
+                    path = "ci/teamcity/Delft3D/linux/docker/build.Dockerfile"
                 }
                 contextDir = "."
                 platform = DockerCommandStep.ImagePlatform.Linux
                 namesAndTags = """
-                    runtime-environment
-                    containers.deltares.nl/delft3d/delft3d-runtime-environment:alma8-%build.vcs.number%
+                    dimrset
+                    containers.deltares.nl/delft3d/delft3dfm:alma8-%build.vcs.number%
                 """.trimIndent()
                 commandArgs = """
                     --pull
                     --no-cache
                     --build-arg GIT_COMMIT=%build.vcs.number%
                     --build-arg GIT_BRANCH=%teamcity.build.branch%
-                    --build-arg BUILDTOOLS_IMAGE_TAG=%dep.${LinuxBuildTools.id}.env.IMAGE_TAG%
                 """.trimIndent()
             }
         }
         dockerCommand {
-            name = "Docker build testbench-environment image"
+            name = "Docker build testbench image"
             commandType = build {
                 source = file {
-                    path = "ci/teamcity/Delft3D/linux/docker/testEnvironment.Dockerfile"
+                    path = "ci/teamcity/Delft3D/linux/docker/test.Dockerfile"
                 }
                 contextDir = "."
                 platform = DockerCommandStep.ImagePlatform.Linux
-                namesAndTags = "containers.deltares.nl/delft3d/test/delft3d-test-environment:alma8-%build.vcs.number%"
+                namesAndTags = "containers.deltares.nl/delft3d/test/delft3dfm:alma8-%build.vcs.number%"
                 commandArgs = """
                     --build-arg GIT_COMMIT=%build.vcs.number%
                     --build-arg GIT_BRANCH=%teamcity.build.branch%
@@ -111,23 +111,13 @@ object LinuxRuntimeContainers : BuildType({
             name = "Docker push"
             commandType = push {
                 namesAndTags = """
-                    containers.deltares.nl/delft3d/delft3d-runtime-environment:alma8-%build.vcs.number%
-                    containers.deltares.nl/delft3d/test/delft3d-test-environment:alma8-%build.vcs.number%
+                    containers.deltares.nl/delft3d/delft3dfm:alma8-%build.vcs.number%
+                    containers.deltares.nl/delft3d/test/delft3dfm:alma8-%build.vcs.number%
                 """.trimIndent()
             }
         }
     }
     features {
-        dockerSupport {
-            loginToRegistry = on {
-                dockerRegistryId = "DOCKER_REGISTRY_DELFT3D"
-            }
-        }
-        dockerSupport {
-            loginToRegistry = on {
-                dockerRegistryId = "DOCKER_REGISTRY_DELFT3D_DEV"
-            }
-        }
         dockerSupport {
             loginToRegistry = on {
                 dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
@@ -144,6 +134,17 @@ object LinuxRuntimeContainers : BuildType({
             artifacts {
                 artifactRules = "dimrset_lnx64_*.tar.gz!/lnx64 => dimrset"
             }
+        }
+
+        artifacts(LinuxThirdPartyDownloadIntelMpi) {
+            buildRule = lastSuccessful()
+            cleanDestination = true
+            artifactRules = """
+                intelmpi.tar.gz!/bin/hydra_* => intel/mpi/bin/
+                intelmpi.tar.gz!/bin/mpiexec* => intel/mpi/bin/
+                intelmpi.tar.gz!/bin/mpirun => intel/mpi/bin/
+                intelmpi.tar.gz!/lib  => intel/mpi/lib
+            """.trimIndent()
         }
         artifacts(AbsoluteId("Wanda_WandaCore_Wanda4TrunkX64")) {
             cleanDestination = true

@@ -79,11 +79,13 @@ object LinuxThirdPartyLibs : BuildType({
                 """.trimIndent()
             }
         }
-        dockerCommand {
-            name = "Push"
-            commandType = push {
-                namesAndTags = "%harbor_repo%:%env.IMAGE_TAG%"
-                removeImageAfterPush = true
+        if (DslContext.getParameter("environment") == "production") {
+            dockerCommand {
+                name = "Push"
+                commandType = push {
+                    namesAndTags = "%harbor_repo%:%env.IMAGE_TAG%"
+                    removeImageAfterPush = true
+                }
             }
         }
         dockerCommand {
