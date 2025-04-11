@@ -3343,9 +3343,8 @@ contains
          else
             line = 'GEN3 KOMEN'
          end if
-         if (sr%windgrowth) then
-             line = trim(line) // ' DRAG WU'
-         end if
+         ! Always add (wind related) drag formula. It doesn't harm if there is no wind.
+         line = trim(line) // ' DRAG WU'
       else
       end if
       write (luninp, '(1X,A)') line
