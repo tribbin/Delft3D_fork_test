@@ -81,7 +81,7 @@ contains
       OPTION(i) = 'Drop3D                                  '; it(2 * i) = 6; i = i + 1
       OPTION(i) = 'jaStructurelayersactive                 '; it(2 * i) = 2; i = i + 1
       OPTION(i) = 'jarhointerfaces                         '; it(2 * i) = 2; i = i + 1
-      OPTION(i) = 'maxitpresdens                           '; it(2 * i) = 2; i = i + 1
+      OPTION(i) = 'max_iterations_pressure_density         '; it(2 * i) = 2; i = i + 1
 
 !   123456789012345678901234567890123456789012345678901234567890
 !            1         2         3         4         5         6
@@ -202,7 +202,7 @@ contains
       call IFORMPUTdouble(2 * i, drop3D, '(F7.3)'); i = i + 1
       call IFORMputINTEGER(2 * i, jastructurelayersactive); i = i + 1
       call IFORMputINTEGER(2 * i, jarhointerfaces); i = i + 1
-      call IFORMputINTEGER(2 * i, maxitpresdens); i = i + 1
+      call IFORMputINTEGER(2 * i, max_iterations_pressure_density); i = i + 1
 
       !  Display the form with numeric fields left justified
       !  and set the initial field to number 2
@@ -265,7 +265,7 @@ contains
             call IFORMGETdouble(2 * i, Drop3D); i = i + 1
             call IFORMGETINTEGER(2 * i, jastructurelayersactive); i = i + 1
             call IFORMGETINTEGER(2 * i, jarhointerfaces); i = i + 1
-            call IFORMGetINTEGER(2 * i, maxitpresdens); i = i + 1
+            call IFORMGetINTEGER(2 * i, max_iterations_pressure_density); i = i + 1
          end if
          call IWinClose(1)
          call IWinClose(1)
