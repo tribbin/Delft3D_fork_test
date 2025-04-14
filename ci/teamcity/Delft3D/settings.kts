@@ -3,7 +3,6 @@ import jetbrains.buildServer.configs.kotlin.projectFeatures.*
 
 import Delft3D.*
 import Delft3D.linux.*
-import Delft3D.linux.thirdParty.*
 import Delft3D.linux.containers.*
 import Delft3D.windows.*
 import Delft3D.template.*
@@ -43,14 +42,6 @@ project {
         id("Linux")
         name = "Linux"
         subProject {
-            id("LinuxThirdParty")
-            name = "Third Party"
-            buildType(LinuxThirdPartyDownloadIntelMpi)
-            buildTypesOrder = arrayListOf(
-                LinuxThirdPartyDownloadIntelMpi
-            )
-        }
-        subProject {
             id("BuildContainers")
             name = "Build-environment Containers"
             buildType(LinuxBuildTools)
@@ -62,12 +53,12 @@ project {
         }
         buildType(LinuxBuild)
         buildType(LinuxCollect)
-        buildType(LinuxDocker)
+        buildType(LinuxRuntimeContainers)
         buildType(LinuxTest)
         buildTypesOrder = arrayListOf(
             LinuxBuild,
             LinuxCollect,
-            LinuxDocker,
+            LinuxRuntimeContainers,
             LinuxTest
         )
     }
