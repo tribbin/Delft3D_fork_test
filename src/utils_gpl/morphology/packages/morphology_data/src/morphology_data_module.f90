@@ -291,13 +291,15 @@ type moroutputtype
     logical :: bamor
     logical :: wumor
     !
-    logical :: subsupl
+    logical :: cumsubsupl
     logical :: bodsed
     logical :: dpsed
     logical :: thlyr
     logical :: preload
     logical :: sedconc
     logical :: morfacft
+    logical :: sxytot
+    logical :: sxyavg
 end type moroutputtype
 
 !
@@ -1726,7 +1728,8 @@ subroutine initmoroutput(moroutput, def)
     moroutput%avgintv      = -999d0
     moroutput%morstats     = .false.
     !
-    moroutput%aks           = no !!should be true in default?
+    moroutput%aks           = no
+    moroutput%sxyavg        = yes
     moroutput%cumavg        = no
     moroutput%dg            = no
     moroutput%dgsd          = no
@@ -1739,14 +1742,19 @@ subroutine initmoroutput(moroutput, def)
     moroutput%frac          = no
     moroutput%lyrfrac       = yes
     moroutput%msed          = yes
+    moroutput%bodsed        = yes
+    moroutput%dpsed         = yes
+    moroutput%thlyr         = yes
     moroutput%mudfrac       = no
     moroutput%percentiles   = no
     moroutput%poros         = yes
     moroutput%rca           = yes
     moroutput%rsedeq        = yes
+    moroutput%sedconc       = yes
     moroutput%sandfrac      = no
     moroutput%sedpar        = no
     moroutput%seddif        = no
+    moroutput%sxytot        = yes
     moroutput%sbuuvv        = yes
     moroutput%sbcuv         = no
     moroutput%sscuv         = no
@@ -1769,14 +1777,9 @@ subroutine initmoroutput(moroutput, def)
     moroutput%blave         = no
     moroutput%bamor         = no
     moroutput%wumor         = no
-    !
-    moroutput%subsupl       = no  !subsidence and uplift
-    moroutput%bodsed        = yes !same as msed? sediment mass
-    moroutput%dpsed         = yes !same as lyrfrac? volume fraction
-    moroutput%thlyr         = no  !thickness of layer
-    moroutput%preload       = no  !historical largest load/preload
-    moroutput%sedconc       = yes !sediment concentration
-    moroutput%morfacft      = yes!morfac and morft
+    moroutput%cumsubsupl    = no
+    moroutput%preload       = no
+    moroutput%morfacft      = yes
     
 end subroutine initmoroutput
 

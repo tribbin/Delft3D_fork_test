@@ -340,7 +340,7 @@ subroutine wrsedm(lundia    ,error     ,mmax      ,kmax      ,nmaxus    , &
           endif
        endif
        call addelm(gdp, lundia, FILOUT_MAP, grpnam, 'DPS', ' ', io_prec          , 2, dimids=(/iddim_n, iddim_m/), longname='Bottom depth (zeta point)', unit='m', acl='z')
-       if (lfsdu) then       
+       if (lfsdu .and. moroutput%cumsubsupl) then       
           call addelm(gdp, lundia, FILOUT_MAP, grpnam, 'SDU', ' ', io_prec          , 2, dimids=(/iddim_n, iddim_m/), longname='Cumulative bed level change due to subsidence/uplift', unit='m', acl='z')
        endif    
        if (moroutput%dzduuvv) then
