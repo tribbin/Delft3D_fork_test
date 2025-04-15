@@ -1,6 +1,5 @@
 #! /bin/bash
 #SBATCH --job-name=va-trigger-teamcity-build
-#SBATCH --output=/p/devops-dsc/verschilanalyse/logs/va-trigger-teamcity-build-%j.out
 #SBATCH --time=00:10:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -17,10 +16,6 @@ if [[ \
     >&2 echo "BUILD_ID, VCS_ROOT_ID, VCS_REVISION or BRANCH_NAME not set."
     exit 1
 fi
-
-# Purge the `aws` module. For some reason it breaks curl.
-# It replaces the openssl library with a version that doesn't have the same symbols.
-module purge
 
 curl --fail --silent --show-error -X POST \
     --header "Authorization: Bearer $(cat "${HOME}/.teamcity/verschilanalyse-token")" \

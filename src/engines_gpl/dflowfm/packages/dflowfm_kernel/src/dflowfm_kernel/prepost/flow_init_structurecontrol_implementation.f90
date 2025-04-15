@@ -62,7 +62,7 @@ contains
       use m_partitioninfo, only: jampi
       use string_module, only: strcmpi
       use messagehandling, only: IDLEN
-      
+
       implicit none
       logical :: status
       integer :: i, L, Lf, kb, ierr, k, kbi, n
@@ -139,16 +139,17 @@ contains
             select case (pstru%type)
             case (ST_DAMBREAK)
                num_dambreak_links = num_dambreak_links + numgen
-               call update_counters(qid, numgen, ndambreaksignals, L1dambreaksg, L2dambreaksg, dambridx, i)
-               kedb(L1dambreaksg(ndambreaksignals):L2dambreaksg(ndambreaksignals)) = kegen(1:numgen)
+               call update_counters(pstru%id, numgen, n_db_signals, db_first_link, db_last_link, dambridx, i)
+               kedb(db_first_link(n_db_signals):db_last_link(n_db_signals)) = kegen(1:numgen)
             case (ST_PUMP)
-               call update_counters(qid, numgen, npumpsg, L1pumpsg, L2pumpsg, pumpidx, i)
+               call update_counters(pstru%id, numgen, npumpsg, L1pumpsg, L2pumpsg, pumpidx, i)
                kep(L1pumpsg(npumpsg):L2pumpsg(npumpsg)) = kegen(1:numgen)
                npump = l2pumpsg(npumpsg)
             end select
 
             if (numgen > 0) then
                istat = initialize_structure_links(pstru, numgen, kegen(1:numgen), wu)
+               call apply_teta_is_1_to_neighbours(kegen(1:numgen), numgen, teta)
             else
                call reallocP(pstru%linknumbers, 0)
                istat = DFM_NOERR
@@ -167,7 +168,7 @@ contains
          istat = max(istat, initialize_compounds(network%cmps, network%sts))
       end if
       npumpsg = network%sts%numPumps
-      ndambreaklinks = 0
+      n_db_links = 0
 
       allocate (xdum(1), ydum(1), kdum(1), stat=ierr)
       call aerr('xdum(1), ydum(1), kdum(1)', ierr, 3)
@@ -178,15 +179,21 @@ contains
       ! pumps, including staged pumps
       !
       if (npumpsg > 0) then
-         if (allocated(qpump)) deallocate (qpump)
-         if (allocated(pump_ids)) deallocate (pump_ids)
+         if (allocated(qpump)) then
+            deallocate (qpump)
+         end if
+         if (allocated(pump_ids)) then
+            deallocate (pump_ids)
+         end if
          allocate (pump_ids(npumpsg))
          allocate (qpump(npumpsg), stat=ierr)
          call aerr('qpump(npumpsg)', ierr, npumpsg)
          qpump = 0.0_dp
 
          if (npump > 0) then
-            if (allocated(kpump)) deallocate (kpump)
+            if (allocated(kpump)) then
+               deallocate (kpump)
+            end if
             allocate (kpump(3, npump), stat=ierr)
             call aerr('kpump(3,npump)', ierr, npump * 3)
             kpump = 0
@@ -214,16 +221,24 @@ contains
 
          nPumpsWithLevels = 0
 
-         if (allocated(pumpsWithLevels)) deallocate (pumpsWithLevels)
+         if (allocated(pumpsWithLevels)) then
+            deallocate (pumpsWithLevels)
+         end if
          allocate (pumpsWithLevels(npumpsg))
          pumpsWithLevels = pumpidx
-         if (allocated(waterLevelsPumpLeft)) deallocate (waterLevelsPumpLeft)
+         if (allocated(waterLevelsPumpLeft)) then
+            deallocate (waterLevelsPumpLeft)
+         end if
          allocate (waterLevelsPumpLeft(npumpsg))
          waterLevelsPumpLeft = 0.0_dp
-         if (allocated(waterLevelsPumpRight)) deallocate (waterLevelsPumpRight)
+         if (allocated(waterLevelsPumpRight)) then
+            deallocate (waterLevelsPumpRight)
+         end if
          allocate (waterLevelsPumpRight(npumpsg))
          waterLevelsPumpRight = 0.0_dp
-         if (allocated(pumpAveraging)) deallocate (pumpAveraging)
+         if (allocated(pumpAveraging)) then
+            deallocate (pumpAveraging)
+         end if
          allocate (pumpAveraging(2, npumpsg))
          pumpAveraging = 0.0_dp
          ! initialize
@@ -241,9 +256,9 @@ contains
       !
       ! dambreak
       !
-      if (ndambreaksignals > 0) then
+      if (n_db_signals > 0) then
 
-         call update_dambreak_administration(ndambreaksignals, l1dambreaksg, l2dambreaksg, dambridx, lftopol)
+         call update_dambreak_administration(n_db_signals, db_first_link, db_last_link, dambridx, lftopol)
 
       end if
       if (istat == DFM_NOERR) then
@@ -285,11 +300,21 @@ contains
 888   continue
 
       if (allocated(xdum)) deallocate (xdum, ydum, kdum)
-      if (allocated(widths)) deallocate (widths)
-      if (allocated(pumpidx)) deallocate (pumpidx)
-      if (allocated(gateidx)) deallocate (gateidx)
-      if (allocated(cdamidx)) deallocate (cdamidx)
-      if (allocated(cgenidx)) deallocate (cgenidx)
+      if (allocated(widths)) then
+         deallocate (widths)
+      end if
+      if (allocated(pumpidx)) then
+         deallocate (pumpidx)
+      end if
+      if (allocated(gateidx)) then
+         deallocate (gateidx)
+      end if
+      if (allocated(cdamidx)) then
+         deallocate (cdamidx)
+      end if
+      if (allocated(cgenidx)) then
+         deallocate (cgenidx)
+      end if
 
    end function flow_init_structurecontrol
 
@@ -297,7 +322,7 @@ contains
    subroutine allocate_structure_arrays(nstr, widths, lftopol, pumpidx, gateidx, cdamidx, cgenidx, dambridx)
       use precision_basics, only: dp
       use m_alloc, only: realloc
-      use fm_external_forcings_data, only: dambreakPolygons, dambreakLinksEffectiveLength, dambreakLinksActualLength
+      use fm_external_forcings_data, only: dambreakPolygons, db_link_effective_width, db_link_actual_width
       use network_data, only: numl
 
       integer, intent(in) :: nstr !< nstr is the number of (potential) structures
@@ -311,9 +336,9 @@ contains
 
       call realloc(widths, numl)
       call realloc(lftopol, numl)
-      call realloc(dambreakLinksEffectiveLength, numl)
-      call realloc(dambreakLinksActualLength, numl)
-      dambreakLinksActualLength = 0.0_dp
+      call realloc(db_link_effective_width, numl)
+      call realloc(db_link_actual_width, numl)
+      db_link_actual_width = 0.0_dp
       call realloc(pumpidx, nstr)
       call realloc(gateidx, nstr)
       call realloc(cdamidx, nstr)
@@ -341,7 +366,7 @@ contains
       integer, dimension(:), allocatable, intent(inout) :: strucidx !< strucidx is the index of the structure.
       integer, intent(in) :: structure_index !< structure_index is the index of the structure.
 
-      write (msgbuf, '(a,i8,a)') trim(qid), numlinks, ' nr of dambreak links'
+      write (msgbuf, '(a,i8,a)') trim(qid), numlinks, ' nr of structure links'
       call msg_flush()
       nsignals = nsignals + 1
       strucidx(nsignals) = structure_index
@@ -358,36 +383,32 @@ contains
    end subroutine update_counters
 
    !> Update dambreak administration.
-   subroutine update_dambreak_administration(ndambreaksignals, L1dambreaksg, L2dambreaksg, dambridx, lftopol)
+   subroutine update_dambreak_administration(n_db_signals, db_first_link, db_last_link, dambridx, lftopol)
       use precision_basics, only: dp
       use messagehandling, only: IDLEN, msg_flush, msgbuf, err_flush
       use m_missing, only: dmiss, dxymis
       use dfm_error, only: DFM_NOERR
       use geometry_module, only: dbdistance, normalout, comp_breach_point
       use gridoperations, only: incells
-
       use timespace_parameters, only: uniform, fourier, justupdate, spaceandtime
       use network_data, only: xk, yk
       use unstruc_channel_flow, only: network
       use m_cell_geometry, only: xz, yz
       use m_meteo, only: ec_addtimespacerelation
       use m_sferic, only: jsferic, jasfer3D
-
       use m_flowgeom, only: ln, kcu, wu, lncn, snu, csu
       use m_inquire_flowgeom, only: findnode
-      use fm_external_forcings_data, only: kdambreak, LStartBreach, &
-                                           dambreak_ids, activeDambreakLinks, &
-                                           dambreakLevelsAndWidthsFromTable, &
-                                           dambreaks, ndambreaklinks, dambreakLinksEffectiveLength
-      use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, breachDepthDambreak, breachWidthDambreak, &
-                                          add_dambreaklocation_upstream, add_dambreaklocation_downstream, &
-                                          add_averaging_upstream_signal, add_averaging_downstream_signal
+      use fm_external_forcings_data, only: db_link_ids, breach_start_link, db_ids, db_active_links, &
+                                           db_levels_widths_table, dambreaks, n_db_links, db_link_effective_width
+      use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, db_breach_depth, db_breach_width, &
+                                   add_dambreaklocation_upstream, add_dambreaklocation_downstream, &
+                                   add_averaging_upstream_signal, add_averaging_downstream_signal
       use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
       use m_alloc, only: realloc
 
-      integer, intent(in) :: ndambreaksignals !< ndambreaksignals is the number of dambreak signals.
-      integer, dimension(:), intent(in) :: L1dambreaksg !< L1dambreaksg is the start index of the dambreak signals.
-      integer, dimension(:), intent(in) :: L2dambreaksg !< L2dambreaksg is the end index of the dambreak signals.
+      integer, intent(in) :: n_db_signals !< n_db_signals is the number of dambreak signals.
+      integer, dimension(:), intent(in) :: db_first_link !< db_first_link is the start index of the dambreak signals.
+      integer, dimension(:), intent(in) :: db_last_link !< db_last_link is the end index of the dambreak signals.
       integer, dimension(:), intent(in) :: dambridx !< dambridx is the index of the dambreak in the structure list.
       integer, dimension(:), intent(in) :: lftopol !< lftopol is the link number of the flow link.
 
@@ -405,22 +426,22 @@ contains
 
       character(len=Idlen) :: qid
 
-      ndambreaklinks = l2dambreaksg(ndambreaksignals)
+      n_db_links = db_last_link(n_db_signals)
 
-      call realloc(kdambreak, [3, ndambreaklinks], fill=0)
-      call realloc(dambreaks, ndambreaksignals, fill=0)
-      call realloc(LStartBreach, ndambreaksignals, fill=-1)
-      call allocate_and_initialize_dambreak_data(ndambreaksignals)
-      call realloc(breachDepthDambreak, ndambreaksignals, fill=0.0_dp)
-      call realloc(breachWidthDambreak, ndambreaksignals, fill=0.0_dp)
-      call realloc(dambreak_ids, ndambreaksignals)
-      call realloc(activeDambreakLinks, ndambreaklinks, fill=0)
-      call realloc(dambreakLevelsAndWidthsFromTable, ndambreaksignals * 2, fill=0.0_dp)
+      call realloc(db_link_ids, [3, n_db_links], fill=0)
+      call realloc(dambreaks, n_db_signals, fill=0)
+      call realloc(breach_start_link, n_db_signals, fill=-1)
+      call allocate_and_initialize_dambreak_data(n_db_signals)
+      call realloc(db_breach_depth, n_db_signals, fill=0.0_dp)
+      call realloc(db_breach_width, n_db_signals, fill=0.0_dp)
+      call realloc(db_ids, n_db_signals)
+      call realloc(db_active_links, n_db_links, fill=0)
+      call realloc(db_levels_widths_table, n_db_signals * 2, fill=0.0_dp)
 
-      do n = 1, ndambreaksignals
+      do n = 1, n_db_signals
          associate (pstru => network%sts%struct(dambridx(n)))
-            do k = L1dambreaksg(n), L2dambreaksg(n)
-               L = pstru%linknumbers(k - L1dambreaksg(n) + 1)
+            do k = db_first_link(n), db_last_link(n)
+               L = pstru%linknumbers(k - db_first_link(n) + 1)
                Lf = abs(L)
                if (L > 0) then
                   kb = ln(1, Lf)
@@ -429,16 +450,16 @@ contains
                   kb = ln(2, Lf)
                   kbi = ln(1, Lf)
                end if
-               ! kdambreak
-               kdambreak(1, k) = kb
-               kdambreak(2, k) = kbi
-               kdambreak(3, k) = L
+               ! db_link_ids
+               db_link_ids(1, k) = kb
+               db_link_ids(2, k) = kbi
+               db_link_ids(3, k) = L
             end do
          end associate
       end do
 
       ! number of columns in the dambreak heights and widths tim file
-      do n = 1, ndambreaksignals
+      do n = 1, n_db_signals
 
          !The index of the structure
          index_in_structure = dambridx(n)
@@ -448,42 +469,42 @@ contains
 
          associate (pstru => network%sts%struct(dambridx(n)))
             associate (dambreak => pstru%dambreak)
-               dambreak_ids(n) = network%sts%struct(index_in_structure)%id
+               db_ids(n) = network%sts%struct(index_in_structure)%id
 
                ! mapping
                dambreaks(n) = index_in_structure
                ! set initial phase, width, crest level, coefficents if algorithm is 1
                dambreak%phase = 0
                dambreak%width = 0.0_dp
-               dambreak%maximumWidth = 0.0_dp
-               dambreak%crl = dambreak%crestLevelIni
+               dambreak%maximum_width = 0.0_dp
+               dambreak%crest_level = dambreak%crest_level_ini
                if (dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then
                   ! Time-interpolated value will be placed in zcgen((n-1)*3+1) when calling ec_gettimespacevalue.
                   qid = 'dambreakLevelsAndWidths'
-                  if (index(trim(dambreak%levelsAndWidths)//'|', '.tim|') > 0) then
+                  if (index(trim(dambreak%levels_and_widths)//'|', '.tim|') > 0) then
                      kx = 2
-                     success = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, dambreak%levelsAndWidths, uniform, spaceandtime, 'O', targetIndex=n) ! Hook up 1 component at a time, even when target element set has kx=3
+                     success = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, dambreak%levels_and_widths, uniform, spaceandtime, 'O', targetIndex=n) ! Hook up 1 component at a time, even when target element set has kx=3
                   end if
                end if
 
                ! inquire if the water level upstream has to be taken from a location or be a result of averaging
                if (dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
                    .or. dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
-                  xla = dambreak%waterLevelUpstreamLocationX
-                  yla = dambreak%waterLevelUpstreamLocationY
-                  if (dambreak%waterLevelUpstreamNodeId /= '') then
-                     ierr = findnode(dambreak%waterLevelUpstreamNodeId, k)
+                  xla = dambreak%water_level_upstream_location_x
+                  yla = dambreak%water_level_upstream_location_y
+                  if (dambreak%water_level_upstream_node_id /= '') then
+                     ierr = findnode(dambreak%water_level_upstream_node_id, k)
                      if (ierr /= DFM_NOERR .or. k <= 0) then
-                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for waterLevelUpstreamNodeId = ''', trim(dambreak%waterLevelUpstreamNodeId), &
-                           ''' in dambreak ''', trim(dambreak_ids(n)), '''.'
+                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for water_level_upstream_node_id = ''', trim(dambreak%water_level_upstream_node_id), &
+                           ''' in dambreak ''', trim(db_ids(n)), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_upstream(n,k)
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_upstream(n,k)                        
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else
                      call add_averaging_upstream_signal(n)
@@ -493,21 +514,21 @@ contains
                ! inquire if the water level downstream has to be taken from a location or be a result of averaging
                if (dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
                    .or. dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
-                  xla = dambreak%waterLevelDownstreamLocationX
-                  yla = dambreak%waterLevelDownstreamLocationY
-                  if (dambreak%waterLevelDownstreamNodeId /= '') then
-                     ierr = findnode(dambreak%waterLevelDownstreamNodeId, k)
+                  xla = dambreak%water_level_downstream_location_x
+                  yla = dambreak%water_level_downstream_location_y
+                  if (dambreak%water_level_downstream_node_id /= '') then
+                     ierr = findnode(dambreak%water_level_downstream_node_id, k)
                      if (ierr /= DFM_NOERR .or. k <= 0) then
-                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for waterLevelDownstreamNodeId = ''', trim(dambreak%waterLevelDownstreamNodeId), &
-                           ''' in dambreak ''', trim(dambreak_ids(n)), '''.'
+                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for water_level_downstream_node_id = ''', trim(dambreak%water_level_downstream_node_id), &
+                           ''' in dambreak ''', trim(db_ids(n)), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else
                      call add_averaging_downstream_signal(n)
@@ -519,14 +540,14 @@ contains
                if (.not. associated(pstru%yCoordinates)) cycle
 
                ! Create the array with the coordinates of the flow links
-               nDambreakCoordinates = L2dambreaksg(n) - L1dambreaksg(n) + 1
+               nDambreakCoordinates = db_last_link(n) - db_first_link(n) + 1
                call realloc(xl, [nDambreakCoordinates, 2])
                call realloc(yl, [nDambreakCoordinates, 2])
                indexLink = 0
-               do k = L1dambreaksg(n), L2dambreaksg(n)
+               do k = db_first_link(n), db_last_link(n)
                   indexLink = indexLink + 1
                   ! compute the mid point
-                  Lf = abs(kdambreak(3, k))
+                  Lf = abs(db_link_ids(3, k))
                   k1 = ln(1, Lf)
                   k2 = ln(2, Lf)
                   xl(indexLink, 1) = xz(k1)
@@ -536,17 +557,17 @@ contains
                end do
 
                ! comp_breach_point takes plain arrays to compute the breach point (also used in unstruct_bmi)
-               call comp_breach_point(dambreak%startLocationX, dambreak%startLocationY, &
+               call comp_breach_point(dambreak%start_location_x, dambreak%start_location_y, &
                                       pstru%xCoordinates, pstru%yCoordinates, pstru%numCoordinates, xl, &
                                       yl, Lstart, x_breach, y_breach, jsferic, jasfer3D, dmiss)
 
-               LStartBreach(n) = L1dambreaksg(n) - 1 + Lstart
+               breach_start_link(n) = db_first_link(n) - 1 + Lstart
 
                ! compute the normal projections of the start and endpoints of the flow links
-               do k = L1dambreaksg(n), L2dambreaksg(n)
-                  Lf = abs(kdambreak(3, k))
+               do k = db_first_link(n), db_last_link(n)
+                  Lf = abs(db_link_ids(3, k))
                   if (kcu(Lf) == 3) then ! 1d2d flow link
-                     dambreakLinksEffectiveLength(k) = wu(Lf)
+                     db_link_effective_width(k) = wu(Lf)
                   else
                      k3 = lncn(1, Lf)
                      k4 = lncn(2, Lf)
@@ -557,12 +578,12 @@ contains
                      ylb = pstru%yCoordinates(kpol + 1)
 
                      call normalout(xla, yla, xlb, ylb, xn, yn, jsferic, jasfer3D, dmiss, dxymis)
-                     dambreakLinksEffectiveLength(k) = dbdistance(xk(k3), yk(k3), xk(k4), yk(k4), jsferic, jasfer3D, dmiss)
-                     dambreakLinksEffectiveLength(k) = dambreakLinksEffectiveLength(k) * abs(xn * csu(Lf) + yn * snu(Lf))
+                     db_link_effective_width(k) = dbdistance(xk(k3), yk(k3), xk(k4), yk(k4), jsferic, jasfer3D, dmiss)
+                     db_link_effective_width(k) = db_link_effective_width(k) * abs(xn * csu(Lf) + yn * snu(Lf))
                   end if
 
                   ! Sum the length of the intersected flow links (required to bound maximum breach width)
-                  dambreak%maximumWidth = dambreak%maximumWidth + dambreakLinksEffectiveLength(k)
+                  dambreak%maximum_width = dambreak%maximum_width + db_link_effective_width(k)
                end do
 
                ! Now we can deallocate the polygon
@@ -600,11 +621,11 @@ contains
       use m_read_property, only: read_property
       use m_togeneral, only: togeneral
       use unstruc_messages, only: callback_msg
-      use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, breachDepthDambreak, breachWidthDambreak, &
-         add_dambreaklocation_upstream, add_dambreaklocation_downstream, add_averaging_upstream_signal, &
-         add_averaging_downstream_signal
+      use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, db_breach_depth, db_breach_width, &
+                                   add_dambreaklocation_upstream, add_dambreaklocation_downstream, add_averaging_upstream_signal, &
+                                   add_averaging_downstream_signal
       use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
-      use fm_external_forcings_data, only: dambreakLinksEffectiveLength, dambreakLinksActualLength
+      use fm_external_forcings_data, only: db_link_effective_width, db_link_actual_width
 
       implicit none
       logical :: status
@@ -681,22 +702,42 @@ contains
          return
       end if
 
-      if (allocated(widths)) deallocate (widths)
-      if (allocated(lftopol)) deallocate (lftopol)
-      if (allocated(dambreakLinksEffectiveLength)) deallocate (dambreakLinksEffectiveLength)
-      if (allocated(dambreakLinksActualLength)) deallocate (dambreakLinksActualLength)
-      if (allocated(pumpidx)) deallocate (pumpidx)
-      if (allocated(gateidx)) deallocate (gateidx)
-      if (allocated(cdamidx)) deallocate (cdamidx)
-      if (allocated(cgenidx)) deallocate (cgenidx)
-      if (allocated(dambridx)) deallocate (dambridx)
-      if (allocated(dambreakPolygons)) deallocate (dambreakPolygons)
+      if (allocated(widths)) then
+         deallocate (widths)
+      end if
+      if (allocated(lftopol)) then
+         deallocate (lftopol)
+      end if
+      if (allocated(db_link_effective_width)) then
+         deallocate (db_link_effective_width)
+      end if
+      if (allocated(db_link_actual_width)) then
+         deallocate (db_link_actual_width)
+      end if
+      if (allocated(pumpidx)) then
+         deallocate (pumpidx)
+      end if
+      if (allocated(gateidx)) then
+         deallocate (gateidx)
+      end if
+      if (allocated(cdamidx)) then
+         deallocate (cdamidx)
+      end if
+      if (allocated(cgenidx)) then
+         deallocate (cgenidx)
+      end if
+      if (allocated(dambridx)) then
+         deallocate (dambridx)
+      end if
+      if (allocated(dambreakPolygons)) then
+         deallocate (dambreakPolygons)
+      end if
 
       allocate (widths(numl))
       allocate (lftopol(numl))
-      allocate (dambreakLinksEffectiveLength(numl))
-      allocate (dambreakLinksActualLength(numl))
-      dambreakLinksActualLength = 0.0_dp
+      allocate (db_link_effective_width(numl))
+      allocate (db_link_actual_width(numl))
+      db_link_actual_width = 0.0_dp
       allocate (pumpidx(nstr))
       allocate (gateidx(nstr))
       allocate (cdamidx(nstr))
@@ -706,8 +747,8 @@ contains
 !initialize the index
       dambridx = -1
 
-! UNST-3308: early counting of ndambreaklinks is needed here, because of lftopol array
-      ndambreaklinks = 0
+! UNST-3308: early counting of n_db_links is needed here, because of lftopol array
+      n_db_links = 0
 
 ! NOTE: readStructures(network, md_structurefile) has already been called.
       do i = 1, network%sts%count
@@ -727,8 +768,8 @@ contains
                                             loc_spec_type, nump=pstru%numCoordinates, xpin=pstru%xCoordinates, ypin=pstru%yCoordinates, &
                                             branchindex=pstru%ibran, chainage=pstru%chainage, &
                                             xps=dambreakPolygons(i)%xp, yps=dambreakPolygons(i)%yp, nps=dambreakPolygons(i)%np, &
-                                            lftopol=lftopol(ndambreaklinks + 1:numl), sortLinks=1)
-            ndambreaklinks = ndambreaklinks + numgen ! UNST-3308: early counting of ndambreaklinks is needed here, because of lftopol array
+                                            lftopol=lftopol(n_db_links + 1:numl), sortLinks=1)
+            n_db_links = n_db_links + numgen ! UNST-3308: early counting of n_db_links is needed here, because of lftopol array
          case default
             call selectelset_internal_links(lnx, kegen(1:numl), numgen, &
                                             loc_spec_type, nump=pstru%numCoordinates, xpin=pstru%xCoordinates, ypin=pstru%yCoordinates, &
@@ -738,6 +779,7 @@ contains
 
          if (numgen > 0) then
             istat = initialize_structure_links(pstru, numgen, kegen(1:numgen), wu)
+            call apply_teta_is_1_to_neighbours(kegen(1:numgen), numgen, teta)
          else
             call reallocP(pstru%linknumbers, 0)
             istat = DFM_NOERR
@@ -752,8 +794,8 @@ contains
 
       call update_lin2str_admin(network)
 
-! UNST-3308: early counting of ndambreaklinks was needed here, because of lftopol array, but must be redone later below as well.
-      ndambreaklinks = 0
+! UNST-3308: early counting of n_db_links was needed here, because of lftopol array, but must be redone later below as well.
+      n_db_links = 0
 
       if (network%cmps%Count > 0) then
          istat = max(istat, initialize_compounds(network%cmps, network%sts))
@@ -892,26 +934,26 @@ contains
             if (loc_spec_type /= LOCTP_POLYLINE_FILE) then
                ndambr = pstru%numlinks
                if (pstru%numlinks > 0) then
-                  kedb(ndambreaklinks + 1:ndambreaklinks + ndambr) = pstru%linknumbers(1:ndambr)
+                  kedb(n_db_links + 1:n_db_links + ndambr) = pstru%linknumbers(1:ndambr)
                end if
             else
-               call selectelset_internal_links(lnx, kedb(ndambreaklinks + 1:numl), ndambr, LOCTP_POLYLINE_FILE, plifile, &
+               call selectelset_internal_links(lnx, kedb(n_db_links + 1:numl), ndambr, LOCTP_POLYLINE_FILE, plifile, &
                                                xps=dambreakPolygons(i)%xp, yps=dambreakPolygons(i)%yp, nps=dambreakPolygons(i)%np, &
-                                               lftopol=lftopol(ndambreaklinks + 1:numl), sortLinks=1)
+                                               lftopol=lftopol(n_db_links + 1:numl), sortLinks=1)
             end if
 
             success = .true.
             write (msgbuf, '(2a,i8,a)') trim(qid), trim(plifile), ndambr, ' nr of dambreak links'
             call msg_flush()
 
-            ndambreaksignals = ndambreaksignals + 1
-            dambridx(ndambreaksignals) = i
-            call realloc(L1dambreaksg, ndambreaksignals)
-            L1dambreaksg(ndambreaksignals) = ndambreaklinks + 1
-            call realloc(L2dambreaksg, ndambreaksignals)
-            L2dambreaksg(ndambreaksignals) = ndambreaklinks + ndambr
+            n_db_signals = n_db_signals + 1
+            dambridx(n_db_signals) = i
+            call realloc(db_first_link, n_db_signals)
+            db_first_link(n_db_signals) = n_db_links + 1
+            call realloc(db_last_link, n_db_signals)
+            db_last_link(n_db_signals) = n_db_links + ndambr
 
-            ndambreaklinks = ndambreaklinks + ndambr
+            n_db_links = n_db_links + ndambr
 
          case ('gate', 'weir', 'generalstructure') !< The various generalstructure-based structures
             if (loc_spec_type /= LOCTP_POLYLINE_FILE) then
@@ -958,32 +1000,56 @@ contains
       kdum = 1
 
       if (ncgensg > 0) then ! All generalstructure, i.e., the weir/gate/generalstructure user input
-         if (allocated(zcgen)) deallocate (zcgen)
-         if (allocated(kcgen)) deallocate (kcgen)
+         if (allocated(zcgen)) then
+            deallocate (zcgen)
+         end if
+         if (allocated(kcgen)) then
+            deallocate (kcgen)
+         end if
          kx = 3 ! 1: crest/sill, 2: gateloweredge, 3: width (?)
          allocate (zcgen(ncgensg * kx), kcgen(4, ncgen), stat=ierr)
          call aerr('zcgen(ncgensg*kx), kcgen(4,ncgen)', ierr, ncgen * (2 * kx + 3))
          kcgen = 0.0_dp
          zcgen = huge(1.0_dp)
 
-         if (allocated(cgen_ids)) deallocate (cgen_ids)
-         if (allocated(cgen_type)) deallocate (cgen_type)
-         if (allocated(cgen2str)) deallocate (cgen2str)
-         if (allocated(weir2cgen)) deallocate (weir2cgen)
-         if (allocated(gate2cgen)) deallocate (gate2cgen)
-         if (allocated(genstru2cgen)) deallocate (genstru2cgen)
+         if (allocated(cgen_ids)) then
+            deallocate (cgen_ids)
+         end if
+         if (allocated(cgen_type)) then
+            deallocate (cgen_type)
+         end if
+         if (allocated(cgen2str)) then
+            deallocate (cgen2str)
+         end if
+         if (allocated(weir2cgen)) then
+            deallocate (weir2cgen)
+         end if
+         if (allocated(gate2cgen)) then
+            deallocate (gate2cgen)
+         end if
+         if (allocated(genstru2cgen)) then
+            deallocate (genstru2cgen)
+         end if
          allocate (cgen_ids(ncgensg), cgen_type(ncgensg), cgen2str(ncgensg))
          allocate (weir2cgen(nweirgen), gate2cgen(ngategen), genstru2cgen(ngenstru))
-         if (allocated(gates)) deallocate (gates)
+         if (allocated(gates)) then
+            deallocate (gates)
+         end if
          allocate (gates(ngategen))
 
          nweirgen = 0
          ngategen = 0
          ngenstru = 0
 
-         if (allocated(fusav)) deallocate (fusav)
-         if (allocated(rusav)) deallocate (rusav)
-         if (allocated(ausav)) deallocate (ausav)
+         if (allocated(fusav)) then
+            deallocate (fusav)
+         end if
+         if (allocated(rusav)) then
+            deallocate (rusav)
+         end if
+         if (allocated(ausav)) then
+            deallocate (ausav)
+         end if
          allocate (Fusav(3, ncgen), Rusav(3, ncgen), Ausav(3, ncgen), stat=ierr)
          Fusav = 0.0_dp
          Rusav = 0.0_dp
@@ -1006,7 +1072,7 @@ contains
                kcgen(3, k) = Lf
                kcgen(4, k) = n ! pointer to general structure signal nr n
                call setfixedweirscheme3onlink(Lf)
-               iadv(Lf) = 22 ! iadv = general
+               iadv(Lf) = IADV_GENERAL_STRUCTURE ! iadv = general
 
             end do
 
@@ -1040,7 +1106,9 @@ contains
          hulp(idx_gateheight, 1:ncgensg) = huge(1.0_dp) ! GateHeight
          hulp(idx_gateopeningwidth, 1:ncgensg) = 0.0_dp ! GateOpeningWidth
 
-         if (allocated(generalstruc)) deallocate (generalstruc)
+         if (allocated(generalstruc)) then
+            deallocate (generalstruc)
+         end if
          allocate (generalstruc(ncgensg))
 
          do n = 1, ncgensg
@@ -1389,7 +1457,9 @@ contains
             deallocate (zgate, kgate)
          end if
 
-         if (allocated(gate_ids)) deallocate (gate_ids)
+         if (allocated(gate_ids)) then
+            deallocate (gate_ids)
+         end if
          allocate (gate_ids(ngatesg))
          allocate (zgate(ngatesg), kgate(3, ngate), stat=ierr)
          call aerr('zgate(ngatesg), kgate(3,ngate)', ierr, ngate * 5)
@@ -1458,10 +1528,16 @@ contains
       end if ! Old style controllable gateloweredgelevel
 
       if (ncdamsg > 0) then ! Old-style controllable damlevel
-         if (allocated(zcdam)) deallocate (zcdam)
-         if (allocated(kcdam)) deallocate (kcdam)
+         if (allocated(zcdam)) then
+            deallocate (zcdam)
+         end if
+         if (allocated(kcdam)) then
+            deallocate (kcdam)
+         end if
 
-         if (allocated(cdam_ids)) deallocate (cdam_ids)
+         if (allocated(cdam_ids)) then
+            deallocate (cdam_ids)
+         end if
          allocate (cdam_ids(ncdamsg))
          allocate (zcdam(ncdamsg), kcdam(3, ncdam), stat=ierr)
          call aerr('zcdam(ncdamsg), kcdam(3,ncdam)', ierr, ncdam * 5)
@@ -1536,15 +1612,21 @@ contains
 ! pumps, including staged pumps
 !
       if (npumpsg > 0) then
-         if (allocated(qpump)) deallocate (qpump)
-         if (allocated(pump_ids)) deallocate (pump_ids)
+         if (allocated(qpump)) then
+            deallocate (qpump)
+         end if
+         if (allocated(pump_ids)) then
+            deallocate (pump_ids)
+         end if
          allocate (pump_ids(npumpsg))
          allocate (qpump(npumpsg), stat=ierr)
          call aerr('qpump(npumpsg)', ierr, npumpsg)
          qpump = 0.0_dp
 
          if (npump > 0) then
-            if (allocated(kpump)) deallocate (kpump)
+            if (allocated(kpump)) then
+               deallocate (kpump)
+            end if
             allocate (kpump(3, npump), stat=ierr)
             call aerr('kpump(3,npump)', ierr, npump * 3)
             kpump = 0
@@ -1572,16 +1654,24 @@ contains
 
          nPumpsWithLevels = 0
 
-         if (allocated(pumpsWithLevels)) deallocate (pumpsWithLevels)
+         if (allocated(pumpsWithLevels)) then
+            deallocate (pumpsWithLevels)
+         end if
          allocate (pumpsWithLevels(npumpsg))
          pumpsWithLevels = -1
-         if (allocated(waterLevelsPumpLeft)) deallocate (waterLevelsPumpLeft)
+         if (allocated(waterLevelsPumpLeft)) then
+            deallocate (waterLevelsPumpLeft)
+         end if
          allocate (waterLevelsPumpLeft(npumpsg))
          waterLevelsPumpLeft = 0.0_dp
-         if (allocated(waterLevelsPumpRight)) deallocate (waterLevelsPumpRight)
+         if (allocated(waterLevelsPumpRight)) then
+            deallocate (waterLevelsPumpRight)
+         end if
          allocate (waterLevelsPumpRight(npumpsg))
          waterLevelsPumpRight = 0.0_dp
-         if (allocated(pumpAveraging)) deallocate (pumpAveraging)
+         if (allocated(pumpAveraging)) then
+            deallocate (pumpAveraging)
+         end if
          allocate (pumpAveraging(2, npumpsg))
          pumpAveraging = 0.0_dp
          ! initialize
@@ -1673,43 +1763,59 @@ contains
 !
 ! dambreak
 !
-      if (ndambreaksignals > 0) then
+      if (n_db_signals > 0) then
 
-         call allocate_and_initialize_dambreak_data(ndambreaklinks) 
-         
-         if (allocated(kdambreak)) deallocate (kdambreak)
-         allocate (kdambreak(3, ndambreaklinks), stat=ierr) ! the last row stores the actual
-         ! kdambreak is an integer array? This is flow_init_structurecontrol_old so will be removed soon
-         kdambreak = 0.0_dp
-         if (allocated(dambreaks)) deallocate (dambreaks)
-         allocate (dambreaks(ndambreaksignals))
+         call allocate_and_initialize_dambreak_data(n_db_links)
+
+         if (allocated(db_link_ids)) then
+            deallocate (db_link_ids)
+         end if
+         allocate (db_link_ids(3, n_db_links), stat=ierr) ! the last row stores the actual
+         ! db_link_ids is an integer array? This is flow_init_structurecontrol_old so will be removed soon
+         db_link_ids = 0.0_dp
+         if (allocated(dambreaks)) then
+            deallocate (dambreaks)
+         end if
+         allocate (dambreaks(n_db_signals))
          dambreaks = 0
 
-         if (allocated(LStartBreach)) deallocate (LStartBreach)
-         allocate (LStartBreach(ndambreaksignals))
-         LStartBreach = -1
+         if (allocated(breach_start_link)) then
+            deallocate (breach_start_link)
+         end if
+         allocate (breach_start_link(n_db_signals))
+         breach_start_link = -1
 
-         if (allocated(breachDepthDambreak)) deallocate (breachDepthDambreak)
-         allocate (breachDepthDambreak(ndambreaksignals))
-         breachDepthDambreak = 0.0_dp
+         if (allocated(db_breach_depth)) then
+            deallocate (db_breach_depth)
+         end if
+         allocate (db_breach_depth(n_db_signals))
+         db_breach_depth = 0.0_dp
 
-         if (allocated(breachWidthDambreak)) deallocate (breachWidthDambreak)
-         allocate (breachWidthDambreak(ndambreaksignals))
-         breachWidthDambreak = 0.0_dp
+         if (allocated(db_breach_width)) then
+            deallocate (db_breach_width)
+         end if
+         allocate (db_breach_width(n_db_signals))
+         db_breach_width = 0.0_dp
 
-         if (allocated(dambreak_ids)) deallocate (dambreak_ids)
-         allocate (dambreak_ids(ndambreaksignals))
+         if (allocated(db_ids)) then
+            deallocate (db_ids)
+         end if
+         allocate (db_ids(n_db_signals))
 
-         if (allocated(activeDambreakLinks)) deallocate (activeDambreakLinks)
-         allocate (activeDambreakLinks(ndambreaklinks))
-         activeDambreakLinks = 0
+         if (allocated(db_active_links)) then
+            deallocate (db_active_links)
+         end if
+         allocate (db_active_links(n_db_links))
+         db_active_links = 0
 
-         if (allocated(dambreakLevelsAndWidthsFromTable)) deallocate (dambreakLevelsAndWidthsFromTable)
-         allocate (dambreakLevelsAndWidthsFromTable(ndambreaksignals * 2))
-         dambreakLevelsAndWidthsFromTable = 0.0_dp
+         if (allocated(db_levels_widths_table)) then
+            deallocate (db_levels_widths_table)
+         end if
+         allocate (db_levels_widths_table(n_db_signals * 2))
+         db_levels_widths_table = 0.0_dp
 
-         do n = 1, ndambreaksignals
-            do k = L1dambreaksg(n), L2dambreaksg(n)
+         do n = 1, n_db_signals
+            do k = db_first_link(n), db_last_link(n)
                L = kedb(k)
                Lf = abs(L)
                if (L > 0) then
@@ -1719,16 +1825,16 @@ contains
                   kb = ln(2, Lf)
                   kbi = ln(1, Lf)
                end if
-               ! kdambreak
-               kdambreak(1, k) = kb
-               kdambreak(2, k) = kbi
-               kdambreak(3, k) = L
+               ! db_link_ids
+               db_link_ids(1, k) = kb
+               db_link_ids(2, k) = kbi
+               db_link_ids(3, k) = L
             end do
          end do
 
          ! number of columns in the dambreak hights and widths tim file
          kx = 2
-         do n = 1, ndambreaksignals
+         do n = 1, n_db_signals
 
             !The index of the structure
             indexInStructure = dambridx(n)
@@ -1739,7 +1845,7 @@ contains
             ! read the id first
             strid = ' '
             call prop_get(str_ptr, '', 'id', strid, success)
-            dambreak_ids(n) = strid
+            db_ids(n) = strid
 
             istrtmp = hashsearch(network%sts%hashlist_structure, strid) ! Assumes unique names across all structure types.
             if (istrtmp /= -1) then
@@ -1754,12 +1860,12 @@ contains
                call prop_get(str_ptr, '', 'type', strtype, success)
                istrtype = getStructype_from_string(strtype)
                ! flow1d_io library: add and read SOBEK dambreak
-               if (L2dambreaksg(n) >= L1dambreaksg(n)) then
+               if (db_last_link(n) >= db_first_link(n)) then
                   ! structure is active in current grid on one or more flow links: just use the first link of the the structure (the network%sts%struct(istrtmp)%link_number is not used in computations)
-                  k = L1dambreaksg(n)
-                  k1 = kdambreak(1, k)
-                  k2 = kdambreak(2, k)
-                  Lf = abs(kdambreak(3, k))
+                  k = db_first_link(n)
+                  k1 = db_link_ids(1, k)
+                  k2 = db_link_ids(2, k)
+                  Lf = abs(db_link_ids(3, k))
                else
                   ! Structure is not active in current grid: use dummy calc points and flow links, not used in computations.
                   k1 = 0
@@ -1780,14 +1886,14 @@ contains
                ! set initial phase, width, crest level, coefficents if algorithm is 1
                network%sts%struct(istrtmp)%dambreak%phase = 0
                network%sts%struct(istrtmp)%dambreak%width = 0.0_dp
-               network%sts%struct(istrtmp)%dambreak%maximumWidth = 0.0_dp
-               network%sts%struct(istrtmp)%dambreak%crl = network%sts%struct(istrtmp)%dambreak%crestLevelIni
+               network%sts%struct(istrtmp)%dambreak%maximum_width = 0.0_dp
+               network%sts%struct(istrtmp)%dambreak%crest_level = network%sts%struct(istrtmp)%dambreak%crest_level_ini
                if (network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then
                   ! Time-interpolated value will be placed in zcgen((n-1)*3+1) when calling ec_gettimespacevalue.
                   qid = 'dambreakLevelsAndWidths'
-                  network%sts%struct(istrtmp)%dambreak%levelsAndWidths = trim(network%sts%struct(istrtmp)%dambreak%levelsAndWidths)
-                  if (index(trim(network%sts%struct(istrtmp)%dambreak%levelsAndWidths)//'|', '.tim|') > 0) then
-                     success = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, network%sts%struct(istrtmp)%dambreak%levelsAndWidths, uniform, spaceandtime, 'O', targetIndex=n) ! Hook up 1 component at a time, even when target element set has kx=3
+                  network%sts%struct(istrtmp)%dambreak%levels_and_widths = trim(network%sts%struct(istrtmp)%dambreak%levels_and_widths)
+                  if (index(trim(network%sts%struct(istrtmp)%dambreak%levels_and_widths)//'|', '.tim|') > 0) then
+                     success = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, network%sts%struct(istrtmp)%dambreak%levels_and_widths, uniform, spaceandtime, 'O', targetIndex=n) ! Hook up 1 component at a time, even when target element set has kx=3
                   else
                      success = .false.
                   end if
@@ -1796,21 +1902,21 @@ contains
                ! inquire if the water level upstream has to be taken from a location or be a result of averaging
                if (network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
                    .or. network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
-                  xla = network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamLocationX
-                  yla = network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamLocationY
-                  if (network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamNodeId /= '') then
-                     ierr = findnode(network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamNodeId, k)
+                  xla = network%sts%struct(istrtmp)%dambreak%water_level_upstream_location_x
+                  yla = network%sts%struct(istrtmp)%dambreak%water_level_upstream_location_y
+                  if (network%sts%struct(istrtmp)%dambreak%water_level_upstream_node_id /= '') then
+                     ierr = findnode(network%sts%struct(istrtmp)%dambreak%water_level_upstream_node_id, k)
                      if (ierr /= DFM_NOERR .or. k <= 0) then
-                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for waterLevelUpstreamNodeId = ''', trim(network%sts%struct(istrtmp)%dambreak%waterLevelUpstreamNodeId), &
+                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for water_level_upstream_node_id = ''', trim(network%sts%struct(istrtmp)%dambreak%water_level_upstream_node_id), &
                            ''' in dambreak ''', trim(strid), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_upstream(n,k)
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_upstream(n,k)
+                        call add_dambreaklocation_upstream(n, k)
                      end if
                   else
                      call add_averaging_upstream_signal(n)
@@ -1820,21 +1926,21 @@ contains
                ! inquire if the water level downstream has to be taken from a location or be a result of averaging
                if (network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_VERHEIJVDKNAAP & ! Needed for computation and output
                    .or. network%sts%struct(istrtmp)%dambreak%algorithm == BREACH_GROWTH_TIMESERIES) then ! Needed for output only.
-                  xla = network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamLocationX
-                  yla = network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamLocationY
-                  if (network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamNodeId /= '') then
-                     ierr = findnode(network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamNodeId, k)
+                  xla = network%sts%struct(istrtmp)%dambreak%water_level_downstream_location_x
+                  yla = network%sts%struct(istrtmp)%dambreak%water_level_downstream_location_y
+                  if (network%sts%struct(istrtmp)%dambreak%water_level_downstream_node_id /= '') then
+                     ierr = findnode(network%sts%struct(istrtmp)%dambreak%water_level_downstream_node_id, k)
                      if (ierr /= DFM_NOERR .or. k <= 0) then
-                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for waterLevelDownstreamNodeId = ''', trim(network%sts%struct(istrtmp)%dambreak%waterLevelDownstreamNodeId), &
+                        write (msgbuf, '(a,a,a,a,a)') 'Cannot find the node for water_level_downstream_node_id = ''', trim(network%sts%struct(istrtmp)%dambreak%water_level_downstream_node_id), &
                            ''' in dambreak ''', trim(strid), '''.'
                         call err_flush()
                      else
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else if (xla /= dmiss .and. yla /= dmiss) then
                      call incells(xla, yla, k)
                      if (k > 0) then
-                        call add_dambreaklocation_downstream(n,k)
+                        call add_dambreaklocation_downstream(n, k)
                      end if
                   else
                      call add_averaging_downstream_signal(n)
@@ -1853,16 +1959,20 @@ contains
             if (.not. allocated(dambreakPolygons(indexInPliset)%yp)) cycle
 
             ! Create the array with the coordinates of the flow links
-            if (allocated(xl)) deallocate (xl)
-            if (allocated(yl)) deallocate (yl)
-            nDambreakCoordinates = L2dambreaksg(n) - L1dambreaksg(n) + 1
+            if (allocated(xl)) then
+               deallocate (xl)
+            end if
+            if (allocated(yl)) then
+               deallocate (yl)
+            end if
+            nDambreakCoordinates = db_last_link(n) - db_first_link(n) + 1
             allocate (xl(nDambreakCoordinates, 2))
             allocate (yl(nDambreakCoordinates, 2))
             indexLink = 0
-            do k = L1dambreaksg(n), L2dambreaksg(n)
+            do k = db_first_link(n), db_last_link(n)
                indexLink = indexLink + 1
                ! compute the mid point
-               Lf = abs(kdambreak(3, k))
+               Lf = abs(db_link_ids(3, k))
                k1 = ln(1, Lf)
                k2 = ln(2, Lf)
                xl(indexLink, 1) = xz(k1)
@@ -1872,8 +1982,8 @@ contains
             end do
 
             ! comp_breach_point takes plain arrays to compute the breach point (also used in unstruct_bmi)
-            call comp_breach_point(network%sts%struct(istrtmp)%dambreak%startLocationX, &
-                                   network%sts%struct(istrtmp)%dambreak%startLocationY, &
+            call comp_breach_point(network%sts%struct(istrtmp)%dambreak%start_location_x, &
+                                   network%sts%struct(istrtmp)%dambreak%start_location_y, &
                                    dambreakPolygons(indexInPliset)%xp, &
                                    dambreakPolygons(indexInPliset)%yp, &
                                    dambreakPolygons(indexInPliset)%np, &
@@ -1886,13 +1996,13 @@ contains
                                    jasfer3D, &
                                    dmiss)
 
-            LStartBreach(n) = L1dambreaksg(n) - 1 + Lstart
+            breach_start_link(n) = db_first_link(n) - 1 + Lstart
 
             ! compute the normal projections of the start and endpoints of the flow links
-            do k = L1dambreaksg(n), L2dambreaksg(n)
-               Lf = abs(kdambreak(3, k))
+            do k = db_first_link(n), db_last_link(n)
+               Lf = abs(db_link_ids(3, k))
                if (kcu(Lf) == 3) then ! 1d2d flow link
-                  dambreakLinksEffectiveLength(k) = wu(Lf)
+                  db_link_effective_width(k) = wu(Lf)
                else
                   k3 = lncn(1, Lf)
                   k4 = lncn(2, Lf)
@@ -1903,12 +2013,12 @@ contains
                   ylb = dambreakPolygons(indexInPliset)%yp(kpol + 1)
 
                   call normalout(xla, yla, xlb, ylb, xn, yn, jsferic, jasfer3D, dmiss, dxymis)
-                  dambreakLinksEffectiveLength(k) = dbdistance(xk(k3), yk(k3), xk(k4), yk(k4), jsferic, jasfer3D, dmiss)
-                  dambreakLinksEffectiveLength(k) = dambreakLinksEffectiveLength(k) * abs(xn * csu(Lf) + yn * snu(Lf))
+                  db_link_effective_width(k) = dbdistance(xk(k3), yk(k3), xk(k4), yk(k4), jsferic, jasfer3D, dmiss)
+                  db_link_effective_width(k) = db_link_effective_width(k) * abs(xn * csu(Lf) + yn * snu(Lf))
                end if
 
                ! Sum the length of the intersected flow links (required to bound maximum breach width)
-               network%sts%struct(istrtmp)%dambreak%maximumWidth = network%sts%struct(istrtmp)%dambreak%maximumWidth + dambreakLinksEffectiveLength(k)
+               network%sts%struct(istrtmp)%dambreak%maximum_width = network%sts%struct(istrtmp)%dambreak%maximum_width + db_link_effective_width(k)
             end do
 
             ! Now we can deallocate the polygon
@@ -1954,12 +2064,45 @@ contains
 888   continue
 
       if (allocated(xdum)) deallocate (xdum, ydum, kdum)
-      if (allocated(widths)) deallocate (widths)
-      if (allocated(pumpidx)) deallocate (pumpidx)
-      if (allocated(gateidx)) deallocate (gateidx)
-      if (allocated(cdamidx)) deallocate (cdamidx)
-      if (allocated(cgenidx)) deallocate (cgenidx)
+      if (allocated(widths)) then
+         deallocate (widths)
+      end if
+      if (allocated(pumpidx)) then
+         deallocate (pumpidx)
+      end if
+      if (allocated(gateidx)) then
+         deallocate (gateidx)
+      end if
+      if (allocated(cdamidx)) then
+         deallocate (cdamidx)
+      end if
+      if (allocated(cgenidx)) then
+         deallocate (cgenidx)
+      end if
 
    end function flow_init_structurecontrol_old
+
+   !> Set teta to 1 for all links that are connected to an upstream or downstream node of a general structure link.
+   subroutine apply_teta_is_1_to_neighbours(links, num_links, teta)
+
+      use m_flowgeom, only: nd, ln
+
+      integer, dimension(:), intent(in) :: links !< Array with flow links on hydraulic structures.
+      integer, intent(in) :: num_links !< Length of input array links.
+      real(kind=dp), dimension(:), intent(inout) :: teta !< Theta-values of time integration for all flow links.
+
+      ! set teta to 1 for a
+      integer :: i, nn, n12, kk, LL
+      do i = 1, num_links
+         do nn = 1, 2
+            n12 = ln(nn, abs(links(i)))
+            do kk = 1, nd(n12)%lnx
+               LL = abs(nd(n12)%ln(kk))
+               teta(LL) = 1.0_dp
+            end do
+         end do
+
+      end do
+   end subroutine apply_teta_is_1_to_neighbours
 
 end submodule flow_init_structurecontrol_implementation

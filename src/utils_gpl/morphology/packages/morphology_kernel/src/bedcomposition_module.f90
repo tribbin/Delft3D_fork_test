@@ -142,6 +142,9 @@ type bedcomp_settings
                               !  3: base layer composition is set equal to the composition of layer above it (thickness computed - total mass conserved)
                               !  4: base layer composition and thickness constant (no change whatsoever)
                               !  5: base lyaer composition is updated, but thickness is kept constant
+   integer :: active_layer_diffusion !  switch for applying diffusion in the active layer model
+                                     !   0: no diffusion (default)
+                                     !   1: x-y-diffusion file
     !
     ! pointers
     !
@@ -154,6 +157,7 @@ type bedcomp_settings
     real(fp) , dimension(:)   , pointer :: thexlyr   ! thickness of exchange layer
     real(fp) , dimension(:)   , pointer :: thtrlyr   ! thickness of transport layer
     real(fp) , dimension(:)   , pointer :: zdiff     ! depth below bed level for which diffusion coefficients are defined, units : m
+    real(fp) , dimension(:)   , pointer :: aldiff    ! diffusion coefficient of the active layer, units : m2/s
     ! 
     ! logicals
     !
@@ -1975,6 +1979,7 @@ function initmorlyr(this) result (istat)
     settings%theulyr        = rmissval
     settings%thlalyr        = rmissval
     settings%updbaselyr     = 1
+    settings%active_layer_diffusion = 0
     !
     nullify(settings%kdiff)
     nullify(settings%phi)
@@ -2090,6 +2095,12 @@ function allocmorlyr(this) result (istat)
     if (istat == 0) allocate (state%sedshort(nfrac,nmlb:nmub), stat = istat)
     if (istat == 0) state%sedshort = 0.0_fp
     !
+    if (settings%active_layer_diffusion > 0) then
+       if (istat == 0) allocate (settings%aldiff(nmlb:nmub), stat = istat)
+       if (istat == 0) settings%aldiff = 0.0_fp
+    endif 
+    !    
+    !
     ! WARNING: Do not allocate this%work here
     ! For some reason it needs to be allocated/deallocated in updmorlyr/gettoplyr
     !
@@ -2196,6 +2207,8 @@ function clrmorlyr(this) result (istat)
        if (associated(settings%phi))       deallocate(settings%phi    , STAT = istat)
        if (associated(settings%rhofrac))   deallocate(settings%rhofrac, STAT = istat)
        if (associated(settings%sigphi))    deallocate(settings%sigphi , STAT = istat)
+       !
+       if (associated(settings%aldiff))   deallocate(settings%aldiff  , STAT = istat)
        !
        deallocate(this%settings, STAT = istat)
        nullify(this%settings)
@@ -2355,6 +2368,8 @@ function bedcomp_getpointer_integer_scalar(this, variable, val) result (istat)
        val => this%settings%nmub
     case ('base_layer_updating_type','updbaselyr')
        val => this%settings%updbaselyr
+    case ('active_layer_diffusion')
+       val => this%settings%active_layer_diffusion
     case default
        val => NULL()
     end select
@@ -2443,6 +2458,8 @@ function bedcomp_getpointer_fp_1darray(this, variable, val) result (istat)
        val => this%settings%thtrlyr
     case ('diffusion_levels','zdiff')
        val => this%settings%zdiff
+    case ('active_layer_diffusion','aldiff')
+       val => this%settings%aldiff
     case default
        val => NULL()
     end select

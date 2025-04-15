@@ -1,11 +1,12 @@
 #! /bin/bash
 #SBATCH --job-name=va-sync-refs
-#SBATCH --output=/p/devops-dsc/verschilanalyse/report/logs/va-sync-refs-%j.out
 #SBATCH --time=04:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --partition=16vcpu
 #SBATCH --cpus-per-task=16
+#SBATCH --partition=16vcpu_spot
+#SBATCH --account=verschilanalyse
+#SBATCH --qos=verschilanalyse
 
 set -eo pipefail
 
@@ -28,8 +29,11 @@ export -f unzip_references
 rm -rf "$REFERENCE_DIR"
 mkdir -p "$ARCHIVE_DIR" "$REFERENCE_DIR"
 
-aws --profile=verschilanalyse --endpoint-url=https://s3.deltares.nl \
-    s3 sync --delete --no-progress "${BUCKET}/${REFERENCE_PREFIX}" "$ARCHIVE_DIR"
+docker run --rm \
+    --volume="${HOME}/.aws:/root/.aws:ro" --volume="${ARCHIVE_DIR}:/data" \
+    docker.io/amazon/aws-cli:2.22.7 \
+    --profile=verschilanalyse --endpoint-url=https://s3.deltares.nl \
+    s3 sync --delete --no-progress "${BUCKET}/${REFERENCE_PREFIX}" /data
 
 find "$ARCHIVE_DIR" -iname '*.zip' -print0 \
     | xargs -0 -I'{}' -P8 bash -c 'unzip_references "{}"'

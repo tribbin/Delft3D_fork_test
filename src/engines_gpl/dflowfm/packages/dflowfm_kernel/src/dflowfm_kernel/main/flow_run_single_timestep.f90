@@ -48,7 +48,6 @@ contains
       use m_transport_sub, only: transport
       use m_step_reduce_transport_morpho, only: step_reduce_transport_morpho
       use m_step_reduce_hydro, only: step_reduce_hydro
-      use m_setlinktocornerweights, only: setlinktocornerweights
       use m_setlinktocenterweights, only: setlinktocenterweights
       use m_getcellsurface1d, only: getcellsurface1d
 

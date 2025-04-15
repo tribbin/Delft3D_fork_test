@@ -727,6 +727,7 @@ subroutine SOFLOW(&
 !c     not used?
 !      storWidth = waoft + ngrid
 !
+   psltvr(:,:) = 0.0
 !
 !    summerdikes input (not used)
 !

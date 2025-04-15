@@ -26,8 +26,7 @@ include_directories(${include_path}
                     ${d_hydro_lib_include_path}
                     ${version_include_dir})
 
-if (UNIX)    
-    include_directories(${NETCDF_INCLUDEDIR}) 
+if (UNIX)
     add_definitions(-DD3D_PLUGIN_EXT=".so")
 endif(UNIX)
 
@@ -53,8 +52,7 @@ if(UNIX)
                               "${d_hydro_lib_path}/include"
                               "${expat_include_path}")
 
-    target_link_libraries(${executable_name} ${oss_dependencies}) 
-    target_link_directories(${executable_name} PRIVATE ${NETCDF_LIBRARY_DIRS})
+    target_link_libraries(${executable_name} ${oss_dependencies})
 
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
@@ -96,7 +94,6 @@ endif(WIN32)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${source} ${d_hydro_lib_sources} ${header_version_file}  ${rc_version_file})
 set_target_properties (${executable_name} PROPERTIES FOLDER engines_gpl/d_hydro)
 if (WIN32)
-    set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
 	if (CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.vcxproj.$ENV{USERNAME}.user")
 		configure_file(
 		"${CMAKE_BINARY_DIR}/template.vcxproj.user"

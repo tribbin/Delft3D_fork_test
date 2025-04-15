@@ -5,6 +5,7 @@ import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 object Sign : BuildType({
 
     name = "Sign"
+    description = "Sign all unsigned binaries (except tclkitsh852.exe)."
     buildNumberPattern = "%build.vcs.number%"
     artifactRules = "to_sign => oss_artifacts_x64_%build.vcs.number%.zip!x64"
 
@@ -14,26 +15,23 @@ object Sign : BuildType({
 
     steps {
         powerShell {
-            name = "Remove already signed binaries"
+            name = "Move already signed binaries"
             platform = PowerShellStep.Platform.x64
-            workingDir = "to_sign"
+            scriptMode = file {
+                path = "ci/teamcity/signing/move_signed_bins.ps1"
+            }
+            scriptArgs = "-source to_sign -destination signed"
+        }
+        powerShell {
+            name = "Move exception binary tclkitsh852.exe"
+            platform = PowerShellStep.Platform.x64
             scriptMode = script {
+                // We cannot sing this binary, see: https://wiki.tcl-lang.org/page/SDX+under+Windows
                 content = """
-                    ${'$'}files = Get-ChildItem -Path . -Recurse -Include *.exe,*.dll | Where-Object { -not ${'$'}_.PSIsContainer }
-                    
-                    foreach (${'$'}file in ${'$'}files) {
-                        try {
-                            # Check if the file is signed
-                            ${'$'}signature = Get-AuthenticodeSignature -FilePath ${'$'}file.FullName
-                            if (${'$'}signature.Status -eq 'Valid') {
-                                # Remove the signed file
-                                Remove-Item -Path ${'$'}file.FullName -Force
-                                Write-Output "Removed signed file: ${'$'}(${'$'}file.FullName)"
-                            }
-                        } catch {
-                            Write-Output "Error processing file: ${'$'}(${'$'}file.FullName)"
-                        }
+                    if (-Not (Test-Path -Path dont_sign\\bin)) {
+                        New-Item -ItemType Directory -Path dont_sign\\bin
                     }
+                    Move-Item -Path to_sign\\bin\\tclkitsh852.exe -Destination dont_sign\\bin\\tclkitsh852.exe -Force
                 """.trimIndent()
             }
         }
@@ -47,6 +45,21 @@ object Sign : BuildType({
                 """.trimIndent()
             }
         }
+        powerShell {
+            name = "Move back signed binaries"
+            platform = PowerShellStep.Platform.x64
+            scriptMode = file {
+                path = "ci/teamcity/signing/move_signed_bins.ps1"
+            }
+            scriptArgs = "-source signed -destination to_sign"
+        }
+        powerShell {
+            name = "Move back exception binary tclkitsh852.exe"
+            platform = PowerShellStep.Platform.x64
+            scriptMode = script {
+                content = """Move-Item -Path dont_sign\\bin\\tclkitsh852.exe -Destination to_sign\\bin\\tclkitsh852.exe -Force""".trimIndent()
+            }
+        }
     }
 
     dependencies {
@@ -58,8 +71,9 @@ object Sign : BuildType({
             artifacts {
                 cleanDestination = true
                 artifactRules = """
-                    ?:*_x64_*.zip!/x64/**/*.exe => to_sign
-                    ?:*_x64_*.zip!/x64/**/*.dll => to_sign
+                    ?:*_x64_*.zip!/x64/bin/** => to_sign/bin
+                    ?:*_x64_*.zip!/x64/lib/** => to_sign/lib
+                    ?:*_x64_*.zip!/x64/share/** => to_sign/share
                 """.trimIndent()
             }
         }

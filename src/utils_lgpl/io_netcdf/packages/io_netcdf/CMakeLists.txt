@@ -7,15 +7,6 @@ set(version_include_dir ${CMAKE_SOURCE_DIR}/../version_includes)
 set(rc_dir ${CMAKE_CURRENT_SOURCE_DIR}/version)
 set(rc_version_file ${rc_dir}/io_netcdf_version_number.rc)
 
-if(UNIX)
-     # the `pkg_check_modules` function is created with this call
-     find_package(PkgConfig REQUIRED)
-
-     # these calls create special `PkgConfig::<MODULE>` variables
-     pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
-endif()
-
-
 ###########
 # IO_NETCDF
 ###########
@@ -32,11 +23,9 @@ if(UNIX)
     set(oss_dependencies deltares_common
                          io_netcdf_data
                          fortrangis
-                         PkgConfig::NETCDF
                          netcdff)
     target_compile_definitions(${library_name} PRIVATE LINUX64)
     target_link_libraries(${library_name} ${oss_dependencies})
-    target_link_directories(${library_name} PUBLIC ${NETCDF_LIBDIR})
 endif(UNIX)
 
 if (WIN32)

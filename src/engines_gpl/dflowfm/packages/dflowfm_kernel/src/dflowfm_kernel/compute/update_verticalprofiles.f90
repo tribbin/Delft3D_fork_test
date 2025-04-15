@@ -69,7 +69,7 @@ contains
       use m_get_kbot_ktop
       use m_get_Lbot_Ltop
       use m_links_to_centers, only: links_to_centers
-      use m_setrho, only: setrhofixedp
+      use m_density, only: density_at_cell
       use precision, only: dp
 
       implicit none
@@ -388,70 +388,32 @@ contains
 
                      dzc1 = 0.5_dp * (zws(k1u) - zws(k1 - 1)) ! vertical distance between cell centers on left side
                      if (dzc1 > 0) then
-                        if (.not. density_is_pressure_dependent()) then
+                        if (.not. apply_thermobaricity) then
                            drhodz1 = (rho(k1u) - rho(k1)) / dzc1
                         else
                            prsappr = ag * rhomean * (zws(ktop(ln(1, LL))) - zws(k1))
-                           drhodz1 = (setrhofixedp(k1u, prsappr) - setrhofixedp(k1, prsappr)) / dzc1
+                           drhodz1 = (density_at_cell(k1u, prsappr) - density_at_cell(k1, prsappr)) / dzc1
                         end if
                      end if
 
                      dzc2 = 0.5_dp * (zws(k2u) - zws(k2 - 1)) ! vertical distance between cell centers on right side
                      if (dzc2 > 0) then
-                        if (.not. density_is_pressure_dependent()) then
+                        if (.not. apply_thermobaricity) then
                            drhodz2 = (rho(k2u) - rho(k2)) / dzc2
                         else
                            prsappr = ag * rhomean * (zws(ktop(ln(2, LL))) - zws(k2))
-                           drhodz2 = (setrhofixedp(k2u, prsappr) - setrhofixedp(k2, prsappr)) / dzc2
+                           drhodz2 = (density_at_cell(k2u, prsappr) - density_at_cell(k2, prsappr)) / dzc2
                         end if
                      end if
 
-                     if (jadrhodz == 1) then ! averagingif non zero
-
-                        if (drhodz1 == 0) then
-                           drhodz = drhodz2
-                        else if (drhodz2 == 0) then
-                           drhodz = drhodz1
-                        else
-                           !drhodz  = 0.5_dp*( drhodz1 + drhodz2 )
-                           drhodz = acl(LL) * drhodz1 + (1.0_dp - acl(LL)) * drhodz2
-                        end if
-
-                     else if (jadrhodz == 2) then ! averaging
-
+                     if (drhodz1 == 0) then
+                        drhodz = drhodz2
+                     else if (drhodz2 == 0) then
+                        drhodz = drhodz1
+                     else
                         drhodz = acl(LL) * drhodz1 + (1.0_dp - acl(LL)) * drhodz2
-
-                     else if (jadrhodz == 3) then ! upwind
-
-                        if (u1(L) > 0.0_dp) then
-                           drhodz = drhodz1
-                        else
-                           drhodz = drhodz2
-                        end if
-
-                     else if (jadrhodz == 4) then ! most stratified, decreases viscosity
-
-                        drhodz = min(drhodz1, drhodz2)
-
-                     else if (jadrhodz == 5) then
-
-                        drhodz = max(drhodz1, drhodz2) ! least stratified, increases viscosity
-
-                     else if (jadrhodz == 6) then ! first average then d/dz
-
-                        if (dzc1 > 0 .and. dzc2 > 0) then
-
-                           if (.not. density_is_pressure_dependent()) then
-                              drhodz = (rho(k1u) + rho(k2u) - rho(k1) - rho(k2)) / (dzc1 + dzc2)
-                           else
-                              prsappr = ag * rhomean * (zws(ktop(ln(1, LL))) - zws(k1))
-                              drhodz = (setrhofixedp(k1u, prsappr) + setrhofixedp(k2u, prsappr) - setrhofixedp(k1, prsappr) - setrhofixedp(k1, prsappr)) / (dzc1 + dzc2)
-                           end if
-
-                        end if
-
                      end if
-                     !
+
                      bruva(k) = coefn2 * drhodz ! N.B., bruva = N**2 / sigrho
                      buoflu(k) = max(vicwwu(L), vicwminb) * bruva(k)
 

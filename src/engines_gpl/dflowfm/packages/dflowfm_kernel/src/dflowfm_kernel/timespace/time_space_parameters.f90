@@ -196,6 +196,8 @@ contains
          method = SPACEANDTIME
       case ('uniform', 'unimagdir')
          method = SPACEANDTIME
+      case ('bcascii')
+         method = SPACEANDTIME
       end select
 
    end subroutine update_method_with_weightfactor_fallback

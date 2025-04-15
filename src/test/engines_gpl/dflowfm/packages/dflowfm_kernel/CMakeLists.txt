@@ -10,10 +10,6 @@ if(UNIX)
 
     # the `pkg_check_modules` function is created with this call
     find_package(PkgConfig REQUIRED)
-
-    # these calls create special `PkgConfig::<MODULE>` variables
-   # pkg_check_modules(NETCDF     REQUIRED IMPORTED_TARGET netcdf)
-   # pkg_check_modules(NETCDF_FTN REQUIRED IMPORTED_TARGET netcdf-fortran)
     pkg_check_modules(PETSC      REQUIRED IMPORTED_TARGET PETSc)
 
     set(oss_dependencies    deltares_common
@@ -39,7 +35,6 @@ if(UNIX)
                             morphology_io
                             morphology_kernel
                             morphology_plugins_c
-                            netcdff
                             polypack
                             trachytopes_io
                             trachytopes_kernel
@@ -49,9 +44,6 @@ if(UNIX)
                             waq_utils_c
                             waq_utils_f
                             dflowfm_kernel)
-
-    message(STATUS "netcdf lib dir is ${NETCDF_LIBRARY_DIRS}")
-    target_link_directories(${executable_name} PRIVATE ${NETCDF_LIBRARY_DIRS})
 
 
     target_link_libraries(${executable_name}

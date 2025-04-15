@@ -9,6 +9,8 @@ import Delft3D.step.*
 
 object WindowsCollect : BuildType({
 
+    description = "Prepping the binaries for testing/release and verify the signing and directory structure."
+
     templates(
         TemplateMergeRequest,
         TemplatePublishStatus,
@@ -17,7 +19,6 @@ object WindowsCollect : BuildType({
 
     name = "Collect"
     buildNumberPattern = "%dep.${WindowsBuild.id}.product%: %build.vcs.number%"
-    description = "DIMRset collector for Linux."
 
     allowExternalStatus = true
     artifactRules = """
@@ -50,6 +51,20 @@ object WindowsCollect : BuildType({
                 scriptArguments = "--srcdir x64 --output dimrset_version_x64.txt"
             }
         }
+        python {
+            name = "Verify (un)signed binaries and directory structure"
+            command = file {
+                filename = "ci/DIMRset_delivery/src/validate_signing.py"
+                scriptArguments = """
+                    "ci\\DIMRset_delivery\\src\\%dep.${WindowsBuild.id}.product%-binaries.json" 
+                    "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools\\VsDevCmd.bat" 
+                    "x64"
+                """.trimIndent()
+            }
+            conditions {
+                matches("dep.${WindowsBuild.id}.product", "(fm-suite|all-testbench)")
+            }
+        }
     }
 
     failureConditions {
@@ -71,19 +86,6 @@ object WindowsCollect : BuildType({
     }
 
     dependencies {
-        dependency(WindowsBuild) {
-            snapshot {
-                onDependencyFailure = FailureAction.FAIL_TO_START
-                onDependencyCancel = FailureAction.CANCEL
-            }
-            artifacts {
-                artifactRules = """
-                    oss_artifacts_x64_*.zip!/x64/bin/** => x64/bin
-                    oss_artifacts_x64_*.zip!/x64/lib/** => x64/lib
-                    oss_artifacts_x64_*.zip!/x64/share/** => x64/share
-                """.trimIndent()
-            }
-        }
         dependency(AbsoluteId("${DslContext.getParameter("delft3d_signing_project_root")}_Sign")) {
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
@@ -93,6 +95,7 @@ object WindowsCollect : BuildType({
                 artifactRules = """
                     oss_artifacts_x64_*.zip!/x64/bin/** => x64/bin
                     oss_artifacts_x64_*.zip!/x64/lib/** => x64/lib
+                    ?:oss_artifacts_x64_*.zip!/x64/share/** => x64/share
                 """.trimIndent()
             }
         }

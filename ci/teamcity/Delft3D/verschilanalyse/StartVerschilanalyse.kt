@@ -3,15 +3,19 @@ package Delft3D.verschilanalyse
 import java.io.File
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
+import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 
 import Delft3D.verschilanalyse.ReportVerschilanalyse
 
 
 object StartVerschilanalyse : BuildType({
-    name = "Start verschilanalyse models"
+    name = "Submit"
+    description = "Submit verschilanalyse models to H7."
+    maxRunningBuilds = 1
 
     vcs {
         root(DslContext.settingsRoot)
+        cleanCheckout = true
     }
 
     params {
@@ -25,6 +29,15 @@ object StartVerschilanalyse : BuildType({
             ).joinToString(separator="/")
         )         
         param("reference_prefix", "output/release/2025.01")
+        checkbox(
+            "use_latest_weekly_reference_output",
+            "true",
+            display = ParameterDisplay.NORMAL,
+            label = "Use latest weekly reference output",
+            description = "Use the output of the latest successful weekly verschilanalyse as a reference for this verschilanalyse.",
+            checked = "true", 
+            unchecked = "false",
+        )
         param("output_prefix", "output/weekly/latest")
         param("model_filter", "")
     }
@@ -58,6 +71,22 @@ object StartVerschilanalyse : BuildType({
     }
 
     steps {
+        python {
+            name = "Use the latest weekly verschilanalyse output as reference"
+            conditions { 
+                equals("use_latest_weekly_reference_output", "true")
+            }
+            pythonVersion = customPython {
+                executable = "python3.11"
+            }
+            environment = venv {
+                requirementsFile = ""
+                pipArgs = "--editable ./ci/python[verschilanalyse]"
+            }
+            command = module {
+                module = "ci_tools.verschilanalyse.find_latest_weekly_output"
+            }
+        }
         sshUpload { 
             name = "Upload bundle"
             transportProtocol = SSHUpload.TransportProtocol.SCP
@@ -101,6 +130,13 @@ object StartVerschilanalyse : BuildType({
                 username = "%h7_account_username%"
                 password = "%h7_account_password%"
             }
+        }
+    }
+
+    features {
+        swabra {}
+        provideAwsCredentials {
+            awsConnectionId = "minio_verschilanalyse_connection"
         }
     }
 

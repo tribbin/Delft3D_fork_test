@@ -10,6 +10,8 @@ import Delft3D.linux.containers.*
 
 object LinuxBuild : BuildType({
 
+    description = "CMake build."
+
     templates(
         TemplateMergeRequest,
         TemplateDetermineProduct,
@@ -20,7 +22,6 @@ object LinuxBuild : BuildType({
 
     name = "Build"
     buildNumberPattern = "%product%: %build.vcs.number%"
-    description = "Linux build."
 
     allowExternalStatus = true
     artifactRules = """
@@ -30,10 +31,8 @@ object LinuxBuild : BuildType({
     """.trimIndent()
 
     params {
-        param("intel_oneapi_version", "2023")
-        param("intel_fortran_compiler", "ifort")
         param("generator", """"Unix Makefiles"""")
-        param("build_type", "Release")
+        select("build_type", "%dep.${LinuxThirdPartyLibs.id}.build_type%", display = ParameterDisplay.PROMPT, options = listOf("Release", "RelWithDebInfo", "Debug"))
         select("product", "auto-select", display = ParameterDisplay.PROMPT, options = listOf("auto-select", "all-testbench", "fm-suite", "d3d4-suite", "fm-testbench", "d3d4-testbench", "waq-testbench", "part-testbench", "rr-testbench", "wave-testbench", "swan-testbench"))
     }
 

@@ -7,7 +7,8 @@ if (WIN32)
     # Disable diagnostic indicating that ifort is deprecated (10448)
     message(STATUS "Setting global Intel Fortran compiler flags in Windows")
     set(CMAKE_Fortran_FLAGS "/W1 /nologo /libs:dll /threads /MP /Qdiag-disable:10448 /assume:recursion")
-
+    # Set global linker flags for Fortran
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /link /LARGEADDRESSAWARE /STACK:20000000")
     # Set global C/C++ compiler flags that apply for each C/C++ project
     string(APPEND CMAKE_C_FLAGS " /MP")
     string(APPEND CMAKE_CXX_FLAGS " /MP")
@@ -94,7 +95,7 @@ if (UNIX)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
     # Set debug flags:
-    string(APPEND CMAKE_Fortran_FLAGS_DEBUG " ${check_uninit_flag} ${check_stack_flag} ${check_bounds_flag} ${traceback_flag} ${check_pointers_flag} ${floating_point_exception_flag}")
+    string(APPEND CMAKE_Fortran_FLAGS_DEBUG " ${check_stack_flag} ${check_bounds_flag} ${traceback_flag} ${check_pointers_flag} ${floating_point_exception_flag}")
 endif(UNIX)
 
 set(qauto_threaded_flags "SHELL:${automatic_local_variable_storage_flag}" "SHELL:${generate_reentrancy_threaded_flag}")

@@ -61,17 +61,9 @@ if (WIN32)
 endif(WIN32)
 
 if(UNIX)
-    # the `pkg_check_modules` function is created with this call
-    find_package(PkgConfig REQUIRED)
-
-    # these calls create special `PkgConfig::<MODULE>` variables
-    pkg_check_modules(NETCDF REQUIRED IMPORTED_TARGET netcdf)
-
     target_link_libraries(${executable_name} PRIVATE
-         PkgConfig::NETCDF
          netcdff)
 
-    target_include_directories(${executable_name} PUBLIC netcdff)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include"
                         ${version_include_dir}
                         ${CMAKE_BINARY_DIR}/fortran_module_dir)
@@ -102,10 +94,6 @@ endif(UNIX)
 # Define how the files should be structured within Visual Studio
 source_group(TREE ${checkout_src_root}/third_party_open/swan FILES ${executable_files})
 set_target_properties (${executable_name} PROPERTIES FOLDER third_party_open/swan_mpi)
-
-if (WIN32)
-    set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
-endif(WIN32)
 
 # Set post-build step
 set(install_dir ${CMAKE_BINARY_DIR})

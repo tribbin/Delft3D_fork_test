@@ -279,12 +279,7 @@ contains
          constituent_unit = ''
          constituent_cumul_unit = ''
          if (num >= ISED1 .and. num <= ISEDN .and. stm_included) then ! The constituent is sediment
-            select case (stmpar%morpar%moroutput%transptype)
-            case (0)
-               constituent_cumul_unit = 'kg'
-            case (1, 2)
-               constituent_cumul_unit = 'm3'
-            end select
+            constituent_cumul_unit = stmpar%morpar%moroutput%unit_sediment_amount
          else if (const_units(num) /= ' ') then
             constituent_cumul_unit = trim(const_units(num))//' m3'
          end if
@@ -631,7 +626,7 @@ contains
    end subroutine add_station_wqbot3D_output_items
 
    !> add output config for sediment transports on observation stations
-   !! the transpunit is known during model initialisation
+   !! the unit_transport_rate is known during model initialisation
    subroutine add_station_sedtrans_configs(output_config_set)
    
       use m_ug_nc_attribute, only: ug_nc_attribute
@@ -641,60 +636,47 @@ contains
       implicit none
       
       type(t_output_quantity_config_set), intent(inout) :: output_config_set
-      
-      character(len=idlen) :: transpunit
       type(ug_nc_attribute) :: atts(4)
       
       call ncu_set_att(atts(1), 'geometry', 'station_geom')
       
-      transpunit = ''
-      
-      select case (stmpar%morpar%moroutput%transptype)
-        case (0)
-            transpunit = 'kg s-1 m-1'
-        case (1)
-            transpunit = 'm3 s-1 m-1'
-        case (2)
-            transpunit = 'm3 s-1 m-1'
-      end select
-        
       call add_output_config(output_config_set, IDX_HIS_SBCX, &
                              'wrihis_sediment', 'sbcx', &
                              'Current related bedload transport, x-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       call add_output_config(output_config_set, IDX_HIS_SBCY, &
                              'wrihis_sediment', 'sbcy', &
                              'Current related bedload transport, y-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       call add_output_config(output_config_set, IDX_HIS_SBWX, &
                              'wrihis_sediment', 'sbwx', &
                              'Wave related bedload transport, x-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       call add_output_config(output_config_set, IDX_HIS_SBWY, &
                              'wrihis_sediment', 'sbwy', &
                              'Wave related bedload transport, y-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       call add_output_config(output_config_set, IDX_HIS_SSWX, &
                              'wrihis_sediment', 'sswx', &
                              'Wave related suspended transport, x-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       call add_output_config(output_config_set, IDX_HIS_SSWY, &
                              'wrihis_sediment', 'sswy', &
                              'Wave related suspended transport, y-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       call add_output_config(output_config_set, IDX_HIS_SSCX, &
                              'wrihis_sediment', 'sscx', &
                              'Current related suspended transport, x-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       call add_output_config(output_config_set, IDX_HIS_SSCY, &
                              'wrihis_sediment', 'sscy', &
                              'Current related suspended transport, y-component', &
-                             '', transpunit, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
+                             '', stmpar%morpar%moroutput%unit_transport_rate, UNC_LOC_STATION, nc_attributes=atts(1:1), nc_dim_ids=t_station_nc_dimensions(statdim=.true., sedtotdim=.true., timedim=.true.))
       
       output_config_set%configs(IDX_HIS_SBCX)%input_value = '1'
       output_config_set%configs(IDX_HIS_SBCY)%input_value = '1'
       output_config_set%configs(IDX_HIS_SBWX)%input_value = '1'
-      output_config_set%configs(IDX_HIS_SBWY)%input_value = '1'      
+      output_config_set%configs(IDX_HIS_SBWY)%input_value = '1'
       output_config_set%configs(IDX_HIS_SSCX)%input_value = '1'
       output_config_set%configs(IDX_HIS_SSCY)%input_value = '1'
       output_config_set%configs(IDX_HIS_SSWX)%input_value = '1'
@@ -2191,7 +2173,7 @@ contains
       use fm_external_forcings_data
       use m_structures
       use m_observations_data
-      use m_physcoef, only: density_is_pressure_dependent
+      use m_physcoef, only: apply_thermobaricity
       use m_statistical_output_types, only: process_data_interface_double
       use m_transport, only: NUMCONST, itemp, isalt, ised1
       use m_sediment, only: stm_included, stmpar
@@ -2416,18 +2398,18 @@ contains
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_CULVERT_VELOCITY), valculvert(IVAL_VEL, 1:network%sts%numCulverts))
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_CULVERT_STATE), valculvert(IVAL_CL_STATE, 1:network%sts%numCulverts))
       end if
-      if (jahisdambreak > 0 .and. ndambreaksignals > 0) then
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_S1UP), valdambreak(IVAL_S1UP, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_S1DN), valdambreak(IVAL_S1DN, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_DISCHARGE), valdambreak(IVAL_DIS, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_CUMULATIVE_DISCHARGE), valdambreak(IVAL_DB_DISCUM, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_VELOCITY), valdambreak(IVAL_VEL, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_HEAD), valdambreak(IVAL_HEAD, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_FLOW_AREA), valdambreak(IVAL_AREA, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_CREST_LEVEL), valdambreak(IVAL_DB_CRESTH, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_CREST_WIDTH), valdambreak(IVAL_DB_CRESTW, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_BREACH_WIDTH_TIME_DERIVATIVE), valdambreak(IVAL_DB_TIMEDIV, 1:ndambreaksignals))
-         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_WATER_LEVEL_JUMP), valdambreak(IVAL_DB_JUMP, 1:ndambreaksignals))
+      if (jahisdambreak > 0 .and. n_db_signals > 0) then
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_S1UP), valdambreak(IVAL_S1UP, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_S1DN), valdambreak(IVAL_S1DN, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_DISCHARGE), valdambreak(IVAL_DIS, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_CUMULATIVE_DISCHARGE), valdambreak(IVAL_DB_DISCUM, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_VELOCITY), valdambreak(IVAL_VEL, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_HEAD), valdambreak(IVAL_HEAD, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_FLOW_AREA), valdambreak(IVAL_AREA, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_CREST_LEVEL), valdambreak(IVAL_DB_CRESTH, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_CREST_WIDTH), valdambreak(IVAL_DB_CRESTW, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_BREACH_WIDTH_TIME_DERIVATIVE), valdambreak(IVAL_DB_TIMEDIV, 1:n_db_signals))
+         call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DAMBREAK_WATER_LEVEL_JUMP), valdambreak(IVAL_DB_JUMP, 1:n_db_signals))
       end if
       if (jahisuniweir > 0 .and. network%sts%numuniweirs > 0) then
          call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_UNIWEIR_DISCHARGE), valuniweir(IVAL_DIS, 1:network%sts%numuniweirs))
@@ -2572,7 +2554,7 @@ contains
             if (model_is_3D()) then
                temp_pointer(1:kmx * ntot) => valobs(1:ntot, IPNT_RHOP:IPNT_RHOP + kmx - 1)
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_POTENTIAL_DENSITY), temp_pointer)
-               if (density_is_pressure_dependent()) then
+               if (apply_thermobaricity) then
                   temp_pointer(1:kmx * ntot) => valobs(1:ntot, IPNT_RHO:IPNT_RHO + kmx - 1)
                   call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_DENSITY), temp_pointer)
                end if

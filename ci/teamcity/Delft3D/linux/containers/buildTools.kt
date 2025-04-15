@@ -10,7 +10,7 @@ import java.io.File
 
 object LinuxBuildTools : BuildType({
     name = "Build tools"
-    description = "Build the Delft3D Linux build-tools container image and push it to Harbor."
+    description = "Build-environment container image to build our Delf3D software in."
 
     templates(
         TemplatePublishStatus,
@@ -23,7 +23,7 @@ object LinuxBuildTools : BuildType({
     }
 
     params {
-        param("intel_oneapi_version", "2023")
+        param("intel_oneapi_version", "2024")
         param("harbor_repo", "containers.deltares.nl/delft3d-dev/delft3d-buildtools")
 
         // Environment variables that must be overwritten in the build.
