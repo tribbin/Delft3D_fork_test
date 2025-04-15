@@ -108,7 +108,7 @@ contains
             k2 = ln(2, L)
             bob(1, L) = max(zcdamn, bob0(1, L))
             bob(2, L) = max(zcdamn, bob0(2, L))
-            iadv(L) = 22
+            iadv(L) = IADV_GENERAL_STRUCTURE
             call switchiadvnearlink(L)
             if (pstru%type == ST_CULVERT) then
                ! Culverts remain on the given invert level. The Bobs and bed level will be changed in case the invert level
@@ -168,7 +168,7 @@ contains
             if (istru /= 0 .and. db_first_link(n) <= db_last_link(n)) then
                ! Update the crest/bed levels
                call adjust_bobs_on_dambreak_breach(network%sts%struct(istru)%dambreak%width, &
-                                                 & network%sts%struct(istru)%dambreak%maximum_width , &
+                                                 & network%sts%struct(istru)%dambreak%maximum_width, &
                                                  & network%sts%struct(istru)%dambreak%crest_level, &
                                                  & breach_start_link(n), &
                                                  & db_first_link(n), &

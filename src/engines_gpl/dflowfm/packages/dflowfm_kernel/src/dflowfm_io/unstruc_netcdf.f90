@@ -13628,7 +13628,7 @@ contains
       ierr = get_var_and_shift(imapfile, 'weirdte', map_fixed_weir_energy_loss, tmpvar1, UNC_LOC_U, kmx, Lstart, um%lnx_own, it_read, um%jamergedmap, &
                                um%ilink_own, um%ilink_merge)
       do L = 1, lnx
-         if (iadv(L) == 24 .or. iadv(L) == 25) then
+         if (iadv(L) == IADV_TABELLENBOEK_WEIR .or. iadv(L) == IADV_VILLEMONTE_WEIR) then
             weirdte(nfxwL(L)) = map_fixed_weir_energy_loss(L)
          end if
       end do
@@ -15179,7 +15179,7 @@ contains
          call mess(LEVEL_ERROR, 'Could not put header in flow geometry file.')
          call check_error(ierr)
          return
-      end if      
+      end if
       if (jsferic == 1) then
          crs%epsg_code = 4326
       end if

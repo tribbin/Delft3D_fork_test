@@ -1812,8 +1812,8 @@ contains
       integer :: i, npli_pts, nxln
       real(kind=dp) :: thdh
       logical :: with_z
-      real(kind=dp), dimension(:), allocatable :: dSL
-      integer, dimension(:), allocatable :: iLnx, ipol
+      real(kind=dp), dimension(:), allocatable :: polygon_segment_weights
+      integer, dimension(:), allocatable :: crossed_links, polygon_nodes
 
       ! The fortran name of the attribute name
       character(len=MAXSTRLEN) :: feat_name
@@ -1860,21 +1860,21 @@ contains
          ! THINDAMS
       case ("thindams")
          iresult = DFM_NOTIMPLEMENTED
-         allocate (iLnx(Lnx))
-         iLnx = 0
-         allocate (ipol(Lnx))
-         ipol = 0
-         allocate (dSL(Lnx))
-         dSL = 0
-         call find_crossed_links_kdtree2(treeglob, npl, xpl, ypl, 2, Lnx, 0, nxln, iLnx, ipol, dSL, iresult)
+         allocate (crossed_links(Lnx))
+         crossed_links = 0
+         allocate (polygon_nodes(Lnx))
+         polygon_nodes = 0
+         allocate (polygon_segment_weights(Lnx))
+         polygon_segment_weights = 0
+         call find_crossed_links_kdtree2(treeglob, npl, xpl, ypl, ITYPE_FLOWLINK, Lnx, BOUNDARY_NONE, nxln, crossed_links, polygon_nodes, polygon_segment_weights, iresult)
          if (iresult /= DFM_NOERR) then
             goto 888
          end if
          do i = 1, nxln
-            bob(1, iLnx(i)) = thdh
-            bob(2, iLnx(i)) = thdh
+            bob(1, crossed_links(i)) = thdh
+            bob(2, crossed_links(i)) = thdh
          end do
-         deallocate (iLnx, ipol, dSL)
+         deallocate (crossed_links, polygon_nodes, polygon_segment_weights)
          ! TODO: AvD: also somehow disable the existing thin dams
 
       case ("fixedweirs", "sourcesinks")
@@ -1909,7 +1909,7 @@ contains
       use iso_c_utils
       use fm_external_forcings_data
       use m_dambreak_breach, only: db_upstream_level, db_downstream_level, &
-            db_breach_depth, db_breach_width
+                                   db_breach_depth, db_breach_width
       use m_observations
       use m_monitoring_crosssections
       use m_strucs

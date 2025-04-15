@@ -1072,7 +1072,7 @@ contains
                kcgen(3, k) = Lf
                kcgen(4, k) = n ! pointer to general structure signal nr n
                call setfixedweirscheme3onlink(Lf)
-               iadv(Lf) = 22 ! iadv = general
+               iadv(Lf) = IADV_GENERAL_STRUCTURE ! iadv = general
 
             end do
 

@@ -242,7 +242,7 @@ contains
       integer, dimension(:), intent(in) :: itpenur !< boundary condition nr in openbndsect for u
       integer, intent(inout) :: ib !< block counter for boundaries
       integer, intent(inout) :: ibqh !< block counter for qh boundaries
-      logical :: res 
+      logical :: res
 
       integer, dimension(1) :: target_index
       character(len=INI_VALUE_LEN) :: location_file, quantity, forcing_file, property_name, property_value
@@ -253,7 +253,7 @@ contains
       integer :: method, num_items_in_block, j
 
       res = .true.
-      
+
       ! First check for required input:
       call prop_get(node_ptr, '', 'quantity', quantity, is_successful)
       if (.not. is_successful) then
@@ -1031,24 +1031,24 @@ contains
          call addsorsin_from_polyline_file(location_file, sourcesink_id, z_range_source, z_range_sink, area, ierr)
       else
          call addsorsin(sourcesink_id, x_coordinates, y_coordinates, &
-                     z_range_source, z_range_sink, area, ierr)
+                        z_range_source, z_range_sink, area, ierr)
       end if
-      
+
       if (ierr /= DFM_NOERR) then
          write (msgbuf, '(5a)') 'Error while processing ''', trim(file_name), ''': [', trim(group_name), ']. ' &
-            // 'Source sink with id='//trim(sourcesink_id)//'. could not be added.'
+            //'Source sink with id='//trim(sourcesink_id)//'. could not be added.'
          call err_flush()
          return
       end if
 
       quantity_id = 'sourcesink_discharge' ! New quantity name in .bc files
       !call resolvePath(filename, basedir) ! TODO!
-      is_successful = adduniformtimerelation_objects(quantity_id, '', 'source sink', trim(sourcesink_id), 'discharge', trim(discharge_input), (numconst + 1)*(numsrc-1) + 1, &
-                                               1, qstss)
+      is_successful = adduniformtimerelation_objects(quantity_id, '', 'source sink', trim(sourcesink_id), 'discharge', trim(discharge_input), (numconst + 1) * (numsrc - 1) + 1, &
+                                                     1, qstss)
 
       if (.not. is_successful) then
          write (msgbuf, '(5a)') 'Error while processing ''', trim(file_name), ''': [', trim(group_name), ']. ' &
-            // 'Could not initialize discharge data in ''', trim(discharge_input), ''' for source sink with id='//trim(sourcesink_id)//'.'
+            //'Could not initialize discharge data in ''', trim(discharge_input), ''' for source sink with id='//trim(sourcesink_id)//'.'
          call err_flush()
          return
       end if
@@ -1077,12 +1077,12 @@ contains
                   call prop_get(node_ptr, '', 'tracer'//trim(const_name)//'Delta', constituent_delta_file(i_const), is_read)
                end if
             end if
-            
+
             if (is_read) then
-               quantity_id = 'sourcesink_' // trim(const_name) // 'Delta'  ! New quantity name in .bc files
+               quantity_id = 'sourcesink_'//trim(const_name)//'Delta' ! New quantity name in .bc files
                !call resolvePath(filename, basedir) ! TODO!
-               is_successful = adduniformtimerelation_objects(quantity_id, '', 'source sink', trim(sourcesink_id), TRIM(const_name)//'Delta', trim(constituent_delta_file(i_const)), (numconst + 1)*(numsrc-1) + 1 + i_const, &
-                                                        1, qstss)
+               is_successful = adduniformtimerelation_objects(quantity_id, '', 'source sink', trim(sourcesink_id), trim(const_name)//'Delta', trim(constituent_delta_file(i_const)), (numconst + 1) * (numsrc - 1) + 1 + i_const, &
+                                                              1, qstss)
                continue
             end if
          end do
