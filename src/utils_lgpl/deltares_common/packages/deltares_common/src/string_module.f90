@@ -69,7 +69,8 @@ module string_module
    public :: GetLine
    public :: int2str
    public :: get_version_major_minor_integer
-
+   public :: str_split 
+   
    interface strip_quotes
       module procedure strip_quotes1
       module procedure strip_quotes2
@@ -1038,4 +1039,49 @@ contains
       success = .true.
    end subroutine get_version_major_minor_integer
 
+   subroutine str_split(words,last_token,string, token, quote, delims)
+   
+   use m_alloc, only: realloc
+      !
+      ! Arguments
+      !
+   character(*), intent(inout) :: string
+   character(*), intent(out) :: token
+   character(:), allocatable, intent(out) :: words(:)
+   integer, intent(out) :: last_token
+   character(1), optional, intent(in) :: quote
+   character(*), optional, intent(in) :: delims
+
+   
+   integer :: i
+   !character(len=256) :: temp_string
+   integer, parameter :: MAXTOKENS=3
+   integer, parameter :: MAXLENGTH=25
+   allocate(character(len=MAXLENGTH) :: words(MAXTOKENS))
+
+
+   do i = 1, MAXTOKENS
+      words(i) = ""  
+   end do
+
+   i = 0
+   !temp_string = string
+
+   do i=1,MAXTOKENS
+      !temp_string=frcu
+      !temp_string='' token=frcu 
+      ! 
+      !temp_string=pumps/pump2/capacity
+      !temp_string=/pump2/capacity token=pumps
+      call str_token(string, token, quote, delims)
+      if (len_trim(token) == 0) then
+          last_token=i-1
+          return  ! Exit when no more tokens are found
+      end if
+      
+      words(i) = token
+   end do
+   last_token=MAXTOKENS
+   end subroutine str_split
+   
 end module string_module

@@ -759,14 +759,17 @@ contains
    subroutine get_var_type(c_var_name, c_type) bind(C, name="get_var_type")
       !DEC$ ATTRIBUTES DLLEXPORT :: get_var_type
 
-      use string_module, only: str_token
+      use string_module, only: str_split
       
       character(kind=c_char), intent(in) :: c_var_name(*)
       character(kind=c_char), intent(out) :: c_type(MAXSTRLEN)
       character(len=MAXSTRLEN) :: type_name, var_name
       character(len=strlen(c_var_name)) :: tmp_var_name
       character(len=strlen(c_var_name)) :: varset_name !< For parsing compound variable names.
-
+      integer :: last_token
+      character(:), allocatable :: words(:)
+      integer :: i
+      
       ! Use one of the following types
       ! BMI datatype        C datatype        NumPy datatype
       ! BMI_STRING          char*             S<
@@ -774,20 +777,24 @@ contains
       ! BMI_LONG            long int          int32
       ! BMI_FLOAT           float             float32
       ! BMI_DOUBLE          double            float64
-      
+
+      type_name = "" !initially the type name is empty
+
       !First we check if the type is captured by the automatically generated include file.
       var_name = char_array_to_string(c_var_name, strlen(c_var_name))
       include "bmi_get_var_type.inc"
 
-      !Second we check if the variable name is a compound name (e.g., `var_name='weirs/weir1/crestlevel'`)
-      !If the variable name is a compound name, the output in `varset_name` will be the first part of the name (e.g., `tmp_var_name='weirs'`).
-      !If the variable name is not a compound name, the output in `tmp_var_name` is empty.
-      tmp_var_name = var_name !e.g., `var_name='weirs/weir1/crestlevel'`
-      call str_token(tmp_var_name, varset_name, DELIMS='/') 
+      if (type_name == "") then !If it has not been filled already
+         !Second we check if it is of a special case. It can be a compound name (e.g., 'weirs/weir1/crestlevel').
+         !If it is a compound name, we check on the last token (e.g., 'crestlevel'), as this has the information of the type. 
+          
+         !Split the variable name. 
+         !E.g., var_name='weirs/weir1/crestlevel' -> words(1)='weirs', words(2)='weir1', words(3)='crestlevel'; last_token=3
+         !E.g., var_name='frcu' -> words(1)='frcu', words(2)='', words(3)=''; last_token=1
+         call str_split(words,last_token, var_name, varset_name, DELIMS='/')
       
-      select case (tmp_var_name)
-      case ("") !it is not a compund name
-         select case (var_name)
+         !Case on the last token of the variable name.
+         select case (trim(words(last_token)))
             case ("netelemnode")
                type_name = "int"
             case ("flowelemnode", "flowelemnbs", "flowelemlns")
@@ -802,19 +809,21 @@ contains
                type_name = "type(t_voltable)"
             case ('network')
                type_name = "type(t_network)"
-         end select
-      case default !it is a compound name
-          type_name = "double"
-      end select
+            case default !for now, if it is a compound name, we assume it is a double
+               type_name = "double"
+            end select          
+      end if
       
-      !Third we check if it a constituent name (e.g., 'salt', 'tracer1', etc.)
-      if (numconst > 0) then
-         iconst = find_name(const_names, var_name)
+      if (type_name == "") then !If it has not been filled already
+         !Third we check if it a constituent name (e.g., 'salt', 'tracer1', etc.)
+         if (numconst > 0) then
+            iconst = find_name(const_names, var_name)
+         end if
+         if (iconst /= 0) then
+            type_name = "double"
+         end if
       end if
-      if (iconst /= 0) then
-         type_name = "double"
-      end if
-
+      
       c_type = string_to_char_array(trim(type_name), len(trim(type_name)))
 
    end subroutine get_var_type
