@@ -101,7 +101,7 @@ source_group(src/schematization/triggers FILES ${schematization_triggersSRC})
 source_group(src/timeseries FILES ${timeseriesSRC})
 source_group(src/utilities FILES ${utilitiesSRC})
 
-add_library(FBCTools_static STATIC 
+add_library(FBCTools_static STATIC
             ${FBCTools_static_SRC}
             ${dataBindingSRC}
             ${optimizationProblemSRC}
