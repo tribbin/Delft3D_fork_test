@@ -68,5 +68,25 @@ contains
    res = n_db_links > 0
 
    end function exist_dambreak_links
+   
+   !> Retrieve the set of snapped flowlinks for a dambreak
+   function retrieve_set_of_flowlinks_dambreak(i_dambreak) result(links)
+
+      integer, intent(in) :: i_dambreak !< Index of the dambreak
+      integer, dimension(:), allocatable :: links !< The set of flowlinks that this dambreak has been snapped to
+
+      integer :: n_links !< Total number of flowlinks in the set
+      integer :: k, i
+
+      n_links = db_last_link(i_dambreak) + 1 - db_first_link(i_dambreak)
+      allocate (links(n_links), source=-999)
+
+      i = 0
+      do k = db_first_link(i_dambreak), db_last_link(i_dambreak)
+         i = i + 1
+         links(i) = db_link_ids(k)
+      end do
+
+   end function retrieve_set_of_flowlinks_dambreak
 
 end module m_dambreak_data

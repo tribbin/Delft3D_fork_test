@@ -1675,6 +1675,7 @@ contains
    subroutine retrieve_set_of_flowlinks_for_polyline_structure(struc_type_id, i_struc, links)
       use MessageHandling, only: mess, LEVEL_ERROR
       use m_GlobalParameters
+      use m_dambreak_data, only: retrieve_set_of_flowlinks_dambreak
 
       integer, intent(in) :: struc_type_id !< The id of the type of the structure (e.g. ST_CULVERT)
       integer, intent(in) :: i_struc !< Index of the structure of this type
@@ -1690,7 +1691,7 @@ contains
       case (ST_DAM)
          call retrieve_set_of_flowlinks_dam(i_struc, links)
       case (ST_DAMBREAK)
-         call retrieve_set_of_flowlinks_dambreak(i_struc, links)
+         links = retrieve_set_of_flowlinks_dambreak(i_struc)
       case (ST_GATE)
          call retrieve_set_of_flowlinks_gate(i_struc, links)
       case (ST_COMPOUND)
@@ -1756,27 +1757,6 @@ contains
       end do
 
    end subroutine retrieve_set_of_flowlinks_dam
-
-!> Retrieve the set of snapped flowlinks for a dambreak
-   subroutine retrieve_set_of_flowlinks_dambreak(i_dambreak, links)
-      use m_dambreak_data, only: db_first_link, db_last_link, db_link_ids
-
-      integer, intent(in) :: i_dambreak !< Index of the dambreak
-      integer, dimension(:), allocatable, intent(out) :: links !< The set of flowlinks that this dambreak has been snapped to
-
-      integer :: n_links !< Total number of flowlinks in the set
-      integer :: k, i
-
-      n_links = db_last_link(i_dambreak) + 1 - db_first_link(i_dambreak)
-      allocate (links(n_links), source=-999)
-
-      i = 0
-      do k = db_first_link(i_dambreak), db_last_link(i_dambreak)
-         i = i + 1
-         links(i) = db_link_ids(k)
-      end do
-
-   end subroutine retrieve_set_of_flowlinks_dambreak
 
 !> Retrieve the set of snapped flowlinks for a gate
    subroutine retrieve_set_of_flowlinks_gate(i_gate, links)
