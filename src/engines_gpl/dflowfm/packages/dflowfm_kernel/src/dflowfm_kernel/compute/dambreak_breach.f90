@@ -93,8 +93,8 @@ contains
       use m_missing, only: dmiss
       use unstruc_channel_flow, only: network
       use m_partitioninfo, only: get_average_quantity_from_links
-      use m_dambreak_data, only: n_db_links, n_db_signals, dambreaks, &
-                                           db_first_link, db_last_link, db_link_ids, db_active_links
+      use m_dambreak_data, only: n_db_links, n_db_signals, dambreaks, db_first_link, db_last_link, db_link_ids, &
+          db_active_links, db_upstream_link_ids, db_downstream_link_ids
 
       real(kind=dp), intent(in) :: start_time !< start time
       real(kind=dp), intent(in) :: delta_time !< delta time
@@ -115,21 +115,21 @@ contains
 
       call reset_dambreak_variables(n_db_signals)
 
-      call update_dambreak_water_levels(start_time, UPSTREAM, db_upstream_levels, error)
+      call update_dambreak_water_levels(start_time, UPSTREAM, db_upstream_link_ids, db_upstream_levels, error)
       if (error /= 0) then
          success = .false.
          return
       end if
 
-      call update_dambreak_water_levels(start_time, DOWNSTREAM, db_downstream_levels, error)
+      call update_dambreak_water_levels(start_time, DOWNSTREAM, db_downstream_link_ids, db_downstream_levels, error)
       if (error /= 0) then
          success = .false.
          return
       end if
 
       ! u1 velocity on the flowlinks (averaged by the wetted area). The mask is the water level itself
-      error = get_average_quantity_from_links(db_first_link, db_last_link, au, db_link_ids(3, :), u1, &
-                                              db_link_ids(3, :), db_weight_averaged_values, 1, hu, dmiss, &
+      error = get_average_quantity_from_links(db_first_link, db_last_link, au, db_link_ids, u1, &
+                                              db_link_ids, db_weight_averaged_values, 1, hu, dmiss, &
                                               db_active_links, 0)
       if (error /= 0) then
          success = .false.
@@ -175,7 +175,7 @@ contains
    end subroutine reset_dambreak_variables
 
    !> update water levels for dambreaks
-   subroutine update_dambreak_water_levels(start_time, up_down, water_levels, error)
+   subroutine update_dambreak_water_levels(start_time, up_down, db_updowns_link_ids, water_levels, error)
       use m_flow, only: s1, hu
       use m_partitioninfo, only: get_average_quantity_from_links
       use m_dambreak_data, only: n_db_links, dambreaks, breach_start_link, db_first_link, db_last_link, &
@@ -186,6 +186,7 @@ contains
 
       real(kind=dp), intent(in) :: start_time !< start time
       integer, intent(in) :: up_down !< 1 - upstream, 2 - downstream
+      integer, dimension(:), intent(in) :: db_updowns_link_ids !< upstream or downstream link ids
       real(kind=dp), dimension(:), intent(inout) :: water_levels !< water levels
       integer, intent(out) :: error !< error code
 
@@ -201,7 +202,7 @@ contains
       if (n_averaging(up_down) > 0) then
          error = get_average_quantity_from_links(db_first_link(averaging_mapping(1:n_averaging(up_down), up_down)), &
                                                  db_last_link(averaging_mapping(1:n_averaging(up_down), up_down)), wu, &
-                                                 db_link_ids(3, :), s1, db_link_ids(up_down, :), db_weight_averaged_values, &
+                                                 db_link_ids, s1, db_updowns_link_ids, db_weight_averaged_values, &
                                                  0, hu, dmiss, db_active_links, 0)
          if (error /= 0) then
             return
@@ -215,7 +216,7 @@ contains
                else if (abs(start_time - &
                             network%sts%struct(dambreaks(averaging_mapping(n, up_down)))%dambreak%T0) < 1e-10_dp) then
                   water_levels(averaging_mapping(n, up_down)) = &
-                     s1(db_link_ids(up_down, breach_start_link(averaging_mapping(n, up_down))))
+                     s1(db_updowns_link_ids(breach_start_link(averaging_mapping(n, up_down))))
                else
                   continue
                end if
@@ -320,7 +321,7 @@ contains
       real(kind=dp) :: right_side !< total dambreak structure width on the "right" [m]
 
       ! process the breach at the starting link
-      Lf = abs(db_link_ids(3, starting_link))
+      Lf = abs(db_link_ids(starting_link))
       if (Lf > 0 .and. width > 0.0_dp) then
          ! some breach, set to breached crest level
          bob(1, Lf) = max(bob0(1, Lf), crest_level)
@@ -371,7 +372,7 @@ contains
 
       ! process dam "left" of initial breach segment
       do k = starting_link - 1, left_link, -1
-         Lf = abs(db_link_ids(3, k))
+         Lf = abs(db_link_ids(k))
          if (left_breach_width > 0.0_dp) then
             ! some breach, set to breached crest level
             if (Lf > 0) then
@@ -393,7 +394,7 @@ contains
 
       ! process dam "right" of initial breach segment
       do k = starting_link + 1, right_link
-         Lf = abs(db_link_ids(3, k))
+         Lf = abs(db_link_ids(k))
          if (right_breach_width > 0.0_dp) then
             ! some breach, set to breached crest level
             if (Lf > 0) then

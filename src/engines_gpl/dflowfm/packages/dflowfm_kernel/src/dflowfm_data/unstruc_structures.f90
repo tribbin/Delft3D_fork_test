@@ -1773,7 +1773,7 @@ contains
       i = 0
       do k = db_first_link(i_dambreak), db_last_link(i_dambreak)
          i = i + 1
-         links(i) = db_link_ids(3, k)
+         links(i) = db_link_ids(k)
       end do
 
    end subroutine retrieve_set_of_flowlinks_dambreak

@@ -398,7 +398,8 @@ contains
       use m_flowgeom, only: ln, kcu, wu, lncn, snu, csu
       use m_inquire_flowgeom, only: findnode
       use m_dambreak_data, only: n_db_links, n_db_signals, db_link_ids, breach_start_link, db_ids, &
-                                           dambreaks, db_link_effective_width, db_first_link, db_last_link
+                                dambreaks, db_link_effective_width, db_first_link, db_last_link, &
+          db_upstream_link_ids, db_downstream_link_ids
       use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, &
                                    add_dambreaklocation_upstream, add_dambreaklocation_downstream, &
                                    add_averaging_upstream_signal, add_averaging_downstream_signal
@@ -429,7 +430,9 @@ contains
       n_db_links = db_last_link(n_db_signals)
 
       call allocate_and_initialize_dambreak_data(n_db_signals)
-      call realloc(db_link_ids, [3, n_db_links], fill=0)
+      call realloc(db_link_ids, n_db_links, fill=0)
+      call realloc(db_upstream_link_ids, n_db_links, fill=0)
+      call realloc(db_downstream_link_ids, n_db_links, fill=0)
 
       do n = 1, n_db_signals
          associate (pstru => network%sts%struct(dambridx(n)))
@@ -443,9 +446,9 @@ contains
                   kb = ln(2, Lf)
                   kbi = ln(1, Lf)
                end if
-               db_link_ids(1, k) = kb
-               db_link_ids(2, k) = kbi
-               db_link_ids(3, k) = L
+               db_upstream_link_ids(k) = kb
+               db_downstream_link_ids(k) = kbi
+               db_link_ids(k) = L
             end do
          end associate
       end do
@@ -537,7 +540,7 @@ contains
                do k = db_first_link(n), db_last_link(n)
                   indexLink = indexLink + 1
                   ! compute the mid point
-                  Lf = abs(db_link_ids(3, k))
+                  Lf = abs(db_link_ids(k))
                   k1 = ln(1, Lf)
                   k2 = ln(2, Lf)
                   xl(indexLink, 1) = xz(k1)
@@ -555,7 +558,7 @@ contains
 
                ! compute the normal projections of the start and endpoints of the flow links
                do k = db_first_link(n), db_last_link(n)
-                  Lf = abs(db_link_ids(3, k))
+                  Lf = abs(db_link_ids(k))
                   if (kcu(Lf) == 3) then ! 1d2d flow link
                      db_link_effective_width(k) = wu(Lf)
                   else
@@ -616,7 +619,8 @@ contains
                                    add_averaging_downstream_signal
       use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
       use m_dambreak_data, only: n_db_links, n_db_signals, db_first_link, db_last_link, db_link_effective_width, &
-          db_link_actual_width, db_link_ids, dambreaks, breach_start_link, db_ids, db_active_links
+          db_link_actual_width, db_link_ids, dambreaks, breach_start_link, db_ids, db_active_links, &
+          db_upstream_link_ids, db_downstream_link_ids
 
       implicit none
       logical :: status
@@ -1757,53 +1761,16 @@ contains
       if (n_db_signals > 0) then
 
          call allocate_and_initialize_dambreak_data(n_db_links)
-
-         if (allocated(db_link_ids)) then
-            deallocate (db_link_ids)
-         end if
-         allocate (db_link_ids(3, n_db_links), stat=ierr) ! the last row stores the actual
-         ! db_link_ids is an integer array? This is flow_init_structurecontrol_old so will be removed soon
-         db_link_ids(:,:) = 0.0_dp
-         if (allocated(dambreaks)) then
-            deallocate (dambreaks)
-         end if
-         allocate (dambreaks(n_db_signals))
-         dambreaks(:) = 0
-
-         if (allocated(breach_start_link)) then
-            deallocate (breach_start_link)
-         end if
-         allocate (breach_start_link(n_db_signals))
-         breach_start_link(:) = -1
-
-         if (allocated(db_breach_depths)) then
-            deallocate (db_breach_depths)
-         end if
-         allocate (db_breach_depths(n_db_signals))
-         db_breach_depths(:) = 0.0_dp
-
-         if (allocated(db_breach_widths)) then
-            deallocate (db_breach_widths)
-         end if
-         allocate (db_breach_widths(n_db_signals))
-         db_breach_widths(:) = 0.0_dp
-
-         if (allocated(db_ids)) then
-            deallocate (db_ids)
-         end if
-         allocate (db_ids(n_db_signals))
-
-         if (allocated(db_active_links)) then
-            deallocate (db_active_links)
-         end if
-         allocate (db_active_links(n_db_links))
-         db_active_links(:) = 0
-
-         if (allocated(db_levels_widths_table)) then
-            deallocate (db_levels_widths_table)
-         end if
-         allocate (db_levels_widths_table(n_db_signals * 2))
-         db_levels_widths_table = 0.0_dp
+         call realloc(db_upstream_link_ids, n_db_links, fill=0)
+         call realloc(db_downstream_link_ids, n_db_links, fill=0)
+         call realloc(db_link_ids, n_db_links, fill=0)
+         call realloc(dambreaks, n_db_signals, fill=0)
+         call realloc(breach_start_link, n_db_signals, fill=-1)
+         call realloc(db_breach_depths, n_db_signals, fill=0.0_dp)
+         call realloc(db_breach_widths, n_db_signals, fill=0.0_dp)
+         call realloc(db_ids, n_db_signals, fill="")
+         call realloc(db_active_links, n_db_links, fill=0)
+         call realloc(db_levels_widths_table, 2*n_db_signals, fill=0.0_dp)
 
          do n = 1, n_db_signals
             do k = db_first_link(n), db_last_link(n)
@@ -1816,10 +1783,9 @@ contains
                   kb = ln(2, Lf)
                   kbi = ln(1, Lf)
                end if
-               ! db_link_ids
-               db_link_ids(1, k) = kb
-               db_link_ids(2, k) = kbi
-               db_link_ids(3, k) = L
+               db_upstream_link_ids(k) = kb
+               db_downstream_link_ids(k) = kbi
+               db_link_ids(k) = L
             end do
          end do
 
@@ -1854,9 +1820,9 @@ contains
                if (db_last_link(n) >= db_first_link(n)) then
                   ! structure is active in current grid on one or more flow links: just use the first link of the the structure (the network%sts%struct(istrtmp)%link_number is not used in computations)
                   k = db_first_link(n)
-                  k1 = db_link_ids(1, k)
-                  k2 = db_link_ids(2, k)
-                  Lf = abs(db_link_ids(3, k))
+                  k1 = db_upstream_link_ids(k)
+                  k2 = db_downstream_link_ids(k)
+                  Lf = abs(db_link_ids(k))
                else
                   ! Structure is not active in current grid: use dummy calc points and flow links, not used in computations.
                   k1 = 0
@@ -1963,7 +1929,7 @@ contains
             do k = db_first_link(n), db_last_link(n)
                indexLink = indexLink + 1
                ! compute the mid point
-               Lf = abs(db_link_ids(3, k))
+               Lf = abs(db_link_ids(k))
                k1 = ln(1, Lf)
                k2 = ln(2, Lf)
                xl(indexLink, 1) = xz(k1)
@@ -1991,7 +1957,7 @@ contains
 
             ! compute the normal projections of the start and endpoints of the flow links
             do k = db_first_link(n), db_last_link(n)
-               Lf = abs(db_link_ids(3, k))
+               Lf = abs(db_link_ids(k))
                if (kcu(Lf) == 3) then ! 1d2d flow link
                   db_link_effective_width(k) = wu(Lf)
                else

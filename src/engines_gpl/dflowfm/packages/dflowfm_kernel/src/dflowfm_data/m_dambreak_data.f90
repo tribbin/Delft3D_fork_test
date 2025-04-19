@@ -41,7 +41,9 @@ module m_dambreak_data
    integer, allocatable :: db_last_link(:) !< last dambreak link for each signal
    integer, allocatable :: db_active_links(:) !< db_active_links, open dambreak links
    integer, allocatable :: breach_start_link(:) !< the starting link, the closest to the breach point
-   integer, allocatable :: db_link_ids(:, :) !< dambreak links index array
+   integer, allocatable :: db_upstream_link_ids(:) !< dambreak links index array
+   integer, allocatable :: db_downstream_link_ids(:) !< dambreak links index array
+   integer, allocatable :: db_link_ids(:) !< dambreak links index array
    real(kind=dp), allocatable, target :: db_levels_widths_table(:) !< dambreak widths and heights
    character(len=128), allocatable, target :: db_ids(:) !< the dambreak ids
    real(kind=dp), dimension(:), allocatable, public :: db_link_effective_width !< dambreak effective flow widths

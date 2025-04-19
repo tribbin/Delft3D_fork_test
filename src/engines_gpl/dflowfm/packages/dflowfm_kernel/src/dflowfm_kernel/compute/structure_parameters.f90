@@ -34,9 +34,8 @@ module m_structure_parameters
    private
    public :: structure_parameters
 contains
-! =================================================================================================
-! =================================================================================================
-   subroutine structure_parameters
+
+    subroutine structure_parameters
       use m_flowgeom, only: ln, wu, bob
       use m_flow
       use m_structures
@@ -51,7 +50,7 @@ contains
       use m_longculverts, only: nlongculverts, longculverts, newculverts
       use m_dambreak_breach, only: db_upstream_levels, db_downstream_levels
       use m_dambreak_data, only: p_n_db_signals, db_first_link, db_last_link, dambreaks, db_link_ids, db_link_actual_width, &
-          db_active_links, breach_start_link
+          db_active_links, breach_start_link, db_upstream_link_ids
 
       integer :: i, n, L, Lf, La, ierr, k, ku, kd, istru, nlinks
       real(kind=dp) :: dir
@@ -538,14 +537,14 @@ contains
                   cycle
                end if
 
-               Lf = db_link_ids(3, L)
+               Lf = db_link_ids(L)
                La = abs(Lf)
                if (jampi > 0) then
                   call link_ghostdata(my_rank, idomain(ln(1, La)), idomain(ln(2, La)), jaghost, idmn_ghost)
                   if (jaghost == 1) cycle
                end if
                dir = 1.0_dp
-               if (Ln(1, La) /= db_link_ids(1, L)) then
+               if (Ln(1, La) /= db_upstream_link_ids(L)) then
                   dir = -1.0_dp
                end if
                valdambreak(IVAL_WIDTH, n) = valdambreak(IVAL_WIDTH, n) + db_link_actual_width(L)
@@ -565,7 +564,7 @@ contains
                   valdambreak(IVAL_DB_CRESTH, n) = network%sts%struct(istru)%dambreak%crest_level
                else
                   valdambreak(1:NUMVALS_DAMBREAK - 1, n) = dmiss ! No breach started yet, set FillValue
-                  La = abs(db_link_ids(3, breach_start_link(n)))
+                  La = abs(db_link_ids(breach_start_link(n)))
                   valdambreak(IVAL_DB_CRESTH, n) = bob(1, La) ! No breach started yet, use bob as 'crest'.
                   valdambreak(IVAL_DB_CRESTW, n) = 0.0_dp ! No breach started yet, set crest width to 0
                   cycle

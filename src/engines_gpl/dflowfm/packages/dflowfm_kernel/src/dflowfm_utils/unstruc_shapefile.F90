@@ -1629,7 +1629,7 @@ contains
          i = 0
          do L = db_first_link(n), db_last_link(n)
             ! create a shape object with the "simple" method, for each shape 2 components are added x, y
-            Lf = db_link_ids(3, L)
+            Lf = db_link_ids(L)
             if (Lf == 0) cycle
 
             write (lenobj_loc, '(I4.4)') i

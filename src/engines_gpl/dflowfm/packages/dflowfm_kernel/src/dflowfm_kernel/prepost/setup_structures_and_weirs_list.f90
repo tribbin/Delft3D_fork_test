@@ -93,7 +93,7 @@ contains
          do n = 1, p_n_db_signals
             if (dambreaks(n) /= 0) then
                do k = db_first_link(n), db_last_link(n)
-                  L = abs(db_link_ids(3, k))
+                  L = abs(db_link_ids(k))
                   does_link_contain_structures(L) = .true.
                end do
             end if

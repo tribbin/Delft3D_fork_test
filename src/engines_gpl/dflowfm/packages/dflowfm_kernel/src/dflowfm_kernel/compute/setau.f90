@@ -95,7 +95,7 @@ contains
          ! set correct flow areas for dambreaks, using the actual flow width
          do n = 1, p_n_db_signals
             do k = db_first_link(n), db_last_link(n)
-               L = abs(db_link_ids(3, k))
+               L = abs(db_link_ids(k))
                au(L) = hu(L) * db_link_actual_width(k)
             end do
          end do
