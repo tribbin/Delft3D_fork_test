@@ -27,6 +27,7 @@
 !
 !-------------------------------------------------------------------------------
     
+!> Module for handling dambreak data in the model
 module m_dambreak_data
    use precision, only: dp
 
@@ -55,6 +56,7 @@ module m_dambreak_data
 
 contains
 
+!> Initialize the dambreak data
    subroutine default_dambreak_data()
 
       n_db_links = 0 ! nr of dambreak links
@@ -62,15 +64,16 @@ contains
 
    end subroutine default_dambreak_data
    
+   !> Check if there are any dambreak links
    pure function exist_dambreak_links() result(res)
-   logical :: res 
+      logical :: res !< True if there are any dambreak links
 
-   res = n_db_links > 0
+      res = n_db_links > 0
 
    end function exist_dambreak_links
    
    !> Retrieve the set of snapped flowlinks for a dambreak
-   function retrieve_set_of_flowlinks_dambreak(i_dambreak) result(links)
+   pure function retrieve_set_of_flowlinks_dambreak(i_dambreak) result(links)
 
       integer, intent(in) :: i_dambreak !< Index of the dambreak
       integer, dimension(:), allocatable :: links !< The set of flowlinks that this dambreak has been snapped to
@@ -89,4 +92,41 @@ contains
 
    end function retrieve_set_of_flowlinks_dambreak
 
+   pure function should_write_dambreaks() result(res)
+   
+      logical :: res 
+      integer :: objects !< total number of objects to write
+      integer :: n !< loop index
+
+      ! Count the number of active links for each signal
+      objects = n_db_signals
+      do n = 1, n_db_signals
+         if (db_first_link(n) > db_last_link(n)) then
+            objects = objects - 1
+         end if
+      end do
+        
+      res = objects > 0
+   end function should_write_dambreaks
+   
+   
+   !> set correct flow areas for dambreaks, using the actual flow width
+   subroutine multiply_by_dambreak_link_actual_width(hu, au)
+   
+      real(kind=dp) , intent(in) :: hu(:) !< source
+      real(kind=dp) , intent(inout) :: au(:) !< results
+
+      integer :: n !< loop index
+      integer :: k !< loop index
+      integer :: link !< link index
+      
+      do n = 1, n_db_signals
+         do k = db_first_link(n), db_last_link(n)
+            link = abs(db_link_ids(k))
+            au(link) = hu(link) * db_link_actual_width(k)
+         end do
+      end do
+         
+   end subroutine multiply_by_dambreak_link_actual_width
+   
 end module m_dambreak_data

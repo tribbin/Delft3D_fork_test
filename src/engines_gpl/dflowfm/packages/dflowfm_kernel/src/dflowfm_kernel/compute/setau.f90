@@ -57,10 +57,10 @@ contains
       use fm_external_forcings_data, only: ngatesg, L1gatesg, L2gatesg, kgate, zgate, ncgensg, zcgen, L1cgensg, L2cgensg, kcgen, &
          nklep, lklep, nvalv, lvalv, valv, nqbnd, L1qbnd, L2qbnd, kbndu, huqbnd, wwssav_all, japartqbnd, &
          zbndq, qbndhutrs, at_all
-      use m_dambreak_data, only: p_n_db_signals, db_first_link, db_last_link, db_link_ids, db_link_actual_width
+      use m_dambreak_data, only: multiply_by_dambreak_link_actual_width
 
       integer :: n, nq, L, k2
-      integer :: ng, Lnu, LL, iup, k
+      integer :: ng, Lnu, LL, iup
       real(kind=dp) :: at, ssav, wwav, fac, zlu, zgaten, sup, bupmin, bup, openfact, afac, hh
       integer :: upstream_cell
       integer :: upstream_cell_index
@@ -93,12 +93,8 @@ contains
          end if
 
          ! set correct flow areas for dambreaks, using the actual flow width
-         do n = 1, p_n_db_signals
-            do k = db_first_link(n), db_last_link(n)
-               L = abs(db_link_ids(k))
-               au(L) = hu(L) * db_link_actual_width(k)
-            end do
-         end do
+         call multiply_by_dambreak_link_actual_width(hu, au)
+
          call reduceFlowAreaAtLongculverts()
 
       end if
