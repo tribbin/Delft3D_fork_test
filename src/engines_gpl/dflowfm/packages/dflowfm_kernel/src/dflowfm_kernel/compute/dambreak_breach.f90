@@ -65,7 +65,7 @@ contains
    subroutine allocate_and_initialize_dambreak_data(n_db_signals)
       use m_alloc, only: realloc
       use m_dambreak_data, only: dambreaks, db_ids, db_levels_widths_table, n_db_links, &
-          breach_start_link, db_active_links
+          breach_start_link, db_active_links, db_link_ids, db_upstream_link_ids, db_downstream_link_ids
 
       integer, intent(in) :: n_db_signals !< number of dambreak signals
 
@@ -73,7 +73,7 @@ contains
       call realloc(breach_start_link, n_db_signals, fill=-1)
       call realloc(db_breach_depths, n_db_signals, fill=0.0_dp)
       call realloc(db_breach_widths, n_db_signals, fill=0.0_dp)
-      call realloc(db_ids, n_db_signals)
+      call realloc(db_ids, n_db_signals, fill="")
       call realloc(db_active_links, n_db_links, fill=0)
       call realloc(db_levels_widths_table, n_db_signals * 2, fill=0.0_dp)
       call realloc(db_upstream_levels, n_db_signals)
@@ -82,6 +82,9 @@ contains
       call realloc(location_mapping, [n_db_signals, NUMBER_COLUMNS], fill=0)
       call realloc(locations, [n_db_signals, NUMBER_COLUMNS], fill=0)
       call realloc(averaging_mapping, [n_db_signals, NUMBER_COLUMNS], fill=0)
+      call realloc(db_link_ids, n_db_links, fill=0)
+      call realloc(db_upstream_link_ids, n_db_links, fill=0)
+      call realloc(db_downstream_link_ids, n_db_links, fill=0)
       n_locations(:) = 0
       n_averaging(:) = 0
 

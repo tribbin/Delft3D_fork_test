@@ -62,7 +62,7 @@ contains
       use m_partitioninfo, only: jampi
       use string_module, only: strcmpi
       use messagehandling, only: IDLEN
-      use m_dambreak_data, only: n_db_signals, db_first_link, db_last_link, n_db_links
+      use m_dambreak_data, only: n_db_signals, db_first_link, db_last_link
 
       implicit none
       logical :: status
@@ -169,7 +169,6 @@ contains
          istat = max(istat, initialize_compounds(network%cmps, network%sts))
       end if
       npumpsg = network%sts%numPumps
-      n_db_links = 0
 
       allocate (xdum(1), ydum(1), kdum(1), stat=ierr)
       call aerr('xdum(1), ydum(1), kdum(1)', ierr, 3)
@@ -399,7 +398,7 @@ contains
       use m_inquire_flowgeom, only: findnode
       use m_dambreak_data, only: n_db_links, n_db_signals, db_link_ids, breach_start_link, db_ids, &
                                 dambreaks, db_link_effective_width, db_first_link, db_last_link, &
-          db_upstream_link_ids, db_downstream_link_ids
+                                db_upstream_link_ids, db_downstream_link_ids
       use m_dambreak_breach, only: allocate_and_initialize_dambreak_data, &
                                    add_dambreaklocation_upstream, add_dambreaklocation_downstream, &
                                    add_averaging_upstream_signal, add_averaging_downstream_signal
@@ -423,6 +422,8 @@ contains
 
       character(len=Idlen) :: qid
       
+      n_db_links = 0
+
       if (n_db_signals <= 0) then
          return
       end if
@@ -430,9 +431,6 @@ contains
       n_db_links = db_last_link(n_db_signals)
 
       call allocate_and_initialize_dambreak_data(n_db_signals)
-      call realloc(db_link_ids, n_db_links, fill=0)
-      call realloc(db_upstream_link_ids, n_db_links, fill=0)
-      call realloc(db_downstream_link_ids, n_db_links, fill=0)
 
       do n = 1, n_db_signals
          associate (pstru => network%sts%struct(dambridx(n)))
@@ -619,7 +617,7 @@ contains
                                    add_averaging_downstream_signal
       use m_dambreak, only: BREACH_GROWTH_VERHEIJVDKNAAP, BREACH_GROWTH_TIMESERIES
       use m_dambreak_data, only: n_db_links, n_db_signals, db_first_link, db_last_link, db_link_effective_width, &
-          db_link_actual_width, db_link_ids, dambreaks, breach_start_link, db_ids, db_active_links, &
+          db_link_actual_width, db_link_ids, dambreaks, breach_start_link, db_ids, &
           db_upstream_link_ids, db_downstream_link_ids
 
       implicit none
@@ -1761,16 +1759,6 @@ contains
       if (n_db_signals > 0) then
 
          call allocate_and_initialize_dambreak_data(n_db_links)
-         call realloc(db_upstream_link_ids, n_db_links, fill=0)
-         call realloc(db_downstream_link_ids, n_db_links, fill=0)
-         call realloc(db_link_ids, n_db_links, fill=0)
-         call realloc(dambreaks, n_db_signals, fill=0)
-         call realloc(breach_start_link, n_db_signals, fill=-1)
-         call realloc(db_breach_depths, n_db_signals, fill=0.0_dp)
-         call realloc(db_breach_widths, n_db_signals, fill=0.0_dp)
-         call realloc(db_ids, n_db_signals, fill="")
-         call realloc(db_active_links, n_db_links, fill=0)
-         call realloc(db_levels_widths_table, 2*n_db_signals, fill=0.0_dp)
 
          do n = 1, n_db_signals
             do k = db_first_link(n), db_last_link(n)
