@@ -48,9 +48,9 @@ contains
       use m_compound
       use m_GlobalParameters
       use m_longculverts, only: nlongculverts, longculverts, newculverts
-      use m_dambreak_breach, only: db_upstream_levels, db_downstream_levels
+      use m_dambreak_breach, only: db_upstream_levels, db_downstream_levels, is_not_db_active_link
       use m_dambreak_data, only: p_n_db_signals, db_first_link, db_last_link, dambreaks, db_link_ids, db_link_actual_width, &
-          db_active_links, breach_start_link, db_upstream_link_ids
+          breach_start_link, db_upstream_link_ids
 
       integer :: i, n, L, Lf, La, ierr, k, ku, kd, istru, nlinks
       real(kind=dp) :: dir
@@ -533,7 +533,7 @@ contains
             valdambreak(1:NUMVALS_DAMBREAK - 1, n) = 0.0_dp
             istru = dambreaks(n)
             do L = db_first_link(n), db_last_link(n)
-               if (db_active_links(L) /= 1) then
+               if (is_not_db_active_link(L)) then
                   cycle
                end if
 

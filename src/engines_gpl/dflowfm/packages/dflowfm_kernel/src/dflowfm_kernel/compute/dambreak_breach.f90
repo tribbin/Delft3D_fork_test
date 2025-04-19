@@ -41,6 +41,7 @@ module m_dambreak_breach
    public :: add_dambreaklocation_downstream
    public :: add_averaging_upstream_signal
    public :: add_averaging_downstream_signal
+   public :: is_not_db_active_link
 
    ! time varying, values can be retrieved via BMI interface
    real(kind=dp), dimension(:), allocatable, target, public :: db_breach_depths !< dambreak breach depths (as a level)
@@ -59,6 +60,7 @@ module m_dambreak_breach
    real(kind=dp), dimension(:, :), allocatable :: db_weight_averaged_values !< (1,:) weight averaged values of waterlevel per dambreaklink
                                                                            !! (2,:) weight per dambreaklink
    real(kind=dp), allocatable, target :: levels_widths_from_table(:) !< dambreak heights and widths
+   integer, dimension(:), allocatable :: db_active_links !< db_active_links, open dambreak links
 
 
 contains
@@ -67,7 +69,7 @@ contains
    subroutine allocate_and_initialize_dambreak_data(n_db_signals)
       use m_alloc, only: realloc
       use m_dambreak_data, only: dambreaks, db_ids, n_db_links, breach_start_link, &
-          db_active_links, db_link_ids, db_upstream_link_ids, db_downstream_link_ids
+          db_link_ids, db_upstream_link_ids, db_downstream_link_ids
 
       integer, intent(in) :: n_db_signals !< number of dambreak signals
 
@@ -99,7 +101,7 @@ contains
       use unstruc_channel_flow, only: network
       use m_partitioninfo, only: get_average_quantity_from_links
       use m_dambreak_data, only: n_db_links, n_db_signals, dambreaks, db_first_link, db_last_link, db_link_ids, &
-          db_active_links, db_upstream_link_ids, db_downstream_link_ids
+          db_upstream_link_ids, db_downstream_link_ids
 
       real(kind=dp), intent(in) :: start_time !< start time
       real(kind=dp), intent(in) :: delta_time !< delta time
@@ -183,8 +185,7 @@ contains
    subroutine update_dambreak_water_levels(start_time, up_down, updowns_link_ids, water_levels, error)
       use m_flow, only: s1, hu
       use m_partitioninfo, only: get_average_quantity_from_links
-      use m_dambreak_data, only: n_db_links, dambreaks, breach_start_link, db_first_link, db_last_link, &
-                                           db_link_ids, db_active_links
+      use m_dambreak_data, only: n_db_links, dambreaks, breach_start_link, db_first_link, db_last_link, db_link_ids
       use m_flowgeom, only: wu
       use m_missing, only: dmiss
       use unstruc_channel_flow, only: network
@@ -319,7 +320,7 @@ contains
    subroutine adjust_bobs_on_dambreak_breach(width, max_width, crest_level, starting_link, left_link, right_link, &
                                              structure_id)
       use m_flowgeom, only: bob, bob0
-      use m_dambreak_data, only: db_link_ids, db_active_links, db_link_effective_width, db_link_actual_width
+      use m_dambreak_data, only: db_link_ids, db_link_effective_width, db_link_actual_width
       use m_dambreak, only: dambreak_widening, DBW_SYMM, DBW_PROP, DBW_SYMM_ASYMM
       use messagehandling, only: msgbuf, LEVEL_WARN, SetMessage
 
@@ -525,4 +526,14 @@ contains
          end do
       end if
    end subroutine  adjust_bobs_for_dambreaks
+   
+   pure function is_not_db_active_link(link) result(res)
+   
+      integer, intent(in) :: link !< index of the flow link
+      logical :: res !< True if the link is not an active dambreak link
+   
+      res = db_active_links(link) /= 1
+   
+   end function is_not_db_active_link
+   
 end module m_dambreak_breach
