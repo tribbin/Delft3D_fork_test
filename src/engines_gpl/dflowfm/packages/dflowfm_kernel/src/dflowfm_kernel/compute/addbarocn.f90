@@ -100,7 +100,7 @@ contains
       use m_flowparameters, only: epshu
       use m_flow, only: zws
       use m_transport, only: ISALT, ITEMP, constituents
-      use m_physcoef, only: rhomean, maxitpresdens, apply_thermobaricity, ag
+      use m_physcoef, only: rhomean, max_iterations_pressure_density, apply_thermobaricity, ag
       use m_get_kbot_ktop, only: getkbotktop
       use m_density, only: calculate_density
 
@@ -147,7 +147,7 @@ contains
             rhosww(k - 1) = calculate_density(saw(k - kb), tmw(k - kb)) - rhomean
          else
             pdb = pdb + rhomean * dzz
-            do i = 1, maxitpresdens
+            do i = 1, max_iterations_pressure_density
                pd = pu + 0.5_dp * (rhosww(k) + rhosww(k - 1)) * dzz ! start with previous step estimate
                p0d = ag * (pd + pdb) ! total pressure
                rhosww(k - 1) = calculate_density(saw(k - kb), tmw(k - kb), p0d) - rhomean

@@ -99,7 +99,7 @@ module m_physcoef
 
    integer :: idensform !< 0 = Uniform density, 1 = Eckart, 2 = UNESCO, 3 = UNESCO83
    logical :: apply_thermobaricity !< Check if density is pressure dependent
-   integer :: Maxitpresdens = 1 !< max nr of density-pressure iterations
+   integer :: max_iterations_pressure_density = 1 !< max nr of density-pressure iterations
    integer :: Jarhointerfaces = 0 !< rho computed at vertical interfaces, yes=1, 0=cell center
    integer :: Jabarocponbnd = 1 !< baroclini pressure on open boundaries yes/no
 

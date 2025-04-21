@@ -157,7 +157,7 @@ contains
       use m_flow, only: zws, numtopsig, kmxn, ktop
       use m_flowparameters, only: jarhoxu
       use m_transport, only: ISALT, ITEMP, constituents
-      use m_physcoef, only: rhomean, maxitpresdens, ag, apply_thermobaricity
+      use m_physcoef, only: rhomean, max_iterations_pressure_density, ag, apply_thermobaricity
       use m_density, only: calculate_density
 
       integer, intent(in) :: LL, Lb, Lt
@@ -248,7 +248,7 @@ contains
             else
                pdb = (zws(ktz) - zws(kz - 1)) * rhomean
                rvk = rvdn(k + 1) + 0.5_dp * dzz * (rhosww(k) + rhosww(k - 1))
-               do i = 1, maxitpresdens
+               do i = 1, max_iterations_pressure_density
                   p0d = ag * (rvk + pdb) ! total pressure
                   rhow0 = calculate_density(saw0, tmw0, p0d) - rhomean
                   rvk = rvdn(k + 1) + 0.5_dp * dzz * (rhosww(k) + rhow0)
