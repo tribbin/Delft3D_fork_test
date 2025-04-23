@@ -3037,8 +3037,8 @@ contains
       end if
 
       call prop_set(prop_ptr, 'numerics', 'Tlfsmo', Tlfsmo, 'Fourier smoothing time (s) on water level boundaries')
-      if (writeall .or. keepstbndonoutflow > 0) then
-         call prop_set(prop_ptr, 'numerics', 'Keepstbndonoutflow', keepstbndonoutflow, 'Keep sal and tem signals on bnd also at outflow, 1=yes, 0=no=default=copy inside value on outflow')
+      if (writeall .or. keepstbndonoutflow /= 1) then
+         call prop_set(prop_ptr, 'numerics', 'Keepstbndonoutflow', keepstbndonoutflow, 'Keep salinity and temperature signals on boundary cells at outflow (0: no (like Thatcher-Harleman), 1: yes (use prescribed boundary conditions)')
       end if
 
       if (writeall .or. jadiffusiononbnd == 0) then
@@ -3139,8 +3139,8 @@ contains
          call prop_set(prop_ptr, 'numerics', 'AntiCreep', jacreep, 'Include anti-creep to suppress artifical vertical diffusion (0: no, 1: yes).')
       end if
 
-      if (writeall .or. Jabarocponbnd /= 0) then
-         call prop_set(prop_ptr, 'numerics', 'Barocponbnd', jabarocponbnd, 'Use fix in barocp for zlaybed 0,1, 1=default)')
+      if (writeall .or. Jabarocponbnd /= 1) then
+         call prop_set(prop_ptr, 'numerics', 'Barocponbnd', jabarocponbnd, 'Include baroclinic pressure on open boundaries  (0: no, 1: yes).')
       end if
       if (writeall .or. max_iterations_pressure_density /= 1) then
          call prop_set(prop_ptr, 'numerics', 'maxitpresdens', max_iterations_pressure_density, 'Max nr of iterations in pressure-density coupling, only used if thermobaricity is true.')
@@ -3301,7 +3301,7 @@ contains
       call prop_set(prop_ptr, 'physics', 'Rhomean', rhomean, 'Average water density (kg/m3)')
 
       call prop_set(prop_ptr, 'physics', 'Idensform', idensform, 'Density calulation (0: uniform, 1: Eckart, 2: UNESCO, 3: UNESCO83)')
-      call prop_set(prop_ptr, 'physics', 'thermobaricity', apply_thermobaricity, 'Include pressure effects on water density. Only works for idensform = 3 (UNESCO 83).')
+      call prop_set(prop_ptr, 'physics', 'thermobaricity', apply_thermobaricity, 'Include pressure effects on water density. Only works for idensform = 3 (UNESCO83).')
 
       call prop_set(prop_ptr, 'physics', 'Ag', ag, 'Gravitational acceleration')
       call prop_set(prop_ptr, 'physics', 'TidalForcing', jatidep, 'Tidal forcing, if jsferic=1 (0: no, 1: yes)')

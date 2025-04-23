@@ -31,10 +31,6 @@
 !
 
 module m_update_verticalprofiles
-   use m_tridag, only: tridag
-   use m_model_specific, only: update_turkin_modelspecific
-   use m_wave_fillsurdis, only: wave_fillsurdis
-   use m_vertical_profile_u0, only: vertical_profile_u0
 
    implicit none
 
@@ -45,46 +41,43 @@ module m_update_verticalprofiles
 contains
 
    subroutine update_verticalprofiles()
-!c************************************************************************
-!c
-!c         D e l f t      H y d r a u l i c s   -   Section    M-C-M
-!c
-!c             Module: based on Subroutine tratur in DPM
-!c           Function: Transport solver tke and epsilon plus vertical momentum exchange u0
-!c        Method used: Teta method for integration in time.
-!c                     Tke and eps computed at layer interfaces.
-!c                     SANCTUM
-!c               Date: 13:26 dinsdag 4 augustus 1998
-!c         Programmer: R.E. Uittenbogaard
-!c************************************************************************
-
-      use m_getustbcfuhi
+      use m_getustbcfuhi, only: getustbcfuhi
       use m_doaddksources, only: doaddksources
-      use m_flow
+      use m_flow, only: iturbulencemodel, kmx, iadvec, javau, hu, lbot, ltop, ustb, cfuhi, advi, jawave, jawavestokes, flowwithoutwaves, adve, u1, qw, &
+                        a1, vicwwu, vonkar, c2e, sqcmukep, ndkx, javakeps, turkinepsws, turkin1, tureps1, numsrc, addksources, tqcu, eqcu, sqcu, q1, tetavkeps, &
+                        eps4, trsh_u1lb, sqcmukepi, ustw, ieps, turkin0, zws, tureps0, ak, bk, ck, dk, turbulence_lax_factor, turbulence_lax_vertical, eps20, &
+                        jarichardsononoutput, rich, sigrho, vol1, javeg, dke, rnveg, diaveg, jacdvegsp, cdvegsp, cdveg, clveg, r3, ek, epstke, kmxl, sigepsi, &
+                        c1e, c3tuns, c3tsta, c1t, c2t, c9of1, eps6, epseps, jalogprofkepsbndin, dmiss, jamodelspecific, eddyviscositybedfacmax, &
+                        vicwws, kmxx, turbulence_lax_horizontal, viskin, sigtkei, jawavebreakerturbulence, rhomean, cde, idensform, bruva, buoflu, &
+                        vicwminb, dijdij, v, eddyviscositysurfacmax
       use m_flowgeom, only: lnx, acl, ln, ndxi, lnxi
       use m_waves, only: hwav, gammax, ustokes, vstokes, fbreak, fwavpendep
       use m_partitioninfo, only: jampi, itype_sall3d, update_ghosts
-      use m_flowtimes
-      use m_sferic
-      use m_get_kbot_ktop
-      use m_get_Lbot_Ltop
+      use m_flowtimes, only: dtprev, t_spinup_turb_log_prof, time1, tstart_tlfsmo_user
+      use m_sferic, only: pi
+      use m_get_Lbot_Ltop, only: getlbotltop
       use m_links_to_centers, only: links_to_centers
-      use m_density, only: density_at_cell
-      use precision, only: dp
+      use m_turbulence, only: cmukep, drhodz, rho, brunt_vaisala_coefficient
+      use m_tridag, only: tridag
+      use m_model_specific, only: update_turkin_modelspecific
+      use m_wave_fillsurdis, only: wave_fillsurdis
+      use m_vertical_profile_u0, only: vertical_profile_u0
+      use precision, only: dp, comparereal
+      use m_alloc, only: aerr
 
       implicit none
 
-      real(kind=dp) :: tetm1, dzc1, dzc2, tkedisL
-      real(kind=dp) :: vicu, vicd, difu, difd, dzdz1, dzdz2, sourtu, sinktu, drhodz
+      real(kind=dp) :: tetm1, tkedisL
+      real(kind=dp) :: vicu, vicd, difu, difd, dzdz1, dzdz2, sourtu, sinktu
       real(kind=dp) :: zz, z00, ac1, ac2, tkebot, tkesur, epsbot, epssur
-      real(kind=dp) :: hdzb, dtiL, adv, omegu, drhodz1, drhodz2
+      real(kind=dp) :: hdzb, dtiL, adv, omegu
       real(kind=dp) :: dzu(kmxx), dzw(kmxx), womegu(kmxx), pkwav(kmxx)
       real(kind=dp) :: gradk, gradt, grad, gradd, gradu, volki, arLL, qqq, faclax, zf
       real(kind=dp) :: wk, wke, vk, um, tauinv, tauinf, xlveg, rnv, diav, ap1, alf, c2esqcmukep, teps, tkin
       real(kind=dp) :: cfuhi3D, vicwmax, zint, z1, vicwww, alfaT, tke, eps, c3t
-      real(kind=dp) :: rhoLL, pkwmag, hrmsLL, wdep, dzwav, dis1, dis2, surdisLL, prsappr
+      real(kind=dp) :: rhoLL, pkwmag, hrmsLL, wdep, dzwav, dis1, dis2, surdisLL
       integer :: k, ku, LL, L, Lb, Lt, kxL, Lu, Lb0, whit
-      integer :: k1, k2, k1u, k2u, n1, n2, kup, ierror
+      integer :: k1, k2, n1, n2, kup, ierror
 
       if (iturbulencemodel <= 0 .or. kmx == 0) return
 
@@ -94,7 +87,7 @@ contains
 
       if (iturbulencemodel == 1) then ! 1=constant
 
-         !$OMP PARALLEL DO                                     &
+         !$OMP PARALLEL DO &
          !$OMP PRIVATE(LL,Lb,Lt,kxL,dzu,L,k,hdzb,z00,ac1,ac2,n1,n2,k1,k2,womegu,cfuhi3D)
 
          do LL = 1, lnx
@@ -210,6 +203,8 @@ contains
       else if (iturbulencemodel >= 3) then ! 3=k-epsilon, 4=k-tau
 
          c2esqcmukep = c2e * sqcmukep
+
+         call calculate_drhodz(rho, zws, drhodz)
 
          if (javakeps > 0) then ! transport switched on: prepare horizontal advection k and eps
 
@@ -382,39 +377,15 @@ contains
                   !c Source and sink terms                                                                           k turkin
                   if (idensform > 0) then
                      k1 = ln(1, L); k2 = ln(2, L)
-                     k1u = ln(1, Lu); k2u = ln(2, Lu)
 
-                     drhodz = 0.0_dp; drhodz1 = 0.0_dp; drhodz2 = 0.0_dp
-
-                     dzc1 = 0.5_dp * (zws(k1u) - zws(k1 - 1)) ! vertical distance between cell centers on left side
-                     if (dzc1 > 0) then
-                        if (.not. apply_thermobaricity) then
-                           drhodz1 = (rho(k1u) - rho(k1)) / dzc1
-                        else
-                           prsappr = ag * rhomean * (zws(ktop(ln(1, LL))) - zws(k1))
-                           drhodz1 = (density_at_cell(k1u, prsappr) - density_at_cell(k1, prsappr)) / dzc1
-                        end if
+                     ! Determine Brunt-Vaisala frequency at flowlinks. N.B., bruva = N**2 / sigrho.
+                     if (comparereal(drhodz(k1), 0.0_dp) == 0) then
+                        bruva(k) = drhodz(k2) * brunt_vaisala_coefficient
+                     else if (comparereal(drhodz(k2), 0.0_dp) == 0) then
+                        bruva(k) = drhodz(k1) * brunt_vaisala_coefficient
+                     else ! Weighted average
+                        bruva(k) = (acl(LL) * drhodz(k1) + (1.0_dp - acl(LL)) * drhodz(k2)) * brunt_vaisala_coefficient 
                      end if
-
-                     dzc2 = 0.5_dp * (zws(k2u) - zws(k2 - 1)) ! vertical distance between cell centers on right side
-                     if (dzc2 > 0) then
-                        if (.not. apply_thermobaricity) then
-                           drhodz2 = (rho(k2u) - rho(k2)) / dzc2
-                        else
-                           prsappr = ag * rhomean * (zws(ktop(ln(2, LL))) - zws(k2))
-                           drhodz2 = (density_at_cell(k2u, prsappr) - density_at_cell(k2, prsappr)) / dzc2
-                        end if
-                     end if
-
-                     if (drhodz1 == 0) then
-                        drhodz = drhodz2
-                     else if (drhodz2 == 0) then
-                        drhodz = drhodz1
-                     else
-                        drhodz = acl(LL) * drhodz1 + (1.0_dp - acl(LL)) * drhodz2
-                     end if
-
-                     bruva(k) = coefn2 * drhodz ! N.B., bruva = N**2 / sigrho
                      buoflu(k) = max(vicwwu(L), vicwminb) * bruva(k)
 
                      !c Production, dissipation, and buoyancy term in TKE equation;
@@ -717,7 +688,7 @@ contains
                      end if
 
                      tkedisL = 0.0_dp ! tkedis(L)
-                     sinktu = c2e * (tureps0(L) + tkedisL) / turkin1(L) ! yoeri has here : /turkin0(L)
+                     sinktu = c2e * (tureps0(L) + tkedisL) / turkin1(L)
 
                      !c Addition of production and of dissipation to matrix ;                               epsilon
                      !c observe implicit treatment by Newton linearization.
@@ -933,4 +904,52 @@ contains
 
    end subroutine update_verticalprofiles
 
+   !> Calculates vertical density gradient for Brunt-Vaisala frequency
+   subroutine calculate_drhodz(rho, zws, drhodz)
+      use m_get_kbot_ktop, only: getkbotktop
+      use m_flowgeom, only: ndx
+      use m_physcoef, only: ag, rhomean, apply_thermobaricity
+      use m_density, only: density_at_cell_given_pressure
+      use precision, only: dp
+
+      real(kind=dp), dimension(:), intent(in) :: rho !< Water density at cell centres (kg/m3)
+      real(kind=dp), dimension(:), intent(in) :: zws !< z levels  (m) of interfaces (w-points) at cell centres (s-points)
+      real(kind=dp), dimension(:), intent(out) :: drhodz !< Vertical density gradient (in horizontal cell centers)
+
+      real(kind=dp) :: dz, pressure, density_up, density_down
+      integer :: k_bot, k_top, cell_index_2d, cell_index_3d
+
+      drhodz(:) = 0.0_dp
+
+      if (.not. apply_thermobaricity) then
+         !$OMP PARALLEL DO &
+         !$OMP PRIVATE(cell_index_2d, cell_index_3d, k_bot, k_top, dz)
+         do cell_index_2d = 1, ndx
+            call getkbotktop(cell_index_2d, k_bot, k_top)
+            do cell_index_3d = k_bot, k_top - 1
+               dz = 0.5_dp * (zws(cell_index_3d + 1) - zws(cell_index_3d - 1)) ! Vertical distance between cell centers
+               if (dz > 0.0_dp) then
+                  drhodz(cell_index_3d) = (rho(cell_index_3d + 1) - rho(cell_index_3d)) / dz
+               end if
+            end do
+         end do
+         !$OMP END PARALLEL DO
+      else
+         !$OMP PARALLEL DO &
+         !$OMP PRIVATE(cell_index_2d, cell_index_3d, k_bot, k_top, dz, pressure, density_up, density_down)
+         do cell_index_2d = 1, ndx
+            call getkbotktop(cell_index_2d, k_bot, k_top)
+            do cell_index_3d = k_bot, k_top - 1
+               dz = 0.5_dp * (zws(cell_index_3d + 1) - zws(cell_index_3d - 1)) ! Vertical distance between cell centers
+               if (dz > 0.0_dp) then
+                  pressure = ag * rhomean * (zws(k_top) - zws(cell_index_3d)) ! At vertical interface
+                  density_up = density_at_cell_given_pressure(cell_index_3d + 1, pressure)
+                  density_down = density_at_cell_given_pressure(cell_index_3d, pressure)
+                  drhodz(cell_index_3d) = (density_up - density_down) / dz
+               end if
+            end do
+         end do
+         !$OMP END PARALLEL DO
+      end if
+   end subroutine calculate_drhodz
 end module m_update_verticalprofiles

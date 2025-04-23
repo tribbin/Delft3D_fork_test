@@ -88,7 +88,7 @@ contains
                         longwave, patm, rhum, qrad, solar_radiation, tbed, qext, qextreal, vextcum, cdwcof
       use m_nudge, only: nudge_tem, nudge_sal, nudge_time, nudge_rate
       use m_polygonlayering, only: polygonlayering
-      use m_turbulence, only: potential_density, in_situ_density
+      use m_turbulence, only: potential_density, in_situ_density, drhodz
       use m_physcoef, only: apply_thermobaricity
 
       integer :: ierr, n, k, mxn, j, kk, LL, L, k1, k2, k3, n1, n2, n3, n4, kb1, kb2, numkmin, numkmax, kbc1, kbc2
@@ -952,7 +952,7 @@ contains
 
       end if
 
-      if (kmx > 0) then ! 7 turbulence arrays (0:kmx)
+      if (kmx > 0) then ! turbulence arrays
          if (allocated(turkin0)) then
             deallocate (turkin0, turkin1, tureps0, tureps1, vicwwu, vicwws)
          end if
@@ -969,6 +969,8 @@ contains
          call aerr('vicwwu   (Lnkx)', ierr, Lnkx); vicwwu = 0.0_dp
          allocate (vicwws(ndkx), stat=ierr)
          call aerr('vicwws   (ndkx)', ierr, ndkx); vicwws = 0.0_dp
+         allocate (drhodz(ndkx), stat=ierr)
+         call aerr('drhodz(ndkx)', ierr, ndkx); drhodz = 0.0_dp
 
          if (allocated(turkinepsws)) then
             deallocate (turkinepsws)
