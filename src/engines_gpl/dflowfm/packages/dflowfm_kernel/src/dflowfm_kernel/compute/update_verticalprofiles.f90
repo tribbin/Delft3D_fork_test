@@ -27,9 +27,6 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
 module m_update_verticalprofiles
 
    implicit none
@@ -44,11 +41,11 @@ contains
       use m_getustbcfuhi, only: getustbcfuhi
       use m_doaddksources, only: doaddksources
       use m_flow, only: iturbulencemodel, kmx, iadvec, javau, hu, lbot, ltop, ustb, cfuhi, advi, jawave, jawavestokes, flowwithoutwaves, adve, u1, qw, &
-                        a1, vicwwu, vonkar, c2e, sqcmukep, ndkx, javakeps, turkinepsws, turkin1, tureps1, numsrc, addksources, tqcu, eqcu, sqcu, q1, tetavkeps, &
-                        eps4, trsh_u1lb, sqcmukepi, ustw, ieps, turkin0, zws, tureps0, ak, bk, ck, dk, turbulence_lax_factor, turbulence_lax_vertical, eps20, &
-                        jarichardsononoutput, rich, sigrho, vol1, javeg, dke, rnveg, diaveg, jacdvegsp, cdvegsp, cdveg, clveg, r3, ek, epstke, kmxl, sigepsi, &
-                        c1e, c3tuns, c3tsta, c1t, c2t, c9of1, eps6, epseps, jalogprofkepsbndin, dmiss, jamodelspecific, eddyviscositybedfacmax, &
-                        vicwws, kmxx, turbulence_lax_horizontal, viskin, sigtkei, jawavebreakerturbulence, rhomean, cde, idensform, bruva, buoflu, &
+                        a1, vicwwu, vonkar, c2e, ndkx, javakeps, turkinepsws, turkin1, tureps1, numsrc, addksources, tqcu, eqcu, sqcu, q1, tetavkeps, &
+                        eps4, trsh_u1lb, ustw, ieps, turkin0, zws, tureps0, ak, bk, ck, dk, turbulence_lax_factor, turbulence_lax_vertical, eps20, &
+                        jarichardsononoutput, sigrho, vol1, javeg, dke, rnveg, diaveg, jacdvegsp, cdvegsp, cdveg, clveg, r3, ek, epstke, kmxl, &
+                        c1e, c1t, c2t, c9of1, eps6, epseps, jalogprofkepsbndin, dmiss, jamodelspecific, eddyviscositybedfacmax, &
+                        vicwws, kmxx, turbulence_lax_horizontal, viskin, jawavebreakerturbulence, rhomean, idensform, bruva, buoflu, &
                         vicwminb, dijdij, v, eddyviscositysurfacmax
       use m_flowgeom, only: lnx, acl, ln, ndxi, lnxi
       use m_waves, only: hwav, gammax, ustokes, vstokes, fbreak, fwavpendep
@@ -57,7 +54,8 @@ contains
       use m_sferic, only: pi
       use m_get_Lbot_Ltop, only: getlbotltop
       use m_links_to_centers, only: links_to_centers
-      use m_turbulence, only: cmukep, drhodz, rho, brunt_vaisala_coefficient
+      use m_turbulence, only: cmukep, rho, drhodz, brunt_vaisala_coefficient, rich, richs, c3e_stable, c3e_unstable, sigtkei, sigepsi, cde, &
+                              c3t_stable, c3t_unstable
       use m_tridag, only: tridag
       use m_model_specific, only: update_turkin_modelspecific
       use m_wave_fillsurdis, only: wave_fillsurdis
@@ -73,8 +71,8 @@ contains
       real(kind=dp) :: hdzb, dtiL, adv, omegu
       real(kind=dp) :: dzu(kmxx), dzw(kmxx), womegu(kmxx), pkwav(kmxx)
       real(kind=dp) :: gradk, gradt, grad, gradd, gradu, volki, arLL, qqq, faclax, zf
-      real(kind=dp) :: wk, wke, vk, um, tauinv, tauinf, xlveg, rnv, diav, ap1, alf, c2esqcmukep, teps, tkin
-      real(kind=dp) :: cfuhi3D, vicwmax, zint, z1, vicwww, alfaT, tke, eps, c3t
+      real(kind=dp) :: wk, wke, vk, um, tauinv, tauinf, xlveg, rnv, diav, ap1, alf, teps, tkin
+      real(kind=dp) :: cfuhi3D, vicwmax, zint, z1, vicwww, alfaT, tke, eps
       real(kind=dp) :: rhoLL, pkwmag, hrmsLL, wdep, dzwav, dis1, dis2, surdisLL
       integer :: k, ku, LL, L, Lb, Lt, kxL, Lu, Lb0, whit
       integer :: k1, k2, n1, n2, kup, ierror
@@ -202,8 +200,6 @@ contains
 
       else if (iturbulencemodel >= 3) then ! 3=k-epsilon, 4=k-tau
 
-         c2esqcmukep = c2e * sqcmukep
-
          call calculate_drhodz(rho, zws, drhodz)
 
          if (javakeps > 0) then ! transport switched on: prepare horizontal advection k and eps
@@ -279,8 +275,8 @@ contains
                   advi(Lb) = advi(Lb) + cfuhi3D
                end if
 
-               tkebot = sqcmukepi * ustb(LL)**2 ! this has stokes incorporated when jawave>0
-               tkesur = sqcmukepi * ustw(LL)**2 ! only wind+ship contribution
+               tkebot = ustb(LL)**2 / sqrt(cmukep) ! this has stokes incorporated when jawave>0
+               tkesur = ustw(LL)**2 / sqrt(cmukep) ! only wind+ship contribution
 
                if (ieps == 3) then ! as Delft3D
                   vicwwu(Lb0) = vonkar * ustb(LL) * z00
@@ -322,7 +318,7 @@ contains
                   end if
                end if
 
-               vicu = viskin + 0.5_dp * (vicwwu(Lb0) + vicwwu(Lb)) * sigtkei !
+               vicu = viskin + 0.5_dp * (vicwwu(Lb0) + vicwwu(Lb)) * sigtkei
 
                ! Calculate turkin source from wave dissipation: preparation
                if (jawave > 0) then
@@ -384,7 +380,7 @@ contains
                      else if (comparereal(drhodz(k2), 0.0_dp) == 0) then
                         bruva(k) = drhodz(k1) * brunt_vaisala_coefficient
                      else ! Weighted average
-                        bruva(k) = (acl(LL) * drhodz(k1) + (1.0_dp - acl(LL)) * drhodz(k2)) * brunt_vaisala_coefficient 
+                        bruva(k) = (acl(LL) * drhodz(k1) + (1.0_dp - acl(LL)) * drhodz(k2)) * brunt_vaisala_coefficient
                      end if
                      buoflu(k) = max(vicwwu(L), vicwminb) * bruva(k)
 
@@ -426,7 +422,7 @@ contains
                      dijdij(k) = ((u1(Lu) - u1(L))**2 + (v(Lu) - v(L))**2) / dzw(k)**2
                   end if
 
-                  if (jarichardsononoutput > 0) then ! save richardson nr to output
+                  if (jarichardsononoutput > 0) then
                      rich(L) = sigrho * bruva(k) / max(1d-8, dijdij(k)) ! sigrho because bruva premultiplied by 1/sigrho
                   end if
 
@@ -569,7 +565,7 @@ contains
                               wk = vk * um * um ! work done by this layer m2/s3
                               ap1 = 1.0 - diav * diav * rnv * pi * 0.25 ! Free area
                               xlveg = Clveg * sqrt(ap1 / rnv) ! typical length between plants
-                              tauinv = c2esqcmukep * (wk / xlveg**2)**r3
+                              tauinv = c2e * sqrt(cmukep) * (wk / xlveg**2)**r3
                               teps = 0.5_dp * (tureps0(L) + tureps0(L))
                               tkin = 0.5_dp * (turkin0(L) + turkin0(L))
                               if (iturbulencemodel == 3) then
@@ -668,11 +664,14 @@ contains
                              + difd * (tureps0(L - 1) - tureps0(L)) * tetm1
                   end if
 
-                  if (iturbulencemodel == 3) then !k-eps
+                  if (iturbulencemodel == 3) then ! k-eps
 
                      !c Source and sink terms                                                                epsilon
-                     if (bruva(k) < 0.0_dp) then ! instable, increase rhs
-                        dk(k) = dk(k) - cmukep * c1e * bruva(k) * turkin1(L)
+                     if (bruva(k) > 0.0_dp) then ! stable stratification
+                        dk(k) = dk(k) - cmukep * c3e_stable * bruva(k) * turkin1(L)
+                        bk(k) = bk(k) - (2.0_dp * cmukep * c3e_stable * bruva(k) * turkin1(L)) / tureps0(L)
+                     elseif (bruva(k) < 0.0_dp) then ! unstable stratification
+                        dk(k) = dk(k) - cmukep * c3e_unstable * bruva(k) * turkin1(L)
                      end if
 
                      ! Similar to the k-equation, in the eps-equation the net IWE to TKE
@@ -684,7 +683,6 @@ contains
                      ! Add wave dissipation production term
                      if (jawave > 0 .and. jawavebreakerturbulence > 0) then
                         sourtu = sourtu + pkwav(k) * c1e * tureps0(L) / max(turkin0(L), 1d-7)
-                        !sourtu = sourtu + c1e*cmukep*turkin0(L)/max(vicwwu(L),vicwminb)*pkwav(k)
                      end if
 
                      tkedisL = 0.0_dp ! tkedis(L)
@@ -696,24 +694,12 @@ contains
                      bk(k) = bk(k) + sinktu * 2.0_dp
                      dk(k) = dk(k) + sinktu * tureps0(L) + sourtu
 
-                     !  bk(k) = bk(k) + sinktu
-                     !  dk(k) = dk(k) + sourtu
-
-                     ! dk(k) = dk(k) - sinktu*tureps0(L) + sourtu
-
-                  else if (iturbulencemodel == 4) then !                                               k-tau
-
-                     ! buoyancy term, we have in RHS :~ -Bruva*c3t
-                     ! c1e = 1.44
-                     ! bruva<0, instable, c3e=c1e c3t=1-c3e=-0.44 => -Bruva*c3t < 0 increase diag
-                     ! bruva>0    stable, c3e=0   c3t=1-c3e= 1.00 => -Bruva*c3t < 0 increase diag
+                  else if (iturbulencemodel == 4) then ! k-tau
 
                      if (bruva(k) < 0.0_dp) then ! instable
-                        c3t = c3tuns ! == -0.044   !c3e = c1e ; c3t = (1.0_dp-c3e)*cmukep
-                        bk(k) = bk(k) + c3t * bruva(k) * tureps0(L)
+                        bk(k) = bk(k) + c3t_unstable * bruva(k) * tureps0(L)
                      else if (bruva(k) > 0.0_dp) then ! stable
-                        c3t = c3tsta ! == 0.09     !c3e = 0.0_dp ; c3t = (1.0_dp-c3e)*cmukep
-                        bk(k) = bk(k) + c3t * bruva(k) * tureps0(L)
+                        bk(k) = bk(k) + c3t_stable * bruva(k) * tureps0(L)
                      end if
 
                      bk(k) = bk(k) - c1t * dijdij(k) * tureps0(L)
@@ -755,7 +741,7 @@ contains
                   ak(0) = 0.0_dp ! at the bed:
                   bk(0) = 1.0_dp
                   ck(0) = -1.0_dp
-                  if (ustb(LL) > 0 .and. kxL > 1) then ! deps/dz = (epsb+1-epsb)/dz = (u*)**3/ ((dz/2+9z0)**2)
+                  if (ustb(LL) > 0 .and. kxL > 1) then
                      dk(0) = dzu(1) * abs(ustb(LL))**3 / (vonkar * hdzb * hdzb)
                   else
                      dk(0) = 0.0_dp
@@ -767,13 +753,12 @@ contains
                   bk(kxL) = 1.0_dp
                   ck(kxL) = 0.0_dp
                   dk(kxL) = 0.0_dp
-                  ! dk(kxL) =  vonkar*9.0_dp*z00/(max(ustw(LL),eps6)*0.3_dp)  ! 0.3=sqrt(cmu0), cmu0=cmukep
 
                   ak(0) = 0.0_dp ! at the bed:
                   bk(0) = 1.0_dp
                   ck(0) = 0.0_dp
                   if (ustb(LL) > 0) then
-                     dk(0) = vonkar * c9of1 * z00 / (max(ustb(LL), eps6) * 0.3_dp) ! 0.3=sqrt(cmu0), cmu0=cmukep
+                     dk(0) = vonkar * c9of1 * z00 / (max(ustb(LL), eps6) * 0.3_dp)
                   else
                      dk(0) = 0.0_dp
                   end if
@@ -901,6 +886,9 @@ contains
       end if
 
       call links_to_centers(vicwws, vicwwu)
+      if (jarichardsononoutput > 0) then
+         call links_to_centers(richs, rich)
+      end if
 
    end subroutine update_verticalprofiles
 

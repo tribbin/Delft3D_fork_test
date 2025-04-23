@@ -1173,6 +1173,17 @@ contains
       call prop_get(md_ptr, 'numerics', 'cstbnd', jacstbnd)
       call prop_get(md_ptr, 'numerics', 'Maxitverticalforestertem', Maxitverticalforestertem)
       call prop_get(md_ptr, 'numerics', 'Turbulencemodel', Iturbulencemodel)
+
+      call prop_get(md_ptr, 'numerics', 'c1e', c1e)
+      call prop_get(md_ptr, 'numerics', 'c3eStable', c3e_stable)
+      if (c3e_stable > 0.0_dp) then
+         call mess(LEVEL_ERROR, 'c3eStable should be <= 0')
+      end if
+      call prop_get(md_ptr, 'numerics', 'c3eUnstable', c3e_unstable)
+      if (c3e_unstable < 0.0_dp) then
+         call mess(LEVEL_ERROR, 'c3eUnstable should be >= 0')
+      end if
+
       call prop_get(md_ptr, 'numerics', 'Turbulenceadvection', javakeps)
       call prop_get(md_ptr, 'numerics', 'FacLaxTurb', turbulence_lax_factor)
       call prop_get(md_ptr, 'numerics', 'FacLaxTurbVer', turbulence_lax_vertical)
@@ -3111,6 +3122,9 @@ contains
 
       if (writeall .or. kmx > 0) then
          call prop_set(prop_ptr, 'numerics', 'Turbulencemodel', Iturbulencemodel, 'Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)')
+         call prop_set(prop_ptr, 'numerics', 'c1e', c1e, 'c1e coefficient in turbulence model')
+         call prop_set(prop_ptr, 'numerics', 'c3eStable', c3e_stable, 'c3e coefficient (for stable stratification) in k-eps turbulence model')
+         call prop_set(prop_ptr, 'numerics', 'c3eUnstable', c3e_unstable, 'c3e coefficient (for unstable stratification) in k-eps turbulence model')
       end if
 
       if (writeall .or. (javakeps /= 3 .and. kmx > 0)) then
