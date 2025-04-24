@@ -2,7 +2,7 @@
     "output_directory": "verschillentool_output",
     "models": [
         {
-            "name": "grevelingen",
+            "name": "dflowfm2d-grevelingen-j19_6-v2a",
             "his_config": {
                 "his_1": "/data/reference/grevelingen/dflowfm2d-grevelingen-j19_6-v2a/computations/hist/stormperiode_2013_fxw_aangepast/DFM_OUTPUT_Grevelingen/Grevelingen_0000_his.nc",
                 "his_2": "/data/input/grevelingen/dflowfm2d-grevelingen-j19_6-v2a/computations/hist/stormperiode_2013_fxw_aangepast/DFM_OUTPUT_Grevelingen/Grevelingen_0000_his.nc",
