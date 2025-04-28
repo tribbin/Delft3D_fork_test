@@ -4245,8 +4245,7 @@ contains
 
    !> Validate the user input for the density formula
    subroutine validate_density_settings(idensform, apply_thermobaricity)
-      use m_density_formulas, only: DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, &
-                                    DENSITY_OPTION_UNESCO83, DENSITY_OPTION_BAROCLINIC, DENSITY_OPTION_DELTARES_FLUME
+      use m_density_formulas, only: DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, DENSITY_OPTION_UNESCO83
       integer, intent(in) :: idensform !< Density formula identifier
       logical, intent(in) :: apply_thermobaricity !< Whether the density formula are pressure dependent
 
@@ -4260,8 +4259,7 @@ contains
       end if
       ! No thermobaricity
       select case (idensform)
-      case (DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, &
-            DENSITY_OPTION_UNESCO83, DENSITY_OPTION_BAROCLINIC, DENSITY_OPTION_DELTARES_FLUME)
+      case (DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, DENSITY_OPTION_UNESCO83)
          return
       case default
          call mess(LEVEL_ERROR, 'Unsupported value for keyword "idensform", see manual or .dia file for supported values.')
