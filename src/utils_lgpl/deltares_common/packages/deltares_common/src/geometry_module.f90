@@ -2583,7 +2583,7 @@ contains
    !> circumcenter of a polygon defined by set of vertices.
       !! See also getcellcircumcenter
    subroutine GETCIRCUMCENTER(nn, xv, yv, lnnl, xz, yz, jsferic, jasfer3D, jglobe, jins, dmiss, dxymis, dcenterinside, circumcenter_method_dummy)
-
+      use precision, only: hp
       use mathconsts, only: degrad_hp, raddeg_hp
       use physicalconsts, only: earth_radius
       use m_circumcenter_method, only: INTERNAL_NETLINKS_EDGE, ALL_NETLINKS_LOOP, circumcenter_tolerance
