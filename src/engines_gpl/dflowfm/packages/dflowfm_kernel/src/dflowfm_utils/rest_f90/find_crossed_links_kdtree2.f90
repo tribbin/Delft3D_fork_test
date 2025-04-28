@@ -304,9 +304,6 @@ contains
          end if
       end do
 
-      deallocate(new_index)
-      deallocate(polygon_segment_weights_copy)
-
    end subroutine
 
 end module m_find_crossed_links_kdtree2

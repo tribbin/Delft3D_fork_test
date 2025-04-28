@@ -2734,9 +2734,6 @@ contains
 
          end do
 
-         deallocate(ww2)
-         deallocate(u_temp)
-         
       end subroutine orthonet_smooth_u
 
    end subroutine orthogonalisenet

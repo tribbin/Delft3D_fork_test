@@ -289,9 +289,6 @@ contains
          end do
       end do
       
-      deallocate(LDone)
-      deallocate(LwDone)
-
    end subroutine reconst2ndini
 
    ! ==============================================================================================
