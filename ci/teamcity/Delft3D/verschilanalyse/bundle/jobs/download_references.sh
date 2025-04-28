@@ -1,5 +1,5 @@
 #! /bin/bash
-#SBATCH --job-name=va-sync-refs
+#SBATCH --job-name=va-download-refs
 #SBATCH --time=04:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
@@ -10,8 +10,8 @@
 
 set -eo pipefail
 
-if [[ -z "$BUCKET" || -z "$REFERENCE_PREFIX" || -z "$VAHOME" ]]; then
-    >&2 echo "Environment variables BUCKET, REFERENCE_PREFIX or VAHOME not set."
+if ! util.check_vars_are_set BUCKET REFERENCE_PREFIX VAHOME ; then
+    >&2 echo "Abort"
     exit 1
 fi
 
@@ -33,7 +33,7 @@ docker run --rm \
     --volume="${HOME}/.aws:/root/.aws:ro" --volume="${ARCHIVE_DIR}:/data" \
     docker.io/amazon/aws-cli:2.22.7 \
     --profile=verschilanalyse --endpoint-url=https://s3.deltares.nl \
-    s3 sync --delete --no-progress "${BUCKET}/${REFERENCE_PREFIX}" /data
+    s3 sync --delete --no-progress "${BUCKET}/${REFERENCE_PREFIX}/output" /data
 
 find "$ARCHIVE_DIR" -iname '*.zip' -print0 \
     | xargs -0 -I'{}' -P8 bash -c 'unzip_references "{}"'
