@@ -685,7 +685,7 @@ contains
       use m_flowgeom !,              only : wu1Duni, bamin, rrtol, jarenumber, VillemonteCD1, VillemonteCD2
       use m_flowtimes
       use m_flowparameters
-      use m_dambreak, only: set_dambreak_widening_method
+      use m_dambreak_breach, only: set_dambreak_widening_method
       use m_waves, only: rouwav, gammax, hminlw, jauorb, jahissigwav, jamapsigwav
       use m_wind ! ,                  only : icdtyp, cdb, wdb,
       use network_data, only: zkuni, Dcenterinside, removesmalllinkstrsh, cosphiutrsh
@@ -2609,7 +2609,7 @@ contains
       use m_map_his_precision
       use m_datum
       use m_circumcenter_method, only: INTERNAL_NETLINKS_EDGE, circumcenter_tolerance, md_circumcenter_method
-      use m_dambreak_data, only: exist_dambreak_links
+      use m_dambreak_breach, only: exist_dambreak_links
 
       integer, intent(in) :: mout !< File pointer where to write to.
       logical, intent(in) :: writeall !< Write all fields, including default values
@@ -4247,8 +4247,7 @@ contains
 
    !> Validate the user input for the density formula
    subroutine validate_density_settings(idensform, apply_thermobaricity)
-      use m_density_formulas, only: DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, &
-                                    DENSITY_OPTION_UNESCO83, DENSITY_OPTION_BAROCLINIC, DENSITY_OPTION_DELTARES_FLUME
+      use m_density_formulas, only: DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, DENSITY_OPTION_UNESCO83
       integer, intent(in) :: idensform !< Density formula identifier
       logical, intent(in) :: apply_thermobaricity !< Whether the density formula are pressure dependent
 
@@ -4262,8 +4261,7 @@ contains
       end if
       ! No thermobaricity
       select case (idensform)
-      case (DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, &
-            DENSITY_OPTION_UNESCO83, DENSITY_OPTION_BAROCLINIC, DENSITY_OPTION_DELTARES_FLUME)
+      case (DENSITY_OPTION_UNIFORM, DENSITY_OPTION_ECKART, DENSITY_OPTION_UNESCO, DENSITY_OPTION_UNESCO83)
          return
       case default
          call mess(LEVEL_ERROR, 'Unsupported value for keyword "idensform", see manual or .dia file for supported values.')
