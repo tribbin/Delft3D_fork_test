@@ -58,7 +58,7 @@ contains
       select case (trim(str_tolower(circumcenter_method_string)))
       case ('internalnetlinksedge')
          circumcenter_method = INTERNAL_NETLINKS_EDGE
-         call mess(LEVEL_WARN, '"[geometry] circumcenterMethod = internalNetlinksEdge" will be deprecated and will be removed in future. Please update this in your model. "circumcenterMethod = internalNetlinksLoop" is the improved current inplementation using internal net links only. "circumcenterMethod = allNetlinksLoop" is a stricter implemention considering also the net links on the outline of the grid. The new options may require an update of your grid.')
+         call mess(LEVEL_WARN, '"[geometry] circumcenterMethod = internalNetlinksEdge" will be deprecated and will be removed in future. Please update this in your model. "circumcenterMethod = internalNetlinksLoop" is the improved current implementation using internal net links only. "circumcenterMethod = allNetlinksLoop" is a stricter implementation considering also the net links on the outline of the grid. The new options may require an update of your grid.')
       case ('internalnetlinksloop')
          circumcenter_method = INTERNAL_NETLINKS_LOOP
       case ('allnetlinksloop')
