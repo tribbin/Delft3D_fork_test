@@ -27,7 +27,7 @@ object Trigger : BuildType({
 
     params {
         param("testbench_table", "ci/teamcity/Delft3D/vars/dimr_testbench_table.csv")
-    
+
         param("teamcity_user", "svc_dimr_trigger")
         password("teamcity_pass", "credentialsJSON:15cc6665-e900-4360-8942-00e654f6acfe")
 
@@ -100,7 +100,7 @@ object Trigger : BuildType({
                 doesNotEqual("product", "none-testbench")
                 doesNotEqual("product", "qp-testbench")
             }
-            
+
             scriptContent = """
                 curl --fail --silent --show-error \
                      -u %teamcity_user%:%teamcity_pass% \

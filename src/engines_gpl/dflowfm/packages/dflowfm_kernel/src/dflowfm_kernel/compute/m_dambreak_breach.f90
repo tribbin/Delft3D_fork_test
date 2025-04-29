@@ -226,9 +226,9 @@ contains
 
    !> provides dambreak names
    function get_dambreak_names() result(names)
-      character(len=128), dimension(n_db_signals) :: names !< the dambreak names
-
-      names = db_ids(1:n_db_signals)
+      character(len=128), dimension(:), allocatable :: names !< the dambreak names
+            
+      names = [(db_ids(i), integer :: i=1, n_db_signals)]
 
    end function get_dambreak_names
 
