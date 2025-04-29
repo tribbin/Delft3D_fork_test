@@ -72,10 +72,13 @@ contains
       end if
 
       do L = Lt, Lb, -1
-         k1 = ln(1, L); k1t = k1
-         k2 = ln(2, L); k2t = k2
+         k1 = ln(1, L)
+         k1t = k1
+         k2 = ln(2, L)
+         k2t = k2
          if (L == Lt) then
-            k1t = ktop(ln(1, LL)); k2t = ktop(ln(2, LL))
+            k1t = ktop(ln(1, LL))
+            k2t = ktop(ln(2, LL))
          end if
 
          rhovol(L - Lb + 1) = 0.5_dp * ((zws(k1t) - zws(k1 - 1)) * rho(k1) + (zws(k2t) - zws(k2 - 1)) * rho(k2))
@@ -92,15 +95,20 @@ contains
          if (L == Lb .and. morelayersleft /= 0) then ! extrapolate at 'bed' layer of deepest side
 
             if (morelayersleft == 1) then ! k=deep side, kz=shallow side
-               k = k1; kt = ktop(ln(1, LL))
-               kz = k2; ktz = ktop(ln(2, LL))
+               k = k1
+               kt = ktop(ln(1, LL))
+               kz = k2
+               ktz = ktop(ln(2, LL))
             else
-               k = k2; kt = ktop(ln(2, LL))
-               kz = k1; ktz = ktop(ln(1, LL))
+               k = k2
+               kt = ktop(ln(2, LL))
+               kz = k1
+               ktz = ktop(ln(1, LL))
             end if
 
             if (ktz - kz > 0) then ! shallow side extrapolates, coeffs based on shallow side:
-               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1)); fzd = 1.0_dp - fzu
+               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1))
+               fzd = 1.0_dp - fzu
                rhow1 = fzu * rho(k + 1) + fzd * rho(k)
                rhow0 = 2.0_dp * rho(k) - rhow1
             else ! one layerr
@@ -126,9 +134,11 @@ contains
             grk = (rvdn(k + 1) + 0.5_dp * dzz * (2.0_dp * rhow1 + rhow0) / 3.0_dp) * dzz
 
             if (morelayersleft == 1) then ! k1=deepest
-               rv1 = rvk; gr1 = grk
+               rv1 = rvk
+               gr1 = grk
             else
-               rv2 = rvk; gr2 = grk
+               rv2 = rvk
+               gr2 = grk
             end if
 
             if (insigpart == 0) then
@@ -188,10 +198,13 @@ contains
       end if
 
       do L = Lt, Lb, -1
-         k1 = ln(1, L); k1t = k1
-         k2 = ln(2, L); k2t = k2
+         k1 = ln(1, L)
+         k1t = k1
+         k2 = ln(2, L)
+         k2t = k2
          if (L == Lt) then
-            k1t = ktop(ln(1, LL)); k2t = ktop(ln(2, LL))
+            k1t = ktop(ln(1, LL))
+            k2t = ktop(ln(2, LL))
          end if
 
          rhovol(L - Lb + 1) = 0.5_dp * ((zws(k1t) - zws(k1 - 1)) * rho(k1) + (zws(k2t) - zws(k2 - 1)) * rho(k2))
@@ -208,15 +221,20 @@ contains
          if (L == Lb .and. morelayersleft /= 0) then ! extrapolate at 'bed' layer of deepest side
 
             if (morelayersleft == 1) then ! k=deep side, kz=shallow side
-               k = k1; kt = ktop(ln(1, LL))
-               kz = k2; ktz = ktop(ln(2, LL))
+               k = k1
+               kt = ktop(ln(1, LL))
+               kz = k2
+               ktz = ktop(ln(2, LL))
             else
-               k = k2; kt = ktop(ln(2, LL))
-               kz = k1; ktz = ktop(ln(1, LL))
+               k = k2
+               kt = ktop(ln(2, LL))
+               kz = k1
+               ktz = ktop(ln(1, LL))
             end if
 
             if (ktz - kz > 0) then ! shallow side extrapolates, coeffs based on shallow side:
-               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1)); fzd = 1.0_dp - fzu
+               fzu = (zws(kz + 1) - zws(kz)) / (zws(kz + 1) - zws(kz - 1))
+               fzd = 1.0_dp - fzu
                rhow1 = fzu * rho(k + 1) + fzd * rho(k)
                rhow0 = 2.0_dp * rho(k) - rhow1
             else ! one layer
@@ -259,9 +277,11 @@ contains
             grk = (rvdn(k + 1) + 0.5_dp * dzz * (2.0_dp * rhosww(k) + rhow0) / 3.0_dp) * dzz
 
             if (morelayersleft == 1) then ! k1=deepest
-               rv1 = rvk; gr1 = grk
+               rv1 = rvk
+               gr1 = grk
             else
-               rv2 = rvk; gr2 = grk
+               rv2 = rvk
+               gr2 = grk
             end if
 
             if (insigpart == 0) then
@@ -319,10 +339,13 @@ contains
       end if
 
       do L = Lt, Lb, -1
-         k1 = ln(1, L); k1t = k1
-         k2 = ln(2, L); k2t = k2
+         k1 = ln(1, L)
+         k1t = k1
+         k2 = ln(2, L)
+         k2t = k2
          if (L == Lt) then
-            k1t = ktop(ln(1, LL)); k2t = ktop(ln(2, LL))
+            k1t = ktop(ln(1, LL))
+            k2t = ktop(ln(2, LL))
          end if
 
          rhovol(L - Lb + 1) = 0.5_dp * ((zws(k1t) - zws(k1 - 1)) * rho(k1) + (zws(k2t) - zws(k2 - 1)) * rho(k2))
@@ -339,11 +362,15 @@ contains
          if (L == Lb .and. morelayersleft /= 0) then ! extrapolate at 'bed' layer of deepest side
 
             if (morelayersleft == 1) then ! k=deep side, kz=shallow side
-               k = k1; kt = ktop(ln(1, LL))
-               kz = k2; ktz = ktop(ln(2, LL))
+               k = k1
+               kt = ktop(ln(1, LL))
+               kz = k2
+               ktz = ktop(ln(2, LL))
             else
-               k = k2; kt = ktop(ln(2, LL))
-               kz = k1; ktz = ktop(ln(1, LL))
+               k = k2
+               kt = ktop(ln(2, LL))
+               kz = k1
+               ktz = ktop(ln(1, LL))
             end if
 
             if (insigpart == 0) then
@@ -362,9 +389,11 @@ contains
             grk = (rvdn(k + 1) + dzz * (rho(k) - rhomean)) * dzz
 
             if (morelayersleft == 1) then ! k1=deepest
-               rv1 = rvk; gr1 = grk
+               rv1 = rvk
+               gr1 = grk
             else
-               rv2 = rvk; gr2 = grk
+               rv2 = rvk
+               gr2 = grk
             end if
 
             if (insigpart == 0) then

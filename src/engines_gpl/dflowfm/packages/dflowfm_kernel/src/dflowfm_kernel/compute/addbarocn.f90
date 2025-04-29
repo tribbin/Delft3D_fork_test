@@ -68,18 +68,22 @@ contains
          else if (k > kb .and. k < kt) then
             dzu = zws(k + 1) - zws(k)
             dzd = zws(k - 1) - zws(k - 2)
-            fuu = dzu / (dzu + dzz); fud = 1.0_dp - fuu
-            fdu = dzz / (dzd + dzz); fdd = 1.0_dp - fdu
+            fuu = dzu / (dzu + dzz)
+            fud = 1.0_dp - fuu
+            fdu = dzz / (dzd + dzz)
+            fdd = 1.0_dp - fdu
             roup = fuu * rho(k + 1) + fud * rho(k) - rhomean
             rodo = fdu * rho(k) + fdd * rho(k - 1) - rhomean
          else if (k == kb) then
             dzu = zws(k + 1) - zws(k)
-            fuu = dzu / (dzu + dzz); fud = 1.0_dp - fuu
+            fuu = dzu / (dzu + dzz)
+            fud = 1.0_dp - fuu
             roup = fuu * rho(k + 1) + fud * rho(k) - rhomean
             rodo = 2.0_dp * (rho(k) - rhomean) - roup
          else if (k == kt) then
             dzd = zws(k - 1) - zws(k - 2)
-            fdu = dzz / (dzd + dzz); fdd = 1.0_dp - fdu
+            fdu = dzz / (dzd + dzz)
+            fdd = 1.0_dp - fdu
             rodo = fdu * rho(k) + fdd * rho(k - 1) - rhomean
             roup = 2.0_dp * (rho(k) - rhomean) - rodo
          end if
@@ -118,7 +122,8 @@ contains
 
       if (kt > kb) then
          do k = kb, kt - 1
-            fzu = (zws(k + 1) - zws(k)) / (zws(k + 1) - zws(k - 1)); fzd = 1.0_dp - fzu
+            fzu = (zws(k + 1) - zws(k)) / (zws(k + 1) - zws(k - 1))
+            fzd = 1.0_dp - fzu
             saw(k - kb + 1) = fzu * constituents(isalt, k + 1) + fzd * constituents(isalt, k)
             tmw(k - kb + 1) = fzu * constituents(itemp, k + 1) + fzd * constituents(itemp, k)
          end do
