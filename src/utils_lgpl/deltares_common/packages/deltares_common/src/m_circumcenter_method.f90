@@ -61,7 +61,7 @@ contains
          circumcenter_method_ = INTERNAL_NETLINKS_EDGE
          if (present(circumcenter_method_read)) then
             if (circumcenter_method_read) then
-               call mess(LEVEL_WARN, '"[geometry] circumcenterMethod = internalNetlinksEdge" will be deprecated and will be removed in future. Please update this in your model. "circumcenterMethod = internalNetlinksLoop" is the improved current implementation using internal net links only. "circumcenterMethod = allNetlinksLoop" is a stricter implementation considering also the net links on the outline of the grid. The new options may require an update of your grid.')
+               call mess(LEVEL_WARN, '"[geometry] circumcenterMethod = internalNetlinksEdge" will be deprecated and removed in the future. Please update this in your model. "circumcenterMethod = internalNetlinksLoop" is the improved current implementation that uses only internal net links. "circumcenterMethod = allNetlinksLoop" is a stricter implementation that also considers net links on the boundary of the grid. The new options may require updating your grid.')
             end if
          end if
       case ('internalnetlinksloop')
