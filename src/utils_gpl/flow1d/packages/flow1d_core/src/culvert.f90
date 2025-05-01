@@ -33,6 +33,7 @@ module m_Culvert
    use m_tables
    use MessageHandling
    use m_GlobalParameters
+   use precision_basics, only: dp
 
    implicit none
 
@@ -45,9 +46,10 @@ module m_Culvert
       module procedure deallocCulvert
    end interface dealloc
    
+   !> Culvert object, contains all parameters needed to compute the flow through a culvert.
    type, public :: t_culvert
-      double precision                :: leftlevel             !< Left invert level of culvert
-      double precision                :: rightlevel            !< Right invert level of culvert
+      real(kind=dp)                :: leftlevel             !< Left invert level of culvert
+      real(kind=dp)                :: rightlevel            !< Right invert level of culvert
       type(t_crosssection), pointer   :: pcross => null()      !< Pointer to cross section of culvert
       integer                         :: crosssectionnr        !< Cross section index in cross section array
       integer                         :: allowedflowdir        !< Allowed flow direction
@@ -55,18 +57,18 @@ module m_Culvert
                                                                !< 1 only positive flow
                                                                !< 2 only negative flow
                                                                !< 3 no flow allowed
-      double precision                :: length                !< Length of the culvert
-      double precision                :: inletlosscoeff        !< Loss coefficient at inflow point
-      double precision                :: outletlosscoeff       !< Loss coefficient at outflow point
+      real(kind=dp)                :: length                !< Length of the culvert
+      real(kind=dp)                :: inletlosscoeff        !< Loss coefficient at inflow point
+      real(kind=dp)                :: outletlosscoeff       !< Loss coefficient at outflow point
       logical                         :: has_valve             !< Indicates whether a valve has been added
-      double precision                :: valveOpening          !< Current valve opening
+      real(kind=dp)                :: valveOpening          !< Current valve opening
       type(t_table), pointer          :: losscoeff => null()   !< Table containing loss coefficients as a function of the relative opening
       integer                         :: state                 !< State of Culvert/Siphon
                                                                !< 0 = No Flow
                                                                !< 1 = Free Culvert Flow 
                                                                !< 2 = Submerged Culvert Flow 
       logical                        :: isInvertedSiphon       !< Indicates wether the culvert is of subtype inverted siphon.
-      double precision               :: bendLossCoeff          !< Bend loss coefficient of siphon
+      real(kind=dp)               :: bendLossCoeff          !< Bend loss coefficient of siphon
    end type
 
 contains
@@ -92,68 +94,66 @@ contains
       
    end subroutine deallocCulvert
                               
-   !> 
-   subroutine ComputeCulvert(culvert, fum, rum, aum, dadsm, cmustr, s1m1, s1m2, qm,  &
-                             q0m, u1m, u0m, dxm, dt, wetdown)
+   !> Compute FU and RU for a culvert.
+   subroutine ComputeCulvert(culvert, fum, rum, aum, dadsm, s1m1, s1m2, &
+                             u1m, dxm, dt, wetdown)
       use m_Roughness
+      use precision_basics, only: dp
 
       implicit none
       !
       ! Global variables
       !
-      type(t_culvert), pointer                     :: culvert
-      double precision, intent(  out)              :: aum
-      double precision, intent(  out)              :: dadsm
-      double precision, intent(  out)              :: fum
-      double precision, intent(inout)              :: q0m
-      double precision, intent(inout)              :: qm
-      double precision, intent(  out)              :: rum
-      double precision, intent(  out)              :: cmustr
-      double precision, intent(inout)              :: u0m
-      double precision, intent(inout)              :: u1m
-      double precision, intent(in   )              :: s1m1         !< left waterlevel s(m)          sleft
-      double precision, intent(in   )              :: s1m2         !< right waterlevel s(m+1)       sright
-      double precision, intent(in   )              :: dxm
-      double precision, intent(in   )              :: dt
-      double precision, intent(in   )              :: wetdown
+      type(t_culvert), pointer                     :: culvert !< Pointer to the culvert object.
+      real(kind=dp), intent(  out)              :: aum !< flow area of the culvert.
+      real(kind=dp), intent(  out)              :: dadsm !< width of the culvert.
+      real(kind=dp), intent(  out)              :: fum !< fu term of the 1D equations.
+      real(kind=dp), intent(  out)              :: rum !< ru term of the 1D equations.
+      real(kind=dp), intent(inout)              :: u1m !< flow velocity in the culvert.
+      real(kind=dp), intent(in   )              :: s1m1 !< left waterlevel s(m).
+      real(kind=dp), intent(in   )              :: s1m2 !< right waterlevel s(m+1).
+      real(kind=dp), intent(in   )              :: dxm !< distance between the two nodes (m).
+      real(kind=dp), intent(in   )              :: dt !< time step (s).
+      real(kind=dp), intent(in   )              :: wetdown !< downstream wet area (m2).
          
       ! Local variables
       type(t_CrossSection)           :: CrossSection
       integer                        :: allowedflowdir
       integer                        :: dir
 
-      double precision               :: smax             !< zeta_1 (upstream water level)
-      double precision               :: smin             !< zeta_2 (downstream water level)
-      logical                        :: isfreeflow
-      double precision               :: bu
-      double precision               :: cmus
-      double precision               :: cu
-      double precision               :: dc                  !< hc_2 critical depth
-      double precision               :: culvertCrest
-      double precision               :: inflowCrest         !< zc_1 (at upstream water level)
-      double precision               :: outflowCrest        !< zc_2 (at downstream water level)
-      double precision               :: du
-      double precision               :: gl_thickness
-      double precision               :: dpt                 !< upstream water depth
-      double precision               :: openingfac
-      double precision               :: valveOpening
-      double precision               :: chezyCulvert
-      double precision               :: chezyValve
-      double precision               :: wArea               !< upstream wet area (no valve)
-      double precision               :: wPerimiter          !< upstream wet perimeter  (no valve)
-      double precision               :: wWidth              !< upstream wet surface width (no valve)
-      double precision               :: valveArea           !< upstream wet area
-      double precision               :: valvePerimiter      !< upstream wet perimeter
-      double precision               :: valveWidth          !< upstream wet surface width
-      double precision               :: hydrRadius
-      double precision               :: culvertArea
-      double precision               :: valveloss
-      double precision               :: exitloss
-      double precision               :: frictloss
-      double precision               :: totalLoss
-      double precision               :: dlim
-      double precision               :: dxlocal
-      double precision               :: eps10 = 1d-10
+      real(kind=dp)               :: smax             !< zeta_1 (upstream water level)
+      real(kind=dp)               :: smin             !< zeta_2 (downstream water level)
+      logical                     :: isfreeflow
+      real(kind=dp)               :: bu
+      real(kind=dp)               :: cmus
+      real(kind=dp)               :: cu
+      real(kind=dp)               :: dc                  !< hc_2 critical depth
+      real(kind=dp)               :: culvertCrest
+      real(kind=dp)               :: inflowCrest         !< zc_1 (at upstream water level)
+      real(kind=dp)               :: outflowCrest        !< zc_2 (at downstream water level)
+      real(kind=dp)               :: du
+      real(kind=dp)               :: gl_thickness
+      real(kind=dp)               :: dpt                 !< upstream water depth
+      real(kind=dp)               :: openingfac
+      real(kind=dp)               :: valveOpening
+      real(kind=dp)               :: chezyCulvert
+      real(kind=dp)               :: chezyValve
+      real(kind=dp)               :: wArea               !< upstream wet area (no valve)
+      real(kind=dp)               :: wPerimiter          !< upstream wet perimeter  (no valve)
+      real(kind=dp)               :: wWidth              !< upstream wet surface width (no valve)
+      real(kind=dp)               :: valveArea           !< upstream wet area
+      real(kind=dp)               :: valvePerimiter      !< upstream wet perimeter
+      real(kind=dp)               :: valveWidth          !< upstream wet surface width
+      real(kind=dp)               :: hydrRadius
+      real(kind=dp)               :: culvertArea
+      real(kind=dp)               :: valveloss
+      real(kind=dp)               :: exitloss
+      real(kind=dp)               :: frictloss
+      real(kind=dp)               :: totalLoss
+      real(kind=dp)               :: dlim
+      real(kind=dp)               :: dxlocal
+      real(kind=dp)               :: eps10 = 1d-10
+      real(kind=dp) :: qm
 
       ! Culvert Type
       
@@ -172,7 +172,7 @@ contains
          inflowCrest  = culvert%rightlevel
       endif
       culvertCrest = max(outflowCrest, inflowCrest) 
-
+      qm = aum * u1m
       ! Check on Flow Direction
       allowedFlowDir = culvert%allowedflowdir
       if ((smax <= culvertCrest) .or. (allowedFlowDir == 3) .or. &
@@ -181,9 +181,7 @@ contains
          fum   = 0.0d0
          rum   = 0.0d0
          u1m   = 0.0d0
-         u0m   = 0.0d0
          qm    = 0.0d0
-         q0m   = 0.0d0
          culvert%state = 0
          return
       endif
@@ -215,9 +213,7 @@ contains
          fum   = 0.0d0
          rum   = 0.0d0
          u1m   = 0.0d0
-         u0m   = 0.0d0
          qm    = 0.0d0
-         q0m   = 0.0d0
          culvert%state = 0
          return
       endif
@@ -271,7 +267,6 @@ contains
       cmus = 1.0d0 / sqrt(totalLoss)
       cmus = min(cmus, 1.0d0)    ! Limit to maximum of 1.0
  
-      cmustr = cmus
       aum    = culvertArea
       dadsm  = wWidth
 
