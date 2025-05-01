@@ -1,9 +1,17 @@
 /** \mainpage D-FlowFM Developer Guide
 
-This is a test page
-\htmlonly
-<embed src="D-Flow_FM_Developers_Guide.pdf" width="100%" heigth="100%" \
-href="D-Flow_FM_Developers_Guide.pdf"></embed> \endhtmlonly
+This is test group
+This documentation is intended for developers working with the D-FlowFM source code.
 
+There exists a developer's guide which can be dound here: 
+<a href="https://content.oss.deltares.nl/delft3dfm2d3d/D-Flow_FM_Developers_Guide.pdf" target=""><b>Developer Guide</b></a>
+
+Below is an overview of the D-FlowFM Kernel.
+
+\image html FM_Kernel_Overview.svg
+
+D-FlowFM Kernel can be run from command line which follows the path defined in \ref Unstruc
+
+The more appropriate way to run D-Flow FM is via the BMI interface, which can be found \ref BMI_Unstruc
 
 */

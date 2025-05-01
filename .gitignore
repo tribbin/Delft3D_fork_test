@@ -49,4 +49,3 @@ src/**/FortranCInterface.h
 /ci/DIMRset_delivery/venv/**
 /ci/teamcity/Delft3D/target/**
 result_doc
-/src/engines_gpl/dflowfm/result_doc_dot
