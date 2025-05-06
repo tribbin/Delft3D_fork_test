@@ -139,7 +139,7 @@ contains
 
       cmukep = 0.09_dp
       c2e = 1.92_dp
-      c1e = c2e - vonkar**2 / (sigeps * sqrt(cmukep))
+      c1e = c2e - vonkar**2 / (sigeps * sqrt(cmukep)) ! Can be overriden by user and is therefore not a derived coefficient
 
       c3e_stable = 0.0_dp
       c3e_unstable = c1e ! Can be overriden by user and is therefore not a derived coefficient
@@ -156,9 +156,7 @@ contains
       cewall = cmukep**0.75_dp / vonkar
       cde = cmukep**0.75_dp
 
-      c1e = c2e - vonkar**2 / (sigeps * sqrt(cmukep))
       c1t = (1.0_dp - c1e) * cmukep
-
       c2t = 1.0_dp - c2e
       c3t_stable = 1.0_dp * cmukep
       c3t_unstable = (1.0_dp - c1e) * cmukep
