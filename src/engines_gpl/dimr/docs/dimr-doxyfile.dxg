@@ -1000,7 +1000,8 @@ INPUT                  = ../packages \
                          ../packages/dimr_lib \
                          ../packages/dimr_lib_tests \
                          ../packages/dimr_testcomponent \
-                         src/dimr-mainpage.dox
+                         src/dimr-mainpage.dox \
+                         src/DIMRAndBMIDesign.md
 
 # This tag can be used to specify the character encoding of the source files
 # that Doxygen parses. Internally Doxygen uses the UTF-8 encoding. Doxygen uses

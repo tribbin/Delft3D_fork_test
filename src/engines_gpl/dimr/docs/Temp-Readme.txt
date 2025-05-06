@@ -13,3 +13,6 @@ The structure for developer documentation per project:
 
 
 Starting with Doxygen -> https://www.doxygen.nl/manual/starting.html
+
+
+Using Pandoc to convert Word-example: .\pandoc.exe --extract-media=images -s .\input.docx -t markdown -o .\output.md
