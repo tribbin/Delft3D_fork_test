@@ -146,9 +146,10 @@ class MapFlowVelocityTolerances:
 class Statistics:
     """Contains statistics of a sample."""
 
+    avg_max: float
+    avg_mean: float
+    avg_rms: float
     max: float
-    mean: float
-    rms: float
 
 
 @dataclass
@@ -183,22 +184,35 @@ class VerschillentoolOutput:
         """
         averages_sheet = workbook["Averages"]
         statistics_sheet = workbook["Statistics"]
+        maxima_sheet = workbook["Maxima"]
 
         stats_dict = {
             str(name_cell.value).split(maxsplit=1)[0]: float(value_cell.value)
             for name_cell, value_cell in averages_sheet["A2:B7"]
         }
 
+        first_col = maxima_sheet.min_column - 1
+        last_col = maxima_sheet.max_column - 1
+
+        maxima_dict = {
+            str(maxima_sheet[row][first_col].value).split(maxsplit=1)[0]: float(
+                maxima_sheet[row][last_col].value  # type: ignore
+            )
+            for row in range(2, maxima_sheet.max_row + 1)
+        }
+
         try:
             flow_velocity_stats = Statistics(
-                max=stats_dict["sea_water_speed_max"],
-                mean=stats_dict["sea_water_speed_mean"],
-                rms=stats_dict["sea_water_speed_rms"],
+                avg_max=stats_dict["sea_water_speed_max"],
+                avg_mean=stats_dict["sea_water_speed_mean"],
+                avg_rms=stats_dict["sea_water_speed_rms"],
+                max=maxima_dict["sea_water_speed"],
             )
             water_level_stats = Statistics(
-                max=stats_dict["sea_surface_height_max"],
-                mean=stats_dict["sea_surface_height_mean"],
-                rms=stats_dict["sea_surface_height_rms"],
+                avg_max=stats_dict["sea_surface_height_max"],
+                avg_mean=stats_dict["sea_surface_height_mean"],
+                avg_rms=stats_dict["sea_surface_height_rms"],
+                max=maxima_dict["sea_surface_height"],
             )
         except KeyError as exc:
             raise ValueError(f"Failed to parse verschillentool output: Missing key {exc}") from exc

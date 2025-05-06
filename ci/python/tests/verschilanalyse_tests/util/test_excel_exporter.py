@@ -90,7 +90,8 @@ def test_make_summary_workbook(output_type: OutputType) -> None:
     # Assert all bar statistics are over tolerance.
     assert bar_row[0].value == "bar"
     assert bar_row[1].value == 43
-    assert all(cell.fill == red_fill and str(cell.value).startswith("❌") for cell in bar_row[2:])
+    assert all(cell.fill == red_fill and str(cell.value).startswith("❌") for cell in bar_row[2:5])
+    assert all(cell.fill == red_fill and str(cell.value).startswith("❌") for cell in bar_row[6:9])
 
     # Assert all foo statistics are within tolerance.
     assert foo_row[0].value == "foo"

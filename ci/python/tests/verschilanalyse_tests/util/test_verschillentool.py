@@ -5,8 +5,8 @@ from tests.helpers import verschilanalyse as helper
 
 
 def test_from_verschillentool_workbook() -> None:
-    flow_velocity_stats = Statistics(1.0, 2.0, 3.0)
-    water_level_stats = Statistics(4.0, 5.0, 6.0)
+    flow_velocity_stats = Statistics(1.0, 2.0, 3.0, 0.0)
+    water_level_stats = Statistics(4.0, 5.0, 6.0, 0.0)
     workbook = helper.make_verschillentool_workbook(
         flow_velocity_stats=flow_velocity_stats,
         water_level_stats=water_level_stats,

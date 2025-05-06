@@ -45,36 +45,38 @@ class ExcelExporter:
             [
                 model_name,
                 stats.row_count,
+                round(stats.water_level.avg_max, ndigits=ndigits),
+                round(stats.water_level.avg_mean, ndigits=ndigits),
+                round(stats.water_level.avg_rms, ndigits=ndigits),
                 round(stats.water_level.max, ndigits=ndigits),
-                round(stats.water_level.mean, ndigits=ndigits),
-                round(stats.water_level.rms, ndigits=ndigits),
+                round(stats.flow_velocity.avg_max, ndigits=ndigits),
+                round(stats.flow_velocity.avg_mean, ndigits=ndigits),
+                round(stats.flow_velocity.avg_rms, ndigits=ndigits),
                 round(stats.flow_velocity.max, ndigits=ndigits),
-                round(stats.flow_velocity.mean, ndigits=ndigits),
-                round(stats.flow_velocity.rms, ndigits=ndigits),
             ]
         )
 
         row = sheet[sheet.max_row]
         red_fill = cls._status_to_fill(Status.ERROR)
         # Apply the red style to cells based on the thresholds.
-        if stats.water_level.max > Tolerances.max(stats.output_type, Variable.WATER_LEVEL):
+        if stats.water_level.avg_max > Tolerances.max(stats.output_type, Variable.WATER_LEVEL):
             row[2].fill = red_fill
             row[2].value = f"❌ {row[2].value}"
-        if stats.water_level.mean > Tolerances.mean(stats.output_type, Variable.WATER_LEVEL):
+        if stats.water_level.avg_mean > Tolerances.mean(stats.output_type, Variable.WATER_LEVEL):
             row[3].fill = red_fill
             row[3].value = f"❌ {row[3].value}"
-        if stats.water_level.rms > Tolerances.rms(stats.output_type, Variable.WATER_LEVEL):
+        if stats.water_level.avg_rms > Tolerances.rms(stats.output_type, Variable.WATER_LEVEL):
             row[4].fill = red_fill
             row[4].value = f"❌ {row[4].value}"
-        if stats.flow_velocity.max > Tolerances.max(stats.output_type, Variable.FLOW_VELOCITY):
-            row[5].fill = red_fill
-            row[5].value = f"❌ {row[5].value}"
-        if stats.flow_velocity.mean > Tolerances.mean(stats.output_type, Variable.FLOW_VELOCITY):
+        if stats.flow_velocity.avg_max > Tolerances.max(stats.output_type, Variable.FLOW_VELOCITY):
             row[6].fill = red_fill
             row[6].value = f"❌ {row[6].value}"
-        if stats.flow_velocity.rms > Tolerances.rms(stats.output_type, Variable.FLOW_VELOCITY):
+        if stats.flow_velocity.avg_mean > Tolerances.mean(stats.output_type, Variable.FLOW_VELOCITY):
             row[7].fill = red_fill
             row[7].value = f"❌ {row[7].value}"
+        if stats.flow_velocity.avg_rms > Tolerances.rms(stats.output_type, Variable.FLOW_VELOCITY):
+            row[8].fill = red_fill
+            row[8].value = f"❌ {row[8].value}"
 
     @staticmethod
     def _to_column(log_data: SlurmLogData | None) -> Sequence[str | int | float]:
@@ -154,14 +156,24 @@ class ExcelExporter:
         model_stats: dict[str, VerschillentoolOutput],
         ndigits: int = 4,
     ) -> None:
+        if output_type == OutputType.HIS:
+            unit = "stations"
+        elif output_type == OutputType.MAP:
+            unit = "times"
+        else:
+            raise ValueError(f"Invalid OutputType {output_type}")
+
         other_headers = [
-            f"Max water level ({Variable.WATER_LEVEL.unit})",
-            f"Bias water level ({Variable.WATER_LEVEL.unit})",
-            f"RMSE water level ({Variable.WATER_LEVEL.unit})",
-            f"Max flow velocity ({Variable.FLOW_VELOCITY.unit})",
-            f"Bias flow velocity ({Variable.FLOW_VELOCITY.unit})",
-            f"RMSE flow velocity ({Variable.FLOW_VELOCITY.unit})",
+            f"Maximum water level averaged over {unit} ({Variable.WATER_LEVEL.unit})",
+            f"Bias water level averaged over {unit} ({Variable.WATER_LEVEL.unit})",
+            f"RMSE water level averaged over {unit} ({Variable.WATER_LEVEL.unit})",
+            f"Maximum water level over all {unit} ({Variable.WATER_LEVEL.unit})",
+            f"Maximum flow velocity averaged over {unit} ({Variable.FLOW_VELOCITY.unit})",
+            f"Bias flow velocity averaged over {unit} ({Variable.FLOW_VELOCITY.unit})",
+            f"RMSE flow velocity averaged over {unit} ({Variable.FLOW_VELOCITY.unit})",
+            f"Maximum flow velocity over all {unit} ({Variable.FLOW_VELOCITY.unit})",
         ]
+
         count_header = cls.VERSCHILLENTOOL_COUNT_HEADERS[output_type]
 
         sheet.append(["Model name", count_header, *other_headers])

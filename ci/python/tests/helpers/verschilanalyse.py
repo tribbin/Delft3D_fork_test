@@ -60,8 +60,8 @@ def make_verschillentool_output(
 
     Has default values for all parameters to make it easier to create test instances.
     """
-    flow_velocity = flow_velocity or Statistics(0.0, 0.0, 0.0)
-    water_level = water_level or Statistics(0.0, 0.0, 0.0)
+    flow_velocity = flow_velocity or Statistics(0.0, 0.0, 0.0, 0.0)
+    water_level = water_level or Statistics(0.0, 0.0, 0.0, 0.0)
     return VerschillentoolOutput(
         output_type=output_type,
         water_level=water_level,
@@ -109,9 +109,9 @@ def make_verschillentool_workbook(
     output_type: OutputType = OutputType.HIS,
 ) -> openpyxl.Workbook:
     if water_level_stats is None:
-        water_level_stats = Statistics(0.0, 0.0, 0.0)
+        water_level_stats = Statistics(0.0, 0.0, 0.0, 0.0)
     if flow_velocity_stats is None:
-        flow_velocity_stats = Statistics(0.0, 0.0, 0.0)
+        flow_velocity_stats = Statistics(0.0, 0.0, 0.0, 0.0)
 
     workbook = openpyxl.Workbook()
 
@@ -131,18 +131,24 @@ def make_verschillentool_workbook(
             stats_sheet.append([(now + timedelta(days=i)).isoformat(), random.random(), random.random()])
 
     # Leave maxima sheet empty for now.
-    workbook.create_sheet(title="Maxima")
+    maxima_sheet = workbook.create_sheet(title="Maxima")
+    for row in [
+        ["", "Time", "Maximum value over all times"],
+        ["sea_surface_height (m)", "2-1-2035  11:00:00", water_level_stats.max],
+        ["sea_water_speed (m s-1)", "2-1-2035  06:00:00", flow_velocity_stats.max],
+    ]:
+        maxima_sheet.append(row)
 
     # Write averages sheet.
     averages_sheet = workbook.create_sheet(title="Averages")
     for row in [
         ["", "Average over all stations"],
-        ["sea_water_speed_max (m s-1)", flow_velocity_stats.max],
-        ["sea_water_speed_mean (m s-1)", flow_velocity_stats.mean],
-        ["sea_water_speed_rms (m s-1)", flow_velocity_stats.rms],
-        ["sea_surface_height_max (m)", water_level_stats.max],
-        ["sea_surface_height_mean (m)", water_level_stats.mean],
-        ["sea_surface_height_rms (m)", water_level_stats.rms],
+        ["sea_water_speed_max (m s-1)", flow_velocity_stats.avg_max],
+        ["sea_water_speed_mean (m s-1)", flow_velocity_stats.avg_mean],
+        ["sea_water_speed_rms (m s-1)", flow_velocity_stats.avg_rms],
+        ["sea_surface_height_max (m)", water_level_stats.avg_max],
+        ["sea_surface_height_mean (m)", water_level_stats.avg_mean],
+        ["sea_surface_height_rms (m)", water_level_stats.avg_rms],
     ]:
         averages_sheet.append(row)
 
@@ -167,7 +173,8 @@ def tolerance_stats(output_type: OutputType, variable: Variable, diff: float = 0
     Statistics
     """
     return Statistics(
+        avg_max=Tolerances.max(output_type, variable) + diff,
+        avg_mean=Tolerances.mean(output_type, variable) + diff,
+        avg_rms=Tolerances.rms(output_type, variable) + diff,
         max=Tolerances.max(output_type, variable) + diff,
-        mean=Tolerances.mean(output_type, variable) + diff,
-        rms=Tolerances.rms(output_type, variable) + diff,
     )
