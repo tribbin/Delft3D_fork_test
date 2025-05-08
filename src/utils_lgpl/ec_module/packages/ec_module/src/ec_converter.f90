@@ -437,15 +437,20 @@ contains
          case (elmSetType_spheric_ortho, elmSetType_Cartesian_ortho)
             src_x => sourceElementSet%x
             src_y => sourceElementSet%y
-            nsx = n_cols
-            nsy = n_rows
-
+            !nsx = n_cols
+            !nsy = n_rows
+            nsx = SIZE(src_x)
+            nsy = SIZE(src_y)
+            iimin = nsx
+            jjmin = nsy
+            
             if (connection%converterPtr%ofType == convType_netcdf) then
                issparse = 1 ! sparse storage
             end if
 
             if (issparse == 1) then
-               call realloc(imask, (/n_cols, n_rows/), fill=0)
+               !call realloc(imask, (/n_cols, n_rows/), fill=0)
+               call realloc(imask, (/nsx, nsy/), fill=0)
             end if
 
             do i = 1, n_points

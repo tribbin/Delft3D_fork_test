@@ -2973,18 +2973,24 @@ contains
                dim_offset = 0
                nrel = 0
             end if
-
             ! this goes wrong when time is defined before space in nc file
             if (grid_type == elmSetType_samples) then
                ncol = fileReaderPtr%dim_length(dimids(1))
                nrow = 1
                nlay = crd_dimlen(1, 3)
             else
-               ncol = fileReaderPtr%dim_length(fileReaderPtr%lonx_id)
+               ! EM: THE CODE BELOW IS WRONG; IF THE ORDER IN THE FILE IS NOT Y,X
+               !     THERE IS NO REQUIRED RELATION BETWEEN Rows/Columns and X and Y.
+               !     NOTE: Once upon a time all files were (Y,X,T), but this is no
+               !           longer the case. (e.g. for periodic forcing)
+               ! Inputs: lonx_id, laty_id, dimids(order), dim_length(dim_id)
+               !ncol = fileReaderPtr%dim_length(fileReaderPtr%lonx_id)
+               ncol = fileReaderPtr%dim_length(dimids(1))
                nrow = 1
                nlay = 0
                if (size(dimids) >= 2) then
-                  nrow = fileReaderPtr%dim_length(fileReaderPtr%laty_id)
+                  !nrow = fileReaderPtr%dim_length(fileReaderPtr%laty_id)
+                  nrow = fileReaderPtr%dim_length(dimids(2))
                   if (size(dimids) > 3 + dim_offset) then
                      nlay = fileReaderPtr%dim_length(dimids(3 + dim_offset))
                   end if
@@ -3606,8 +3612,8 @@ contains
       integer, dimension(2) :: dim_sizes !< number of points in x and y directions (note: may be swapped).
       real(hp), dimension(:,:), allocatable :: data_block !< temporary buffer for phase data
       integer :: istat !< status of allocation operation
-      integer :: i !< loop variable
-      integer :: j !< loop variable
+      integer :: i !< column index loop variable
+      integer :: j !< row index loop variable
       logical :: is_y_x !< file data is transposed in X <-> Y
       !
       success = .false.
@@ -3657,7 +3663,7 @@ contains
       if (.not. ecSupportNetcdfCheckError(nf90_inquire_dimension(fileReaderPtr%fileHandle, dimids(1), len=dim_sizes(1)), "obtain first phase dimension length", fileReaderPtr%fileName)) return
       if (.not. ecSupportNetcdfCheckError(nf90_inquire_dimension(fileReaderPtr%fileHandle, dimids(2), len=dim_sizes(2)), "obtain second phase dimension length", fileReaderPtr%fileName)) return
 
-      ! Allocate required buffer.
+      ! Allocate temporary buffer.
       allocate (data_block(dim_sizes(1), dim_sizes(2)), stat=istat)
       if (istat /= 0) then
          call setECMessage('ERROR: Failed to allocate phase buffer array.')
@@ -3667,18 +3673,19 @@ contains
       ! Load phase data.
       if (.not. ecSupportNetcdfCheckError(nf90_get_var(fileReaderPtr%fileHandle, phase_id, data_block, start=(/1, 1/), count=dim_sizes), "obtain phase data", fileReaderPtr%fileName)) return
 
-      if (dimids(1) == fileReaderPtr%lonx_id .and. dimids(2) == fileReaderPtr%laty_id) then
+      
+      !if (dimids(1) == fileReaderPtr%lonx_id .and. dimids(2) == fileReaderPtr%laty_id) then
           ! normal
           fileReaderPtr%hframe%phase_dims = dim_sizes
           is_y_x = .false.
-      elseif (dimids(2) == fileReaderPtr%lonx_id .and. dimids(1) == fileReaderPtr%laty_id) then
+      !elseif (dimids(2) == fileReaderPtr%lonx_id .and. dimids(1) == fileReaderPtr%laty_id) then
           ! transposed
-          fileReaderPtr%hframe%phase_dims = (/ dim_sizes(2), dim_sizes(1) /)
-          is_y_x = .true.
-      else
-         call setECMessage('ERROR: Phase dimensions are not X,Y or Y,X.')
-         return
-      end if
+          !fileReaderPtr%hframe%phase_dims = (/ dim_sizes(2), dim_sizes(1) /)
+          !is_y_x = .true.
+      !else
+         !call setECMessage('ERROR: Phase dimensions are not X,Y or Y,X.')
+         !return
+      !end if
 
       ! Allocate phase buffer.
       allocate (fileReaderPtr%hframe%phases(fileReaderPtr%hframe%phase_dims(1), fileReaderPtr%hframe%phase_dims(2)), stat=istat)
@@ -3687,7 +3694,7 @@ contains
          return
       end if
 
-      ! Copy buffer into phases
+      ! Copy temporary buffer into hframe phases
       do j=1,fileReaderPtr%hframe%phase_dims(2)
          do i=1,fileReaderPtr%hframe%phase_dims(1)
              if (is_y_x) then
