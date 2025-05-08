@@ -15,12 +15,18 @@ COPY --from=buildtools ${INTEL_MPI_PATH}/hydra_* ${INTEL_MPI_PATH}/mpiexec* ${IN
 ADD dimrset /opt/dimrset
 ADD example /example
 
+# For backwards compatibility with old docker scripts.
+RUN mkdir -p /opt/delft3dfm_latest
+RUN ln -s /opt/dimrset /opt/delft3dfm_latest/lnx64
+ADD delft3dfm_latest_readme.txt /opt
+
 RUN dnf --assumeyes update \
   && dnf --assumeyes install libgomp libfabric \
   && dnf clean all
 
 ENV LD_LIBRARY_PATH=/opt/dimrset/lib
 ENV PATH=/opt/dimrset/bin:/opt/intel/mpi/bin:$PATH
+ENV PROC_DEF_DIR=/opt/dimrset/share/delft3d
 ENV OMP_NUM_THREADS=1
 
 ARG GIT_COMMIT=unknown
@@ -28,5 +34,8 @@ ARG GIT_BRANCH=unknown
 LABEL delft3d-git-commit=$GIT_COMMIT
 LABEL delft3d-git-branch=$GIT_BRANCH
 
-WORKDIR /example
-CMD ["./run_example.sh"]
+# For backwards compatibility with old docker scripts.
+RUN mkdir /data
+WORKDIR /data
+ADD readme.txt /data
+CMD ["cat", "/data/readme.txt"]

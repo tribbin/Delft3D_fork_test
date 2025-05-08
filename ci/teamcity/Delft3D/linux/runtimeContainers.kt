@@ -67,9 +67,12 @@ object LinuxRuntimeContainers : BuildType({
             """.trimIndent()
         }
         script {
-            name = "Copy example to docker directory"
+            name = "Copy example and readme.txt"
             scriptContent = """
-                mkdir ./example && cp -r examples/dflowfm/08_dflowfm_sequential_dwaves/* ./example
+                mkdir ./example && cp -r examples/dflowfm/01_dflowfm_sequential/* ./example
+                rm ./example/run.* ./example/run_docker.sh
+                cp -f ci/teamcity/Delft3D/linux/docker/readme.txt .
+                cp -f ci/teamcity/Delft3D/linux/docker/delft3dfm_latest_readme.txt .
             """.trimIndent()
         }
         dockerCommand {
@@ -85,12 +88,14 @@ object LinuxRuntimeContainers : BuildType({
                     containers.deltares.nl/delft3d/delft3d-runtime-container:alma8-%build.vcs.number%
                 """.trimIndent()
                 commandArgs = """
+                    --provenance=false
                     --pull
                     --no-cache
                     --build-arg GIT_COMMIT=%build.vcs.number%
                     --build-arg GIT_BRANCH=%teamcity.build.branch%
                     --build-arg BUILDTOOLS_IMAGE_TAG=%dep.${LinuxBuildTools.id}.env.IMAGE_TAG%
                 """.trimIndent()
+                // --provenance=false is to prevent metadata to be pushed as unknown/unknown os/arch https://docs.docker.com/build/metadata/attestations/attestation-storage/
             }
         }
         dockerCommand {

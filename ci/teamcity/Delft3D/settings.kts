@@ -122,9 +122,11 @@ project {
 
     buildType(Trigger)
     buildType(DIMRbak)
+    buildType(Publish)
     buildTypesOrder = arrayListOf(
         Trigger,
-        DIMRbak
+        DIMRbak,
+        Publish
     )
 
     features {
