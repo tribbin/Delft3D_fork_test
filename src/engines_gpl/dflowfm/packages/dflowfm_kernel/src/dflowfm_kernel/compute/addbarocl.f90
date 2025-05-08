@@ -427,7 +427,7 @@ contains
             end if
 
             baroclinic_pressure = baroclinic_pressures(cell_index_3d + 1) + delta_z * (density(cell_index_3d) - rhomean)
-            integrated_baroclinic_pressure = (baroclinic_pressures(cell_index_3d + 1) + delta_z * (density(cell_index_3d) - rhomean)) * delta_z
+            integrated_baroclinic_pressure = (baroclinic_pressures(cell_index_3d + 1) + 0.5_dp * delta_z * (density(cell_index_3d) - rhomean)) * delta_z
 
             if (morelayersleft == 1) then ! k1=deepest
                baroclinic_pressure1 = baroclinic_pressure
