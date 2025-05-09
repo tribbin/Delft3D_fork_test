@@ -5,4 +5,5 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/drr_configuration.
 include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/fbc_configuration.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/miscellaneous/tools_configuration.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/miscellaneous/windows_postbuild_configuration.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/flow2d3d_configuration.cmake)
 project(wave)
