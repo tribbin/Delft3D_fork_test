@@ -4,7 +4,7 @@ This document describes the steps to perform a single-node Delft3D FM computatio
 Note: For multinode calculations (on High Performance Computing platforms) our Apptainer solution should be used.
 
 1 Loading the Docker image
-=============================
+==========================
 
     From tarball:
     $ docker load -i delft3dfm_<version>-<commit-id>.tar
@@ -18,7 +18,7 @@ Note: For multinode calculations (on High Performance Computing platforms) our A
     Note: Using this method, the image is stored locally and can be used for running the Docker container.
 
 2 Run an example test case
-==================================
+==========================
 
     2.1 Run the example case that is provided in the container
     $ docker run -t --workdir /example containers.deltares.nl/delft3d/delft3dfm:release-<version> ./run_example.sh
@@ -48,3 +48,21 @@ Note: This solution with the run_docker.sh script is for running on Linux or wit
     Starting the computation:
       - Run:
         $ <path_to_your_model>/run_docker.sh
+
+Commonly encountered problem (and workaround)
+=============================================
+
+    When using Docker on Windows, the Windows filesystem sometimes is 'lost' between runs due to a Microsoft bug.
+
+    Error (for example for example-testcase 02_dflowfm_parallel):
+
+        realpath: examples/02_dflowfm_parallel/run_docker.sh: No such file or directory
+        docker: Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: exec: "./run_example.sh": stat ./run_example.sh: no such file or directory: unknown
+
+    Workaround:
+
+        Type these commands on the command line and then re-run:
+          cd .. (to get out of the current folder)
+          cd -  (to get back to the previous folder)
+
+        Or add these commands to the run_docker.sh script (above the 'docker run' line).
