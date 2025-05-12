@@ -73,7 +73,7 @@ contains
             L = kcgen(3, n)
             does_link_contain_structures(L) = .true.
          end do
-      end do
+      end do 
 
       do istru = 1, network%sts%count
          associate (p_structure => network%sts%struct(istru))
