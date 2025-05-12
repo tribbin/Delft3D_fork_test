@@ -33,7 +33,7 @@
 
 module m_add_baroclinic_pressure_link
    use precision, only: dp
-   use m_physcoef, only: thermobaricity_in_baroclinic_pressure_gradient
+   use m_physcoef, only: thermobaricity_in_pressure_gradient
    use m_turbulence, only: in_situ_density, potential_density
 
    implicit none
@@ -71,7 +71,7 @@ contains
       end if
 
       ! Associate density with the potential density or in-situ density
-      if (thermobaricity_in_baroclinic_pressure_gradient) then
+      if (thermobaricity_in_pressure_gradient) then
          density => in_situ_density
       else
          density => potential_density
@@ -207,7 +207,7 @@ contains
       end if
 
       ! Associate density with the potential density or in-situ density
-      if (thermobaricity_in_baroclinic_pressure_gradient) then
+      if (thermobaricity_in_pressure_gradient) then
          density => in_situ_density
       else
          density => potential_density
@@ -358,7 +358,7 @@ contains
       end if
 
       ! Associate density with the potential density or in-situ density
-      if (thermobaricity_in_baroclinic_pressure_gradient) then
+      if (thermobaricity_in_pressure_gradient) then
          density => in_situ_density
       else
          density => potential_density
