@@ -28,9 +28,9 @@ docker login \
 find config -name '*.json' -iregex "$MODEL_REGEX" -exec docker run --rm \
     --volume="${VAHOME}/input:/data/input:ro" \
     --volume="${VAHOME}/reference:/data/reference:ro" \
-    --volume="${PWD}/{}:/app/{}:ro" \
-    --volume="${VERSCHILLENTOOL_DIR}:/app/verschillentool_output" \
-    containers.deltares.nl/delft3d/verschillentool:rename-station --config "{}" ';'
+    --volume="${PWD}/{}:/data/{}:ro" \
+    --volume="${VERSCHILLENTOOL_DIR}:/data/verschillentool" \
+    containers.deltares.nl/delft3d/verschillentool:rename-station --config "/data/{}" ';'
 
 # Use the last part of the REFERENCE_PREFIX as the REFERENCE_TAG
 REFERENCE_TAG="${REFERENCE_PREFIX##*/}"

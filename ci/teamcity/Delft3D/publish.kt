@@ -20,8 +20,6 @@ object Publish : BuildType({
     artifactRules = """
         #teamcity:symbolicLinks=as-is
         +:examples/dflowfm/examples/**/* => %brand%/examples/
-        -:examples/dflowfm/examples/**/run.sh
-        -:examples/dflowfm/examples/**/run.bat
         +:ci/teamcity/Delft3D/linux/docker/readme.txt => %brand%/
         +:%brand%_*.tar => %brand%/
     """.trimIndent()
@@ -141,7 +139,8 @@ object Publish : BuildType({
                     rm -f *.*
                     mkdir examples
                     shopt -s extglob
-                    mv !(examples) examples
+                    mv -v !(examples) examples
+                    rm -vf examples/*/run.{sh,bat}
                     zip -r ${'$'}{ZIP_FILE} examples
                 popd
                 pushd ci/teamcity/Delft3D/linux/docker
