@@ -1,5 +1,5 @@
 {
-    "output_directory": "verschillentool_output",
+    "output_directory": "/data/verschillentool",
     "models": [
         {
             "name": "dflowfm2d-markermeer-hr2023_6-v1a",

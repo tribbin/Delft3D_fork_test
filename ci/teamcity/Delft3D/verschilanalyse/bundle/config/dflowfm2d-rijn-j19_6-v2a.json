@@ -1,5 +1,5 @@
 {
-    "output_directory": "verschillentool_output",
+    "output_directory": "/data/verschillentool",
     "models": [
         {
             "name": "dflowfm2d-rijn-j19_6-v2a",
