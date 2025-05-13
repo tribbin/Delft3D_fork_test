@@ -46,7 +46,6 @@ contains
       use m_getkbotktopmax
       use m_flowtimes, only: handle_extra, irefdate, tunit, tstart_user, tim1fld, ti_mba
       use m_flowgeom, only: lnx, ndx, xz, yz, xu, yu, iadv, ibot, ndxi, lnx1d, grounlay, jagrounlay, kcs
-      use m_inquire_flowgeom, only: IFLTP_1D, IFLTP_ALL
       use m_netw, only: xk, yk, zk, numk, numl
       use unstruc_model, only: md_extfile_dir, md_inifieldfile, md_extfile
       use timespace, only: timespaceinitialfield, timespaceinitialfield_int, ncflow, loctp_polygon_file, loctp_polyline_file, selectelset_internal_links, selectelset_internal_nodes, getmeteoerror, readprovider
@@ -75,6 +74,7 @@ contains
       use unstruc_inifields, only: initialfield2Dto3D
       use m_find_name, only: find_name
       use m_fm_wq_processes_sub, only: get_waqinputname
+      use network_data, only: LINK_1D, LINK_ALL
 
       integer, intent(inout) :: iresult !< integer error code, is preserved in case earlier errors occur.
 
@@ -1137,9 +1137,9 @@ contains
             else if (jaoldstr > 0 .and. (qid == 'pump1D' .or. qid == 'pump')) then
 
                if (qid == 'pump1D') then
-                  call selectelset_internal_links(lnx1D, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_1D, sortLinks=1)
+                  call selectelset_internal_links(lnx1D, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=LINK_1D, sortLinks=1)
                else
-                  call selectelset_internal_links(lnx, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_ALL, sortLinks=1)
+                  call selectelset_internal_links(lnx, kep(npump + 1:numl), npum, LOCTP_POLYLINE_FILE, filename, linktype=LINK_ALL, sortLinks=1)
                end if
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), npum, ' nr of pump links'; call msg_flush()
@@ -1161,7 +1161,7 @@ contains
 
             else if (jaoldstr > 0 .and. qid == 'valve1D') then
 
-               call selectelset_internal_links(lnx1D, kevalv(nvalv + 1:numl), numvalv, LOCTP_POLYLINE_FILE, filename, linktype=IFLTP_1D)
+               call selectelset_internal_links(lnx1D, kevalv(nvalv + 1:numl), numvalv, LOCTP_POLYLINE_FILE, filename, linktype=LINK_1D)
                success = .true.
                write (msgbuf, '(a,1x,a,i8,a)') trim(qid), trim(filename), numvalv, ' nr of valves '; call msg_flush()
 
