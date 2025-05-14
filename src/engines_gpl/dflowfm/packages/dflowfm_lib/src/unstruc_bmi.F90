@@ -3545,7 +3545,7 @@ contains
 
       call cosphiunetcheck(1)
 
-      call partition_METIS_to_idomain(npart, jacontiguous, md_pmethod, 0)
+      call partition_METIS_to_idomain(idomain, npart, jacontiguous, md_pmethod, 0)
 
       ndomains = npart
 

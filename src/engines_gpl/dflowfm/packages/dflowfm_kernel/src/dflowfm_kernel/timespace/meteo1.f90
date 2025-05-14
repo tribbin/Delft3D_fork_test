@@ -357,7 +357,7 @@ contains
    !
    subroutine readTransformcoefficients(minp, transformcoef)
       use m_filez, only: readerror, zoekopt
-      
+
       integer, intent(in) :: minp
       real(kind=dp), intent(out) :: transformcoef(:)
 
@@ -5573,6 +5573,7 @@ contains
       use m_polygon
       use m_reapol
       use m_filez, only: oldfil
+      use network_data, only: LINK_1D, LINK_2D,LINK_1D2D_INTERNAL,LINK_1D2D_LONGITUDINAL,LINK_1D2D_STREETINLET,LINK_1D_MAINBRANCH,LINK_1D2D_ROOF,LINK_ALL
 
       implicit none
 
@@ -5589,7 +5590,7 @@ contains
       integer, optional, intent(in) :: branchindex !< (Optional) Branch index on which flow link is searched for (when loc_spec_type==LOCTP_BRANCHID_CHAINAGE).
       real(kind=dp), optional, intent(in) :: chainage !< (Optional) Offset along specified branch (when loc_spec_type==LOCTP_BRANCHID_CHAINAGE).
       character(len=*), optional, intent(in) :: contactId !< (Optional) Unique contactId for one flow link (when loc_spec_type==LOCTP_CONTACTID) (stored as mesh contact in input grid).
-      integer, optional, intent(in) :: linktype !< (Optional) Limit search to specific link types: only 1D flow links (linktype==IFLTP_1D), 2D (linktype==IFLTP_2D), or both (linktype==IFLTP_ALL).
+      integer, optional, intent(in) :: linktype !< (Optional) Limit search to specific link types: only 1D flow links (linktype==LINK_1D), 2D (linktype==LINK_2D), or both (linktype==LINK_ALL).
       real(kind=dp), allocatable, optional, intent(inout) :: xps(:), yps(:) !< (Optional) Arrays in which the read in polyline x,y-points can be stored (only relevant when loc_spec_type==LOCTP_POLYGON_FILE/LOCTP_POLYLINE_FILE).
       integer, optional, intent(inout) :: nps !< (Optional) Number of polyline points that have been read in (only relevant when loc_spec_type==LOCTP_POLYGON_FILE/LOCTP_POLYLINE_FILE).
       integer, optional, intent(inout) :: lftopol(:) !< (Optional) Mapping array from flow links to the polyline index that intersected that flow link (only relevant when loc_spec_type==LOCTP_POLYLINE_FILE or LOCTP_POLYLINE_XY).
@@ -5603,7 +5604,7 @@ contains
       if (present(linktype)) then
          linktype_ = linktype
       else
-         linktype_ = IFLTP_ALL
+         linktype_ = LINK_ALL
       end if
 
       numg = 0
@@ -5683,13 +5684,13 @@ contains
 
          ! select search range for flow links
          select case (linktype_)
-         case (IFLTP_1D, IFLTP_1D2D_INT, IFLTP_1D2D_LONG, IFLTP_1D2D_STREET, IFLTP_1D2D_ROOF)
+         case (LINK_1D, LINK_1D2D_INTERNAL, LINK_1D2D_LONGITUDINAL, LINK_1D2D_STREETINLET, LINK_1D2D_ROOF)
             Lstart = 1
             Lend = lnx1D
-         case (IFLTP_2D)
+         case (LINK_2D)
             Lstart = lnx1D + 1
             Lend = lnx
-         case (IFLTP_ALL)
+         case (LINK_ALL)
             Lstart = 1
             Lend = lnx
          end select
@@ -5697,7 +5698,7 @@ contains
          inp = -1
          ierr = 0
          do L = Lstart, Lend
-            if (linktype_ /= IFLTP_ALL .and. kcu(L) /= linktype_) then
+            if (linktype_ /= LINK_ALL .and. kcu(L) /= linktype_) then
                cycle
             end if
 
