@@ -133,12 +133,16 @@ if __name__ == "__main__":
     examples_dir = base_dir / EXAMPLES_RELATIVE_DIR
     apptainer_dir = base_dir / APPTAINER_RELATIVE_DIR
 
+    has_errors = False
     logger.log("Create destination directory.")
     if not create_destination_directory(dest_dir, logger):
-        sys.exit(1)
+        has_errors = True
 
     logger.log("Copy files from the examples directory to the destination.")
     if copy_examples(examples_dir, apptainer_dir, dest_dir, logger):
-        sys.exit(1)
+        has_errors = True
 
     logger.log("Copy completed.")
+
+    if has_errors:
+        sys.exit(1)
