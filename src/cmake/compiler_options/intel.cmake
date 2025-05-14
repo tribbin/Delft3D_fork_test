@@ -93,7 +93,7 @@ if (UNIX)
     set(check_uninit_flag                        "-check uninit")
     set(check_stack_flag                         "-check stack")
     set(openmp_flag                              "-qopenmp")     # To disable: set to -qopenmp-stubs
-    set(avx2_flag                                "-arch" "CORE-AVX2")
+    set(avx2_flag                                "-arch CORE-AVX2")
     set(generate_reentrancy_threaded_flag        "-reentrancy threaded")
     set(floating_point_exception_flag            "-fpe0")
     set(flush_to_zero_flag                       "-ftz")

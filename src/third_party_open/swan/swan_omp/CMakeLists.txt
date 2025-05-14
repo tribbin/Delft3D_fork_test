@@ -90,8 +90,8 @@ if (WIN32)
 endif(WIN32)
 if (UNIX)
     target_compile_options(${executable_name} PRIVATE
-                                                  ${avx2_flag}
-                                                  ${flush_to_zero_flag})
+                                                  "SHELL:${avx2_flag}"
+                                                  "SHELL:${flush_to_zero_flag}")
 endif(UNIX)
 
 # Define preprocessor definitions
