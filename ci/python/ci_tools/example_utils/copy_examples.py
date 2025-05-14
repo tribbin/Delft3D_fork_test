@@ -68,19 +68,29 @@ def create_destination_directory(dest_dir: Path, logger: Logger) -> bool:
 
 
 def copy_examples(example_directory: Path, apptainer_directory: Path, dest_dir: Path, logger: Logger) -> bool:
-    """Copy all files to the destination directory.
+    """
+    Copy example files and Apptainer scripts to the destination directory.
 
-    Take example cases from example_directory and the apptainer scripts from the apptainer_directory.
-    Copy all files to the destination directory.
+    Parameters
+    ----------
+    example_directory : Path
+        Directory containing example files.
+    apptainer_directory : Path
+        Directory containing Apptainer scripts.
+    dest_dir : Path
+        Destination directory for copied files.
+    logger : Logger
+        Logger for logging messages.
 
     Returns
     -------
-        bool: True if successful, False if there were errors
+        bool: True if all operations succeed, False otherwise.
     """
-    h7_scripts = ["run_native_h7.sh", "submit_singularity_h7.sh"]
+    h7_scripts = {"run_native_h7.sh", "submit_singularity_h7.sh"}
     exclude_patterns = ["run-all-examples-*"]
     success = True
-    # Copy examples
+
+    # Copy example files
     for src_item in example_directory.rglob("*"):
         try:
             if any(src_item.match(pattern) for pattern in exclude_patterns):
@@ -88,30 +98,33 @@ def copy_examples(example_directory: Path, apptainer_directory: Path, dest_dir: 
                 continue
 
             dest_file = dest_dir / src_item.relative_to(example_directory)
-            if src_item.is_file():
-                dest_file.parent.mkdir(parents=True, exist_ok=True)
-                logger.log(f"Copying file: {src_item} to {dest_file}")
-                shutil.copy2(src_item, dest_file)
-            elif src_item.is_dir():
+
+            if src_item.is_dir():
                 dest_file.mkdir(parents=True, exist_ok=True)
-                logger.log(f"Creating directory: {dest_file}")
-        except shutil.Error as e:
-            logger.log(f"Copy failed: {e}", LogLevel.ERROR)
+                logger.log(f"Created directory: {dest_file}")
+            elif src_item.is_file():
+                dest_file.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src_item, dest_file)
+                logger.log(f"Copied file: {src_item} to {dest_file}")
+        except Exception as e:
+            logger.log(f"Error copying {src_item} to {dest_file}: {e}", LogLevel.ERROR)
             success = False
 
-    # Copy Apptainer scripts
+    # Copy Apptainer scripts to each subdirectory in dest_dir
     for subdir in dest_dir.iterdir():
-        try:
-            if subdir.is_dir():
-                for file in apptainer_directory.glob("*.sh"):
-                    if file.name in h7_scripts:
-                        dest_file = subdir / file.name
-                        logger.log(f"Copying file: {file} to {dest_file}")
-                        shutil.copy2(file, dest_file)
-        except shutil.Error as e:
-            logger.log(f"Copy failed: {e}", LogLevel.ERROR)
-            success = False
-    logger.log("Copy completed.")
+        if not subdir.is_dir():
+            continue
+        for script in apptainer_directory.glob("*.sh"):
+            if script.name in h7_scripts:
+                try:
+                    dest_script = subdir / script.name
+                    shutil.copy2(script, dest_script)
+                    logger.log(f"Copied script: {script} to {dest_script}")
+                except Exception as e:
+                    logger.log(f"Error copying script {script} to {dest_script}: {e}", LogLevel.ERROR)
+                    success = False
+
+    logger.log("Copy operation completed.")
     return success
 
 
