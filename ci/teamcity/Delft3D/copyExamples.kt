@@ -28,9 +28,16 @@ object CopyExamples : BuildType({
     steps {
         python {
             name = "Copy example files to P drive"
-            command = file {
-                filename = "ci/python/ci_tools/example_utils/copy_examples.py"
-                scriptArguments = "%DEST_DIR% --tc_logging"
+            environment = venv {
+                requirementsFile = ""
+                pipArgs = "--editable ./ci/python[example_utils]"
+            }
+            command = module {
+                module = "ci_tools.example_utils.copy_examples"
+                scriptArguments = """
+                    "%DEST_DIR% 
+                    --tc_logging"
+                """.trimIndent()
             }
         }
     }
