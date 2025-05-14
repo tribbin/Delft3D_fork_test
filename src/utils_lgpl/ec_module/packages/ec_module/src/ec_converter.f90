@@ -443,7 +443,7 @@ contains
             nsy = SIZE(src_y)
             iimin = nsx
             jjmin = nsy
-            
+
             if (connection%converterPtr%ofType == convType_netcdf) then
                issparse = 1 ! sparse storage
             end if
@@ -520,7 +520,7 @@ contains
                do jj = 1, n_cols - 1
                   do ii = 1, n_rows - 1
                      if (ieee_is_nan(sx_2D(jj, ii)) .or. ieee_is_nan(sx_2D(jj + 1, ii)) .or. ieee_is_nan(sx_2D(jj, ii + 1)) .or. ieee_is_nan(sx_2D(jj + 1, ii + 1)) .or. &
-                        ieee_is_nan(sy_2D(jj, ii)) .or. ieee_is_nan(sy_2D(jj + 1, ii)) .or. ieee_is_nan(sy_2D(jj, ii + 1)) .or. ieee_is_nan(sy_2D(jj + 1, ii + 1))) then
+                         ieee_is_nan(sy_2D(jj, ii)) .or. ieee_is_nan(sy_2D(jj + 1, ii)) .or. ieee_is_nan(sy_2D(jj, ii + 1)) .or. ieee_is_nan(sy_2D(jj + 1, ii + 1))) then
                         cycle
                      end if
                      cx = (sx_2D(jj, ii) + sx_2D(jj + 1, ii) + sx_2D(jj, ii + 1) + sx_2D(jj + 1, ii + 1)) / 4.0
@@ -2325,7 +2325,7 @@ contains
       real(hp) :: maxangle
       real(hp) :: delta
       real(hp) :: weightfac
-      
+
       if (ieee_is_nan(var1) .or. ieee_is_nan(var2)) then
          cyclic_interpolation = ieee_value(0.0_hp, ieee_quiet_nan)
          return

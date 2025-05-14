@@ -3605,7 +3605,7 @@ contains
       integer, dimension(2) :: dimids !< integer id's of amplitude/phase variable's dimension variables eg: phase(y,x) -> id's of y and x.
       integer :: numids !< number of variable id's of amplitude/phase (we expect 2: y,x or x,y)
       integer, dimension(2) :: dim_sizes !< number of points in x and y directions (note: may be swapped).
-      real(hp), dimension(:,:), allocatable :: data_block !< temporary buffer for phase data
+      real(hp), dimension(:, :), allocatable :: data_block !< temporary buffer for phase data
       integer :: istat !< status of allocation operation
       integer :: i !< column index loop variable
       integer :: j !< row index loop variable
@@ -3671,11 +3671,11 @@ contains
 
       is_transposed = (dimids(2) == fileReaderPtr%lonx_id .and. dimids(1) == fileReaderPtr%laty_id)
       !fileReaderPtr%is_transposed_field = is_transposed
-      
+
       if (is_transposed) then
-          fileReaderPtr%hframe%phase_dims = (/ dim_sizes(2), dim_sizes(1) /)
+         fileReaderPtr%hframe%phase_dims = (/dim_sizes(2), dim_sizes(1)/)
       else
-          fileReaderPtr%hframe%phase_dims = dim_sizes
+         fileReaderPtr%hframe%phase_dims = dim_sizes
       end if
 
       ! Allocate phase buffer.
@@ -3692,7 +3692,7 @@ contains
          fileReaderPtr%hframe%phases = data_block
       end if
 
-      deallocate(data_block)
+      deallocate (data_block)
       success = .true.
    end function ecNetcdfInitializeHarmonicsFrame
 
