@@ -1075,7 +1075,7 @@ contains
       
       !For now, if it is a compound name (i.e., it has more than one token), we assume it is a double. 
       !It cannot be as `case default` because otherwise whatever result from the `include` will be overwritten.
-      if (last_token > 1) then
+      if (last_token > 1) then 
          shape(1) = 1
          return
       end if
