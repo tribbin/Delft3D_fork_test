@@ -3,6 +3,9 @@ bin*/**
 build_*/**
 install_*/**
 
+# Documentation result directories
+**/result_doc/**
+
 # editor files
 .vscode
 .idea/*
