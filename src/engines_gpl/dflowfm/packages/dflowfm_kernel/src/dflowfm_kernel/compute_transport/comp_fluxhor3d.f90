@@ -42,7 +42,7 @@ module m_comp_fluxhor3d
 contains
 
    subroutine comp_fluxhor3D(NUMCONST, limtyp, Ndkx, Lnkx, u1, q1, sqi, vol1, kbot, Lbot, Ltop, kmxn, kmxL, sed, difsed, sigdifi, &
-                             viu, nsubsteps, jaupdatehorflux, ndeltasteps, jaupdateconst, flux, dsedx, dsedy, jalimitdiff, dxiAu)
+                             viu, nsubsteps, jaupdatehorflux, ndeltasteps, jaupdateconst, flux, dsedx, dsedy, jalimitdiff, dxiAu, difsedsp, background_diffusion_factor)
       use precision, only: dp
       use m_flowgeom, only: Ndx, Lnx, ln, nd, klnup, slnup, dxi, acl, csu, snu, wcx1, wcx2, wcy1, wcy2, Dx ! static mesh information
       use m_flowtimes, only: dts
@@ -75,6 +75,8 @@ contains
 
       real(kind=dp), dimension(NUMCONST, Ndkx), intent(in) :: sed !< transported quantities
       real(kind=dp), dimension(NUMCONST), intent(in) :: difsed !< scalar-specific diffusion coefficent (dicouv)
+      real(kind=dp), dimension(NUMCONST, lnx), optional, intent(in) :: difsedsp !< spatially-varying diffusion coefficient (optional). If present, it overwrites the scalar in `difsed`
+      real(kind=dp), dimension(NUMCONST), optional, intent(in) :: background_diffusion_factor !< factor multipling background diffusion `dicouv` (optional). By default it is 1.0, so background diffusion is applied. If set to 0.0, background diffusion is not applied. 
       real, dimension(Lnkx), intent(in) :: viu !< spatially varying horizontal eddy viscosity, NOTE: real, not double
       real(kind=dp), dimension(NUMCONST), intent(in) :: sigdifi !< 1/(Prandtl number) for heat, 1/(Schmidt number) for mass
       integer, intent(in) :: nsubsteps !< number of substeps
@@ -87,6 +89,8 @@ contains
       integer, intent(in) :: jalimitdiff !< limit diffusion (for time step) (1) or not (0)
       real(kind=dp), dimension(Lnkx), intent(in) :: dxiAu !< area of horizontal diffusive flux divided by Dx
 
+      real(kind=dp), dimension(NUMCONST) ::background_diffusion_factor_local !< local copy of `background_diffusion_factor`. As `background_diffusion_factor` is optional, it cannot be allocated if not present and we need a copy to handle it.
+      
       real(kind=dp) :: sl1L, sl2L, sl3L, sl1R, sl2R, sl3R
       real(kind=dp) :: cf, sedkuL, sedkuR, ds1L, ds2L, ds1R, ds2R
       real(kind=dp) :: sedL, sedR
@@ -94,6 +98,7 @@ contains
       real(kind=dp) :: dfac1, dfac2
       real(kind=dp) :: difcoeff, QL, QR, diuspL, ds1, ds2, dsedn, half
       real(kind=dp) :: dt_loc
+      real(kind=dp) :: difsed_const ! difsed for a constituent
 
       integer :: j, iswitchL, iswitchR
       integer :: k1, k2, LL, L, Lb, Lt, laydif, jaL, jaR
@@ -105,6 +110,12 @@ contains
 
       if (timon) call timstrt("comp_fluxhor3D", ithndl)
 
+      if (PRESENT(background_diffusion_factor)) then
+          background_diffusion_factor_local=background_diffusion_factor
+      else
+          background_diffusion_factor_local=1.0_dp
+      end if
+      
       dt_loc = dts
 
       if (limtyp == 6) then
@@ -294,7 +305,7 @@ contains
       if (dicouv >= 0d0 .and. jalimitdiff /= 3) then
          number_limited_links = 0
          !$OMP PARALLEL DO                             &
-         !$OMP PRIVATE(LL,dfac1,dfac2,Lb,Lt,L,k1,k2,fluxfacMaxL,fluxfacMaxR,j,difcoeff,fluxfac,diuspL,flux_max_limit) &
+         !$OMP PRIVATE(LL,dfac1,dfac2,Lb,Lt,L,k1,k2,fluxfacMaxL,fluxfacMaxR,j,difcoeff,fluxfac,diuspL,flux_max_limit,difsed_const) &
          !$OMP FIRSTPRIVATE(dt_loc)
          do LL = 1, Lnx
             if (nsubsteps > 1) then
@@ -321,7 +332,7 @@ contains
             else
                diuspL = dicouv
             end if
-
+         
             Lb = Lbot(LL)
             Lt = Ltop(LL)
             do L = Lb, Lt
@@ -332,9 +343,16 @@ contains
                   fluxfacMaxR = dfac2 * (vol1(k2) / dt_loc - sqi(k2))
                end if
                do j = 1, NUMCONST
+                   
                   if (jaupdateconst(j) /= 1) cycle
 
-                  difcoeff = sigdifi(j) * viu(L) + difsed(j) + diuspL ! without smagorinsky, viu is 0 ,
+                  if (PRESENT(difsedsp)) then
+                     difsed_const=difsedsp(j,LL)
+                  else
+                     difsed_const=difsed(j)
+                  endif
+                  
+                  difcoeff = sigdifi(j) * viu(L) + difsed_const + background_diffusion_factor_local(j)*diuspL ! without smagorinsky, viu is 0 ,
                   ! difsed only contains molecular value,
                   ! so then you only get user specified value
 

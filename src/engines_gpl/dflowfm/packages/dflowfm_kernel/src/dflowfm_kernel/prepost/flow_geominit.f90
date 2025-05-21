@@ -40,6 +40,7 @@ module m_flow_geominit
    use m_sort_flowlinks_ccw, only: sort_flowlinks_ccw
    use m_setwallorientations, only: setwallorientations
    use m_setprofs1d, only: setprofs1d
+   use m_allocatelinktocornerweights, only: allocatelinktocornerweights
    use m_setlinktocornerweights, only: setlinktocornerweights
    use m_setlinktocenterweights, only: setlinktocenterweights
    use m_setcornertolinkorientations, only: setcornertolinkorientations
@@ -55,6 +56,7 @@ module m_flow_geominit
    use m_makethindamadmin, only: makethindamadmin
    use m_iadvecini, only: iadvecini
    use m_getdxofconnectedkcu1, only: getdxofconnectedkcu1
+   use m_wind, only: jawindpartialdry
 
    implicit none
 
@@ -69,7 +71,7 @@ contains
       use precision, only: dp
       use m_cutcell_list, only: cutcell_list
       use m_checknetwork, only: checknetwork
-      use m_allocate_linktocenterweights, only: allocate_linktocenterweights
+      use m_allocate_linktocenterweights, only: allocatelinktocenterweights
       use m_add_boundarynetcells, only: add_boundarynetcells
       use m_addexternalboundarypoints, only: addexternalboundarypoints
       use m_xbeachwaves, only: xbeach_makethetagrid
@@ -120,6 +122,7 @@ contains
       use m_ini_sferic
       use m_set_bobs
       use m_cosphiu, only: cosphiu
+      use m_getcellsurface1d, only: getcellsurface1d
 
       implicit none
 
@@ -149,7 +152,7 @@ contains
       integer :: icn ! corner stuff
       integer :: kk1, kk2, kk3 ! banf stuff
       real(kind=dp) :: dlength, dlenmx, dxorgL
-      real(kind=dp) :: rrr, cs, sn, dis, xn, yn, xt, yt, rl, sf, hdx, alfa, dxlim, dxlink
+      real(kind=dp) :: rrr, cs, sn, dis, xn, yn, xt, yt, rl, sf, alfa, dxlim, dxlink
       real(kind=dp) :: phase
       real(kind=dp) :: xref, yref
       integer :: jaend
@@ -357,7 +360,9 @@ contains
          call aerr('bl_ave(ndx)', ierr, ndx)
       end if
 
-      if (allocated(kfs)) deallocate (kfs)
+      if (allocated(kfs)) then
+         deallocate (kfs)
+      end if
       allocate (kfs(ndx)); kfs = 0
 
       ! Reallocate circumcenters with extra space for 1D nodes, but keep existing 2D data.
@@ -497,7 +502,9 @@ contains
       call readyy('geominit-NODELINKS         ', 0.5d0)
 
       if (allocated(ln)) deallocate (ln, lncn, bob, bob0, dx, dxi, wu, wui, kcu, csu, snu, acl, iadv, teta, wu_mor, wu1D2D, hh1D2D)
-      if (allocated(ibot)) deallocate (ibot)
+      if (allocated(ibot)) then
+         deallocate (ibot)
+      end if
       allocate (ln(2, lnx), stat=ierr)
       call aerr('ln   (2,lnx)', ierr, 2 * lnx)
       allocate (lncn(2, lnx), stat=ierr)
@@ -873,7 +880,9 @@ contains
 
       call set_1d_indices_in_network()
 
-      if (allocated(prof1D)) deallocate (prof1D)
+      if (allocated(prof1D)) then
+         deallocate (prof1D)
+      end if
       allocate (prof1D(3, lnx1D), stat=ierr)
       call aerr('prof1D(3,lnx1D)', ierr, 2 * lnx1D)
       do L = 1, lnx1D
@@ -888,11 +897,15 @@ contains
          end if
       end do
 
-      if (allocated(Lbnd1D)) deallocate (Lbnd1D)
+      if (allocated(Lbnd1D)) then
+         deallocate (Lbnd1D)
+      end if
       allocate (Lbnd1D(lnxi + 1:lnx), stat=ierr); Lbnd1D = 0
       call aerr('Lbnd1D(lnxi+1:lnx)', ierr, lnx - lnxi + 1)
 
-      if (allocated(grounlay)) deallocate (grounLay)
+      if (allocated(grounlay)) then
+         deallocate (grounlay)
+      end if
       if (lnx1D > 0) then
          allocate (grounLay(lnx1D), stat=ierr); grounLay = dmiss
          call aerr('grounLay(lnx1D)', ierr, Lnx1D)
@@ -939,12 +952,6 @@ contains
                   WU(L) = (1d0 - ALFA) * PROFILES1D(KA)%WIDTH + ALFA * PROFILES1D(KB)%WIDTH
                end if
             end if
-            hdx = 0.5d0 * dx(L)
-            if (kcu(L) /= 3) then
-               ! TODO: UNST-6592: consider excluding ghost links here and do an mpi_allreduce sum later
-               if (k1 > ndx2d) ba(k1) = ba(k1) + hdx * wu(L) ! todo, on 1d2d nodes, choose appropriate wu1DUNI = min ( wu1DUNI, intersected 2D face)
-               if (k2 > ndx2d) ba(k2) = ba(k2) + hdx * wu(L)
-            end if
          else
             wu(L) = dbdistance(xk(k3), yk(k3), xk(k4), yk(k4), jsferic, jasfer3D, dmiss) ! set 2D link width
          end if
@@ -954,11 +961,6 @@ contains
          ! WU of orphan 1D2D links must come from neighbouring partition.
          call update_ghosts(ITYPE_U, 1, lnx, wu, ierror, ignore_orientation=.true.)
       end if
-
-      do L = lnxi + 1, Lnx
-         k1 = ln(1, L); k2 = ln(2, L)
-         ba(k1) = ba(k2) ! set bnd ba to that of inside point
-      end do
 
       k = 0 ! count MAX nr of 1D endpoints, dir zijn dead ends
       do L = 1, lnx
@@ -974,7 +976,9 @@ contains
       end do
       mx1Dend = k
 
-      if (allocated(n1Dend)) deallocate (n1Dend)
+      if (allocated(n1Dend)) then
+         deallocate (n1Dend)
+      end if
       allocate (n1Dend(mx1Dend), stat=ierr); n1Dend = 0
       call aerr('n1Dend(mx1Dend)', ierr, mx1Dend)
 
@@ -994,10 +998,7 @@ contains
       end do
       mx1Dend = k
 
-      do k = 1, mx1Dend
-         k1 = n1Dend(k)
-         ba(k1) = 2d0 * ba(k1)
-      end do
+      call getcellsurface1d(ba, bai)
 
       ! fraction of dist(nd1->edge) to link lenght dx
       call readyy('geominit', 0.94d0)
@@ -1057,14 +1058,22 @@ contains
          end if
       end do
 
-      do n = 1, ndx
+      do n = 1, ndx2D ! internal 2d nodes
+         if (ba(n) > 0d0) then
+            bai(n) = 1d0 / ba(n) ! initially, ba based on 'max wet envelopes', take bai used in linktocentreweights
+         end if
+      end do
+
+      do n = ndx1Db + 1, ndx ! boundary 2d nodes
          if (ba(n) > 0d0) then
             bai(n) = 1d0 / ba(n) ! initially, ba based on 'max wet envelopes', take bai used in linktocentreweights
          end if
       end do
 
       ! call message ('cutcell call 4',' ',' ')
-      if (allocated(kfs)) deallocate (kfs)
+      if (allocated(kfs)) then
+         deallocate (kfs)
+      end if
       fnam = '*.cut'
       n12 = 4
       allocate (kfs(ndx)); kfs = 0
@@ -1072,10 +1081,9 @@ contains
 
       call setcentertolinkorientations()
 
-      ! call setlinktocenterweights()
-
       call setcornertolinkorientations()
 
+      call allocatelinktocornerweights()
       call setlinktocornerweights()
 
       do n = ndx2D + 1, ndxi
@@ -1103,7 +1111,9 @@ contains
       n12 = 5; fnam = '*.cut'
       ! call message ('cutcell call 5',' ',' ')
 
-      if (allocated(numlimdt)) deallocate (numlimdt)
+      if (allocated(numlimdt)) then
+         deallocate (numlimdt)
+      end if
       allocate (numlimdt(ndx), stat=ierr); numlimdt = 0
       call aerr('numlimdt(ndx)', ierr, ndx)
       if (numlimdt_baorg > 0) then ! if prev_numlimdt(k) > numlimdt_baorg then ba(k) = baorg(k) in cutcell
@@ -1164,7 +1174,9 @@ contains
          end if
       end do
 
-      if (allocated(walls)) deallocate (walls)
+      if (allocated(walls)) then
+         deallocate (walls)
+      end if
       allocate (walls(17, nw), stat=ierr); walls = 0
       call aerr('walls(17,nw)', ierr, nw * 17)
 
@@ -1180,7 +1192,7 @@ contains
             walls(2, nw) = k3 ! first wall corner
             walls(3, nw) = k4 ! second wall corner
 
-            if (iPerot == -1) then
+            if (Perot_type == NOT_DEFINED) then
                nwx = nd(k1)%nwx
                if (nd(k1)%nwx == 0) then
                   allocate (nd(k1)%nw(1))
@@ -1250,7 +1262,7 @@ contains
 
       call setwallorientations()
 
-      call allocate_linktocenterweights()
+      call allocatelinktocenterweights()
       call setlinktocenterweights()
 
 !-------------------------------------------------- CELL CORNER RELATED -----------------------------------------------

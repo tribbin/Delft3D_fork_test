@@ -48,17 +48,18 @@ contains
       use m_readyy
 
       integer, parameter :: MAXOP = 64
-      character(len=40) :: OPTION(MAXOP), exp(MAXOP)
+      character(len=40) :: OPTION(MAXOP)
       integer :: NUMK, KEY
-      real(kind=dp) :: XK(NUMK), YK(NUMK), ZK(NUMK), EA(NUMK)
+      real(kind=dp), dimension(numk), intent(in) :: XK
+      real(kind=dp), dimension(numk), intent(in) :: YK
+      real(kind=dp), dimension(numk), intent(in) :: ZK
+      real(kind=dp), dimension(numk), intent(out) :: EA
       real(kind=dp) :: XI, YI, ZI, DA, AF, RD
 
       integer :: ichange, inhul, ja, k, maxopt, nwhat
       real(kind=dp), save :: A = 1d0
 
       JA = 0
-      exp(1) = 'MENU TIG                                '
-      exp(2) = 'HOW TO REPLACE THE VALUES               '
       OPTION(1) = 'FIELD = UNIFORM VALUE, only missings    '
       OPTION(2) = 'FIELD = UNIFORM VALUE, all points       '
       OPTION(3) = 'FIELD = MAX(FIELD,UNIFORM VALUE)        '
@@ -150,7 +151,7 @@ contains
       end do
       call READYY('CHANGE FIELD VALUES', -1d0)
       KEY = 3
-      return
+            
    end subroutine PLUSABSD
 
 end module m_plusabsd

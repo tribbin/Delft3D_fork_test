@@ -27,145 +27,123 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
-module m_addbaroclinicpressure
-   use m_addbarocn, only: addbarocn, addbarocnorg, addbarocnrho_w
+module m_add_baroclinic_pressure
 
    implicit none
 
    private
 
-   public :: addbaroclinicpressure
+   public :: add_baroclinic_pressure
 
 contains
 
-   subroutine addbaroclinicpressure()
-      use m_addbarocl, only: addbarocL, addbarocLorg, addbarocLrho_w
-      use m_addbaroc2, only: addbaroc2
-      use m_addbaroc, only: addbaroc
-      use m_flowgeom
-      use m_flow
-      use m_flowtimes
-      use m_get_Lbot_Ltop
+   !> Computes and adds the baroclinic pressure gradient contributions to the momentum equations
+   subroutine add_baroclinic_pressure()
+      use precision, only: dp, comparereal
+      use m_add_baroclinic_pressure_link, only: add_baroclinic_pressure_link, add_baroclinic_pressure_link_interface, add_baroclinic_pressure_link_use_rho_directly
+      use m_add_baroclinic_pressure_cell, only: add_baroclinic_pressure_cell, add_baroclinic_pressure_cell_interface, add_baroclinic_pressure_cell_use_rho_directly
+      use m_add_baroclinic_pressure_2d, only: add_baroclinic_pressure_2d
+      use m_flowgeom, only: lnxi, lnx, ndx
+      use m_flow, only: hu, kmx
+      use m_turbulence, only: baroclinic_pressures, integrated_baroclinic_pressures
+      use m_physcoef, only: jabarocponbnd, rhointerfaces
+      use m_get_Lbot_Ltop, only: getLbotLtop
 
       implicit none
-      integer :: LL, Lb, Lt, n, lnxbc
 
-      if (jabarocterm == 0) return
+      integer :: link_index_2d, l_bot, l_top, cell_index_2d, nr_of_links
 
       if (jabarocponbnd == 0) then
-         lnxbc = lnxi
+         nr_of_links = lnxi
       else
-         lnxbc = lnx
+         nr_of_links = lnx
       end if
 
-      if (jabarocterm == 1) then
-
-         !$OMP PARALLEL DO       &
-         !$OMP PRIVATE(LL,Lb,Lt)
-
-         do LL = 1, lnxbc
-            if (hu(LL) == 0d0) cycle
-            call getLbotLtop(LL, Lb, Lt)
-            if (Lt < Lb) then
+      if (kmx == 0) then
+         !$OMP PARALLEL DO &
+         !$OMP PRIVATE(link_index_2d)
+         do link_index_2d = 1, nr_of_links
+            if (comparereal(hu(link_index_2d), 0.0_dp) == 0) then
                cycle
             end if
-            call addbaroc(LL, Lb, Lt)
-         end do
-
-         !$OMP END PARALLEL DO
-
-      else if (jabarocterm == 2 .or. jabarocterm == 3 .or. kmx == 0) then
-
-         !$OMP PARALLEL DO       &
-         !$OMP PRIVATE(LL,Lb,Lt)
-         do LL = 1, lnxbc
-            if (hu(LL) == 0d0) cycle
-            call getLbotLtop(LL, Lb, Lt)
-            if (Lt < Lb) then
-               cycle
-            end if
-            call addbaroc2(LL, Lb, Lt)
+            call add_baroclinic_pressure_2d(link_index_2d)
          end do
          !$OMP END PARALLEL DO
-
       else
 
-         rvdn = 0d0; grn = 0d0
+         baroclinic_pressures(:) = 0.0_dp
+         integrated_baroclinic_pressures(:) = 0.0_dp
 
-         if (jabaroczlaybed == 0) then ! org now back for full backward compat.
+         if (rhointerfaces == 0) then
 
-            !$OMP PARALLEL DO       &
-            !$OMP PRIVATE(n)
-            do n = 1, ndx
-               call addbarocnorg(n)
+            !$OMP PARALLEL DO &
+            !$OMP PRIVATE(cell_index_2d)
+            do cell_index_2d = 1, ndx
+               call add_baroclinic_pressure_cell(cell_index_2d)
             end do
             !$OMP END PARALLEL DO
 
-            !$OMP PARALLEL DO       &
-            !$OMP PRIVATE(LL,Lb,Lt)
-            do LL = 1, lnxbc
-               if (hu(LL) == 0d0) cycle
-               call getLbotLtop(LL, Lb, Lt)
-               if (Lt < Lb) then
+            !$OMP PARALLEL DO &
+            !$OMP PRIVATE(link_index_2d,l_bot,l_top)
+            do link_index_2d = 1, nr_of_links
+               if (comparereal(hu(link_index_2d), 0.0_dp) == 0) then
                   cycle
                end if
-               call addbarocLorg(LL, Lb, Lt)
+               call getLbotLtop(link_index_2d, l_bot, l_top)
+               if (l_top < l_bot) then
+                  cycle
+               end if
+               call add_baroclinic_pressure_link(link_index_2d, l_bot, l_top)
             end do
             !$OMP END PARALLEL DO
 
-         else ! these are the routines we want to keep if all ink is dry
+         elseif (rhointerfaces == 1) then
 
-            if (jarhointerfaces == 1) then
+            !$OMP PARALLEL DO &
+            !$OMP PRIVATE(cell_index_2d)
+            do cell_index_2d = 1, ndx
+               call add_baroclinic_pressure_cell_interface(cell_index_2d)
+            end do
+            !$OMP END PARALLEL DO
 
-               !$OMP PARALLEL DO       &
-               !$OMP PRIVATE(n)
-               do n = 1, ndx
-                  call addbarocnrho_w(n)
-               end do
-               !$OMP END PARALLEL DO
+            !$OMP PARALLEL DO &
+            !$OMP PRIVATE(link_index_2d,l_bot,l_top)
+            do link_index_2d = 1, nr_of_links
+               if (comparereal(hu(link_index_2d), 0.0_dp) == 0) then
+                  cycle
+               end if
+               call getLbotLtop(link_index_2d, l_bot, l_top)
+               if (l_top < l_bot) then
+                  cycle
+               end if
+               call add_baroclinic_pressure_link_interface(link_index_2d, l_bot, l_top)
+            end do
+            !$OMP END PARALLEL DO
 
-               !$OMP PARALLEL DO       &
-               !$OMP PRIVATE(LL,Lb,Lt)
-               do LL = 1, lnxbc
-                  if (hu(LL) == 0d0) cycle
-                  call getLbotLtop(LL, Lb, Lt)
-                  if (Lt < Lb) then
-                     cycle
-                  end if
-                  call addbarocLrho_w(LL, Lb, Lt)
-               end do
-               !$OMP END PARALLEL DO
+         elseif (rhointerfaces == 2) then
 
-            else
+            !$OMP PARALLEL DO &
+            !$OMP PRIVATE(cell_index_2d)
+            do cell_index_2d = 1, ndx
+               call add_baroclinic_pressure_cell_use_rho_directly(cell_index_2d)
+            end do
+            !$OMP END PARALLEL DO
 
-               !$OMP PARALLEL DO       &
-               !$OMP PRIVATE(n)
-               do n = 1, ndx
-                  call addbarocn(n)
-               end do
-               !$OMP END PARALLEL DO
-
-               !$OMP PARALLEL DO       &
-               !$OMP PRIVATE(LL,Lb,Lt)
-               do LL = 1, lnxbc
-                  if (hu(LL) == 0d0) cycle
-                  call getLbotLtop(LL, Lb, Lt)
-                  if (Lt < Lb) then
-                     cycle
-                  end if
-                  call addbarocL(LL, Lb, Lt)
-               end do
-               !$OMP END PARALLEL DO
-
-            end if
+            !$OMP PARALLEL DO &
+            !$OMP PRIVATE(link_index_2d,l_bot,l_top)
+            do link_index_2d = 1, nr_of_links
+               if (comparereal(hu(link_index_2d), 0.0_dp) == 0) then
+                  cycle
+               end if
+               call getLbotLtop(link_index_2d, l_bot, l_top)
+               if (l_top < l_bot) then
+                  cycle
+               end if
+               call add_baroclinic_pressure_link_use_rho_directly(link_index_2d, l_bot, l_top)
+            end do
+            !$OMP END PARALLEL DO
 
          end if
-
       end if
-
-   end subroutine addbaroclinicpressure
-
-end module m_addbaroclinicpressure
+   end subroutine add_baroclinic_pressure
+end module m_add_baroclinic_pressure

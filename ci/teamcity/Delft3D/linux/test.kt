@@ -5,6 +5,7 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
+import jetbrains.buildServer.configs.kotlin.failureConditions.*
 import Delft3D.template.*
 import Delft3D.step.*
 
@@ -13,14 +14,17 @@ import CsvProcessor
 
 object LinuxTest : BuildType({
 
+    description = "Run TestBench.py within the Docker container on a list of testbench XML files."
+
     templates(
         TemplateMergeRequest,
         TemplatePublishStatus,
-        TemplateMonitorPerformance
+        TemplateMonitorPerformance,
+        TemplateDockerRegistry
     )
 
     name = "Test"
-    buildNumberPattern = "%build.vcs.number%"
+    buildNumberPattern = "%product%: %build.vcs.number%"
 
     artifactRules = """
         test\deltares_testbench\data\cases\**\*.pdf      => pdf
@@ -50,6 +54,7 @@ object LinuxTest : BuildType({
             options = processor.configs.zip(processor.labels) { config, label -> label to config },
             display = ParameterDisplay.PROMPT
         )
+        param("product", "unknown")
         checkbox("copy_cases", "false", label = "Copy cases", description = "ZIP a complete copy of the ./data/cases directory.", display = ParameterDisplay.PROMPT, checked = "true", unchecked = "false")
         text("case_filter", "", label = "Case filter", display = ParameterDisplay.PROMPT, allowEmpty = true)
         param("s3_dsctestbench_accesskey", DslContext.getParameter("s3_dsctestbench_accesskey"))
@@ -62,12 +67,6 @@ object LinuxTest : BuildType({
             param("configfile", processor.activeConfigs.mapIndexed { index, config ->
                 value(config, processor.activeLabels[index])
             })
-        }
-        dockerSupport {
-            cleanupPushedImages = true
-            loginToRegistry = on {
-                dockerRegistryId = "PROJECT_EXT_133,PROJECT_EXT_81"
-            }
         }
     }
 
@@ -93,7 +92,7 @@ object LinuxTest : BuildType({
                     --override-paths "from[local]=/dimrset,root[local]=/opt,from[engines_to_compare]=/dimrset,root[engines_to_compare]=/opt,from[engines]=/dimrset,root[engines]=/opt"
                 """.trimIndent()
             }
-            dockerImage = "containers.deltares.nl/delft3d/test/delft3dfm:alma8-%build.vcs.number%"
+            dockerImage = "containers.deltares.nl/delft3d/test/delft3d-test-container:alma8-%build.vcs.number%"
             dockerImagePlatform = PythonBuildStep.ImagePlatform.Linux
             dockerPull = true
             dockerRunParameters = """
@@ -107,7 +106,7 @@ object LinuxTest : BuildType({
             executionMode = BuildStep.ExecutionMode.ALWAYS
             commandType = other {
                 subCommand = "rmi"
-                commandArgs = "containers.deltares.nl/delft3d/test/delft3dfm:alma8-%build.vcs.number%"
+                commandArgs = "containers.deltares.nl/delft3d/test/delft3d-test-container:alma8-%build.vcs.number%"
             }
         }
         dockerCommand {
@@ -133,11 +132,21 @@ object LinuxTest : BuildType({
                 onDependencyFailure = FailureAction.FAIL_TO_START
             }
         }
-        dependency(LinuxDocker) {
+        dependency(LinuxRuntimeContainers) {
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
+        }
+    }
+
+    failureConditions {
+        errorMessage = true
+        failOnText {
+            conditionType = BuildFailureOnText.ConditionType.CONTAINS
+            pattern = "[ERROR  ]"
+            failureMessage = "There was an ERROR in the TestBench.py output."
+            reverse = false
         }
     }
 

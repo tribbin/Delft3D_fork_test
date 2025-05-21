@@ -24,7 +24,6 @@ if (WIN32)
                             wave_kernel
                             wave_manager
                             nefis
-                            netcdf4
                             netcdff
                             triangle_c
                             swan
@@ -106,7 +105,6 @@ set_target_properties (${executable_name} PROPERTIES FOLDER engines_gpl/wave)
 # Change the name of the target library to wave.exe
 set_target_properties (${executable_name} PROPERTIES OUTPUT_NAME wave_exe)
 if (WIN32)
-    set_target_properties(${executable_name} PROPERTIES LINK_FLAGS "/LARGEADDRESSAWARE /STACK:20000000")
 	set (userfilename "${CMAKE_BINARY_DIR}/template.vfproj.user")
 	configure_file(
     ${userfilename}

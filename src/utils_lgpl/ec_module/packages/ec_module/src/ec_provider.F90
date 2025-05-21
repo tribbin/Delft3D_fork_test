@@ -1007,21 +1007,21 @@ contains
                success = .false.
             end if
          else if (index(lc_filename, '.amh') /= 0) then
-            ! ===== quantity: rhum
+            ! ===== quantity: relative_humidity
             quantityId = ecInstanceCreateQuantity(instancePtr)
             if (.not. (ecQuantitySet(instancePtr, quantityId, name='relative_humidity', &
                                      units=trim(ecSpiderwebAndCurviFindInFile(fileReaderPtr%fileHandle, 'unit1'))))) then
                success = .false.
             end if
          else if (index(lc_filename, '.amt') /= 0) then
-            ! ===== quantity: tair
+            ! ===== quantity: air_temperature
             quantityId = ecInstanceCreateQuantity(instancePtr)
             if (.not. (ecQuantitySet(instancePtr, quantityId, name='air_temperature', &
                                      units=trim(ecSpiderwebAndCurviFindInFile(fileReaderPtr%fileHandle, 'unit1'))))) then
                success = .false.
             end if
          else if (index(lc_filename, '.amc') /= 0) then
-            ! ===== quantity: clou
+            ! ===== quantity: cloudiness
             quantityId = ecInstanceCreateQuantity(instancePtr)
             if (.not. (ecQuantitySet(instancePtr, quantityId, name='cloudiness', &
                                      units=trim(ecSpiderwebAndCurviFindInFile(fileReaderPtr%fileHandle, 'unit1'))))) then
@@ -2552,7 +2552,7 @@ contains
          ncvarnames(1) = 'msl' ! mean sea-level pressure
          ncstdnames(1) = 'air_pressure'
       case ('airdensity')
-         ! UNST-6593: airdensity has variable name p140209 and no standard_name, will be changed in the future according to ECMWF.
+         ! UNST-6593: air_density has variable name p140209 and no standard_name, will be changed in the future according to ECMWF.
          ncvarnames(1) = 'p140209' ! air density above sea
          ncstdnames(1) = 'air_density'
       case ('airpressure_windx_windy')
@@ -2737,10 +2737,14 @@ contains
          fileReaderPtr%standard_names(idvar) = ncstdnames(i) ! overwrite the standardname by the one required
 
          ierror = nf90_inquire_variable(fileReaderPtr%fileHandle, idvar, ndims=ndims) ! get the number of dimensions
-         if (allocated(coordids)) deallocate (coordids) ! allocate space for the variable id's
+         if (allocated(coordids)) then
+            deallocate (coordids) ! allocate space for the variable id's
+         end if
          allocate (coordids(ndims)) ! .. representing the var's coordinates
          coordids = -1
-         if (allocated(dimids)) deallocate (dimids)
+         if (allocated(dimids)) then
+            deallocate (dimids)
+         end if
          allocate (dimids(ndims))
          ierror = nf90_inquire_variable(fileReaderPtr%fileHandle, idvar, dimids=dimids) ! get dimension ID's
 

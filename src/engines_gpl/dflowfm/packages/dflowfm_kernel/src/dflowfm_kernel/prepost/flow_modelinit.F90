@@ -84,7 +84,7 @@ contains
       use unstruc_files, only: mdia
       use unstruc_netcdf
       use MessageHandling
-      use m_flowparameters, only: jawave, jatrt, jacali, jasedtrails, jajre, modind, jaextrapbl, Corioadamsbashfordfac, flow_solver, FLOW_SOLVER_SRE
+      use m_flowparameters, only: jawave, jatrt, jacali, flowWithoutWaves, jasedtrails, jajre, modind, jaextrapbl, Corioadamsbashfordfac, flow_solver, FLOW_SOLVER_SRE, NOT_DEFINED
       use dfm_error
       use m_fm_wq_processes, only: jawaqproc
       use m_vegetation
@@ -127,7 +127,9 @@ contains
       use m_set_model_boundingbox, only: set_model_boundingbox
       use m_init_openmp, only: init_openmp
       use m_fm_wq_processes_sub, only: fm_wq_processes_ini_proc, fm_wq_processes_ini_sub, fm_wq_processes_step
-      use m_tauwavefetch, only: tauwavefetch !
+      use m_tauwavefetch, only: tauwavefetch
+
+      !
       ! To raise floating-point invalid, divide-by-zero, and overflow exceptions:
       ! Activate the following line (See also statements below)
       !use ifcore
@@ -279,7 +281,7 @@ contains
       call flow_allocflow() ! allocate   flow arrays
       call timstop(handle_extra(37)) ! end alloc flow
       !
-      if (jawave > 0) then
+      if (jawave > 0 .and. .not. flowWithoutWaves) then
          call alloc9basicwavearrays()
       end if
       if (jawave > 2) then

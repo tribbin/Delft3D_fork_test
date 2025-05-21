@@ -25,14 +25,23 @@ contains
       real(kind=dp), dimension(mmax, 9) :: Amat
       real(kind=dp), dimension(mmax) :: Wmat
       real(kind=dp), dimension(9) :: svec
-      integer, dimension(lnx) :: LDone
-      integer, dimension(mxwalls) :: LwDone
+      integer, dimension(:), allocatable :: LDone
+      integer, dimension(:), allocatable :: LwDone
+      
+      allocate(LDone(lnx))
+      allocate(LwDone(mxwalls))
 
-      if (allocated(AtWAiAtW)) deallocate (AtWAiAtW)
+      if (allocated(AtWAiAtW)) then
+         deallocate (AtWAiAtW)
+      end if
       allocate (AtWAiAtW(9, mmax, lnx), stat=ierr); AtWAiAtW = 0d0
-      if (allocated(ireconstu)) deallocate (ireconstu)
+      if (allocated(ireconstu)) then
+         deallocate (ireconstu)
+      end if
       allocate (ireconstu(lnx)); ireconstu = 0
-      if (allocated(ireconstz)) deallocate (ireconstz)
+      if (allocated(ireconstz)) then
+         deallocate (ireconstz)
+      end if
       allocate (ireconstz(ndx)); ireconstz = 0
 
       scale = 1d0
@@ -279,7 +288,7 @@ contains
             end do
          end do
       end do
-
+      
    end subroutine reconst2ndini
 
    ! ==============================================================================================

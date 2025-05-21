@@ -16,6 +16,7 @@ import src.utils.plot_differences as plot
 from src.config.file_check import FileCheck
 from src.config.parameter import Parameter
 from src.utils.comparers.comparison_result import ComparisonResult
+from src.utils.comparers.end_result import EndResult
 from src.utils.comparers.i_comparer import IComparer
 from src.utils.logging.i_logger import ILogger
 
@@ -239,8 +240,11 @@ class NetcdfComparer(IComparer):
             nc_var = NetCdfVariable(left_nc_root.variables[variable_name], right_nc_root.variables[variable_name])
             self._check_for_dimension_equality(nc_var, variable_name)
 
-            # http://docs.scipy.org/doc/numpy/reference/generated/numpy.argmax.html
-            result = self._compare_array(parameter, left_nc_root, variable_name, nc_var)
+            if nc_var.left.ndim == 0:
+                result = self._compare_0d_variable(nc_var, logger)
+            else:
+                # http://docs.scipy.org/doc/numpy/reference/generated/numpy.argmax.html
+                result = self._compare_array(parameter, left_nc_root, variable_name, nc_var)
 
         except RuntimeError as e:
             logger.error(str(e))
@@ -251,7 +255,7 @@ class NetcdfComparer(IComparer):
             logger.error(str(e))
             result.error = True
 
-        if result.result == "NOK":
+        if result.result == EndResult.NOK:
             if nc_var.left.ndim == 1:
                 logger.info(f"Plotting of 1d-array not yet supported, variable name: {variable_name}")
             if nc_var.left.ndim == 2 and self._enable_plotting:
@@ -263,6 +267,37 @@ class NetcdfComparer(IComparer):
                     parameter,
                 )
 
+        return result
+
+    def _compare_0d_variable(self, nc_var: NetCdfVariable, logger: ILogger) -> ComparisonResult:
+        """Compare 0D variable attributes."""
+        result = ComparisonResult()
+        attrs_left: List[str] = nc_var.left.ncattrs()
+        attrs_right: List[str] = nc_var.right.ncattrs()
+
+        left_set = set(attrs_left)
+        right_set = set(attrs_right)
+
+        unique_attrs_left = left_set - right_set
+        unique_attrs_right = right_set - left_set
+
+        if (len(unique_attrs_left) > 0 or len(unique_attrs_right) > 0):
+            logger.error(f"Attributes do not match for: {nc_var.left.name} => {unique_attrs_left}, {unique_attrs_right}")
+            result.result = EndResult.NOK
+            return result
+
+        common_attrs = left_set.intersection(right_set)
+
+        for attr in common_attrs:
+            value1 = getattr(nc_var.left, attr)
+            value2 = getattr(nc_var.right, attr)
+
+            if (not bool(value1 == value2)):
+                logger.error(f"Values of attribute {attr} do not match")
+                result.result = EndResult.NOK
+                return result
+
+        result.result = EndResult.OK
         return result
 
     def _compare_array(
@@ -289,7 +324,7 @@ class NetcdfComparer(IComparer):
         right_strings = nc.chartostring(nc_var.right[:])
         result = ComparisonResult()
         result.passed = np.array_equal(left_strings, right_strings)
-        result.result = "OK" if result.passed else "NOK"
+        result.result = EndResult.OK if result.passed else EndResult.NOK
         return result
 
     def _compare_floats(
@@ -621,9 +656,6 @@ def search_times_series_id(nc_root: nc.Dataset) -> List[str]:
     """Return variable key if `cf_role == timeseries_id`, otherwise `None`."""
     keys = []
     for key, value in nc_root.variables.items():
-        try:
-            if value.cf_role == "timeseries_id":
-                keys.append(key)
-        except Exception:
-            pass
+        if hasattr(value, "cf_role") and value.cf_role == "timeseries_id":
+            keys.append(key)
     return keys

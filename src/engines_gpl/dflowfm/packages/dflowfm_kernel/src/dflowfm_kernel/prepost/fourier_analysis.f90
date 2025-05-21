@@ -420,7 +420,9 @@ contains
       if (line(1:1) == '*' .or. line == ' ') goto 20
       !
       call str_lower(line, 132)
-      if (allocated(columns)) deallocate (columns)
+      if (allocated(columns)) then
+         deallocate (columns)
+      end if
       call strsplit(line, 1, columns, 1)
       ncols = size(columns)
 
@@ -1361,7 +1363,9 @@ contains
       ! reset line in smaller case characters and define contents
       !
       call str_lower(line, 300)
-      if (allocated(columns)) deallocate (columns)
+      if (allocated(columns)) then
+         deallocate (columns)
+      end if
       call strsplit(line, 1, columns, 1)
       ncols = size(columns)
       !
@@ -1456,6 +1460,7 @@ contains
       use m_transport, only: constituents
       use m_flowgeom, only: bl, lnx, bl_min
       use m_flow
+      use m_wind, only: wx, wy
       implicit none
 
       real(kind=fp), intent(in) :: time0 !< Current time [seconds]
@@ -1520,7 +1525,9 @@ contains
             end if
          end do
 
-         if (allocated(wmag)) deallocate (wmag)
+         if (allocated(wmag)) then
+            deallocate (wmag)
+         end if
 
          if (nfou > 0) then
             write (cnum, *) real(time0)

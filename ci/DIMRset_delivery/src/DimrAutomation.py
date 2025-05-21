@@ -1,13 +1,13 @@
 from helpers.ArtifactInstallHelper import ArtifactInstallHelper
 from helpers.EmailHelper import EmailHelper
 from helpers.ExcelHelper import ExcelHelper
+from helpers.GitClient import GitClient
 from helpers.KernelVersionExtractor import KernelVersionExtractor
 from helpers.PinHelper import PinHelper
-from helpers.SshClient import SshClient
-from helpers.GitClient import GitClient
-from helpers.TestbankResultParser import TestbankResultParser
-from helpers.PublicWikiHelper import PublicWikiHelper
 from helpers.PreconditionsHelper import PreconditionsHelper
+from helpers.PublicWikiHelper import PublicWikiHelper
+from helpers.SshClient import Direction, SshClient
+from helpers.TestbankResultParser import TestbankResultParser
 from lib.Atlassian import Atlassian
 from lib.TeamCity import TeamCity
 from settings.general_settings import *
@@ -51,7 +51,6 @@ class DimrAutomation(object):
         """Runs the actual DIMR release automation steps."""
         self.__assert_preconditions()
         self.__get_kernel_versions()  # This step is crucial for the script to run, do not comment this one out!
-        self.__update_public_wiki()
         self.__download_and_install_artifacts()
         self.__git_client.tag_commit(
             self.__kernel_versions["OSS_ver"], f"DIMRset_{self.__dimr_version}"
@@ -59,6 +58,7 @@ class DimrAutomation(object):
         self.__pin_and_tag_builds()
         self.__update_excel_sheet()
         self.__prepare_email()
+        self.__update_public_wiki()
 
     def __assert_preconditions(self) -> None:
         """Asserts some preconditions are met before the script is fully run."""
@@ -113,15 +113,22 @@ class DimrAutomation(object):
     def __update_excel_sheet(self) -> None:
         """Updates the Excel sheet with this week's release information."""
         parser = self.__get_testbank_result_parser()
-        path_to_excel_file = f"{NETWORK_BASE_PATH}..\\{VERSIONS_EXCEL_FILENAME}"
+        path_to_excel_file = f"/p/d-hydro/dimrset/{VERSIONS_EXCEL_FILENAME}"
+
+        self.__ssh_client.secure_copy(
+            LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME, path_to_excel_file, Direction.FROM
+        )
         helper = ExcelHelper(
             teamcity=self.__teamcity,
-            filepath=path_to_excel_file,
+            filepath=VERSIONS_EXCEL_FILENAME,
             dimr_version=self.__dimr_version,
             kernel_versions=self.__kernel_versions,
             parser=parser,
         )
         helper.append_row()
+        self.__ssh_client.secure_copy(
+            LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME, path_to_excel_file, Direction.TO
+        )
 
     def __prepare_email(self) -> None:
         parser = self.__get_testbank_result_parser()

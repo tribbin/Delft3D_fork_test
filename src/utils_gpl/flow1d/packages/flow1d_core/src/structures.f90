@@ -41,7 +41,7 @@ module m_1d_structures
    use m_Universal_Weir
    use m_Bridge
    use m_hash_search
-   use m_Dambreak
+   use m_dambreak, only: t_dambreak_settings
    use iso_c_utils
 
    implicit none
@@ -83,6 +83,7 @@ module m_1d_structures
    public get_discharge_under_compound_struc
    public set_u0isu1_structures
    public set_u1q1_structure
+   public update_bedlevels_for_bridges
 
    interface fill_hashtable
       module procedure fill_hashtable_sts
@@ -146,7 +147,7 @@ module m_1d_structures
       type(t_uni_weir),pointer         :: uniweir => null()
       type(t_bridge),pointer           :: bridge => null()
       type(t_GeneralStructure),pointer :: generalst => null()
-      type(t_dambreak),pointer         :: dambreak => null()
+      type(t_dambreak_settings),pointer         :: dambreak => null()
    end type
 
    type, public :: t_structureSet
@@ -832,6 +833,8 @@ end subroutine deallocstructure
       integer, dimension(:),           intent(in   ) :: links    !< (numlinks) The flow link numbers affected by this structure.
       double precision, dimension(:),  intent(in   ) :: wu       !< (numlinks) The width of the flow links affected by this structure.
       integer                                        :: istat    !< Result status (0 if successful).
+      
+      character(len=16) :: struct_type
 
       istat = 0
       allocate(struct%linknumbers(numlinks), struct%fu(numlinks), struct%ru(numlinks), struct%au(numlinks), struct%u0(numlinks), struct%u1(numlinks))
@@ -844,7 +847,7 @@ end subroutine deallocstructure
       struct%u1 = 0d0
       
       select case(struct%type)
-      case (ST_GENERAL_ST) ! REMARK: for version 2 files weirs, orifices and gates are implemented as general structures
+      case (ST_GENERAL_ST) ! REMARK: for version 2 files weirs, orifices and gates are implemented as general structures.
          allocate(struct%generalst%widthcenteronlink(numlinks), struct%generalst%gateclosedfractiononlink(numlinks), struct%generalst%sOnCrest(numlinks), struct%generalst%state(3,numlinks))
          struct%generalst%sOnCrest(1:numlinks) = 0d0
          struct%generalst%state = 0
@@ -854,10 +857,14 @@ end subroutine deallocstructure
          struct%generalst%au = 0d0
          allocate(struct%generalst%gateclosedfractiononlink(numlinks))
          struct%generalst%gateclosedfractiononlink = 0d0
-      case (ST_CULVERT, ST_UNI_WEIR, ST_ORIFICE, ST_GATE, ST_WEIR, ST_PUMP, ST_BRIDGE)
+      case (ST_PUMP)
+         ! Pump is supported on multiple flow links. Needs no additional initialization here.
+         continue
+      case (ST_CULVERT, ST_UNI_WEIR, ST_ORIFICE, ST_GATE, ST_WEIR, ST_BRIDGE)
          if (numlinks > 1) then
             istat = 1
-            call setmessage(LEVEL_ERROR, 'Multiple links for culvert structures is not supported, check structure'//trim(struct%id))
+            call GetStrucType_from_int(struct%type, struct_type)
+            call setmessage(LEVEL_ERROR, 'Multiple links for '// trim(struct_type) //' structures is not supported, check structure '//trim(struct%id))
          endif
       case (ST_DAMBREAK)
          ! NOTE: flow1d currently does not contain any special computations for dambreak on multiple flow links (2D grid).
@@ -1008,14 +1015,32 @@ end subroutine deallocstructure
    !! this is relevant under compound structures.
    !! This routine typically should be called once (at the end of) every timestep.
    subroutine set_u1q1_structure(pstru, L0, s1k1, s1k2, teta)
-      type (t_structure), intent(inout) :: pstru       !< structure
-      integer,            intent(in)    :: L0          !< local link index
-      double precision,   intent(in)    :: s1k1, s1k2  !< water level on nodes k1 and k2
-      double precision,   intent(in)    :: teta        !< Theta-value of theta-time-integration for this flow link. (not used yet)
+      type (t_structure), intent(inout) :: pstru !< structure
+      integer, intent(in) :: L0 !< local link index
+      double precision, intent(in) :: s1k1, s1k2  !< water level on nodes k1 and k2
+      double precision, intent(in) :: teta !< Theta-value of theta-time-integration for this flow link. (not used yet)
 
       pstru%u1(L0) = pstru%ru(L0) - pstru%fu(L0)*( s1k2 - s1k1 )
       ! NOTE: No q1 part here, since pstru%q1 does not exist.
       
    end subroutine set_u1q1_structure
 
+   !> Sets the bed level for pillar bridges in the structure set, that use the cross section definition of the channel.
+   subroutine update_bedlevels_for_bridges(sts, bobs)
+      type(t_structureSet), intent(inout) :: sts !< Structure set that must be updated.
+      double precision, dimension(:,:), intent(in) :: bobs !< The bed level at the bridge. (dimensions (2,lnx)
+
+      integer :: i, L
+
+      do i = 1, sts%numBridges
+         associate(pstru => sts%struct(sts%bridgeIndices(i)))
+            if (.not. pstru%bridge%useOwnCrossSection) then
+               L = pstru%linknumbers(1)
+               pstru%bridge%bedLevel = max(bobs(1, L), bobs(2, L))
+            end if
+         end associate
+      end do
+
+   end subroutine update_bedlevels_for_bridges
 end module m_1d_structures
+   

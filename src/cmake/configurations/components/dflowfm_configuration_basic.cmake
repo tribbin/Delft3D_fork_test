@@ -50,9 +50,6 @@ endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/dwaq/dwaq_base.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/configurations/components/dwaq/dwaq_dflowfm_online_coupling.cmake)
 
-
-
-
 # Morphology
 if(NOT TARGET morphology_plugins_c)
     add_subdirectory(${checkout_src_root}/${morphology_plugins_c_module} morphology_plugins_c)
@@ -148,6 +145,11 @@ if(NOT TARGET FLAP)
     add_subdirectory(${checkout_src_root}/${FLAP_module} FLAP)
 endif()
 
+if(WIN32)
+   if (NOT TARGET gdal)
+      add_subdirectory(${checkout_src_root}/${gdal_module} gdal)
+   endif()
+endif(WIN32)
 # fortrangis
 if(NOT TARGET fortrangis)
     add_subdirectory(${checkout_src_root}/${fortrangis_module} fortrangis)
@@ -165,9 +167,11 @@ if(WIN32)
 endif(WIN32)
 
 # netcdf
-if(NOT TARGET netcdff)
-    add_subdirectory(${checkout_src_root}/${netcdf_module} netcdff)
-endif()
+if(WIN32)
+    if(NOT TARGET netcdff)
+        add_subdirectory(${checkout_src_root}/${netcdf_module} netcdff)
+    endif()
+endif(WIN32)
 
 # io_netcdf
 if(NOT TARGET io_netcdf)
@@ -213,6 +217,11 @@ endif()
 # spherepack
 if(NOT TARGET spherepack)
     add_subdirectory(${checkout_src_root}/${spherepack_module} spherepack)
+endif()
+
+#intel MPI & MKL
+if(NOT TARGET intelredist)
+    add_subdirectory(${checkout_src_root}/${intelredist_module} intelredist)
 endif()
 
 # Unit tests for dflowfm and io_netcdf

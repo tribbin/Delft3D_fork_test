@@ -58,14 +58,23 @@ module m_flowparameters
    !< bed level of the channel.
    integer :: lincontin !< 0 = no, 1 = yes linear continuity
 
-   integer :: iPerot !< Perot weigthing type of cell center velocities ucx, ucy
-                                                        !! in vectoren:
+   integer :: Perot_type !< Perot weigthing type of cell center velocities ucx, ucy
+                                                        !! in vectors:
                                                         !! 0 : uc*sum(w) = sum (u W)
                                                         !! 1 : uc*A      = sum(u dxa W)
                                                         !! 2 : uc*A*hs   = sum(u dxa W hu ), ie waterdepth dependent
-                                                        !! 2 : uc*V      = sum(q dxa      ), ie waterdepth dependent
-                                                        !! 3 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
-                                                        !! 4 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
+   ! To do: Check unused options (UNST-8641)
+   ! 2 : uc*V      = sum(q dxa      ), ie waterdepth dependent
+   ! 3 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
+   ! 4 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
+   ! 5 : uc*Vc     = sum(u dxa W hu ), Vc = dxa W hu based volume in cell
+   ! 6 : as 5, also for Coriolis
+   integer, parameter :: NOT_DEFINED = -1
+   integer, parameter :: PEROT_WIDTH_BASED = 0 !< uc*sum(w) = sum (u W)
+   integer, parameter :: PEROT_AREA_BASED = 1 !< uc*A      = sum(u dxa W)
+   integer, parameter :: PEROT_VOLUME_BASED = 2 ! uc*A*hs   = sum(u dxa W hu ), ie waterdepth dependent
+
+   integer :: Perot_weight_update !> Perot weight update for 1D nodes (0: no (default), 1: yes)
 
    integer :: jacomp = 1 !! same now for netnodes, 0 = default, 1 = use cs, sn in weighting, 2=regular scalar x,y interpolation based on banf
 
@@ -91,8 +100,6 @@ module m_flowparameters
 
    real(kind=dp) :: Corioadamsbashfordfac = 0.5d0 !< Coriolis Adams Bashforth , 0d0 = explicit, 0.5 = AB
 
-   real(kind=dp) :: Barocadamsbashfordfac = .5d0 !< Baroclinic Adams Bashforth , 0d0 = explicit, 0.5 = AB
-
    real(kind=dp) :: hhtrshcor !< if > 0 safety for hu/hs in corio for now, ==0
 
    real(kind=dp) :: trshcorio !< below this depth coriolis force scaled down linearly to 0
@@ -115,13 +122,14 @@ module m_flowparameters
    integer :: janudge !< temperature and salinity nudging
    integer :: jainiwithnudge !< initialize salinity and temperature with nudge variables
 
-   integer :: itempforcingtyp !< Forcing parameter types 1,2 humidity, 3,4 dewpoint see code
+   integer :: itempforcingtyp !< Forcing parameter types 1,2 relative humidity, 3,4 dew point temperature, see code
 
-   logical :: btempforcingtypA !< Forcing parameter Air temperature is given as a separate field or not
-   logical :: btempforcingtypC !< Forcing parameter Cloudiness given as a separate field or not
-   logical :: btempforcingtypH !< Forcing parameter Humidity given as a separate field or not
-   logical :: btempforcingtypS !< Forcing parameter Solarradiation given as a separate field or not
-   logical :: btempforcingtypL !< Forcing parameter Long wave radiation given as a separate field or not
+   logical :: btempforcingtypA !< Forcing parameter air temperature is given as a separate field or not
+   logical :: btempforcingtypC !< Forcing parameter cloudiness given as a separate field or not
+   logical :: btempforcingtypD !< Forcing parameter dew point temperature given as a separate field or not
+   logical :: btempforcingtypH !< Forcing parameter relative humidity given as a separate field or not
+   logical :: btempforcingtypS !< Forcing parameter solar radiation given as a separate field or not
+   logical :: btempforcingtypL !< Forcing parameter long wave radiation given as a separate field or not
 
    integer :: jarhoxu !< rho effects in momentum, 0=no, 1=in horizontal adv, 2=+ in vertical adv, 3 = + in pressure term
 
@@ -150,8 +158,6 @@ module m_flowparameters
    integer :: ihorvic !< 0=no visc, 1=do visc
 
    integer :: jacreep !< Include anti-creep calculation, (0=no, 1=yes)
-
-   integer :: jainirho !< Initialise rho at start at flowinit (otherwise first step without barocl)
 
    integer :: jasecflow !< 0: no, 1: yes
 
@@ -366,8 +372,6 @@ module m_flowparameters
 
    integer :: javased !< vert. adv. suspended sediment concentrations : 0=No, 1=UpwexpL, 2=Centralexpl, 3=UpwimpL, 4=CentraLimpL, 5=switched to 3 for neg stratif., 6=higher-order upwind/explicit
 
-   integer :: javatest !< vert. adv. keps : test, 0 = no
-
    integer :: jaimplicitfallvelocity = 1 !< fallvelocity implicit 1=yes, 0=no
 
    integer :: jahazlayer !< vertical treatment of horizontal advection in z layers 1=org, 2=sigma, 3=node volumes
@@ -384,12 +388,6 @@ module m_flowparameters
    character(len=28) :: md_flow_solver = 'generic1d2d3d'
    integer, parameter :: FLOW_SOLVER_FM = 1
    integer, parameter :: FLOW_SOLVER_SRE = 2
-
-   integer :: jabaroctimeint !< time integration baroclini pressure, 1 = Euler, abs() = 2; rho at n+1/2, 3: AdamsB
-
-   integer :: jabarocterm !< 1 or 2 for original or revised term, we only document the revised term, keep org for backw. comp.
-
-   integer :: jaorgbarockeywords !< default=0=new, 1=org
 
    integer :: jatransportautotimestepdiff = 0 ! Auto Timestep in Transport module, 0 = limitation of diffusion, but no limitation of time-step due to diffusion, 1 = no limitation of diffusion, but limitation of time step due to diffusion, 2: no limitation of diffusion and no limitation of time step due to diffusion
 
@@ -459,8 +457,8 @@ module m_flowparameters
 
    integer :: jasourcesink !< 1: source+sink 2:source 3:sink for sediment
 
-   integer :: jalogsolverconvergence !< log solver convergence message bloat (default 1, preferable 0)
-   integer :: jalogtransportsolverlimiting !< log transport solver limiting message bloat (default 0, preferable 0)
+   integer :: jalogsolverconvergence !< log solver convergence message bloat - 0: no (default) ; 1: yes
+   integer :: jalogtransportsolverlimiting !< log transport solver limiting message bloat - 0: no (default) ; 1: yes
 
    integer :: jadpuopt !< option for bed level at velocity point in case of tile approach bed level: 1 = max (default). This is equivalent to min in Delft3D 4; 2 = mean.
    integer :: jaextrapbl !< option for extrapolating bed level at boundaries according to the slope: 0 = no extrapolation (default); 1 = extrapolate. Necessary for analytical solutions.
@@ -644,6 +642,9 @@ module m_flowparameters
    ! parameter for secondary flow
    integer :: ispirparopt ! for visualization
 
+   integer, parameter :: PEROT_STATIC = 0 ! Initialise Perot weights once
+   integer, parameter :: PEROT_UPDATE = 1 ! Initialise Perot weights every time-step
+
 contains
 !> Sets ALL (scalar) variables in this module to their default values.
 !! For a reinit prior to flow computation, only call reset_flowparameters() instead.
@@ -663,16 +664,9 @@ contains
       !< bed level of the channel.
       lincontin = 0 ! 0 = no, 1 = yes linear continuity
 
-      iPerot = 1 ! Perot weigthing type of cell center velocities ucx, ucy
-      ! in vectoren:
-      ! 0 : uc*sum(w) = sum (u W)
-      ! 1 : uc*A      = sum(u dxa W)
-      ! 2 : uc*A*hs   = sum(u dxa W hu ), ie waterdepth dependent
-      ! 2 : uc*V      = sum(q dxa      ), ie waterdepth dependent
-      ! 3 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
-      ! 4 : uc*A*humx = sum(u dxa W hu ), humx = max(hu)
-      ! 5 : uc*Vc     = sum(u dxa W hu ), Vc = dxa W hu based volume in cell
-      ! 6 : as 5, also for Coriolis
+      Perot_type = PEROT_AREA_BASED ! Perot weighting type of cell center velocities ucx, ucy
+
+      Perot_weight_update = PEROT_STATIC ! update Perot weights for 1D nodes (0: no (default), 1: yes)
 
       icorio = 5 ! Coriolis weigthing
       ! (Tx,Ty) = tangential unit vector at u-point
@@ -727,8 +721,6 @@ contains
       japillar = 0 ! include pillar (0=no, 1=yes)
 
       jaequili = 0 ! equilibrium secondary flow (0=no, 1=yes)
-
-      jainirho = 1 ! Initialise rho at start at flowinit (otherwise first step without barocl)
 
       jacreep = 0 ! Include anti-creep calculation, (0=no, 1=yes)
 
@@ -933,9 +925,6 @@ contains
       jastructurelayersactive = 1
       JaZerozbndinflowadvection = 0
       md_flow_solver = 'generic1d2d3d'
-      jabaroctimeint = -4 !< time integration baroclini pressure, 1 = expl., 2=AB rho , 3 = AB barocterm, 4=3dryfloodproof 5 = advect rho (n+1/2)
-      jabarocterm = 4 !  revised baroc term
-      jaorgbarockeywords = 0
 
       jaanalytic = 0 !< analytic solution available in black sideview => do not also show computed surface in black
       jaustarint = 1 !< 1=integral bed layer velocity,  0=velocity at half bed layer

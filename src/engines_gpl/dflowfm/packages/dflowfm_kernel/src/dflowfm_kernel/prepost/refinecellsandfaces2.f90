@@ -55,7 +55,7 @@ contains
       use m_write_illegal_cells_to_pol, only: write_illegal_cells_to_pol
       use m_confrm
       use m_change_samples_refine_param
-      use m_netw
+      use network_data, only: nump, numl, netcell, kc, netstat, netstat_cells_dirty, keepcircumcenters, numk
       use m_samples
       use m_samples_refine
       use m_ec_interpolationsettings
@@ -322,9 +322,15 @@ contains
 1234  continue
 
 !  deallocate
-      if (allocated(jarefine)) deallocate (jarefine)
-      if (allocated(jalink)) deallocate (jalink)
-      if (allocated(linkbrother)) deallocate (linkbrother)
+      if (allocated(jarefine)) then
+         deallocate (jarefine)
+      end if
+      if (allocated(jalink)) then
+         deallocate (jalink)
+      end if
+      if (allocated(linkbrother)) then
+         deallocate (linkbrother)
+      end if
       if (allocated(zss)) then
          call deallocate_sampleHessian()
          iHesstat = iHesstat_DIRTY
@@ -346,7 +352,9 @@ contains
 
          integer :: k
 
-         if (allocated(kc_sav)) deallocate (kc_sav)
+         if (allocated(kc_sav)) then
+            deallocate (kc_sav)
+         end if
 
          if (numk < 1) goto 1234
 
@@ -578,7 +586,7 @@ contains
          use m_ec_basic_interpolation, only: averaging2, TerrorInfo, triinterp2
          use m_sferic, only: jsferic, jasfer3D
          use geometry_module, only: dbdistance, comp_masscenter
-
+         use network_data, only: tooclose
          implicit none
 
          integer, intent(in) :: ic !< polygon nr
@@ -871,7 +879,7 @@ contains
 
          integer :: iter, ic, kk, L, N
 
-         if (NUMITCOURANT < 1) return ! nothing to do
+         if (numitcourant < 1) return ! nothing to do
 
          if (jadirectional /= 0) then
             call qnerror('directional refinement not allowed in combination with smoothing', ' ', ' ')
@@ -882,7 +890,7 @@ contains
 !      allocate(janode(numk)
          allocate (jalin(numL))
 
-         do iter = 1, NUMITCOURANT
+         do iter = 1, numitcourant
 !        determine node refinement mask
 !         janode = 0
 
@@ -949,7 +957,9 @@ contains
 
 !     deallocate
 !      if ( allocated(janode) ) deallocate(janode)
-         if (allocated(jalin)) deallocate (jalin)
+         if (allocated(jalin)) then
+            deallocate (jalin)
+         end if
 
          return
       end subroutine smooth_jarefine
@@ -962,6 +972,8 @@ contains
          use geometry_module, only: getcircumcenter
          use m_find_common_node
          use m_new_link
+         use network_data, only: kn3typ, kn, xk, yk, lnn, dcenterinside, xzw, yzw
+         use m_circumcenter_method, only: circumcenter_method
 
          implicit none
 
@@ -1175,7 +1187,7 @@ contains
                end if
 
 !           compute circumcenter without hanging nodes
-               call getcircumcenter(Np, xp, yp, LnnL, xz, yz, jsferic, jasfer3D, jglobe, jins, dmiss, dxymis, dcenterinside)
+               call getcircumcenter(Np, xp, yp, LnnL, xz, yz, jsferic, jasfer3D, jglobe, jins, dmiss, dxymis, dcenterinside, circumcenter_method)
 
                if (jsferic == 1) then
                   call comp_middle_latitude(ymin, ymax, ynew, ierr)
@@ -1260,6 +1272,7 @@ contains
          ! we can't use m_netw because it overwrites cellmask, redefine variable before using m_netw
          !use m_netw
          use m_plotdots
+         use network_data, only: xzw, yzw, kn, xk, yk
 
          implicit none
 

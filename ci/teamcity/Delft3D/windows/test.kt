@@ -5,6 +5,7 @@ import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.triggers.*
+import jetbrains.buildServer.configs.kotlin.failureConditions.*
 import Delft3D.template.*
 import Delft3D.step.*
 
@@ -13,6 +14,8 @@ import CsvProcessor
 
 object WindowsTest : BuildType({
 
+    description = "Run TestBench.py on a list of testbench XML files. (This is not containerized as we'd need more Docker-pool agents.)"
+
     templates(
         TemplateMergeRequest,
         TemplatePublishStatus,
@@ -20,7 +23,7 @@ object WindowsTest : BuildType({
     )
 
     name = "Test"
-    buildNumberPattern = "%build.vcs.number%"
+    buildNumberPattern = "%product%: %build.vcs.number%"
 
     artifactRules = """
         test\deltares_testbench\data\cases\**\*.pdf      => pdf
@@ -51,6 +54,7 @@ object WindowsTest : BuildType({
             options = processor.configs.zip(processor.labels) { config, label -> label to config },
             display = ParameterDisplay.PROMPT
         )
+        param("product", "unknown")
         checkbox("copy_cases", "false", label = "Copy cases", description = "ZIP a complete copy of the ./data/cases directory.", display = ParameterDisplay.PROMPT, checked = "true", unchecked = "false")
         text("case_filter", "", label = "Case filter", display = ParameterDisplay.PROMPT, allowEmpty = true)
         param("s3_dsctestbench_accesskey", DslContext.getParameter("s3_dsctestbench_accesskey"))
@@ -106,6 +110,7 @@ object WindowsTest : BuildType({
                 call :kill_program mpiexec.exe
                 call :kill_program hydra_pmi_proxy.exe
                 call :kill_program mormerge.exe
+                call :kill_program d_hydro.exe
                 set errorlevel=0
                 goto :eof
                 
@@ -148,6 +153,16 @@ object WindowsTest : BuildType({
             buildRule = lastSuccessful()
             cleanDestination = true
             artifactRules = "Bin64.zip!/Release/*.*=>test/deltares_testbench/data/engines/teamcity_artifacts/wanda/x64"
+        }
+    }
+
+    failureConditions {
+        errorMessage = true
+        failOnText {
+            conditionType = BuildFailureOnText.ConditionType.CONTAINS
+            pattern = "[ERROR  ]"
+            failureMessage = "There was an ERROR in the TestBench.py output."
+            reverse = false
         }
     }
 

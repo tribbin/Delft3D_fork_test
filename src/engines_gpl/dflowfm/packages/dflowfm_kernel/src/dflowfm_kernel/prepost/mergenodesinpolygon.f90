@@ -218,7 +218,9 @@ contains
             end if
 
 !       deallocate permutation array
-            if (allocated(iperm)) deallocate (iperm)
+            if (allocated(iperm)) then
+               deallocate (iperm)
+            end if
 
 !       deallocate kdtree
             if (treeglob%itreestat /= ITREE_EMPTY) call delete_kdtree2(treeglob)
@@ -254,7 +256,7 @@ contains
          call READYY(' ', -1d0)
       end if
 
-      if (CONNECT1DEND > 0) then
+      if (connect1dend > 0) then
 
          call READYY('Connecting 1D nodes', 0d0)
 
@@ -265,7 +267,7 @@ contains
             if (KC(K) == 1 .and. NMK(K) == 1) then
                do KK = K + 1, NUMK
                   if (KC(KK) == 1 .and. NMK(KK) == 1) then
-                     if (dbdistance(XK(K), yk(k), XK(KK), yk(kk), jsferic, jasfer3D, dmiss) < 0.2 * CONNECT1DEND) then
+                     if (dbdistance(XK(K), yk(k), XK(KK), yk(kk), jsferic, jasfer3D, dmiss) < 0.2 * connect1dend) then
                         call MERGENODES(K, KK, JA)
                         if (JA == 1) then
                            KC(K) = -1
@@ -317,7 +319,7 @@ contains
                               cycle !  SKIP OWN BRANCH
                            end if
 
-                           if (dbdistance(XK(K), yk(k), XK(Ka), yk(ka), jsferic, jasfer3D, dmiss) < CONNECT1DEND) then
+                           if (dbdistance(XK(K), yk(k), XK(Ka), yk(ka), jsferic, jasfer3D, dmiss) < connect1dend) then
                               DIST = dbdistance(XK(KA), YK(KA), XK(K), YK(K), jsferic, jasfer3D, dmiss)
                               if (Dist < DISMIN) then
                                  dismin = dist; KM = K

@@ -40,6 +40,7 @@ contains
    subroutine changenetworkPARAMETERS()
       use m_sferic, only: jamidlat
       use network_data
+      use m_circumcenter_method, only: circumcenter_method, circumcenter_tolerance
       use unstruc_colors
       use unstruc_display_data
       use m_missing
@@ -71,7 +72,7 @@ contains
       integer :: iselect, minp
       character(len=128) select(3)
 
-      integer, parameter :: NUMPAR = 22, NUMFLD = 2 * NUMPAR
+      integer, parameter :: NUMPAR = 24, NUMFLD = 2 * NUMPAR
       integer IX(NUMFLD), IY(NUMFLD), IS(NUMFLD), IT(NUMFLD)
       character OPTION(NUMPAR) * 40, HELPM(NUMPAR) * 60
       integer, external :: infoinput
@@ -108,6 +109,8 @@ contains
       OPTION(20) = '1D2D link generation algorithm          '; IT(20 * 2) = 2
       OPTION(21) = 'Lateral algorithm search radius         '; IT(21 * 2) = 6
       OPTION(22) = 'Use middle latitude (1/0)               '; IT(22 * 2) = 2
+      OPTION(23) = 'Circumcenter method (1/2/3)             '; IT(23 * 2) = 2
+      OPTION(24) = 'Circumcenter tolerance                  '; IT(24 * 2) = 6
 
 !   123456789012345678901234567890123456789012345678901234567890
 !            1         2         3         4         5         6
@@ -156,6 +159,10 @@ contains
          I1D2DTP_1TO1, ': default (1-to-1), ', I1D2DTP_1TON_EMB, ': embedded 1-to-n, ', I1D2DTP_1TON_LAT, ': lateral 1-to-n.'
       HELPM(22) = &
          '1 = yes, 0 = no                                             '
+      HELPM(23) = &
+         'iterate per 1=edge, 2=loop, 3=loop incl. boundary           '
+      HELPM(24) = &
+         'tolerance for circumcenter convergence (m)                  '
 
       call SAVEKEYS()
       NUMPARACTUAL = NUMPAR
@@ -222,12 +229,12 @@ contains
       call IFormputDouble(2 * 6, cosphiutrsh, '(F7.3)')
       call IFormputDouble(2 * 7, removesmalllinkstrsh, '(F7.3)')
       call IFORMpuTINTEGER(2 * 8, JOCHECKNET)
-      call IFORMpuTINTEGER(2 * 9, NUMITCOURANT)
+      call IFORMpuTINTEGER(2 * 9, numitcourant)
       call IFormputDouble(2 * 10, SMALLESTSIZEINCOURANT, '(F7.0)')
       call IFormputDouble(2 * 11, TRIAREAREMFRAC, '(F7.3)')
       call IFORMpuTINTEGER(2 * 12, M13QUAD)
       call IFormputDouble(2 * 13, Tooclose, '(F7.3)')
-      call IFormputDouble(2 * 14, CONNECT1DEND, '(F7.3)')
+      call IFormputDouble(2 * 14, connect1dend, '(F7.3)')
       call IFormputDouble(2 * 15, Unidx1D, '(F7.3)')
       call IFormputDouble(2 * 16, DCLOSE_bound, '(F7.3)')
       call IFormputDouble(2 * 17, DCLOSE_whole, '(F7.3)')
@@ -243,6 +250,8 @@ contains
       call IFormputinteger(2 * 20, imake1d2dtype)
       call IFormputDouble(2 * 21, searchRadius1D2DLateral, '(F7.3)')
       call IFormputinteger(2 * 22, jamidlat)
+      call IFormputinteger(2 * 23, circumcenter_method)
+      call IFormputDouble(2 * 24, circumcenter_tolerance, '(e10.5)')
 
       ! Display the form with numeric fields left justified and set the initial field to number 2
       call IOUTJUSTIFYNUM('L')
@@ -263,12 +272,12 @@ contains
             if (IMP >= IXP .and. IMP < IXP + IW .and. &
                 INP >= IYP + 3 .and. INP < IYP + IH + 3 + 2) then
                if (NBUT == 1) then
-                  KEY = 21
-               else
                   KEY = 22
+               else
+                  KEY = 23
                end if
             else
-               KEY = 23
+               KEY = 24
             end if
          end if
       else if (KEY == -1) then
@@ -277,8 +286,8 @@ contains
       if (KEY == 26) then
          WRDKEY = OPTION(IFEXIT / 2)
          call HELP(WRDKEY, NLEVEL)
-      else if (KEY == 22 .or. KEY == 23) then
-         if (KEY == 22) then
+      else if (KEY == 23 .or. KEY == 24) then
+         if (KEY == 23) then
             ! netcell administration out of date if jins changes
             call IFORMGETINTEGER(2 * 1, jins)
             if (jins /= jins_old) netstat = NETSTAT_CELLS_DIRTY
@@ -292,12 +301,12 @@ contains
             call IFormgetDouble(2 * 6, cosphiutrsh)
             call IFormGetDouble(2 * 7, removesmalllinkstrsh)
             call IFORMGETINTEGER(2 * 8, JOCHECKNET)
-            call IFORMGETINTEGER(2 * 9, NUMITCOURANT)
+            call IFORMGETINTEGER(2 * 9, numitcourant)
             call IFormGetDouble(2 * 10, SMALLESTSIZEINCOURANT)
             call IFormGetDouble(2 * 11, TRIAREAREMFRAC)
             call IFORMGETINTEGER(2 * 12, M13QUAD)
             call IFormGetDouble(2 * 13, Tooclose)
-            call IFormGetDouble(2 * 14, CONNECT1DEND)
+            call IFormGetDouble(2 * 14, connect1dend)
             call IFormGetDouble(2 * 15, Unidx1D)
             call IFormGetDouble(2 * 16, DCLOSE_BOUND)
             call IFormGetDouble(2 * 17, DCLOSE_WHOLE)
@@ -316,6 +325,8 @@ contains
             call IFormGetinteger(2 * 20, imake1d2dtype)
             call IFormGetDouble(2 * 21, searchRadius1D2DLateral)
             call IFormGetinteger(2 * 22, jamidlat)
+            call IFormGetinteger(2 * 23, circumcenter_method)
+            call IFormGetDouble(2 * 24, circumcenter_tolerance)
 
          end if
          call IWinClose(1)

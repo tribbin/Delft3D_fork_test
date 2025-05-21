@@ -44,7 +44,7 @@ contains
       use m_comp_gravinput, only: comp_GravInput
       use m_anticreep, only: anticreep
       use m_add_internaltidesfrictionforces, only: add_InternalTidesFrictionForces
-      use m_addbaroclinicpressure, only: addbaroclinicpressure
+      use m_add_baroclinic_pressure, only: add_baroclinic_pressure
       use m_flow
       use m_flowparameters, only: trshcorio
       use m_flowgeom
@@ -56,7 +56,7 @@ contains
       use m_xbeach_data, only: Lwave
       use m_fm_icecover, only: ice_p, fm_ice_update_press, ice_apply_pressure, ice_reduce_waves, ice_af, ice_apply_friction, ice_frctp, ice_frcuni, FRICT_AS_DRAG_COEFF
       use m_get_Lbot_Ltop
-      use m_get_cz
+      use m_get_chezy, only: get_chezy
       use m_links_to_centers, only: links_to_centers
 
       integer :: L, LL, Lb, Lt, k1, k2, kt1, kt2
@@ -211,14 +211,14 @@ contains
          call fm_ice_update_press(ag)
       end if
 
-      if (japatm > 0 .or. jatidep > 0 .or. ice_apply_pressure) then
+      if (air_pressure_available > 0 .or. jatidep > 0 .or. ice_apply_pressure) then
          do L = 1, lnx
             if (hu(L) > 0) then
                k1 = ln(1, L); k2 = ln(2, L)
 
                dptot = 0.0d0
-               if (japatm > 0) then
-                  dptot = dptot + (patm(k2) - patm(k1)) * dxi(L) / rhomean
+               if (air_pressure_available > 0) then
+                  dptot = dptot + (air_pressure(k2) - air_pressure(k1)) * dxi(L) / rhomean
                end if
                if (ice_apply_pressure) then
                   dptot = dptot + (ice_p(k2) - ice_p(k1)) * dxi(L) / rhomean
@@ -268,27 +268,15 @@ contains
                   call anticreep(L)
                end if
             end do
-
          else
-
-            call addbaroclinicpressure()
-
-            if (abs(jabaroctimeint) == 2) then
-               rho0 = rho ! save rho
-            else if (abs(jabaroctimeint) == 5) then
-               if (jarhoxu > 0) then
-                  rho = rho0 ! restore rho
-               end if
-            end if
-            jabaroctimeint = abs(jabaroctimeint) ! flag as initialised
-
+            call add_baroclinic_pressure()
          end if
       end if
 
       if (jasecflow > 0) then ! Secondary Flow
 
          do LL = 1, lnx
-            call getcz(hu(LL), frcu(LL), ifrcutp(LL), czusf(LL), LL) ! calculating chezy coefficient on the flow links
+            czusf(LL) = get_chezy(hu(LL), frcu(LL), u1(LL), v(LL), ifrcutp(LL)) ! calculating chezy coefficient on the flow links
          end do
 
          if (kmx < 2) then
