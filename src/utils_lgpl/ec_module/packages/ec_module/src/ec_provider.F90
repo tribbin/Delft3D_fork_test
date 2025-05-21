@@ -86,8 +86,8 @@ contains
       character(len=*), intent(in) :: forcingfile
       character(len=*), intent(in) :: location
       character(len=*), intent(in) :: quantity
-      real(hp), intent(in) :: k_refdat !< kernel ref date
-      real(hp), intent(in) :: k_tzone !< kernel time zone
+      real(dp), intent(in) :: k_refdat !< kernel ref date
+      real(dp), intent(in) :: k_tzone !< kernel time zone
       integer, intent(in) :: k_tsunit !< kernel timestep unit (1=sec, 2=min, 3=hour)
       integer, intent(out) :: fileReaderId !< unique fileReader id
       character(len=*), optional, intent(in) :: funtype !< matching function in the BC-block header
@@ -136,15 +136,15 @@ contains
       logical :: success !< function status
       type(tEcInstance), pointer :: instancePtr !< intent(in)
       integer, intent(in) :: bcBlockId !< unique bcBlock id
-      real(hp), intent(in) :: k_refdat !< kernel ref date
-      real(hp), intent(in) :: k_tzone !< kernel time zone
+      real(dp), intent(in) :: k_refdat !< kernel ref date
+      real(dp), intent(in) :: k_tzone !< kernel time zone
       integer, intent(in) :: k_tsunit !< kernel timestep unit (1=sec, 2=min, 3=hour)
       integer, intent(out) :: fileReaderId !< unique fileReader id
       character(*), intent(in) :: fileName !< relative path of data file
       integer, intent(in) :: fileType !< type of the BC-file (ascii=bc, netcdf=nc)
       character(*), intent(in) :: quantityName !< name of quantity, needed for structured input files (NetCDF and BC)
       character(*), intent(in) :: plilabel !< identify a (set of) pli-points
-      real(hp), optional, intent(in) :: dtnodal !< Nodal factors in astronomical bc update interval
+      real(dp), optional, intent(in) :: dtnodal !< Nodal factors in astronomical bc update interval
       integer, intent(out) :: istat !< Detailed result status. \see{m_ec_parameters}.
       character(len=*), optional, intent(in) :: funtype !< Function type requested to match; the value for the keyword 'FUNCTION' in the bc-headers
       !< passing funtype narrows down the search for blocks to blocks with the requested function
@@ -244,12 +244,12 @@ contains
       integer, intent(in) :: fileReaderId !< unique FileReader id
       integer, intent(in) :: fileType !< type of data file, see provFile enumeration
       character(len=*), intent(in) :: fileName !< relative path of data file
-      real(kind=hp), intent(in) :: refdat !< Kernel's reference date, format: Gregorian yyyymmdd
-      real(kind=hp), intent(in) :: tzone !< Kernel's timezone.
+      real(dp), intent(in) :: refdat !< Kernel's reference date, format: Gregorian yyyymmdd
+      real(dp), intent(in) :: tzone !< Kernel's timezone.
       integer, intent(in) :: tsunit !< Kernel's timestep unit (1=sec 2=min 3=sec).
       character(len=*), optional, intent(in) :: quantityName !< name of quantity, needed for structured input files (NetCDF and BC)
       character(len=*), optional, intent(in) :: forcingFile !< name of the forcing file (if quantityName is given)
-      real(kind=hp), optional, intent(in) :: dtnodal !< Nodal factors update interval
+      real(dp), optional, intent(in) :: dtnodal !< Nodal factors update interval
       character(len=*), optional, intent(in) :: varname !< variable name within filename
       character(len=*), optional, intent(in) :: varname2 !< variable name 2 within filename
       !
@@ -424,8 +424,8 @@ contains
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(inout)
       logical, optional :: use_std_names !< us
       !
-      real(hp), dimension(:), allocatable :: discharges !< the table's discharge values
-      real(hp), dimension(:), allocatable :: waterlevels !< the table's water level values
+      real(dp), dimension(:), allocatable :: discharges !< the table's discharge values
+      real(dp), dimension(:), allocatable :: waterlevels !< the table's water level values
       integer :: nr_rows !< the number of rows in the table
       integer :: itemId !< helper variable
       integer :: quantityId !< helper variable
@@ -674,10 +674,10 @@ contains
       type(tEcItem), pointer :: itemPeriod !< Item containing the Fourier period
       type(tEcItem), pointer :: itemMagnitude !< Item containing the Fourier magnitude
       type(tEcItem), pointer :: itemPhase !< Item containing the Fourier phase
-      real(hp), dimension(:), allocatable :: periods !< Fourier components transformed into periods
+      real(dp), dimension(:), allocatable :: periods !< Fourier components transformed into periods
       character(len=8), dimension(:), allocatable :: components !< Astro component names read from file
-      real(hp), dimension(:), allocatable :: magnitudes !< seed values for the magnitudes of the Fourier components
-      real(hp), dimension(:), allocatable :: phases !< seed values for the phases of the Fourier components
+      real(dp), dimension(:), allocatable :: magnitudes !< seed values for the magnitudes of the Fourier components
+      real(dp), dimension(:), allocatable :: phases !< seed values for the phases of the Fourier components
       !
       success = .true.
       itemPeriod => null()
@@ -957,11 +957,11 @@ contains
       !
       integer :: n_cols !< number of columns
       integer :: n_rows !< number of rows
-      real(hp) :: x0 !< seed x-coordinate
-      real(hp) :: y0 !< seed y-coordinate
-      real(hp) :: dxa !< step size in x
-      real(hp) :: dya !< step size in y
-      real(hp) :: dmiss !< missing data value
+      real(dp) :: x0 !< seed x-coordinate
+      real(dp) :: y0 !< seed y-coordinate
+      real(dp) :: dxa !< step size in x
+      real(dp) :: dya !< step size in y
+      real(dp) :: dmiss !< missing data value
       integer :: quantityId !< helper variable
       integer :: elementSetId !< helper variable
       integer :: field0Id !< helper variable
@@ -1122,7 +1122,7 @@ contains
       character(len=maxFileNameLen) :: grid_file !< file name of curvilinear grid
       integer :: minp !< IO unit number
       integer :: mx, grid_width !< n_clos, n_rows
-      real(hp), dimension(:), allocatable :: x, y !< coordinate arrays
+      real(dp), dimension(:), allocatable :: x, y !< coordinate arrays
       integer :: i, j !< loop counters
       character(len=10) :: dummy !< helper variable for ignored data
       integer :: istat !< status of operation
@@ -1216,7 +1216,7 @@ contains
       integer :: field1Id !< id of new Field
       integer :: itemId !< id of new Item
       character(len=:), allocatable :: rec !< a read line
-      real(hp) :: missingValue !< helper variable
+      real(dp) :: missingValue !< helper variable
       integer :: n_cols, n_rows
       integer :: n_quantity
       integer :: i
@@ -1296,9 +1296,9 @@ contains
       type(tEcInstance), pointer :: instancePtr !< intent(in)
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(inout)
       !
-      real(hp), dimension(:), allocatable :: xs
-      real(hp), dimension(:), allocatable :: ys
-      real(hp), dimension(:, :), allocatable :: zs
+      real(dp), dimension(:), allocatable :: xs
+      real(dp), dimension(:), allocatable :: ys
+      real(dp), dimension(:, :), allocatable :: zs
 
       integer :: nSamples !< number of samples
       integer :: kx !< vector max of values at sample points
@@ -1375,10 +1375,10 @@ contains
       integer, parameter :: MAXSTRLEN = 128 !<
       integer, parameter :: MAXLAY = 256 !<
       integer :: numlay, i !<
-      real(hp), dimension(:), allocatable :: xws !< x-values
-      real(hp), dimension(:), allocatable :: yws !< y-values
-      real(hp), dimension(:), allocatable :: zws !< z-values of vertical velocities
-      real(hp), dimension(MAXLAY) :: a !<
+      real(dp), dimension(:), allocatable :: xws !< x-values
+      real(dp), dimension(:), allocatable :: yws !< y-values
+      real(dp), dimension(:), allocatable :: zws !< z-values of vertical velocities
+      real(dp), dimension(MAXLAY) :: a !<
 
       integer :: vectormax, iostat
       !
@@ -1548,8 +1548,8 @@ contains
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(inout)
 
       !
-      real(hp), dimension(:), allocatable :: xs !< x-coordinates of support points
-      real(hp), dimension(:), allocatable :: ys !< y-coordinates of support points
+      real(dp), dimension(:), allocatable :: xs !< x-coordinates of support points
+      real(dp), dimension(:), allocatable :: ys !< y-coordinates of support points
       integer, dimension(:), allocatable :: mask !< support point mask array (for polytime ElementSet)
       integer :: n_points !< number of support points
       integer :: n_signals !< Number of forcing signals created (at most n_signals==n_points, but warn if n_signals==0)
@@ -1756,8 +1756,8 @@ contains
       character(len=*), intent(in) :: bctfilename !< in case of bct-data, we neeed the explicit filename
       character(len=*), intent(in) :: quantityname !< in case of bct-data, we neeed the explicit quantityname
       !
-      real(hp), dimension(:), allocatable :: xs !< x-coordinates of support points
-      real(hp), dimension(:), allocatable :: ys !< y-coordinates of support points
+      real(dp), dimension(:), allocatable :: xs !< x-coordinates of support points
+      real(dp), dimension(:), allocatable :: ys !< y-coordinates of support points
       integer, dimension(:), allocatable :: mask !< support point mask array (for polytime ElementSet)
       integer :: n_points !< number of support points
       integer :: n_signals !< Number of forcing signals created (at most n_signals==n_points, but warn if n_signals==0)
@@ -1980,7 +1980,7 @@ contains
       integer, intent(in) :: n_points
       integer, dimension(:), allocatable :: itemIDList
 
-      real(hp), dimension(:), allocatable :: zs !< z/sigma-coordinates of support points
+      real(dp), dimension(:), allocatable :: zs !< z/sigma-coordinates of support points
       integer :: i, magnitude, vectormax, zInterpolationType
       type(tEcItem), pointer :: itemt3D, itemSRC
       integer :: elementSetId
@@ -2175,9 +2175,9 @@ contains
       integer :: itemId !< helper variable
       integer :: n_cols !< helper variable
       integer :: n_rows !< helper variable
-      real(hp) :: missingValue !< helper variable
-      real(hp) :: radius !< helper variable
-      real(hp) :: spw_merge_frac !< helper variable
+      real(dp) :: missingValue !< helper variable
+      real(dp) :: radius !< helper variable
+      real(dp) :: spw_merge_frac !< helper variable
       character(len=maxNameLen) :: radius_unit !< helper variable
       type(tEcItem), pointer :: item1 !< Item containing quantity1
       type(tEcItem), pointer :: item2 !< Item containing quantity2
@@ -2322,8 +2322,8 @@ contains
       type(tEcInstance), pointer :: instancePtr !< EC-instance
       integer, intent(in) :: sourceItemId !< Source item id, before temporal interpolation
       integer, intent(in), optional :: tgtNdx !< Optional target index, 1 is assumed as default
-      real(hp), pointer, optional :: arrayPtr(:) !< Optional pointer to a target array somewhere else
-      real(hp), pointer, optional :: scalarPtr !< Optional pointer to a target scalar somewhere else
+      real(dp), pointer, optional :: arrayPtr(:) !< Optional pointer to a target array somewhere else
+      real(dp), pointer, optional :: scalarPtr !< Optional pointer to a target scalar somewhere else
       integer :: targetItemId !< Target item id, after temporal interpolation
       integer :: itemId !< returned  target item ID, if successful, otherwise -1
       type(tECItem), pointer :: sourceItemPtr => null()
@@ -2458,17 +2458,17 @@ contains
       integer :: vptyp !< interpretation of the vertical coordinate
       character(len=NF90_MAX_NAME) :: z_positive !< which direction of z is positive ?
       character(len=NF90_MAX_NAME) :: z_standardname !< which direction of z is positive ?
-      real(hp) :: gnplon, gnplat !< coordinates of shifted north pole obtained from gridmapping
-      real(hp) :: gsplon, gsplat !< coordinates of shifted south pole obtained from gridmapping
-      real(hp), dimension(:, :), allocatable :: fgd_data !< coordinate data along first dimension's axis
-      real(hp), dimension(:), allocatable :: fgd_data_1d !< coordinate data along first dimension's axis
-      real(hp), dimension(:), allocatable :: fgd_data_trans !< coordinate data along first dimension's axis transformed, rotating pole
-      real(hp), dimension(:, :), allocatable :: sgd_data !< coordinate data along second dimension's axis
-      real(hp), dimension(:), allocatable :: sgd_data_1d !< coordinate data along second dimension's axis
-      real(hp), dimension(:), allocatable :: sgd_data_trans !< coordinate data along first dimension's axis transformed, rotating pole
-      real(hp), dimension(:), allocatable :: tgd_data_1d !< coordinate data along third dimension's axis
-      real(hp), dimension(:), allocatable :: pdiri !<
-      real(hp) :: var_miss !< missing data value in second dimension
+      real(dp) :: gnplon, gnplat !< coordinates of shifted north pole obtained from gridmapping
+      real(dp) :: gsplon, gsplat !< coordinates of shifted south pole obtained from gridmapping
+      real(dp), dimension(:, :), allocatable :: fgd_data !< coordinate data along first dimension's axis
+      real(dp), dimension(:), allocatable :: fgd_data_1d !< coordinate data along first dimension's axis
+      real(dp), dimension(:), allocatable :: fgd_data_trans !< coordinate data along first dimension's axis transformed, rotating pole
+      real(dp), dimension(:, :), allocatable :: sgd_data !< coordinate data along second dimension's axis
+      real(dp), dimension(:), allocatable :: sgd_data_1d !< coordinate data along second dimension's axis
+      real(dp), dimension(:), allocatable :: sgd_data_trans !< coordinate data along first dimension's axis transformed, rotating pole
+      real(dp), dimension(:), allocatable :: tgd_data_1d !< coordinate data along third dimension's axis
+      real(dp), dimension(:), allocatable :: pdiri !<
+      real(dp) :: var_miss !< missing data value in second dimension
       character(len=NF90_MAX_NAME) :: grid_mapping !< name of the applied grid mapping
       character(len=NF90_MAX_NAME) :: units !< helper variable for variable's units
       character(len=NF90_MAX_NAME) :: coord_name !< helper variable
@@ -3242,7 +3242,7 @@ contains
       integer :: itemId !< helper variable
       integer :: t0t1 !< indicates whether the 0 or the 1 field is read. -1: choose yourself
       logical :: local_success !< when the return flag should not be influenced
-      real(hp) :: dmiss !< missing data value
+      real(dp) :: dmiss !< missing data value
       type(tEcItem), pointer :: item
       character(NF90_MAX_NAME) :: string !< read from NetCDF file
       character(300) :: message
@@ -3349,10 +3349,10 @@ contains
    function ecProviderInitializeTimeFrame(fileReaderPtr, k_refdate, k_timezone, k_timestep_unit, dtnodal) result(success)
       logical :: success !< function status
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(inout)
-      real(hp), intent(in) :: k_refdate !< Kernel's reference date as MJD
-      real(hp), intent(in) :: k_timezone !< Kernel's timezone.
+      real(dp), intent(in) :: k_refdate !< Kernel's reference date as MJD
+      real(dp), intent(in) :: k_timezone !< Kernel's timezone.
       integer, intent(in) :: k_timestep_unit !< Kernel's time step unit (1=seconds, 2=minutes, 3=hours)
-      real(hp), optional, intent(in) :: dtnodal !< Nodal factors update interval
+      real(dp), optional, intent(in) :: dtnodal !< Nodal factors update interval
       !
       success = .false.
       !
@@ -3617,7 +3617,7 @@ contains
       integer, dimension(2) :: dimids !< integer id's of amplitude/phase variable's dimension variables eg: phase(y,x) -> id's of y and x.
       integer :: numids !< number of variable id's of amplitude/phase (we expect 2: y,x or x,y)
       integer, dimension(2) :: dim_sizes !< number of points in x and y directions (note: may be swapped).
-      real(hp), dimension(:, :), allocatable :: data_block !< temporary buffer for phase data
+      real(dp), dimension(:, :), allocatable :: data_block !< temporary buffer for phase data
       integer :: istat !< status of allocation operation
       integer :: i !< column index loop variable
       integer :: j !< row index loop variable
@@ -3717,11 +3717,11 @@ contains
       integer :: minp !<
       integer, intent(out) :: num_columns !<
       integer, intent(out) :: num_rows !<
-      real(hp), intent(out) :: x0 !<
-      real(hp), intent(out) :: y0 !<
-      real(hp), intent(out) :: dxa !<
-      real(hp), intent(out) :: dya !<
-      real(hp), intent(out) :: dmiss !<
+      real(dp), intent(out) :: x0 !<
+      real(dp), intent(out) :: y0 !<
+      real(dp), intent(out) :: dxa !<
+      real(dp), intent(out) :: dya !<
+      real(dp), intent(out) :: dmiss !<
       !
       integer :: jacornerx
       integer :: jacornery

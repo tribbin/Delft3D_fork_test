@@ -120,7 +120,7 @@ contains
    function ecUniReadTimeSteps(fileReaderPtr, time_steps) result(success)
       logical :: success !< function status
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
-      real(hp), intent(out) :: time_steps !< number of time steps of length tEcTimeFrame%time_unit
+      real(dp), intent(out) :: time_steps !< number of time steps of length tEcTimeFrame%time_unit
       !
       character(:), allocatable :: rec !< content of a line
       integer :: istat !< status of read operation
@@ -155,8 +155,8 @@ contains
    function ecUniReadBlock(fileReaderPtr, time_steps, values) result(success)
       logical :: success !< function status
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
-      real(hp), intent(inout) :: time_steps !< number of time steps of duration: MJD
-      real(hp), dimension(:), intent(inout) :: values !< read values
+      real(dp), intent(inout) :: time_steps !< number of time steps of duration: MJD
+      real(dp), dimension(:), intent(inout) :: values !< read values
       !
       integer :: n_values !< number of quantities in the file
       character(len=:), allocatable :: rec, rec0 !< content of a line
@@ -199,8 +199,8 @@ contains
       implicit none
       logical :: success !< function status
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
-      real(hp), intent(inout) :: time_steps !< number of time steps of duration: seconds
-      real(hp), dimension(:), intent(inout) :: values !< read values
+      real(dp), intent(inout) :: time_steps !< number of time steps of duration: seconds
+      real(dp), dimension(:), intent(inout) :: values !< read values
 
       success = ecBCreadline(fileReaderPtr, values=values, time_steps=time_steps, eof=fileReaderPtr%end_of_data)
    end function ecBCReadBlock
@@ -221,10 +221,10 @@ contains
       integer :: n_rows !< number of rows
       type(tEcItem), pointer :: item !< Item containing the first Quantity
       character(len=maxNameLen) :: rec !< helper variable
-      real(hp) :: time_steps !< number of time steps from reference time of current data block
+      real(dp) :: time_steps !< number of time steps from reference time of current data block
       integer :: i, j, k !< loop counters
       character(len=maxNameLen) :: keyword !< helper variable
-      real(hp) :: timesteps !< helper variable
+      real(dp) :: timesteps !< helper variable
       integer :: istat !< status of read operation
       !
       success = .false.
@@ -305,7 +305,7 @@ contains
       type(tEcItem), optional, pointer :: item3 !< Item containing quantity3, intent(inout)
       !
       character(len=maxNameLen) :: rec !< helper variable
-      real(hp) :: time_steps !< number of time steps from reference time of current data block
+      real(dp) :: time_steps !< number of time steps from reference time of current data block
       integer :: i, j !< loop counter
       character(len=maxNameLen) :: keyword !< helper variable
       integer :: istat !< status of read operation
@@ -437,11 +437,11 @@ contains
       integer, intent(in) :: n_rows
       !
       character(len=maxNameLen) :: rec !< helper variable
-      real(hp) :: time_steps !< number of time steps from reference time of current data block
+      real(dp) :: time_steps !< number of time steps from reference time of current data block
       integer :: i, j !< loop counter
-      real(hp) :: x_spw_eye
-      real(hp) :: y_spw_eye
-      real(hp) :: p_drop_spw_eye
+      real(dp) :: x_spw_eye
+      real(dp) :: y_spw_eye
+      real(dp) :: p_drop_spw_eye
       character(len=maxNameLen) :: keyword
       integer :: istat ! Reader status code
       !
@@ -670,7 +670,7 @@ contains
    function ecNetcdfGetTimeIndexByTime(fileReaderPtr, time_mjd) result(ndx)
       integer :: ndx !< read into Field T0 or T1 (0,1).
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
-      real(hp), intent(in) :: time_mjd
+      real(dp), intent(in) :: time_mjd
       ndx = ecSupportMJDToTimeIndex(fileReaderPtr%tframe, time_mjd)
    end function ecNetcdfGetTimeIndexByTime
 
@@ -690,12 +690,12 @@ contains
       integer :: ierror !< return status of NetCDF method call
       integer :: varid !< NetCDF id of NetCDF variable
       integer :: i, j, k !< loop counters
-      real(hp), dimension(:, :), allocatable :: data_block !< 2D slice of NetCDF variable's data
-      real(hp), dimension(:, :), allocatable :: temp_block !< 2D slice of NetCDF variable's data
+      real(dp), dimension(:, :), allocatable :: data_block !< 2D slice of NetCDF variable's data
+      real(dp), dimension(:, :), allocatable :: temp_block !< 2D slice of NetCDF variable's data
       integer :: istat !< allocation status
-      real(hp) :: dmiss_nc !< local netcdf missing
+      real(dp) :: dmiss_nc !< local netcdf missing
 
-      real(hp) :: mintime, maxtime !< range of kernel times that can be requested from this netcdf reader
+      real(dp) :: mintime, maxtime !< range of kernel times that can be requested from this netcdf reader
       logical :: valid_field
       character(len=20) :: cnumber1 !< number converted to string for error message
       character(len=20) :: cnumber2 !< idem
@@ -996,8 +996,8 @@ contains
       integer :: idvar_q !< id as obtained from NetCDF
       integer :: ntimes !< number of times on the NetCDF file
       integer :: read_index !< index of field to read
-      real(hp) :: tim !< instantanious time
-      real(hp), dimension(:), allocatable :: times !< time array read from NetCDF
+      real(dp) :: tim !< instantanious time
+      real(dp), dimension(:), allocatable :: times !< time array read from NetCDF
       character(NF90_MAX_NAME) :: string !< to catch NetCDF messages
       !
       success = .false.
@@ -1101,8 +1101,8 @@ contains
    function ecQhtableReadAll(fileReaderPtr, discharges, waterlevels, nr_rows) result(success)
       logical :: success !< function status
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
-      real(hp), dimension(:), allocatable, intent(out) :: discharges !<
-      real(hp), dimension(:), allocatable, intent(out) :: waterlevels !<
+      real(dp), dimension(:), allocatable, intent(out) :: discharges !<
+      real(dp), dimension(:), allocatable, intent(out) :: waterlevels !<
       integer, intent(out) :: nr_rows !<
       !
       integer :: istat !< status of operation
@@ -1175,10 +1175,10 @@ contains
    function ecFourierReadAll(fileReaderPtr, periods, components, magnitudes, phases, nPeriods) result(success)
       logical :: success !< function status
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
-      real(hp), dimension(:), allocatable, intent(out) :: periods !< periods in minutes, directly or converted from components
+      real(dp), dimension(:), allocatable, intent(out) :: periods !< periods in minutes, directly or converted from components
       character(len=8), dimension(:), allocatable, intent(out) :: components !< astro component names
-      real(hp), dimension(:), allocatable, intent(out) :: magnitudes !< seed values for the magnitudes of the Fourier components
-      real(hp), dimension(:), allocatable, intent(out) :: phases !< seed values for the phases of the Fourier components (in deg, output in rad)
+      real(dp), dimension(:), allocatable, intent(out) :: magnitudes !< seed values for the magnitudes of the Fourier components
+      real(dp), dimension(:), allocatable, intent(out) :: phases !< seed values for the phases of the Fourier components (in deg, output in rad)
       integer, intent(out) :: nPeriods !< number of periods
 
       !
@@ -1477,9 +1477,9 @@ contains
    function ecSampleReadAll_from_fileReader(fileReaderPtr, xs, ys, zs, nSamples, kx) result(success)
       logical :: success !< function status
       type(tEcFileReader), pointer :: fileReaderPtr !< intent(in)
-      real(hp), dimension(:), allocatable, intent(out) :: xs !< list of x-coordinates of all samples
-      real(hp), dimension(:), allocatable, intent(out) :: ys !< list of y-coordinates of all samples
-      real(hp), dimension(:, :), allocatable, intent(out) :: zs !< list of z-values of all samples
+      real(dp), dimension(:), allocatable, intent(out) :: xs !< list of x-coordinates of all samples
+      real(dp), dimension(:), allocatable, intent(out) :: ys !< list of y-coordinates of all samples
+      real(dp), dimension(:, :), allocatable, intent(out) :: zs !< list of z-values of all samples
       integer, intent(out) :: nSamples !< number of samples
       integer, intent(out) :: kx !< number of vector components in each sample value (1 for scalars)
 
@@ -1494,15 +1494,15 @@ contains
       logical :: success !< function status
       integer, intent(inout) :: msam !< logical unit number (to already opened file)
       character(len=*), intent(in) :: filename !< Name of the file (for messaging only)
-      real(hp), dimension(:), allocatable, intent(out) :: xs !< list of x-coordinates of all samples
-      real(hp), dimension(:), allocatable, intent(out) :: ys !< list of y-coordinates of all samples
-      real(hp), dimension(:, :), allocatable, intent(out) :: zs !< list of z-values of all samples
+      real(dp), dimension(:), allocatable, intent(out) :: xs !< list of x-coordinates of all samples
+      real(dp), dimension(:), allocatable, intent(out) :: ys !< list of y-coordinates of all samples
+      real(dp), dimension(:, :), allocatable, intent(out) :: zs !< list of z-values of all samples
       integer, intent(out) :: nSamples !< number of samples
       integer, intent(out) :: kx !< number of vector components in each sample value (1 for scalars)
 
-      double precision :: xx, yy, zz
-      double precision :: dmiss_dflt = -999d0 ! Use default missing value for this 'old' sample file type
-      double precision :: xymis_dflt = -999d0 !
+      real(dp) :: xx, yy, zz
+      real(dp) :: dmiss_dflt = -999d0 ! Use default missing value for this 'old' sample file type
+      real(dp) :: xymis_dflt = -999d0 !
       character(len=:), allocatable :: rec
       character(len=maxMessageLen) :: tex
       integer :: istat
@@ -1571,9 +1571,9 @@ contains
 !   integer, intent(in)        :: unitnr
 !   integer, intent(in)        :: num_rows
 !   integer, intent(in)        :: num_columns
-!   real(hp), dimension(:,:), intent(out) :: xwind, ywind, press
-!   real(hp), intent(in)       :: p_conv
-!   real(hp), intent(out)      :: tread
+!   real(dp), dimension(:,:), intent(out) :: xwind, ywind, press
+!   real(dp), intent(in)       :: p_conv
+!   real(dp), intent(out)      :: tread
 !   integer, intent(in)        :: ipart ! request 'uvp' for all components,
 !                                       ! 'u', 'v', or 'p' for one component
 !   !
@@ -1737,8 +1737,8 @@ contains
 !   integer                            :: num_rows       ! out at initialization, otherwise in
 !   integer                            :: num_columns       ! out at initialization, otherwise in
 !   type(tGrib_data), pointer, optional :: meta
-!   real(hp), dimension(:,:)           :: xwind, ywind, press
-!   real(hp)                           :: txwind, tywind, tpress, tread
+!   real(dp), dimension(:,:)           :: xwind, ywind, press
+!   real(dp)                           :: txwind, tywind, tpress, tread
 !   !
 !   ! locals
 !   !
@@ -2001,20 +2001,20 @@ contains
       type(tEcFileReader), pointer :: corFileReaderPtr !< intent(inout)
       !
       integer :: nPeriods !< number of periods
-      real(hp), dimension(:), allocatable :: periods !< Fourier components transformed into periods
+      real(dp), dimension(:), allocatable :: periods !< Fourier components transformed into periods
       character(len=8), dimension(:), allocatable :: components
-      real(hp), dimension(:), allocatable :: magnitudes !< seed values for the magnitudes of the Fourier components
-      real(hp), dimension(:), allocatable :: phases !< seed values for the phases of the Fourier components
+      real(dp), dimension(:), allocatable :: magnitudes !< seed values for the magnitudes of the Fourier components
+      real(dp), dimension(:), allocatable :: phases !< seed values for the phases of the Fourier components
       type(tEcFileReader), pointer :: cmpFileReaderPtr !< related file reader (with components)
 
       character(len=8), pointer :: cmpcomponent(:), corcomponent(:) !< raw data from input, stored in the bc%quantity
-      real(hp), pointer :: cmpamplitude(:), coramplitude(:)
-      real(hp), pointer :: cmpphase(:), corphase(:)
+      real(dp), pointer :: cmpamplitude(:), coramplitude(:)
+      real(dp), pointer :: cmpphase(:), corphase(:)
 
-      real(hp), pointer :: cmpamplitude_result_T0(:)
-      real(hp), pointer :: cmpphase_result_T0(:)
-      real(hp), pointer :: cmpamplitude_result_T1(:)
-      real(hp), pointer :: cmpphase_result_T1(:)
+      real(dp), pointer :: cmpamplitude_result_T0(:)
+      real(dp), pointer :: cmpphase_result_T0(:)
+      real(dp), pointer :: cmpamplitude_result_T1(:)
+      real(dp), pointer :: cmpphase_result_T1(:)
 
       integer :: icmp, ncmp, icor, ncor, iitem
       logical :: cmpfound
@@ -2186,10 +2186,10 @@ contains
       integer, dimension(:), intent(in) :: ia !< CRS sparsity pattern, startpointers
       integer, dimension(:), intent(in) :: ja !< CRS sparsity pattern, column numbers
       integer, intent(in) :: Ndatasize !< dimension of sparse data
-      double precision, dimension(:), intent(inout) :: arr1d !< CRS data
+      real(dp), dimension(:), intent(inout) :: arr1d !< CRS data
       integer, intent(out) :: ierror !< error (!=0) or not (0)
 
-      double precision, dimension(:), allocatable :: data_block ! work array for reading
+      real(dp), dimension(:), allocatable :: data_block ! work array for reading
 
       integer, dimension(:), allocatable :: mcolmin, mcolmax
       integer, dimension(:), allocatable :: nrowmax
