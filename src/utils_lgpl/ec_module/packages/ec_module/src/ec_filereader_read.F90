@@ -804,7 +804,7 @@ contains
          do while (.not. valid_field)
             ! - Read a scalar data block.
             if (item%elementSetPtr%nCoordinates == 0) then
-               ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, fieldPtr%arr1dPtr, start=(/timesndx/), count=(/1/))
+               ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, fieldPtr%arr1dPtr, start=[timesndx], count=[1])
                if (ierror /= NF90_NOERR) then
                   call setECMessage("NetCDF:'"//trim(nf90_strerror(ierror))//"' in "//trim(fileReaderPtr%filename)//".")
                   return
@@ -842,23 +842,23 @@ contains
                   if (item%elementSetPtr%n_layers == 0) then
                      if (item%elementSetPtr%ofType == elmSetType_samples) then
                         if (has_harmonics) then
-                           ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/col0/), count=(/ncol/))
+                           ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[col0], count=[ncol])
                         else
-                           ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/col0, timesndx/), count=(/ncol, 1/))
+                           ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[col0, timesndx], count=[ncol, 1])
                         end if
                      else
                         if (has_harmonics) then
                            if (is_column_major) then
-                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/row0, col0/), count=(/nrow, ncol/))
+                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[row0, col0], count=[nrow, ncol])
                            else
-                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/col0, row0/), count=(/ncol, nrow/))
+                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[col0, row0], count=[ncol, nrow])
                            end if
                         else
-                           ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/col0, row0, timesndx/), count=(/ncol, nrow, 1/))
+                           ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[col0, row0, timesndx], count=[ncol, nrow, 1])
                            ! handle case where dimensions are permutated
                            if (ierror /= 0) then
                               allocate (temp_block(nrow, ncol), stat=istat)
-                              if (istat == 0) ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, temp_block, start=(/timesndx, row0, col0/), count=(/1, nrow, ncol/))
+                              if (istat == 0) ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, temp_block, start=[timesndx, row0, col0], count=[1, nrow, ncol])
                               if (ierror == 0) then
                                  data_block = transpose(temp_block)
                                  deallocate (temp_block)
@@ -890,15 +890,15 @@ contains
                      do k = 1, item%elementSetPtr%n_layers
                         if (has_harmonics) then
                            if (is_column_major) then
-                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/row0, col0, k/), count=(/nrow, ncol, 1/))
+                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[row0, col0, k], count=[nrow, ncol, 1])
                            else
-                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/col0, row0, k/), count=(/ncol, nrow, 1/))
+                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[col0, row0, k], count=[ncol, nrow, 1])
                            end if
                         else
                            if (is_column_major) then
-                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/row0, col0, k, timesndx/), count=(/nrow, ncol, 1, 1/))
+                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[row0, col0, k, timesndx], count=[nrow, ncol, 1, 1])
                            else
-                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=(/col0, row0, k, timesndx/), count=(/ncol, nrow, 1, 1/))
+                              ierror = nf90_get_var(fileReaderPtr%fileHandle, varid, data_block, start=[col0, row0, k, timesndx], count=[ncol, nrow, 1, 1])
                            end if
                         end if
                         do i = 1, nrow
@@ -2257,11 +2257,11 @@ contains
             if (mcolmax(j) >= mcolmin(j)) then
 !                 read data
                if (is_column_major) then
-                  start(1:2) = (/nrowmin, mcolmin(j)/)
-                  cnt(1:2) = (/nrowmax(j) - nrowmin + 1, mcolmax(j) - mcolmin(j) + 1/)
+                  start(1:2) = [nrowmin, mcolmin(j)]
+                  cnt(1:2) = [nrowmax(j) - nrowmin + 1, mcolmax(j) - mcolmin(j) + 1]
                else
-                  start(1:2) = (/mcolmin(j), nrowmin/)
-                  cnt(1:2) = (/mcolmax(j) - mcolmin(j) + 1, nrowmax(j) - nrowmin + 1/)
+                  start(1:2) = [mcolmin(j), nrowmin]
+                  cnt(1:2) = [mcolmax(j) - mcolmin(j) + 1, nrowmax(j) - nrowmin + 1]
                end if
                if (ndims > 2) then
                   start(ndims) = timesndx

@@ -3679,12 +3679,12 @@ contains
       end if
 
       ! Load phase data.
-      if (.not. ecSupportNetcdfCheckError(nf90_get_var(fileReaderPtr%fileHandle, phase_id, data_block, start=(/1, 1/), count=dim_sizes), "obtain phase data", fileReaderPtr%fileName)) return
+      if (.not. ecSupportNetcdfCheckError(nf90_get_var(fileReaderPtr%fileHandle, phase_id, data_block, start=[1, 1], count=dim_sizes), "obtain phase data", fileReaderPtr%fileName)) return
 
       is_column_major = ecProviderDataIsColumnMajor(dimids(1), dimids(2), fileReaderPtr%lonx_id, fileReaderPtr%laty_id)
 
       if (is_column_major) then
-         fileReaderPtr%hframe%phase_dims = (/dim_sizes(2), dim_sizes(1)/)
+         fileReaderPtr%hframe%phase_dims = [dim_sizes(2), dim_sizes(1)]
       else
          fileReaderPtr%hframe%phase_dims = dim_sizes
       end if
