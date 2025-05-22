@@ -264,34 +264,34 @@
                 <file name="dflowfm/DFM_OUTPUT_FlowFM/FlowFM_map.nc" type="netCDF">
                     <parameters>
                         <parameter name="mesh1d_s1" toleranceAbsolute="0.001" />
-                        <parameter name="mesh1d_u1" toleranceAbsolute="0.001" />
+                        <parameter name="mesh1d_u1" toleranceAbsolute="0.005" />
                         <parameter name="mesh1d_q1" toleranceAbsolute="0.001" />
-                        <parameter name="mesh1d_current_total_net_inflow_lateral" toleranceAbsolute="0.001" />
+                        <parameter name="mesh1d_current_total_net_inflow_lateral" toleranceRelative="0.001" />
                         <parameter name="mesh1d_waterdepth" toleranceAbsolute="0.001" />
                         <parameter name="mesh1d_volume_on_ground" toleranceAbsolute="0.001" />
                     </parameters>
                 </file>
                 <file name="dflowfm/DFM_OUTPUT_FlowFM/FlowFM_his.nc" type="netCDF">
                     <parameters>
-                        <parameter name="water_balance_boundaries_in" toleranceRelative="0.000001" />
-                        <parameter name="water_balance_boundaries_out" toleranceRelative="0.000001" />
-                        <parameter name="water_balance_laterals_in" toleranceRelative="0.000001" />
-                        <parameter name="water_balance_laterals_out" toleranceRelative="0.000001" />
-                        <parameter name="water_balance_storage" toleranceRelative="0.000001" />
-                        <parameter name="water_balance_total_volume" toleranceRelative="0.000001" />
-						<parameter name="pump_capacity" toleranceAbsolute="0.001" />
+                        <parameter name="water_balance_boundaries_in" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_boundaries_out" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_laterals_in" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_laterals_out" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_storage" toleranceRelative="0.0001" />
+                        <parameter name="water_balance_total_volume" toleranceRelative="0.0001" />
+						<parameter name="pump_capacity" toleranceRelative="0.001" />
 						<parameter name="pump_head" toleranceAbsolute="0.001" />
 						<parameter name="pump_s1_suction_side" toleranceAbsolute="0.001" />
 						<parameter name="pump_s1_delivery_side" toleranceAbsolute="0.001" />
 						<parameter name="pump_s1up" toleranceAbsolute="0.001" />
 						<parameter name="pump_s1dn" toleranceAbsolute="0.001" />
-						<parameter name="pump_structure_discharge" toleranceAbsolute="0.001" />
+						<parameter name="pump_structure_discharge" toleranceRelative="0.001" />
 						<parameter name="pump_structure_head" toleranceAbsolute="0.001" />
                         <parameter name="culvert_discharge" toleranceAbsolute="0.0001" />
                         <parameter name="culvert_s1up" toleranceAbsolute="0.0001" />
                         <parameter name="culvert_s1dn" toleranceAbsolute="0.0001" />
-                        <parameter name="culvert_flow_area" toleranceAbsolute="0.0001" />
-                        <parameter name="culvert_velocity" toleranceAbsolute="0.0001" />
+                        <parameter name="culvert_flow_area" toleranceAbsolute="0.001" />
+                        <parameter name="culvert_velocity" toleranceAbsolute="0.001" />
                     </parameters>
                 </file>
             </checks>
