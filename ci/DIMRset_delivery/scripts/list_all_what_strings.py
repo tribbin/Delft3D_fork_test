@@ -58,8 +58,6 @@ def list_what_strings(file_path: str, log_file) -> None:
 
 def walk_and_list_what_strings(root_folder, log_file):
     for current_dir, subdirs, files in os.walk(root_folder):
-        # Skip version control directories
-        subdirs[:] = [d for d in subdirs if d not in {".svn", ".git", ".hg", ".bzr"}]
         if current_dir != root_folder:
             print(f"\t{current_dir}")
             for file_name in files:
