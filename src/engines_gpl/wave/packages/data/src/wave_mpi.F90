@@ -99,11 +99,8 @@ subroutine initialize_wave_mpi()
 #endif
       !
       if (.not.mpi_is_initialized) then
-         ! * parallel wave.exe
-         mpi_initialized_by_engine = .TRUE.
-#ifdef HAVE_MPI
-         call mpi_init ( ierr )
-#endif
+         ! * parallel wave.exe not called by parallel dimr.exe
+         call wavestop( 1, 'Not supported: D-Waves is running in parallel but is not called by dimr.exe' )
       endif
       !
       if (engine_comm_world /= MPI_COMM_NULL) then

@@ -328,34 +328,25 @@ void Dimr::runStartBlock(dimr_control_block* cb, double tStep, int phase) {
 void Dimr::createDistributeMPISubGroupCommunicator(dimr_component* component, bool isMaster) {
     MPI_Group mpiGroupComp;
     int ierr;
-    bool multipleProcessesCheck;
-    if (isMaster) {
-        // Check on multiple processes always passes
-        multipleProcessesCheck = true;
+    if (component == NULL) {
+        throw Exception(true, Exception::ERR_MPI, "createDistributeMPISubGroupCommunicator: undefined component.");
     }
-    else {
-        if (component->numProcesses > 1) {
-            multipleProcessesCheck = true;
-        }
-        else {
-            multipleProcessesCheck = false;
-        }
-    }
+    bool multipleProcessesCheck = isMaster || component->numProcesses > 1;
     if (use_mpi && component->mpiCommVar != NULL && multipleProcessesCheck) {
         ierr = MPI_Group_incl(mpiGroupWorld, component->numProcesses, component->processes, &mpiGroupComp);
         if (ierr != MPI_SUCCESS) {
-            throw Exception(true, Exception::ERR_MPI, "runParallelInit: cannot create a subgroup of %d processes for component \"%s\". Code: %d.", component->numProcesses, component->name, ierr);
+            throw Exception(true, Exception::ERR_MPI, "createDistributeMPISubGroupCommunicator: cannot create a subgroup of %d processes for component \"%s\". Code: %d.", component->numProcesses, component->name, ierr);
         }
         // Needs to be called by *all* ranks:
         ierr = MPI_Comm_create(MPI_COMM_WORLD, mpiGroupComp, &component->mpiComm);
         if (ierr != MPI_SUCCESS) {
-            throw Exception(true, Exception::ERR_MPI, "runParallelInit: cannot create a subcommunicator of %d processes for component \"%s\". Code: %d.", component->numProcesses, component->name, ierr);
+            throw Exception(true, Exception::ERR_MPI, "createDistributeMPISubGroupCommunicator: cannot create a subcommunicator of %d processes for component \"%s\". Code: %d.", component->numProcesses, component->name, ierr);
         }
         if (component->onThisRank) {
             MPI_Fint* fComm;
             component->dllGetVar(component->mpiCommVar, (void**)(&fComm));
             if (fComm == NULL) {
-                throw Exception(true, Exception::ERR_MPI, "runParallelInit: cannot obtain reference to communicator handle \"%s\" from component \"%s\".", component->mpiCommVar, component->name);
+                throw Exception(true, Exception::ERR_MPI, "createDistributeMPISubGroupCommunicator: cannot obtain reference to communicator handle \"%s\" from component \"%s\".", component->mpiCommVar, component->name);
             }
             *fComm = MPI_Comm_c2f(component->mpiComm);
         }
