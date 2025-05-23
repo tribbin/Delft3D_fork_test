@@ -96,4 +96,5 @@ set(build_dir ${CMAKE_BINARY_DIR})
 
 install(TARGETS ${library_name}
          RUNTIME DESTINATION lib
+         LIBRARY DESTINATION lib
 )
