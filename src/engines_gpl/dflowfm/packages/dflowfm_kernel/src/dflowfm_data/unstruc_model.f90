@@ -729,6 +729,8 @@ contains
       use m_qnerror
       use messagehandling, only: msgbuf, err_flush, warn_flush
       use m_circumcenter_method, only: md_circumcenter_method, circumcenter_method, extract_circumcenter_method, circumcenter_tolerance
+      use m_check_positive_value, only: check_positive_value
+      use m_add_baroclinic_pressure, only: rhointerfaces
 
       character(*), intent(in) :: filename !< Name of file to be read (the MDU file must be in current working directory).
       integer, intent(out) :: istat !< Return status (0=success)
@@ -1589,6 +1591,11 @@ contains
       call prop_get(md_ptr, 'waves', 'Wavemodelnr', jawave)
       call prop_get(md_ptr, 'waves', 'Waveforcing', waveforcing)
       call prop_get(md_ptr, 'waves', 'WavePeakEnhancementFactor', JONSWAPgamma0)
+      if (jawave == 6) then ! backward compatibility
+         write (msgbuf, '(a,i0,a)') 'Wavemodelnr = ', jawave, ' is now merged with the offline wave functionality (wavemodelnr=7), and option 6 is deprecated.'
+         call mess(LEVEL_WARN, msgbuf)
+         jawave = 7
+      end if
       if (jawave /= 7 .and. waveforcing /= 0) then
          write (msgbuf, '(a,i0,a)') 'Waveforcing = , ', waveforcing, ' is only supported for Wavemodelnr = 7. Keyword ignored.'
          call mess(LEVEL_WARN, msgbuf)
@@ -1604,7 +1611,7 @@ contains
       call prop_get(md_ptr, 'waves', 'Hwavuni', Hwavuni)
       call prop_get(md_ptr, 'waves', 'Twavuni', Twavuni)
       call prop_get(md_ptr, 'waves', 'Phiwavuni', Phiwavuni)
-
+      call prop_get(md_ptr, 'waves', 'flowWithoutWaves', flowWithoutWaves) ! True: Do not use Wave data in the flow computations, it will only be passed through to D-WAQ
       call prop_get(md_ptr, 'waves', 'Rouwav', rouwav)
       if (jawave > 0 .and. .not. flowWithoutWaves) then
          call setmodind(rouwav, modind)
@@ -1612,9 +1619,8 @@ contains
       call prop_get(md_ptr, 'waves', 'Gammax', gammax)
       call prop_get(md_ptr, 'waves', 'hminlw', hminlw)
       call prop_get(md_ptr, 'waves', 'uorbfac', jauorb) ! 0=delft3d4, sqrt(pi)/2 included in uorb calculation; >0: FM, factor not included; default: 0
-      call prop_get(md_ptr, 'waves', 'flowWithoutWaves', flowWithoutWaves) ! True: Do not use Wave data in the flow computations, it will only be passed through to D-WAQ
       ! backward compatibility for hk in tauwavehk:
-      if (jawave > 0 .and. jawave < 3 .or. flowWithoutWaves) then
+      if ((jawave > 0 .and. jawave < 3) .or. flowWithoutWaves) then
          jauorb = 1
       end if
       call prop_get(md_ptr, 'waves', 'jahissigwav', jahissigwav) ! 1: sign wave height on his output; 0: hrms wave height on his output. Default=1
@@ -2027,7 +2033,8 @@ contains
       call prop_get(md_ptr, 'output', 'Wrimap_velocity_component_u1', jamapu1, success)
       call prop_get(md_ptr, 'output', 'Wrimap_velocity_component_u0', jamapu0, success)
       call prop_get(md_ptr, 'output', 'Wrimap_velocity_vector', jamapucvec, success)
-      if ((jawave == 3 .or. jawave == 6) .and. jamapucvec == 0) then
+      !
+      if (jawave == 3 .and. jamapucvec == 0) then ! only needed for 2 way coupling
          jamapucvec = 1
          write (msgbuf, '(a, i0, a)') 'MDU setting "Wavemodelnr = ', jawave, '" requires ' &
             //'"Wrimap_velocity_vector = 1". Has been enabled now.'
@@ -2586,7 +2593,7 @@ contains
       use network_data, only: zkuni, Dcenterinside, removesmalllinkstrsh, cosphiutrsh
       use m_circumcenter_method, only: circumcenter_method
       use m_sferic, only: anglat, anglon, jsferic, jasfer3D
-      use m_physcoef, only: apply_thermobaricity
+      use m_density_parameters, only: apply_thermobaricity
       use unstruc_netcdf, only: unc_writeopts, UG_WRITE_LATLON, UG_WRITE_NOOPTS, unc_nounlimited, unc_noforcedflush, unc_uuidgen, unc_metadatafile
       use dflowfm_version_module
       use m_equatorial
@@ -2610,7 +2617,8 @@ contains
       use m_map_his_precision
       use m_datum
       use m_circumcenter_method, only: INTERNAL_NETLINKS_EDGE, circumcenter_tolerance, md_circumcenter_method
-      use m_dambreak_breach, only: exist_dambreak_links
+      use m_dambreak_breach, only: have_dambreaks_links
+      use m_add_baroclinic_pressure, only: DENSITY_TO_INTERFACES, rhointerfaces
 
       integer, intent(in) :: mout !< File pointer where to write to.
       logical, intent(in) :: writeall !< Write all fields, including default values
@@ -3162,8 +3170,8 @@ contains
       if (writeall .or. max_iterations_pressure_density /= 1) then
          call prop_set(prop_ptr, 'numerics', 'maxitpresdens', max_iterations_pressure_density, 'Max nr of iterations in pressure-density coupling, only used if thermobaricity is true.')
       end if
-      if (writeall .or. rhointerfaces /= 0) then
-         call prop_set(prop_ptr, 'numerics', 'Rhointerfaces', rhointerfaces, 'Evaluate rho at interfaces: 0 = linear interpolation, 1 = recompute from salinity and temperature, 2 = use cell density.')
+      if (writeall .or. rhointerfaces /= DENSITY_TO_INTERFACES) then
+         call prop_set(prop_ptr, 'numerics', 'Rhointerfaces', rhointerfaces, 'Baroclinic pressure gradient method: -1 = original method. Evaluate rho at interfaces: 0 = linear interpolation, 1 = recompute from salinity and temperature, 2 = use cell density.')
       end if
 
       if (icgsolver == 8) then ! for parms solver
@@ -3413,7 +3421,7 @@ contains
          call prop_set(prop_ptr, 'physics', 'Equili', jaequili, 'Equilibrium spiral flow intensity (0: no, 1: yes)')
       end if
 
-      if (exist_dambreak_links()) then
+      if (have_dambreaks_links()) then
          call prop_set(prop_ptr, 'physics', 'BreachGrowth', trim(md_dambreak_widening_method), 'Method for implementing dambreak widening: symmetric, proportional, or symmetric-asymmetric')
       end if
 
@@ -3549,9 +3557,9 @@ contains
          call prop_set(prop_ptr, 'hydrology', 'InterceptionModel', interceptionmodel, 'Interception model (0: none, 1: on, via layer thickness)')
       end if
 
-      ! JRE -> aanvullen, kijken wat aangeleverd wordt
+      ! jre wm67
       if (writeall .or. jawave > 0) then
-         call prop_set(prop_ptr, 'waves', 'Wavemodelnr', jawave, 'Wave model nr. (0: none, 1: fetch/depth limited hurdlestive, 2: Young-Verhagen, 3: SWAN, 5: uniform, 6: SWAN-NetCDF, 7: Offline Wave Coupling')
+         call prop_set(prop_ptr, 'waves', 'Wavemodelnr', jawave, 'Wave model nr. (0: none, 1: fetch/depth limited Hurdle-Stive, 2: fetch/depth limited Young-Verhagen, 3: SWAN, 5: uniform, 7: Offline Wave Coupling')
          call prop_set(prop_ptr, 'waves', 'Rouwav', rouwav, 'Friction model for wave induced shear stress: FR84 (default) or: MS90, HT91, GM79, DS88, BK67, CJ85, OY88, VR04')
          call prop_set(prop_ptr, 'waves', 'Gammax', gammax, 'Maximum wave height/water depth ratio')
          call prop_set(prop_ptr, 'waves', 'uorbfac', jauorb, 'Orbital velocities: 0=D3D style; 1=Guza style')
@@ -4154,19 +4162,6 @@ contains
       end if
 
    end function is_not_multiple
-
-!> Raise an error when provided value is not positive (also to avoid division by zero)
-   subroutine check_positive_value(mdu_keyword, value)
-      use m_flowparameters, only: eps10
-      implicit none
-
-      character(*), intent(in) :: mdu_keyword !< Keyword in the mdu-file
-      real(kind=dp), intent(in) :: value !< Corresponding value
-
-      if (value < eps10) then
-         call mess(LEVEL_ERROR, trim(mdu_keyword), ' should be larger than 0.')
-      end if
-   end subroutine check_positive_value
 
    subroutine set_output_time_vector(md_tvfil, ti_tv, ti_tv_rel)
 

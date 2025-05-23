@@ -2181,7 +2181,7 @@ contains
       use fm_external_forcings_data
       use m_structures
       use m_observations_data
-      use m_physcoef, only: apply_thermobaricity
+      use m_density_parameters, only: apply_thermobaricity
       use m_statistical_output_types, only: process_data_interface_double
       use m_transport, only: NUMCONST, itemp, isalt, ised1
       use m_sediment, only: stm_included, stmpar
@@ -2193,7 +2193,7 @@ contains
       use m_dad, only: dad_included, dadpar
       use m_laterals, only: numlatsg, qplat, qplatAve, qLatRealAve, qLatReal
       use m_sferic, only: jsferic
-      use m_wind, only: japatm, jawind, jarain, ja_airdensity, ja_computed_airdensity, cloudiness, relative_humidity
+      use m_wind, only: air_pressure_available, jawind, jarain, ja_airdensity, ja_computed_airdensity, cloudiness, relative_humidity
       use m_dambreak_breach, only: n_db_signals
       use, intrinsic :: iso_c_binding
 
@@ -2608,7 +2608,7 @@ contains
          end if
 
          ! Meteo
-         if (japatm > 0 .and. jahiswind > 0) then
+         if (air_pressure_available > 0 .and. jahiswind > 0) then
             call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_PATM), valobs(:, IPNT_PATM))
          end if
 

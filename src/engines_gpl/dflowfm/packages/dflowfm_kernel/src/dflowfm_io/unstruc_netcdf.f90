@@ -290,16 +290,16 @@ module unstruc_netcdf
       integer :: id_rain(MAX_ID_VAR) = -1 !< Variable ID for
       integer :: id_icepths(MAX_ID_VAR) = -1 !< Variable ID for interception layer waterdepth.
       integer :: id_wind(MAX_ID_VAR) = -1 !< Variable ID for
-      integer :: id_patm(MAX_ID_VAR) = -1 !< Variable ID for
+      integer :: id_air_pressure(MAX_ID_VAR) = -1 !< Variable ID for
       integer :: id_ice_af(MAX_ID_VAR) = -1 !< Variable ID for sea_ice_area_fraction
       integer :: id_ice_h(MAX_ID_VAR) = -1 !< Variable ID for sea_ice_thickness
       integer :: id_ice_p(MAX_ID_VAR) = -1 !< Variable ID for the pressure exerted by the sea ice cover
       integer :: id_ice_t(MAX_ID_VAR) = -1 !< Variable ID for temperature of the ice cover
       integer :: id_snow_h(MAX_ID_VAR) = -1 !< Variable ID for snow_thickness
       integer :: id_snow_t(MAX_ID_VAR) = -1 !< Variable ID for temperature of the snow cover
-      integer :: id_tair(MAX_ID_VAR) = -1 !< Variable ID for
-      integer :: id_rhum(MAX_ID_VAR) = -1 !< Variable ID for
-      integer :: id_clou(MAX_ID_VAR) = -1 !< Variable ID for
+      integer :: id_air_temperature(MAX_ID_VAR) = -1 !< Variable ID for
+      integer :: id_relative_humidity(MAX_ID_VAR) = -1 !< Variable ID for
+      integer :: id_cloudiness(MAX_ID_VAR) = -1 !< Variable ID for
       integer :: id_E(MAX_ID_VAR) = -1 !< Variable ID for
       integer :: id_R(MAX_ID_VAR) = -1 !< Variable ID for
       integer :: id_hwav(MAX_ID_VAR) = -1 !< Variable ID for
@@ -347,7 +347,7 @@ module unstruc_netcdf
       integer :: id_windyu(MAX_ID_VAR) = -1 !< Variable ID for wind on flow links, y-component
       integer :: id_windstressx(MAX_ID_VAR) = -1 !< Variable ID for wind stress, on cell center, x-component
       integer :: id_windstressy(MAX_ID_VAR) = -1 !< Variable ID for wind stress, on cell center, y-component
-      integer :: id_airdensity(MAX_ID_VAR) = -1 !< Variable ID for air density
+      integer :: id_air_density(MAX_ID_VAR) = -1 !< Variable ID for air density
       integer :: id_turkin1(MAX_ID_VAR) = -1 !< Variable ID for turbulent kinetic energy
       integer :: id_vicwwu(MAX_ID_VAR) = -1 !< Variable ID for turbulent vertical eddy viscosity at velocity points
       integer :: id_vicwws(MAX_ID_VAR) = -1 !< Variable ID for turbulent vertical eddy viscosity at pressure points
@@ -383,8 +383,8 @@ module unstruc_netcdf
       integer :: id_bl(MAX_ID_VAR) = -1 ! TODO: AvD: HK's timedep bl
 ! nudging
       integer :: id_nudge_time(MAX_ID_VAR) = -1 ! nudging time
-      integer :: id_nudge_sal(MAX_ID_VAR) = -1 ! nudging salinity
-      integer :: id_nudge_tem(MAX_ID_VAR) = -1 ! nudging temperature
+      integer :: id_nudge_salinity(MAX_ID_VAR) = -1 ! nudging salinity
+      integer :: id_nudge_temperature(MAX_ID_VAR) = -1 ! nudging temperature
       integer :: id_nudge_Dsal(MAX_ID_VAR) = -1 ! difference of nudging salinity with salinity
       integer :: id_nudge_Dtem(MAX_ID_VAR) = -1 ! difference of nudging temperature with temperature
 !vegetation
@@ -5285,7 +5285,7 @@ contains
       use m_get_ucx_ucy_eul_mag
       use m_get_chezy, only: get_chezy
       use messagehandling, only: err_flush
-      use m_nudge, only: nudge_rate, nudge_tem, nudge_sal
+      use m_nudge, only: nudge_rate, nudge_temperature, nudge_salinity
       use m_turbulence, only: in_situ_density, potential_density
 
       implicit none
@@ -5772,8 +5772,8 @@ contains
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_icepths, nc_precision, UNC_LOC_S, 'interception_waterdepth', '', 'Waterdepth in interception layer', 'm', jabndnd=jabndnd_)
          end if
 
-         if (jamapwind > 0 .and. japatm /= 0) then
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_patm, nc_precision, UNC_LOC_S, 'Patm', 'surface_air_pressure', 'Atmospheric pressure near surface', 'N m-2', jabndnd=jabndnd_)
+         if (jamapwind > 0 .and. air_pressure_available /= 0) then
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_air_pressure, nc_precision, UNC_LOC_S, 'Patm', 'surface_air_pressure', 'Atmospheric pressure near surface', 'N m-2', jabndnd=jabndnd_)
          end if
 
          if (ice_mapout) then
@@ -5821,15 +5821,15 @@ contains
          end if
 
          if (ja_airdensity + ja_computed_airdensity > 0 .and. jamap_airdensity > 0) then
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_airdensity, nc_precision, UNC_LOC_S, 'rhoair', 'air_density', 'Air density', 'kg m-3', jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_air_density, nc_precision, UNC_LOC_S, 'rhoair', 'air_density', 'Air density', 'kg m-3', jabndnd=jabndnd_)
          end if
 
          ! Heat fluxes
          if (jamapheatflux > 0 .and. jatem > 1) then ! here less verbose
 
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_tair, nc_precision, UNC_LOC_S, 'Tair', 'surface_temperature', 'Air temperature near surface', 'degC', jabndnd=jabndnd_)
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_rhum, nc_precision, UNC_LOC_S, 'Rhum', 'surface_specific_humidity', 'Relative humidity near surface', '', jabndnd=jabndnd_)
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_clou, nc_precision, UNC_LOC_S, 'Clou', 'cloud_area_fraction', 'Cloudiness', '1', jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_air_temperature, nc_precision, UNC_LOC_S, 'Tair', 'surface_temperature', 'Air temperature near surface', 'degC', jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_relative_humidity, nc_precision, UNC_LOC_S, 'Rhum', 'surface_specific_humidity', 'Relative humidity near surface', '', jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cloudiness, nc_precision, UNC_LOC_S, 'Clou', 'cloud_area_fraction', 'Cloudiness', '1', jabndnd=jabndnd_)
 
             if (jatem == 5) then
                ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_qsun, nc_precision, UNC_LOC_S, 'Qsun', 'surface_net_downward_shortwave_flux', 'Solar influx', 'W m-2', jabndnd=jabndnd_)
@@ -6341,8 +6341,8 @@ contains
 
          if (janudge > 0 .and. jamapNudge > 0) then
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_time, nc_precision, UNC_LOC_S, 'Tnudge', 'nudging_time', 'Nudging relaxing time', 's', is_timedep=0, jabndnd=jabndnd_)
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_tem, nc_precision, UNC_LOC_S3D, 'nudge_tem', 'nudging_tem', 'Nudging temperature', 'degC', jabndnd=jabndnd_)
-            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_sal, nc_precision, UNC_LOC_S3D, 'nudge_sal', 'nudging_sal', 'Nudging salinity', '1e-3, jabndnd=jabndnd_', jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_temperature, nc_precision, UNC_LOC_S3D, 'nudge_tem', 'nudging_tem', 'Nudging temperature', 'degC', jabndnd=jabndnd_)
+            ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_salinity, nc_precision, UNC_LOC_S3D, 'nudge_sal', 'nudging_sal', 'Nudging salinity', '1e-3, jabndnd=jabndnd_', jabndnd=jabndnd_)
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_Dtem, nc_precision, UNC_LOC_S3D, 'nudge_Dtem', 'nudging_Dtem', 'Difference of nudging temperature with temperature', 'degC', jabndnd=jabndnd_)
             ierr = unc_def_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_Dsal, nc_precision, UNC_LOC_S3D, 'nudge_Dsal', 'nudging_Dsal', 'Difference of nudging salinity with salinity', '1e-3', jabndnd=jabndnd_)
 
@@ -7458,7 +7458,7 @@ contains
       end if
 
       if (ja_airdensity + ja_computed_airdensity > 0 .and. jamap_airdensity > 0) then
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_airdensity, UNC_LOC_S, airdensity, jabndnd=jabndnd_)
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_air_density, UNC_LOC_S, air_density, jabndnd=jabndnd_)
       end if
 
       ! Rain
@@ -7476,8 +7476,8 @@ contains
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_icepths, UNC_LOC_S, InterceptHs, jabndnd=jabndnd_)
       end if
 
-      if (jamapwind > 0 .and. japatm > 0) then
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_patm, UNC_LOC_S, patm, jabndnd=jabndnd_)
+      if (jamapwind > 0 .and. air_pressure_available > 0) then
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_air_pressure, UNC_LOC_S, air_pressure, jabndnd=jabndnd_)
       end if
 
       if (ice_mapout) then
@@ -7493,11 +7493,9 @@ contains
 
       ! Heat flux models
       if (jamapheatflux > 0 .and. jatem > 1) then ! here less verbose
-
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_tair, UNC_LOC_S, airtemperature, jabndnd=jabndnd_)
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_rhum, UNC_LOC_S, relative_humidity, jabndnd=jabndnd_)
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_clou, UNC_LOC_S, cloudiness, jabndnd=jabndnd_)
-
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_air_temperature, UNC_LOC_S, air_temperature, jabndnd=jabndnd_)
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_relative_humidity, UNC_LOC_S, relative_humidity, jabndnd=jabndnd_)
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_cloudiness, UNC_LOC_S, cloudiness, jabndnd=jabndnd_)
          if (jatem == 5) then
             ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_qsun, UNC_LOC_S, Qsunmap, jabndnd=jabndnd_)
             ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_qeva, UNC_LOC_S, Qevamap, jabndnd=jabndnd_)
@@ -7848,21 +7846,21 @@ contains
 
       if (janudge > 0 .and. jamapnudge > 0) then
 !    nudging
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_tem, UNC_LOC_S3D, nudge_tem, jabndnd=jabndnd_)
-         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_sal, UNC_LOC_S3D, nudge_sal, jabndnd=jabndnd_)
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_temperature, UNC_LOC_S3D, nudge_temperature, jabndnd=jabndnd_)
+         ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_salinity, UNC_LOC_S3D, nudge_salinity, jabndnd=jabndnd_)
 
          workx = DMISS
          do k = 1, ndkx
-            if (nudge_tem(k) /= DMISS) then
-               workx(k) = nudge_tem(k) - constituents(itemp, k)
+            if (nudge_temperature(k) /= DMISS) then
+               workx(k) = nudge_temperature(k) - constituents(itemp, k)
             end if
          end do
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_Dtem, UNC_LOC_S3D, workx, jabndnd=jabndnd_)
 
          workx = DMISS
          do k = 1, ndkx
-            if (nudge_tem(k) /= DMISS) then
-               workx(k) = nudge_sal(k) - constituents(isalt, k)
+            if (nudge_temperature(k) /= DMISS) then
+               workx(k) = nudge_salinity(k) - constituents(isalt, k)
             end if
          end do
          ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_nudge_Dsal, UNC_LOC_S3D, workx, jabndnd=jabndnd_)
@@ -8030,6 +8028,7 @@ contains
       use m_get_ucx_ucy_eul_mag
       use m_get_chezy, only: get_chezy
       use m_turbulence, only: in_situ_density, potential_density
+      use m_waves, only: uorb
 
       implicit none
 
@@ -8063,7 +8062,7 @@ contains
          id_q1main, &
          id_s1, id_taus, id_ucx, id_ucy, id_ucz, id_ucxa, id_ucya, id_unorm, id_ww1, id_sa1, id_tem1, id_sed, id_ero, id_s0, id_u0, id_cfcl, id_cftrt, id_czs, id_czu, &
          id_qsun, id_qeva, id_qcon, id_qlong, id_qfreva, id_qfrcon, id_qtot, &
-         id_patm, id_ice_af, id_ice_h, id_ice_p, id_ice_t, id_snow_h, id_snow_t, id_tair, id_rhum, id_clou, id_E, id_R, id_H, id_D, id_DR, id_urms, id_thetamean, &
+         id_air_pressure, id_ice_af, id_ice_h, id_ice_p, id_ice_t, id_snow_h, id_snow_t, id_air_temperature, id_relative_humidity, id_cloudiness, id_E, id_R, id_H, id_D, id_DR, id_urms, id_thetamean, &
          id_cwav, id_cgwav, id_sigmwav, &
          id_ust, id_vst, id_windx, id_windy, id_windxu, id_windyu, id_numlimdt, id_hs, id_bl, id_zk, &
          id_1d2d_edges, id_1d2d_zeta1d, id_1d2d_crest_level, id_1d2d_b_2di, id_1d2d_b_2dv, id_1d2d_d_2dv, id_1d2d_q_zeta, id_1d2d_q_lat, &
@@ -8199,9 +8198,9 @@ contains
             end if
 
             if (jamapheatflux > 0 .and. jatem > 1) then ! Heat modelling only
-               call definencvar(imapfile, id_tair(iid), nf90_double, idims, 'Tair', 'air temperature', 'degC', 'FlowElem_xcc FlowElem_ycc')
-               call definencvar(imapfile, id_rhum(iid), nf90_double, idims, 'rhum', 'Relative humidity', ' ', 'FlowElem_xcc FlowElem_ycc')
-               call definencvar(imapfile, id_clou(iid), nf90_double, idims, 'clou', 'cloudiness', ' ', 'FlowElem_xcc FlowElem_ycc')
+               call definencvar(imapfile, id_air_temperature(iid), nf90_double, idims, 'Tair', 'air temperature', 'degC', 'FlowElem_xcc FlowElem_ycc')
+               call definencvar(imapfile, id_relative_humidity(iid), nf90_double, idims, 'rhum', 'Relative humidity', ' ', 'FlowElem_xcc FlowElem_ycc')
+               call definencvar(imapfile, id_cloudiness(iid), nf90_double, idims, 'clou', 'cloudiness', ' ', 'FlowElem_xcc FlowElem_ycc')
 
                if (jatem == 5) then
                   call definencvar(imapfile, id_qsun(iid), nf90_double, idims, 'Qsun', 'solar influx', 'W m-2', 'FlowElem_xcc FlowElem_ycc')
@@ -9274,8 +9273,8 @@ contains
             end if
          end if
 
-         if (jamapwind > 0 .and. japatm > 0) then
-            call definencvar(imapfile, id_patm(iid), nf90_double, idims, 'Patm', 'Atmospheric Pressure', 'N m-2', 'FlowElem_xcc FlowElem_ycc')
+         if (jamapwind > 0 .and. air_pressure_available > 0) then
+            call definencvar(imapfile, id_air_pressure(iid), nf90_double, idims, 'Patm', 'Atmospheric Pressure', 'N m-2', 'FlowElem_xcc FlowElem_ycc')
          end if
 
          if (ice_mapout) then
@@ -10715,8 +10714,8 @@ contains
          ierr = nf90_put_var(imapfile, id_windyu(iid), wy, [1, itim], [lnx, 1])
       end if
 
-      if (jamapwind > 0 .and. japatm > 0) then
-         ierr = nf90_put_var(imapfile, id_patm(iid), Patm, [1, itim], [ndxndxi, 1])
+      if (jamapwind > 0 .and. air_pressure_available > 0) then
+         ierr = nf90_put_var(imapfile, id_air_pressure(iid), air_pressure, [1, itim], [ndxndxi, 1])
       end if
 
       if (ice_mapout) then
@@ -10731,10 +10730,9 @@ contains
       end if
 
       if (jamapheatflux > 0 .and. jatem > 1) then ! Heat modelling only
-         ierr = nf90_put_var(imapfile, id_tair(iid), airtemperature, [1, itim], [ndxndxi, 1])
-         ierr = nf90_put_var(imapfile, id_rhum(iid), relative_humidity, [1, itim], [ndxndxi, 1])
-         ierr = nf90_put_var(imapfile, id_clou(iid), cloudiness, [1, itim], [ndxndxi, 1])
-
+         ierr = nf90_put_var(imapfile, id_air_temperature(iid), air_temperature, [1, itim], [ndxndxi, 1])
+         ierr = nf90_put_var(imapfile, id_relative_humidity(iid), relative_humidity, [1, itim], [ndxndxi, 1])
+         ierr = nf90_put_var(imapfile, id_cloudiness(iid), cloudiness, [1, itim], [ndxndxi, 1])
          if (jatem == 5) then
             ierr = nf90_put_var(imapfile, id_qsun(iid), Qsunmap, [1, itim], [ndxndxi, 1])
             ierr = nf90_put_var(imapfile, id_qeva(iid), Qevamap, [1, itim], [ndxndxi, 1])
