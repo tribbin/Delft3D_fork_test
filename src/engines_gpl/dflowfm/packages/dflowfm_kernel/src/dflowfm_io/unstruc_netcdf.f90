@@ -6978,8 +6978,8 @@ contains
             ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_sbwt, UNC_LOC_U, toutputy, jabndnd=jabndnd_)
         end if
         if (stmpar%lsedtot > 0 .and. stmpar%morpar%moroutput%sswuuvv) then
-            call realloc(toutputx, [lnx, stmpar%lsedtot], keepExisting=.false., fill=-999_dp)
-            call realloc(toutputy, [lnx, stmpar%lsedtot], keepExisting=.false., fill=-999_dp)
+            call realloc(toutputx, [lnx, stmpar%lsedtot], keepExisting=.false., fill=-999.0_dp)
+            call realloc(toutputy, [lnx, stmpar%lsedtot], keepExisting=.false., fill=-999.0_dp)
             do l = 1, stmpar%lsedtot
                select case (stmpar%morpar%moroutput%transptype)
                case (0)
