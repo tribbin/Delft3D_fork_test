@@ -107,7 +107,12 @@ project {
         """.trimIndent()
 
         buildType(TestPythonCiTools)
+        buildType(TestBenchValidation)
         buildType(CopyExamples)
+
+        buildTypesOrder = arrayListOf(
+            TestPythonCiTools, TestBenchValidation, CopyExamples
+        )
     }
 
     subProject(VerschilanalyseProject)
