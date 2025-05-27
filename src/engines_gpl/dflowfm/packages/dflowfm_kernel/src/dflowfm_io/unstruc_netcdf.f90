@@ -4722,32 +4722,34 @@ contains
             if (stmpar%morpar%moroutput%msed) then
                ierr = nf90_put_var(irstfile, id_msed, stmpar%morlyr%state%msed(:, :, 1:ndxi), [1, 1, 1, itim], [stmpar%lsedtot, stmpar%morlyr%settings%nlyr, ndxi, 1])
             end if
-            ! lyrfrac
-            if (.not. allocated(frac)) allocate (frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx))
-            frac = -999d0
-            if (stmpar%morlyr%settings%iporosity == 0) then
-               dens => stmpar%sedpar%cdryb
-            else
-               dens => stmpar%sedpar%rhosol
-            end if
-            do k = 1, stmpar%morlyr%settings%nlyr
-               do nm = 1, ndxi
-                  if (stmpar%morlyr%state%thlyr(k, nm) > 0.0_fp) then
-                     svthick = stmpar%morlyr%state%svfrac(k, nm) * stmpar%morlyr%state%thlyr(k, nm)
-                     do l = 1, stmpar%lsedtot
-                        frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm) / (dens(l) * svthick)
-                     end do
-                  else
-                     frac(:, k, nm) = 0d0
-                  end if
-               end do
-            end do
             ! thlyr
             if (stmpar%morpar%moroutput%thlyr) then
                ierr = nf90_put_var(irstfile, id_thlyr, stmpar%morlyr%state%thlyr(:, 1:ndxi), [1, 1, itim], [stmpar%morlyr%settings%nlyr, ndxi, 1])
             end if
             ! lyrfrac
             if (stmpar%morpar%moroutput%lyrfrac) then
+               if (.not. allocated(frac)) allocate (frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx))
+               frac = -999d0
+                
+               if (stmpar%morlyr%settings%iporosity == 0) then
+                  dens => stmpar%sedpar%cdryb
+               else
+                  dens => stmpar%sedpar%rhosol
+               end if
+                
+               do k = 1, stmpar%morlyr%settings%nlyr
+                  do nm = 1, ndxi
+                     if (stmpar%morlyr%state%thlyr(k, nm) > 0.0_fp) then
+                        svthick = stmpar%morlyr%state%svfrac(k, nm) * stmpar%morlyr%state%thlyr(k, nm)
+                        do l = 1, stmpar%lsedtot
+                           frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm) / (dens(l) * svthick)
+                        end do
+                     else
+                        frac(:, k, nm) = 0d0
+                     end if
+                  end do
+               end do
+                
                ierr = nf90_put_var(irstfile, id_lyrfrac, frac(:, :, 1:ndxi), [1, 1, 1, itim], [stmpar%lsedtot, stmpar%morlyr%settings%nlyr, ndxi, 1])
             end if
             ! preload
@@ -7429,27 +7431,28 @@ contains
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_thlyr, UNC_LOC_S, stmpar%morlyr%state%thlyr, locdim=2, jabndnd=jabndnd_)
             end if
             !
-            if (.not. allocated(frac)) allocate (frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx))
-            frac = -999d0
-            if (stmpar%morlyr%settings%iporosity == 0) then
-               dens => stmpar%sedpar%cdryb
-            else
-               dens => stmpar%sedpar%rhosol
-            end if
-            do k = 1, stmpar%morlyr%settings%nlyr
-               do nm = 1, ndxndxi
-                  if (stmpar%morlyr%state%thlyr(k, nm) > 0.0_fp) then
-                     do l = 1, stmpar%lsedtot
-                        frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm) / (dens(l) * stmpar%morlyr%state%svfrac(k, nm) * &
-                                                                               stmpar%morlyr%state%thlyr(k, nm))
-                     end do
-                  else
-                     frac(:, k, nm) = 0d0
-                  end if
-               end do
-            end do
-            
             if (stmpar%morpar%moroutput%lyrfrac) then
+                if (.not. allocated(frac)) allocate (frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx))
+                frac = -999d0
+                
+                if (stmpar%morlyr%settings%iporosity == 0) then
+                   dens => stmpar%sedpar%cdryb
+                else
+                   dens => stmpar%sedpar%rhosol
+                end if
+                
+                do k = 1, stmpar%morlyr%settings%nlyr
+                   do nm = 1, ndxndxi
+                      if (stmpar%morlyr%state%thlyr(k, nm) > 0.0_fp) then
+                         do l = 1, stmpar%lsedtot
+                            frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm) / (dens(l) * stmpar%morlyr%state%svfrac(k, nm) * &
+                                                                                   stmpar%morlyr%state%thlyr(k, nm))
+                         end do
+                      else
+                         frac(:, k, nm) = 0d0
+                      end if
+                   end do
+                end do
                ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_lyrfrac, UNC_LOC_S, frac, locdim=3, jabndnd=jabndnd_)
             end if
             !
@@ -10740,25 +10743,29 @@ contains
                ! Calculate values for lyrfrac and porosity
                !
                ! lyrfrac
-               if (.not. allocated(frac)) allocate (frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx))
-               frac = -999d0
-               if (stmpar%morlyr%settings%iporosity == 0) then
-                  dens => stmpar%sedpar%cdryb
-               else
-                  dens => stmpar%sedpar%rhosol
-               end if
-               do k = 1, stmpar%morlyr%settings%nlyr
-                  do nm = 1, ndxndxi
-                     if (stmpar%morlyr%state%thlyr(k, nm) > 0.0_fp) then
-                        do l = 1, stmpar%lsedtot
-                           frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm) / (dens(l) * stmpar%morlyr%state%svfrac(k, nm) * &
-                                                                                  stmpar%morlyr%state%thlyr(k, nm))
-                        end do
-                     else
-                        frac(:, k, nm) = 0d0
-                     end if
+               if (stmpar%morpar%moroutput%lyrfrac) then
+                  if (.not. allocated(frac)) allocate (frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr, 1:ndx))
+                  frac = -999d0
+                  
+                  if (stmpar%morlyr%settings%iporosity == 0) then
+                     dens => stmpar%sedpar%cdryb
+                  else
+                     dens => stmpar%sedpar%rhosol
+                  end if
+                  
+                  do k = 1, stmpar%morlyr%settings%nlyr
+                     do nm = 1, ndxndxi
+                        if (stmpar%morlyr%state%thlyr(k, nm) > 0.0_fp) then
+                           do l = 1, stmpar%lsedtot
+                              frac(l, k, nm) = stmpar%morlyr%state%msed(l, k, nm) / (dens(l) * stmpar%morlyr%state%svfrac(k, nm) * &
+                                                                                     stmpar%morlyr%state%thlyr(k, nm))
+                           end do
+                        else
+                           frac(:, k, nm) = 0d0
+                        end if
+                     end do
                   end do
-               end do
+               end if
                !
                if (stmpar%morlyr%settings%iporosity > 0) then
                   if (.not. allocated(poros)) allocate (poros(1:stmpar%morlyr%settings%nlyr, 1:ndx))
