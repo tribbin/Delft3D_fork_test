@@ -13527,12 +13527,10 @@ contains
       if (kmx > 0) then
          ierr = get_var_and_shift(imapfile, 'hu', hu, tmpvar1, UNC_LOC_WU, kmx, Lstart, um%lnx_own, it_read, um%jamergedmap, &
                                   um%ilink_own, um%ilink_merge)
-         call check_error(ierr, 'hu')
          call reconstruct_hu_2D_from_3D(hu, lnx)
       else
          ierr = get_var_and_shift(imapfile, 'hu', hu, tmpvar1, UNC_LOC_U, kmx, Lstart, um%lnx_own, it_read, um%jamergedmap, &
                                   um%ilink_own, um%ilink_merge)
-         call check_error(ierr, 'hu')
       end if
       
       ! Read qa (flow link), optional: only from rst file, so no error check
