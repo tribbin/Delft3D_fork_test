@@ -397,7 +397,7 @@ contains
 
       integer :: k
 
-      if (jawave == 3 .or. jawave == 6 .or. jawave == 7) then
+      if (jawave == 3 .or. jawave == 7) then
 
          if (.not. initialization) then
             !
@@ -535,15 +535,15 @@ contains
 
    end subroutine set_wave_parameters
 
-   subroutine get_values_and_consider_jawave6(item)
+   subroutine get_values_and_consider_fww(item)
 
       integer, intent(in) :: item
 
       success_copy = success
       success = success .and. ecGetValues(ecInstancePtr, item, ecTime)
-      if (jawave == 6) success = success_copy
+      if (flowwithoutwaves) success = success_copy           ! used to be jawave=6, but this is only real use case
 
-   end subroutine get_values_and_consider_jawave6
+   end subroutine get_values_and_consider_fww
 
 !> set wave parameters for jawave==3 (online wave coupling) and jawave==6 (SWAN data for D-WAQ)
    subroutine set_all_wave_parameters()
@@ -560,34 +560,34 @@ contains
          success = success .and. ecGetValues(ecInstancePtr, item_tp, ecTime)
       end if
       if (allocated(phiwav)) then
-         call get_values_and_consider_jawave6(item_dir)
+         call get_values_and_consider_fww(item_dir)
       end if
       if (allocated(sxwav)) then
-         call get_values_and_consider_jawave6(item_fx)
+         call get_values_and_consider_fww(item_fx)
       end if
       if (allocated(sywav)) then
-         call get_values_and_consider_jawave6(item_fy)
+         call get_values_and_consider_fww(item_fy)
       end if
       if (allocated(sbxwav)) then
-         call get_values_and_consider_jawave6(item_wsbu)
+         call get_values_and_consider_fww(item_wsbu)
       end if
       if (allocated(sbywav)) then
-         call get_values_and_consider_jawave6(item_wsbv)
+         call get_values_and_consider_fww(item_wsbv)
       end if
       if (allocated(mxwav)) then
-         call get_values_and_consider_jawave6(item_mx)
+         call get_values_and_consider_fww(item_mx)
       end if
       if (allocated(mywav)) then
-         call get_values_and_consider_jawave6(item_my)
+         call get_values_and_consider_fww(item_my)
       end if
       if (allocated(uorbwav)) then
-         call get_values_and_consider_jawave6(item_ubot)
+         call get_values_and_consider_fww(item_ubot)
       end if
       if (allocated(dsurf)) then
-         call get_values_and_consider_jawave6(item_dissurf)
+         call get_values_and_consider_fww(item_dissurf)
       end if
       if (allocated(dwcap)) then
-         call get_values_and_consider_jawave6(item_diswcap)
+         call get_values_and_consider_fww(item_diswcap)
       end if
 
    end subroutine set_all_wave_parameters

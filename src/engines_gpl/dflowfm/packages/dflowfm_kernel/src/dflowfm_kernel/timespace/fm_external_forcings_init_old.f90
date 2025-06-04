@@ -1166,6 +1166,7 @@ contains
                   success = .false.
                else
                   success = .true.
+                  numsrc_old = numsrc_old + 1
                end if
 
                ! 2. Time series hookup is done below, once counting of all numsrc is done.
@@ -1308,7 +1309,7 @@ contains
                call qnerror(' ', 'Quantity WINDX_WINDY_AIRPRESSURE must be renamed to airpressure_windx_windy in the ext-file.', ' ')
                success = .false.
             else if (trim(qid) == "wavesignificantheight") then
-               if (jawave == 6 .or. jawave == 7) then
+               if (jawave == 7) then
                   success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                else
                   call mess(LEVEL_WARN, 'Reading *.ext forcings file '''//trim(md_extfile)//''', QUANTITY "wavesignificantheight" found but "Wavemodelnr" is not 6 or 7')
@@ -1316,7 +1317,7 @@ contains
                   success = .false.
                end if
             else if (trim(qid) == "waveperiod") then
-               if (jawave == 6 .or. jawave == 7) then
+               if (jawave == 7) then
                   success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                else
                   call mess(LEVEL_WARN, 'Reading *.ext forcings file '''//trim(md_extfile)//''', QUANTITY "waveperiod" found but "Wavemodelnr" is not 6 or 7')
@@ -1820,7 +1821,10 @@ contains
          end do
       end if
 
-      if (numsrc > 0) then
+      if (numsrc_old > 0) then
+         if (numsrc_old /= numsrc) then
+            call mess(LEVEL_ERROR, 'Source/sink entries detected in both the old and new ext file. This is not allowed.')
+         end if
          ja = 1
          rewind (mext)
          kx = numconst + 1
