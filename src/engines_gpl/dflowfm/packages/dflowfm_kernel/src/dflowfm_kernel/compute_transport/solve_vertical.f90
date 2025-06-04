@@ -107,12 +107,17 @@ contains
       dt_loc = dts
 
       rhs = 0d0
+      
+      ac = 0.0_dp
+      bc = 0.0_dp
+      cc = 0.0_dp
+      dc = 0.0_dp
 
       call make_rhs(NUMCONST, thetavert, Ndkx, kmx, vol1, kbot, ktop, sumhorflux, fluxver, source, sed, nsubsteps, jaupdate, ndeltasteps, rhs)
 
       ! construct and solve system
       !$OMP PARALLEL DO                                                 &
-      !$OMP PRIVATE(kk,kb,ktx,kt,a,b,c,sol,j,d,k,n,dvol1i,dvol2i,fluxfac,e,dtbazi,dtba,ozmid,bruns,qw_loc) &
+      !$OMP PRIVATE(kk,kb,ktx,kt,a,b,c,sol,j,d,k,n,dvol1i,dvol2i,fluxfac,e,dtbazi,dtba,ozmid,bruns,qw_loc,ac,bc,cc,dc) &
       !$OMP FIRSTPRIVATE(dt_loc)
       do kk = 1, Ndxi
          if (nsubsteps > 1) then
@@ -239,10 +244,10 @@ contains
          do j = 1, NUMCONST
             ! make this compiler safe, ie don't pass first element and assume memory contiguity
             nel = kt - kb + 1
-            ac = a(nel, j)
-            bc = b(nel, j)
-            cc = c(nel, j)
-            dc = d(nel, j)
+            ac(1:nel) = a(1:nel, j)
+            bc(1:nel) = b(1:nel, j)
+            cc(1:nel) = c(1:nel, j)
+            dc(1:nel) = d(1:nel, j)
             call tridag(ac, bc, cc, dc, e, sol, nel)
 
             sed(j, kb:kt) = sol(1:nel)
