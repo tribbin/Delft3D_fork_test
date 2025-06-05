@@ -70,6 +70,7 @@ contains
       use m_links_to_centers, only: links_to_centers
       use m_wind, only: wx, wy, jawind, air_pressure_available, air_pressure, jarain, rain, air_density, air_temperature, relative_humidity, cloudiness
       use m_turbulence, only: in_situ_density, potential_density, rich, richs
+      use m_waveconst
       use m_fm_icecover, only: ice_s1, ice_zmin, ice_zmax, ice_area_fraction, ice_thickness, ice_pressure, ice_temperature, snow_thickness, snow_temperature, ja_icecover, ICECOVER_NONE, ICECOVER_SEMTNER
 
       implicit none
@@ -97,7 +98,7 @@ contains
          call realloc(ueuy, ndkx, keepExisting=.false., fill=0.0_dp)
       end if
       !
-      if (jawave > 0) then
+      if (jawave > NO_WAVES) then
          if (jahissigwav == 0) then
             wavfac = 1.0_dp
          else
@@ -115,7 +116,7 @@ contains
       end if
 
       if (jahistaucurrent > 0) then
-         if ((jawave == 0 .or. flowWithoutWaves)) then
+         if ((jawave == NO_WAVES .or. flowWithoutWaves)) then
             ! fill taus
             call gettaus(1, 1)
 
@@ -193,7 +194,7 @@ contains
                nlayb = 1
             end if
 
-            if (jawave > 0 .and. .not. flowWithoutWaves) then
+            if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
                wa = 0.0_dp
                call linkstocentercartcomp(k, ustokes, wa) ! wa now 2*1 value or 2*1 vertical slice
             end if
@@ -228,7 +229,7 @@ contains
                valobs(i, IPNT_PATM) = air_pressure(k)
             end if
 
-            if (jawave == 4 .and. allocated(R)) then
+            if (jawave == WAVE_SURFBEAT .and. allocated(R)) then
                valobs(i, IPNT_WAVER) = R(k)
             end if
             
@@ -246,7 +247,7 @@ contains
                end if
             end if
 
-            if (jawave > 0 .and. allocated(hwav)) then
+            if (jawave > NO_WAVES .and. allocated(hwav)) then
                valobs(i, IPNT_WAVEH) = hwav(k) * wavfac
                valobs(i, IPNT_WAVET) = twav(k)
                if (.not. flowWithoutWaves) then
@@ -278,7 +279,7 @@ contains
                   ii = j - IVAL_SSCY1 + 1
                   valobs(i, IPNT_SSCY1 + ii - 1) = sedtra%sscy(k, ii)
                end do
-               if (jawave > 0 .and. .not. flowWithoutWaves) then
+               if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
                   do j = IVAL_SBWX1, IVAL_SBWXN
                      ii = j - IVAL_SBWX1 + 1
                      valobs(i, IPNT_SBWX1 + ii - 1) = sedtra%sbwx(k, ii)
@@ -403,7 +404,7 @@ contains
                   valobs(i, IPNT_UCY + klay - 1) = ueuy(kk)
                end if
 
-               if (jawave > 0 .and. .not. flowWithoutWaves) then
+               if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
                   if (hs(k) > epshu) then
                      if (kmx == 0) then
                         kk_const = 1

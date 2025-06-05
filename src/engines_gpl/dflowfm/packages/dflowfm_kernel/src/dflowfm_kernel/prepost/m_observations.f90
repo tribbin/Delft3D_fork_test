@@ -37,6 +37,7 @@ module m_observations
    use fm_external_forcings_data
    use MessageHandling, only: IdLen
    use precision, only: dp
+   use m_waveconst
 
    implicit none
 
@@ -246,7 +247,7 @@ contains
       if (air_pressure_available > 0) then
          IVAL_PATM = next_index(i)
       end if
-      if (jawave > 0) then
+      if (jawave > NO_WAVES) then
          IVAL_WAVEH = next_index(i)
          IVAL_WAVED = next_index(i)
          IVAL_WAVET = next_index(i)
@@ -316,7 +317,7 @@ contains
          IVAL_SSCXN = next_index(i, numfracs - 1)
          IVAL_SSCY1 = next_index(i)
          IVAL_SSCYN = next_index(i, numfracs - 1)
-         if (jawave > 0) then
+         if (jawave > NO_WAVES) then
             IVAL_SBWX1 = next_index(i)
             IVAL_SBWXN = next_index(i, numfracs - 1)
             IVAL_SBWY1 = next_index(i)
@@ -361,7 +362,7 @@ contains
          IVAL_UCXQ = next_index(i)
          IVAL_UCYQ = next_index(i)
       end if
-      if (jawave > 0) then
+      if (jawave > NO_WAVES) then
          IVAL_UCXST = next_index(i)
          IVAL_UCYST = next_index(i)
       end if
