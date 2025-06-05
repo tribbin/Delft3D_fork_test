@@ -58,6 +58,7 @@ module unstruc_netcdf
    use m_qnerror
    use netcdf_utils, only: ncu_sanitize_name, ncu_ensure_data_mode, ncu_ensure_define_mode, ncu_restore_mode
    use m_waveconst
+   use m_get_Lbot_Ltop_max, only: getLbotLtopmax
    use m_reconstruct_hydrodynamics, only: reconstruct_hu_2D_from_3D
 
    implicit none
