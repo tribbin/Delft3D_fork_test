@@ -1234,17 +1234,17 @@ contains
       call prop_get(mdw_ptr, 'Numerics', 'RChHsTm01', r_dummy)
       if (r_dummy > -999.0) then
          write (*, *) 'SWAN_INPUT: Obsolete by switching to "NUM STOPC": RChHsTm01. Use DAbsHinc/DRelHinc.'
-         call handle_errors_mdw(sr)
+         ! TEMPORARY DISABLED: call handle_errors_mdw(sr)
       endif
       call prop_get(mdw_ptr, 'Numerics', 'RChMeanHs', r_dummy)
       if (r_dummy > -999.0) then
          write (*, *) 'SWAN_INPUT: Obsolete by switching to "NUM STOPC": RChMeanHs. Use DAbsHinc/DRelHinc.'
-         call handle_errors_mdw(sr)
+         ! TEMPORARY DISABLED: call handle_errors_mdw(sr)
       endif
       call prop_get(mdw_ptr, 'Numerics', 'RChMeanTm01', r_dummy)
       if (r_dummy > -999.0) then
          write (*, *) 'SWAN_INPUT: Obsolete by switching to "NUM STOPC": RChMeanTm01. Use DAbsHinc/DRelHinc.'
-         call handle_errors_mdw(sr)
+         ! TEMPORARY DISABLED: call handle_errors_mdw(sr)
       endif
       
       !
