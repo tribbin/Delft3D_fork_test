@@ -37,7 +37,8 @@ module fm_external_forcings
    use m_setsigmabnds, only: setsigmabnds
    use precision_basics, only: hp, dp
    use fm_external_forcings_utils, only: get_tracername, get_sedfracname, get_constituent_name
-   use messagehandling, only: msgbuf, msg_flush, err_flush, LEVEL_WARN, mess
+   use m_waveconst
+
    implicit none
 
    private
@@ -101,6 +102,7 @@ contains
    subroutine print_error_message(time_in_seconds)
       use m_ec_message, only: dumpECMessageStack
       use unstruc_messages, only: callback_msg
+      use messagehandling, only: LEVEL_WARN, mess
 
       real(kind=dp), intent(in) :: time_in_seconds !< Current time when doing this action
 
@@ -130,11 +132,11 @@ contains
       integer :: ec_item_id, first, last, link, i, k
       logical :: first_time_wind
 
-      wx = 0.d0
-      wy = 0.d0
-      wdsu_x = 0.d0
-      wdsu_y = 0.d0
-      wcharnock = 0.d0
+      wx = 0.0_dp
+      wy = 0.0_dp
+      wdsu_x = 0.0_dp
+      wdsu_y = 0.0_dp
+      wcharnock = 0.0_dp
       call initialize_array_with_zero(ec_pwxwy_x)
       call initialize_array_with_zero(ec_pwxwy_y)
 
@@ -211,13 +213,13 @@ contains
          end if
          if (allocated(ec_pwxwy_c)) then
             do link = 1, lnx
-               wcharnock(link) = wcharnock(link) + 0.5d0 * (ec_pwxwy_c(ln(1, link)) + ec_pwxwy_c(ln(2, link)))
+               wcharnock(link) = wcharnock(link) + 0.5_dp * (ec_pwxwy_c(ln(1, link)) + ec_pwxwy_c(ln(2, link)))
             end do
          end if
       end if
       if (allocated(ec_charnock)) then
          do link = 1, lnx
-            wcharnock(link) = wcharnock(link) + 0.5d0 * (ec_charnock(ln(1, link)) + ec_charnock(ln(2, link)))
+            wcharnock(link) = wcharnock(link) + 0.5_dp * (ec_charnock(ln(1, link)) + ec_charnock(ln(2, link)))
          end do
       end if
 
@@ -232,13 +234,13 @@ contains
 
       if (item_atmosphericpressure /= ec_undef_int) then
          do k = 1, ndx
-            if (comparereal(patm(k), dmiss, eps10) == 0) then
-               patm(k) = BACKGROUND_AIR_PRESSURE
+            if (comparereal(air_pressure(k), dmiss, eps10) == 0) then
+               air_pressure(k) = BACKGROUND_AIR_PRESSURE
             end if
          end do
       end if
 
-      if ((jawave == 1 .or. jawave == 2) .and. .not. flowWithoutWaves) then
+      if ((jawave == WAVE_FETCH_HURDLE .or. jawave == WAVE_FETCH_YOUNG) .and. .not. flowWithoutWaves) then
          call tauwavefetch(time_in_seconds)
       end if
 
@@ -287,8 +289,8 @@ contains
          real(kind=dp), intent(inout) :: array_y(:) !< Array of Y-components for interpolation
 
          do link = 1, lnx
-            array_x(link) = array_x(link) + 0.5d0 * (ec_pwxwy_x(ln(1, link)) + ec_pwxwy_x(ln(2, link)))
-            array_y(link) = array_y(link) + 0.5d0 * (ec_pwxwy_y(ln(1, link)) + ec_pwxwy_y(ln(2, link)))
+            array_x(link) = array_x(link) + 0.5_dp * (ec_pwxwy_x(ln(1, link)) + ec_pwxwy_x(ln(2, link)))
+            array_y(link) = array_y(link) + 0.5_dp * (ec_pwxwy_y(ln(1, link)) + ec_pwxwy_y(ln(2, link)))
          end do
 
       end subroutine perform_additional_spatial_interpolation
@@ -308,7 +310,7 @@ contains
          real(kind=dp), allocatable, intent(inout) :: array(:) !< Array that will be initialized
 
          if (allocated(array)) then
-            array(:) = 0.d0
+            array(:) = 0.0_dp
          end if
 
       end subroutine initialize_array_with_zero
@@ -317,12 +319,12 @@ contains
 
 !> Gets windstress (and air pressure) from input files, and sets the windstress
    subroutine calculate_wind_stresses(time_in_seconds, iresult)
-      use m_wind, only: jawind, japatm
+      use m_wind, only: jawind, air_pressure_available
       use dfm_error, only: DFM_NOERR
 
       real(kind=dp), intent(in) :: time_in_seconds !< Current time when getting and applying winds
       integer, intent(out) :: iresult !< Error indicator
-      if (jawind == 1 .or. japatm > 0) then
+      if (jawind == 1 .or. air_pressure_available > 0) then
          call prepare_wind_model_data(time_in_seconds, iresult)
          if (iresult /= DFM_NOERR) then
             return
@@ -393,7 +395,7 @@ contains
       integer :: kb !< cell index of boundary cell
       integer :: ki !< cell index of internal cell
 
-      if (jawave == 7 .and. waveforcing == 2) then
+      if (jawave == WAVE_NC_OFFLINE .and. waveforcing == WAVEFORCING_DISSIPATION_TOTAL) then
          do link = 1, number_of_links
             kb = link2cell(1, link)
             ki = link2cell(2, link)
@@ -433,8 +435,7 @@ contains
       use unstruc_files, only: resolvePath
       use m_qnerror
       use m_filez, only: oldfil, doclose
-
-      implicit none
+      use messagehandling, only: msgbuf, msg_flush, err_flush
 
       character(len=256) :: filename
       integer :: filetype
@@ -513,7 +514,7 @@ contains
       call aerr('xe (nx)', ierr, nx)
       allocate (ye(nx), stat=ierr); ye = 0
       call aerr('ye (nx)', ierr, nx)
-      allocate (xyen(2, nx), stat=ierr); xyen = 0d0
+      allocate (xyen(2, nx), stat=ierr); xyen = 0.0_dp
       call aerr('xyen(2, nx)', ierr, nx)
 
       ! some temp arrays
@@ -527,7 +528,7 @@ contains
       end if
       allocate (kce(nx), ke(nx), kez(nx), keu(nx), kes(nx), ketm(nx), kesd(nx), keuxy(nx), ket(nx), ken(nx), ke1d2d(nx), keg(nx), ked(nx), kep(nx), kedb(nx), keklep(nx), kevalv(nx), kegs(nx), kegen(nx), itpez(nx), itpenz(nx), itpeu(nx), itpenu(nx), kew(nx), ftpet(nx), stat=ierr)
       call aerr('kce(nx), ke(nx), kez(nx), keu(nx), kes(nx), ketm(nx), kesd(nx), keuxy(nx), ket(nx), ken(nx), ke1d2d(nx), keg(nx), ked(nx), kep(nx), kedb(nx), keklep(nx), kevalv(nx), kegs(nx), kegen(nx), itpez(nx), itpenz(nx), itpeu(nx) , itpenu(nx), kew(nx), ftpet(nx)', ierr, 17 * nx)
-      kce = 0; ke = 0; kez = 0; keu = 0; kes = 0; ketm = 0; kesd = 0; keuxy = 0; ket = 0; ken = 0; ke1d2d = 0; keg = 0; ked = 0; kep = 0; kedb = 0; keklep = 0; kevalv = 0; kegen = 0; itpez = 0; itpenz = 0; itpeu = 0; itpenu = 0; kew = 0; ftpet = 1d6
+      kce = 0; ke = 0; kez = 0; keu = 0; kes = 0; ketm = 0; kesd = 0; keuxy = 0; ket = 0; ken = 0; ke1d2d = 0; keg = 0; ked = 0; kep = 0; kedb = 0; keklep = 0; kevalv = 0; kegen = 0; itpez = 0; itpenz = 0; itpeu = 0; itpenu = 0; kew = 0; ftpet = 1e6_dp
 
       if (allocated(ketr)) then
          deallocate (ketr)
@@ -624,7 +625,7 @@ contains
 
             jatimespace = 1 ! module is to be used
 
-            call processexternalboundarypoints(qid, filename, filetype, return_time, nx, kce, numz, numu, nums, numtm, numsd, numt, numuxy, numn, num1d2d, numqh, numw, numtr, numsf, 1d0, transformcoef)
+            call processexternalboundarypoints(qid, filename, filetype, return_time, nx, kce, numz, numu, nums, numtm, numsd, numt, numuxy, numn, num1d2d, numqh, numw, numtr, numsf, 1.0_dp, transformcoef)
 
          end if
 
@@ -655,8 +656,7 @@ contains
       use unstruc_model, only: ExtfileNewMajorVersion, ExtfileNewMinorVersion
       use m_missing, only: dmiss
       use m_qnerror
-
-      implicit none
+      use messagehandling, only: msgbuf, err_flush
 
       character(len=*), intent(in) :: filename
       integer, intent(in) :: nx
@@ -761,15 +761,15 @@ contains
             call prop_get(node_ptr, '', 'returnTime', return_time)
             call prop_get(node_ptr, '', 'return_time', return_time) ! UNST-2386: Backwards compatibility reading.
 
-            tr_ws = 0d0
+            tr_ws = 0.0_dp
             call prop_get(node_ptr, '', 'tracerFallVelocity', tr_ws)
             transformcoef(4) = tr_ws
 
-            tr_decay_time = 0d0
+            tr_decay_time = 0.0_dp
             call prop_get(node_ptr, '', 'tracerDecayTime', tr_decay_time)
             transformcoef(5) = tr_decay_time
 
-            rrtolb = 0d0
+            rrtolb = 0.0_dp
             call prop_get(node_ptr, '', 'openBoundaryTolerance', rrtolb)
 
             width1D = dmiss
@@ -779,10 +779,10 @@ contains
             call prop_get(node_ptr, '', 'bndBlDepth', blDepth)
 
             if (group_ok) then
-               if (rrtolb > 0d0) then
+               if (rrtolb > 0.0_dp) then
                   call processexternalboundarypoints(quantity, location_file, filetype, return_time, nx, kce, numz, numu, nums, numtm, numsd, numt, numuxy, numn, num1d2d, numqh, numw, numtr, numsf, rrtolrel=(1 + 2 * rrtolb) / (1 + 2 * rrtol), tfc=transformcoef, width1D=width1D, blDepth=blDepth)
                else
-                  call processexternalboundarypoints(quantity, location_file, filetype, return_time, nx, kce, numz, numu, nums, numtm, numsd, numt, numuxy, numn, num1d2d, numqh, numw, numtr, numsf, rrtolrel=1d0, tfc=transformcoef, width1D=width1D, blDepth=blDepth)
+                  call processexternalboundarypoints(quantity, location_file, filetype, return_time, nx, kce, numz, numu, nums, numtm, numsd, numt, numuxy, numn, num1d2d, numqh, numw, numtr, numsf, rrtolrel=1.0_dp, tfc=transformcoef, width1D=width1D, blDepth=blDepth)
                end if
                num_bc_ini_blocks = num_bc_ini_blocks + 1
             end if
@@ -823,7 +823,7 @@ contains
       call realloc(thrtn, thrtlen, keepExisting=.true., fill=0)
       thrtn(thrtlen) = nbnd
 
-      call realloc(thrtt, thrtlen, keepExisting=.true., fill=0d0)
+      call realloc(thrtt, thrtlen, keepExisting=.true., fill=0.0_dp)
       thrtt(thrtlen) = rettime
    end subroutine appendrettime
 
@@ -854,8 +854,7 @@ contains
       use m_missing, only: dmiss
       use m_qnerror
       use m_find_name, only: find_name
-
-      implicit none
+      use messagehandling, only: msgbuf, msg_flush, err_flush
 
       character(len=256), intent(in) :: qid !
       character(len=256), intent(in) :: filename !
@@ -910,17 +909,17 @@ contains
 
             call realloc(L1qhbnd, nqhbnd); L1qhbnd(nqhbnd) = nbndz + 1
             call realloc(L2qhbnd, nqhbnd); L2qhbnd(nqhbnd) = nbndz + numz
-            call realloc(atqh_all, nqhbnd); atqh_all(nqhbnd) = 0d0
-            call realloc(atqh_sum, nqhbnd); atqh_sum(nqhbnd) = 0d0
-            call realloc(qhbndz, nqhbnd); qhbndz(nqhbnd) = 0d0
+            call realloc(atqh_all, nqhbnd); atqh_all(nqhbnd) = 0.0_dp
+            call realloc(atqh_sum, nqhbnd); atqh_sum(nqhbnd) = 0.0_dp
+            call realloc(qhbndz, nqhbnd); qhbndz(nqhbnd) = 0.0_dp
             call realloc(qh_gamma, nqhbnd)
-            qh_gamma = 0d0
+            qh_gamma = 0.0_dp
             call realloc(qhbndz_min, nqhbnd)
-            qhbndz_min = 0d0
+            qhbndz_min = 0.0_dp
             call realloc(qhbndz_plus, nqhbnd)
-            qhbndz_plus = 0d0
+            qhbndz_plus = 0.0_dp
             call realloc(q_org, nqhbnd)
-            q_org = 0d0
+            q_org = 0.0_dp
          end if
          itpez(nbndz + 1:nbndz + numz) = itpbn
 
@@ -954,13 +953,13 @@ contains
             nqbnd = nqbnd + 1
             call realloc(L1qbnd, nqbnd); L1qbnd(nqbnd) = nbndu + 1
             call realloc(L2qbnd, nqbnd); L2qbnd(nqbnd) = nbndu + numu
-            call realloc(at_all, nqbnd); at_all(nqbnd) = 0d0
-            call realloc(at_sum, nqbnd); at_sum(nqbnd) = 0d0
-            call realloc(wwssav_all, (/2, nqbnd/), keepExisting=.true., fill=0d0)
-            call realloc(wwssav_sum, (/2, nqbnd/), keepExisting=.true., fill=0d0)
-            call realloc(huqbnd, L2qbnd(nqbnd)); huqbnd(L1qbnd(nqbnd):L2qbnd(nqbnd)) = 0d0
+            call realloc(at_all, nqbnd); at_all(nqbnd) = 0.0_dp
+            call realloc(at_sum, nqbnd); at_sum(nqbnd) = 0.0_dp
+            call realloc(wwssav_all, (/2, nqbnd/), keepExisting=.true., fill=0.0_dp)
+            call realloc(wwssav_sum, (/2, nqbnd/), keepExisting=.true., fill=0.0_dp)
+            call realloc(huqbnd, L2qbnd(nqbnd)); huqbnd(L1qbnd(nqbnd):L2qbnd(nqbnd)) = 0.0_dp
          else if (qidfm == 'absgenbnd') then
-            if (.not. (jawave == 4)) then ! Safety to avoid allocation errors later on
+            if (.not. (jawave == WAVE_SURFBEAT)) then ! Safety to avoid allocation errors later on
                call qnerror('Absorbing-generating boundary defined without activating surfbeat model. Please use appropriate wave model, or change the boundary condition type.', '  ', ' ')
                write (msgbuf, '(a)') 'Absorbing-generating boundary defined without activating surfbeat model. Please use appropriate wave model, or change the boundary condition type.'
                call err_flush()
@@ -1121,8 +1120,7 @@ contains
       use m_flowtimes, only: dt_nodal
       use m_qnerror
       use m_find_name, only: find_name
-
-      implicit none
+      use messagehandling, only: LEVEL_WARN, mess
 
       character(len=*), intent(inout) :: qid !< Identifier of current quantity (i.e., 'waterlevelbnd')
       character(len=*), intent(in) :: filename !< Name of data file for current quantity.
@@ -1233,6 +1231,7 @@ contains
          pzmax => zminmaxuxy(nbnduxy + 1:2 * nbnduxy)
          success = ec_addtimespacerelation(qid, xbnduxy, ybnduxy, kduxy, kx, filename, filetype, method, operand, xy2bnduxy, &
                                            z=sigmabnduxy, pzmin=pzmin, pzmax=pzmax, forcingfile=forcing_file)
+         success = success .and. check_keyword_zerozbndinflowadvection()
 
       else if (nbndn > 0 .and. (qid == 'normalvelocitybnd')) then
          success = ec_addtimespacerelation(qid, xbndn, ybndn, kdn, kx, filename, filetype, method, operand, xy2bndn, forcingfile=forcing_file, targetindex=targetindex)
@@ -1274,8 +1273,7 @@ contains
       use m_transportdata, only: NAMLEN
       use string_module, only: strcmpi
       use timespace_parameters, only: uniform, bcascii, spaceandtime
-
-      implicit none
+      use messagehandling, only: msgbuf, msg_flush, err_flush, LEVEL_WARN, mess
 
       character(len=*), intent(in) :: qid !< Identifier of current quantity (i.e., 'waterlevelbnd')
       character(len=*), intent(in) :: location_file !< Name of location file (*.pli or *.pol) for current quantity (leave empty when valuestring contains value or filename).
@@ -1301,7 +1299,7 @@ contains
       logical :: file_exists
 
       success = .true. ! initialization
-      xdum = 1d0; ydum = 1d0; kdum = 1
+      xdum = 1.0_dp; ydum = 1.0_dp; kdum = 1
 
       if (len_trim(paramvalue) > 0) then
          valuestring = paramvalue
@@ -1443,8 +1441,7 @@ contains
       use m_sediment, only: stm_included
       use m_missing
       use m_find_name, only: find_name
-
-      implicit none
+      use messagehandling, only: msgbuf, err_flush
 
       integer :: thrtlen, i, j, nseg, itrac, ifrac, iconst, n, ierr
       character(len=256) :: qidfm, tracnam, sedfracnam, qidnam
@@ -1598,7 +1595,7 @@ contains
             ! mapping to constituents, just in case fracs do not map sequentially to ised1 and so on
             iconst = ifrac2const(ifrac)
             if (iconst == 0) then
-               bndsf(ifrac)%tht = 0d0
+               bndsf(ifrac)%tht = 0.0_dp
             else
                do i = 1, n
                   bndsf(ifrac)%tht(i) = threttim(iconst, bndsf(ifrac)%k(5, i))
@@ -1621,11 +1618,11 @@ contains
       if (.not. allocated(wx)) then
          allocate (wx(lnx), wy(lnx), wdsu(lnx), wdsu_x(lnx), wdsu_y(lnx), stat=ierr)
          call aerr('wx(lnx), wy(lnx), wdsu(lnx), wdsu_x(lnx), wdsu_y(lnx)', ierr, lnx)
-         wx = 0d0
-         wy = 0d0
-         wdsu = 0d0
-         wdsu_x = 0d0
-         wdsu_y = 0d0
+         wx = 0.0_dp
+         wy = 0.0_dp
+         wdsu = 0.0_dp
+         wdsu_x = 0.0_dp
+         wdsu_y = 0.0_dp
       end if
 
    end subroutine allocatewindarrays
@@ -1673,6 +1670,7 @@ contains
       use m_flow_init_structurecontrol, only: flow_init_structurecontrol
       use m_setzminmax, only: setzminmax
       use m_bnd, only: alloc_bnd, dealloc_bndarr
+      use messagehandling, only: msgbuf, LEVEL_WARN, mess
 
       integer, intent(out) :: iresult
 
@@ -1684,9 +1682,6 @@ contains
       integer :: tmp_nbndu, tmp_nbndt, tmp_nbndn
 
       iresult = DFM_NOERR
-
-      tair_available = .false.
-      dewpoint_available = .false.
 
       if (.not. allocated(const_names)) then
          allocate (const_names(0))
@@ -1705,6 +1700,7 @@ contains
       itempforcingtyp = 0
       btempforcingtypA = .false.
       btempforcingtypC = .false.
+      btempforcingtypD = .false.
       btempforcingtypH = .false.
       btempforcingtypS = .false.
       btempforcingtypL = .false.
@@ -1757,8 +1753,8 @@ contains
       if (allocated(ec_pwxwy_y)) then
          deallocate (ec_pwxwy_y)
       end if
-      if (allocated(patm)) then
-         deallocate (patm)
+      if (allocated(air_pressure)) then
+         deallocate (air_pressure)
       end if
       if (allocated(kbndz)) deallocate (xbndz, ybndz, xy2bndz, zbndz, kbndz, zbndz0)
       if (allocated(zkbndz)) then
@@ -1808,7 +1804,7 @@ contains
 
             do n = 1, nd(kbi)%lnx
                L = abs(nd(kbi)%ln(n))
-               teta(L) = 1d0
+               teta(L) = 1.0_dp
             end do
 
             if (iadvec /= 0 .and. kcu(L) == -1) then
@@ -1914,7 +1910,7 @@ contains
 
             do n = 1, nd(kbi)%lnx
                L = abs(nd(kbi)%ln(n))
-               teta(L) = 1d0
+               teta(L) = 1.0_dp
             end do
 
             iadv(Lf) = -1 ! switch off adv at open u-bnd's
@@ -2029,7 +2025,7 @@ contains
       call init_1d2d()
 
       ! JRE ================================================================
-      if (nbndw > 0 .and. .not. (jawave == 4)) then
+      if (nbndw > 0 .and. .not. (jawave == WAVE_SURFBEAT)) then
          call qnerror('Wave energy boundary defined without setting correct wavemodelnr.', ' ', ' ')
          iresult = DFM_WRONGINPUT
       end if
@@ -2154,9 +2150,9 @@ contains
                end if
             end do
             ! also allocate 3D-sigma bnd distribution for EC
-            call realloc(bndtr(itrac)%sigma, kmxd * nbndtr(itrac), stat=ierr, fill=0d0)
+            call realloc(bndtr(itrac)%sigma, kmxd * nbndtr(itrac), stat=ierr, fill=0.0_dp)
             call aerr('sigma(kmxd*nbndtr(itrac))', ierr, kmxd * nbndtr(itrac))
-            call realloc(bndtr(itrac)%zminmax, 2 * nbndtr(itrac), stat=ierr, fill=0d0)
+            call realloc(bndtr(itrac)%zminmax, 2 * nbndtr(itrac), stat=ierr, fill=0.0_dp)
             call aerr('bndtr(itrac)%zminmax(2*nbndtr(itrac))', ierr, 2 * nbndtr(itrac))
          end do ! itrac
       end if
@@ -2198,9 +2194,9 @@ contains
                   end if
                end do ! nbndsf(isf)
                ! also allocate 3D-sigma bnd distribution for EC
-               call realloc(bndsf(isf)%sigma, kmxd * nbndsf(isf), stat=ierr, fill=0d0)
+               call realloc(bndsf(isf)%sigma, kmxd * nbndsf(isf), stat=ierr, fill=0.0_dp)
                call aerr('sigma(kmxd*nbndsf(isf))', ierr, kmxd * nbndsf(isf))
-               call realloc(bndsf(isf)%zminmax, 2 * nbndsf(isf), stat=ierr, fill=0d0)
+               call realloc(bndsf(isf)%zminmax, 2 * nbndsf(isf), stat=ierr, fill=0.0_dp)
                call aerr('bndsf(isf)%zminmax(2*nbndsf(isf))', ierr, 2 * nbndsf(isf))
             end do ! ised
          end if
@@ -2333,7 +2329,7 @@ contains
          if (allocated(shx)) deallocate (xyship, shx, shy, shu, shv, shi, sho)
          allocate (xyship(2 * nshiptxy), shx(nshiptxy), shy(nshiptxy), shu(nshiptxy), shv(nshiptxy), shi(nshiptxy), sho(nshiptxy), stat=ierr)
          call aerr('xyship(2*nshiptxy), shx(nshiptxy), shy(nshiptxy), shu(nshiptxy), shv(nshiptxy), shi(nshiptxy), sho(nshiptxy)', ierr, 4 * nshiptxy)
-         iniship = 0; nshiptxy = 0; shx = 0d0; shy = 0d0; xyship = dmiss
+         iniship = 0; nshiptxy = 0; shx = 0.0_dp; shy = 0.0_dp; xyship = dmiss
       end if
 
       if (jased > 0) then
@@ -2479,7 +2475,7 @@ contains
       end if
 
       if (jawind == 0) then
-         if (jawave > 0 .and. jawave < 3) then
+         if (jawave > NO_WAVES .and. jawave < 3) then
             jawave = 0 ! no wind, no waves
             call mess(LEVEL_INFO, 'No wind, so waves is switched off ')
          end if
@@ -2490,17 +2486,24 @@ contains
       end if
 
       if (ja_computed_airdensity == 1) then
-         if ((japatm /= 1) .or. .not. tair_available .or. .not. dewpoint_available .or. &
-             (item_atmosphericpressure == ec_undef_int) .or. (item_airtemperature == ec_undef_int) .or. (item_humidity == ec_undef_int)) then
-            call mess(LEVEL_ERROR, 'Quantities airpressure, airtemperature and dewpoint are expected, as separate quantities (e.g., QUANTITY = airpressure), in ext-file in combination with keyword computedAirdensity in mdu-file.')
+         if ((item_apwxwy_p == ec_undef_int) .and. (item_atmosphericpressure == ec_undef_int)) then
+            call mess(LEVEL_ERROR, 'When "computedAirdensity = 1", quantity airpressure must be provided in the .ext file.')
+         end if
+         if ((item_hac_air_temperature == ec_undef_int) .and. (item_hacs_air_temperature == ec_undef_int) .and. &
+             (item_dac_air_temperature == ec_undef_int) .and. (item_dacs_air_temperature == ec_undef_int) .and. &
+             (item_air_temperature == ec_undef_int)) then
+            call mess(LEVEL_ERROR, 'When "computedAirdensity = 1", quantity airtemperature must be provided in the .ext file.')
+         end if
+         if ((item_dac_dew_point_temperature == ec_undef_int) .and. (item_dacs_dew_point_temperature == ec_undef_int) .and. &
+             (item_dew_point_temperature == ec_undef_int)) then
+            call mess(LEVEL_ERROR, 'When "computedAirdensity = 1", quantity dewpoint must be provided in the .ext file.')
+         end if
+         if (ja_airdensity == 1) then
+            call mess(LEVEL_ERROR, 'Quantity airdensity in ext-file is unexpected in combination with keyword "computedAirdensity = 1" in mdu-file.')
          else
-            if (ja_airdensity == 1) then
-               call mess(LEVEL_ERROR, 'Quantity airdensity in ext-file is unexpected in combination with keyword computedAirdensity = 1 in mdu-file.')
-            else
-               allocate (airdensity(ndx), stat=ierr)
-               call aerr('airdensity(ndx)', ierr, ndx)
-               airdensity = 0d0
-            end if
+            allocate (air_density(ndx), stat=ierr)
+            call aerr('air_density(ndx)', ierr, ndx)
+            air_density(:) = 0.0_dp
          end if
       end if
 
@@ -2561,81 +2564,81 @@ contains
       end if
 
       if (javeg > 0) then
-         call realloc(rnveg, Ndkx, keepExisting=.false., fill=0d0, stat=ierr)
+         call realloc(rnveg, Ndkx, keepExisting=.false., fill=0.0_dp, stat=ierr)
          call aerr(' rnveg (Ndkx)', ierr, Ndkx)
-         call realloc(diaveg, Ndkx, keepExisting=.false., fill=0d0, stat=ierr)
+         call realloc(diaveg, Ndkx, keepExisting=.false., fill=0.0_dp, stat=ierr)
          call aerr('diaveg (Ndkx)', ierr, Ndkx)
 
          if (jaCdvegsp > 0) then
-            call realloc(Cdvegsp, Ndkx, keepExisting=.false., fill=0d0, stat=ierr)
+            call realloc(Cdvegsp, Ndkx, keepExisting=.false., fill=0.0_dp, stat=ierr)
             call aerr('Cdvegsp (Ndkx)', ierr, Ndkx)
          end if
 
          javeg = 1
          if (.not. allocated(stemheight)) then
-            call realloc(stemheight, Ndkx, keepExisting=.false., fill=0d0, stat=ierr)
+            call realloc(stemheight, Ndkx, keepExisting=.false., fill=0.0_dp, stat=ierr)
             call aerr(' stemheight (Ndkx)', ierr, Ndkx)
          end if
 
          if (allocated(stemdiam) .and. allocated(stemdens)) then
             do k = 1, ndx
-               if (stemdens(k) > 0d0) then
+               if (stemdens(k) > 0.0_dp) then
                   if ((pi * (stemdiam(k) / 2)**2 * stemdens(k)) > 1.0_dp) then
                      call mess(LEVEL_ERROR, 'The area covered by a plant or pile (based on the quantity "stemdiameter") is larger than the typical area of it (calculated as the reciprocal of the quantity "stemdensity").')
                   end if
                   rnveg(k) = stemdens(k)
                   diaveg(k) = stemdiam(k)
                end if
-               if (stemheight(k) == dmiss) stemheight(k) = 0d0
+               if (stemheight(k) == dmiss) stemheight(k) = 0.0_dp
             end do
             deallocate (stemdiam, stemdens)
          end if
 
          if (kmx == 0) then
             if (jabaptist >= 3) then
-               call realloc(alfaveg, Lnx, keepExisting=.false., fill=0d0, stat=ierr)
+               call realloc(alfaveg, Lnx, keepExisting=.false., fill=0.0_dp, stat=ierr)
                call aerr(' alfaveg (Lnx)', ierr, Lnx)
-               call realloc(cfuveg, Lnx, keepExisting=.false., fill=0d0, stat=ierr)
+               call realloc(cfuveg, Lnx, keepExisting=.false., fill=0.0_dp, stat=ierr)
                call aerr(' cfuveg  (Lnx)', ierr, Lnx)
             end if
             if (jabaptist >= 2) then
-               call realloc(alfav, Lnx, keepExisting=.false., fill=0d0, stat=ierr)
+               call realloc(alfav, Lnx, keepExisting=.false., fill=0.0_dp, stat=ierr)
                call aerr(' alfav (Lnx)', ierr, Lnx)
             end if
          end if
 
          if (rhoveg /= dmiss) then
-            call realloc(phiv, Ndx, keepExisting=.false., fill=0d0, stat=ierr)
-            call realloc(phivt, Ndx, keepExisting=.false., fill=0d0, stat=ierr)
+            call realloc(phiv, Ndx, keepExisting=.false., fill=0.0_dp, stat=ierr)
+            call realloc(phivt, Ndx, keepExisting=.false., fill=0.0_dp, stat=ierr)
          end if
       end if
 
       if ((jatrt > 0) .and. trachy_resistance) then
-         call realloc(alfav, Lnx, keepExisting=.false., fill=0d0, stat=ierr)
+         call realloc(alfav, Lnx, keepExisting=.false., fill=0.0_dp, stat=ierr)
          call aerr(' alfav (Lnx)', ierr, Lnx)
       end if
 
       if (jagrounLay == 1) then
          if (allocated(wigr)) deallocate (wigr, argr, pergr)
-         allocate (argr(lnx1D), stat=ierr); argr = 0d0
+         allocate (argr(lnx1D), stat=ierr); argr = 0.0_dp
          call aerr('argr(lnx1D)', ierr, Lnx1D)
-         allocate (wigr(lnx1D), stat=ierr); wigr = 0d0
+         allocate (wigr(lnx1D), stat=ierr); wigr = 0.0_dp
          call aerr('wigr(lnx1D)', ierr, Lnx1D)
-         allocate (pergr(lnx1D), stat=ierr); pergr = 0d0
+         allocate (pergr(lnx1D), stat=ierr); pergr = 0.0_dp
          call aerr('pergr(lnx1D)', ierr, Lnx1D)
          do L = 1, lnx1D
             if (grounlay(L) == dmiss) then
                if (grounlayuni > 0) then
                   grounlay(L) = grounlayuni
                else
-                  grounlay(L) = 0d0
+                  grounlay(L) = 0.0_dp
                end if
             end if
          end do
          jagrounlay = 0
          do L = 1, lnx1D
             itp = prof1D(3, L)
-            if (grounlay(L) > 0d0 .and. abs(itp) <= 3) then
+            if (grounlay(L) > 0.0_dp .and. abs(itp) <= 3) then
                call getprof_1D(L, grounlay(L), argr(L), wigr(L), 1, 1, pergr(L))
             end if
          end do
@@ -2697,7 +2700,7 @@ contains
          bare(1:ndxi) = ba(1:ndxi)
 
          if (network%loaded) then
-            bare(ndx2D + 1:ndxi) = 0d0
+            bare(ndx2D + 1:ndxi) = 0.0_dp
             do L = 1, lnx1D ! for all links, set link width
                k1 = ln(1, L)
                k2 = ln(2, L)
@@ -2707,9 +2710,9 @@ contains
                   ! Since BA contains the flow area only and not the total area or the area of the storage nodes, BARE has to be recalculated.
 
                   hyst_dummy = .false.
-                  call GetCSParsTotal(network%adm%line2cross(L, 2), network%crs%cross, 1d3, area, width, CS_TYPE_NORMAL, hyst_dummy)
+                  call GetCSParsTotal(network%adm%line2cross(L, 2), network%crs%cross, 1e3_dp, area, width, CS_TYPE_NORMAL, hyst_dummy)
 
-                  hdx = 0.5d0 * dx(L)
+                  hdx = 0.5_dp * dx(L)
                   if (k1 > ndx2d) bare(k1) = bare(k1) + hdx * width
                   if (k2 > ndx2d) bare(k2) = bare(k2) + hdx * width
                end if
@@ -2723,7 +2726,7 @@ contains
                k1 = stors(i)%grid_point
                if (k1 > 0) then
                   ! Add storage area to BARE by using a water depth of 1000 m
-                  bare(k1) = bare(k1) + get_surface(stors(i), bl(k1) + 1d3)
+                  bare(k1) = bare(k1) + get_surface(stors(i), bl(k1) + 1e3_dp)
                end if
             end do
          end if
@@ -2732,7 +2735,7 @@ contains
             if (kcs(n) == 1) then
                call IN2Dflowcell(Xz(n), Yz(n), ja)
                if (ja >= 1) then
-                  bare(n) = 0d0
+                  bare(n) = 0.0_dp
                end if
             end if
          end do
@@ -2798,7 +2801,7 @@ contains
 
    !> Allocate and initialized atmosperic pressure variable(s)
    function allocate_patm(default_value) result(status)
-      use m_wind, only: patm
+      use m_wind, only: air_pressure
       use m_cell_geometry, only: ndx
       use m_alloc, only: aerr
       use precision_basics, only: hp
@@ -2807,11 +2810,27 @@ contains
       integer :: status
 
       status = 0
-      if (.not. allocated(patm)) then
-         allocate (patm(ndx), stat=status, source=default_value)
-         call aerr('patm(ndx)', status, ndx)
+      if (.not. allocated(air_pressure)) then
+         allocate (air_pressure(ndx), stat=status, source=default_value)
+         call aerr('air_pressure(ndx)', status, ndx)
       end if
 
    end function allocate_patm
 
+   function check_keyword_zerozbndinflowadvection() result(success)
+      use m_flowparameters, only: jaZerozbndinflowadvection
+      use messagehandling, only: LEVEL_ERROR, msgbuf, mess
+      
+      logical :: success
+
+      success = .true.
+
+      if (jaZerozbndinflowadvection > 0) then
+         write (msgbuf, '(a,i0,a)') &
+            'The combination of prescribing advection velocities via [Boundary]-quantity "uxuyadvectionvelocitybnd" and "Zerozbndinflowadvection" = ', &
+            jaZerozbndinflowadvection, ' is inconsistent and not allowed.'
+         call mess(LEVEL_ERROR, msgbuf)
+         success = .false.
+      end if
+   end function check_keyword_zerozbndinflowadvection
 end module fm_external_forcings

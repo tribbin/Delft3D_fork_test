@@ -37,6 +37,7 @@ module m_observations
    use fm_external_forcings_data
    use MessageHandling, only: IdLen
    use precision, only: dp
+   use m_waveconst
 
    implicit none
 
@@ -93,7 +94,7 @@ contains
       use m_transport, only: ITRA1, ITRAN, ISED1, ISEDN
       use m_fm_wq_processes, only: noout, numwqbots
       use m_sediment, only: stm_included, stmpar
-      use m_wind, only: japatm, jawind
+      use m_wind, only: air_pressure_available, jawind
       implicit none
 
       integer :: i, i0, numfracs, nlyrs
@@ -149,8 +150,10 @@ contains
       IVAL_TEPS = 0
       IVAL_VIU = 0
       IVAL_VICWWS = 0
+      IVAL_DIFWWS = 0
       IVAL_VICWWU = 0
       IVAL_RICH = 0
+      IVAL_RICHS = 0
       IVAL_WS1 = 0
       IVAL_WSN = 0
       IVAL_SEDDIF1 = 0
@@ -229,10 +232,10 @@ contains
          i = i + 1; IVAL_WX = i
          i = i + 1; IVAL_WY = i
       end if
-      if (japatm > 0) then
+      if (air_pressure_available > 0) then
          i = i + 1; IVAL_PATM = i
       end if
-      if (jawave > 0) then
+      if (jawave > NO_WAVES) then
          i = i + 1; IVAL_WAVEH = i
          i = i + 1; IVAL_WAVED = i
          i = i + 1; IVAL_WAVET = i
@@ -289,7 +292,7 @@ contains
          i = i + numfracs - 1; IVAL_SSCXN = i ! on purpose lsedtot, see alloc in morphology_data_module
          i = i + 1; IVAL_SSCY1 = i
          i = i + numfracs - 1; IVAL_SSCYN = i
-         if (jawave > 0) then
+         if (jawave > NO_WAVES) then
             i = i + 1; IVAL_SBWX1 = i
             i = i + numfracs - 1; IVAL_SBWXN = i
             i = i + 1; IVAL_SBWY1 = i
@@ -334,7 +337,7 @@ contains
          i = i + 1; IVAL_UCXQ = i
          i = i + 1; IVAL_UCYQ = i
       end if
-      if (jawave > 0) then
+      if (jawave > NO_WAVES) then
          i = i + 1; IVAL_UCXST = i
          i = i + 1; IVAL_UCYST = i
       end if
@@ -389,10 +392,12 @@ contains
             i = i + 1; IVAL_TKIN = i
             i = i + 1; IVAL_TEPS = i
             i = i + 1; IVAL_VICWWS = i
+            i = i + 1; IVAL_DIFWWS = i
             i = i + 1; IVAL_VICWWU = i
          end if
          if (idensform > 0) then
             i = i + 1; IVAL_RICH = i
+            i = i + 1; IVAL_RICHS = i
          end if
          if (jased > 0 .and. stm_included .and. ISED1 > 0) then
             i = i + 1; IVAL_SEDDIF1 = i
@@ -463,8 +468,10 @@ contains
       IPNT_TEPS = ivalpoint(IVAL_TEPS, kmx, nlyrs)
       IPNT_VIU = ivalpoint(IVAL_VIU, kmx, nlyrs)
       IPNT_VICWWS = ivalpoint(IVAL_VICWWS, kmx, nlyrs)
+      IPNT_DIFWWS = ivalpoint(IVAL_DIFWWS, kmx, nlyrs)
       IPNT_VICWWU = ivalpoint(IVAL_VICWWU, kmx, nlyrs)
       IPNT_RICH = ivalpoint(IVAL_RICH, kmx, nlyrs)
+      IPNT_RICHS = ivalpoint(IVAL_RICHS, kmx, nlyrs)
       IPNT_RHOP = ivalpoint(IVAL_RHOP, kmx, nlyrs)
       IPNT_RHO = ivalpoint(IVAL_RHO, kmx, nlyrs)
       IPNT_WS1 = ivalpoint(IVAL_WS1, kmx, nlyrs)

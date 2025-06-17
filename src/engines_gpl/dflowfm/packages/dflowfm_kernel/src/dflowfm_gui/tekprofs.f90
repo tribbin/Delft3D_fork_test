@@ -63,8 +63,7 @@ contains
       use m_depmax2, only: vmax => vmax2, vmin => vmin2
       use m_get_kbot_ktop
       use m_get_czz0
-      use m_density, only: density_at_cell
-      use m_physcoef, only: apply_thermobaricity, idensform
+      use m_density_parameters, only: apply_thermobaricity, idensform
       use m_density_formulas, only: DENSITY_OPTION_UNESCO83
 
       implicit none
@@ -75,7 +74,7 @@ contains
       real(kind=dp) :: zmin, zmax
       real(kind=dp) :: h0, b0, z00, zinc, cz, ustbref, ustwref, zint, z1, dz2, zz
       real(kind=dp) :: tkebot, tkesur, tkewin
-      real(kind=dp) :: epsbot, epssur, dzkap, sqcf, ulx, sg, drhodz, rhomea
+      real(kind=dp) :: epsbot, epssur, dzkap, sqcf, ulx, sg
       real(kind=dp) :: VMAX2, VMIN2
       integer :: is, Ls, LLs, Lbs, Lts
       integer :: jabruv
@@ -190,8 +189,8 @@ contains
 
             else if (iturbulencemodel >= 3) then
 
-               tkebot = ustbref**2 / sqcmukep
-               tkewin = ustwref**2 / sqcmukep
+               tkebot = ustbref**2 / sqrt(cmukep)
+               tkewin = ustwref**2 / sqrt(cmukep)
                tkesur = max(tkewin, ustbref**2)
                ! tkesur = 0d0
                epsbot = cewall * tkebot**1.5d0
@@ -351,9 +350,7 @@ contains
 
             do k = kb, kt - 1
                kk = k - kb + 1
-               drhodz = (rho(k + 1) - rho(k)) / (0.5d0 * (zws(k + 1) - zws(k - 1)))
-               rhomea = 0.5d0 * (rho(k + 1) + rho(k))
-               dijdij(kk) = -ag * drhodz / rhomea
+               dijdij(kk) = drhodz(kk) * brunt_vaisala_coefficient
             end do
             dijdij(0) = 0d0; dijdij(km) = dijdij(km - 1)
             vmin = minval(dijdij(1:km - 1))
@@ -386,7 +383,7 @@ contains
             call TEKFN(7, 13, 1, ucy(kb:kt), hcref, km, vmin, vmax, zmin, zmax, KLPROF, 'y-velocity', 0, 2, 0d0, kplot)
          end if
 
-         if (jawave > 0 .and. jawaveStokes > 0 .and. .not. flowWithoutWaves) then
+         if (jawave > NO_WAVES .and. jawaveStokes > NO_STOKES_DRIFT .and. .not. flowWithoutWaves) then
             vmin = minval(ucx(kb:kt) - ustokes(Lb:Lt))
             vmax = maxval(ucx(kb:kt) - ustokes(Lb:Lt))
             vmax = max(abs(vmin), abs(vmax)); vmin = -vmax
