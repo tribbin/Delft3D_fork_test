@@ -45,7 +45,6 @@ public :: ncu_ensure_define_mode
 public :: ncu_ensure_data_mode
 public :: ncu_restore_mode
 public :: ncu_inq_var_fill, ncu_copy_atts, ncu_copy_chunking_deflate
-public :: ncu_inq_dimname
 public :: ncu_clone_vardef
 public :: ncu_append_atts
 public :: ncu_get_att
@@ -82,10 +81,6 @@ interface ncu_inq_var_fill
    module procedure ncu_inq_var_fill_int4
    module procedure ncu_inq_var_fill_real8
 end interface ncu_inq_var_fill
-
-interface ncu_inq_dimname
-   module procedure nc4_inq_dimname
-end interface ncu_inq_dimname
 
 !> Data type to store some NetCDF attributes in memory.
 !! Most subroutines in this module operate directly on an open NetCDF dataset on disk,
@@ -579,20 +574,6 @@ function ncu_inq_var_fill_real8( ncid, varid, no_fill, fill_value, fill_value_cu
       ierr = nf90_noerr
    end if
 end function ncu_inq_var_fill_real8
-
-
-!> Compatibility function: returns the name of the dimension denoted by dimid.
-!! Module netcdf4_nf contains function nf_inq_dimname
-function nc4_inq_dimname (ncid, dimid, name) result (status)
-   use netcdf4_nf_interfaces, only: nf_inq_dimname
-
-   integer,          intent(in)  :: ncid 
-   integer,          intent(in)  :: dimid 
-   character(len=*), intent(out) :: name
-   integer                       :: status
- 
-   status = nf_inq_dimname(ncid, dimid, name)
-end function nc4_inq_dimname
 
 !> Copy chunking and deflate settings from a variable or dataset into another variable/dataset.
 !! Returns:

@@ -194,17 +194,6 @@ Interface
 
  End Function nf_inq_typeid
 End Interface
-!-------------------------------- nf_inq_dimname ------------------------------
-Interface
- Function nf_inq_dimname(ncid, dimid, name) RESULT (status)
-
- Integer,          Intent(IN)  :: ncid 
- Integer,          Intent(IN)  :: dimid 
- Character(LEN=*), Intent(OUT) :: name
- Integer                       :: status
-
- End Function nf_inq_dimname
-End Interface
 !-------------------------------- nf_def_grp ---------------------------------
 Interface
  Function nf_def_grp( parent_ncid, name, new_ncid) RESULT (status)

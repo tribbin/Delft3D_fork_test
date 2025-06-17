@@ -37,7 +37,7 @@ module m_ec_netcdf_timeseries
    use multi_file_io
    use string_module
    use io_ugrid
-   use netcdf_utils, only: ncu_get_att, ncu_inq_dimname
+   use netcdf_utils, only: ncu_get_att
    implicit none
 
    private
@@ -253,7 +253,7 @@ contains
 
          ! Check for important var: was it time?
          if (ncptr%standard_names(iVars) == 'time') then ! Multiple variables might have standard_name "time"
-            ierr = ncu_inq_dimname(ncptr%ncid, var_dimids(1, iVars), name)
+            ierr = nf90_inquire_dimension(ncptr%ncid, var_dimids(1,iVars), name = name)
             if (var_ndims(iVars) == 1 .and. name == 'time') then ! ndims must be 1 and dimName must be "time"
                ierr = nf90_get_att(ncptr%ncid, iVars, 'units', ncptr%timeunit) ! Store the unit string of the time variable
                if (ierr /= 0) return
