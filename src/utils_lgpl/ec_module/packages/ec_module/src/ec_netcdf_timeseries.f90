@@ -138,6 +138,8 @@ contains
    !! Open only if this file is not already opened, so check the list of nc-objects first and return a pointer ....
    function ecNetCDFInit(ncname, ncptr, iostat) result(success)
       logical :: success
+      logical :: station_id_found
+      logical :: time_found
       character(len=*), intent(in) :: ncname
       type(tEcNetCDF), pointer, intent(inout) :: ncptr
       integer, optional, intent(out) :: iostat
@@ -153,12 +155,14 @@ contains
       integer, dimension(:), allocatable :: var_ndims
 
       success = .false.
+      station_id_found = .false.
+      time_found = .false.
       allocate (character(len=0) :: cf_role)
       allocate (character(len=0) :: positive)
       allocate (character(len=0) :: zunits)
 
       ierr = nf90_open(trim(ncname), NF90_NOWRITE, ncptr%ncid)
-      if (ierr /= NF90_NOERR) then
+      if (ierr /= 0) then
          call setECmessage("ec_netcdf_timeseries::ecNetCDFInit: Error opening "//trim(ncname))
          return
       end if
@@ -199,7 +203,7 @@ contains
       var_ndims = 0
       do iVars = 1, nVars ! Inventorize variables
          ierr = nf90_inquire_attribute(ncptr%ncid, iVars, 'vector', len=len_vectordef) ! Check if this variable is just a reference to vector
-         if (ierr == NF90_NOERR) then
+         if (ierr == 0) then
             isVector = .true.
             allocate (character(len=len_vectordef) :: ncptr%vector_definitions(iVars)%s, stat=ierr)
             if (ierr /= 0) return
@@ -209,7 +213,7 @@ contains
          end if
          ierr = nf90_inquire_variable(ncptr%ncid, iVars, name=ncptr%variable_names(iVars)) ! Variable name
          ierr = nf90_get_att(ncptr%ncid, iVars, 'standard_name', ncptr%standard_names(iVars)) ! Standard name if available
-         if (ierr /= NF90_NOERR) ncptr%standard_names(iVars) = ncptr%variable_names(iVars) ! Variable name as fallback for standard_name
+         if (ierr /= 0) ncptr%standard_names(iVars) = ncptr%variable_names(iVars) ! Variable name as fallback for standard_name
          ierr = nf90_get_att(ncptr%ncid, iVars, 'long_name', ncptr%long_names(iVars)) ! Long name for non CF names
 
          ierr = nf90_get_att(ncptr%ncid, iVars, '_FillValue', ncptr%fillvalues(iVars))
@@ -225,10 +229,9 @@ contains
          ! Check for important var: was it the stations?
          cf_role = ''
          ierr = ncu_get_att(ncptr%ncid, iVars, 'cf_role', cf_role)
-         if (cf_role == 'timeseries_id') then
-            n_dims = 0
-            ierr = nf90_inquire_variable(ncptr%ncid, iVars, ndims=n_dims)
-            if (n_dims == 2) then ! If cf Role 'timeseries_id' found, compose an index timeseries id's
+         if (cf_role == 'timeseries_id') then ! Multiple variables might have cf_role=timeseries_id
+            if (var_ndims(iVars)==2 .and. ncptr%variable_names(iVars)=='station_id') then  ! Check dims and var_name
+               ! Compose an index timeseries id's 
                ierr = nf90_inquire_variable(ncptr%ncid, iVars, dimids=dimids_tsid)
                if (ierr /= NF90_NOERR) return
                tslen = ncptr%dimlen(dimids_tsid(1)) ! timeseries ID length
@@ -240,14 +243,12 @@ contains
                ncptr%tsid = ''
                do iTims = 1, nTims
                   ierr = nf90_get_var(ncptr%ncid, iVars, ncptr%tsid(iTims), (/1, iTims/), (/tslen, 1/))
-                  if (ierr /= NF90_NOERR) return
+                  if (ierr /= 0) return
                   call replace_char(ncptr%tsid(iTims), 0, 32) ! Replace NULL char by whitespace: iachar(' ') == 32
                end do
                ncptr%tsidvarid = iVars ! For convenience also store the Station ID explicitly
                ncptr%tsiddimid = dimids_tsid(2) ! For convenience also store the Station's dimension ID explicitly
-            else
-               ! timeseries_id has the wrong dimensionality
-               return
+               station_id_found = .true.
             end if
          end if
 
@@ -259,6 +260,7 @@ contains
                if (ierr /= NF90_NOERR) return
                ncptr%timevarid = iVars ! For convenience also store the ID explicitly
                ncptr%timedimid = var_dimids(1, iVars)
+               time_found = .true.
             end if
          end if
 
@@ -274,9 +276,9 @@ contains
             allocate (ncptr%vp(ncptr%nLayer), stat=ierr)
             if (ierr /= 0) return
             ierr = nf90_get_var(ncptr%ncid, ncptr%layervarid, ncptr%vp, (/1/), (/ncptr%nLayer/))
-            if (ierr /= NF90_NOERR) return
+            if (ierr /= 0) return
             ierr = ncu_get_att(ncptr%ncid, iVars, 'units', zunits)
-            if (ierr /= NF90_NOERR) return
+            if (ierr /= 0) return
             if (strcmpi(zunits, 'm')) then
                if (strcmpi(positive, 'up')) ncptr%vptyp = BC_VPTYP_ZDATUM ! z upward from datum, unmodified z-values
                if (strcmpi(positive, 'down')) ncptr%vptyp = BC_VPTYP_ZSURF ! z downward
@@ -294,7 +296,9 @@ contains
       deallocate (positive)
       deallocate (zunits)
 
-      success = .true.
+      if (station_id_found .and. time_found) then
+         success = .true.
+      end if
    end function ecNetCDFInit
 
    ! =======================================================================
@@ -447,7 +451,7 @@ contains
 
       success = .false.
       ierr = nf90_get_att(ncptr%ncid, q_id, trim(attribute_name), attribute_value)
-      if (ierr /= NF90_NOERR) return
+      if (ierr /= 0) return
       success = .true.
    end function ecNetCDFGetAttrib
 
