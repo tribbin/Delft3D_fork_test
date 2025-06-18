@@ -158,7 +158,7 @@ contains
       allocate (character(len=0) :: zunits)
 
       ierr = nf90_open(trim(ncname), NF90_NOWRITE, ncptr%ncid)
-      if (ierr /= 0) then
+      if (ierr /= NF90_NOERR) then
          call setECmessage("ec_netcdf_timeseries::ecNetCDFInit: Error opening "//trim(ncname))
          return
       end if
@@ -199,7 +199,7 @@ contains
       var_ndims = 0
       do iVars = 1, nVars ! Inventorize variables
          ierr = nf90_inquire_attribute(ncptr%ncid, iVars, 'vector', len=len_vectordef) ! Check if this variable is just a reference to vector
-         if (ierr == 0) then
+         if (ierr == NF90_NOERR) then
             isVector = .true.
             allocate (character(len=len_vectordef) :: ncptr%vector_definitions(iVars)%s, stat=ierr)
             if (ierr /= 0) return
@@ -209,7 +209,7 @@ contains
          end if
          ierr = nf90_inquire_variable(ncptr%ncid, iVars, name=ncptr%variable_names(iVars)) ! Variable name
          ierr = nf90_get_att(ncptr%ncid, iVars, 'standard_name', ncptr%standard_names(iVars)) ! Standard name if available
-         if (ierr /= 0) ncptr%standard_names(iVars) = ncptr%variable_names(iVars) ! Variable name as fallback for standard_name
+         if (ierr /= NF90_NOERR) ncptr%standard_names(iVars) = ncptr%variable_names(iVars) ! Variable name as fallback for standard_name
          ierr = nf90_get_att(ncptr%ncid, iVars, 'long_name', ncptr%long_names(iVars)) ! Long name for non CF names
 
          ierr = nf90_get_att(ncptr%ncid, iVars, '_FillValue', ncptr%fillvalues(iVars))
@@ -230,7 +230,7 @@ contains
             ierr = nf90_inquire_variable(ncptr%ncid, iVars, ndims=n_dims)
             if (n_dims == 2) then ! If cf Role 'timeseries_id' found, compose an index timeseries id's
                ierr = nf90_inquire_variable(ncptr%ncid, iVars, dimids=dimids_tsid)
-               if (ierr /= 0) return
+               if (ierr /= NF90_NOERR) return
                tslen = ncptr%dimlen(dimids_tsid(1)) ! timeseries ID length
                nTims = ncptr%dimlen(dimids_tsid(2)) ! number of timeseries IDs
                ncptr%nTims = nTims
@@ -240,7 +240,7 @@ contains
                ncptr%tsid = ''
                do iTims = 1, nTims
                   ierr = nf90_get_var(ncptr%ncid, iVars, ncptr%tsid(iTims), (/1, iTims/), (/tslen, 1/))
-                  if (ierr /= 0) return
+                  if (ierr /= NF90_NOERR) return
                   call replace_char(ncptr%tsid(iTims), 0, 32) ! Replace NULL char by whitespace: iachar(' ') == 32
                end do
                ncptr%tsidvarid = iVars ! For convenience also store the Station ID explicitly
@@ -256,7 +256,7 @@ contains
             ierr = nf90_inquire_dimension(ncptr%ncid, var_dimids(1,iVars), name = name)
             if (var_ndims(iVars) == 1 .and. name == 'time') then ! ndims must be 1 and dimName must be "time"
                ierr = nf90_get_att(ncptr%ncid, iVars, 'units', ncptr%timeunit) ! Store the unit string of the time variable
-               if (ierr /= 0) return
+               if (ierr /= NF90_NOERR) return
                ncptr%timevarid = iVars ! For convenience also store the ID explicitly
                ncptr%timedimid = var_dimids(1, iVars)
             end if
@@ -274,9 +274,9 @@ contains
             allocate (ncptr%vp(ncptr%nLayer), stat=ierr)
             if (ierr /= 0) return
             ierr = nf90_get_var(ncptr%ncid, ncptr%layervarid, ncptr%vp, (/1/), (/ncptr%nLayer/))
-            if (ierr /= 0) return
+            if (ierr /= NF90_NOERR) return
             ierr = ncu_get_att(ncptr%ncid, iVars, 'units', zunits)
-            if (ierr /= 0) return
+            if (ierr /= NF90_NOERR) return
             if (strcmpi(zunits, 'm')) then
                if (strcmpi(positive, 'up')) ncptr%vptyp = BC_VPTYP_ZDATUM ! z upward from datum, unmodified z-values
                if (strcmpi(positive, 'down')) ncptr%vptyp = BC_VPTYP_ZSURF ! z downward
@@ -371,17 +371,17 @@ contains
          return ! l_id<0 means : location not found, q_id<0 means quantity not found
       end if
       ierr = nf90_Inquire_Variable(ncptr%ncid, q_id(1), ndims=n_dims)
-      if (ierr /= 0) return
+      if (ierr /= NF90_NOERR) return
       if (.not. allocated(dimids)) then
          allocate (dimids(n_dims), stat=ierr)
          if (ierr /= 0) return
          ierr = nf90_Inquire_Variable(ncptr%ncid, q_id(1), dimids=dimids)
-         if (ierr /= 0) return
+         if (ierr /= NF90_NOERR) return
       else
          allocate (dimids_check(n_dims), stat=ierr)
          if (ierr /= 0) return
          ierr = nf90_Inquire_Variable(ncptr%ncid, q_id(1), dimids=dimids_check)
-         if (ierr /= 0) return
+         if (ierr /= NF90_NOERR) return
          if (.not. (all(dimids == dimids_check) .and. n_dims == size(dimids))) then
             ! sanity check: all elements should have the same dimensions vector
             return ! unsuccessfully
@@ -447,7 +447,7 @@ contains
 
       success = .false.
       ierr = nf90_get_att(ncptr%ncid, q_id, trim(attribute_name), attribute_value)
-      if (ierr /= 0) return
+      if (ierr /= NF90_NOERR) return
       success = .true.
    end function ecNetCDFGetAttrib
 
