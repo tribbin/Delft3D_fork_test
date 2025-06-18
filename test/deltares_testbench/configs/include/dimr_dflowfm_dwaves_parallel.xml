@@ -1,0 +1,32 @@
+<testCases xmlns="http://schemas.deltares.nl/deltaresTestbench_v3">
+    <testCase name="e100_f10_c00_fm2" ref="dimr">
+      <path version="2025-06-18T17:00:00">e100_dflowfm-dwaves/f10_parallel/c00_fm2</path>
+      <programs>
+        <program ref="dflowfm" seq="1">
+          <workingDirectory>fm</workingDirectory>
+          <arguments>
+            <argument>--partition:ndomains=2:icgsolver=6</argument>
+            <argument>loo.mdu</argument>
+          </arguments>
+        </program>
+          <program ref="dimr" seq="2">
+             <arguments>
+                 <argument>-c 2 -m dimr_config.xml</argument>
+             </arguments>
+          </program>
+      </programs>
+      <maxRunTime>10.0</maxRunTime>
+      <checks>
+        <file name="fm/dflowfmoutput/loo_0000_map.nc" type="netCDF">
+           <parameters>
+               <parameter name="mesh2d_s1" toleranceAbsolute="0.001" />
+           </parameters>
+        </file>
+        <file name="fm/dflowfmoutput/loo_0001_map.nc" type="netCDF">
+           <parameters>
+               <parameter name="mesh2d_s1" toleranceAbsolute="0.001" />
+           </parameters>
+        </file>
+      </checks>
+    </testCase>
+</testCases>
