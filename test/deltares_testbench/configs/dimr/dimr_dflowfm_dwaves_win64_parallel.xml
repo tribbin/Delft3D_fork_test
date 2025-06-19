@@ -58,6 +58,18 @@
                 <environment name="OMP_NUM_THREADS" type="raw">1</environment>
             </environments>
         </program>
+        <program name="dimr_seq" ignoreStandardError="true" ignoreReturnValue="true" logOutputToFile="true" programStringRemoveQuotes="true">
+            <location ref="reference_engines" type="reference">
+                <from>win64</from>
+            </location>
+            <location ref="local" type="check">
+                <from>teamcity_artifacts/x64</from> <!-- just the first part of the directory structure, wil be file by TeamCity -->
+            </location>
+            <path>bin/run_dimr.bat</path>
+            <environments>
+                <environment name="OMP_NUM_THREADS" type="raw">1</environment>
+            </environments>
+        </program>
         <program name="dflowfm" logOutputToFile="true" programStringRemoveQuotes="true" addSearchPaths="true">
             <location ref="reference_engines" type="reference">
                 <from>win64</from>
