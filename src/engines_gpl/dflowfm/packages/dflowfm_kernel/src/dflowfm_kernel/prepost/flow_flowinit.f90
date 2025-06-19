@@ -177,10 +177,6 @@ contains
       call initialize_spiral_flow_with_uniform_value()
       call initialize_sediment()
 
-      if (jasal == OFF .and. jatem == OFF .and. jased == OFF) then
-         idensform = DENSITY_OPTION_UNIFORM
-      end if
-
       volerror(:) = 0.0_dp
       squ(:) = 0
       sqi(:) = 0
