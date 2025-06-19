@@ -82,7 +82,7 @@ contains
       use m_sferic, only: default_sferic
       use m_1d2d_fixedweirs, only: default_1d2d_fixedweirs
       use m_laterals, only: default_lateral
-      use m_f1dimp
+      use m_f1dimp, only: default_fm1dimp
       use fm_statistical_output
       use fm_deprecated_keywords, only: default_fm_deprecated_keywords
       use m_sediment, only: deallocgrains, default_sediment
