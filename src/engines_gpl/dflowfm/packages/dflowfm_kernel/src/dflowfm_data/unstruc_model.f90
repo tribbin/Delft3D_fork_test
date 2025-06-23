@@ -1382,12 +1382,17 @@ contains
 
       call prop_get(md_ptr, 'physics', 'Stanton', Stanton)
       call prop_get(md_ptr, 'physics', 'Dalton', Dalton)
-      call prop_get(md_ptr, 'physics', 'Tempmax', Tempmax)
-      call prop_get(md_ptr, 'physics', 'Tempmin', Tempmin)
-      call prop_get(md_ptr, 'physics', 'Allowcoolingbelowzero', Jaallowcoolingbelowzero)
+      call prop_get(md_ptr, 'physics', 'Tempmax', temperature_max)
+      call prop_get(md_ptr, 'physics', 'Tempmin', temperature_min)
+      call prop_get(md_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point)
+      if (use_salinity_freezing_point .and. temperature_min >= 0.0_dp) then
+          write(msgbuf,'(a,g0,a)') 'salinityDependentFreezingPoint is set to true, but Tempmin = ', temperature_min, &
+              ' is not below 0 degrees Celsius. This may lead to incorrect results.'
+         call mess(LEVEL_WARN, msgbuf)
+      end if
 
-      call prop_get(md_ptr, 'physics', 'Salimax', Salimax)
-      call prop_get(md_ptr, 'physics', 'Salimin', Salimin)
+      call prop_get(md_ptr, 'physics', 'Salimax', salinity_max)
+      call prop_get(md_ptr, 'physics', 'Salimin', salinity_min)
       call prop_get(md_ptr, 'physics', 'Surftempsmofac', Surftempsmofac)
       call prop_get(md_ptr, 'physics', 'RhoairRhowater', wind_stress_water_density_option)
       call prop_get(md_ptr, 'physics', 'Heat_eachstep', jaheat_eachstep)
@@ -3353,9 +3358,9 @@ contains
          if (writeall .or. (deltasalinity /= dmiss)) then
             call prop_set(prop_ptr, 'physics', 'DeltaSalinity', Deltasalinity, 'for testcases')
          end if
-         if (writeall .or. (salimax /= dmiss .or. salimin /= 0.0_dp)) then
-            call prop_set(prop_ptr, 'physics', 'Salimax', Salimax, 'Limit the salinity')
-            call prop_set(prop_ptr, 'physics', 'Salimin', Salimin, 'Limit the salinity')
+         if (writeall .or. (salinity_max /= dmiss .or. salinity_min /= 0.0_dp)) then
+            call prop_set(prop_ptr, 'physics', 'Salimax', salinity_max, 'Upper salinity limit')
+            call prop_set(prop_ptr, 'physics', 'Salimin', salinity_min, 'Lower salinity limit')
          end if
       end if
 
@@ -3383,12 +3388,13 @@ contains
          call prop_set(prop_ptr, 'physics', 'Stanton', Stanton, 'Coefficient for convective heat flux, if negative, Ccon = abs(Stanton)*Cdwind')
          call prop_set(prop_ptr, 'physics', 'Dalton', Dalton, 'Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind')
 
-         if (writeall .or. (tempmax /= dmiss .or. tempmin /= 0.0_dp)) then
-            call prop_set(prop_ptr, 'physics', 'Tempmax', Tempmax, 'Limit the temperature')
-            call prop_set(prop_ptr, 'physics', 'Tempmin', Tempmin, 'Limit the temperature, if -999, tempmin=(-0.0575 - 2.154996d-4*sal)*sal')
+         if (writeall .or. (temperature_max /= dmiss .or. temperature_min /= dmiss)) then
+            call prop_set(prop_ptr, 'physics', 'Tempmax', temperature_max, 'Upper temperature limit')
+            call prop_set(prop_ptr, 'physics', 'Tempmin', temperature_min, 'Lower temperature limit')
          end if
-         if (writeall .or. Jaallowcoolingbelowzero /= 0) then
-            call prop_set(prop_ptr, 'physics', 'Allowcoolingbelowzero', Jaallowcoolingbelowzero, '0 = no, 1 = yes')
+         if (writeall .or. use_salinity_freezing_point) then
+            call prop_set(prop_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point, &
+                'Enable salinity-dependent freezing point (0 = no, 1 = yes)')
          end if
          if (writeall .or. surftempsmofac > 0.0_dp) then
             call prop_set(prop_ptr, 'physics', 'Surftempsmofac', Surftempsmofac, 'Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no')

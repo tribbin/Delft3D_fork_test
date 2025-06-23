@@ -47,14 +47,14 @@ module m_transportdata
    integer, parameter :: NAMLEN = 128
    integer :: NUMCONST ! Total number of constituents
    integer :: NUMCONST_MDU ! number of constituents as specified in mdu/ext file
-   integer, target :: ISALT ! salt
-   integer, target :: ITEMP ! temperature
-   integer :: ISED1 ! first sediment fraction
-   integer :: ISEDN ! last  sediment fraction
-   integer :: ISPIR ! secondary flow intensity
-   integer :: ITRA1 ! first tracer
-   integer :: ITRAN ! last  tracer, should be at the back
-   integer :: ITRAN0 ! back up of ITRAN
+   integer, target :: isalt ! salt
+   integer, target :: itemp ! temperature
+   integer :: ised1 ! first sediment fraction
+   integer :: isedn ! last  sediment fraction
+   integer :: ispir ! secondary flow intensity
+   integer :: itra1 ! first tracer
+   integer :: itran ! last  tracer, should be at the back
+   integer :: itran0 ! back up of itran
 
 !  tracers
    integer, dimension(:), allocatable :: itrac2const ! constituent number of tracers (boundary conditions only)
