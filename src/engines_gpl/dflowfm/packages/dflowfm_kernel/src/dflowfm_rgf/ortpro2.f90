@@ -44,7 +44,7 @@ contains
       use precision, only: dp
 
       real(kind=dp) :: X1, Y1, X2, Y2, X3, Y3, X4, Y4, TV
-      integer :: JA
+      integer, intent(inout) :: JA
 
       real(kind=dp) :: DX, DY, R2
 

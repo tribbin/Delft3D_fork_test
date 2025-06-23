@@ -49,8 +49,8 @@ contains
       integer :: i, nsize
       integer :: j
       integer :: nsc
-      integer :: numcol
-      integer :: numrow
+      integer, intent(in) :: numcol
+      integer, intent(in) :: numrow
       real(kind=dp) :: xb
       real(kind=dp) :: xm
       real(kind=dp) :: xz

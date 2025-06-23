@@ -55,7 +55,7 @@ contains
 !
 ! Global variables
 !
-      integer :: idatum !  Absolute date related to ITDATE and TIMSEC
+      integer, intent(inout) :: idatum !  Absolute date related to ITDATE and TIMSEC
       integer, intent(out) :: itijd !  Absolute time related to ITDATE and TIMSEC
       integer, intent(in) :: julday !  Description and declaration in inttim.igs
       real(fp), intent(in) :: timsec !  Description and declaration in inttim.igs

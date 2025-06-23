@@ -26,14 +26,38 @@
 !  Deltares, and remain the property of Stichting Deltares. All rights reserved.
 !
 !-------------------------------------------------------------------------------
-!
-!
-module m_ellips
-   use precision, only: dp
 
+module m_setellipse
    implicit none
+   private
+   public :: setellipse
 
-   real(dp) :: a
-   real(dp) :: e
+contains
 
-end module m_ellips
+   subroutine setellipse(iell)
+      use m_ellipse, only: semi_major_axis, eccentricity
+      use precision, only: dp
+
+      integer, intent(in) :: iell
+
+      semi_major_axis = 6378137_dp
+      eccentricity = 0.081819_dp
+
+      if (iell == 1) then ! hayford
+         semi_major_axis = 6378388_dp
+         eccentricity = 0.081992_dp
+      elseif (iell == 2) then ! bessel
+         semi_major_axis = 6377397_dp
+         eccentricity = 0.081690_dp
+      elseif (iell == 3) then ! wgs 84
+         semi_major_axis = 6378137_dp
+         eccentricity = 0.081819_dp
+      elseif (iell == 4) then ! clarke 1880
+         semi_major_axis = 6378249_dp
+         eccentricity = 0.082478_dp
+      elseif (iell == 5) then ! india 1830
+         semi_major_axis = 6377276.345_dp
+         eccentricity = 0.081473_dp
+      end if
+   end subroutine setellipse
+end module m_setellipse

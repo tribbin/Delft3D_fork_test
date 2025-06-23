@@ -45,7 +45,7 @@ contains
       use M_MISSING, only: dxymis
       use m_spline, only: spline
       use m_put_ij, only: putij
-      use m_get_ij, only: getij
+      use m_get_ij, only: get_ij
 
       integer :: i
       integer :: iff
@@ -73,7 +73,7 @@ contains
       XJ2 = DXYMIS
 
       do JN = 1, NC
-         call GETIJ(X, XH1, MMAX, NMAX, MNMAX, 1, MC, JN, JN)
+         call get_ij(X, XH1, MMAX, NMAX, MNMAX, 1, MC, JN, JN)
          JALIN = 0
          K = 0
          do I = 1, MC
@@ -102,7 +102,7 @@ contains
       end do
 
       do IN = 1, MC
-         call GETIJ(X, XH1, MMAX, NMAX, MNMAX, IN, IN, 1, NC)
+         call get_ij(X, XH1, MMAX, NMAX, MNMAX, IN, IN, 1, NC)
          JALIN = 0
          K = 0
          do I = 1, NC

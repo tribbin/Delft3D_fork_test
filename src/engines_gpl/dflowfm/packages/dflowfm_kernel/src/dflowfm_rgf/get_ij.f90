@@ -27,33 +27,31 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
 module m_get_ij
    implicit none
 contains
-   subroutine GETIJ(X, XH, MMAX, NMAX, MNMAX, I1, I2, J1, J2)
+   subroutine get_ij(x, xh, mmax, nmax, mnmax, i1, i2, j1, j2)
       use precision, only: dp
 
-      integer :: i
-      integer :: i1
-      integer :: i2
-      integer :: j
-      integer :: j1
-      integer :: j2
-      integer :: k
-      integer :: mmax
-      integer :: mnmax
-      integer :: nmax
-!     HAAL EEN LIJN (XH) UIT EEN ARRAY (X)
-      real(kind=dp) :: X(MMAX, NMAX), XH(MNMAX)
-      K = 0
-      do J = J1, J2
-         do I = I1, I2
-            K = K + 1
-            XH(K) = X(I, J)
+      integer, intent(in) :: mmax
+      integer, intent(in) :: nmax
+      integer, intent(in) :: mnmax
+      real(kind=dp), intent(in) :: x(mmax, nmax)
+      real(kind=dp), intent(out) :: xh(mnmax)
+      integer, intent(in) :: i1
+      integer, intent(in) :: i2
+      integer, intent(in) :: j1
+      integer, intent(in) :: j2
+
+      integer :: i, j, k
+
+      ! Extract a line (xh) from an array (x)
+      k = 0
+      do j = j1, j2
+         do i = i1, i2
+            k = k + 1
+            xh(k) = x(i, j)
          end do
       end do
-      return
-   end subroutine GETIJ
+   end subroutine get_ij
 end module m_get_ij

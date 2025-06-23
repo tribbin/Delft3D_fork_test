@@ -45,7 +45,7 @@ contains
       use M_MISSING, only: dmiss
 
       integer :: i
-      integer :: mmax
+      integer, intent(in) :: mmax
       real(kind=dp) :: H(MMAX)
 
       do I = 1, MMAX

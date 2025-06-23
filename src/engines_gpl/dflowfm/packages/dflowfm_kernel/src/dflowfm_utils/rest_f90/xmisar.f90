@@ -45,7 +45,7 @@ contains
       use M_MISSING, only: xymis
 
       integer :: i
-      integer :: mmax
+      integer, intent(in) :: mmax
       real(kind=dp) :: x
       dimension X(MMAX)
       do I = 1, MMAX

@@ -50,12 +50,12 @@ contains
       real(kind=dp) :: half
       integer :: j
       integer :: l
-      integer :: m1
-      integer :: m2
+      integer, intent(in) :: m1
+      integer, intent(in) :: m2
       integer :: maxits
       integer :: n
-      integer :: n1
-      integer :: n2
+      integer, intent(in) :: n1
+      integer, intent(in) :: n2
       real(kind=dp) :: one
       real(kind=dp) :: qtr
       real(kind=dp) :: rjac
