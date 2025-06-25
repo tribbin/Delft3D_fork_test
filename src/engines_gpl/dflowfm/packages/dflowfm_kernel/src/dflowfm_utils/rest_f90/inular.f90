@@ -42,8 +42,8 @@ contains
 
    subroutine INULAR(X, MMAX)
       integer :: i
-      integer :: mmax
-      integer X(MMAX)
+      integer, intent(in) :: mmax
+      integer, intent(inout) :: X(MMAX)
       do I = 1, MMAX
          X(I) = 0d0
       end do

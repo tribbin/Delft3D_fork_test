@@ -37,8 +37,8 @@ contains
       use m_missing, only: dmiss
       implicit none
       integer :: i
-      integer :: maxlan
-      integer :: mxlan
+      integer, intent(in) :: maxlan
+      integer, intent(in) :: mxlan
       real(kind=dp) :: xmax
       real(kind=dp) :: xmin
       real(kind=dp) :: xx

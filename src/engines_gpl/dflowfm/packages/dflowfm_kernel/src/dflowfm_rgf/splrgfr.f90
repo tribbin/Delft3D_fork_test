@@ -138,8 +138,8 @@ contains
 !        vul voor alle splines de lijninterpolaties in
          do I1 = 1, NUMSPL
 !           Alle horizontaaltjes
-            call GETIJ(XSPc, XI1, mcs, maxsplen, imax, I1, I1, 1, NUMPX)
-            call GETIJ(YSPc, YI1, mcs, maxsplen, imax, I1, I1, 1, NUMPX)
+            call get_ij(XSPc, XI1, mcs, maxsplen, imax, I1, I1, 1, NUMPX)
+            call get_ij(YSPc, YI1, mcs, maxsplen, imax, I1, I1, 1, NUMPX)
             call NUMPold(XSPc, mcs, maxsplen, I1, NI1)
             call PAKTIJ(TIJ, mcs, maxsplen, TI1, imax, I1, I1, 1, NUMSPL, NTI1)
             if (I1 <= NUMI) then

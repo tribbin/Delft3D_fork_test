@@ -45,8 +45,8 @@ contains
 
       integer :: i
       integer :: j
-      integer :: mmax
-      integer :: nmax
+      integer, intent(in) :: mmax
+      integer, intent(in) :: nmax
       real(kind=dp) :: x
       real(kind=dp) :: xr
 !     DE EERSTE IN DE TWEEDE

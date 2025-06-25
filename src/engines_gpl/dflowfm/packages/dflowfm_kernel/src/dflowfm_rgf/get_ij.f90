@@ -26,14 +26,32 @@
 !  Deltares, and remain the property of Stichting Deltares. All rights reserved.
 !
 !-------------------------------------------------------------------------------
-!
-!
-module m_ellips
-   use precision, only: dp
 
+module m_get_ij
    implicit none
+contains
+   subroutine get_ij(x, xh, mmax, nmax, mnmax, i1, i2, j1, j2)
+      use precision, only: dp
 
-   real(dp) :: a
-   real(dp) :: e
+      integer, intent(in) :: mmax
+      integer, intent(in) :: nmax
+      integer, intent(in) :: mnmax
+      real(kind=dp), intent(in) :: x(mmax, nmax)
+      real(kind=dp), intent(out) :: xh(mnmax)
+      integer, intent(in) :: i1
+      integer, intent(in) :: i2
+      integer, intent(in) :: j1
+      integer, intent(in) :: j2
 
-end module m_ellips
+      integer :: i, j, k
+
+      ! Extract a line (xh) from an array (x)
+      k = 0
+      do j = j1, j2
+         do i = i1, i2
+            k = k + 1
+            xh(k) = x(i, j)
+         end do
+      end do
+   end subroutine get_ij
+end module m_get_ij

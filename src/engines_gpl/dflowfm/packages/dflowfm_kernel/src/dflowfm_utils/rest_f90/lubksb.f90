@@ -38,11 +38,11 @@ contains
       real(kind=dp) :: b
       integer :: i
       integer :: ii
-      integer :: indx
+      integer, intent(in) :: indx
       integer :: j
       integer :: ll
-      integer :: n
-      integer :: np
+      integer, intent(in) :: n
+      integer, intent(in) :: np
       real(kind=dp) :: sum
       dimension A(NP, NP), INDX(N), B(N)
       II = 0

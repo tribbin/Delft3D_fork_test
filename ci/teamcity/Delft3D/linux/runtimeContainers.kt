@@ -21,6 +21,18 @@ object LinuxRuntimeContainers : BuildType({
     name = "Runtime Containers"
     buildNumberPattern = "%dep.${LinuxBuild.id}.product%: %build.vcs.number%"
 
+    outputParams {
+        exposeAllParameters = false
+        param("product", "%dep.${LinuxBuild.id}.product%")
+        param("runtime_container_image", "%runtime_container_image%")
+        param("testbench_container_image", "%testbench_container_image%")
+    }
+
+    params {
+        param("runtime_container_image", "containers.deltares.nl/delft3d/delft3d-runtime-container:alma8-%dep.${LinuxBuild.id}.product%-%build.vcs.number%")
+        param("testbench_container_image", "containers.deltares.nl/delft3d/test/delft3d-test-container:alma8-%dep.${LinuxBuild.id}.product%-%build.vcs.number%")
+    }
+
     vcs {
         root(DslContext.settingsRoot)
         cleanCheckout = true
@@ -85,7 +97,7 @@ object LinuxRuntimeContainers : BuildType({
                 platform = DockerCommandStep.ImagePlatform.Linux
                 namesAndTags = """
                     runtime-container
-                    containers.deltares.nl/delft3d/delft3d-runtime-container:alma8-%build.vcs.number%
+                    %runtime_container_image%
                 """.trimIndent()
                 commandArgs = """
                     --provenance=false
@@ -93,7 +105,7 @@ object LinuxRuntimeContainers : BuildType({
                     --no-cache
                     --build-arg GIT_COMMIT=%build.vcs.number%
                     --build-arg GIT_BRANCH=%teamcity.build.branch%
-                    --build-arg BUILDTOOLS_IMAGE_TAG=%dep.${LinuxBuildTools.id}.env.IMAGE_TAG%
+                    --build-arg BUILDTOOLS_IMAGE_TAG=%dep.${LinuxBuild.id}.build_tools_image_tag%
                 """.trimIndent()
                 // --provenance=false is to prevent metadata to be pushed as unknown/unknown os/arch https://docs.docker.com/build/metadata/attestations/attestation-storage/
             }
@@ -106,7 +118,7 @@ object LinuxRuntimeContainers : BuildType({
                 }
                 contextDir = "."
                 platform = DockerCommandStep.ImagePlatform.Linux
-                namesAndTags = "containers.deltares.nl/delft3d/test/delft3d-test-container:alma8-%build.vcs.number%"
+                namesAndTags = "%testbench_container_image%"
                 commandArgs = """
                     --build-arg GIT_COMMIT=%build.vcs.number%
                     --build-arg GIT_BRANCH=%teamcity.build.branch%
@@ -117,8 +129,8 @@ object LinuxRuntimeContainers : BuildType({
             name = "Docker push"
             commandType = push {
                 namesAndTags = """
-                    containers.deltares.nl/delft3d/delft3d-runtime-container:alma8-%build.vcs.number%
-                    containers.deltares.nl/delft3d/test/delft3d-test-container:alma8-%build.vcs.number%
+                    containers.deltares.nl/delft3d/delft3d-runtime-container:alma8-%dep.${LinuxBuild.id}.product%-%build.vcs.number%
+                    containers.deltares.nl/delft3d/test/delft3d-test-container:alma8-%dep.${LinuxBuild.id}.product%-%build.vcs.number%
                 """.trimIndent()
             }
         }

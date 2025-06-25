@@ -44,7 +44,7 @@ contains
       use precision, only: dp
 
       integer :: i
-      integer :: mmax
+      integer, intent(in) :: mmax
 !     DE EERSTE IN DE TWEEDE
       real(kind=dp) XR(MMAX), X(MMAX)
       do I = 1, MMAX

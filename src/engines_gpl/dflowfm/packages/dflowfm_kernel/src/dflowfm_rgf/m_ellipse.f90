@@ -26,34 +26,14 @@
 !  Deltares, and remain the property of Stichting Deltares. All rights reserved.
 !
 !-------------------------------------------------------------------------------
-
 !
 !
-module m_get_ij
+module m_ellipse
+   use precision, only: dp
    implicit none
-contains
-   subroutine GETIJ(X, XH, MMAX, NMAX, MNMAX, I1, I2, J1, J2)
-      use precision, only: dp
+   private
 
-      integer :: i
-      integer :: i1
-      integer :: i2
-      integer :: j
-      integer :: j1
-      integer :: j2
-      integer :: k
-      integer :: mmax
-      integer :: mnmax
-      integer :: nmax
-!     HAAL EEN LIJN (XH) UIT EEN ARRAY (X)
-      real(kind=dp) :: X(MMAX, NMAX), XH(MNMAX)
-      K = 0
-      do J = J1, J2
-         do I = I1, I2
-            K = K + 1
-            XH(K) = X(I, J)
-         end do
-      end do
-      return
-   end subroutine GETIJ
-end module m_get_ij
+   real(dp), public :: semi_major_axis
+   real(dp), public :: eccentricity
+
+end module m_ellipse

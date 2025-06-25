@@ -27,45 +27,37 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
-!
-module m_setellips
-
+module m_setellipse
    implicit none
-
    private
-
-   public :: setellips
+   public :: setellipse
 
 contains
 
-   subroutine SETELLIPS(IELL)
-      use m_ellips
+   subroutine setellipse(iell)
+      use m_ellipse, only: semi_major_axis, eccentricity
+      use precision, only: dp
 
-      integer :: iell
+      integer, intent(in) :: iell
 
-      A = 6378137d0
-      E = 0.081819d0
+      semi_major_axis = 6378137_dp
+      eccentricity = 0.081819_dp
 
-      if (IELL == 1) then ! Hayford
-         A = 6378388d0
-         E = 0.081992d0
-      elseif (IELL == 2) then ! Bessel
-         A = 6377397d0
-         E = 0.081690d0
-      elseif (IELL == 3) then ! WGS 84
-         A = 6378137d0
-         E = 0.081819d0
-      elseif (IELL == 4) then ! Clarke 1880
-         A = 6378249d0
-         E = 0.082478d0
-      elseif (IELL == 5) then ! India 1830
-         A = 6377276.345d0
-         E = 0.081473d0
+      if (iell == 1) then ! hayford
+         semi_major_axis = 6378388_dp
+         eccentricity = 0.081992_dp
+      elseif (iell == 2) then ! bessel
+         semi_major_axis = 6377397_dp
+         eccentricity = 0.081690_dp
+      elseif (iell == 3) then ! wgs 84
+         semi_major_axis = 6378137_dp
+         eccentricity = 0.081819_dp
+      elseif (iell == 4) then ! clarke 1880
+         semi_major_axis = 6378249_dp
+         eccentricity = 0.082478_dp
+      elseif (iell == 5) then ! india 1830
+         semi_major_axis = 6377276.345_dp
+         eccentricity = 0.081473_dp
       end if
-      return
-   end subroutine SETELLIPS
-
-end module m_setellips
+   end subroutine setellipse
+end module m_setellipse

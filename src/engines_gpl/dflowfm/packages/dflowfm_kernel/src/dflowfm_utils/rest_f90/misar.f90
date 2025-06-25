@@ -42,10 +42,10 @@ contains
 
    subroutine MISAR(H, MMAX)
       use precision, only: dp
-      use M_MISSING
+      use M_MISSING, only: dmiss
 
       integer :: i
-      integer :: mmax
+      integer, intent(in) :: mmax
       real(kind=dp) :: H(MMAX)
 
       do I = 1, MMAX
