@@ -43,10 +43,10 @@ contains
 
    subroutine updateValuesOnRunupGauges_mpi()
       use precision, only: dp
-      use m_monitoring_runupgauges
-      use m_partitioninfo
-      use m_timer
-      use mpi
+      use m_monitoring_runupgauges, only : num_rugs, rug
+      use m_partitioninfo, only : my_rank, reduce_rug, dfm_comm_dfmworld
+      use m_timer, only : jatimer, starttimer, ioutputmpi, stoptimer
+      use mpi, only : mpi_allreduce, mpi_double_precision, mpi_sum
 
       integer :: irug, ierror
       real(kind=dp), allocatable, dimension(:, :) :: ruh

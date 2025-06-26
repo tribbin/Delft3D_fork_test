@@ -50,7 +50,7 @@ contains
                              a, b, c, d, e, sol, rhs)
       use precision, only: dp
       use m_make_rhs, only: make_rhs
-      use m_flowgeom, only: Ndxi, Ndx, ba, kfs ! static mesh information
+      use m_flowgeom, only : Ndxi, kfs, ba ! static mesh information
       use m_flowtimes, only: dts
       use m_flow, only: kmxn, xlozmidov, rhomean, rho, ag, a1, wsf, jaimplicitfallvelocity ! do not use m_flow, please put this in the argument list
       use m_turbulence, only: difwws

@@ -39,12 +39,12 @@ contains
    !! Updates cross-section based on main average bed level change.
    !! Returns bed level change for lowest point in cross-section.
    subroutine fm_update_crosssections(blchg)
-      use precision
+      use precision, only : fp, dp, comparereal
+      use unstruc_channel_flow, only : network, nt_LinkNode
+      use m_CrossSections, only : CS_TABULATED
+      use MessageHandling, only : msgbuf, err_flush
       use m_flowgeom, only: bl, ndx, ndx2d
       use m_oned_functions, only: gridpoint2cross
-      use unstruc_channel_flow, only: network, t_node, nt_LinkNode
-      use m_CrossSections, only: t_CSType, CS_TABULATED
-      use MessageHandling
       use m_fm_erosed, only: ndxi_mor, ndx_mor, e_sbn, nd_mor, lsedtot
       use m_f1dimp, only: f1dimppar
       use m_flowparameters, only: flow_solver, FLOW_SOLVER_SRE

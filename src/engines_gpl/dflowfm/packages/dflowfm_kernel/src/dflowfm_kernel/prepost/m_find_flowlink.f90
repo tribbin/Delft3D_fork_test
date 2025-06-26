@@ -43,8 +43,8 @@ contains
       use MessageHandling, only: mess, LEVEL_WARN, LEVEL_ERROR
       use m_GlobalParameters, only: INDTP_ALL
       use m_partitioninfo, only: jampi
-      use mpi
-      use m_inflowcell
+      use mpi, only : mpi_allreduce, mpi_in_place, mpi_integer, mpi_max, mpi_comm_world
+      use m_inflowcell, only : inflowcell
 
       real(dp), dimension(:), intent(in) :: xx !< x-coordinate of input points
       real(dp), dimension(:), intent(in) :: yy !< y-coordinate of input points
@@ -88,11 +88,9 @@ contains
    !> Find for each input point the flow link with the shortest perpendicular distance to it, given a set of points [xx, yy].
    !! Uses the k-d tree routines
    subroutine find_nearest_flowlinks_kdtree(xx, yy, link_nrs_nearest, distances, ierror)
-      use MessageHandling, only: mess, LEVEL_ERROR
+      
       use m_flowgeom, only: lnx, ln, xz, yz
-      use m_alloc, only: realloc
       use kdtree2Factory, only: kdtree_instance, find_nearest_sample_kdtree
-      use geometry_module, only: dlinedis
       use m_sferic, only: jsferic
       use m_missing, only: dmiss
 
@@ -259,7 +257,7 @@ contains
    !! so that the index is only non-zero for the process that actually owns the nearest flowlink
    subroutine reduce_nearest_flowlinks(distances, link_nrs_nearest)
       use MessageHandling, only: mess, LEVEL_ERROR
-      use mpi
+      use mpi, only : mpi_allreduce, mpi_in_place, mpi_2double_precision, mpi_minloc, mpi_comm_world
       use m_partitioninfo, only: jampi, my_rank
 
       real(dp), dimension(:), intent(in) :: distances !< Distances to nearest flowlink reported by each process

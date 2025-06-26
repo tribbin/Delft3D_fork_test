@@ -40,16 +40,15 @@ contains
 
    subroutine getustbcfuhi(LL, Lb, ustbLL, cfuhiLL, hdzb, z00, cfuhi3D) ! see Uittenbogaard's subroutine USTAR
       use precision, only: dp
-      use m_getsoulsbywci
-      use m_flow
+      use m_getsoulsbywci, only : getsoulsbywci
+      use m_flow, only : frcu, ifrcutp, hu, trsh_u1lb, ag, s1, u1, c9of1, jaustarint, vonkar, z0ucur, v, jawave, no_waves, flowwithoutwaves, jawavestokes, no_stokes_drift, rhomean, modind, epsz0, taubu, taubxu, z0urou, jawavestreaming, wave_streaming_off, ltop, adve, viskin, vicwwu, vicoww, jafrculin, frculin
+      use m_get_ustwav, only : getustwav
+      use m_get_czz0, only : getczz0
       use m_flowgeom, only: ln, dxi, csu, snu
       use m_flowtimes, only: dti
       use m_waves, only: ustokes, vstokes, wblt
       use m_sediment, only: stm_included
-      use m_turbulence, only: tkepro
       use m_flowtimes, only: dts
-      use m_get_ustwav
-      use m_get_czz0
       use m_filez, only: error
       use mathconsts, only: ee
 

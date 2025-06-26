@@ -44,8 +44,7 @@ contains
       use fm_external_forcings_data, only: ncdamsg, zcdam, l1cdamsg, l2cdamsg, kcdam, ncgensg, l1cgensg, l2cgensg, kcgen, zcgen
       use m_flowparameters, only: ifixedweirscheme1D2D
       use unstruc_channel_flow, only: network, st_culvert
-      use m_1d_structures, only: t_structure, get_crest_level
-      use m_compound, only: t_compound
+      use m_1d_structures, only : get_crest_level
       use m_1d2d_fixedweirs, only: set_iadvec
       use messagehandling, only: msgbuf, warn_flush
       use m_switchiadvnearlink, only: switchiadvnearlink

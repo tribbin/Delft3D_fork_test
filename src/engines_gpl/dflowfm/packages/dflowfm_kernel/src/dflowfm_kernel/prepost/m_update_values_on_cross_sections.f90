@@ -228,10 +228,10 @@ contains
 !> Reduce cross-section flowlink-integrated data
    subroutine reduce_cross_section_flowlink_integrals
       use m_monitoring_crosssections, only: nval, ncrs, crs_values
-      use m_partitioninfo
-      use m_timer
+      use m_partitioninfo, only : dfm_comm_dfmworld
+      use m_timer, only : jatimer, starttimer, ioutputmpi, stoptimer
+      use mpi, only : mpi_allreduce, mpi_in_place, mpi_double_precision, mpi_sum
 #ifdef HAVE_MPI
-      use mpi
 #endif
 
       implicit none

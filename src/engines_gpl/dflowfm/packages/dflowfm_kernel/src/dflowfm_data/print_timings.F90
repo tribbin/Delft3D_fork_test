@@ -43,7 +43,7 @@ contains
 !>  print timing information to file
    subroutine print_timings(FNAM, dtime)
 #ifdef HAVE_MPI
-      use mpi
+      use mpi, only : mpi_reduce, mpi_double_precision, mpi_max, mpi_sum, mpi_integer
 #endif
       use precision, only: dp
       use m_timer, only: numt, t, tcpu, numcgits, tnams, numtsteps

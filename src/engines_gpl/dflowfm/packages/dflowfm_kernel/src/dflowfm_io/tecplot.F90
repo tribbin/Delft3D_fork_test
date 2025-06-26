@@ -93,7 +93,7 @@ contains
 
 !  write array to Tecplot file
    subroutine tecdat(num, var, ierr, kmask, miss)
-      use m_missing
+      
 
       integer, intent(in) :: num ! data size
       real(kind=dp), dimension(num), intent(in) :: var ! data to be written
@@ -142,9 +142,7 @@ contains
 
 !>  write net to Tecplot file
    subroutine wrinet_tecplot(FNAM)
-      use network_data
-      use m_partitioninfo
-      use m_qnerror
+      use m_partitioninfo, only : qnerror
 
       character(len=*), intent(in) :: FNAM
 
@@ -321,8 +319,7 @@ contains
    end subroutine wrimap_tecplot
 
    subroutine ini_tecplot()
-      use network_data
-      use gridoperations
+      
 
 #ifdef HAVE_TECPLOT
 
