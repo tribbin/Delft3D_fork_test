@@ -748,15 +748,15 @@ contains
             end if
          case ('airpressure', 'atmosphericpressure')
             kx = 1
-            ierr = allocate_patm(0._dp)
+            ierr = allocate_patm(0.0_dp)
 
          case ('pseudoAirPressure')
             kx = 1
-            ierr = allocate_pseudo_air_pressure(0._dp)
+            ierr = allocate_pseudo_air_pressure(0.0_dp)
 
          case ('waterLevelCorrection')
             kx = 1
-            ierr = allocate_water_level_correction(0._dp)
+            ierr = allocate_water_level_correction(0.0_dp)
 
          case ('airpressure_windx_windy', 'airpressure_stressx_stressy', 'airpressure_windx_windy_charnock')
             kx = 1
@@ -765,7 +765,7 @@ contains
             jawindstressgiven = merge(1, 0, quantity == 'airpressure_stressx_stressy')
             jaspacevarcharn = merge(1, 0, quantity == 'airpressure_windx_windy_charnock')
 
-            ierr = allocate_patm(100000._dp)
+            ierr = allocate_patm(100000.0_dp)
 
             if (.not. allocated(ec_pwxwy_x)) then
                allocate (ec_pwxwy_x(ndx), ec_pwxwy_y(ndx), stat=ierr, source=0.0_dp)
@@ -884,17 +884,17 @@ contains
             ja_airdensity = 1
 
          case ('airpressure', 'atmosphericpressure')
-            air_pressure_available = 1
+            air_pressure_available = .true.
 
          case ('pseudoAirPressure')
-            pseudo_air_pressure_available = 1
+            pseudo_air_pressure_available = .true.
 
          case ('waterLevelCorrection')
-            water_level_correction_available = 1
+            water_level_correction_available = .true.
 
          case ('airpressure_windx_windy', 'airpressure_stressx_stressy', 'airpressure_windx_windy_charnock')
             jawind = 1
-            air_pressure_available = 1
+            air_pressure_available = .true.
 
          case ('charnock')
             jaspacevarcharn = 1

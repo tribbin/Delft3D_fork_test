@@ -70,9 +70,6 @@ module m_wind
    real(kind=dp), dimension(:), allocatable :: cdwcof !< wind stress cd coefficient () , only if jatemp ==5
 
    integer :: jawind !< use wind yes or no
-   integer :: air_pressure_available !< use air_pressure yes or no
-   integer :: pseudo_air_pressure_available !< use pseudo_air_pressure yes or no (used for computing water level correction)
-   integer :: water_level_correction_available !< use water_level_correction yes or no (used for correcting water level)
    integer :: jaspacevarcharn !< use space and time varying Charnock coefficients yes or no
    integer :: jawindstressgiven !< wind given as stress, no conversion needed
    integer :: jastresstowind !< if jawindstressgiven==1, convert stress to wind yes/no 1/0
@@ -86,6 +83,11 @@ module m_wind
    integer :: jaQext !< use Qin externally provided yes or no
    integer :: jaqin !< use qin , sum of all in fluxes
    integer :: update_wind_stress_each_time_step = 0 !< if 1, update wind (and air pressure) in each computational time step, else in externalforcings (default)
+
+   logical :: air_pressure_available !< use air_pressure yes or no
+   logical :: pseudo_air_pressure_available !< use pseudo_air_pressure yes or no (used for computing water level correction)
+   logical :: water_level_correction_available !< use water_level_correction yes or no (used for correcting water level)
+
    real(kind=dp) :: windxav, windyav !< average wind for plotting
 
    real(kind=dp) :: windsp
@@ -148,7 +150,7 @@ contains
    !> Resets only wind variables intended for a restart of flow simulation.
    !! Upon loading of new model/MDU, call default_wind() instead.
    subroutine reset_wind()
-      air_pressure_available = 0 !< use air_pressure yes or no
+      air_pressure_available = .false. !< use air_pressure yes or no
       jaspacevarcharn = 0 !< use space varying Charnock coefficients
       jawindstressgiven = 0 !< wind stress given in meteo file
       ja_airdensity = 0

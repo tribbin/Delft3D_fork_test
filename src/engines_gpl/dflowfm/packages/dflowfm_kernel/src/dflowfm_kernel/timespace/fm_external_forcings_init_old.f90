@@ -826,7 +826,7 @@ contains
 
                if (success) then
                   jawind = 1
-                  air_pressure_available = 1
+                  air_pressure_available = .true.
                end if
 
             else if (qid == 'charnock') then
@@ -921,38 +921,29 @@ contains
 
             else if (qid == 'airpressure' .or. qid == 'atmosphericpressure') then
 
-               if (.not. allocated(air_pressure)) then
-                  allocate (air_pressure(ndx), stat=ierr)
-                  call aerr('air_pressure(ndx)', ierr, ndx)
-                  air_pressure = 0.0_dp
-               end if
+               call realloc(air_pressure, ndx, keepExisting=.false., fill=0.0_dp, stat=ierr)
+               call aerr('air_pressure(ndx)', ierr, ndx)
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  air_pressure_available = 1
+                  air_pressure_available = .true.
                end if
 
             else if (qid == 'pseudoAirPressure') then
 
-               if (.not. allocated(pseudo_air_pressure)) then
-                  allocate (pseudo_air_pressure(ndx), stat=ierr)
-                  call aerr('pseudo_air_pressure(ndx)', ierr, ndx)
-                  pseudo_air_pressure = 0.0_dp
-               end if
+               call realloc(pseudo_air_pressure, ndx, keepExisting=.false., fill=0.0_dp, stat=ierr)
+               call aerr('pseudo_air_pressure(ndx)', ierr, ndx)
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  pseudo_air_pressure_available = 1
+                  pseudo_air_pressure_available = .true.
                end if
 
             else if (qid == 'waterLevelCorrection') then
 
-               if (.not. allocated(water_level_correction)) then
-                  allocate (water_level_correction(ndx), stat=ierr)
-                  call aerr('water_level_correction(ndx)', ierr, ndx)
-                  water_level_correction = 0.0_dp
-               end if
+               call realloc(water_level_correction, ndx, keepExisting=.false., fill=0.0_dp, stat=ierr)
+               call aerr('water_level_correction(ndx)', ierr, ndx)
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  water_level_correction_available = 1
+                  water_level_correction_available = .true.
                end if
 
             else if (qid == 'air_temperature') then

@@ -330,7 +330,7 @@ contains
 
       real(kind=dp), intent(in) :: time_in_seconds !< Current time when getting and applying winds
       integer, intent(out) :: iresult !< Error indicator
-      if (jawind == 1 .or. air_pressure_available > 0) then
+      if (jawind == 1 .or. air_pressure_available) then
          call prepare_wind_model_data(time_in_seconds, iresult)
          if (iresult /= DFM_NOERR) then
             return
@@ -2809,54 +2809,42 @@ contains
    function allocate_patm(default_value) result(status)
       use m_wind, only: air_pressure
       use m_cell_geometry, only: ndx
-      use m_alloc, only: aerr
-      use precision_basics, only: hp
+      use m_alloc, only: aerr, realloc
+      use precision, only: dp
 
-      real(kind=hp), intent(in) :: default_value !< default atmospheric pressure value
+      real(kind=dp), intent(in) :: default_value !< default atmospheric pressure value
       integer :: status
 
-      status = 0
-      if (.not. allocated(air_pressure)) then
-         allocate (air_pressure(ndx), stat=status, source=default_value)
-         call aerr('air_pressure(ndx)', status, ndx)
-      end if
-
+      call realloc(air_pressure, ndx, keepExisting=.false., fill=default_value, stat=status)
+      call aerr('air_pressure(ndx)', status, ndx)
    end function allocate_patm
 
    !> Allocate and initialized pseudo atmosperic pressure variable(s)
    function allocate_pseudo_air_pressure(default_value) result(status)
       use m_wind, only: pseudo_air_pressure
       use m_cell_geometry, only: ndx
-      use m_alloc, only: aerr
-      use precision_basics, only: hp
+      use m_alloc, only: aerr, realloc
+      use precision, only: dp
 
-      real(kind=hp), intent(in) :: default_value !< default atmospheric pressure value
+      real(kind=dp), intent(in) :: default_value !< default atmospheric pressure value
       integer :: status
 
-      status = 0
-      if (.not. allocated(pseudo_air_pressure)) then
-         allocate (pseudo_air_pressure(ndx), stat=status, source=default_value)
-         call aerr('pseudo_air_pressure(ndx)', status, ndx)
-      end if
-
+      call realloc(pseudo_air_pressure, ndx, keepExisting=.false., fill=default_value, stat=status)
+      call aerr('pseudo_air_pressure(ndx)', status, ndx)
    end function allocate_pseudo_air_pressure
 
    !> Allocate and initialized pseudo atmosperic pressure variable(s)
    function allocate_water_level_correction(default_value) result(status)
       use m_wind, only: water_level_correction
       use m_cell_geometry, only: ndx
-      use m_alloc, only: aerr
-      use precision_basics, only: hp
+      use m_alloc, only: aerr, realloc
+      use precision, only: dp
 
-      real(kind=hp), intent(in) :: default_value !< default atmospheric pressure value
+      real(kind=dp), intent(in) :: default_value !< default atmospheric pressure value
       integer :: status
 
-      status = 0
-      if (.not. allocated(water_level_correction)) then
-         allocate (water_level_correction(ndx), stat=status, source=default_value)
-         call aerr('water_level_correction(ndx)', status, ndx)
-      end if
-
+      call realloc(water_level_correction, ndx, keepExisting=.false., fill=default_value, stat=status)
+      call aerr('water_level_correction(ndx)', status, ndx)
    end function allocate_water_level_correction
 
    function check_keyword_zerozbndinflowadvection() result(success)
