@@ -45,7 +45,7 @@ contains
 !> Read ice cover settings (Note: the meteo module should already have been initialized)
 subroutine read_icecover(icecover, md_ptr, chapter, error)
    type (icecover_type), intent(inout) :: icecover !< ice cover data structure containing the data read
-   type(tree_data), pointer :: md_ptr !< pointer to the input file
+   type(tree_data), pointer, intent(in) :: md_ptr !< pointer to the input file
    character(len=*), intent(in) :: chapter !< chapter name of the ice section
    logical, intent(out) :: error !< flag indicating an execution error
 
@@ -64,7 +64,7 @@ subroutine determine_icecover_model(icecover, md_ptr, chapter, error)
    use icecover_module, only: select_icecover_model, ICECOVER_NONE, ICECOVER_EXT, ICECOVER_SEMTNER
 
    type (icecover_type), intent(inout) :: icecover !< ice cover data structure containing the data read
-   type(tree_data), pointer :: md_ptr !< pointer to the input file
+   type(tree_data), pointer, intent(in) :: md_ptr !< pointer to the input file
    character(len=*), intent(in) :: chapter !< chapter name of the ice section
    logical, intent(out) :: error !< flag indicating an execution error
 
@@ -101,13 +101,13 @@ subroutine read_icecover_parameters(icecover, md_ptr, chapter, error)
    use icecover_module, only: ICE_WINDDRAG_NONE, ICE_WINDDRAG_CUBIC, ICE_WINDDRAG_LB05, &
       & ICE_WINDDRAG_AN10, ICE_WINDDRAG_LINEAR, ICE_WINDDRAG_RAYS, ICE_WINDDRAG_JOYCE19
    !
-   type (icecover_type)         , intent(inout) :: icecover !< ice cover data structure containing the data read
-   type(tree_data)              , pointer       :: md_ptr   !< pointer to the input file
-   character(len=*)             , intent(in)    :: chapter  !< chapter name of the ice section
-   logical                      , intent(out)   :: error    !< flag indicating an execution error
+   type (icecover_type), intent(inout) :: icecover !< ice cover data structure containing the data read
+   type(tree_data), pointer, intent(in) :: md_ptr !< pointer to the input file
+   character(len=*), intent(in) :: chapter !< chapter name of the ice section
+   logical, intent(out) :: error !< flag indicating an execution error
    !
-   integer                                      :: model_type !< local ice cover model flag
-   character(256)                               :: tmp   !< temporary string for input processing
+   integer :: model_type !< local ice cover model flag
+   character(256) :: tmp !< temporary string for input processing
 
    call prop_get(md_ptr, chapter, 'applyPressure', icecover%apply_pressure)
    call prop_get(md_ptr, chapter, 'applyFriction', icecover%apply_friction)
@@ -172,12 +172,13 @@ subroutine read_icecover_output(icecover, md_ptr, chapter)
    use properties, only: tree_data, prop_get
 
    type (icecover_type), intent(inout) :: icecover !< ice cover data structure containing the data read
-   type(tree_data), pointer :: md_ptr !< pointer to the input file
+   type(tree_data), pointer, intent(in) :: md_ptr !< pointer to the input file
    character(len=*), intent(in) :: chapter !< chapter name of the ice section
 
-   ! backward compatibility flags located in the ice chapter
+   ! backward compatibility flags located in the ice and output chapters
    call prop_get(md_ptr, chapter, 'addIceToHis', icecover%hisout%default)
    call prop_get(md_ptr, chapter, 'addIceToMap', icecover%mapout%default)
+   call prop_get(md_ptr, 'output', 'wriMap_ice', icecover%mapout%default)
    
    ! new output flags always located in the output chapter
    call read_output_flags_per_quantity(icecover%hisout, md_ptr, 'output', 'wriHis', icecover%model_type)
@@ -191,7 +192,7 @@ subroutine read_output_flags_per_quantity(outflags, md_ptr, chapter, prefix, mod
    use properties, only: tree_data, prop_get
    
    type(icecover_output_flags), intent(inout) :: outflags !< output flags structure
-   type(tree_data), pointer :: md_ptr !< pointer to the input file
+   type(tree_data), pointer, intent(in) :: md_ptr !< pointer to the input file
    character(len=*), intent(in) :: chapter !< chapter name of the ice section
    character(len=*), intent(in) :: prefix !< name of output file   
    integer, intent(in) :: model_type !< ice cover model flag
