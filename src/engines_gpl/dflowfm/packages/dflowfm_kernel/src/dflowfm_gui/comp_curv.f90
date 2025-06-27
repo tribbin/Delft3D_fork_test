@@ -36,8 +36,8 @@ contains
    subroutine comp_curv(num, xsp, ysp, xsp2, ysp2, s, curv, dnx, dny, dsx, dsy)
       use precision, only: dp
 
-      use m_sferic, only : jsferic, dg2rd, ra, jasfer3d
-      use m_splint, only : splint
+      use m_sferic, only: jsferic, dg2rd, ra, jasfer3d
+      use m_splint, only: splint
       use geometry_module, only: dbdistance, getdxdy, normalout
       use m_missing, only: dmiss, dxymis
 

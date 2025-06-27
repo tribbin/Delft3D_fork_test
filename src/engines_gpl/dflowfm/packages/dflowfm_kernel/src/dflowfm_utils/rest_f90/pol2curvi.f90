@@ -54,11 +54,11 @@ contains
       use m_tranfn2, only: tranfn2
       use m_get_polstartend, only: get_polstartend
       use precision, only: dp
-      use m_grid, only : mc, nc, mmax, nmax, xc, yc
-      use m_gridsettings, only : mfac, nfac
-      use m_polygon, only : npl, xpl, ypl
-      use m_qnerror, only : qnerror
-      use m_increase_grid, only : increasegrid
+      use m_grid, only: mc, nc, mmax, nmax, xc, yc
+      use m_gridsettings, only: mfac, nfac
+      use m_polygon, only: npl, xpl, ypl
+      use m_qnerror, only: qnerror
+      use m_increase_grid, only: increasegrid
 
       integer, intent(in) :: i1, i2, i3 !< first, second and third corner point in polygon, respectively
       integer, intent(in) :: ja4 !< use polygon for fourth side (1) or not (0)

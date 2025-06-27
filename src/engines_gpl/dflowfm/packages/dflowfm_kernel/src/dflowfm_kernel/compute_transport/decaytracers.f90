@@ -42,10 +42,10 @@ contains
 
    subroutine decaytracers()
       use precision, only: dp
-      use m_transport, only : itra1, itran, constituents
-      use m_flow, only : decaytimetracers, ndkx
-      use m_flowtimes, only : dts
-      use timers, only : timon, timstrt, timstop
+      use m_transport, only: itra1, itran, constituents
+      use m_flow, only: decaytimetracers, ndkx
+      use m_flowtimes, only: dts
+      use timers, only: timon, timstrt, timstop
 
       implicit none
 

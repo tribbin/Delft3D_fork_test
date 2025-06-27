@@ -39,8 +39,8 @@ contains
 
    subroutine comp_samplegradi(IDIR, i, j, grad, Sn, DareaL, DareaR)
       use precision, only: dp
-      use m_comp_grad, only : comp_grad
-      use m_samples_refine, only : zss
+      use m_comp_grad, only: comp_grad
+      use m_samples_refine, only: zss
       use m_samples, only: MXSAM, MYSAM
 
       implicit none

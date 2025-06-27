@@ -43,9 +43,9 @@ contains
 
    subroutine comp_circumcenter(N, xp, yp, xf, yf, xc, yc)
       use precision, only: dp
-      use m_sferic, only : jsferic, jasfer3d, ra, dg2rd
-      use m_missing, only : dmiss, dxymis, jins
-      use m_qnerror, only : qnerror
+      use m_sferic, only: jsferic, jasfer3d, ra, dg2rd
+      use m_missing, only: dmiss, dxymis, jins
+      use m_qnerror, only: qnerror
       use geometry_module, only: pinpok, getdxdy, cross, normalin
 
       integer, intent(in) :: N !< polygon dimension

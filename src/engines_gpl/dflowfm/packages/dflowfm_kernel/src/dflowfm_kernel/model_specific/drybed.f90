@@ -43,8 +43,8 @@ contains
 
    subroutine drybed(time)
       use precision, only: dp
-      use m_movabs, only : movabs
-      use m_lnabs, only : lnabs
+      use m_movabs, only: movabs
+      use m_lnabs, only: lnabs
 
       real(kind=dp) :: time
 

@@ -44,7 +44,7 @@ contains
       use m_GlobalParameters, only: INDTP_ALL
       use m_partitioninfo, only: jampi
       use mpi
-      use m_inflowcell, only : inflowcell
+      use m_inflowcell, only: inflowcell
 
       real(dp), dimension(:), intent(in) :: xx !< x-coordinate of input points
       real(dp), dimension(:), intent(in) :: yy !< y-coordinate of input points
@@ -88,7 +88,7 @@ contains
    !> Find for each input point the flow link with the shortest perpendicular distance to it, given a set of points [xx, yy].
    !! Uses the k-d tree routines
    subroutine find_nearest_flowlinks_kdtree(xx, yy, link_nrs_nearest, distances, ierror)
-      
+
       use m_flowgeom, only: lnx, ln, xz, yz
       use kdtree2Factory, only: kdtree_instance, find_nearest_sample_kdtree
       use m_sferic, only: jsferic

@@ -39,9 +39,9 @@ contains
 
    subroutine samples_to_cellmask2()
 
-      use network_data, only : cellmask, nump1d2d, increasepol, nump, npl, netcell, xpl, xk, ypl, yk, zpl
-      use m_samples, only : zs, ns, xs, ys
-      use geometry_module, only : dbpinpol_optinside_perpol2, ipolyfound
+      use network_data, only: cellmask, nump1d2d, increasepol, nump, npl, netcell, xpl, xk, ypl, yk, zpl
+      use m_samples, only: zs, ns, xs, ys
+      use geometry_module, only: dbpinpol_optinside_perpol2, ipolyfound
       use m_missing, only: dmiss
 
       implicit none

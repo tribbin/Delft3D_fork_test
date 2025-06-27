@@ -47,8 +47,8 @@ contains
  !! type link to 2D grid cell).
    subroutine get1Ddir(n1, xt, yt)
       use precision, only: dp
-      use m_flowgeom, only : nd, kcu, ln, xz, yz, xu, yu
-      use m_flow, only : dxymis, dmiss
+      use m_flowgeom, only: nd, kcu, ln, xz, yz, xu, yu
+      use m_flow, only: dxymis, dmiss
       use m_sferic, only: jsferic, jasfer3D
       use geometry_module, only: normalin, normalout
 

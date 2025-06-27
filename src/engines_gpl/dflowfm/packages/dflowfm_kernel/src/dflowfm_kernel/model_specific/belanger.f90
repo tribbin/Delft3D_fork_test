@@ -40,10 +40,10 @@ contains
 
    subroutine belanger()
       use precision, only: dp
-      use m_physcoef, only : frcuni, ifrctypuni, ag
-      use fm_external_forcings_data, only : kbndz
-      use m_movabs, only : movabs
-      use m_lnabs, only : lnabs
+      use m_physcoef, only: frcuni, ifrctypuni, ag
+      use fm_external_forcings_data, only: kbndz
+      use m_movabs, only: movabs
+      use m_lnabs, only: lnabs
       use m_flowgeom, only: xz, bl, dxi, ln
       use m_flow, only: s1, iadvec, u1, v
       use m_get_chezy, only: get_chezy

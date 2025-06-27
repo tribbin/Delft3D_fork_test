@@ -43,8 +43,8 @@ contains
    !> allocate center related linkxy weights
    subroutine allocatelinktocenterweights()
 
-      use m_flowgeom, only : wcxy, wcx1, wcy1, wcx2, wcy2, wcl, wc, ndx, lnx
-      use m_alloc, only : aerr
+      use m_flowgeom, only: wcxy, wcx1, wcy1, wcx2, wcy2, wcl, wc, ndx, lnx
+      use m_alloc, only: aerr
 
       integer :: ierr
 

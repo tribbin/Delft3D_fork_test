@@ -1386,8 +1386,8 @@ contains
       call prop_get(md_ptr, 'physics', 'Tempmin', temperature_min)
       call prop_get(md_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point)
       if (use_salinity_freezing_point .and. temperature_min >= 0.0_dp) then
-          write(msgbuf,'(a,g0,a)') 'salinityDependentFreezingPoint is set to true, but Tempmin = ', temperature_min, &
-              ' is not below 0 degrees Celsius. This may lead to incorrect results.'
+         write (msgbuf, '(a,g0,a)') 'salinityDependentFreezingPoint is set to true, but Tempmin = ', temperature_min, &
+            ' is not below 0 degrees Celsius. This may lead to incorrect results.'
          call mess(LEVEL_WARN, msgbuf)
       end if
 
@@ -3394,7 +3394,7 @@ contains
          end if
          if (writeall .or. use_salinity_freezing_point) then
             call prop_set(prop_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point, &
-                'Enable salinity-dependent freezing point (0 = no, 1 = yes)')
+                          'Enable salinity-dependent freezing point (0 = no, 1 = yes)')
          end if
          if (writeall .or. surftempsmofac > 0.0_dp) then
             call prop_set(prop_ptr, 'physics', 'Surftempsmofac', Surftempsmofac, 'Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no')

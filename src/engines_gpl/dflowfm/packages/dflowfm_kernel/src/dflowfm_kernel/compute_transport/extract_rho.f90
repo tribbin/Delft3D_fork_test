@@ -41,9 +41,9 @@ module m_extract_rho
 contains
 
    subroutine extract_rho()
-      use m_transport, only : constituents
-      use m_flow, only : ndkx, rho, sa1
-      use timers, only : timon, timstrt, timstop
+      use m_transport, only: constituents
+      use m_flow, only: ndkx, rho, sa1
+      use timers, only: timon, timstrt, timstop
 
       implicit none
 

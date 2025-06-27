@@ -44,9 +44,9 @@ contains
    subroutine SHIFXY(IS, JS, MP, NP)
 
       !     XH,     YH,     mmax, nmax, MC,     NC, IS,     JS,     MP,     NP        )
-      use m_missing, only : xymis
-      use m_grid, only : mc, nc, xc, yc, zc
-      use m_increase_grid, only : increasegrid
+      use m_missing, only: xymis
+      use m_grid, only: mc, nc, xc, yc, zc
+      use m_increase_grid, only: increasegrid
 
       integer :: is, js, mp, np
 

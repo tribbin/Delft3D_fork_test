@@ -45,11 +45,11 @@ contains
    subroutine detect_ridges(jadeleteHessians)
       use precision, only: dp
       use m_deallocate_samplehessian, only: deallocate_samplehessian
-      use m_plot_ridges, only : plot_ridges
-      use m_samples, only : mxsam, mysam, ns, xs, ys, savesam
-      use m_samples_refine, only : nsamplesmooth, zss
-      use m_missing, only : dmiss
-      use m_comp_sampleDh, only : comp_sampledh
+      use m_plot_ridges, only: plot_ridges
+      use m_samples, only: mxsam, mysam, ns, xs, ys, savesam
+      use m_samples_refine, only: nsamplesmooth, zss
+      use m_missing, only: dmiss
+      use m_comp_sampleDh, only: comp_sampledh
       use geometry_module, only: dbdistance
       use m_sferic, only: jsferic, jasfer3D
 

@@ -38,19 +38,19 @@ contains
 
    subroutine TEKFN(NSC, NF, JW, X, Y, N, X1, X2, Y1, Y2, NCOL, TITLE, JAUTO, JP, DAG, kp1)
       use precision, only: dp
-      use m_setwindow, only : setwindow
-      use m_isofil, only : isofil
-      use m_dispf2cir, only : dispf2cir
-      use m_dispf2, only : dispf2
-      use m_box, only : box
-      use m_depmax, only : vmax, vmin, nv, dv, val
-      use m_ktext, only : ktext
-      use m_fbox, only : fbox
-      use m_gtext, only : gtext
-      use m_set_col, only : setcol
-      use m_movabs, only : movabs
-      use m_lnabs, only : lnabs
-      use m_draw_text, only : drawtext
+      use m_setwindow, only: setwindow
+      use m_isofil, only: isofil
+      use m_dispf2cir, only: dispf2cir
+      use m_dispf2, only: dispf2
+      use m_box, only: box
+      use m_depmax, only: vmax, vmin, nv, dv, val
+      use m_ktext, only: ktext
+      use m_fbox, only: fbox
+      use m_gtext, only: gtext
+      use m_set_col, only: setcol
+      use m_movabs, only: movabs
+      use m_lnabs, only: lnabs
+      use m_draw_text, only: drawtext
       use m_flow, only: kplotfrombedorsurface
       use unstruc_colors, only: ncolblack
       implicit none

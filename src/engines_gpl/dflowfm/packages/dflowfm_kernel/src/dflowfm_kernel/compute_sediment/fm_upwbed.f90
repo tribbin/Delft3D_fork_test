@@ -46,7 +46,7 @@ contains
       use m_flowgeom, only: acl, snu, csu, kcu, ndx
       use m_flow, only: u1, epshu, hu
       use m_sediment, only: stmpar, jabndtreatment
-      use sediment_basics_module, only : has_bedload
+      use sediment_basics_module, only: has_bedload
       use m_fm_erosed, only: link1, link1sign, tratyp, kfsed, link1sign2
       use m_fm_erosed, only: ln => ln_mor
       use m_fm_erosed, only: lnx => lnx_mor

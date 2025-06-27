@@ -38,10 +38,10 @@ contains
 
    subroutine inifcori()
       use precision, only: dp
-      use m_flowgeom, only : lnx, yu, xu, ndx, yz, xz, llkkk, ln, nd
-      use m_flow, only : jacorioconstant, fcori, icorio, aerr, jasecflow, kmx, fcoris
-      use m_sferic, only : jsferic, omega, dg2rd, anglat, ra
-      use m_dbdistance_hk, only : dbdistancehk
+      use m_flowgeom, only: lnx, yu, xu, ndx, yz, xz, llkkk, ln, nd
+      use m_flow, only: jacorioconstant, fcori, icorio, aerr, jasecflow, kmx, fcoris
+      use m_sferic, only: jsferic, omega, dg2rd, anglat, ra
+      use m_dbdistance_hk, only: dbdistancehk
       use network_data, only: ykmin, ykmax
       use messagehandling, only: LEVEL_INFO, mess
       use m_filez, only: doclose

@@ -106,7 +106,7 @@ contains
 
    subroutine ReallocCrosssectionSums(cs)
       use m_transport, only: NUMCONST
-      use m_alloc, only : realloc
+      use m_alloc, only: realloc
       use m_sediment, only: jased, stmpar
       implicit none
       type(tcrs), allocatable, intent(inout) :: cs(:) !< Array of cross sections
@@ -153,7 +153,7 @@ contains
 
 !> Copies array of crs into another array of crs.
    subroutine copyCrossSections(rfrom, rto)
-      
+
       type(tcrs), intent(inout) :: rfrom(:)
       type(tcrs), intent(inout) :: rto(:)
 
@@ -288,7 +288,7 @@ contains
 !> Reads observation points from an *.pli file.
 ! Typically called via loadObservCrossSections().
    subroutine loadObservCrossSections_from_pli(filename)
-      use m_polygon, only : xpl, ypl, npl, nampli
+      use m_polygon, only: xpl, ypl, npl, nampli
       use m_reapol_nampli, only: reapol_nampli
       use m_filez, only: oldfil, doclose
 
@@ -308,10 +308,10 @@ contains
 !> Adds observation cross sections, that are read from *.ini file, to the normal cross section adm
    subroutine addObservCrsFromIni(network, filename)
       use precision, only: dp
-      use m_network, only : t_network, mess, level_error
-      use odugrid, only : odu_get_xy_coordinates
-      use m_save_ugrid_state, only : meshgeom1d
-      use dfm_error, only : dfm_noerr
+      use m_network, only: t_network, mess, level_error
+      use odugrid, only: odu_get_xy_coordinates
+      use m_save_ugrid_state, only: meshgeom1d
+      use dfm_error, only: dfm_noerr
       use m_sferic, only: jsferic
       use m_observcrosssections, only: t_observcrosssection
       implicit none

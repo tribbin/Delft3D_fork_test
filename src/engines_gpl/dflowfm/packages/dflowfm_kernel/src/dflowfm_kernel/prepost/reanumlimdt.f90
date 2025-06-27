@@ -41,10 +41,10 @@ module m_reanumlimdt
 contains
 
    subroutine reanumlimdt()
-      use m_flowgeom, only : ndx
-      use m_flow, only : numlimdt
-      use m_partitioninfo, only : jampi, sdmn
-      use m_samples, only : increasesam, xs, ys, zs
+      use m_flowgeom, only: ndx
+      use m_flow, only: numlimdt
+      use m_partitioninfo, only: jampi, sdmn
+      use m_samples, only: increasesam, xs, ys, zs
       use m_GlobalParameters, only: INDTP_ALL
       use m_find_flownode, only: find_nearest_flownodes
       use m_filez, only: oldfil, doclose

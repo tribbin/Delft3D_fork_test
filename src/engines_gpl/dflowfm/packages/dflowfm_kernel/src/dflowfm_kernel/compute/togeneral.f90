@@ -42,7 +42,7 @@ contains
 
    subroutine togeneral(ng, hulp, ngen, widths)
       use precision, only: dp
-      use m_strucs, only : generalstruc
+      use m_strucs, only: generalstruc
       use m_alloc, only: realloc
 
       integer, intent(in) :: ng !< Index of this general structure in the generalstruc(:) array

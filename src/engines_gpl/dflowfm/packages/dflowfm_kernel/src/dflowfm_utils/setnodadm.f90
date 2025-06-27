@@ -38,8 +38,8 @@ contains
 !!   the flow1d::network administration, if they were also
 !!   removed from network_data in the first step.
    subroutine setnodadm(jacrosscheck_)
-      use gridoperations, only : setnodadm_grd_op
-      use m_network, only : msgbuf, warn_flush, update_flow1d_admin
+      use gridoperations, only: setnodadm_grd_op
+      use m_network, only: msgbuf, warn_flush, update_flow1d_admin
       use m_save_ugrid_state, only: contactnlinks, contactnetlinks, netlink2contact, hashlist_contactids
       use unstruc_channel_flow, only: network
       use network_data, only: lc, numl1d, Lperminv, nlinkremoved

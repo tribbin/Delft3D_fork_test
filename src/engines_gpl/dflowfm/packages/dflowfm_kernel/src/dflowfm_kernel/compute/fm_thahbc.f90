@@ -58,9 +58,9 @@ contains
 
    subroutine fm_thahbc()
 
-      use fm_external_forcings_data, only : nbnds, zbnds, kbnds, thtbnds, thzbnds, nbndtm, zbndtm, kbndtm, thtbndtm, thzbndtm, nbndsd, zbndsd, kbndsd, thtbndsd, thzbndsd, bndtr, numtracers, nbndtr, bndsf, numfracs, nbndsf
-      use m_flowparameters, only : jasal, jatem, jased
-      use m_sediment, only : stm_included
+      use fm_external_forcings_data, only: nbnds, zbnds, kbnds, thtbnds, thzbnds, nbndtm, zbndtm, kbndtm, thtbndtm, thzbndtm, nbndsd, zbndsd, kbndsd, thtbndsd, thzbndsd, bndtr, numtracers, nbndtr, bndsf, numfracs, nbndsf
+      use m_flowparameters, only: jasal, jatem, jased
+      use m_sediment, only: stm_included
       use m_transport, only: ISALT, ITEMP, ISED1, itrac2const, ifrac2const
 
       implicit none
@@ -122,10 +122,10 @@ contains
    subroutine thconst(iconst, nbnd, zbnd, kbnd, tht, thz)
       use precision, only: dp
 
-      use m_transport, only : constituents
-      use fm_external_forcings_data, only : nopenbndsect, threttim
-      use m_missing, only : dmiss
-      use m_get_Lbot_Ltop, only : getlbotltop
+      use m_transport, only: constituents
+      use fm_external_forcings_data, only: nopenbndsect, threttim
+      use m_missing, only: dmiss
+      use m_get_Lbot_Ltop, only: getlbotltop
       use mathconsts, only: pi_hp
       use m_flow, only: kmxd, q1
       use m_flowtimes, only: dt_user

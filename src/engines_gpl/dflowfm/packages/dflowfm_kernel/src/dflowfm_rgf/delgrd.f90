@@ -43,10 +43,10 @@ contains
 
    subroutine delgrd(KEY, JASAVE, jadelpol)
 !    delete grid
-      use m_confrm, only : confrm
-      use m_grid, only : xc, yc, mc, nc
-      use m_missing, only : dxymis, dmiss, jins, xymis
-      use m_delpol, only : delpol
+      use m_confrm, only: confrm
+      use m_grid, only: xc, yc, mc, nc
+      use m_missing, only: dxymis, dmiss, jins, xymis
+      use m_delpol, only: delpol
       use m_polygon, only: NPL, xpl, ypl, zpl
       use geometry_module, only: dbpinpol
 

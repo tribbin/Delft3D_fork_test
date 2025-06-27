@@ -37,8 +37,8 @@ module m_zcorn
 contains
 
    real(kind=dp) function zcorn(k) ! get various values at flow cell corners
-      use m_flowgeom, only : ucnx, ucny
-      use m_drawthis, only : ndraw
+      use m_flowgeom, only: ucnx, ucny
+      use m_drawthis, only: ndraw
       implicit none
 
       integer :: k, nodval

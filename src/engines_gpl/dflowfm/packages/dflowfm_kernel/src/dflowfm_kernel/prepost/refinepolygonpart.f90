@@ -50,9 +50,9 @@ contains
       use precision, only: dp
       use m_averagediff, only: averagediff
       use m_accumulatedistance, only: accumulatedistance
-      use M_POLYGON, only : savepol, npl, xpl, ypl, zpl, dxuni, xph, yph, zph, maxpol
-      use M_MISSING, only : dmiss, dxymis
-      use m_alloc, only : aerr, realloc
+      use M_POLYGON, only: savepol, npl, xpl, ypl, zpl, dxuni, xph, yph, zph, maxpol
+      use M_MISSING, only: dmiss, dxymis
+      use m_alloc, only: aerr, realloc
 
       integer :: i1, i2
       integer, intent(in) :: jauniform !< use uniform spacing (1) or not (0)

@@ -35,8 +35,8 @@ contains
    subroutine inflowcell(xp, yp, k, jaoutside, iLocTp) ! is this point in a flowcell
       !FB TODO: this should be a function not a subroutine, return value (k) is not the last argument in list. booleans should be logical not integer.
       use precision, only: dp
-      use m_flowgeom, only : ndxi, ndx2d, nd, xz, yz, dx
-      use m_flow, only : jins, dmiss, nbndz, kbndz
+      use m_flowgeom, only: ndxi, ndx2d, nd, xz, yz, dx
+      use m_flow, only: jins, dmiss, nbndz, kbndz
       use m_GlobalParameters, only: INDTP_1D, INDTP_2D, INDTP_ALL
       use geometry_module, only: pinpok
 

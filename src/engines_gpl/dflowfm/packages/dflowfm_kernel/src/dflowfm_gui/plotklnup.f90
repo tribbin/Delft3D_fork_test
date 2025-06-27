@@ -39,9 +39,9 @@ contains
 
    subroutine plotklnup(L)
       use precision, only: dp
-      use m_dhtext, only : dhtext
-      use m_flowgeom, only : klnup, slnup, xz, yz, xu, yu
-      use m_cirr, only : cirr
+      use m_dhtext, only: dhtext
+      use m_flowgeom, only: klnup, slnup, xz, yz, xu, yu
+      use m_cirr, only: cirr
 
       integer, intent(in) :: L !< flowlink number
 

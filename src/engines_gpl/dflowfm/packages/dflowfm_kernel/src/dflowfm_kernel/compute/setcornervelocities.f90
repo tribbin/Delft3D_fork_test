@@ -43,10 +43,10 @@ contains
 !> set corner related velocity x- and y components
    subroutine setcornervelocities()
       use precision, only: dp
-      use m_flow, only : kmx, jacomp, ucx, ucy, jased, ustbc, ustb, kbotc, kmxc
-      use m_flowgeom, only : ucnx, ucny, lnx1d, lnx, ln, lncn, wcnx3, wcny3, wcnx4, wcny4, mxban, nban, banf, ban, nrcnw, cscnw, sncnw, kcnw, kcu, wcln
-      use m_sferic, only : jasfer3d
-      use m_get_Lbot_Ltop, only : getlbotltop
+      use m_flow, only: kmx, jacomp, ucx, ucy, jased, ustbc, ustb, kbotc, kmxc
+      use m_flowgeom, only: ucnx, ucny, lnx1d, lnx, ln, lncn, wcnx3, wcny3, wcnx4, wcny4, mxban, nban, banf, ban, nrcnw, cscnw, sncnw, kcnw, kcu, wcln
+      use m_sferic, only: jasfer3d
+      use m_get_Lbot_Ltop, only: getlbotltop
       use m_nod2linx, only: nod2linx
       use m_nod2liny, only: nod2liny
 

@@ -43,11 +43,11 @@ contains
    subroutine update_s_explicit()
       use precision, only: dp
       use m_sets01zbnd, only: sets01zbnd
-      use m_flow, only : s1, s0, sq
-      use m_flowgeom, only : ndx, bai
-      use m_flowtimes, only : dts
-      use m_partitioninfo, only : jampi, update_ghosts, itype_sall
-      use m_timer, only : jatimer, starttimer, iupdsall, stoptimer
+      use m_flow, only: s1, s0, sq
+      use m_flowgeom, only: ndx, bai
+      use m_flowtimes, only: dts
+      use m_partitioninfo, only: jampi, update_ghosts, itype_sall
+      use m_timer, only: jatimer, starttimer, iupdsall, stoptimer
       implicit none
 
       integer :: k

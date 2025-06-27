@@ -49,11 +49,11 @@ contains
       use m_turbulence, only: sigdifi
       use m_flowtimes, only: time1
       use m_physcoef, only: dicouv
-      use m_timer, only : jatimer, starttimer, impireduce, stoptimer
-      use m_transport, only : dtmin_transp, kk_dtmin, jalimitdtdiff, sumdifflim, numconst, difsedu, dxiau, dtmax, ised1, time_dtmax
-      use m_partitioninfo, only : jampi, idomain, my_rank, update_ghosts, itype_sall, reduce_double_min
-      use timers, only : timon, timstrt, timstop
-      use m_get_kbot_ktop, only : getkbotktop
+      use m_timer, only: jatimer, starttimer, impireduce, stoptimer
+      use m_transport, only: dtmin_transp, kk_dtmin, jalimitdtdiff, sumdifflim, numconst, difsedu, dxiau, dtmax, ised1, time_dtmax
+      use m_partitioninfo, only: jampi, idomain, my_rank, update_ghosts, itype_sall, reduce_double_min
+      use timers, only: timon, timstrt, timstop
+      use m_get_kbot_ktop, only: getkbotktop
       use m_sediment, only: mtd, stm_included
 
       implicit none

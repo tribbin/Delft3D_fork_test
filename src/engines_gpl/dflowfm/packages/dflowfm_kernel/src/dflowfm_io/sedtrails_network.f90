@@ -56,7 +56,7 @@ contains
 
    !> increase the number of sedtrails nodes
    subroutine sedtrails_increasenetwork(k0)
-      use m_alloc, only : aerr
+      use m_alloc, only: aerr
       use m_missing, only: xymis
 
       implicit none
@@ -85,7 +85,7 @@ contains
 
 !> restore variables with backup data
    subroutine sedtrails_restore()
-      use m_sedtrails_data, only : xk0, xk, yk, yk0, numk, numk0
+      use m_sedtrails_data, only: xk0, xk, yk, yk0, numk, numk0
       implicit none
       integer :: kx
 
@@ -102,7 +102,7 @@ contains
    end subroutine sedtrails_restore
 
    subroutine sedtrails_savenet()
-      use m_sedtrails_data, only : xk, kmax, xk0, yk0, zk0, yk, zk, numk0, numk
+      use m_sedtrails_data, only: xk, kmax, xk0, yk0, zk0, yk, zk, numk0, numk
       implicit none
       integer :: ierr
       integer :: kx
@@ -127,12 +127,12 @@ contains
    ! determine interpolation weights to transfer data from flowgeom to sedtrails output
    subroutine sedtrails_get_grid_on_network()
       use precision, only: dp
-      use m_sedtrails_data, only : numk, xk, yk, xk1, yk1, iwork, iglobal_s, st_ind, st_wf, idomain
-      use m_polygon, only : savepol, iistart, maxpoly, iiend, npl, xpl, ypl, npoly, restorepol, zpl
-      use m_tpoly, only : pol_to_tpoly, dbpinpol_tpolies, dealloc_tpoly, tpoly
-      use m_missing, only : dmiss, jins
-      use m_sferic, only : jsferic, jasfer3d
-      use m_copynetboundstopol, only : copynetboundstopol
+      use m_sedtrails_data, only: numk, xk, yk, xk1, yk1, iwork, iglobal_s, st_ind, st_wf, idomain
+      use m_polygon, only: savepol, iistart, maxpoly, iiend, npl, xpl, ypl, npoly, restorepol, zpl
+      use m_tpoly, only: pol_to_tpoly, dbpinpol_tpolies, dealloc_tpoly, tpoly
+      use m_missing, only: dmiss, jins
+      use m_sferic, only: jsferic, jasfer3d
+      use m_copynetboundstopol, only: copynetboundstopol
       use m_partitioninfo, only: my_rank, jampi, generate_partition_pol_from_idomain
       use network_data, only: netstat, netstat_ok
       use geometry_module, only: get_startend

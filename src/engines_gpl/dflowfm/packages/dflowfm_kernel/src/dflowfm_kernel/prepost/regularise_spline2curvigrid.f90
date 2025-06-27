@@ -45,8 +45,8 @@ contains
 
    subroutine regularise_spline2curvigrid()
       use precision, only: dp
-      use m_grid, only : mc, nc, xc, yc
-      use m_get_lr, only : get_lr
+      use m_grid, only: mc, nc, xc, yc
+      use m_get_lr, only: get_lr
       use m_spline2curvi, only: dtolLR
       use m_missing, only: dmiss
       use geometry_module, only: dbdistance

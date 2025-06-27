@@ -41,10 +41,10 @@ contains
 
    subroutine flgsfm(n, ng, L, jarea)
       use precision, only: dp
-      use m_flowgeom, only : ln, bob, wu, bl
-      use m_strucs, only : generalstruc
-      use m_flow, only : kcgen, l1cgensg, s1, au, fu, ru, kmx, ff3, u1, rusav, fusav, u0, q1, ausav, jastructurelayersactive, zws, hu
-      use m_get_Lbot_Ltop, only : getlbotltop
+      use m_flowgeom, only: ln, bob, wu, bl
+      use m_strucs, only: generalstruc
+      use m_flow, only: kcgen, l1cgensg, s1, au, fu, ru, kmx, ff3, u1, rusav, fusav, u0, q1, ausav, jastructurelayersactive, zws, hu
+      use m_get_Lbot_Ltop, only: getlbotltop
 !!--description-----------------------------------------------------------------
 ! NONE
 !!--pseudo code and references--------------------------------------------------
@@ -53,7 +53,6 @@ contains
       ! use cpluv
       ! use m_strucs
       ! use ident
-
 
       implicit none
 !

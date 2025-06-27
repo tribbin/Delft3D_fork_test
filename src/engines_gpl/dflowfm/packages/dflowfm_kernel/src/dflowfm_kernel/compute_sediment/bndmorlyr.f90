@@ -46,8 +46,8 @@ contains
       !    Function: - Apply bed composition boundary conditions
       !
    !!--declarations----------------------------------------------------------------
-      use precision, only : fp
-      use table_handles, only : gettabledata
+      use precision, only: fp
+      use table_handles, only: gettabledata
       use bedcomposition_module, only: copybedcomp, setmfrac, setvfrac
       use m_flowtimes, only: julrefdat
       use m_sediment, only: stmtype

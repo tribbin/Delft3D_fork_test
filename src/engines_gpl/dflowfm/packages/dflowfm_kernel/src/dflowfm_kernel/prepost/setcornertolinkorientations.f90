@@ -42,9 +42,9 @@ contains
 
    subroutine setcornertolinkorientations()
       use precision, only: dp
-      use m_flowgeom, only : csbn, snbn, lnx, lncn
-      use m_sferic, only : jsferic, jasfer3d
-      use m_alloc, only : aerr
+      use m_flowgeom, only: csbn, snbn, lnx, lncn
+      use m_sferic, only: jsferic, jasfer3d
+      use m_alloc, only: aerr
       use network_data, only: xk, yk
       use m_missing, only: dmiss
       use geometry_module, only: half, spher2locvec

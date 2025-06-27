@@ -44,8 +44,8 @@ contains
 
    subroutine make_gridline(num, xsp, ysp, dwidth, mfacmax, mfac, hmax, xg, yg, sc, jacurv)
       use precision, only: dp
-      use m_missing, only : dmiss
-      use m_spline, only : spline
+      use m_missing, only: dmiss
+      use m_spline, only: spline
       use geometry_module, only: dbdistance
       use m_sferic, only: jsferic, jasfer3D
       use m_splinelength, only: splinelength

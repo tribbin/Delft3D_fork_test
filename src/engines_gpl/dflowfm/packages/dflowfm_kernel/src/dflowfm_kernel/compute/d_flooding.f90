@@ -124,7 +124,7 @@ contains
    end subroutine reset_sobekdfm
 
    subroutine realloc_1d2d()
-      use m_alloc, only : aerr
+      use m_alloc, only: aerr
 
       integer ierr
 
@@ -187,8 +187,8 @@ contains
    subroutine sethu_1d2d()
       use precision, only: dp
 
-      use m_flowgeom, only : bob
-      use m_flow, only : s0, hu
+      use m_flowgeom, only: bob
+      use m_flow, only: s0, hu
 
       integer :: ibnd
       integer :: k2
@@ -217,10 +217,10 @@ contains
 
    !> initialize and allocate m_sobekdfm data
    subroutine init_1d2d()
-      use m_flowgeom, only : lne2ln, ln, xyen, nd, teta, iadv
-      use m_flowparameters, only : iadvec
-      use fm_external_forcings_data, only : ke1d2d
-      use network_data, only : xe, ye
+      use m_flowgeom, only: lne2ln, ln, xyen, nd, teta, iadv
+      use m_flowparameters, only: iadvec
+      use fm_external_forcings_data, only: ke1d2d
+      use network_data, only: xe, ye
       use m_GlobalParameters, only: pi
 
       integer :: k
@@ -273,7 +273,7 @@ contains
 
    subroutine init_1d2d_boundary_points()
 
-      use m_flow, only : s1
+      use m_flow, only: s1
 
       integer :: kb, k2, k
 
@@ -290,7 +290,7 @@ contains
 
    !> calculates new s1 values for virtual (ghost) 1d2d boundary points
    subroutine compute_q_total_1d2d()
-      use m_flow, only : au, u1, s1
+      use m_flow, only: au, u1, s1
 
       integer :: ibnd
       integer :: L
@@ -305,8 +305,8 @@ contains
 !
    subroutine compute_1d2d_boundaries()
 
-      use m_reduce, only : bbr, ccr, lv2, ddr
-      use m_flow, only : hu
+      use m_reduce, only: bbr, ccr, lv2, ddr
+      use m_flow, only: hu
 
       implicit none
 
@@ -333,10 +333,10 @@ contains
    subroutine compute_1d2d_coefficients()
       use precision, only: dp
 
-      use m_flowgeom, only : bob, wu, dx, teta
-      use m_flow, only : s0, s1, hu, u0, ru, au, fu
-      use m_flowtimes, only : dts
-      use m_GlobalParameters, only : gravity
+      use m_flowgeom, only: bob, wu, dx, teta
+      use m_flow, only: s0, s1, hu, u0, ru, au, fu
+      use m_flowtimes, only: dts
+      use m_GlobalParameters, only: gravity
 
       implicit none
 

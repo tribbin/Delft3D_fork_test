@@ -38,18 +38,18 @@ module m_changedisplayparameters
 contains
 
    subroutine CHANGEDISPLAYPARAMETERS()
-      use M_RAAITEK, only : zminrai, zmaxrai, jtextflow
-      use unstruc_colors, only : hlpfor, hlpbck, iws, ihs, lblfor, lblbck, cr
-      use unstruc_display_data, only : npos, ntek, plottofile, numzoomshift, jahighlight, nhlnetnode, nhlnetlink, nhlflownode, nhlflowlink, wetplot, yfac
-      use m_sediment, only : jgrtek, mxgr
-      use m_screenarea, only : xleft, ybot, jaxis
-      use m_helpnow, only : nlevel, wrdkey
-      use m_textsize, only : tsize
-      use m_hardcopy, only : numhcopts, ihcopts, nhcdev
-      use m_vfac, only : vfac, nvec, vfacforce
-      use m_drawthis, only : ndraw
-      use m_help, only : help
-      use m_highlight_form_line, only : highlight_form_line
+      use M_RAAITEK, only: zminrai, zmaxrai, jtextflow
+      use unstruc_colors, only: hlpfor, hlpbck, iws, ihs, lblfor, lblbck, cr
+      use unstruc_display_data, only: npos, ntek, plottofile, numzoomshift, jahighlight, nhlnetnode, nhlnetlink, nhlflownode, nhlflowlink, wetplot, yfac
+      use m_sediment, only: jgrtek, mxgr
+      use m_screenarea, only: xleft, ybot, jaxis
+      use m_helpnow, only: nlevel, wrdkey
+      use m_textsize, only: tsize
+      use m_hardcopy, only: numhcopts, ihcopts, nhcdev
+      use m_vfac, only: vfac, nvec, vfacforce
+      use m_drawthis, only: ndraw
+      use m_help, only: help
+      use m_highlight_form_line, only: highlight_form_line
       use m_missing, only: dmiss
       use m_flow, only: kplotfrombedorsurface, kplotordepthaveraged
 

@@ -44,7 +44,7 @@ contains
 
    subroutine comp_gradC(val, gradx, grady)
       use precision, only: dp
-      use m_flowgeom, only : Lnx, ln, Dxi, wcx1, wcy1, wcx2, wcy2, ndx
+      use m_flowgeom, only: Lnx, ln, Dxi, wcx1, wcy1, wcx2, wcy2, ndx
       implicit none
 
       real(kind=dp), dimension(ndx), intent(in) :: val !< cell-centered data

@@ -35,9 +35,9 @@ contains
    subroutine DISDIS()
       use precision, only: dp
 
-      use m_devices, only : iws
-      use m_locatora, only : xa, ya, xlc, ylc
-      use m_ktext, only : ktext
+      use m_devices, only: iws
+      use m_locatora, only: xa, ya, xlc, ylc
+      use m_ktext, only: ktext
       use geometry_module, only: dbdistance
       use m_missing, only: dmiss
       use m_sferic, only: jsferic, jasfer3D

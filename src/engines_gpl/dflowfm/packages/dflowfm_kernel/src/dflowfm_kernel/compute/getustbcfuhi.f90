@@ -40,10 +40,10 @@ contains
 
    subroutine getustbcfuhi(LL, Lb, ustbLL, cfuhiLL, hdzb, z00, cfuhi3D) ! see Uittenbogaard's subroutine USTAR
       use precision, only: dp
-      use m_getsoulsbywci, only : getsoulsbywci
-      use m_flow, only : frcu, ifrcutp, hu, trsh_u1lb, ag, s1, u1, c9of1, jaustarint, vonkar, z0ucur, v, jawave, flowwithoutwaves, jawavestokes, rhomean, modind, epsz0, taubu, taubxu, z0urou, jawavestreaming, ltop, adve, viskin, vicwwu, vicoww, jafrculin, frculin
-      use m_get_ustwav, only : getustwav
-      use m_get_czz0, only : getczz0
+      use m_getsoulsbywci, only: getsoulsbywci
+      use m_flow, only: frcu, ifrcutp, hu, trsh_u1lb, ag, s1, u1, c9of1, jaustarint, vonkar, z0ucur, v, jawave, flowwithoutwaves, jawavestokes, rhomean, modind, epsz0, taubu, taubxu, z0urou, jawavestreaming, ltop, adve, viskin, vicwwu, vicoww, jafrculin, frculin
+      use m_get_ustwav, only: getustwav
+      use m_get_czz0, only: getczz0
       use m_flowgeom, only: ln, dxi, csu, snu
       use m_flowtimes, only: dti
       use m_waves, only: ustokes, vstokes, wblt

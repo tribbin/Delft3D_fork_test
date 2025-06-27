@@ -42,8 +42,8 @@ contains
 
    subroutine addclosed_2D_walls()
       use precision, only: dp
-      use m_flowgeom, only : mxwalls, walls
-      use m_flow, only : s1, a1, vol1
+      use m_flowgeom, only: mxwalls, walls
+      use m_flow, only: s1, a1, vol1
 
       implicit none
 

@@ -49,8 +49,8 @@ contains
       use m_transport, only: ISED1, ISEDN ! preferably in argument list
       use m_sediment, only: mtd
       use m_sediment, only: jased, sedtra, stm_included
-      use timers, only : timon, timstrt, timstop
-      use m_dlimiter, only : dlimiter
+      use timers, only: timon, timstrt, timstop
+      use m_dlimiter, only: dlimiter
 
       implicit none
 

@@ -44,9 +44,9 @@ contains
    subroutine copypol(ipol, xp, yp)
       use m_get_polstartend, only: get_polstartend
       use precision, only: dp
-      use m_sferic, only : jsferic, ra, dg2rd
-      use m_polygon, only : npl, xpl, ypl, increasepol, zpl
-      use m_missing, only : dmiss
+      use m_sferic, only: jsferic, ra, dg2rd
+      use m_polygon, only: npl, xpl, ypl, increasepol, zpl
+      use m_missing, only: dmiss
       use geometry_module, only: getdxdy
 
       integer, intent(in) :: ipol !< polygon point

@@ -44,10 +44,10 @@ contains
 
    subroutine add_InternalTidesFrictionForces()
       use precision, only: dp
-      use m_flowgeom, only : bl, ndx, ndxi, ba, lnx, ln, acl, csu, snu
-      use m_flow, only : hs, s1, workx, worky, dissinternaltides, ucx, ucy, frcinternaltides2d, epshs, itcap, rho, dissinternaltidesperarea, hu, adve, huvli
-      use m_flowtimes, only : dts
-      use m_partitioninfo, only : jampi, idomain, my_rank
+      use m_flowgeom, only: bl, ndx, ndxi, ba, lnx, ln, acl, csu, snu
+      use m_flow, only: hs, s1, workx, worky, dissinternaltides, ucx, ucy, frcinternaltides2d, epshs, itcap, rho, dissinternaltidesperarea, hu, adve, huvli
+      use m_flowtimes, only: dts
+      use m_partitioninfo, only: jampi, idomain, my_rank
       use messagehandling, only: LEVEL_ERROR, mess
       use m_nod2linx, only: nod2linx
       use m_nod2liny, only: nod2liny

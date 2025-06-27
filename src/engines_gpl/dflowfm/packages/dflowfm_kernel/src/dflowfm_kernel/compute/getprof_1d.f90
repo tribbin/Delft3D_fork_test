@@ -39,10 +39,10 @@ module m_get_prof_1D
 contains
    subroutine getprof_1D(L, hprL, area, width, japerim, calcConv, perim)
       use precision, only: dp
-      use m_flow, only : bndwidth1d, lnxbnd, dmiss, u1, q1, s1, frcu, frcu_mor, u_to_umain, q1_main, cfuhi, ag, hu, ifrcutp, v, frcuni1dgrounlay
-      use m_flowgeom, only : lnxi, lbnd1d, kcu, ln, wu, acl, prof1d, profiles1d, jagrounlay, grounlay, argr, pergr, wigr
-      use unstruc_channel_flow, only : network, getcsparstotal, cscalculationoption, getcsparsflow
-      use m_cross_helper, only : getconveyance, getcrossdischarge
+      use m_flow, only: bndwidth1d, lnxbnd, dmiss, u1, q1, s1, frcu, frcu_mor, u_to_umain, q1_main, cfuhi, ag, hu, ifrcutp, v, frcuni1dgrounlay
+      use m_flowgeom, only: lnxi, lbnd1d, kcu, ln, wu, acl, prof1d, profiles1d, jagrounlay, grounlay, argr, pergr, wigr
+      use unstruc_channel_flow, only: network, getcsparstotal, cscalculationoption, getcsparsflow
+      use m_cross_helper, only: getconveyance, getcrossdischarge
       use m_flowtimes, only: time1, times_update_roughness
       use m_get_chezy, only: get_chezy
 

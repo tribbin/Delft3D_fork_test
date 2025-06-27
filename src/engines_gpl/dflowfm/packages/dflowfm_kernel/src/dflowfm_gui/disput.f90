@@ -33,9 +33,9 @@ module m_disput
    implicit none
 contains
    subroutine DISPUT(NPUT)
-      use M_SFERIC, only : jsferic
-      use M_DEVICES, only : iws, ihs
-      use m_ktext, only : ktext
+      use M_SFERIC, only: jsferic
+      use M_DEVICES, only: iws, ihs
+      use m_ktext, only: ktext
       use network_data, only: kn3typ
       use m_missing, only: JINS
 

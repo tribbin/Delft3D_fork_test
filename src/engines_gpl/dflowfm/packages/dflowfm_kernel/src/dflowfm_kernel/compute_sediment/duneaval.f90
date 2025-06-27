@@ -42,10 +42,10 @@ contains
 
    subroutine duneaval(error)
       use precision, only: dp
-      use m_fm_erosed, only : hswitch, wetslope, dryslope, e_dzdn, e_dzdt, avaltime, morfac, lsedtot, fixfac, frac, dzmaxdune, rhosol
-      use m_sediment, only : avalflux
-      use m_flowgeom, only : lnx, wu_mor, ln, acl, bl, dx, lnxi, ba
-      use m_flow, only : hs
+      use m_fm_erosed, only: hswitch, wetslope, dryslope, e_dzdn, e_dzdt, avaltime, morfac, lsedtot, fixfac, frac, dzmaxdune, rhosol
+      use m_sediment, only: avalflux
+      use m_flowgeom, only: lnx, wu_mor, ln, acl, bl, dx, lnxi, ba
+      use m_flow, only: hs
 
       implicit none
 

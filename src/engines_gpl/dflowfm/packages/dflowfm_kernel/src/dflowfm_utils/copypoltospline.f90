@@ -42,10 +42,10 @@ module m_copypoltospline
 contains
 
    subroutine COPYPOLTOSPLINE()
-      use m_polygon, only : npl, xpl, ypl
-      use m_splines, only : addsplinepoints, mcs
-      use m_missing, only : dmiss
-      use m_delpol, only : delpol
+      use m_polygon, only: npl, xpl, ypl
+      use m_splines, only: addsplinepoints, mcs
+      use m_missing, only: dmiss
+      use m_delpol, only: delpol
       use geometry_module, only: get_startend
 
       integer :: jstart, jend, jpoint

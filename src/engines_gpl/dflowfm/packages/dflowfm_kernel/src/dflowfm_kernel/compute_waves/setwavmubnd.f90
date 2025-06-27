@@ -42,11 +42,11 @@ contains
 
    subroutine setwavmubnd()
       use precision, only: dp
-      use m_flowgeom, only : acl, csu, snu
-      use m_flowparameters, only : epshu
-      use fm_external_forcings_data, only : nbndu, kbndu, nbndz, kbndz, nbndn, kbndn
-      use m_waves, only : hminlw, mxwav, mywav
-      use m_get_Lbot_Ltop, only : getlbotltop
+      use m_flowgeom, only: acl, csu, snu
+      use m_flowparameters, only: epshu
+      use fm_external_forcings_data, only: nbndu, kbndu, nbndz, kbndz, nbndn, kbndn
+      use m_waves, only: hminlw, mxwav, mywav
+      use m_get_Lbot_Ltop, only: getlbotltop
       use m_flow, only: hu, huvli, wavmubnd, kmx
       implicit none
 

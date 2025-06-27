@@ -49,8 +49,8 @@ contains
       !--pseudo code and references--------------------------------------------------
       ! NONE
       !--declarations----------------------------------------------------------------
-      use precision, only : fp
-      use m_get_kbot_ktop, only : getkbotktop
+      use precision, only: fp
+      use m_get_kbot_ktop, only: getkbotktop
       use m_flowtimes, only: dts
       use flocculation, only: FLOC_NONE, flocculate
       use m_flowgeom, only: ndx, bl

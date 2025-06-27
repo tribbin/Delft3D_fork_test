@@ -94,7 +94,7 @@ contains
 !  write array to Tecplot file
    subroutine tecdat(num, var, ierr, kmask, miss)
 #ifdef HAVE_TECPLOT
-   use m_missing, only: DMISS
+      use m_missing, only: DMISS
 #endif
 
       integer, intent(in) :: num ! data size
@@ -148,7 +148,7 @@ contains
       use network_data, only: nump, numk, xk, yk, zk, zkuni, cellmask, kn, lne
       use m_partitioninfo, only: jampi, my_rank, idomain
 #else
-      use m_qnerror, only : qnerror
+      use m_qnerror, only: qnerror
 #endif
 
       character(len=*), intent(in) :: FNAM

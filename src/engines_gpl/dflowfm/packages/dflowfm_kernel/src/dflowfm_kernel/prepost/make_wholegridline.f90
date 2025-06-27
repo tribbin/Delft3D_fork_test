@@ -44,13 +44,13 @@ contains
    subroutine make_wholegridline(ierror)
       use m_make_gridline, only: make_gridline
       use precision, only: dp
-      use m_splines, only : mcs, nump, xsp, ysp
-      use m_grid, only : mc
-      use m_gridsettings, only : mfac
-      use m_spline2curvi, only : jacirc, xg1, yg1, sg1, splineprops, dwidth, jacurv
-      use m_alloc, only : realloc
-      use m_missing, only : dmiss
-      use m_qnerror, only : qnerror
+      use m_splines, only: mcs, nump, xsp, ysp
+      use m_grid, only: mc
+      use m_gridsettings, only: mfac
+      use m_spline2curvi, only: jacirc, xg1, yg1, sg1, splineprops, dwidth, jacurv
+      use m_alloc, only: realloc
+      use m_missing, only: dmiss
+      use m_qnerror, only: qnerror
 
       integer, intent(out) :: ierror ! error (1) or not (0)
 

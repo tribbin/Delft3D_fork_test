@@ -43,10 +43,10 @@ contains
 
    subroutine sethigherorderadvectionvelocities()
       use precision, only: dp
-      use m_flowgeom, only : lnx, ln, acl, klnup, csu, snu, dx, slnup, dxi
-      use m_flow, only : limtypmom, kmx, qa, hs, chkadvd, ducxdx, ducxdy, ducydx, ducydy, ucx, ucy, u1, ucxu, ucyu, kbot, kmxn, kmxl, ktop
-      use m_sferic, only : jasfer3d
-      use m_get_Lbot_Ltop, only : getlbotltop
+      use m_flowgeom, only: lnx, ln, acl, klnup, csu, snu, dx, slnup, dxi
+      use m_flow, only: limtypmom, kmx, qa, hs, chkadvd, ducxdx, ducxdy, ducydx, ducydy, ucx, ucy, u1, ucxu, ucyu, kbot, kmxn, kmxl, ktop
+      use m_sferic, only: jasfer3d
+      use m_get_Lbot_Ltop, only: getlbotltop
       use m_flowtimes, only: dts
       use m_nod2linx, only: nod2linx
       use m_nod2liny, only: nod2liny

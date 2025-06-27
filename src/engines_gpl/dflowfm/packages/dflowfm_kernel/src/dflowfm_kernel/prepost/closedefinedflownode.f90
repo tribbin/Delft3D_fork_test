@@ -43,8 +43,8 @@ contains
    subroutine CLOSEdefinedflownode(XP1, YP1, N1) !
       use precision, only: dp
 
-      use m_flowgeom, only : ndxi, xz, yz
-      use m_flow, only : laydefnr, dmiss
+      use m_flowgeom, only: ndxi, xz, yz
+      use m_flow, only: laydefnr, dmiss
       use geometry_module, only: dbdistance
       use m_sferic, only: jsferic, jasfer3D
 

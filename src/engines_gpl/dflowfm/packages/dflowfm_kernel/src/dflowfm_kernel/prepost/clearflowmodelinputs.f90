@@ -41,7 +41,7 @@ module m_clearflowmodelinputs
 contains
 
    subroutine clearflowmodelinputs()
-      use m_flow, only : nbndz, nbndu, nbnds, nbndtm, nbndt, nbnduxy
+      use m_flow, only: nbndz, nbndu, nbnds, nbndtm, nbndt, nbnduxy
 
       nbndz = 0
       nbndu = 0

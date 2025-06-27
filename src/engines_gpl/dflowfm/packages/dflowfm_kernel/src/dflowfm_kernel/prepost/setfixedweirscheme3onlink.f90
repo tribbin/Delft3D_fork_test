@@ -41,7 +41,7 @@ module m_setfixedweirscheme3onlink
 contains
 
    subroutine setfixedweirscheme3onlink(L)
-      use m_flowgeom, only : teta, iadv, iadv_tabellenboek_weir, iadv_villemonte_weir, ln, nd, iadv_subgrid_weir
+      use m_flowgeom, only: teta, iadv, iadv_tabellenboek_weir, iadv_villemonte_weir, ln, nd, iadv_subgrid_weir
 
       integer :: L, nn, n12, kk, LL
 

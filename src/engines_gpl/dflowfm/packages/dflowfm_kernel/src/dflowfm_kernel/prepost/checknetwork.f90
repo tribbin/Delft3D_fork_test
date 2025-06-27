@@ -45,9 +45,9 @@ contains
    subroutine checknetwork()
       use precision, only: dp
 
-      use network_data, only : numl, linkcross, nlinkcross, kn, xk, yk, numk, nmk, nod, kn
-      use m_alloc, only : realloc
-      use m_readyy, only : readyy
+      use network_data, only: numl, linkcross, nlinkcross, kn, xk, yk, numk, nmk, nod, kn
+      use m_alloc, only: realloc
+      use m_readyy, only: readyy
       use geometry_module, only: cross
       use m_missing, only: dmiss
       use m_sferic, only: jsferic
@@ -121,7 +121,7 @@ contains
 !! from each link (brute force approach O(numl*numl) would be too expensive.
       recursive subroutine findLinks(k)
 !use m_alloc
-         use network_data, only : numk, nmk, nod, kn
+         use network_data, only: numk, nmk, nod, kn
          implicit none
          integer :: k
 !integer, intent(inout) :: linkQueue(:)

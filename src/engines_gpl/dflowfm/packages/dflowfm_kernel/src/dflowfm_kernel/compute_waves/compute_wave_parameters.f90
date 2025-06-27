@@ -47,8 +47,8 @@ contains
    ! compute uorb, rlabda for input in other subroutines
    subroutine compute_wave_parameters()
       use precision, only: dp
-      use m_waves, only : hwav, gammax, ustokes, vstokes, twav, hwavcom, twavcom, phiwav, sxwav, sywav, mxwav, mywav, distot, dsurf, dwcap, jonswapgamma0, sbxwav, sbywav, hwavuni
-      use m_waveconst, only : wave_swan_online, no_stokes_drift, wave_nc_offline, wave_surfbeat, wave_uniform
+      use m_waves, only: hwav, gammax, ustokes, vstokes, twav, hwavcom, twavcom, phiwav, sxwav, sywav, mxwav, mywav, distot, dsurf, dwcap, jonswapgamma0, sbxwav, sbywav, hwavuni
+      use m_waveconst, only: wave_swan_online, no_stokes_drift, wave_nc_offline, wave_surfbeat, wave_uniform
       use m_flow, only: jawave, s1, kmx, jawavestokes, hu, flowwithoutwaves, epshu, ag, hs, waveforcing
       use m_flowgeom, only: bl, lnx, ln, csu, snu, ndx
       use mathconsts, only: sqrt2_hp

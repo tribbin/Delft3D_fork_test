@@ -37,12 +37,12 @@ module m_anchor
 contains
    subroutine ANCHOR(X, Y)
       use precision, only: dp
-      use unstruc_colors, only : klank
-      use m_locatora, only : xa, ya
-      use m_dproject, only : dproject
-      use m_inflowcell, only : inflowcell
-      use m_disdis, only : disdis
-      use m_set_col, only : setcol
+      use unstruc_colors, only: klank
+      use m_locatora, only: xa, ya
+      use m_dproject, only: dproject
+      use m_inflowcell, only: inflowcell
+      use m_disdis, only: disdis
+      use m_set_col, only: setcol
       use m_flow, only: nplot
       use m_GlobalParameters, only: INDTP_ALL
 

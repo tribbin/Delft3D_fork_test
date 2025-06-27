@@ -44,9 +44,9 @@ contains
       use precision, only: dp
       use m_fm_erosed, only: ucxq_mor, ucyq_mor, hs_mor, link1, link1sign, ndx_mor
       use m_flowgeom, only: ndx, lnx, lnxi, ln, nd, wcx1, wcx2, wcy1, wcy2, csu, snu, bl, lnx1D, kcs
-      use m_flow, only : hs, q1, au, kmx, hu, zws, lnkx, ndkx
-      use m_get_kbot_ktop, only : getkbotktop
-      use m_get_Lbot_Ltop, only : getlbotltop
+      use m_flow, only: hs, q1, au, kmx, hu, zws, lnkx, ndkx
+      use m_get_kbot_ktop, only: getkbotktop
+      use m_get_Lbot_Ltop, only: getlbotltop
       use m_flowparameters, only: jacstbnd, epshs, eps10, flow_solver, FLOW_SOLVER_FM
       use m_sediment, only: stmpar
       use m_turbulence, only: ln0

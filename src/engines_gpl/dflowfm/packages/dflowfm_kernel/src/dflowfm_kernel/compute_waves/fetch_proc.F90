@@ -57,10 +57,10 @@ contains
 !> initialize data for the fetch proc operation
    integer function initialise_fetch_proc_data() result(iresult)
 
-      use fetch_proc_operation_data, only : dp, ndx_over_procs, iglobal_s_procs, s1_buffer, f_buffer
+      use fetch_proc_operation_data, only: dp, ndx_over_procs, iglobal_s_procs, s1_buffer, f_buffer
       use mpi
-      use dfm_error, only : DFM_NOTIMPLEMENTED, DFM_NOERR
-      use MessageHandling, only : mess, level_error
+      use dfm_error, only: DFM_NOTIMPLEMENTED, DFM_NOERR
+      use MessageHandling, only: mess, level_error
 #ifdef HAVE_MPI
       use m_partitioninfo, only: my_rank, fetch_proc_rank, DFM_COMM_ALLWORLD, iglobal_s
 #endif
@@ -180,7 +180,7 @@ contains
 !> sends s1 values to the fetch proc
    subroutine send_s1_to_fetch_proc()
 
-      use fetch_proc_operation_data, only : ndx_over_procs, s1_buffer, iglobal_s_procs
+      use fetch_proc_operation_data, only: ndx_over_procs, s1_buffer, iglobal_s_procs
 #ifdef HAVE_MPI
       use mpi
       use m_partitioninfo, only: my_rank, fetch_proc_rank, DFM_COMM_ALLWORLD

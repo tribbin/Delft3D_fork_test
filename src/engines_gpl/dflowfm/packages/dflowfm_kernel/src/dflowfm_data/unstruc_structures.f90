@@ -171,7 +171,7 @@ contains
    !! Used for history output and/or restart file output for hydraulic structures.
    subroutine init_structure_hisvalues()
       use fm_external_forcings_data, only: npumpsg, ncgensg, ngatesg, ncdamsg, ngategen, ngenstru, nweirgen
-      
+
       use m_flowtimes, only: ti_rst
       use m_longculverts, only: nlongculverts
       use m_dambreak_breach, only: n_db_signals
@@ -320,8 +320,8 @@ contains
       use m_flow, only: q1, s1, au, hu, hs
       use m_flowgeom, only: wu, ln, teta, bl
       use m_1d_structures, only: get_discharge_under_compound_struc
-      use m_GlobalParameters, only : st_longculvert, st_pump, st_general_st, st_weir, st_orifice, st_bridge
-      use m_longculverts, only : longculverts
+      use m_GlobalParameters, only: st_longculvert, st_pump, st_general_st, st_weir, st_orifice, st_bridge
+      use m_longculverts, only: longculverts
       use m_flowparameters, only: epshs, epshu
       use m_general_structure, only: t_generalstructure
       implicit none

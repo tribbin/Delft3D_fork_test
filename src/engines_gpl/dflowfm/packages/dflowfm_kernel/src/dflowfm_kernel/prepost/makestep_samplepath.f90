@@ -43,11 +43,11 @@ contains
 
    subroutine makestep_samplepath(ipprev, ipcur, ipnext, Nsub, ipsub, ierror)
       use precision, only: dp
-      use m_samples, only : mxsam, mysam, xs, ys, zs
-      use m_cirr, only : cirr
-      use m_set_col, only : setcol
-      use m_movabs, only : movabs
-      use m_lnabs, only : lnabs
+      use m_samples, only: mxsam, mysam, xs, ys, zs
+      use m_cirr, only: cirr
+      use m_set_col, only: setcol
+      use m_movabs, only: movabs
+      use m_lnabs, only: lnabs
       use m_missing, only: dmiss, dxymis
       use geometry_module, only: dbdistance, dcosphi
       use m_sferic, only: jsferic, jasfer3D

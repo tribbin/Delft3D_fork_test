@@ -37,7 +37,7 @@ module m_d3dflow_dimensioninit
 contains
 
    subroutine D3Dflow_dimensioninit()
-      use m_flowgeom, only : simplegrid_dimens, griddim, ndx, ndxi, mesh_unstructured, partition_noncont, nd, lnxi, lnx, ln, xz, yz
+      use m_flowgeom, only: simplegrid_dimens, griddim, ndx, ndxi, mesh_unstructured, partition_noncont, nd, lnxi, lnx, ln, xz, yz
       use m_partitioninfo, only: jampi, idomain, iglobal_s, my_rank
       use network_data, only: xk, yk
       ! use m_cell_geometry, ony: xz, yz, ndx

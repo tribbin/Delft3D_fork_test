@@ -64,8 +64,8 @@ contains
       use precision, only: dp
       use m_flowgeom, only: xz, yz, ln, lnx, lnx1D
       use stdlib_sorting, only: sort_index
-      use dfm_error, only : dfm_noerr
-      use m_crosspoly, only : crosspoly
+      use dfm_error, only: dfm_noerr
+      use m_crosspoly, only: crosspoly
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
       integer, intent(in) :: npl !< Number of polyline points.
@@ -169,8 +169,8 @@ contains
    !> Find the nearest flow link number for a given location, using (branch index, chainage).
    function findlink_by_branchindex(branchindex, chainage, L) result(ierr)
       use precision, only: dp
-      use unstruc_channel_flow, only : network, getlinkindex
-      use dfm_error, only : dfm_noerr
+      use unstruc_channel_flow, only: network, getlinkindex
+      use dfm_error, only: dfm_noerr
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
       integer, intent(in) :: branchindex !< Branch index in network brs set.
@@ -191,9 +191,9 @@ contains
    !> Find the nearest flow link number for a given location, using (branch id, chainage).
    function findlink_by_branchid(branchid, chainage, L) result(ierr)
       use precision, only: dp
-      use unstruc_channel_flow, only : network
-      use m_hash_search, only : hashsearch
-      use dfm_error, only : dfm_noerr
+      use unstruc_channel_flow, only: network
+      use m_hash_search, only: hashsearch
+      use dfm_error, only: dfm_noerr
       use messagehandling, only: idlen
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
