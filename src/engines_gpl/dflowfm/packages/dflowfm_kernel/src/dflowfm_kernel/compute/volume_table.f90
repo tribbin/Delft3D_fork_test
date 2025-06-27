@@ -153,7 +153,8 @@ contains
    !> Retrieve the volume for given volume table and water level
    real(kind=dp) function getVolumeVoltable(this, level)
       use precision, only: dp
-      use unstruc_channel_flow, only : tableincrement, summerdiketransitionheight
+      use unstruc_channel_flow, only : tableincrement
+      use m_globalparameters, only: summerDikeTransitionHeight
       class(t_voltable) :: this
       real(kind=dp), intent(in) :: level !< water level
 
@@ -186,7 +187,8 @@ contains
    !> Retrieve the surface area for given volume table and water level
    real(kind=dp) function getSurfaceVoltable(this, level)
       use precision, only: dp
-      use unstruc_channel_flow, only : tableincrement, summerdiketransitionheight
+      use unstruc_channel_flow, only : tableincrement
+      use m_globalparameters, only: summerDikeTransitionHeight
 
       class(t_voltable) :: this
       real(kind=dp), intent(in) :: level !< water level
@@ -270,7 +272,8 @@ contains
 
    !> Generate the volume tables, by using GetCSParsTotal.
    subroutine makeVolumeTables(filename, branchOutput)
-
+      use m_crosssections, only: t_CrossSection
+      use m_storage, only: t_storage
       use unstruc_channel_flow, only : usevolumetablefile, volumetablefile, network
       use m_flowgeom, only : ndx, ndx2d, lnx1d, kcs, nd, lnxi, lbnd1d, kcu
 
@@ -406,6 +409,7 @@ contains
       use m_flowparameters
       use m_flowgeom
       use unstruc_channel_flow
+      use m_globalparameters, only: summerDikeTransitionHeight
 
       type(t_voltable), dimension(:), intent(inout) :: vltb !< Volume tables.
 

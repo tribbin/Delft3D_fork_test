@@ -43,7 +43,7 @@ contains
    subroutine getcellcentergradients(hh, dhsdx, dhsdy)
       use precision, only: dp
       use m_flow, only : hu, epshu, nbndu, kbndu, nbndz, kbndz
-      use m_flowgeom, only : lnx, ln, wcx1, dxi, wcy1, wcx2, wcy2
+      use m_flowgeom, only : lnx, ln, wcx1, dxi, wcy1, wcx2, wcy2, ndx
 
       implicit none
 

@@ -46,7 +46,7 @@ contains
       use m_monitoring_runupgauges, only : num_rugs, rug
       use m_partitioninfo, only : my_rank, reduce_rug, dfm_comm_dfmworld
       use m_timer, only : jatimer, starttimer, ioutputmpi, stoptimer
-      use mpi, only : mpi_allreduce, mpi_double_precision, mpi_sum
+      use mpi
 
       integer :: irug, ierror
       real(kind=dp), allocatable, dimension(:, :) :: ruh

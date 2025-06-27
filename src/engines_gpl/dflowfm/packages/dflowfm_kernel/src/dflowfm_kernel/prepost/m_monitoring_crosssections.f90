@@ -313,13 +313,14 @@ contains
       use m_save_ugrid_state, only : meshgeom1d
       use dfm_error, only : dfm_noerr
       use m_sferic, only: jsferic
+      use m_observcrosssections, only: t_observcrosssection
       implicit none
       type(t_network), intent(inout) :: network !< network
       character(len=*), intent(in) :: filename !< filename of the cross section file
 
       integer :: nByBrch ! number of cross sections that are defined by branchID and chainage
       integer :: ierr, ncrsini, i, numv
-      type(t_observCrossSection), pointer :: pCrs
+      type(t_observcrosssection), pointer :: pCrs
       integer, allocatable :: branchIdx_tmp(:), ibrch2crs(:)
       real(kind=dp), allocatable :: Chainage_tmp(:), xx_tmp(:), yy_tmp(:)
 

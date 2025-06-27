@@ -49,6 +49,7 @@ contains
       use m_timer, only : jatimer, starttimer, iupdu, stoptimer
       use unstruc_channel_flow, only : network, set_u1q1_structure ! substitute u1 and q1
       use m_wind, only: jaqin
+      use m_1d_structures, only: t_structure
 
       implicit none
 

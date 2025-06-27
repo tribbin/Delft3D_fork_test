@@ -48,6 +48,8 @@ contains
       use m_fm_erosed, only: ndxi_mor, ndx_mor, e_sbn, nd_mor, lsedtot
       use m_f1dimp, only: f1dimppar
       use m_flowparameters, only: flow_solver, FLOW_SOLVER_SRE
+      use m_CrossSections, only: t_CSType
+      use m_node, only: t_node
 
       real(fp), dimension(:), intent(inout) :: blchg !< Bed level change (> 0 = sedimentation, < 0 = erosion)
 

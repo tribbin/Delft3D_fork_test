@@ -132,7 +132,7 @@ contains
    module subroutine ini_petsc(Ndx, ierror)
       use m_reduce, only : nocg, noel, nogauss, ndn, row
       use m_partitioninfo, only : get_global_numbers, iglobal, numcells, jampi, my_rank, ndomains, numghost_sall, ighostlist_sall
-      use petsc, only : veccreatempiwitharray, petsc_comm_world, petsc_decide, vecassemblybegin, vecassemblyend
+      use petsc
       use m_petsc, only : PETSC_OK, numrows, numallrows, numdia, numoff, rowtoelem, jdia, idia, adia, joff, ioff, aoff, joffsav, guusidxdia, guusidxoff, izerorow, rhs_val, sol_val, res_val, rhs, sol, res
       use MessageHandling, only : mess, level_error
       use stdlib_sorting, only: sort_index

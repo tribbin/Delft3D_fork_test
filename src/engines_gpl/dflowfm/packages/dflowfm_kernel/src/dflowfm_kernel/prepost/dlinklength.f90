@@ -32,7 +32,7 @@
 
 !>    gives link length
 submodule(m_dlinklength) m_dlinklength_
-
+   use precision, only: dp
    implicit none
 
 contains

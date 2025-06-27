@@ -43,6 +43,7 @@ contains
       use m_save_ugrid_state, only: contactnlinks, contactnetlinks, netlink2contact, hashlist_contactids
       use unstruc_channel_flow, only: network
       use network_data, only: lc, numl1d, Lperminv, nlinkremoved
+      use m_alloc, only: realloc
 
       integer, intent(in) :: jacrosscheck_ !< Whether or not to remove any crossing netlinks.
 

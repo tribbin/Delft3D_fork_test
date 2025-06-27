@@ -1701,7 +1701,7 @@ contains
 !> communicate ghost cells to other domains
    subroutine partition_make_sendlist_MPI(itype, numlay_cell, numlay_node, i_list, n_list, ifromto)
       use m_alloc, only : realloc
-      use mpi, only : mpi_status_size, mpi_allgather, mpi_integer, mpi_isend, mpi_double_precision, mpi_probe, mpi_get_count, mpi_recv, mpi_any_tag, mpi_waitall, mpi_statuses_ignore
+      use mpi
       use network_data, only: xzw, yzw, xk, yk
       use m_flowgeom, only: xu, yu
 #ifdef HAVE_MPI
@@ -2359,7 +2359,7 @@ contains
 !>   3D extension: we assume that kbot/Lbot and kmxn/kmxL match their counterparts in the other domain(s)
    subroutine update_ghost_loc(ndomains, NDIM, N, s, numghost, ighost, nghost, numsend, isend, nsend, itag, ierror, nghost3d, nsend3d, kmxnL, kbot, ignore_orientation)
 #ifdef HAVE_MPI
-      use mpi, only : mpi_barrier, mpi_isend, mpi_double_precision, mpi_recv, mpi_get_count, mpi_wait
+      use mpi
       use m_flowgeom, only : dp
       use m_alloc, only : realloc
 #endif
@@ -4453,7 +4453,7 @@ contains
       use m_tpoly
       use m_sferic
       use messagehandling, only: LEVEL_WARN, mess
-      use gridoperations
+      use gridoperations, only: findcells
       use m_copynetboundstopol
       implicit none
 

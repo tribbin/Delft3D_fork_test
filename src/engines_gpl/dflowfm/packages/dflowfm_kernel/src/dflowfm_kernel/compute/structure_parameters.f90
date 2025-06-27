@@ -46,6 +46,8 @@ contains
       use m_longculverts, only: nlongculverts, longculverts, newculverts
       use m_dambreak_breach, only: fill_dambreak_values, n_db_signals
       use m_link_ghostdata, only: link_ghostdata
+      use m_1d_structures, only: t_structure
+      use m_compound, only: t_compound
 
       integer :: i, n, L, Lf, La, ierr, k, ku, kd, istru, nlinks
       real(kind=dp) :: dir

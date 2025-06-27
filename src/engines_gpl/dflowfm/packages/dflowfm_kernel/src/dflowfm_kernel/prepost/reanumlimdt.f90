@@ -48,8 +48,9 @@ contains
       use m_GlobalParameters, only: INDTP_ALL
       use m_find_flownode, only: find_nearest_flownodes
       use m_filez, only: oldfil, doclose
+      use messagehandling, only: IDLEN
 
-      character(len=IdLen) :: name, nams
+      character(len=IDLEN) :: name, nams
       logical :: jawel
       integer :: mlim, k, kk, jakdtree = 1, jaoutside = 0
       integer, allocatable :: knum(:)

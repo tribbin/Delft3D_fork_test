@@ -31,7 +31,7 @@
 !
 
 module m_zcorn
-
+   use precision, only: dp
    implicit none
 
 contains

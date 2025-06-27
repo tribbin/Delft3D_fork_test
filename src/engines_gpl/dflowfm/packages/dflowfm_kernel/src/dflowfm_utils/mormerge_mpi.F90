@@ -42,10 +42,10 @@ module m_mormerge_mpi
 
 contains
 
-!> returns a total number of cells over subdomains
+   !> returns a total number of cells over subdomains
    integer function total_number_of_cells(jampi, ndxi, DFM_COMM_DFMWORLD)
 #ifdef HAVE_MPI
-      use mpi, only : mpi_reduce, mpi_integer, mpi_sum
+      use mpi
 #endif
 
       implicit none
@@ -73,8 +73,8 @@ contains
 !> updates the merge buffer
    subroutine update_mergebuffer(mergehandle, buffer_size, mergebuffer, jampi, my_rank, DFM_COMM_DFMWORLD)
       use m_mormerge, only : put_get_mergebuffer
-      use mpi, only : mpi_gatherv, mpi_scatterv
 #ifdef HAVE_MPI
+      use mpi
 #endif
 
       implicit none
@@ -109,9 +109,10 @@ contains
 !< initialization of mormerge and arrays allocation for its operation on a parallel computer
    function initialize_mormerge_mpi(gdmorpar, lsedtot, ndxi, jampi, my_rank, ndomains, DFM_COMM_DFMWORLD) result(error)
       use m_mormerge, only : initialize_mormerge
+      use morphology_data_module, only: morpar_type
       use m_alloc, only : aerr
-      use mpi, only : mpi_gather, mpi_integer, mpi_double_precision, mpi_real
 #ifdef HAVE_MPI
+      use mpi
 #endif
 
       implicit none

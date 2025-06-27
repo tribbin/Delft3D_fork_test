@@ -121,6 +121,8 @@ contains
       use system_utils, only : split_filename, cat_filename
       use string_module, only: strcmpi
       use m_filez, only: newfil
+      use tree_data_types, only: tree_data
+      use tree_structures, only: maxlen
 
       implicit none
 

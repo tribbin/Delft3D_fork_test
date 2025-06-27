@@ -54,7 +54,7 @@ contains
     !! numl1D+1:numl remain intact). Also: boundary links are ignored.
    subroutine renumberFlowNodes()
       use precision, only: dp
-      use network_data, only : numl, nump, lne, netcell, xzw, yzw, numl1d, kn, lnn, numk, nmk, nod, netstat, netstat_ok
+      use network_data, only : numl, nump, lne, netcell, xzw, yzw, numl1d, kn, lnn, numk, nmk, nod, netstat, netstat_ok, tface
       use m_flowgeom, only : jaflownetchanged, xz, yz, ba
       use m_alloc, only : realloc
       use m_readyy, only : readyy

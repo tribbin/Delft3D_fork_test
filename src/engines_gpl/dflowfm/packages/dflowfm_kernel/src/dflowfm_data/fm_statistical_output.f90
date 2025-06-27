@@ -185,7 +185,7 @@ contains
 
    subroutine add_station_water_quality_configs(output_config_set, idx_his_hwq)
       use processes_input, only: num_wq_user_outputs => noout_user
-      
+      use m_ug_nc_attribute, only: ug_nc_attribute
       use m_fm_wq_processes, only: wq_user_outputs => outputs
       use string_module, only: replace_multiple_spaces_by_single_spaces
       use netcdf_utils, only: ncu_set_att
@@ -235,7 +235,7 @@ contains
       use m_ug_nc_attribute
       use m_transport, only: NUMCONST_MDU, const_names, isedn, ised1, const_units
       use m_sediment, only: stmpar, jased, stm_included
-      use messagehandling, only: Idlen
+      use messagehandling, only: idlen
       use netcdf_utils, only: ncu_set_att, ncu_sanitize_name
       use MessageHandling, only: err
 

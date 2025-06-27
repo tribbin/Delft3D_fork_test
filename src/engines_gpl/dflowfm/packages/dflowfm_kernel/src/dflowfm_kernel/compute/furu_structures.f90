@@ -42,8 +42,8 @@ contains
       use m_flowgeom, only : lnx1d, wu, ln, kcu, bob0, bl, dx, teta
       use m_flowtimes, only : dts
       use m_general_structure, only : update_widths, computegeneralstructure
-      use m_1d_structures, only : set_fu_ru_structure, check_for_changes_on_structures
-      use m_compound, only : computecompound
+      use m_1d_structures, only : set_fu_ru_structure, check_for_changes_on_structures, t_structure
+      use m_compound, only : computecompound, t_compound
       use m_Universal_Weir, only : computeuniversalweir
       use m_culvert, only : computeculvert
       use m_bridge, only : computebridge

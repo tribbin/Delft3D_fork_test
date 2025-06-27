@@ -118,7 +118,7 @@ contains
    !> Set flow node value based on flow link values, where vlin and vlin2 are mapped to vnod(1,:) and vnod(2,:), respectively
    subroutine links_to_centers_dp_rank_2(vnod, vlin, vlin2)
       use precision, only: dp
-      use m_flow, only : lnkx, kmx, lbot, ltop, ktop, kbot, kmxn
+      use m_flow, only : lnkx, kmx, lbot, ltop, ktop, kbot, kmxn, ndkx
       use m_flowgeom, only: lnx, ln, wcL, ndx
 
       real(kind=dp), dimension(2, ndkx), intent(out) :: vnod

@@ -46,6 +46,7 @@ contains
    integer function init_openmp(maxnumthreads, mpion) result(iresult)
 #ifdef _OPENMP
       use omp_lib
+      use messagehandling, only: mess, LEVEL_INFO
 #endif
       use dfm_error, only: dfm_noerr
       

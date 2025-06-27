@@ -43,7 +43,7 @@ contains
       use MessageHandling, only: mess, LEVEL_WARN, LEVEL_ERROR
       use m_GlobalParameters, only: INDTP_ALL
       use m_partitioninfo, only: jampi
-      use mpi, only : mpi_allreduce, mpi_in_place, mpi_integer, mpi_max, mpi_comm_world
+      use mpi
       use m_inflowcell, only : inflowcell
 
       real(dp), dimension(:), intent(in) :: xx !< x-coordinate of input points
@@ -257,7 +257,7 @@ contains
    !! so that the index is only non-zero for the process that actually owns the nearest flowlink
    subroutine reduce_nearest_flowlinks(distances, link_nrs_nearest)
       use MessageHandling, only: mess, LEVEL_ERROR
-      use mpi, only : mpi_allreduce, mpi_in_place, mpi_2double_precision, mpi_minloc, mpi_comm_world
+      use mpi
       use m_partitioninfo, only: jampi, my_rank
 
       real(dp), dimension(:), intent(in) :: distances !< Distances to nearest flowlink reported by each process

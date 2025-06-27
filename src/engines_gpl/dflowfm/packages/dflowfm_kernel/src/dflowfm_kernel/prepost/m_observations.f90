@@ -713,6 +713,7 @@ contains
       use m_save_ugrid_state, only : meshgeom1d
       use dfm_error, only : dfm_noerr
       use m_sferic, only: jsferic
+      use m_ObservationPoints, only: t_ObservationPoint
       implicit none
       type(t_network), intent(inout) :: network !< network
       character(len=*), intent(in) :: filename !< filename of the obs file

@@ -58,7 +58,7 @@ contains
    integer function initialise_fetch_proc_data() result(iresult)
 
       use fetch_proc_operation_data, only : dp, ndx_over_procs, iglobal_s_procs, s1_buffer, f_buffer
-      use mpi, only : mpi_status_size, mpi_gather, mpi_integer, mpi_bcast, mpi_logical, mpi_send, mpi_double_precision, mpi_probe, mpi_any_source, mpi_get_count, mpi_source, mpi_recv
+      use mpi
       use dfm_error, only : DFM_NOTIMPLEMENTED, DFM_NOERR
       use MessageHandling, only : mess, level_error
 #ifdef HAVE_MPI
@@ -181,8 +181,8 @@ contains
    subroutine send_s1_to_fetch_proc()
 
       use fetch_proc_operation_data, only : ndx_over_procs, s1_buffer, iglobal_s_procs
-      use mpi, only : mpi_send, mpi_double_precision, mpi_probe, mpi_any_source, mpi_get_count, mpi_source, mpi_recv
 #ifdef HAVE_MPI
+      use mpi
       use m_partitioninfo, only: my_rank, fetch_proc_rank, DFM_COMM_ALLWORLD
 #endif
       use m_flowgeom, only: ndx

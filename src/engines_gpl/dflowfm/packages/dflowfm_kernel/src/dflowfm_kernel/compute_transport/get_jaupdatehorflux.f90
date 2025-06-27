@@ -42,7 +42,7 @@ module m_get_jaupdatehorflux
 contains
 
    subroutine get_jaupdatehorflux(nsubsteps, limtyp, jaupdate, jaupdatehorflux)
-      use m_flowgeom, only : Lnx, ln, klnup
+      use m_flowgeom, only : Lnx, ln, klnup, ndx
       use timers, only : timon, timstrt, timstop
 
       implicit none

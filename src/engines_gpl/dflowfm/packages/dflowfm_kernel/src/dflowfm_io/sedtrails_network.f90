@@ -129,7 +129,7 @@ contains
       use precision, only: dp
       use m_sedtrails_data, only : numk, xk, yk, xk1, yk1, iwork, iglobal_s, st_ind, st_wf, idomain
       use m_polygon, only : savepol, iistart, maxpoly, iiend, npl, xpl, ypl, npoly, restorepol, zpl
-      use m_tpoly, only : pol_to_tpoly, dbpinpol_tpolies, dealloc_tpoly
+      use m_tpoly, only : pol_to_tpoly, dbpinpol_tpolies, dealloc_tpoly, tpoly
       use m_missing, only : dmiss, jins
       use m_sferic, only : jsferic, jasfer3d
       use m_copynetboundstopol, only : copynetboundstopol

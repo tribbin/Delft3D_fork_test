@@ -51,6 +51,8 @@ contains
       use bedcomposition_module, only: copybedcomp, setmfrac, setvfrac
       use m_flowtimes, only: julrefdat
       use m_sediment, only: stmtype
+      use handles, only: handletype
+      use morphology_data_module, only: bedbndtype, cmpbndtype
       !
       ! The following list of pointer parameters is used to point inside the gdp structure
       !

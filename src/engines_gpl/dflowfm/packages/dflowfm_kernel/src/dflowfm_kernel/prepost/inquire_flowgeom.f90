@@ -194,9 +194,10 @@ contains
       use unstruc_channel_flow, only : network
       use m_hash_search, only : hashsearch
       use dfm_error, only : dfm_noerr
+      use messagehandling, only: idlen
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
-      character(len=Idlen), intent(in) :: branchid !< Branch Id to be searched in network brs set.
+      character(len=idlen), intent(in) :: branchid !< Branch Id to be searched in network brs set.
       real(kind=dp), intent(in) :: chainage !< Chainage of item on the branch with index branchindex.
       integer, intent(out) :: L !< Found flow link number, -1 when not found.
 
@@ -221,9 +222,10 @@ contains
       use m_save_ugrid_state, only: hashlist_contactids, contactnetlinks
       use m_hash_search
       use dfm_error
+      use messagehandling, only: idlen
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
-      character(len=Idlen), intent(in) :: contactId !< contactId to be searched in mesh contact set.
+      character(len=idlen), intent(in) :: contactId !< contactId to be searched in mesh contact set.
       integer, intent(out) :: L !< Found flow link number, -1 when not found.
 
       integer :: LL
@@ -247,9 +249,10 @@ contains
       use m_branch
       use precision_basics, only: comparereal
       use m_GlobalParameters, only: flow1d_eps10
+      use messagehandling, only: idlen
 
       integer :: ierr
-      character(len=Idlen), intent(in) :: nodeId !< Id of the connection node
+      character(len=idlen), intent(in) :: nodeId !< Id of the connection node
       integer, intent(out) :: L !< Found link number, -1 when not found.
 
       integer :: nodeindex
@@ -299,13 +302,14 @@ contains
    function findlink_by_structureid(strucid, L) result(ierr)
       use dfm_error
       use unstruc_channel_flow
+      use messagehandling, only: idlen
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
       character(len=*), intent(in) :: strucid !< Structure id
       integer, intent(out) :: L !< Found flow link number, -1 when not found.
 
       integer :: i
-      character(len=Idlen) :: strucid_tmp
+      character(len=idlen) :: strucid_tmp
 
       L = -1
       ierr = DFM_NOERR
@@ -394,9 +398,10 @@ contains
       use m_hash_search
       use unstruc_channel_flow
       use dfm_error
+      use messagehandling, only: idlen
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
-      character(len=Idlen), intent(in) :: nodeId !< Id of the connection node
+      character(len=idlen), intent(in) :: nodeId !< Id of the connection node
       integer, intent(out) :: nodenr !< Found flow node number, -1 when not found.
 
       integer :: nodeindex
@@ -422,9 +427,10 @@ contains
       use m_hash_search
       use unstruc_channel_flow
       use dfm_error
+      use messagehandling, only: idlen
 
       integer :: ierr !< Result status, DFM_NOERR in case of success.
-      character(len=Idlen), intent(in) :: branchid !< branch Id
+      character(len=idlen), intent(in) :: branchid !< branch Id
       real(kind=dp), intent(in) :: chainage !< chainage of item on the branch with id branchid
       integer, intent(out) :: nodenr !< Found flow node number, -1 when not found.
 

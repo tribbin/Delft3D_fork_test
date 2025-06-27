@@ -651,6 +651,7 @@ contains
 !> scan the input tree, using the keys in the config_set
    subroutine scan_input_tree(tree, paragraph, config_set)
       use properties, only : prop_get
+      use tree_data_types, only: tree_data
 
       type(tree_data), pointer, intent(in) :: tree !< Property tree
       character(len=*), intent(in) :: paragraph !< Paragraph of the location of the input data.
@@ -666,7 +667,8 @@ contains
 
 !> Set the properties for the diagnostics file
    subroutine set_properties(tree, paragraph, config_set)
-      use properties
+      use properties, only: prop_set
+      use tree_data_types, only: tree_data
 
       type(tree_data), pointer, intent(in) :: tree !< Property tree
       character(len=*), intent(in) :: paragraph !< Paragraph of the location of the input data.

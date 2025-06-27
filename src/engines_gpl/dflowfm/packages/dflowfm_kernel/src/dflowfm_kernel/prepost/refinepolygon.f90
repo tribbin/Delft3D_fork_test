@@ -47,7 +47,7 @@ contains
       use precision, only: dp
       use m_typevalue, only : typevalue
       use m_polygon, only : npl, dxuni, xpl, ypl, zpl, increasepol, maxpol
-      use m_tpoly, only : pol_to_tpoly, tpoly_to_pol, dealloc_tpoly
+      use m_tpoly, only : pol_to_tpoly, tpoly_to_pol, dealloc_tpoly, tpoly
       use m_sferic, only : jsferic, jasfer3d
       use m_missing, only : dmiss
       use m_delpol, only : delpol

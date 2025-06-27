@@ -153,6 +153,7 @@ contains
       use unstruc_channel_flow, only : network, realloc, msgbuf, err_flush, flow1d_eps10
       use m_flowgeom, only : ln, ndx2d, nd
       use precision_basics, only: comparereal
+      use m_branch, only: t_branch
 
       implicit none
 

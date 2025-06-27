@@ -47,6 +47,7 @@ contains
       use m_sferic, only : jsferic, jasfer3d, ra, dg2rd
       use m_splint, only : splint
       use m_spline, only : spline
+      use m_splines, only: maxsplen
       use m_comp_curv, only : comp_curv
       use geometry_module, only: dbdistance, dcosphi
       use m_missing, only: dmiss
