@@ -575,9 +575,15 @@ FROM base AS boost
 
 RUN <<"EOF-boost" 
 set -eo pipefail
-dnf install --assumeyes epel-release
 dnf install --assumeyes boost-devel
 EOF-boost
+
+FROM base AS googletest
+
+RUN <<"EOF-googletest"
+set -eo pipefail
+dnf install --assumeyes gtest-devel
+EOF-googletest
 
 FROM base AS all
 
@@ -599,4 +605,5 @@ COPY --from=gdal --link /usr/local/ /usr/local/
 COPY --from=esmf --link /usr/local/ /usr/local/
 COPY --from=boost --link /usr/lib64/ /usr/lib64/
 COPY --from=boost --link /usr/include/boost/ /usr/include/boost/
-
+COPY --from=googletest --link /usr/lib64/ /usr/lib64/
+COPY --from=googletest --link /usr/include/gtest/ /usr/include/gtest/
