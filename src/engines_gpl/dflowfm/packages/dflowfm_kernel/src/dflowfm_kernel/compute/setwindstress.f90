@@ -44,7 +44,7 @@ contains
       use precision, only: dp
       use m_setcdwcoefficient, only: setcdwcoefficient
       use m_flowgeom, only: ln, lnx, snu, csu
-      use m_flow, only: jamapwind, wind_stress_water_density_option, wdsu, ktop, rho, wdsu_x, wdsu_y, rhomean, &
+      use m_flow, only: jamapwind, rho_water_in_wind_stress, RHO_MEAN, wdsu, ktop, rho, wdsu_x, wdsu_y, rhomean, &
                         viskinair, ag, vonkarw, u1, ltop, v, jatem, jamapwindstress, kmx, ustw
       use m_wind, only: windxav, windyav, jawindstressgiven, jastresstowind, wx, wy, rhoair, cdb, relativewind, jaspacevarcharn, wcharnock, cdwcof, ja_airdensity, ja_computed_airdensity, air_density
       use m_fm_icecover, only: fm_ice_drag_effect, ice_modify_winddrag, ICE_WINDDRAG_NONE, ice_af
@@ -64,7 +64,7 @@ contains
                wy = 0d0
             end if
             do L = 1, lnx
-               if (wind_stress_water_density_option > 0) then
+               if (rho_water_in_wind_stress /= RHO_MEAN) then
                   k = ln(2, L)
                   wdsu(L) = (wdsu_x(L) * csu(L) + wdsu_y(L) * snu(L)) / rho(ktop(k))
                else
@@ -122,7 +122,7 @@ contains
                if (jatem == 5) then
                   cdwcof(L) = cdw
                end if
-               if (wind_stress_water_density_option > 0) then
+               if (rho_water_in_wind_stress /= RHO_MEAN) then
                   k = ln(2, L)
                   row = rho(ktop(k))
                end if
