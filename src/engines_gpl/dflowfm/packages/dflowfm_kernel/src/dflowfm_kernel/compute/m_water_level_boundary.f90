@@ -42,27 +42,27 @@ module m_water_level_boundary
 
 contains
 
-   !> Set hu at the 2D indices to the corresponding hu at the top active-layer
-   subroutine correct_water_level_boundary(water_level_boundary,i_boundary)
+   !> Correct water level boundary due to effect of air pressure, water level correction and/or ice
+   pure subroutine correct_water_level_boundary(water_level_boundary, i_boundary)
       real(kind=dp), intent(inout) :: water_level_boundary !< [m] water level boundary
       integer, intent(in) :: i_boundary !< [-] boundary cell index
 
       if (PavBnd > 0 .and. (air_pressure_available .or. pseudo_air_pressure_available &
-          .or. water_level_correction_available)) then
+                            .or. water_level_correction_available)) then
          water_level_boundary = water_level_boundary + PavBnd / (ag * rhomean)
          if (air_pressure_available) then
             water_level_boundary = water_level_boundary - air_pressure(i_boundary) / (ag * rhomean)
          end if
          if (pseudo_air_pressure_available) then
-             water_level_boundary = water_level_boundary - pseudo_air_pressure(i_boundary) / (ag * rhomean)
+            water_level_boundary = water_level_boundary - pseudo_air_pressure(i_boundary) / (ag * rhomean)
          end if
          if (water_level_correction_available) then
-             water_level_boundary = water_level_boundary - water_level_correction(i_boundary) 
+            water_level_boundary = water_level_boundary - water_level_correction(i_boundary)
          end if
       end if
 
       if (ice_apply_pressure) then
-          water_level_boundary = water_level_boundary - ice_p(i_boundary) / (ag * rhomean)
+         water_level_boundary = water_level_boundary - ice_p(i_boundary) / (ag * rhomean)
       end if
 
    end subroutine correct_water_level_boundary
