@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -76,12 +76,10 @@ contains
       end do
 
       do istru = 1, network%sts%count
-         associate (p_structure => network%sts%struct(istru))
-            do L0 = 1, p_structure%numlinks 
-               L = abs(p_structure%linknumbers(L0))
-               does_link_contain_structures(L) = .true.
-            end do
-         end associate
+         do L0 = 1, network%sts%struct(istru)%numlinks
+            L = abs(network%sts%struct(istru)%linknumbers(L0))
+            does_link_contain_structures(L) = .true.
+         end do
       end do
 
       call indicate_links_that_contain_dambreaks(does_link_contain_structures)

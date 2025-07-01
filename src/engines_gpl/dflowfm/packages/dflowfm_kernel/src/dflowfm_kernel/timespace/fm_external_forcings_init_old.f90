@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -949,7 +949,6 @@ contains
 
             else if (qid == 'airdensity') then
 
-
                if (.not. allocated(air_density)) then
                   allocate (air_density(ndx), stat=ierr)
                   call aerr('air_density(ndx)', ierr, ndx)
@@ -1223,11 +1222,9 @@ contains
                   call qnerror('Quantity massbalancearea in the ext-file, but no MbaInterval specified in the mdu-file.', ' ', ' ')
                   success = .false.
                end if
-
-            else if (qid(1:12) == 'waqparameter' .or. qid(1:17) == 'waqmonitoringarea' .or. qid(1:16) == 'waqsegmentnumber') then
+            else if (qid(1:12) == 'waqparameter' .or. qid(1:16) == 'waqsegmentnumber') then
                ! Already taken care of in fm_wq_processes
                success = .true.
-
             else if (qid(1:11) == 'waqfunction') then
                success = ec_addtimespacerelation(qid, xdum, ydum, kdum, kx, filename, filetype, method, operand)
 

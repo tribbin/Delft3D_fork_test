@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -18422,12 +18422,10 @@ contains
 !  another variable).
    subroutine read_sediment(var, stradd, imapfile, kstart, kcount, it_read, um, target_shift)
       use precision, only: dp
-
       use m_flow, only: kmx, ndkx
       use m_transport, only: ISED1, ISEDN, const_names
       use messagehandling, only: mess, LEVEL_WARN
       use m_alloc, only: realloc
-      use m_partitioninfo, only: um
       use fm_location_types, only: UNC_LOC_S3D, UNC_LOC_S
 
 !input/output

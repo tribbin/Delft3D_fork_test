@@ -53,6 +53,10 @@ object Publish : BuildType({
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
+            snapshot(AbsoluteId("LinuxRuntimeContainers")) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
+            }
         }
         triggers {
             finishBuildTrigger {
@@ -77,8 +81,8 @@ object Publish : BuildType({
             label = "Release version", 
             description = "e.g. '2.29.03' or '2025.02'", 
             display = ParameterDisplay.PROMPT)
-        param("commit_id_short", "%dep.${LinuxBuild.id}.build.revisions.short%")
-        param("source_image", "containers.deltares.nl/delft3d/delft3d-runtime-container:alma8-%build.vcs.number%")
+        param("commit_id_short", "%dep.${LinuxBuild.id}.commit_id_short%")
+        param("source_image", "%dep.${LinuxRuntimeContainers.id}.runtime_container_image%")
         param("destination_image_generic", "containers.deltares.nl/delft3d/%brand%:%release_type%")
         param("destination_image_specific", "containers.deltares.nl/delft3d/%brand%:%release_type%-%release_version%")
     }

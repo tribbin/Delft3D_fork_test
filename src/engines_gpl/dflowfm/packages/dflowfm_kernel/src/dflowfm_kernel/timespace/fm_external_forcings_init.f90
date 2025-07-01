@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -829,8 +829,7 @@ contains
             res = timespaceinitialfield(xz, yz, qext, ndx, forcing_file, filetype, method, oper, transformcoef, UNC_LOC_S, mask)
             return ! This was a special case, don't continue with timespace processing below.
          case default
-            write (msgbuf, '(a)') 'Unknown quantity '''//trim(quantity)//' in file ''', file_name, ''': [', group_name, &
-               '].'
+            write (msgbuf, '(a)') 'Unknown quantity '''//trim(quantity)//''' in file '''//trim(file_name)//''': ['//trim(group_name)//'].'
             call err_flush()
             return
          end select

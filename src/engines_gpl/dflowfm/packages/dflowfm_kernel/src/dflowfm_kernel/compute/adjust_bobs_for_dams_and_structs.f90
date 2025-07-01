@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -50,7 +50,7 @@ contains
       use messagehandling, only: msgbuf, warn_flush
       use m_switchiadvnearlink, only: switchiadvnearlink
       use m_dambreak_breach, only: adjust_bobs_for_dambreaks
-   
+
       real(kind=dp) :: zcdamn, minzcdamn, blmx
       type(t_structure), pointer :: pstru
       type(t_compound), pointer :: pcompound
@@ -156,7 +156,7 @@ contains
       end do
 
       call adjust_bobs_for_dambreaks()
-      
+
       if (ifixedweirscheme1D2D == 1) then
          call set_iadvec()
       end if

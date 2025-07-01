@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -26,46 +26,14 @@
 !  Deltares, and remain the property of Stichting Deltares. All rights reserved.
 !
 !-------------------------------------------------------------------------------
-
 !
 !
-
-!
-module m_setellips
-
+module m_ellipse
+   use precision, only: dp
    implicit none
-
    private
 
-   public :: setellips
+   real(dp), public :: semi_major_axis
+   real(dp), public :: eccentricity
 
-contains
-
-   subroutine SETELLIPS(IELL)
-      use m_ellips
-
-      integer :: iell
-
-      A = 6378137d0
-      E = 0.081819d0
-
-      if (IELL == 1) then ! Hayford
-         A = 6378388d0
-         E = 0.081992d0
-      elseif (IELL == 2) then ! Bessel
-         A = 6377397d0
-         E = 0.081690d0
-      elseif (IELL == 3) then ! WGS 84
-         A = 6378137d0
-         E = 0.081819d0
-      elseif (IELL == 4) then ! Clarke 1880
-         A = 6378249d0
-         E = 0.082478d0
-      elseif (IELL == 5) then ! India 1830
-         A = 6377276.345d0
-         E = 0.081473d0
-      end if
-      return
-   end subroutine SETELLIPS
-
-end module m_setellips
+end module m_ellipse
