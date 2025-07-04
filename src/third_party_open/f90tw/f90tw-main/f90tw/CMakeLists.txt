@@ -43,7 +43,7 @@ function(F90TWFPP INFILE OUTFILE)
         find_program(TR_EXE NAMES "tr" REQUIRED)
         add_custom_command(
             OUTPUT "${OUTFILE}"
-            COMMAND "${FPP_EXE}" ${FPPOPTS} ${FPPDEFS} ${FPPINCL} "${INFILE}" | ${SED_EXE} "/^[ \\t]*#/d" | ${TR_EXE} "\\;" "\\n" > "${OUTFILE}"
+            COMMAND "${FPP_EXE}" ${FPPOPTS} ${FPPDEFS} ${FPPINCL} "${INFILE}" | ${SED_EXE} "/^[ \\t]*#/d" | ${TR_EXE} "\\;" "\\n" | ${SED_EXE} "s/^[ \\t]*//;s/[ \\t]*$//;/^$/d" > "${OUTFILE}"
             DEPENDS "${INFILE}" ${FPP_DEPENDS}
             COMMENT "precompile ${INFILE}"
             VERBATIM
