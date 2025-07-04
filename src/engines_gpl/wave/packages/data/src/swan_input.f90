@@ -1205,7 +1205,7 @@ contains
       sr%num_scheme = 1
       sr%cdd = 0.5
       sr%css = 0.5
-      
+
       activate_num_accur = .false.
       activate_num_stopc = .false.
       sr%drel = -1.0 ! Default value will be set after checking whether "num accur" or "num stopc" is used
@@ -1266,7 +1266,7 @@ contains
          write (*, *) 'SWAN_INPUT: Tolerances specified for both "num_accur" and "num_stopc"'
          call handle_errors_mdw(sr)
       end if
-      if (activate_num_accur==.false. .and. activate_num_stopc==.false.) then
+      if (activate_num_accur == .false. .and. activate_num_stopc == .false.) then
          activate_num_stopc = .true.
       end if
       if (activate_num_stopc) then
@@ -3405,7 +3405,7 @@ contains
       elseif (sr%genmode == 3) then
          line = 'GEN3 WESTH'
          ! Always add (wind related) drag formula. It doesn't harm if there is no wind.
-         line = trim(line) // ' DRAG WU'
+         line = trim(line)//' DRAG WU'
       else
       end if
       write (luninp, '(1X,A)') line
