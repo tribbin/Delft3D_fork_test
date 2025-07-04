@@ -47,7 +47,7 @@ contains
       use precision_basics, only: comparereal
       use m_plotdots, only: adddot
       use messagehandling, only: setmessage, level_warn
-      use m_flow, only: a1, bb, nonlin, a1m, dd, s1, vol0, vol1, s1m, s0, nbndz, kbndz, zbndz, zbndz0, u0, epshs, hs, ag, kmx, fu, ru, lbot, ltop, epshu, hu, rhomean, nbndu, kbndu, jacheckmatrix
+      use m_flow, only: a1, bb, nonlin, a1m, dd, s1, vol0, vol1, s1m, s0, nbndz, kbndz, zbndz, zbndz0, u0, epshs, hs, ag, kmx, fu, ru, lbot, ltop, epshu, hu, nbndu, kbndu, jacheckmatrix
       use m_flowgeom, only: ndx, ndx2d, xz, yz, nd, lnx1d, kfs, dx, dxi, bl, ndxi
       use m_flowtimes, only: dti, refdat, time1, alfsmo, dts
       use m_reduce, only: bbr, ddr, ccr, lv2
@@ -55,8 +55,6 @@ contains
       use m_sobekdfm, only: nbnd1d2d, compute_1d2d_boundaries
       use unstruc_channel_flow, only: network
       use time_module, only: seconds_to_datetimestring
-      use m_fm_icecover, only: ice_apply_pressure, ice_p
-      use m_wind, only: air_pressure_available, air_pressure, pavbnd
       use m_branch, only: t_branch
       use iso_c_utils, only: MAXSTRINGLEN
       use m_water_level_boundary, only: correct_water_level_boundary
