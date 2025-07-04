@@ -43,11 +43,10 @@ contains
    !> Sets s1 or s0 water levels at zbndz-type boundaries.
    subroutine sets01zbnd(n01, jasetBlDepth)
       use precision, only: dp
-      use m_flowgeom
-      use m_flow
-      use m_flowtimes
-      use m_missing
-      use m_sobekdfm
+      use m_flowgeom, only: bl, bob, bob0
+      use m_flow, only: nbndz, kbndz, zbndz, zbndz0, s1, epshs, hs, ag, u1, u0, s0, bndbldepth, dmiss
+      use m_flowtimes, only: alfsmo
+      use m_sobekdfm, only: set_1d2d_01
       use m_water_level_boundary, only: correct_water_level_boundary
 
       implicit none

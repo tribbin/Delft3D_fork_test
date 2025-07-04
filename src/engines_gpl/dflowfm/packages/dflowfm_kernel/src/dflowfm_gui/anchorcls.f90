@@ -38,10 +38,10 @@ module m_anchorcls
 contains
 
    subroutine ANCHORCLS()
-      use unstruc_colors
-      use m_locatora
-      use m_disdis
-      use m_set_col
+      use unstruc_colors, only: klank
+      use m_locatora, only: xa, ya
+      use m_disdis, only: disdis
+      use m_set_col, only: setcol
 
       implicit none
 !     ZET ANCHOR NA CLEARSCREEN

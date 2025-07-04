@@ -45,7 +45,7 @@ contains
       use m_flowgeom, only: lnx, ln, wcx1, wcx2, wcy1, wcy2
       use m_flow, only: kmx
       use m_waves, only: ustokes
-      use m_get_Lbot_Ltop_max
+      use m_get_Lbot_Ltop_max, only: getlbotltopmax
 
       implicit none
 

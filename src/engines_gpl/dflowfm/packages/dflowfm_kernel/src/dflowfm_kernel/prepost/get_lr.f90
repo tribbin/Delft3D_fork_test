@@ -37,7 +37,7 @@ contains
       use precision, only: dp
 
       use m_missing, only: dmiss
-      use m_spline2curvi
+      use m_spline2curvi, only: jacirc, dtollr
       use geometry_module, only: dbdistance
       use m_sferic, only: jsferic, jasfer3D
 

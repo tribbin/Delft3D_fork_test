@@ -36,7 +36,7 @@ contains
       use precision, only: dp
       use m_flowgeom, only: ln, kfs, nd
       use m_jacobi, only: bbi, db, itmxjac
-      use m_reduce
+      use m_reduce, only: bbr, ddr, epscg, ccr, lv2
 
       real(kind=dp) :: ds, rrn ! max error
       integer :: L, n, ndx, itsol, nn, La, n1, n2, ni

@@ -44,7 +44,7 @@ contains
    real(kind=dp) function nodup2linx(L, ib, ux, uy)
       use precision, only: dp
       use m_flowgeom, only: csbup, snbup
-      use m_sferic
+      use m_sferic, only: jsferic, jasfer3d
 
       integer, intent(in) :: L !< flowlink number
       integer, intent(in) :: ib !< stencil index  (1 (iup=1), 2 (iup=2), 3 (iup=4), or 4 (iup=5))

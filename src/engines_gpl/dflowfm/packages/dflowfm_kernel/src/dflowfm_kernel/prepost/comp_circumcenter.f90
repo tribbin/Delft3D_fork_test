@@ -43,10 +43,10 @@ contains
 
    subroutine comp_circumcenter(N, xp, yp, xf, yf, xc, yc)
       use precision, only: dp
-      use m_sferic
-      use m_missing
+      use m_sferic, only: jsferic, jasfer3d, ra, dg2rd
+      use m_missing, only: dmiss, dxymis, jins
+      use m_qnerror, only: qnerror
       use geometry_module, only: pinpok, getdxdy, cross, normalin
-      use m_qnerror
 
       integer, intent(in) :: N !< polygon dimension
       real(kind=dp), dimension(N), intent(in) :: xp, yp !< polygon node coordinates

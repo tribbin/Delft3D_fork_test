@@ -575,7 +575,7 @@ contains
 !> Resets only flow variables intended for a restart of flow simulation.
 !! Upon loading of new model/MDU, call default_flow() instead.
    subroutine reset_flow()
-      use m_missing
+      use m_missing, only: dmiss
 ! node related
 
 ! basis

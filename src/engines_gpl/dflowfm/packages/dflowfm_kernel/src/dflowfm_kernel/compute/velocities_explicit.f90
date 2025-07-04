@@ -41,9 +41,9 @@ module m_velocities_explicit
 contains
 
    subroutine velocities_explicit()
-      use m_flowgeom
-      use m_flow
-      use m_flowtimes
+      use m_flowgeom, only: lnx, ln
+      use m_flow, only: itstep, u1, u0, adve, advi, nbndu, kbndu, zbndu, q1, au, squ, sqi, kmx, lbot, ltop
+      use m_flowtimes, only: dts
       implicit none
       integer :: n, L, LL, k1, k2
 

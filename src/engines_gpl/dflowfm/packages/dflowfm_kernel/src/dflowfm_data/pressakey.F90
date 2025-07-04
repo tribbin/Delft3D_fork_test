@@ -42,7 +42,7 @@ contains
 
    subroutine pressakey()
 #ifdef HAVE_MPI
-      use mpi
+      use mpi, only: mpi_barrier
       use m_partitioninfo, only: DFM_COMM_ALLWORLD, my_rank, jampi
 
       integer :: ierr

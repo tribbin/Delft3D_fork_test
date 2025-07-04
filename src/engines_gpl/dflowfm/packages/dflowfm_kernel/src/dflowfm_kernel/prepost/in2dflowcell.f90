@@ -42,11 +42,9 @@ contains
 
    subroutine in2Dflowcell(xp, yp, k) ! is this point in a 2Dflowcell
       use precision, only: dp
-      use m_flowgeom
-      use m_flow
-      use fm_external_forcings_data
+      use m_flowgeom, only: ndx2d, nd
+      use m_flow, only: jins, dmiss
       use geometry_module, only: pinpok
-      use m_missing, only: jins, dmiss
 
       real(kind=dp) :: xp, yp
       integer :: k

@@ -42,7 +42,7 @@ contains
 
    subroutine yzprofile(hpr, ka, itp, area, width, japerim, frcn, friction_type, perim, cfhi)
       use precision, only: dp
-      use m_getseg1d
+      use m_getseg1d, only: getseg1d
       use m_profiles, only: profiles1d
       use m_physcoef, only: ag
 

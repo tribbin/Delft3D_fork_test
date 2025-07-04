@@ -41,8 +41,8 @@ module m_updatebalance
 contains
 
    subroutine updateBalance()
-      use m_flow
-      use m_partitioninfo
+      use m_flow, only: cumvolcur, max_idx, volcur, idx_stor, voltot, vol1ini, idx_voltot, idx_icept
+      use m_partitioninfo, only: jampi, reduce_bal
 
       integer :: ivar
 

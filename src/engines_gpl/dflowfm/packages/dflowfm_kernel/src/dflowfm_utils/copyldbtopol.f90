@@ -42,9 +42,9 @@ contains
 
    subroutine COPYLDBTOPOL()
       use precision, only: dp
-      use m_polygon
-      use m_missing
-      use m_landboundary
+      use m_polygon, only: npl, xpl, ypl, zpl, savepol, increasepol
+      use m_missing, only: dmiss, jins
+      use m_landboundary, only: maxlan, mxlan, xlan, ylan, zlan
       use geometry_module, only: dbpinpol
 
       integer :: k

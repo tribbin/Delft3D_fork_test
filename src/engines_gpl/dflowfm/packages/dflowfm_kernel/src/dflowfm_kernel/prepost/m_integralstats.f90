@@ -74,11 +74,11 @@ contains
 
 !> Update the (time-)integral statistics for all flow nodes, typically after each time step.
    subroutine update_integralstats()
-      use m_flowtimes
-      use m_flow
-      use m_flowgeom
-      use m_gettaus
-      use m_gettauswave
+      use m_flowtimes, only: dts
+      use m_flow, only: jawave, flowwithoutwaves, jawaveswartdelwaq, taus, ucx, ucy, hs
+      use m_flowgeom, only: ndxi
+      use m_gettaus, only: gettaus
+      use m_gettauswave, only: gettauswave
 
       integer :: k
 

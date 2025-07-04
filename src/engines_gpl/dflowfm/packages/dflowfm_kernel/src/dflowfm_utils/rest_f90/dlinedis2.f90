@@ -34,7 +34,7 @@ module m_dlinedis2
 contains
    subroutine dLINEDIS2(X3, Y3, X1, Y1, X2, Y2, JA, DIS, XN, YN, rl)
       use precision, only: dp
-      use m_sferic
+      use m_sferic, only: jsferic, jasfer3d
       use geometry_module, only: getdx, getdy, dbdistance, sphertoCart3D, cart3Dtospher
       use m_missing, only: dmiss
 

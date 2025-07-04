@@ -38,12 +38,12 @@ contains
 
    module subroutine REALAN(MLAN, ANTOT)
       use precision, only: dp
-      use m_polygon
-      use M_landboundary
-      use M_MISSING
-      use m_readyy
-      use m_qn_read_error
-      use m_qn_eof_error
+      use m_polygon, only: xpl, ypl, npl
+      use M_landboundary, only: increaselan, maxlan, mxlan, xlan, ylan, zlan, nclan
+      use M_MISSING, only: dmiss
+      use m_readyy, only: readyy
+      use m_qn_read_error, only: qnreaderror
+      use m_qn_eof_error, only: qneoferror
       use m_filez, only: doclose
 
       implicit none

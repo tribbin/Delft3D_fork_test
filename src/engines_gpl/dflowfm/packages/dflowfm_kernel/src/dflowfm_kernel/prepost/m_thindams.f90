@@ -53,7 +53,7 @@ contains
 !! one or more polylines separated by dmiss values.
    subroutine pol_to_thindams(xpl, ypl, npl)
       use precision, only: dp
-      use m_missing
+      use m_missing, only: dmiss
 
       real(kind=dp), intent(in) :: xpl(:), ypl(:) !< Long array with one or more polylines, separated by dmiss
       integer, intent(in) :: npl !< Total number of polyline points

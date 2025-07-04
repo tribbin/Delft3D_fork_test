@@ -42,13 +42,12 @@ contains
 
    subroutine addlink1Dkcu3(L, japerim) ! and add area's and volumes of 1D link kcu3
       use precision, only: dp
-      use m_flowgeom
-      use m_flow
-      use m_missing
-      use unstruc_channel_flow
-      use precision_basics
-      use m_get_prof_1D
-      use m_get_hpr_nostruc
+      use m_flowgeom, only: ln, bl, dx, acl, kcs, bob0
+      use m_flow, only: s1, a1, vol1, hu, au, vol1_f
+      use unstruc_channel_flow, only: network
+      use precision_basics, only: comparereal
+      use m_get_prof_1D, only: getprof_1d
+      use m_get_hpr_nostruc, only: get_hpr_nostruc
 
       implicit none
 

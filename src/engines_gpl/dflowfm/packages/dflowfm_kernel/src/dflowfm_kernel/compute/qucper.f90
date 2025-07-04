@@ -45,8 +45,8 @@ contains
 !! leaving the cell = +
    real(kind=dp) function QucPer(n12, L)
       use precision, only: dp
-      use m_flow
-      use m_flowgeom
+      use m_flow, only: qa, ucxu, ucyu, u1
+      use m_flowgeom, only: csu, snu, ln, nd
       use m_lin2nodx, only: lin2nodx
       use m_lin2nody, only: lin2nody
       use m_nod2linx, only: nod2linx

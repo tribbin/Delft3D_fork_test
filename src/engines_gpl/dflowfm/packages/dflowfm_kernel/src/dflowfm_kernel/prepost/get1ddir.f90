@@ -47,10 +47,9 @@ contains
  !! type link to 2D grid cell).
    subroutine get1Ddir(n1, xt, yt)
       use precision, only: dp
-      use m_flowgeom
-      use m_flow
+      use m_flowgeom, only: nd, kcu, ln, xz, yz, xu, yu
+      use m_flow, only: dxymis, dmiss
       use m_sferic, only: jsferic, jasfer3D
-      use m_missing, only: dmiss, dxymis
       use geometry_module, only: normalin, normalout
 
       integer, intent(in) :: n1 !< 1D flow node number

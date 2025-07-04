@@ -50,9 +50,9 @@ contains
 
    subroutine crspath_on_netgeom(path)
       use precision, only: dp
-      use m_crspath
-      use network_data
-      use m_get_link_neighboring_cell_coords
+      use m_crspath, only: tcrspath, crspath_on_singlelink
+      use network_data, only: numl, xk, kn, yk
+      use m_get_link_neighboring_cell_coords, only: get_link_neighboringcellcoords
 
       type(tcrspath), intent(inout) :: path !< Cross section path that must be imposed on network geometry.
 

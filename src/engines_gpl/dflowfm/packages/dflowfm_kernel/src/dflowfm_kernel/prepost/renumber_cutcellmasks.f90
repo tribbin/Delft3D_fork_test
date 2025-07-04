@@ -43,7 +43,7 @@ contains
    subroutine renumber_cutcellmasks(perm)
       use precision, only: dp
       use network_data, only: numL
-      use m_cutcells
+      use m_cutcells, only: jastored, idxl, xdxl, ydxl, pdxl
       implicit none
 
       integer, dimension(numL), intent(in) :: perm !< permuation array

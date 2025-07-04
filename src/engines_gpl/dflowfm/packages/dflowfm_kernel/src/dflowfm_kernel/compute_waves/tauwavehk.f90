@@ -44,9 +44,9 @@ contains
       use precision, only: dp
       use m_getwavenr, only: getwavenr
       use m_flow, only: rhog
-      use m_sferic
+      use m_sferic, only: twopi, pi
+      use m_drawthis, only: ndraw
       use m_waves, only: gammax, jauorb
-      use m_drawthis
 
       implicit none
       real(kind=dp) :: Hrms, Tsig, Depth, uorbi, hrm, ust

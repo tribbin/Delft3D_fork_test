@@ -38,7 +38,7 @@ contains
       use unstruc_files, only: mdia, close_all_files
       use dfm_error, only: dfm_genericerror
 #ifdef HAVE_MPI
-      use mpi
+      use mpi, only: mpi_abort
       use m_partitioninfo, only: DFM_COMM_ALLWORLD, jampi
 #endif
 

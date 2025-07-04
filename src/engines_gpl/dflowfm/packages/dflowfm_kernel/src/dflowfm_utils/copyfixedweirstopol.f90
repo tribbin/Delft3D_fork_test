@@ -43,9 +43,9 @@ module m_copyfixedweirstopol
 contains
 
    subroutine copyFixedWeirsToPol()
-      use m_fixedweirs
-      use m_polygon
-      use m_append_crspath_to_pol
+      use m_fixedweirs, only: nfxw, fxw
+      use m_polygon, only: npl
+      use m_append_crspath_to_pol, only: appendcrspathtopol
 
       integer :: i
 

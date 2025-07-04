@@ -43,10 +43,10 @@ contains
 
    subroutine make_rhs(NUMCONST, thetavert, Ndkx, kmx, vol1, kbot, ktop, sumhorflux, fluxver, source, sed, nsubsteps, jaupdate, ndeltasteps, rhs)
       use precision, only: dp
-      use m_flowgeom, only: Ndxi, Ndx, ba ! static mesh information
+      use m_flowgeom, only: Ndxi, ba, ndx
+      use timers, only: timon, timstrt, timstop ! static mesh information
       use m_flowtimes, only: dts
       use m_flowparameters, only: epshu, testdryflood
-      use timers
 
       implicit none
 

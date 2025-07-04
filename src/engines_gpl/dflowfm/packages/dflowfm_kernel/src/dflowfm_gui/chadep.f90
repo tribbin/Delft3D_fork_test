@@ -41,9 +41,9 @@ contains
 
    subroutine CHADEP(XP, YP, RD, KEY)
       use precision, only: dp
-      use M_MISSING
-      use m_disput
-      use m_help
+      use M_MISSING, only: dmiss
+      use m_disput, only: disput
+      use m_help, only: help
       implicit none
       real(kind=dp) :: XP, YP, RD
       integer :: KEY

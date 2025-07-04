@@ -43,13 +43,13 @@ contains
 
    subroutine setcdwcoefficient(uwi, cd10, L)
       use precision, only: dp
-      use m_wind
+      use m_wind, only: icdtyp, cdb, wdb
+      use m_physcoef, only: vonkarw, viskinair
+      use m_missing, only: dmiss
       use m_flow, only: ag, hs, jaCdwusp, Cdwusp
       use m_flowgeom, only: ln
       use m_sferic, only: pi, twopi
       use m_waves, only: twav
-      use m_physcoef
-      use m_missing
 
       implicit none
       integer, intent(in) :: L

@@ -41,12 +41,12 @@ module m_comp_sinktot
 contains
 
    subroutine comp_sinktot()
-      use m_transport
+      use m_transport, only: ised1, isedn, sinksetot, constituents, sinkftot
+      use m_sediment, only: stm_included, mxgr, sedtra, stmpar
+      use timers, only: timon, timstrt, timstop
       use m_flow, only: vol1, kmx
       use m_flowgeom, only: ndx
       use m_flowtimes, only: dts
-      use m_sediment
-      use timers
 
       implicit none
 

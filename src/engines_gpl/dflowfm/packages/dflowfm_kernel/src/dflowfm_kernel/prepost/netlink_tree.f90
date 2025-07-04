@@ -44,8 +44,8 @@ contains
    subroutine netlink_tree(phase)
       use precision, only: dp
       use network_data, only: numl, xk, yk, kn
-      use kdtree2Factory
-      use m_missing
+      use kdtree2Factory, only: build_kdtree, treeglob, realloc_results_kdtree, itree_empty, delete_kdtree2
+      use m_missing, only: dmiss
       use m_sferic, only: jsferic, jasfer3D
       use geometry_module, only: half
 

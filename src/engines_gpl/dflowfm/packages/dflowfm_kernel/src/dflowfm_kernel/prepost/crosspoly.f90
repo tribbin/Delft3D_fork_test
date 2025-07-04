@@ -35,7 +35,7 @@ contains
    subroutine crosspoly(xa, ya, xb, yb, xpl, ypl, npl, XM, YM, CRPM, JA, isec, distanceStartPolygon)
       use precision, only: dp
 
-      use m_missing
+      use m_missing, only: dmiss
       use m_sferic, only: jsferic, jasfer3D
       use geometry_module, only: crossinbox, dbdistance
 

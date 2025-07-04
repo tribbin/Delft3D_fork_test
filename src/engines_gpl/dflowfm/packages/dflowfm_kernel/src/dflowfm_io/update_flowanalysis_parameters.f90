@@ -42,10 +42,9 @@ module m_update_flowanalysis_parameters
 contains
 
    subroutine updateFlowAnalysisParameters()
-      use m_flow
-      use m_flowgeom
-      use m_flowtimes
-      use m_flowparameters, only: jamapFlowAnalysis
+      use m_flow, only: jamapflowanalysis, negativedepths_cum, negativedepths, noiterations_cum, noiterations, limitingtimestepestimation_cum, limitingtimestepestimation, flowcourantnumber
+      use m_flowgeom, only: ndx
+      use m_flowtimes, only: dts
 
       implicit none
 

@@ -41,8 +41,8 @@ module m_iadvecini
 contains
 
    subroutine iadvecini()
-      use m_flowgeom
-      use m_flow
+      use m_flowgeom, only: lnx, iadv, lnx1d
+      use m_flow, only: cflmx, iadvec, kmx, iadvec1d
       use messagehandling, only: LEVEL_INFO, mess
 
       integer :: L, jado

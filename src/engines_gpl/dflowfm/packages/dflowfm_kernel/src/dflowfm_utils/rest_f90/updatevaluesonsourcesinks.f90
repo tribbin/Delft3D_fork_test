@@ -43,11 +43,9 @@ contains
    subroutine updateValuesOnSourceSinks(tim1)
       use m_reallocsrc, only: reallocsrc
       use fm_external_forcings_data, only: qsrc, qsrcavg, vsrccum, vsrccum_pre, numsrc
-      use m_missing
+      use precision, only: dp, comparereal
       use m_flowtimes, only: ti_his, time_his
-      use precision
       use m_flowparameters, only: eps10
-      use m_alloc
 
       real(kind=dp), intent(in) :: tim1 !< Current (new) time
 

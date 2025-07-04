@@ -64,8 +64,8 @@ contains
 !  (J. van Kester, verslag Z3063, juli 2001)
 !
 !!--declarations----------------------------------------------------------------
-      use m_flowgeom
-      use precision
+      use m_flowgeom, only: villemontecd1, villemontecd2
+      use precision, only: fp
       use m_tabellenboek, only: tabellenboek
       implicit none
 !

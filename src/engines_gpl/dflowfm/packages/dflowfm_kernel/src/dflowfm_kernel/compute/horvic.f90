@@ -39,10 +39,9 @@ contains
    !> compute viscous flux balance of cell ln (n12,L) in coordinate frame of L
    real(kind=dp) function horvic(n12, L) ! horizontal viscosity term
       use precision, only: dp
-      use m_flow
-      use m_flowgeom
-      use m_missing
-      use m_sferic
+      use m_flow, only: ucx, ucy, javiusp, viusp, vicouv, istresstyp, au, hs
+      use m_flowgeom, only: csu, snu, ln, nd, lncn, dxi, ucnx, wui, ucny, wu, bai
+      use m_sferic, only: jasfer3d
       use m_cor2linx, only: cor2linx
       use m_cor2liny, only: cor2liny
       use m_lin2nodx, only: lin2nodx

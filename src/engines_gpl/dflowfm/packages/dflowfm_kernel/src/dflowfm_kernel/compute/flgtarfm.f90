@@ -45,8 +45,7 @@ contains
 ! NONE
 !!--declarations----------------------------------------------------------------
       ! use cpluv
-      use m_strucs
-      use m_missing
+      use m_strucs, only: generalstruc
       implicit none
 !
 ! Global variables

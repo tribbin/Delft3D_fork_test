@@ -44,8 +44,8 @@ module m_remove_unused_nodes_and_links
 contains
 
    subroutine remove_unused_nodes_and_links()
-      use network_data, only: numk, numl, nump, kc, kn, lne, lnn, netcell, nmk, nod, tnod, xk, yk, zk
-      use m_alloc
+      use network_data, only: numk, numl, nump, netcell, kn, nmk, nod, xk, yk, zk, kc, lnn, lne, tnod
+      use m_alloc, only: aerr, realloc
 
       ! local variables
       logical, dimension(:), allocatable :: nod_used !< flag specifying whether a node is used in the face definitions

@@ -45,11 +45,11 @@ contains
  !! into metric distances.
    subroutine readyzprofnr(myzprofs, iprofnr, nyz, yy, zz, mx, width, height, zmin)
       use precision, only: dp
-      use messagehandling, only: msgbuf, msg_flush, warn_flush
+      use messagehandling, only: msgbuf, warn_flush
+      use m_missing, only: dmiss
       use m_profiles, only: tolzprof, ntolsave
       use geometry_module, only: dbdistance
       use m_sferic, only: jsferic, jasfer3D
-      use m_missing
       use m_filez, only: readerror
 
       integer :: myzprofs, iprofnr, nyz, mx

@@ -44,8 +44,8 @@ module m_is_1d_boundary_candidate
 contains
 
    pure logical function is_1d_boundary_candidate(L, i)
-      use network_data
-      use m_flowgeom
+      use network_data, only: nmk, kn, lne
+      use m_flowgeom, only: jaallowbndatbifurcation
 
       integer, intent(in) :: L !<  net link to check for boundary candidate
       integer, intent(in) :: i !<  node to check, equals 1 or 2

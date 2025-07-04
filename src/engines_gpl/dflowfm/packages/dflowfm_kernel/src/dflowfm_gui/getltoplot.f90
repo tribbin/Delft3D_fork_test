@@ -37,8 +37,7 @@ module m_getltoplot
 contains
 
    subroutine getLtoplot(kk, k)
-      use m_flowgeom
-      use m_flow
+      use m_flow, only: kplotfrombedorsurface, lbot, kplot, kmxl, ltop
       implicit none
       integer, intent(in) :: kk
       integer, intent(out) :: k

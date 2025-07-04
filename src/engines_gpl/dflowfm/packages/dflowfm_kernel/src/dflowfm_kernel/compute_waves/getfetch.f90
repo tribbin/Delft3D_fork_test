@@ -45,7 +45,7 @@ contains
       use m_flow, only: Hs
       use m_waves, only: fetch, nwf, fetdp
       use m_sferic, only: twopi
-      use m_get_link1
+      use m_get_link1, only: getlink1
       use m_wind, only: wx, wy
 
       implicit none

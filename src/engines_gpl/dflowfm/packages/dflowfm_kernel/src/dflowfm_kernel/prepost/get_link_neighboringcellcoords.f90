@@ -35,7 +35,7 @@ contains
 !> get neighboring cell center coordinates
    subroutine get_link_neighboringcellcoords(L, isactive, xza, yza, xzb, yzb)
       use precision, only: dp
-      use network_data
+      use network_data, only: kn, xk, yk, lne, lnn, nump
       use m_flowgeom, only: xz, yz ! Note that xz,yz are already filled after findcells.
 
       integer, intent(in) :: L !< link number

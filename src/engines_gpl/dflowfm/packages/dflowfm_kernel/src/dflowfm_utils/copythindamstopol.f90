@@ -43,9 +43,9 @@ module m_copythindamstopol
 contains
 
    subroutine copyThinDamsToPol()
-      use m_thindams
+      use m_thindams, only: nthd, thd
+      use m_append_crspath_to_pol, only: appendcrspathtopol
       use m_polygon, only: npl
-      use m_append_crspath_to_pol
 
       integer :: i
 

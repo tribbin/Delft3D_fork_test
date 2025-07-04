@@ -40,8 +40,8 @@ contains
 
    subroutine equili_spiralintensity()
       use precision, only: dp
-      use m_flow
-      use m_flowgeom
+      use m_flow, only: icorio, fcoris, hs, spircrv, spirucm, spirint
+      use m_flowgeom, only: ndx
       use m_sferic, only: jsferic, fcorio
       implicit none
       integer :: kk

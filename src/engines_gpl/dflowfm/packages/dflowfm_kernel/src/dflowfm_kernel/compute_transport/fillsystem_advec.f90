@@ -45,9 +45,9 @@ contains
       use precision, only: dp
       use m_flowgeom, only: ln, lnx, csu, snu, nd, ndx, ndxi
       use m_flow, only: vol1, Au
-      use m_advec_data
-      use m_qnerror
-      use m_writematrix
+      use m_advec_data, only: dfluxfac, ac, jc, ic, jaoutput
+      use m_qnerror, only: qnerror
+      use m_writematrix, only: writematrix
       implicit none
 
       integer, intent(inout) :: ierror

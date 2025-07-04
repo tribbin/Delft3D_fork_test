@@ -46,8 +46,8 @@ contains
  !! is encountered, the polygon is 'closed'.
    subroutine dAREAN(XX, YY, N, DAREA, DLENGTH, DLENMX)
       use precision, only: dp
-      use m_missing
-      use m_sferic
+      use m_missing, only: dmiss
+      use m_sferic, only: jsferic, jasfer3d
       use geometry_module, only: dbdistance, get_startend, comp_masscenter
 
       integer, intent(in) :: n !< Nr. of polygon points.
