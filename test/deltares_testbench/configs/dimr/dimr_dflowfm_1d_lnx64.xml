@@ -46,7 +46,7 @@
                 <argument>-c</argument>
             </arguments>
         </program>
-        <program name="dimr" logOutputToFile="true" programStringRemoveQuotes="true">
+        <program name="dimr" logOutputToFile="true" programStringRemoveQuotes="true" addSearchPaths="true">
             <location ref="reference_engines" type="reference">
                 <from>lnx64</from>
             </location>
