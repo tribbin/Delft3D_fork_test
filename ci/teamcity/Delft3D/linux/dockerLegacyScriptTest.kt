@@ -22,7 +22,7 @@ object LinuxLegacyDockerTest : BuildType({
     )
 
     name = "Legacy Docker Test"
-    buildNumberPattern = "%dep.${LinuxBuild.id}.product%: %build.vcs.number%"
+    buildNumberPattern = "%dep.${LinuxRuntimeContainers.id}.product%: %build.vcs.number%"
 
     vcs {
         root(DslContext.settingsRoot)
@@ -30,7 +30,7 @@ object LinuxLegacyDockerTest : BuildType({
     }
 
     params {
-        param("env.DOCKER_IMAGE", "containers.deltares.nl/delft3d/delft3d-runtime-container:alma8-%build.vcs.number%")
+        param("env.DOCKER_IMAGE", "%dep.${LinuxRuntimeContainers.id}.runtime_container_image%")
     }
 
     features {

@@ -1,6 +1,6 @@
 !----AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
 !  Delft3D is free software: you can redistribute it and/or modify
@@ -1382,14 +1382,18 @@ contains
 
       call prop_get(md_ptr, 'physics', 'Stanton', Stanton)
       call prop_get(md_ptr, 'physics', 'Dalton', Dalton)
-      call prop_get(md_ptr, 'physics', 'Tempmax', Tempmax)
-      call prop_get(md_ptr, 'physics', 'Tempmin', Tempmin)
-      call prop_get(md_ptr, 'physics', 'Allowcoolingbelowzero', Jaallowcoolingbelowzero)
+      call prop_get(md_ptr, 'physics', 'Tempmax', temperature_max)
+      call prop_get(md_ptr, 'physics', 'Tempmin', temperature_min)
+      call prop_get(md_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point)
+      if (use_salinity_freezing_point .and. temperature_min >= 0.0_dp) then
+         write (msgbuf, '(a,g0,a)') 'salinityDependentFreezingPoint is set to true, but Tempmin = ', temperature_min, &
+            ' is not below 0 degrees Celsius. This may lead to incorrect results.'
+         call mess(LEVEL_WARN, msgbuf)
+      end if
 
-      call prop_get(md_ptr, 'physics', 'Salimax', Salimax)
-      call prop_get(md_ptr, 'physics', 'Salimin', Salimin)
+      call prop_get(md_ptr, 'physics', 'Salimax', salinity_max)
+      call prop_get(md_ptr, 'physics', 'Salimin', salinity_min)
       call prop_get(md_ptr, 'physics', 'Surftempsmofac', Surftempsmofac)
-      call prop_get(md_ptr, 'physics', 'RhoairRhowater', wind_stress_water_density_option)
       call prop_get(md_ptr, 'physics', 'Heat_eachstep', jaheat_eachstep)
       call prop_get(md_ptr, 'physics', 'Soiltempthick', Soiltempthick)
       if (soiltempthick > 0.0_dp) then
@@ -1588,6 +1592,7 @@ contains
       call prop_get(md_ptr, 'wind', 'Stresstowind', jastresstowind)
       call prop_get(md_ptr, 'wind', 'Wind_eachstep', update_wind_stress_each_time_step)
       call prop_get(md_ptr, 'wind', 'computedAirdensity', ja_computed_airdensity)
+      call prop_get(md_ptr, 'Wind', 'rhoWaterInWindStress', rho_water_in_wind_stress)
 
       call prop_get(md_ptr, 'waves', 'Wavemodelnr', jawave)
       call prop_get(md_ptr, 'waves', 'Waveforcing', waveforcing)
@@ -3353,9 +3358,9 @@ contains
          if (writeall .or. (deltasalinity /= dmiss)) then
             call prop_set(prop_ptr, 'physics', 'DeltaSalinity', Deltasalinity, 'for testcases')
          end if
-         if (writeall .or. (salimax /= dmiss .or. salimin /= 0.0_dp)) then
-            call prop_set(prop_ptr, 'physics', 'Salimax', Salimax, 'Limit the salinity')
-            call prop_set(prop_ptr, 'physics', 'Salimin', Salimin, 'Limit the salinity')
+         if (writeall .or. (salinity_max /= dmiss .or. salinity_min /= 0.0_dp)) then
+            call prop_set(prop_ptr, 'physics', 'Salimax', salinity_max, 'Upper salinity limit')
+            call prop_set(prop_ptr, 'physics', 'Salimin', salinity_min, 'Lower salinity limit')
          end if
       end if
 
@@ -3383,12 +3388,13 @@ contains
          call prop_set(prop_ptr, 'physics', 'Stanton', Stanton, 'Coefficient for convective heat flux, if negative, Ccon = abs(Stanton)*Cdwind')
          call prop_set(prop_ptr, 'physics', 'Dalton', Dalton, 'Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind')
 
-         if (writeall .or. (tempmax /= dmiss .or. tempmin /= 0.0_dp)) then
-            call prop_set(prop_ptr, 'physics', 'Tempmax', Tempmax, 'Limit the temperature')
-            call prop_set(prop_ptr, 'physics', 'Tempmin', Tempmin, 'Limit the temperature, if -999, tempmin=(-0.0575 - 2.154996d-4*sal)*sal')
+         if (writeall .or. (temperature_max /= dmiss .or. temperature_min /= dmiss)) then
+            call prop_set(prop_ptr, 'physics', 'Tempmax', temperature_max, 'Upper temperature limit')
+            call prop_set(prop_ptr, 'physics', 'Tempmin', temperature_min, 'Lower temperature limit')
          end if
-         if (writeall .or. Jaallowcoolingbelowzero /= 0) then
-            call prop_set(prop_ptr, 'physics', 'Allowcoolingbelowzero', Jaallowcoolingbelowzero, '0 = no, 1 = yes')
+         if (writeall .or. use_salinity_freezing_point) then
+            call prop_set(prop_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point, &
+                          'Enable salinity-dependent freezing point (0 = no, 1 = yes)')
          end if
          if (writeall .or. surftempsmofac > 0.0_dp) then
             call prop_set(prop_ptr, 'physics', 'Surftempsmofac', Surftempsmofac, 'Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no')
@@ -3398,9 +3404,6 @@ contains
          end if
          if (writeall .or. jaheat_eachstep > 0) then
             call prop_set(prop_ptr, 'physics', 'Heat_eachstep', jaheat_eachstep, '1=heat each timestep, 0=heat each usertimestep')
-         end if
-         if (writeall .or. wind_stress_water_density_option > 0) then
-            call prop_set(prop_ptr, 'physics', 'RhoairRhowater', wind_stress_water_density_option, 'windstress rhoa/rhow: 0=Rhoair/Rhomean, 1=Rhoair/rhow()')
          end if
 
          if (writeall .or. janudge > 0 .or. jainiwithnudge > 0) then
@@ -3529,7 +3532,11 @@ contains
          call prop_set(prop_ptr, 'wind', 'computedAirdensity', ja_computed_airdensity, &
                       & 'Compute air density (0: no (default), 1: yes (requires quantities airpressure, airtemperature and dewpoint in .ext-file)')
       end if
-
+      if (writeall .or. rho_water_in_wind_stress /= RHO_MEAN) then
+         call prop_set(prop_ptr, 'Wind', 'rhoWaterInWindStress', rho_water_in_wind_stress, &
+             'Water density used in computation of wind stress (0: Rhomean, 1: local (surface) density of model)')
+      end if
+         
       if (writeall .or. jagrw > 0 .or. infiltrationmodel /= DFM_HYD_NOINFILT) then
          call prop_set(prop_ptr, 'grw', 'groundwater', jagrw, '0=No (horizontal) groundwater flow, 1=With groundwater flow')
          write (tmpstr, '(a,5(i0,": ",a),a)') 'Infiltration method (', DFM_HYD_NOINFILT, 'No infiltration', 1, 'Interception layer', &
