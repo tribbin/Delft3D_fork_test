@@ -54,11 +54,29 @@ object Publish : BuildType({
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
-            dependency(LinuxRuntimeContainers) {
-                snapshot {
-                    onDependencyFailure = FailureAction.FAIL_TO_START
-                    onDependencyCancel = FailureAction.CANCEL
-                }
+            snapshot(AbsoluteId("LinuxTest")) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
+            }
+            snapshot(AbsoluteId("WindowsTest")) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
+            }
+            snapshot(AbsoluteId("LinuxUnitTest")) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
+            }
+            snapshot(AbsoluteId("WindowsUnitTest")) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
+            }
+            snapshot(AbsoluteId("LinuxRunAllDockerExamples")) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
+            }
+            snapshot(AbsoluteId("Delft3D_LinuxLegacyDockerTest")) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+                onDependencyCancel = FailureAction.CANCEL
             }
         }
         dependency(LinuxTest) {

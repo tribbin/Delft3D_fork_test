@@ -43,39 +43,27 @@ object DIMRbak : BuildType({
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
-        }
-        dependency(LinuxTest) {
-            snapshot {
+            snapshot(AbsoluteId("LinuxTest")) {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
-        }
-        dependency(WindowsTest) {
-            snapshot {
+            snapshot(AbsoluteId("WindowsTest")) {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
-        }
-        dependency(LinuxUnitTest) {
-            snapshot {
+            snapshot(AbsoluteId("LinuxUnitTest")) {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
-        }
-        dependency(WindowsUnitTest) {
-            snapshot {
+            snapshot(AbsoluteId("WindowsUnitTest")) {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
-        }
-        dependency(LinuxRunAllDockerExamples) {
-            snapshot {
+            snapshot(AbsoluteId("LinuxRunAllDockerExamples")) {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
-        }
-        dependency(Delft3D_LinuxLegacyDockerTest) {
-            snapshot {
+            snapshot(AbsoluteId("Delft3D_LinuxLegacyDockerTest")) {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
             }
