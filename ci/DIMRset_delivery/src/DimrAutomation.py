@@ -155,21 +155,67 @@ class DimrAutomation(object):
     def __get_previous_testbank_result_parser(
         self, build_id_chain: str
     ) -> TestbankResultParser:
-        """Gets a new TestbankResultParser for the previous pinned test bench results."""
-        pinned_test_bench_builds = self.__teamcity.get_builds_for_build_type_id(
-            build_type_id=TEAMCITY_IDS.DIMR_PUBLISH.value,
-            limit=2,
+        """Gets a new TestbankResultParser for the previous versioned tagged test bench results."""
+
+        current_build_info = self.__teamcity.get_full_build_info_for_build_id(
+            build_id_chain
+        )
+        build_type_id = current_build_info.get("buildTypeId")
+        current_tag_name = self.__get_tag_from_build_info(current_build_info)
+
+        # Get all builds for the publish build type
+        latest_builds = self.__teamcity.get_builds_for_build_type_id(
+            build_type_id=build_type_id,
+            limit=50,
             include_failed_builds=False,
-            pinned="true",
         )
 
-        if pinned_test_bench_builds["build"][0]["id"] != build_id_chain:
-            previous_test_bench_build_id = pinned_test_bench_builds["build"][0]["id"]
-        else:
-            previous_test_bench_build_id = pinned_test_bench_builds["build"][1]["id"]
+        if latest_builds is None:
+            latest_builds = []
 
+        previous_build_id = None
+        previous_version = None
+
+        # Find previous versioned tagged build (major.minor.patch < current)
+        for build in latest_builds.get("build", {}):
+            build_id = build.get("id")
+            if build_id == int(build_id_chain):
+                continue
+
+            loop_build_info = self.__teamcity.get_full_build_info_for_build_id(build_id)
+            loop_tag_name = self.__get_tag_from_build_info(loop_build_info)
+
+            if (
+                loop_tag_name
+                and loop_tag_name != (0, 0, 0)
+                and current_tag_name
+                and loop_tag_name < current_tag_name
+            ):
+                if previous_version is None or loop_tag_name > previous_version:
+                    previous_build_id = build_id
+                    previous_version = loop_tag_name
+        
+        # Previous version not found
+        if previous_build_id is None:
+            return None  
+
+        # Download artifact for previous build
         artifact = self.__teamcity.get_build_artifact(
-            previous_test_bench_build_id, PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
+            build_id=f"{previous_build_id}",
+            path_to_artifact=PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT,
         )
-
         return TestbankResultParser(artifact.decode())
+
+    def __get_tag_from_build_info(self, current_build_info):
+        current_tag_name = (0, 0, 0)
+        tags = current_build_info.get("tags", {}).get("tag", [])
+        for tag in tags:
+            tag_name = tag.get("name")
+            if tag_name.startswith("DIMRset_"):
+                current_tag_name = self.__parse_version(tag_name)
+        return current_tag_name
+
+    def __parse_version(self, tag):
+        if tag and tag.startswith("DIMRset_"):
+            return tuple(map(int, tag[len("DIMRset_") :].split(".")))
+        return None

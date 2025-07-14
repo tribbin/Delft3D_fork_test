@@ -374,6 +374,35 @@ class TeamCity(object):
         print(f"Could not retrieve build info for build id {build_id}:")
         print(f"{result.status_code} - {result.content}")
         return None
+    
+    def get_full_build_info_for_build_id(self, build_id: str) -> Dict[str, Any]:
+        """
+        Gets the build info for a specific build.
+
+        Uses the following TeamCity REST API endpoint:
+        /app/rest/builds/<buildLocator>
+
+        Arguments:
+            build_id (str): The build id of a specific build.
+
+        Returns:
+            Dict[str, Any]: A dictionary with a variety of keys. This includes
+            information about the configuration parameters, artifact dependencies
+            and the agent the build has run on.
+
+            For more information, please see the official TeamCity REST API docs.
+
+            Returns None if the request failed.
+        """
+        endpoint = f"{self.__rest_uri}builds/id:{build_id}"
+        result = requests.get(
+            url=endpoint, headers=self.__default_headers, auth=self.__auth
+        )
+        if result.status_code == 200:
+            return result.json()
+        print(f"Could not retrieve build info for build id {build_id}:")
+        print(f"{result.status_code} - {result.content}")
+        return None
 
     def get_latest_build_id_for_build_type_id(
         self, build_type_id: str, include_failed_builds: bool = False
