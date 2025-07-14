@@ -41,14 +41,12 @@ contains
         use m_part_recons
         use m_part_transport
         use m_sferic
-        use m_sferic_part, only: ptref
-        use geometry_module, only: Cart3Dtospher, sphertocart3D
-        use physicalconsts, only: earth_radius
-        use mathconsts, only: raddeg_hp
         use fileinfo, lun => lunit    ! logical unit numbers for files
         use random_generator
         use timers
         use m_part_modeltypes
+        use m_fm_particles_in_grid, only: displace_spherical, part_findcellsingle
+
 
         !locals
         logical :: partdomain, skip_pt, openbound, mirror
@@ -215,17 +213,14 @@ contains
                     openbound = .TRUE.
                 else
                     ! particle is within the model domain
-                    xpart(ipart) = xpartold + dax
-                    ypart(ipart) = ypartold + day
-                    !temporary check
-                    ! assign the new k (segment) for this new coordinate for the original coordinate system,
-                    ! if sferical provide the actual sferical coordinates.
-                    xx(1) = xpart(ipart)
-                    yy(1) = ypart(ipart)
-                    if (jsferic == 1) then
-                        call Cart3Dtospher(xpart(ipart), ypart(ipart), zpart(ipart), xx(1), yy(1), ptref)
+                    if (jsferic == 0) then
+                        xpart(ipart) = xpartold + dax
+                        ypart(ipart) = ypartold + day
+                    else
+                        call displace_spherical( xpartold, ypartold, zpartold, &
+                                  dax, day, xpart(ipart), ypart(ipart), zpart(ipart) )
                     endif
-                    call part_findcell(1, xx, yy, mpart(ipart:ipart), ierror)
+                    call part_findcellsingle(xpart(ipart), ypart(ipart), mpart(ipart), ierror)
 
                     !  We sill need to check for internal boundaries (eg thin dam or dry cell in the FM model)
                     ! if openbound = false then there is an internal (no flow) boundary.
@@ -396,13 +391,14 @@ contains
         uy0 = u0y(mpart(ipart)) + alphafm(mpart(ipart)) * (ypart(ipart) - yzwcell(mpart(ipart)))
         ux0old = u0x(mpartold) + alphafm(mpartold) * (xpartold - xzwcell(mpartold))  ! in m/s ?
         uy0old = u0y(mpartold) + alphafm(mpartold) * (ypartold - yzwcell(mpartold))
-        dwx = cdrag * (dpxwind - ux0) * dts
-        dwy = cdrag * (dpywind - uy0) * dts  !this is for carthesian grids.
-        xpart(ipart) = xpartold + dwx    !cartesian
-        ypart(ipart) = ypartold + dwy    !
 
-        ! the z-coordinate needs to be updated
-        if (jsferic == 1) then
+        if (jsferic == 0) then
+            dwx = cdrag * (dpxwind - ux0) * dts
+            dwy = cdrag * (dpywind - uy0) * dts  !this is for carthesian grids.
+
+            xpart(ipart) = xpartold + dwx    !cartesian
+            ypart(ipart) = ypartold + dwy    !
+        else
             ! if spherical then for an accurate conversion we need to calculate distances
             zpartold = zpart(ipart)
             ux0old = atan2(ux0old, earth_radius) * raddeg_hp
@@ -411,28 +407,24 @@ contains
             dpywind = - wvel_sf * cos(wdirr)
             dwx = cdrag * (dpxwind - ux0old) * dts
             dwy = cdrag * (dpywind - uy0old) * dts
-            call Cart3Dtospher(xpartold, ypartold, zpartold, xx(1), yy(1), ptref)
-            xx(1) = xx(1) + dwx
-            yy(1) = yy(1) + dwy
-            call sphertocart3D(xx(1), yy(1), xpart(ipart), ypart(ipart), zpart(ipart)) !to convert back to meters
+
+            call displace_spherical( xpartold, ypartold, zpartold, &
+                     dwx, dwy, xpart(ipart), ypart(ipart), zpart(ipart) )
         endif
 
-        xx(1) = xpart(ipart)
-        yy(1) = ypart(ipart)
-        if (jsferic == 1) call Cart3Dtospher(xpart(ipart), ypart(ipart), zpart(ipart), xx(1), yy(1), ptref)
-        call part_findcell(1, xx(1), yy(1), mpart(ipart:ipart), ierror)
+        call part_findcellsingle(xpart(ipart), ypart(ipart), mpart(ipart), ierror)
         call checkpart_openbound(ipart, xpartold, ypartold, mpartold, openbound, xcr, ycr)  ! check around the starting point and end point
 
         ! if the particle goes outside the domain due to wind, use the current angle to transport, otherwise it sticks
         dstick = rnd(rseed) > fstick(ifract) ! if dstick is true then the particle will not stick
         if ((mpart(ipart) == 0 .or. .not.openbound) .and. dstick) then
             ! here we can use the fstick parameter to select whether to take the ! particle out, ie sticks.
-            fangle = datan2(ux0old, uy0old)
-            fanglew = datan2(dpywind, dpxwind)
+            fangle   = atan2(ux0old, uy0old)
+            fanglew  = atan2(dpywind, dpxwind)
             difangle = min(twopi - abs(fangle - fanglew), abs(fangle - fanglew))
 
             ! to map it on the current vector use cos
-            windcurratio = dcos(difangle) * wvelo(mpartold)
+            windcurratio = cos(difangle) * wvelo(mpartold)
             !        if ( jsfer_old ==1 )  windcurratio = dcos(difangle) *  atan2(wvelo(mpartold),earth_radius) * raddeg_hp
             dpywind = windcurratio * uy0old
             dpxwind = windcurratio * ux0old
@@ -440,14 +432,15 @@ contains
             !now we can calculate the new displacement in the direction of hte flow
             dwx = (cdrag * (dpxwind - ux0old)) * dts
             dwy = (cdrag * (dpywind - uy0old)) * dts
-            xpart(ipart) = xpartold + dwx
-            ypart(ipart) = ypartold + dwy
 
-            xx(1) = xpart(ipart)
-            yy(1) = ypart(ipart)
-            if (jsferic == 1) then
-                call Cart3Dtospher(xpart(ipart), ypart(ipart), zpart(ipart), xx(1), yy(1), ptref)
+            if (jsferic == 0) then
+                xpart(ipart) = xpartold + dwx
+                ypart(ipart) = ypartold + dwy
+            else
+                call displace_spherical( xpartold, ypartold, zpartold, &
+                         dwx, dwy, xpart(ipart), ypart(ipart), zpart(ipart) )
             endif
+
             call part_findcell(1, xx(1), yy(1), mpart(ipart:ipart), ierror)
             call checkpart_openbound(ipart, xpartold, ypartold, mpartold, openbound, xcr, ycr)  ! check around the starting point and end point
 

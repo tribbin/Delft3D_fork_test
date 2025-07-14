@@ -671,4 +671,39 @@ contains
 
     end subroutine part06fm
 
+    subroutine displace_spherical( xporg, yporg, zporg, dxp, dyp, xpnew, ypnew, zpnew )
+        !>\file
+        !>            Determines the grid cells and relative coordinates of waste locations
+        !>
+        !>            The wastelocations are given by the user in global x,y coordinates.\n
+        !>            This routine determines the n,m grid indices and the local x,y coordinates.\n
+        !>            The local x,y coordinates are 0< .. <1 and are store in the old x,y locations
+        !
+        !     Note : we need to be careful about the names nwaste and mwaste, nwaste
+        !            is actually a dummy in the case of unstructured grids
+
+        use m_waq_precision, only: dp
+        use mathconsts, only:      raddeg_hp, degrad_hp
+        use physicalconsts, only:  earth_radius
+        use m_sferic_part, only:   ptref
+        use geometry_module, only: Cart3Dtospher, sphertocart3D
+
+        real(kind=dp), intent(in)  :: xporg, yporg, zporg
+        real(kind=dp), intent(in)  :: dxp, dyp
+        real(kind=dp), intent(out) :: xpnew, ypnew, zpnew
+
+        real(kind=dp)              :: xlong, ylat, dxlong, dylat
+
+        call Cart3Dtospher( xporg, yporg, zporg, xlong, ylat, ptref)
+
+        dxlong = atan2( dxp, cos(ylat * degrad_hp) * earth_radius ) * raddeg_hp
+        dylat  = atan2( dyp, earth_radius ) * raddeg_hp
+        xlong  = xlong + dxlong
+        ylat   = ylat  + dylat
+
+        call sphertoCart3D( xlong, ylat, xpnew, ypnew, zpnew )
+
+    end subroutine displace_spherical
+
+
 end module m_fm_particles_in_grid
