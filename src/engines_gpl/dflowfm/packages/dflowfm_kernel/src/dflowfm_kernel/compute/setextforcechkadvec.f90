@@ -101,8 +101,7 @@ contains
                   end if
 
                   Lt = Ltop(LL)
-                  ! adve(Lt) = adve(Lt) - wdsu(LL) / max( toplayminthick, hu(Lt) - hu(Lt-1)  )
-
+                 
                   alf = 1.0_dp
                   if (jawindhuorzwsbased == 0 .and. Lt > 1) then
                      dzt = hu(Lt) - hu(Lt - 1)
@@ -112,7 +111,6 @@ contains
                   end if
                   if (Lbot(LL) < Lt .and. Lt > 2) then
                      dztm = hu(Lt - 1) - hu(Lt - 2)
-                     !if ( dzt < 0.8.0_dp*dztm ) then
                      if (dzt < 0.05_dp) then
                         alf = dzt / (dzt + dztm)
                         adve(Lt - 1) = adve(Lt - 1) - (1.0_dp - alf) * wdsu(LL) * wfac / dztm
