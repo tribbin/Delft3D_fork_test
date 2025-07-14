@@ -50,10 +50,6 @@ object Publish : BuildType({
 
     if (DslContext.getParameter("enable_release_publisher").lowercase() == "true") {
         dependencies {
-            snapshot(AbsoluteId("DIMR_To_NGHS")) {
-                onDependencyFailure = FailureAction.FAIL_TO_START
-                onDependencyCancel = FailureAction.CANCEL
-            }
             dependency(LinuxTest) {
                 snapshot {
                     onDependencyFailure = FailureAction.FAIL_TO_START
@@ -110,7 +106,7 @@ object Publish : BuildType({
 
     params {
         select("release_type", "weekly", display = ParameterDisplay.PROMPT, options = listOf("daily", "weekly", "release"))
-        text("release_version", "%dep.Dimr_DimrCollector.DIMRset_ver%", 
+        text("release_version", "2.29.xx", 
             label = "Release version", 
             description = "e.g. '2.29.03' or '2025.02'", 
             display = ParameterDisplay.PROMPT)
