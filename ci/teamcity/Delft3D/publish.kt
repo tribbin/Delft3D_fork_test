@@ -48,8 +48,27 @@ object Publish : BuildType({
         }
     }
 
+    params {
+        select("release_type", "weekly", display = ParameterDisplay.PROMPT, options = listOf("daily", "weekly", "release"))
+        text("release_version", "2.29.xx", 
+            label = "Release version", 
+            description = "e.g. '2.29.03' or '2025.02'", 
+            display = ParameterDisplay.PROMPT)
+        param("reverse.dep.${DIMRbak.id}.release_version", "%release_version%")
+        param("commit_id_short", "%dep.${LinuxBuild.id}.commit_id_short%")
+        param("source_image", "%dep.${LinuxRuntimeContainers.id}.runtime_container_image%")
+        param("destination_image_generic", "containers.deltares.nl/delft3d/%brand%:%release_type%")
+        param("destination_image_specific", "containers.deltares.nl/delft3d/%brand%:%release_type%-%release_version%")
+    }
+
     if (DslContext.getParameter("enable_release_publisher").lowercase() == "true") {
         dependencies {
+            dependency(DIMRbak) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
             dependency(LinuxTest) {
                 snapshot {
                     onDependencyFailure = FailureAction.FAIL_TO_START
@@ -102,18 +121,6 @@ object Publish : BuildType({
 
     requirements {
         contains("teamcity.agent.jvm.os.name", "Linux")
-    }
-
-    params {
-        select("release_type", "weekly", display = ParameterDisplay.PROMPT, options = listOf("daily", "weekly", "release"))
-        text("release_version", "2.29.xx", 
-            label = "Release version", 
-            description = "e.g. '2.29.03' or '2025.02'", 
-            display = ParameterDisplay.PROMPT)
-        param("commit_id_short", "%dep.${LinuxBuild.id}.commit_id_short%")
-        param("source_image", "%dep.${LinuxRuntimeContainers.id}.runtime_container_image%")
-        param("destination_image_generic", "containers.deltares.nl/delft3d/%brand%:%release_type%")
-        param("destination_image_specific", "containers.deltares.nl/delft3d/%brand%:%release_type%-%release_version%")
     }
 
     steps {
