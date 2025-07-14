@@ -33,7 +33,7 @@ TEST_OCCURRENCES = "./testOccurrences"
 HEADER_FMT = "{:>20s} {:>8s} {:>8s} {:>8s} {:>8s} {:>8s} {:>8s}  ---  {:24s} (#{:s})"
 
 
-class TEAMCITY_IDS(Enum):
+class FILTERED_LIST(Enum):
     DIMRSET_AGGREGATED_RELEASE_RESULTS_LINUX = "Dimr_DimrCollectors_DIMRsetAggregatedReleaseResultsLinux"
     DIMRSET_AGGREGATED_RELEASE_RESULTS_WINDOWS = "Dimr_DimrCollectors_DIMRsetAggregatedReleaseResultsWindows"
     DELFT3D_WINDOWS_TEST = "Delft3D_WindowsTest"
@@ -71,35 +71,6 @@ class ExecutiveSummary(object):
     def __init__(self, name: str, summary: list[TestResultSummary]) -> None:
         self.name = name
         self.summary = summary
-
-
-class ConfigurationInfo(object):
-    """A class to store configuration info."""
-
-    def __init__(self, name: str, identifier: str) -> None:
-        self.name = name
-        self.identifier = identifier
-
-
-class EngineCaseList(object):
-    """A class to store configuration info."""
-
-    def __init__(self, name: str, case_list: List[ConfigurationInfo]) -> None:
-        self.engine_name = name
-        self.list = case_list
-
-    def has_cases(self) -> bool:
-        """Check if the EngineCaseList has any cases.
-
-        Returns
-        -------
-        bool
-            True if there are cases, False otherwise.
-        """
-        if len(self.list) != 0:
-            return True
-        else:
-            return False
 
 
 class TestResult(object):
@@ -176,61 +147,6 @@ class ConfigurationTestResult(object):
         return self.test_result.get_not_passed_total()
 
 
-class SubEngineTestResult(object):
-    """A class to store sub engine test results info."""
-
-    def __init__(self, name: str, engine_results: List[ConfigurationTestResult]) -> None:
-        self.name = name
-        self.engine_results = engine_results
-
-
-class EngineTestResult(object):
-    """A class to store engine test results info."""
-
-    def __init(
-        self, name: str, engine_results: List[ConfigurationTestResult], sub_engine_results: List[SubEngineTestResult]
-    ) -> None:
-        self.name = name
-        self.engine_results = engine_results
-        self.sub_engine_results = sub_engine_results
-
-
-class TreeResult(object):
-    """A class to store the entire tree test results."""
-
-    def __init__(self, name: str, engine_results: List[EngineTestResult]) -> None:
-        self.name = name
-        self.engine_results = engine_results
-
-    def get_executive_summary(self) -> ExecutiveSummary:
-        """Get executive summary of the test results.
-
-        Returns
-        -------
-        ExecutiveSummary
-        """
-        summary_data = TestResultSummary("All")
-        for engine_results in self.engine_results:
-            for engine_result in engine_results.engine_results:
-                summary_data.sum_passed += engine_result.test_result.passed
-                summary_data.sum_failed += engine_result.test_result.failed
-                summary_data.sum_exception += engine_result.test_result.exception
-                summary_data.sum_ignored += engine_result.test_result.ignored
-                summary_data.sum_muted += engine_result.test_result.muted
-
-            for sub_engine_results in engine_results.sub_engine_results:
-                for engine_result in sub_engine_results.engine_results:
-                    summary_data.sum_passed += engine_result.test_result.passed
-                    summary_data.sum_failed += engine_result.test_result.failed
-                    summary_data.sum_exception += engine_result.test_result.exception
-                    summary_data.sum_ignored += engine_result.test_result.ignored
-                    summary_data.sum_muted += engine_result.test_result.muted
-
-        summarydata_array = []
-        summarydata_array.append(summary_data)
-        return ExecutiveSummary(self.name, summarydata_array)
-
-
 def get_sum_test_result(test_overview: List[ConfigurationTestResult]) -> TestResult:
     """Get sum of the test results.
 
@@ -266,99 +182,6 @@ def log_to_file(log_file: TextIOWrapper, *args: str) -> None:
         Variable number of arguments to be written to the log file.
     """
     log_file.write(" ".join(map(str, args)) + "\n")
-
-
-def get_engine_cases_from_url(url: str, username: str, password: str, given_build_config: str) -> EngineCaseList:
-    """Get name and cases from XML node that is requested via the URL.
-
-    Returns
-    -------
-    EngineCaseList
-        Data object with name and a case list.
-    """
-    engine_req = get_request(url, username, password)
-    if not text_in_xml_message(engine_req.text):
-        return EngineCaseList("", [])
-    xml_engine_root = ET.fromstring(engine_req.text)
-    engine_name = xml_engine_root.attrib["name"]
-
-    if "Experimental" in engine_name:
-        print(f"\tSkip {engine_name}")
-        return EngineCaseList("", [])
-    else:
-        print(f"\tRetrieving {engine_name}")
-
-    case_list = get_configuration_info(xml_engine_root, given_build_config)
-
-    return EngineCaseList(engine_name, case_list)
-
-
-def get_test_result_list(
-    log_file: TextIOWrapper, engine_cases: EngineCaseList, username: str, password: str
-) -> List[ConfigurationTestResult]:
-    """Get test results from the engine case list. Logs message to file in case of serious error.
-
-    Returns
-    -------
-    List[ConfigurationTestResult]
-        List with test results.
-    """
-    test_overview = []
-
-    for case_info in engine_cases.list:
-        identifier = case_info.identifier
-
-        url = f"{BASE_URL}/httpAuth/app/rest/builds?locator=buildType:(id:{identifier}),defaultFilter:false,branch:{branch},number:{commit}&count=1&fields=count,build(number,statistics,status,statusText,testOccurrences,agent,lastChange,tags(tag),pinned,revisions(revision))"
-
-        case_req = get_request(url, username, password)
-        if not text_in_xml_message(case_req.text):
-            return 1
-
-        xml_case_root = ET.fromstring(case_req.text)
-
-        for build in xml_case_root.findall("build"):
-            status_text = get_status_text(build)
-            test_overview.append(create_configuration_test_result(build, case_info.name, status_text))
-
-        if len(test_overview) == 0:
-            log_to_file(log_file, f"ERROR: No data available for project {identifier}")
-            continue
-
-        i = test_overview.__len__() - 1
-        if test_overview[i].test_result.failed != 0:
-            cnt = int(build.find(TEST_OCCURRENCES).attrib["count"])
-            href = build.find(TEST_OCCURRENCES).attrib["href"]
-            url_1 = f"{BASE_URL}{href},count:{cnt}"
-            test_occs_req = get_request(url_1, username, password)
-            if not text_in_xml_message(test_occs_req.text):
-                return 1
-            xml_test_occs = ET.fromstring(test_occs_req.text)
-            for t_occ in xml_test_occs.findall("testOccurrence"):
-                if t_occ.attrib["status"] == "FAILURE":
-                    href = t_occ.attrib["href"]
-                    url_2 = f"{BASE_URL}{href}"
-                    test_occ_req = get_request(url_2, username, password)
-                    if not text_in_xml_message(test_occ_req.text):
-                        return 1
-                    xml_test_occ = ET.fromstring(test_occ_req.text)
-                    txt = xml_test_occ.find("details").text
-
-                    try:
-                        if txt.find("Exception occurred") != -1 or txt.find("exception occurred") != -1:
-                            if "muted" in t_occ.attrib:
-                                test_overview[i].test_result.exception += 1
-                                test_overview[i].test_result.muted_exception += 1
-                                test_overview[i].exceptions.append("MUTED: " + xml_test_occ.attrib["name"])
-                            else:
-                                test_overview[i].test_result.failed -= 1
-                                test_overview[i].test_result.exception += 1
-                                test_overview[i].exceptions.append(xml_test_occ.attrib["name"])
-                    except:
-                        error_message = f"ERROR retrieving data from last build for {engine_cases.list[i].name} : {xml_test_occ.attrib['name']}."
-                        print(error_message)
-                        log_to_file(log_file, error_message)
-
-    return test_overview
 
 
 def get_status_text(build: ET.Element) -> str:
@@ -414,28 +237,6 @@ def create_configuration_test_result(build: ET.Element, name: str, status_text: 
     return ConfigurationTestResult(name, build_nr, passed, failed, ignored, muted, status_text)
 
 
-def get_configuration_info(xml_engine_root: ET.Element, given_build_config: str) -> List[ConfigurationInfo]:
-    """Get configuration info from xml tree.
-
-    Returns
-    -------
-    List[ConfigurationInfo]
-        List with configurations.
-    """
-    result = []
-    build_types = xml_engine_root.find("buildTypes")
-    if build_types is not None:
-        for build_type in build_types:
-            build_id = build_type.attrib["id"]
-            if not given_build_config or build_id in given_build_config:
-                build_name = build_type.attrib["name"]
-                if "Not in DIMR-Release" in build_name:
-                    print(f"\tSkip {build_name}")
-                    continue
-                result.append(ConfigurationInfo(build_name, build_id))
-    return result
-
-
 def get_request(url: str, username: str, password: str) -> requests.Response:
     """Send an HTTP GET request with authentication.
 
@@ -469,77 +270,6 @@ def text_in_xml_message(text: str) -> bool:
         return False
 
 
-def get_tree_entire_engine_test_results(
-    log_file: TextIOWrapper, project_ids: str, given_build_config: str, username: str, password: str
-) -> TreeResult:
-    """Get entire tree test results.
-
-    Returns
-    -------
-    TreeResult
-        Entire tree test results.
-    """
-    project_url = f"{PROJECTS_URL}{project_ids}"
-
-    try:
-        project_response = get_request(project_url, username, password)
-    except:
-        print(f"Given URL does not exist: {project_url}")
-        return 1
-
-    if not text_in_xml_message(project_response.text):
-        return 1
-    project_text = ET.fromstring(project_response.text)
-    tree_name = project_text.attrib["name"]
-
-    engines = []
-    for projects_node in project_text.findall("projects"):
-        for project in projects_node:
-            engine_name = project.attrib["name"]
-            if project_is_archived(project):
-                print(f"Skip archived {engine_name}")
-                continue
-
-            engines.append(ConfigurationInfo(engine_name, project.attrib["id"]))
-
-    engine_results = []
-    for engine in engines:
-        print(f"Retrieving {engine.name}")
-        url = f"{PROJECTS_URL}{engine.identifier}"
-        engine_req = get_request(url, username, password)
-        if not text_in_xml_message(engine_req.text):
-            return 1
-
-        test_results = []
-        sub_test_result = []
-
-        engine_cases = get_engine_cases_from_url(url, username, password, given_build_config)
-        if engine_cases.has_cases():
-            test_results = get_test_result_list(log_file, engine_cases, username, password)
-
-        xml_engine_root = ET.fromstring(engine_req.text)
-        for projects_node in xml_engine_root.findall("projects"):
-            for project in projects_node:
-                project_info = ConfigurationInfo(project.attrib["name"], project.attrib["id"])
-
-                url_3 = f"{PROJECTS_URL}{project_info.identifier}"
-                level_req = get_request(url_3, username, password)
-                if not text_in_xml_message(level_req.text):
-                    return 1
-
-                sub_engine_cases = get_engine_cases_from_url(url_3, username, password, given_build_config)
-                if sub_engine_cases.has_cases():
-                    sub_test_result.append(
-                        SubEngineTestResult(
-                            project_info.name, get_test_result_list(log_file, sub_engine_cases, username, password)
-                        )
-                    )
-
-        if engine_cases.has_cases() or sub_engine_cases.has_cases():
-            engine_results.append(EngineTestResult(engine.name, test_results, sub_test_result))
-    return TreeResult(tree_name, engine_results)
-
-
 def project_is_archived(project: ET.Element) -> bool:
     """Determine if project is archived."""
     return bool(project.attrib.get("archived", False))
@@ -566,19 +296,6 @@ def log_executive_summary(log_file: TextIOWrapper, summarydata: ExecutiveSummary
         log_to_file(log_file, f"    Ignored   : {summary.sum_ignored:6d}")
         log_to_file(log_file, f"    Muted     : {summary.sum_muted:6d}")
         log_to_file(log_file, f"    Percentage: {float(percentage):6.2f}")
-
-
-def log_tree(log_file: TextIOWrapper, tree_result: TreeResult) -> None:
-    """Log project tree to a file."""
-    log_to_file(log_file, f"{tree_result.name}")
-
-    for engine_result in tree_result.engine_results:
-        log_to_file(log_file, f"    {engine_result.name}")
-        if len(engine_result.sub_engine_results) != 0:
-            for result in engine_result.sub_engine_results:
-                log_engine(log_file, result.name, result.engine_results)
-        else:
-            log_engine(log_file, engine_result.name, engine_result.engine_results)
 
 
 def log_engine(log_file: TextIOWrapper, name: str, engines: List[ConfigurationTestResult]) -> None:
@@ -679,20 +396,7 @@ def create_argument_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def get_number_of_failed_tests(tree_result_overview: TreeResult) -> int:
-    """Get the number of total tests failed."""
-    total_failed_tests = 0
-    for engine_result in tree_result_overview.engine_results:
-        for result in engine_result.engine_results:
-            total_failed_tests += result.get_not_passed_total()
-        for sub_engine_result in engine_result.sub_engine_results:
-            for result in sub_engine_result.engine_results:
-                total_failed_tests += result.get_not_passed_total()
-
-    return total_failed_tests
-
-
-def get_build_dependency_chain(build_id: str, username: str, password: str, filter: TEAMCITY_IDS = None) -> list:
+def get_build_dependency_chain(build_id: str, username: str, password: str, filtered_list: FILTERED_LIST = None) -> list:
     """
     Get dependency chain of all dependent builds for a given build ID from TeamCity.
 
@@ -704,15 +408,15 @@ def get_build_dependency_chain(build_id: str, username: str, password: str, filt
         TeamCity username.
     password : str
         TeamCity password.
-    filter : TEAMCITY_IDS, optional
-        Optional filter to include only builds whose buildTypeId matches one of the TEAMCITY_IDS values.
+    filtered_list : FILTERED_LIST, optional
+        Optional filter to include only builds whose buildTypeId matches one of the values.
 
     Returns
     -------
     list
         List of dependent build IDs (snapshot dependencies).
     """
-    url = f"{BASE_URL}/httpAuth/app/rest/builds?locator=defaultFilter:false,snapshotDependency(to:(id:{build_id}))&fields=build(id,buildTypeId)"
+    url = f"{BASE_URL}/httpAuth/app/rest/builds?locator=defaultFilter:false,snapshotDependency(to:(id:{build_id})),count:1000&fields=build(id,buildTypeId)"
     response = get_request(url, username, password)
     if not text_in_xml_message(response.text):
         print(f"Could not retrieve dependencies for build ID {build_id}")
@@ -725,7 +429,7 @@ def get_build_dependency_chain(build_id: str, username: str, password: str, filt
         if dep_id:
             if filter is not None:
                 # Accept if build_type_id matches any value in filter
-                filter_values = [item.value for item in filter]
+                filter_values = [item.value for item in filtered_list]
                 if build_type_id in filter_values:
                     dependency_chain.append(dep_id)
             else:
@@ -733,40 +437,58 @@ def get_build_dependency_chain(build_id: str, username: str, password: str, filt
     return dependency_chain
 
 
-def get_build_test_results(build_id: str, username: str, password: str) -> ConfigurationTestResult:
+def get_xml_root_build_test_results(build_id: str, username: str, password: str):
+    url = f"{BASE_URL}/httpAuth/app/rest/builds/id:{build_id}"
+    response = get_request(url, username, password)
+
+    xml_root = ET.fromstring(response.text)
+    return xml_root
+
+
+def has_test_results(xml_root: ET.Element) -> bool:
     """
-    For each build ID, fetch and log its test results.
+    Check if the XML root element has test results.
+
+    Parameters
+    ----------
+    xml_root : ET.Element
+        The XML root element to check.
+
+    Returns
+    -------
+    bool
+        True if test results are present, False otherwise.
+    """
+    test_occurrences = xml_root.find("testOccurrences")
+    return test_occurrences is not None and int(test_occurrences.attrib.get("count", "0")) > 0
+
+
+def get_build_test_results(xml_root: ET.Element) -> ConfigurationTestResult:
+    """
+    For each build ID, fetch its test results.
+
     Queries the TeamCity API for the build, checks for tests, and returns a ConfigurationTestResult.
     Automatically retrieves the configuration name from the TeamCity API.
     """
-    url = f"{BASE_URL}/httpAuth/app/rest/builds/id:{build_id}?fields=number,status,statusText,buildType(name),testOccurrences(count,passed,failed,ignored,muted)"
-    response = get_request(url, username, password)
-    if not text_in_xml_message(response.text):
-        # Could not retrieve build info, return empty result with build_id as name
-        return ConfigurationTestResult("Unknown config", build_id, 0, 0, 0, 0, "No build info")
-
-    xml_root = ET.fromstring(response.text)
     build_nr = xml_root.attrib.get("number", build_id)
-    # Try to get statusText, if not present or empty, use status, else fallback
-    status_text = xml_root.attrib.get("statusText", "")
-    if not status_text:
-        status_text = xml_root.attrib.get("status", "No status available")
+    status_text = xml_root.attrib.get("status", "No status available")
+
+    # Build up config_name including parent project(s)
+    config_name = "Unknown config"
     build_type_elem = xml_root.find("buildType")
-    if build_type_elem is not None and "name" in build_type_elem.attrib:
-        config_name = build_type_elem.attrib["name"]
-    else:
-        config_name = "Unknown config"
-    test_occurrences = xml_root.find("testOccurrences")
+    if build_type_elem is not None:
+        config_name = build_type_elem.attrib.get("name", "Unknown config")
+        parent = build_type_elem.attrib.get("projectName")
+    config_name = f"{parent} / {config_name}"
 
     passed = failed = ignored = muted = 0
-    if test_occurrences is not None:
-        passed = int(test_occurrences.attrib.get("passed", "0"))
-        failed = int(test_occurrences.attrib.get("failed", "0"))
-        ignored = int(test_occurrences.attrib.get("ignored", "0"))
-        muted = int(test_occurrences.attrib.get("muted", "0"))
-        # TeamCity does not provide "exception" directly, so leave as 0
-    else:
-        print(f"No test occurrences found for build {build_id}, assuming no tests run.")
+    test_occurrences = xml_root.find("testOccurrences")
+
+    passed = int(test_occurrences.attrib.get("passed", "0"))
+    failed = int(test_occurrences.attrib.get("failed", "0"))
+    ignored = int(test_occurrences.attrib.get("ignored", "0"))
+    muted = int(test_occurrences.attrib.get("muted", "0"))
+    # TeamCity does not provide "exception" directly, so leave as 0
 
     return ConfigurationTestResult(
         name=config_name,
@@ -837,17 +559,21 @@ if __name__ == "__main__":
     # 1. Get dependency chain of all dependent builds and Filter on relevant build IDs
     dependency_chain = []
     if "build_id" in locals() and build_id:
-        dependency_chain = get_build_dependency_chain(build_id, username, password, TEAMCITY_IDS)
+        dependency_chain = get_build_dependency_chain(build_id, username, password, FILTERED_LIST)
         print(f"Dependency chain for build {build_id}: {dependency_chain}")
 
     # 2. Loop over the builds and retrieve the test results and write to file
     result_list = []
     for build_id in dependency_chain:
-        result_list.append(get_build_test_results(build_id, username, password))
+        xml_root = get_xml_root_build_test_results(build_id, username, password)
+        if has_test_results(xml_root):
+            result_list.append(get_build_test_results(xml_root))
+
+    # 3. Write test results to file
+    result_list.sort(key=lambda x: x.name)
     log_engine(log_file, "all tests", result_list)
 
-    # 3. Write executive summary to file
-    # Aggregate results from result_list into a TestResultSummary
+    # 4. Write executive summary to file
     summary = TestResultSummary("All")
     for result in result_list:
         summary.sum_passed += result.test_result.passed
@@ -868,5 +594,4 @@ if __name__ == "__main__":
     print(f"\nStart: {start_time}")
     print(f"End  : {datetime.now()}")
     print("Ready")
-    # sys.exit(tests_failed)
-    sys.exit(0)
+    sys.exit(tests_failed)
