@@ -46,8 +46,7 @@ contains
       use m_flowgeom, only: ln, lnx, snu, csu
       use m_flow, only: jamapwind, rho_water_in_wind_stress, RHO_MEAN, wdsu, ktop, rho, wdsu_x, wdsu_y, rhomean, &
                         viskinair, ag, vonkarw, u1, ltop, v, jatem, jamapwindstress, kmx, ustw
-      use m_wind, only: windxav, windyav, jawindstressgiven, jastresstowind, wx, wy, rhoair, cdb, wx, wy, relativewind, &
-                        jaspacevarcharn, wcharnock, cdwcof, ja_airdensity, ja_computed_airdensity, air_density
+      use m_wind, only: windxav, windyav, jawindstressgiven, jastresstowind, wx, wy, rhoair, cdb, relativewind, jaspacevarcharn, wcharnock, cdwcof, ja_airdensity, ja_computed_airdensity, air_density
       use m_fm_icecover, only: fm_ice_drag_effect, ice_modify_winddrag, ICE_WINDDRAG_NONE, ice_af
 
       real(kind=dp) :: uwi, cdw, tuwi, roro, wxL, wyL, uL, vL, uxL, uyL, ust, ust2, tau, z0w, roa, row

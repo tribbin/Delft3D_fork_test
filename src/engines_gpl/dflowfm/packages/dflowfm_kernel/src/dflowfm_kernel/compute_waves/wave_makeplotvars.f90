@@ -43,10 +43,9 @@ contains
    subroutine wave_makeplotvars
       use m_waves, only: ustokes, ust_mag, fwav_mag, ustx_cc, usty_cc
       use m_flowparameters, only: jawave
-      use m_flow
-      use m_flowgeom
-      use m_get_Lbot_Ltop
-      use m_waveconst
+      use m_flow, only: wave_surfbeat, wave_swan_online, wave_nc_offline, wavfu, wavfv, rhomean, hu, workx, worky, epshu, taubu, taus
+      use m_flowgeom, only: lnx, ln, wcx1, wcy1, wcx2, wcy2, wcl, ndx
+      use m_get_Lbot_Ltop, only: getlbotltop
 
       implicit none
 

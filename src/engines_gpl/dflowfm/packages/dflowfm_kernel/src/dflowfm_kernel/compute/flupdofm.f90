@@ -42,9 +42,9 @@ contains
    subroutine flupdofm(m, il, ir, istru, velheight, &
                        husb, hdsb, uu, ud, teken, relax)
       use precision, only: dp
-      use m_strucs
-      use m_flowgeom
-      use m_flow
+      use m_strucs, only: strhis2
+      use m_flowgeom, only: nd, iadv, iadv_general_structure
+      use m_flow, only: s1, u1
 
       implicit none
 !

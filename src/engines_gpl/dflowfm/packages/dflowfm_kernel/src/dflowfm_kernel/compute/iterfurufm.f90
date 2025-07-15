@@ -61,11 +61,10 @@ contains
       !
       ! use m_GlobalParameters
       ! use cpluv
-      use m_strucs
-      use m_flow
+      use m_strucs, only: dp, strucalfa
+      use m_flow, only: kmx, cfuhi, frcu, hu, u1, v, ifrcutp, ag, q1, au, u0, fu, ru
       use m_flowgeom, only: dx
       use m_get_chezy, only: get_chezy
-      use precision, only: dp
 
       implicit none
 !

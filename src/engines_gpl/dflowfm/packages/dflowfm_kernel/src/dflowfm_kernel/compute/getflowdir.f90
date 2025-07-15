@@ -37,8 +37,8 @@ module m_getflowdir
 contains
 
    subroutine getflowdir(L, iu)
-      use m_flow
-      use m_flowgeom
+      use m_flow, only: u1, s1
+      use m_flowgeom, only: ln
       implicit none
       integer :: L, iu, k1, k2
 

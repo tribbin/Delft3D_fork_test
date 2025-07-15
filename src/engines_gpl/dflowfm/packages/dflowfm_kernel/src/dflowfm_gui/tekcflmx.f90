@@ -37,12 +37,12 @@ module m_tekcflmx
 contains
 
    subroutine tekcflmx()
-      use m_rcirc
-      use m_flowgeom
-      use m_flow
-      use m_flowtimes
-      use m_htext
-      use m_set_col
+      use m_rcirc, only: rcirc
+      use m_flowgeom, only: xz, yz
+      use m_flow, only: kkcflmx
+      use m_flowtimes, only: dtsc
+      use m_htext, only: htext
+      use m_set_col, only: setcol
       implicit none
       if (kkcflmx /= 0) then
          call setcol(31)

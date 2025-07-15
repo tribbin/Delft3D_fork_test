@@ -36,7 +36,7 @@ contains
    subroutine getzlayerindices(n, nlayb, nrlay)
       use precision, only: dp
       use m_flowgeom, only: bl
-      use m_flow
+      use m_flow, only: laydefnr, laymx, keepzlayeringatbed, keepzlay1bedvol, nlaybn, zslay, numtopsig, janumtopsiguniform, nrlayn
 
       integer, intent(in) :: n !< Flow node/grid cell number
       integer, intent(out) :: nlayb !< Layer number for the bottom layer (in 1:kmx)

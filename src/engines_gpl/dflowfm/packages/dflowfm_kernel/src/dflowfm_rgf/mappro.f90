@@ -51,7 +51,7 @@ contains
       use m_geomerc, only: geomerc
       use m_affine, only: affine
       use precision, only: dp
-      use M_MISSING
+      use M_MISSING, only: dxymis
 
       integer :: ierr
       integer :: ini

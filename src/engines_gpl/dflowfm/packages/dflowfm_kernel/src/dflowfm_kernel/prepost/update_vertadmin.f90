@@ -45,9 +45,9 @@ contains
 
    subroutine update_vertadmin()
       use precision, only: dp
-      use m_partitioninfo
-      use m_flowgeom
-      use m_flow
+      use m_partitioninfo, only: jampi, update_ghosts, itype_sall, update_ghostboundvals, itype_u
+      use m_flowgeom, only: ndx, bl, lnx
+      use m_flow, only: kmx, kmxn, kmxl
       use messagehandling, only: LEVEL_INFO, LEVEL_ERROR, mess
 
       character(len=128) :: mesg

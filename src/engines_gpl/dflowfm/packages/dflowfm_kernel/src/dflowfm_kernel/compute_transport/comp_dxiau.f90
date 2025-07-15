@@ -48,7 +48,7 @@ contains
       use m_fixedweirs, only: nfxw, lnfxw
       use m_transport, only: dxiAu, jalimitdtdiff
       use timers, only: timon, timstrt, timstop
-      use m_get_Lbot_Ltop
+      use m_get_Lbot_Ltop, only: getlbotltop
 
       implicit none
 

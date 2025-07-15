@@ -37,8 +37,7 @@ module m_getktoplot
 contains
 
    subroutine getktoplot(kk, k)
-      use m_flowgeom
-      use m_flow
+      use m_flow, only: kplotfrombedorsurface, kbot, kplot, kmxn, ktop
 
       integer, intent(in) :: kk
       integer, intent(out) :: k

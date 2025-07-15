@@ -45,8 +45,8 @@ contains
       use precision, only: dp
       use m_flowgeom, only: Ndxi, Lnxi, Lnx, ln
       use m_flowtimes, only: dts
-      use m_transport
-      use timers
+      use m_transport, only: numnonglobal, dtmin_transp, nsubsteps, ndeltasteps, dtmax
+      use timers, only: timon, timstrt, timstop
 
       real(kind=dp) :: dt, dtmin
       real(kind=dp) :: logtwo

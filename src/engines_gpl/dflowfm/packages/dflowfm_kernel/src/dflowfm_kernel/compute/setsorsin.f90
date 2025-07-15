@@ -43,12 +43,12 @@ contains
    !> Compute and set source and sink values for the 'intake-outfall' structures.
    subroutine setsorsin()
       use precision, only: dp
-      use m_flow
+      use m_flow, only: srsn, vcsrc, numsrc, ksrc, qsrc, qstss, kmx, zsrc, dmiss, zws, zsrc2, vol1, jamess, ccsrc, qin, epshs, srcname
+      use m_get_kbot_ktop, only: getkbotktop
       use m_flowtimes, only: dts
       use m_transport, only: NUMCONST, constituents
       use MessageHandling, only: LEVEL_WARN, msgbuf, mess
       use m_partitioninfo, only: jampi, reduce_srsn
-      use m_get_kbot_ktop
 
       integer :: n, kk, k, kb, kt, kk2, ku, numvals, L
       real(kind=dp) :: qsrck, qsrckk, dzss

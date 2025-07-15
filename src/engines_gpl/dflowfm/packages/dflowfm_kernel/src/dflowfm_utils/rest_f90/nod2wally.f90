@@ -44,7 +44,7 @@ contains
    real(kind=dp) function nod2wally(nw, ux, uy)
       use precision, only: dp
       use m_flowgeom, only: csbwn, snbwn
-      use m_sferic
+      use m_sferic, only: jsferic, jasfer3d
 
       integer, intent(in) :: nw !< wall element number
       real(kind=dp), intent(in) :: ux, uy !< vector components in wall coordinate frame

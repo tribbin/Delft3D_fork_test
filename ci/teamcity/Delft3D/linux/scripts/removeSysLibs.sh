@@ -1,5 +1,6 @@
 rm -fv libuuid.so.* \
     libdl.so.* \
+    libcurl.so.* \
     librt.so.* \
     libpthread.so.* \
     libm.so.* \
@@ -8,7 +9,6 @@ rm -fv libuuid.so.* \
     libselinux.so.* \
     libbz2.so.* \
     libcom_err.so.* \
-    libcurl.so.* \
     libgssapi_krb5.so.* \
     libidn2.so.* \
     libk5crypto.so.* \

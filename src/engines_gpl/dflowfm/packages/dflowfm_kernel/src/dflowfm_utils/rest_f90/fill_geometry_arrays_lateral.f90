@@ -45,8 +45,8 @@ contains
    subroutine fill_geometry_arrays_lateral()
       use precision, only: dp
       use m_laterals, only: numlatsg, nodecountlat, geomXLat, geomYLat, nlatnd, n1latsg, n2latsg, nnlat, nNodesLat, model_has_laterals_across_partitions
-      use m_alloc
-      use m_partitioninfo
+      use m_alloc, only: realloc
+      use m_partitioninfo, only: is_ghost_node, any_structures_lie_across_multiple_partitions, jampi, reduce_int_sum, my_rank, ndomains, gather_int_data_mpi_same, gatherv_double_data_mpi_dif
       use m_cell_geometry, only: xz, yz
 
       integer, allocatable :: nodeCountLatGat(:), nlatndGat(:), displs(:)

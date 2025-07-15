@@ -43,8 +43,8 @@ contains
 
    subroutine flow_initialize_fm1dimp_timestep(iresult, time1)
       use precision, only: dp
-      use m_fm1dimp_update_network
-      use m_fm1dimp_update_bc
+      use m_fm1dimp_update_network, only: fm1dimp_update_network
+      use m_fm1dimp_update_bc, only: fm1dimp_update_bc
 
 !
 !DECLARATION

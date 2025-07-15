@@ -40,10 +40,10 @@ contains
    !> set wall to flowlinks and wall to flownode oientations
    subroutine setwallorientations()
       use precision, only: dp
-      use m_flowgeom
+      use m_flowgeom, only: csbw, snbw, csbwn, snbwn, mxwalls, lnx, walls, xu, yu, xz, yz
+      use m_sferic, only: jsferic, jasfer3d
+      use m_alloc, only: aerr
       use network_data, only: xk, yk
-      use m_sferic
-      use m_alloc
       use m_missing, only: dmiss
       use geometry_module, only: half, spher2locvec
 

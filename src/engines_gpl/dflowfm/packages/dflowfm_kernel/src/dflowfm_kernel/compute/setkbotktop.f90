@@ -36,12 +36,12 @@ contains
    subroutine setkbotktop(jazws0)
       use precision, only: dp
       use m_flowgeom, only: ndx, ba, bl, ln, lnx, nd
-      use m_flow
+      use m_flow, only: kmx, zws0, zws, ktop0, ktop, vol1, layertype, kbot, jased, s1, kmxn, zslay, toplayminthick, numtopsig, keepzlayeringatbed, dkx, rho, sdkx, tsigma, epshu, laydefnr, laytyp, wflaynod, indlaynod, sigmagrowthfactor, keepzlay1bedvol, vol0, jasal, jatem, qwwaq, ln0
+      use m_get_kbot_ktop, only: getkbotktop
+      use m_get_Lbot_Ltop, only: getlbotltop
+      use m_get_zlayer_indices, only: getzlayerindices
       use m_flowtimes, only: dts, ti_waq
       use m_transport, only: Constituents, ISALT, ITEMP
-      use m_get_kbot_ktop
-      use m_get_Lbot_Ltop
-      use m_get_zlayer_indices
 
       integer :: jazws0
 

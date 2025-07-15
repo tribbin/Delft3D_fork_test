@@ -1386,8 +1386,8 @@ contains
       call prop_get(md_ptr, 'physics', 'Tempmin', temperature_min)
       call prop_get(md_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point)
       if (use_salinity_freezing_point .and. temperature_min >= 0.0_dp) then
-          write(msgbuf,'(a,g0,a)') 'salinityDependentFreezingPoint is set to true, but Tempmin = ', temperature_min, &
-              ' is not below 0 degrees Celsius. This may lead to incorrect results.'
+         write (msgbuf, '(a,g0,a)') 'salinityDependentFreezingPoint is set to true, but Tempmin = ', temperature_min, &
+            ' is not below 0 degrees Celsius. This may lead to incorrect results.'
          call mess(LEVEL_WARN, msgbuf)
       end if
 
@@ -2624,7 +2624,7 @@ contains
       use m_datum
       use m_circumcenter_method, only: INTERNAL_NETLINKS_EDGE, circumcenter_tolerance, md_circumcenter_method
       use m_dambreak_breach, only: have_dambreaks_links
-      use m_add_baroclinic_pressure, only: DENSITY_TO_INTERFACES, rhointerfaces
+      use m_add_baroclinic_pressure, only: BAROC_ORIGINAL, rhointerfaces
 
       integer, intent(in) :: mout !< File pointer where to write to.
       logical, intent(in) :: writeall !< Write all fields, including default values
@@ -3176,8 +3176,8 @@ contains
       if (writeall .or. max_iterations_pressure_density /= 1) then
          call prop_set(prop_ptr, 'numerics', 'maxitpresdens', max_iterations_pressure_density, 'Max nr of iterations in pressure-density coupling, only used if thermobaricity is true.')
       end if
-      if (writeall .or. rhointerfaces /= DENSITY_TO_INTERFACES) then
-         call prop_set(prop_ptr, 'numerics', 'Rhointerfaces', rhointerfaces, 'Baroclinic pressure gradient method: -1 = original method. Evaluate rho at interfaces: 0 = linear interpolation, 1 = recompute from salinity and temperature, 2 = use cell density.')
+      if (writeall .or. rhointerfaces /= BAROC_ORIGINAL) then
+         call prop_set(prop_ptr, 'numerics', 'rhoInterfaces', rhointerfaces, 'Estimate rho at 3D layer interfaces for baroclinic pressure gradient method; -1 = original linear interpolation, 0 = improved linear interpolation, 1 = recompute from salinity and temperature, 2 = use cell density.')
       end if
 
       if (icgsolver == 8) then ! for parms solver
@@ -3394,7 +3394,7 @@ contains
          end if
          if (writeall .or. use_salinity_freezing_point) then
             call prop_set(prop_ptr, 'physics', 'salinityDependentFreezingPoint', use_salinity_freezing_point, &
-                'Enable salinity-dependent freezing point (0 = no, 1 = yes)')
+                          'Enable salinity-dependent freezing point (0 = no, 1 = yes)')
          end if
          if (writeall .or. surftempsmofac > 0.0_dp) then
             call prop_set(prop_ptr, 'physics', 'Surftempsmofac', Surftempsmofac, 'Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no')
@@ -3534,9 +3534,9 @@ contains
       end if
       if (writeall .or. rho_water_in_wind_stress /= RHO_MEAN) then
          call prop_set(prop_ptr, 'Wind', 'rhoWaterInWindStress', rho_water_in_wind_stress, &
-             'Water density used in computation of wind stress (0: Rhomean, 1: local (surface) density of model)')
+                       'Water density used in computation of wind stress (0: Rhomean, 1: local (surface) density of model)')
       end if
-         
+
       if (writeall .or. jagrw > 0 .or. infiltrationmodel /= DFM_HYD_NOINFILT) then
          call prop_set(prop_ptr, 'grw', 'groundwater', jagrw, '0=No (horizontal) groundwater flow, 1=With groundwater flow')
          write (tmpstr, '(a,5(i0,": ",a),a)') 'Infiltration method (', DFM_HYD_NOINFILT, 'No infiltration', 1, 'Interception layer', &

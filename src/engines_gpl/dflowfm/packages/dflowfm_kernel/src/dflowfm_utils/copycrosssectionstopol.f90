@@ -43,10 +43,10 @@ module m_copycrosssectionstopol
 contains
 
    subroutine copyCrossSectionsToPol()
-      use m_monitoring_crosssections
-      use m_polygon
-      use m_alloc
-      use m_append_crspath_to_pol
+      use m_monitoring_crosssections, only: ncrs, crs
+      use m_polygon, only: npl, nampli
+      use m_alloc, only: realloc
+      use m_append_crspath_to_pol, only: appendcrspathtopol
 
       integer :: i
 

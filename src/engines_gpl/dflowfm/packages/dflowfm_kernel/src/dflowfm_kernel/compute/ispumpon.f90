@@ -38,9 +38,8 @@ contains
 
    integer function ispumpon(n, s1k)
       use precision, only: dp
-      use fm_external_forcings_data
-      use m_missing
-      use m_structures
+      use fm_external_forcings_data, only: pumponoff
+      use m_missing, only: dmiss
 
       integer, intent(in) :: n
       real(kind=dp), intent(in) :: s1k

@@ -56,7 +56,6 @@ module m_statistical_output
 contains
 
    subroutine reallocate_output_set(output_set)
-      use m_alloc
 
       type(t_output_variable_set), intent(inout) :: output_set !< output variable set to reallocate
 
@@ -77,7 +76,6 @@ contains
    end subroutine reallocate_output_set
 
    subroutine reallocate_output_set_cropped(output_set, crop)
-      use m_alloc
 
       type(t_output_variable_set), intent(inout) :: output_set !< output variable set to reallocate
       logical, intent(in) :: crop !< whether to crop the output set to its current count

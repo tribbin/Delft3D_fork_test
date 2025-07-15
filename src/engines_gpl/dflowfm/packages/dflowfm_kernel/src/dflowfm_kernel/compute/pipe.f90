@@ -37,7 +37,7 @@ module m_pipe
 contains
 
    subroutine pipe(hpr, dia, area, width, japerim, perim) ! half open part
-      use m_sferic
+      use m_sferic, only: pi, twopi
       use m_flow, only: slotw1D
 !
 ! this subroutine computes wetted circle surface as function

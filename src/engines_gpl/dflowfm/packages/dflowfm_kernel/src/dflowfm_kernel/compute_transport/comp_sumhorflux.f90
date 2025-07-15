@@ -44,7 +44,7 @@ contains
    subroutine comp_sumhorflux(NUMCONST, kmx, Lnkx, Ndkx, Lbot, Ltop, fluxhor, sumhorflux)
       use precision, only: dp
       use m_flowgeom, only: Lnx, Ln ! static mesh information
-      use timers
+      use timers, only: timon, timstrt, timstop
 
       implicit none
 

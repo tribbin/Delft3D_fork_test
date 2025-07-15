@@ -36,8 +36,8 @@ module m_get_prof_1D_min
 contains
    subroutine getprof_1D_min(L, hpr, area, width) ! pressurepipe
       use precision, only: dp
-      use m_flowgeom
-      use unstruc_channel_flow
+      use m_flowgeom, only: lnxi, lbnd1d, kcu, prof1d, profiles1d
+      use unstruc_channel_flow, only: network, getcsparstotal, cs_type_min
 
       integer :: L
       real(kind=dp) :: hpr ! hoogte in profiel

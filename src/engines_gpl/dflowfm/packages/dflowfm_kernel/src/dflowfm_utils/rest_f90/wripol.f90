@@ -34,9 +34,9 @@ module m_wripol
 contains
    subroutine WRIPOL(MPOL)
       use precision, only: dp
-      use M_POLYGON
-      use m_missing
-      use m_wrildb
+      use M_POLYGON, only: npl, nampli, zpl, xpl, ypl
+      use m_missing, only: dmiss
+      use m_wrildb, only: wrildb
 
       integer :: mpol, numnampli
       integer :: NCLAN(0)

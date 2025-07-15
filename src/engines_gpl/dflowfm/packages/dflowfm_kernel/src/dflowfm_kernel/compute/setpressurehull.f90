@@ -41,9 +41,9 @@ module m_setpressurehull
 contains
 
    subroutine setpressurehull()
-      use m_ship
-      use m_flowgeom
-      use m_flow
+      use m_ship, only: zsp
+      use m_flowgeom, only: lnx, ln, dxi
+      use m_flow, only: lbot, ltop, adve, ag
       implicit none
       integer :: L, LL, k1, k2
       do LL = 1, Lnx

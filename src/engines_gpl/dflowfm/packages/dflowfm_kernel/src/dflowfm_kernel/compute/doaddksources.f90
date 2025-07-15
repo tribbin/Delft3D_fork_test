@@ -42,8 +42,8 @@ contains
 
    subroutine doaddksources() ! add k sources
       use precision, only: dp
-      use m_flow
-      use m_flowtimes
+      use m_flow, only: numsrc, ksrc, arsrc, qsrc, vol1, turkinepsws
+      use m_flowtimes, only: dts
       implicit none
 
       integer :: n, k, kk, kk2

@@ -29,7 +29,7 @@
 
 !
 !
-module M_splines
+module m_splines
    use precision, only: dp
    use m_missing, only: dxymis
    use m_readyy

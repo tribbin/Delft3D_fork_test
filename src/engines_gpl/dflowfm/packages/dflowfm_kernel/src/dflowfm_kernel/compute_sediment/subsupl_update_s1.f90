@@ -46,7 +46,6 @@ contains
       use m_flowgeom, only: ndx, bl
       use m_flow, only: s1
       use m_flowparameters, only: epshs
-      use MessageHandling, only: mess, LEVEL_ERROR
 
       implicit none
 

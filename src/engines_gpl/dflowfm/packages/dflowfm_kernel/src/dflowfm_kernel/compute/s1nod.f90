@@ -44,21 +44,19 @@ contains
 !> nodes in continuity eq
    subroutine s1nod()
       use precision, only: dp
-      use precision_basics
+      use precision_basics, only: comparereal
+      use m_plotdots, only: adddot
+      use messagehandling, only: setmessage, level_warn
+      use m_flow, only: a1, bb, nonlin, a1m, dd, s1, vol0, vol1, s1m, s0, nbndz, kbndz, zbndz, zbndz0, u0, epshs, hs, ag, kmx, fu, ru, lbot, ltop, epshu, hu, nbndu, kbndu, jacheckmatrix
+      use m_flowgeom, only: ndx, ndx2d, xz, yz, nd, lnx1d, kfs, dx, dxi, bl, ndxi
+      use m_flowtimes, only: dti, refdat, time1, alfsmo, dts
+      use m_reduce, only: bbr, ddr, ccr, lv2
+      use m_partitioninfo, only: jampi, idomain, my_rank, qnerror, jaoverlap
+      use m_sobekdfm, only: nbnd1d2d, compute_1d2d_boundaries
+      use unstruc_channel_flow, only: network
       use time_module, only: seconds_to_datetimestring
-      use m_plotdots
-      use MessageHandling
-      use m_flow
-      use m_flowgeom
-      use m_flowtimes
-      use m_reduce
-      use m_partitioninfo
-      use m_missing
-      use m_alloc
-      use m_sobekdfm
-      use unstruc_channel_flow
+      use m_branch, only: t_branch
       use iso_c_utils, only: MAXSTRINGLEN
-      use m_qnerror
       use m_water_level_boundary, only: correct_water_level_boundary
 
       integer :: n

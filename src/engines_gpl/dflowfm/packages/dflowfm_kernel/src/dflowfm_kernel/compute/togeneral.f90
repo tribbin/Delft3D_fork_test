@@ -42,8 +42,8 @@ contains
 
    subroutine togeneral(ng, hulp, ngen, widths)
       use precision, only: dp
-      use m_strucs
-      use m_alloc
+      use m_strucs, only: generalstruc
+      use m_alloc, only: realloc
 
       integer, intent(in) :: ng !< Index of this general structure in the generalstruc(:) array
       real(kind=dp), intent(in) :: hulp(26) !< genstru params read from file

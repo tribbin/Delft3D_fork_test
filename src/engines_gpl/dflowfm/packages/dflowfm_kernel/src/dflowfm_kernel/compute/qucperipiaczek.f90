@@ -45,10 +45,9 @@ contains
 !! leaving the cell = +
    subroutine QucPeripiaczek(n12, L, ai, ae, iad)
       use precision, only: dp
-      use m_flow
-      use m_flowgeom
-      use m_flowtimes
-      use m_sferic
+      use m_flow, only: qa, ucxu, ucyu
+      use m_flowgeom, only: csu, snu, ln, nd
+      use m_sferic, only: jasfer3d
       use m_lin2nodx, only: lin2nodx
       use m_lin2nody, only: lin2nody
       use m_nod2linx, only: nod2linx

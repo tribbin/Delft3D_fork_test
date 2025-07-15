@@ -142,7 +142,7 @@ contains
    !! Set it to the supplied default value in the tree if the keyword is not found and the default is 1 (on).
    !! Valid strings such as 'current','average', etc. will return a value of 1.
    subroutine read_output_parameter_toggle(tree, chapter, key, value, success, alternative_key)
-      use tree_structures, only: tree_data
+      use tree_data_types, only: tree_data
       use properties, only: prop_get, prop_set
       implicit none
       type(tree_data), pointer, intent(in) :: tree !< The property tree

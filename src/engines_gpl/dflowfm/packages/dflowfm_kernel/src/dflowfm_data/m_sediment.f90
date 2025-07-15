@@ -174,8 +174,7 @@ contains
 
    subroutine allocgrains() ! for all fractions:
       use precision, only: dp
-      use MessageHandling
-      use m_physcoef
+      use m_physcoef, only: rhomean
       use m_turbulence, only: sigsed
       implicit none
 

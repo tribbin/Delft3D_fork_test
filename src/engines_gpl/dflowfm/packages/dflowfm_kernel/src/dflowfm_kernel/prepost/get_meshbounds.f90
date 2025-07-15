@@ -44,7 +44,7 @@ contains
 
    subroutine get_meshbounds(xboundmin, xboundmax)
       use precision, only: dp
-      use network_data
+      use network_data, only: numl, kn, xk
 
       real(kind=dp), intent(out) :: xboundmin, xboundmax !< mesh bounding box x-coordinates
 

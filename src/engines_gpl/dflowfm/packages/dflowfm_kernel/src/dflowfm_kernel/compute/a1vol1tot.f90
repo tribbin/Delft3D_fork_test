@@ -42,11 +42,11 @@ contains
 
    subroutine a1vol1tot()
       use precision, only: dp
-      use m_flowgeom
-      use m_flow
-      use m_partitioninfo
-      use m_flowtimes
-      use precision_basics
+      use m_flowgeom, only: ndxi, bare
+      use m_flow, only: a1tot, a1, vol1tot, vol1, interceptionmodel, dfm_hyd_intercept_layer, vol1icept, intercepths, jagrw, volgrw, volgrwini, eps10, volcur, idx_voltot, idx_stor, vol1ini
+      use m_partitioninfo, only: jampi, idomain, my_rank, reduce_double_sum
+      use m_flowtimes, only: time1, tstart_user
+      use precision_basics, only: comparereal
       implicit none
 
       real(kind=dp), dimension(1) :: dum

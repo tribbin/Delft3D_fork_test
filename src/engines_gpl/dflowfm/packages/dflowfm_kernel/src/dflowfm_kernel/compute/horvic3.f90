@@ -38,9 +38,8 @@ contains
 
    real(kind=dp) function horvic3(n12, L) ! horizontal viscosity term, out of face normal and tang comp's
       use precision, only: dp
-      use m_flow
-      use m_flowgeom
-      use m_missing
+      use m_flow, only: vicouv, ucx, ucy, javiusp, viusp
+      use m_flowgeom, only: csu, snu, ln, nd, lncn, dxi, ucnx, ucny, wui, wu, bai
       use m_cor2linx, only: cor2linx
       use m_cor2liny, only: cor2liny
       use m_lin2nodx, only: lin2nodx

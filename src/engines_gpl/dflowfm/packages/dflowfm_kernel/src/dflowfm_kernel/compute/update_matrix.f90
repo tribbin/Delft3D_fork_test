@@ -46,7 +46,7 @@ contains
       use m_reduce, only: bbr, ccr, ddr, lv2
       use m_partitioninfo, only: workmatbd, workmatc, numsend_sall, isendlist_sall, numsend_u, isendlist_u, &
                                  itype_sall, itype_u, numghost_sall, ighostlist_sall, numghost_u, ighostlist_u, update_ghosts
-      use m_alloc
+      use m_alloc, only: realloc
 
       integer, intent(out) :: ierror !< error (1) or not (0)
 

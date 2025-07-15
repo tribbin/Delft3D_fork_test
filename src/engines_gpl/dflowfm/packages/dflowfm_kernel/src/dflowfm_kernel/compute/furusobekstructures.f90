@@ -37,10 +37,9 @@ module m_furusobekstructures
 contains
 
    subroutine furusobekstructures()
-      use m_flgsfm
-      use m_flow
-      use m_flowgeom
-      use m_strucs
+      use m_flgsfm, only: flgsfm
+      use m_flow, only: ncgensg, l1cgensg, l2cgensg, kcgen, hu, fusav, rusav, ausav
+      use m_flowgeom, only: ln
       implicit none
       integer :: ng, n, L, Ls
       logical :: firstiter = .true., jarea = .false.

@@ -44,10 +44,8 @@ contains
    !! sqrt(g/C2) in both in 2D and in 3D
    subroutine setcfuhi()
       use precision, only: dp
-      use m_flowtimes
-      use m_flow
+      use m_flow, only: jatrt, frcmax, ifrctypuni, cfuhi, jaconveyance2d, kmx, hu, epshs, huvli, frcu, u1, v, ifrcutp, ag, z0ucur, vonkar, sag, epsz0, z0urou
       use m_flowgeom, only: lnx, lnx1d
-      use m_missing
       use m_get_chezy, only: get_chezy
 
       ! locals

@@ -45,8 +45,8 @@ contains
 !! leaving the cell = +
    real(kind=dp) function QucPerpure1D(n12, L)
       use precision, only: dp
-      use m_flow
-      use m_flowgeom
+      use m_flow, only: japure1d, jajunction1d, u1du, ucxu, ucyu, qa, u1
+      use m_flowgeom, only: kcu, ln, csu, snu, nd
 
       integer, intent(in) :: L !< link number
       integer, intent(in) :: n12 !< index of the node to be processed: 1 (from node) or 2 (to node)

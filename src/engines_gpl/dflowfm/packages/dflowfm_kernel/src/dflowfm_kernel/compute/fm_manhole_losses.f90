@@ -58,10 +58,9 @@ contains
    !> calculate Manhole losses entrance, expansion and bend losses for all manholes and apply losses to advi(L)
    subroutine calculate_manhole_losses(storS, advi)
 
-      use m_alloc
+      use m_storage, only: t_storage_set, t_storage
       use m_flowgeom, only: nd, dxi
       use m_flow, only: u1, au
-      use m_storage, only: t_storage_set, t_storage
       use m_tables, only: hasTableData, interpolate
       use precision, only: comparereal
       use m_sferic, only: pi

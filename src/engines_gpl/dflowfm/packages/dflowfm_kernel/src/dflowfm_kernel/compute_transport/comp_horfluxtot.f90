@@ -45,7 +45,7 @@ contains
       use m_flow, only: Lbot, Ltop, kmx
       use m_transport, only: ISED1, ISEDN, fluxhor, fluxhortot
       use m_flowtimes, only: dts
-      use timers
+      use timers, only: timon, timstrt, timstop
 
       implicit none
 

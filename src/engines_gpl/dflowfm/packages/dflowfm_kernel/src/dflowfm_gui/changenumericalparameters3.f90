@@ -37,20 +37,19 @@ module m_changenumericalparameters3
 contains
 
    subroutine CHANGENUMERICALPARAMETERS3()
-      use m_flow
+      use m_flow, only: clveg, cdveg, rhoveg, cbveg, stemheightstd, modind, slotw1d, slotw2d, epsmaxlev, epsmaxlevm, jawavestreaming, jawavestokes, maxitverticalforestersal, maxitverticalforestertem, noderivedtypes
+      use m_sediment, only: hwavuni, twavuni, phiwavuni, jaseddenscoupling, hwav, twav, phiwav
+      use unstruc_colors, only: hlpfor, hlpbck, iws, ihs, lblfor, lblbck
+      use unstruc_display_data, only: npos
+      use m_helpnow, only: nlevel, wrdkey
+      use m_save_keys, only: savekeys
+      use m_restore_keys, only: restorekeys
+      use m_help, only: help
+      use m_highlight_form_line, only: highlight_form_line
       use m_flowgeom, only: ndx
-      use m_sediment
-      use unstruc_colors
-      use unstruc_display_data
       use m_reduce, only: maxdge
       use dflowfm_version_module, only: company, product_name
-      use m_helpnow
-      use m_save_keys
-      use m_restore_keys
-      use m_help
-      use m_highlight_form_line
       use m_wind, only: jaqin, jaevap, evap
-      use m_waves, only: hwavuni, twavuni, phiwavuni, hwav, twav, phiwav
 
       integer :: numpar, numfld, numparactual, numfldactual
       parameter(NUMPAR=22, NUMFLD=2 * NUMPAR)

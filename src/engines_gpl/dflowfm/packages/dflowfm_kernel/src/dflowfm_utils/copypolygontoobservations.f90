@@ -42,7 +42,7 @@ contains
 
    subroutine copyPolygonToObservations()
       use m_observations, only: addObservation
-      use M_POLYGON
+      use M_POLYGON, only: npl, xpl, ypl
 
       integer :: n
       do N = 1, NPL

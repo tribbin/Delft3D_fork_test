@@ -42,10 +42,10 @@ contains
 
    subroutine AFFINE(XX, YY, XG, YG, INI)
       use precision, only: dp
-      use M_BITMAP
+      use M_BITMAP, only: xp, yp, xb, yb
+      use m_qnerror, only: qnerror
+      use m_bilinxy, only: bilinxy
       use string_module, only: find_first_letter
-      use m_qnerror
-      use m_bilinxy
       use m_filez, only: oldfil, doclose, numbersonline
 
       integer :: ini

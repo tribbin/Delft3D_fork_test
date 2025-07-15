@@ -39,8 +39,8 @@ contains
    subroutine linkstocentercartcomp(knod, vlin, vnod)
       use precision, only: dp
       use m_flow, only: kmx, lnkx
-      use m_flowgeom
-      use m_get_Lbot_Ltop
+      use m_flowgeom, only: nd, ln, wcx1, wcy1, wcx2, wcy2
+      use m_get_Lbot_Ltop, only: getlbotltop
 
       implicit none
 

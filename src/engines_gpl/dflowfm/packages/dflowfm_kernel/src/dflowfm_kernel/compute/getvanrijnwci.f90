@@ -38,11 +38,10 @@ contains
 
    subroutine getvanrijnwci(LL, umod, u2dh, taubpuLL, z0urouL)
       use precision, only: dp
-      use m_flow
-      use m_bedform
-      use m_flowgeom
-      use m_waves
-      use m_physcoef
+      use m_flow, only: hu, epshu, epsz0, lbot, u1, jaconveyance2d, v, ag
+      use m_bedform, only: bfmpar, fp
+      use m_flowgeom, only: ln, acl, csu, snu, lnx1d
+      use m_waves, only: uorb, hwav, twav, rlabda, phiwav, ustokes, vstokes
 
       implicit none
 
