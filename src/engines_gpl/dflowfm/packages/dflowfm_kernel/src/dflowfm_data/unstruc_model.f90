@@ -1322,11 +1322,11 @@ contains
       call prop_get(md_ptr, 'physics', 'Dicoww', dicoww)
       call prop_get(md_ptr, 'physics', 'Vicwminb', Vicwminb)
       call prop_get(md_ptr, 'physics', 'Xlozmidov', Xlozmidov)
-      call prop_get(md_ptr, 'physics', 'TKEMin', epstke)
+      call prop_get(md_ptr, 'physics', 'TKEMin', tke_min)
       if (iturbulencemodel == 4) then ! k-tau
-         call prop_get(md_ptr, 'physics', 'TAUMin', epseps)
+         call prop_get(md_ptr, 'physics', 'TAUMin', eps_min)
       else
-         call prop_get(md_ptr, 'physics', 'EPSMin', epseps)
+         call prop_get(md_ptr, 'physics', 'EPSMin', eps_min)
       end if
 
       call prop_get(md_ptr, 'physics', 'SchmidtNumberSalinity', Schmidt_number_salinity)
@@ -3310,14 +3310,14 @@ contains
             call prop_set(prop_ptr, 'physics', 'Vicwminb', Vicwminb, 'Minimum visc in prod and buoyancy term (m2/s)')
          end if
          call prop_set(prop_ptr, 'physics', 'Xlozmidov', xlozmidov, 'Ozmidov length scale (m), default=0.0, no contribution of internal waves to vertical diffusion')
-         if (comparereal(epstke, MINIMUM_VALUE_K_EPS_TAU) /= 0) then
-            call prop_set(prop_ptr, 'physics', 'TKEMin', epstke, 'Minimum turbulence kinetic energy (TKE) value in k-eps turbulence model')
+         if (comparereal(tke_min, MINIMUM_VALUE_K_EPS_TAU) /= 0) then
+            call prop_set(prop_ptr, 'physics', 'TKEMin', tke_min, 'Minimum turbulence kinetic energy (TKE) value in k-eps turbulence model')
          end if
-         if (comparereal(epseps, MINIMUM_VALUE_K_EPS_TAU) /= 0) then
+         if (comparereal(eps_min, MINIMUM_VALUE_K_EPS_TAU) /= 0) then
             if (iturbulencemodel /= 4) then
-               call prop_set(prop_ptr, 'physics', 'EPSMin', epseps, 'Minimum turbulent dissipation rate (EPS) value in k-eps turbulence model')
+               call prop_set(prop_ptr, 'physics', 'EPSMin', eps_min, 'Minimum turbulent dissipation rate (EPS) value in k-eps turbulence model')
             else
-               call prop_set(prop_ptr, 'physics', 'TAUMin', epseps, 'Minimum turbulent time scale (TAU) value in k-tau turbulence model')
+               call prop_set(prop_ptr, 'physics', 'TAUMin', eps_min, 'Minimum turbulent time scale (TAU) value in k-tau turbulence model')
             end if
          end if
       end if

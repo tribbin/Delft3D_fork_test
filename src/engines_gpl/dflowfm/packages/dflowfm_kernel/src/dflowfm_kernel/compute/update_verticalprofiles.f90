@@ -43,8 +43,8 @@ contains
       use m_flow, only: iturbulencemodel, kmx, iadvec, javau, hu, lbot, ltop, ustb, cfuhi, advi, jawave, jawavestokes, flowwithoutwaves, adve, u1, qw, &
                         a1, vicwwu, vonkar, c2e, ndkx, javakeps, turkinepsws, turkin1, tureps1, numsrc, addksources, tqcu, eqcu, sqcu, q1, tetavkeps, &
                         eps4, trsh_u1lb, ustw, ieps, turkin0, zws, tureps0, ak, bk, ck, dk, turbulence_lax_factor, turbulence_lax_vertical, eps20, &
-                        jarichardsononoutput, sigrho, vol1, javeg, dke, rnveg, diaveg, jacdvegsp, cdvegsp, cdveg, clveg, r3, ek, epstke, kmxl, &
-                        c1e, c1t, c2t, c9of1, eps6, epseps, jalogprofkepsbndin, dmiss, jamodelspecific, eddyviscositybedfacmax, &
+                        jarichardsononoutput, sigrho, vol1, javeg, dke, rnveg, diaveg, jacdvegsp, cdvegsp, cdveg, clveg, r3, ek, tke_min, kmxl, &
+                        c1e, c1t, c2t, c9of1, eps6, eps_min, jalogprofkepsbndin, dmiss, jamodelspecific, eddyviscositybedfacmax, &
                         vicwws, kmxx, turbulence_lax_horizontal, viskin, jawavebreakerturbulence, rhomean, bruva, buoflu, &
                         vicwminb, dijdij, v, eddyviscositysurfacmax, use_density
       use m_flowgeom, only: lnx, acl, ln, ndxi, lnxi
@@ -599,7 +599,7 @@ contains
                end if
 
                call tridag(ak, bk, ck, dk, ek, turkin1(Lb0:Lt), kxL + 1) ! solve k
-               turkin1(Lb0:Lt) = max(epstke, turkin1(Lb0:Lt))
+               turkin1(Lb0:Lt) = max(tke_min, turkin1(Lb0:Lt))
                do L = Lt + 1, Lb + kmxL(LL) - 1 ! copy to surface for z-layers
                   turkin1(L) = turkin1(Lt)
                end do
@@ -810,7 +810,7 @@ contains
                end if
 
                call tridag(ak, bk, ck, dk, ek, tureps1(Lb0:Lt), kxL + 1) ! solve eps
-               tureps1(Lb0:Lt) = max(epseps, tureps1(Lb0:Lt))
+               tureps1(Lb0:Lt) = max(eps_min, tureps1(Lb0:Lt))
                do L = Lt + 1, Lb + kmxL(LL) - 1 ! copy to surface for z-layers
                   tureps1(L) = tureps1(Lt)
                end do
@@ -844,13 +844,13 @@ contains
                      if (jawave > NO_WAVES .and. jawavebreakerturbulence > WAVE_BREAKER_TURB_OFF) then
                         epssur = epssur - dzu(Lt - Lb + 1) * fwavpendep * pkwmag / hrmsLL
                      end if
-                     epsbot = max(epsbot, epseps)
-                     epssur = max(epssur, epseps)
-                     tke = max(epstke, tkesur)
+                     epsbot = max(epsbot, eps_min)
+                     epssur = max(epssur, eps_min)
+                     tke = max(tke_min, tkesur)
                      turkin1(Lt) = tke * (1.0_dp - alfaT) + alfaT * turkin1(Lt)
                      eps = epssur / (hu(Lt) - hu(Lt - 1))
                      tureps1(Lt) = eps * (1.0_dp - alfaT) + alfaT * tureps1(Lt)
-                     tke = max(epstke, tkebot)
+                     tke = max(tke_min, tkebot)
                      turkin1(Lb - 1) = tke * (1.0_dp - alfaT) + alfaT * turkin1(Lb - 1)
                      eps = epsbot / (hu(Lb) - hu(Lb - 1))
                      tureps1(Lb - 1) = eps * (1.0_dp - alfaT) + alfaT * tureps1(Lb - 1)
@@ -875,8 +875,8 @@ contains
 
             else ! dry
 
-               tureps1(Lb0:Lb + kmxL(LL) - 1) = epseps
-               turkin1(Lb0:Lb + kmxL(LL) - 1) = epstke
+               tureps1(Lb0:Lb + kmxL(LL) - 1) = eps_min
+               turkin1(Lb0:Lb + kmxL(LL) - 1) = tke_min
 
             end if ! if (hu(L) > 0) then
          end do ! links loop
