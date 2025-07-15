@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -53,9 +53,7 @@ contains
       integer :: L, n, kk, n12, lnxmax
       integer :: k1, k2, LL
       integer :: ilongc, L1dlink
-
       real(kind=dp) :: aa1, wcw, alf
-      real(kind=dp), dimension(2, ndx) :: wcxy !< center weight factors (2,ndx) , only for normalising
 
       wcx1 = 0
       wcy1 = 0
@@ -232,14 +230,15 @@ contains
       end do
 
       if (Perot_weight_update == PEROT_STATIC) then
-         deallocate (wc)
+         if (allocated(wc)) then
+            deallocate (wc)
+         end if
          if (allocated(wwL)) then
             deallocate (wwL)
          end if
+         if (allocated(wcxy)) then
+            deallocate (wcxy)
+         end if
       end if
-
-      !kfs = 0
-
    end subroutine setlinktocenterweights
-
 end module m_setlinktocenterweights

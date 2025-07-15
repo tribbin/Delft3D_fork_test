@@ -14,7 +14,9 @@ object LinuxThirdPartyLibs : BuildType({
 
     templates(
         TemplatePublishStatus,
-        TemplateMergeRequest
+        TemplateMergeRequest,
+        TemplateMonitorPerformance,
+        TemplateDockerRegistry
     )
 
     vcs {
@@ -37,7 +39,7 @@ object LinuxThirdPartyLibs : BuildType({
         param("env.JIRA_ISSUE_ID", "")
     }
 
-    if (DslContext.getParameter("environment") == "production") {
+    if (DslContext.getParameter("enable_third_party_libs_trigger").lowercase() == "true") {
         triggers {
             vcs { // Only trigger builds when dockerfiles are modified.
                 triggerRules = """
@@ -79,13 +81,11 @@ object LinuxThirdPartyLibs : BuildType({
                 """.trimIndent()
             }
         }
-        if (DslContext.getParameter("environment") == "production") {
-            dockerCommand {
-                name = "Push"
-                commandType = push {
-                    namesAndTags = "%harbor_repo%:%env.IMAGE_TAG%"
-                    removeImageAfterPush = true
-                }
+        dockerCommand {
+            name = "Push"
+            commandType = push {
+                namesAndTags = "%harbor_repo%:%env.IMAGE_TAG%"
+                removeImageAfterPush = true
             }
         }
         dockerCommand {
@@ -103,15 +103,6 @@ object LinuxThirdPartyLibs : BuildType({
             snapshot {
                 onDependencyFailure = FailureAction.FAIL_TO_START
                 onDependencyCancel = FailureAction.CANCEL
-            }
-        }
-    }
-
-    features {
-        perfmon {}
-        dockerSupport {
-            loginToRegistry = on {
-                dockerRegistryId = "DOCKER_REGISTRY_DELFT3D_DEV"
             }
         }
     }

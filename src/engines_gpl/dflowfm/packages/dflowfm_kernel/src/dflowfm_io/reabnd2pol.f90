@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -41,9 +41,8 @@ contains
 
    subroutine reabnd2pol(mbnd, mbca) ! convert d3d boundaryes stuf to model independent
       use precision, only: dp
-      use m_grid
-      use m_polygon
-      use M_MISSING
+      use m_grid, only: ijyes, mc, nc, xc
+      use M_MISSING, only: xymis
       use m_filez, only: doclose
       implicit none
 
@@ -57,7 +56,9 @@ contains
 
       allocate (ma(mmx), na(mmx), mb(mmx), nb(mmx))
 
-      if (allocated(ijyes)) deallocate (ijyes)
+      if (allocated(ijyes)) then
+         deallocate (ijyes)
+      end if
       allocate (ijyes(mc + 1, nc + 1)); ijyes = 0
 
       do I = 2, MC ! set up flow oriented ijyes array, sorry for the inconvenience

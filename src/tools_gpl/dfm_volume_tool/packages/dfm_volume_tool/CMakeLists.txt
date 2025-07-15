@@ -32,7 +32,7 @@ if (UNIX)
                          netcdff
                          dfm_api_access)
 
-    target_link_libraries(${executable_name}
+    target_link_libraries(${executable_name} PRIVATE
          ${oss_dependencies})
 endif(UNIX)
 
@@ -48,7 +48,7 @@ if (WIN32)
                          netcdff
                          dfm_api_access)
 
-    target_link_libraries(${executable_name} ${oss_dependencies})
+    target_link_libraries(${executable_name} PRIVATE ${oss_dependencies})
 endif(WIN32)
 
 if(UNIX)
@@ -84,7 +84,7 @@ if (WIN32)
                             "${checkout_src_root}/third_party_open/pthreads/bin/x64"
                             "${checkout_src_root}/third_party_open/Tecplot/lib/x64")
 
-    target_link_libraries(${executable_name}
+    target_link_libraries(${executable_name} PRIVATE
                           "comctl32.lib"
                           "wsock32.lib"
                           "netapi32.lib"
@@ -111,7 +111,7 @@ endif(WIN32)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sources} ${fortran_version_file})
 set_target_properties (${executable_name} PROPERTIES FOLDER tools_gpl/dfm_volume_tool)
 install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
-
+install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/runscripts/run_dfm_volume_tool.${platform_extension}   DESTINATION bin)
 
 # Set post-build step
 set(install_dir ${CMAKE_BINARY_DIR})

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -39,22 +39,23 @@ module m_changenumericalparameters
 contains
 
    subroutine CHANGENUMERICALPARAMETERS()
-      use m_flow
-      use unstruc_colors
-      use unstruc_display_data
+      use m_flow, only: iadvec, cflmx, iadvec1d, limtypsa, limtyphu, limtypmom, itstep, teta0, icgsolver, jasal, jatem, jacreep, epsmaxlev, irov, icorio, jatidep, epshu, jaexplicitsinks, corioadamsbashfordfac, newcorio, epshs
+      use unstruc_colors, only: hlpfor, hlpbck, iws, ihs, lblfor, lblbck
+      use unstruc_display_data, only: npos
+      use m_helpnow, only: nlevel, wrdkey
+      use m_save_keys, only: savekeys
+      use m_restore_keys, only: restorekeys
+      use m_help, only: help
+      use m_highlight_form_line, only: highlight_form_line
       use m_reduce, only: epscg
       use dflowfm_version_module, only: company, product_name
       use m_fixedweirs, only: nfxw
-      use m_helpnow
-      use m_save_keys
-      use m_restore_keys
-      use m_help
-      use m_highlight_form_line
 
-      integer :: numpar, numfld, numparactual, numfldactual
-      parameter(NUMPAR=24, NUMFLD=2 * NUMPAR)
-      integer IX(NUMFLD), IY(NUMFLD), IS(NUMFLD), IT(NUMFLD)
-      character OPTION(NUMPAR) * 40, HELPM(NUMPAR) * 60
+      integer, parameter :: NUMPAR = 22
+      integer, parameter :: NUMFLD = 2 * NUMPAR
+      integer :: numparactual, numfldactual
+      integer :: IX(NUMFLD), IY(NUMFLD), IS(NUMFLD), IT(NUMFLD)
+      character :: OPTION(NUMPAR) * 40, HELPM(NUMPAR) * 60
       integer, external :: infoinput
 !
       integer :: ir, il, iw, ixp, iyp, ih, i, ifexit, ifinit, key, ja, niadvec
@@ -83,8 +84,6 @@ contains
       OPTION(20) = 'JaExplicitsinks                     ( ) '; it(2 * 20) = 2
       OPTION(21) = 'Corioadamsbashfordfac               ( ) '; it(2 * 21) = 6
       OPTION(22) = 'Newcorio                            ( ) '; it(2 * 22) = 2
-      OPTION(23) = 'Barocterm                           ( ) '; it(2 * 23) = 2
-      OPTION(24) = 'Barocadamsbashfordfac               ( ) '; it(2 * 24) = 6
 
 !   123456789012345678901234567890123456789012345678901234567890
 !            1         2         3         4         5         6
@@ -111,8 +110,6 @@ contains
       HELPM(20) = '1=expl, 0 = impl                                            '
       HELPM(21) = '>0 = Adams Bashford, standard= 0.5, only for Newcorio=1     '
       HELPM(22) = '0=prior to 27-11-2019, 1=no normal forcing on open bnds, 12#'
-      HELPM(23) = '3=default, 4=new                                            '
-      HELPM(24) = '>0 = Adams Bashford, standard= 0.5, only for Baroctimeint=4 '
 
       call SAVEKEYS()
       NUMPARACTUAL = NUMPAR
@@ -202,8 +199,6 @@ contains
       call IFORMPUTinteger(2 * 20, jaexplicitsinks)
       call IFormputDouble(2 * 21, Corioadamsbashfordfac, '(e10.5)')
       call IFormputinteger(2 * 22, Newcorio)
-      call IFormputinteger(2 * 23, Jabarocterm)
-      call IFormputDouble(2 * 24, Barocadamsbashfordfac, '(e10.5)')
 
       !  Display the form with numeric fields left justified
       !  and set the initial field to number 2
@@ -263,8 +258,6 @@ contains
             call IFORMgeTinteger(2 * 20, jaexplicitsinks)
             call IFormgetDouble(2 * 21, Corioadamsbashfordfac)
             call IFormgetinteger(2 * 22, Newcorio)
-            call IFormgetinteger(2 * 23, Jabarocterm)
-            call IFormgetDouble(2 * 24, Barocadamsbashfordfac)
 
             epshs = 0.2d0 * epshu ! minimum waterdepth for setting cfu
             if (niadvec /= iadvec) then

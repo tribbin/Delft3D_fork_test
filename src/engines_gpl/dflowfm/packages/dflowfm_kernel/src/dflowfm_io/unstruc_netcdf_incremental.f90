@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -46,6 +46,7 @@ module unstruc_netcdf_map_class
    use MessageHandling, only: mess, LEVEL_ERROR, LEVEL_INFO, LEVEL_FATAL
    use m_flowparameters, only: eps10, jaeulervel, jawave
    use mathconsts, only: raddeg_hp
+   use m_waveconst
 
    implicit none
 
@@ -245,19 +246,27 @@ contains
       if (ndim == 0) then
          if (mapclass_time_buffer_size > 1) then
             if (nclasses_s1 > 0) then
-               if (allocated(buffer_s1)) deallocate (buffer_s1)
+               if (allocated(buffer_s1)) then
+                  deallocate (buffer_s1)
+               end if
                allocate (buffer_s1(ndx, mapclass_time_buffer_size))
             end if
             if (nclasses_hs > 0) then
-               if (allocated(buffer_hs)) deallocate (buffer_hs)
+               if (allocated(buffer_hs)) then
+                  deallocate (buffer_hs)
+               end if
                allocate (buffer_hs(ndx, mapclass_time_buffer_size))
             end if
             if (nclasses_ucmag > 0 .and. kmx == 0) then
-               if (allocated(buffer_ucmag)) deallocate (buffer_ucmag)
+               if (allocated(buffer_ucmag)) then
+                  deallocate (buffer_ucmag)
+               end if
                allocate (buffer_ucmag(ndx, mapclass_time_buffer_size))
             end if
             if (nclasses_ucdir > 0 .and. kmx == 0) then
-               if (allocated(buffer_ucdir)) deallocate (buffer_ucdir)
+               if (allocated(buffer_ucdir)) then
+                  deallocate (buffer_ucdir)
+               end if
                allocate (buffer_ucdir(ndx, mapclass_time_buffer_size))
             end if
          end if
@@ -338,10 +347,18 @@ contains
          if (associated(previous_hs)) deallocate (previous_hs)
          if (associated(previous_ucmag)) deallocate (previous_ucmag)
          if (associated(previous_ucdir)) deallocate (previous_ucdir)
-         if (allocated(buffer_s1)) deallocate (buffer_s1)
-         if (allocated(buffer_hs)) deallocate (buffer_hs)
-         if (allocated(buffer_ucmag)) deallocate (buffer_ucmag)
-         if (allocated(buffer_ucdir)) deallocate (buffer_ucdir)
+         if (allocated(buffer_s1)) then
+            deallocate (buffer_s1)
+         end if
+         if (allocated(buffer_hs)) then
+            deallocate (buffer_hs)
+         end if
+         if (allocated(buffer_ucmag)) then
+            deallocate (buffer_ucmag)
+         end if
+         if (allocated(buffer_ucdir)) then
+            deallocate (buffer_ucdir)
+         end if
       else
          if (ierr == nf90_noerr .and. need_flush .and. unc_noforcedflush == 0) then
             ierr = nf90_sync(incids%ncid) ! flush output to file
@@ -392,7 +409,7 @@ contains
          lbound = 0d0
       else if (name == 'ucmag') then
          unit = 'm s-1'
-         if (jaeulervel == 1 .and. jawave > 0) then
+         if (jaeulervel == WAVE_EULER_VELOCITIES_OUTPUT_ON .and. jawave > NO_WAVES) then
             ierr = unc_def_var_map(incids%ncid, incids%id_tsp, incids%id_ucmag, nf90_byte, UNC_LOC_S, 'ucmag', 'sea_water_eulerian_speed', 'Flow element center Eulerian velocity magnitude', unit)
          else
             ierr = unc_def_var_map(incids%ncid, incids%id_tsp, incids%id_ucmag, nf90_byte, UNC_LOC_S, 'ucmag', 'sea_water_speed', 'Flow element center velocity magnitude', unit)
@@ -404,7 +421,7 @@ contains
          lbound = 0d0
       else if (name == 'ucdir') then
          unit = 'degree'
-         if (jaeulervel == 1 .and. jawave > 0) then
+         if (jaeulervel == WAVE_EULER_VELOCITIES_OUTPUT_ON .and. jawave > NO_WAVES) then
             ierr = unc_def_var_map(incids%ncid, incids%id_tsp, incids%id_ucdir, nf90_byte, UNC_LOC_S, 'ucdir', 'sea_water_eulerian_velocity_to_direction', 'Flow element center Eulerian velocity direction', unit)
          else
             ierr = unc_def_var_map(incids%ncid, incids%id_tsp, incids%id_ucdir, nf90_byte, UNC_LOC_S, 'ucdir', 'sea_water_velocity_to_direction', 'Flow element center velocity direction', unit)

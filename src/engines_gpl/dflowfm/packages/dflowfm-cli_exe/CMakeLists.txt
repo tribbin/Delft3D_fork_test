@@ -1,7 +1,3 @@
-# Set directories
-# Set the directory of where the source code is located.
-set(src_path src)
-
 # Set the DFlow FM component path
 set(dflowfm_path "${CMAKE_CURRENT_SOURCE_DIR}/../../")
 set(dflowfm_cli_path "${CMAKE_CURRENT_SOURCE_DIR}/src/")
@@ -78,13 +74,12 @@ endif(WIN32)
 
 
 # Define additional compilation flags
-set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/${src_path}/net_main.F90
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/net_main.F90
                             PROPERTIES COMPILE_OPTIONS "${file_preprocessor_flag}")
 
 if (WIN32)
     target_link_libraries(${executable_name} PRIVATE netcdf)
     include_directories(${mpi_module_path}
-                        ${petsc_libdir}
                         ${tecplot_path}
                         ${version_include_dir}
     )
@@ -95,7 +90,6 @@ if (WIN32)
                             PRIVATE
                             "${mpi_library_path}"
                             "${checkout_src_root}/third_party_open/netcdf/${netcdf_version}/lib"
-                            "${petsc_libdir}"
                             "${checkout_src_root}/third_party_open/pthreads/bin/x64"
                             "${checkout_src_root}/third_party_open/Tecplot/lib/x64"
     )
@@ -103,7 +97,6 @@ if (WIN32)
     target_link_libraries(${executable_name} PRIVATE
                           "pthreadVC2.lib"
                           "tecio.lib"
-                          "libpetsc.lib"
                           "${mpi_fortran_library}"
     )
 
@@ -146,12 +139,14 @@ endif(WIN32)
 
 install(TARGETS ${executable_name} RUNTIME DESTINATION bin)
 
+if(WIN32)
+   if(WITH_INTERACTER)
+      add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../../interacter install_interacter)
+   endif()
+endif()
 if (UNIX)
     install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/parallel/generate_parallel_mdu.sh  DESTINATION bin)
     install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/submit_dflowfm_h7.sh     DESTINATION bin)
 endif(UNIX)
 
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/run_dflowfm.${platform_extension}           DESTINATION bin)
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/run_dflowfm_processes.${platform_extension} DESTINATION bin)
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/run_dfmoutput.${platform_extension}         DESTINATION bin)
-install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/team-city/run_dfm_volume_tool.${platform_extension}   DESTINATION bin)
+install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/runscripts/run_dflowfm.${platform_extension} DESTINATION bin)

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -420,7 +420,9 @@ contains
       if (line(1:1) == '*' .or. line == ' ') goto 20
       !
       call str_lower(line, 132)
-      if (allocated(columns)) deallocate (columns)
+      if (allocated(columns)) then
+         deallocate (columns)
+      end if
       call strsplit(line, 1, columns, 1)
       ncols = size(columns)
 
@@ -1361,7 +1363,9 @@ contains
       ! reset line in smaller case characters and define contents
       !
       call str_lower(line, 300)
-      if (allocated(columns)) deallocate (columns)
+      if (allocated(columns)) then
+         deallocate (columns)
+      end if
       call strsplit(line, 1, columns, 1)
       ncols = size(columns)
       !
@@ -1521,7 +1525,9 @@ contains
             end if
          end do
 
-         if (allocated(wmag)) deallocate (wmag)
+         if (allocated(wmag)) then
+            deallocate (wmag)
+         end if
 
          if (nfou > 0) then
             write (cnum, *) real(time0)

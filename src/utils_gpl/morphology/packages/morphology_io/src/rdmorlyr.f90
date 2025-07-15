@@ -1,7 +1,7 @@
 module m_rdmorlyr
 !----- GPL ---------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2011-2024.
+!  Copyright (C)  Stichting Deltares, 2011-2025.
 !
 !  This program is free software: you can redistribute it and/or modify
 !  it under the terms of the GNU General Public License as published by
@@ -112,7 +112,6 @@ contains
       integer, pointer :: nfrac
       integer, pointer :: nlalyr
       integer, pointer :: updbaselyr
-      integer, pointer :: IALDiff
       type(cmpbndtype), dimension(:), pointer :: cmpbnd
       real(fp), parameter :: EPS=0.000000001_fp !used is `comparereal`
 !
@@ -579,6 +578,7 @@ contains
                !
                txtput1 = 'Diffusion in active-layer model'
                write (lundia, '(3a)') txtput1, ':', '                  NO'   
+               morpar%moroutput%aldiff=.false. !if you request the output but there is no diffusion, we do no write it. 
             case(1)
                !
                !YES diffusion in active-layer mode    

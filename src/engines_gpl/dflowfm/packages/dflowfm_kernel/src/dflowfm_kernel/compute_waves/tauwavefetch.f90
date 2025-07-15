@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -54,10 +54,9 @@ contains
 !! based on Hurdle, Stive formulae, tauwave based on Swart, taus = taubmx = taucur + tauwave, as in Delwaq
    subroutine tauwavefetch(tim)
       use precision, only: dp
-      use m_sediment, only: rlabda
       use m_flowgeom, only: ndx, ndxi, ndx2d
       use m_flow
-      use m_waves, only: fetch, nwf, fetdp, uorb, twav, hwav
+      use m_waves, only: fetch, nwf, fetdp, uorb, twav, hwav, rlabda
       use m_flowtimes
       use m_partitioninfo
       use timers
@@ -68,6 +67,7 @@ contains
       use m_tauwavehk, only: tauwavehk
       use m_fetch_operation_utils, only: initialise_fetch_proc_data, stop_fetch_computation, stop_fetch_computation, &
                                          stop_fetch_computation, send_s1_to_fetch_proc, get_fetch_values_from_fetch_proc
+      use m_waveconst
 
       real(kind=dp), intent(in) :: tim
 
@@ -80,10 +80,14 @@ contains
          nwf = 13
          call timstrt('Ext.forcings fetch', handle_fetch)
 
-         if (allocated(fetch)) deallocate (fetch)
+         if (allocated(fetch)) then
+            deallocate (fetch)
+         end if
          allocate (fetch(nwf, ndx), stat=error)
          call aerr('fetch(nwf, ndx)', error, ndx * nwf)
-         if (allocated(fetdp)) deallocate (fetdp)
+         if (allocated(fetdp)) then
+            deallocate (fetdp)
+         end if
          allocate (fetdp(nwf, ndx), stat=error)
          call aerr('fetdp(nwf, ndx)', error, ndx * nwf)
 
@@ -142,9 +146,9 @@ contains
             if (FetchL > 0) then
 
                select case (jawave)
-               case (1)
+               case (WAVE_FETCH_HURDLE)
                   call hurdlestive(U10, fetchL, fetchD, Hsig, Tsig)
-               case (2)
+               case (WAVE_FETCH_YOUNG)
                   call ian_young_pt(U10, fetchL, fetchD, Hsig, Tsig)
                end select
 

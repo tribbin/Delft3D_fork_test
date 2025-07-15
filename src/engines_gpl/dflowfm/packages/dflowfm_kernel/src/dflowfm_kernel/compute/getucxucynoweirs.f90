@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -38,8 +38,8 @@ contains
 
    subroutine getucxucynoweirs(ku, ucxku, ucyku)
       use precision, only: dp
-      use m_flow
-      use m_flowgeom
+      use m_flow, only: hu, u0
+      use m_flowgeom, only: nd, iadv, iadv_subgrid_weir, wu, acl, dx, csu, snu, ba
       use m_sferic, only: jasfer3D
       use m_lin2nodx, only: lin2nodx
       use m_lin2nody, only: lin2nody
@@ -54,7 +54,7 @@ contains
 
       do LL = 1, nd(ku)%lnx
          Ls = nd(ku)%ln(LL); L = abs(Ls)
-         if (iadv(L) < 21 .or. iadv(L) > 29) then ! .ne. structures
+         if (iadv(L) < IADV_SUBGRID_WEIR .or. iadv(L) > 29) then ! .ne. structures
             hunoweir = hunoweir + wu(L) * hu(L)
             wlno = wlno + wu(L)
          end if
@@ -73,7 +73,7 @@ contains
          ww = ac1 * dx(L) * wu(L)
          cs = ww * csu(L); sn = ww * snu(L)
          at = at + ww
-         if (iadv(L) < 21 .or. iadv(L) > 29) then ! .ne. structures
+         if (iadv(L) < IADV_SUBGRID_WEIR .or. iadv(L) > 29) then ! .ne. structures
             if (jasfer3D == 0) then
                ucxku = ucxku + cs * u0(L)
                ucyku = ucyku + sn * u0(L)

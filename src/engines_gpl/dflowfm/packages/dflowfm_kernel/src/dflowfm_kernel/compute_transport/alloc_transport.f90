@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -107,7 +107,9 @@ contains
       end if
 
 !  work arrays
-      if (allocated(rhs)) deallocate (rhs)
+      if (allocated(rhs)) then
+         deallocate (rhs)
+      end if
       allocate (rhs(NUMCONST, Ndkx))
 
       if (kmx > 0) then ! 3D

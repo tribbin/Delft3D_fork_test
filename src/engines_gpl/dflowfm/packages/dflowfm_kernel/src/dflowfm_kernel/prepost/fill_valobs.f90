@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -43,34 +43,35 @@ contains
 
    subroutine fill_valobs()
       use precision, only: dp
-      use m_linkstocentercartcomp
-      use m_flow
-      use m_flowtimes
-      use m_transport
+      use m_linkstocentercartcomp, only: linkstocentercartcomp
+      use m_flow, only: kmx, realloc, ndkx, jawave, no_waves, jahistaucurrent, jahisvelocity, jahisvelvec, ucmag, jaeulervel, &
+                        flowwithoutwaves, workx, taus, worky, jawaveswartdelwaq, jased, dmiss, jahistur, javiusp, viclu, viusp, &
+                        vicouv, s1, nshiptxy, zsp, wave_surfbeat, ucx, ucy, zws, hs, epshu, ucz, jasal, jatem, jahisrho, &
+                        potential_density, apply_thermobaricity, in_situ_density, squ, sqi, iturbulencemodel, vicwws, difwws, &
+                        drhodz, brunt_vaisala_coefficient, idensform, jarichardsononoutput, richs, hu, vicwwu, turkin1, tureps1, &
+                        rich, jahisrain, jahis_airdensity, infiltrationmodel, dfm_hyd_infilt_const, dfm_hyd_infilt_horton, &
+                        jahisinfilt, infiltcap, infilt, jahisheatflux, qsunmap, qevamap, qconmap, qlongmap, qfrevamap, qfrconmap, qtotmap
+      use m_flowtimes, only: handle_extra
+      use m_transport, only: constituents, isalt, itemp, itra1, ised1
+      use m_flowgeom, only: ndx, lnx, bl, nd, ln, wcl, bob, ba
+      use m_observations_data, only : valobs, numobs, nummovobs, kobs, lobs, ipnt_s1, ipnt_hs, ipnt_bl, ipnt_cmx, cmxobs, ipnt_wx, ipnt_wy, ipnt_patm, ipnt_waver, ipnt_waveh, ipnt_wavet, ipnt_waved, ipnt_wavel, ipnt_waveu, ipnt_taux, ipnt_tauy, ival_sbcx1, ival_sbcxn, ipnt_sbcx1, ival_sbcy1, ival_sbcyn, ipnt_sbcy1, ival_sscx1, ival_sscxn, ipnt_sscx1, ival_sscy1, ival_sscyn, ipnt_sscy1, ival_sbwx1, ival_sbwxn, ipnt_sbwx1, ival_sbwy1, ival_sbwyn, ipnt_sbwy1, ival_sswx1, ival_sswxn, ipnt_sswx1, ival_sswy1, ival_sswyn, ipnt_sswy1, ipnt_taub, ival_bodsed1, ival_bodsedn, ipnt_bodsed1, ipnt_dpsed, ival_msed1, ival_msedn, ipnt_msed1, ival_lyrfrac1, ival_lyrfracn, ipnt_lyrfrac1, ipnt_poros, ipnt_thlyr, ival_frac1, ival_fracn, ipnt_frac1, ipnt_mudfrac, ipnt_sandfrac, ival_mfluff1, ival_mfluffn, ipnt_mfluff1, ival_fixfac1, ival_fixfacn, ipnt_fixfac1, ival_hidexp1, ival_hidexpn, ipnt_hidexp1, ival_sour1, ival_sourn, ipnt_sour1, ival_sink1, ival_sinkn, ipnt_sink1, ival_wqb1, ival_wqbn, ipnt_wqb1, ipnt_ucxq, ipnt_ucyq, ipnt_zcs, ipnt_ucx, ipnt_ucy, ipnt_ucxst, ipnt_ucyst, ipnt_ucz, ipnt_sa1, ipnt_tem1, ipnt_viu, ipnt_rhop, ipnt_rho, ipnt_umag, ipnt_qmag, ival_tra1, ival_tran, ipnt_tra1, ival_hwq1, ival_hwqn, ipnt_hwq1, ival_wqb3d1, ival_wqb3dn, ipnt_wqb3d1, ival_sf1, ival_sfn, ipnt_sf1, ival_ws1, ival_wsn, ipnt_ws1, ipnt_sed, ipnt_smx, smxobs, ipnt_zws, ipnt_vicwws, ipnt_difwws, ipnt_bruv, ipnt_richs, ival_seddif1, ival_seddifn, ipnt_seddif1, ipnt_zwu, ipnt_vicwwu, ipnt_tkin, ipnt_teps, ipnt_rich, ipnt_rain, ipnt_airdensity, ipnt_infiltcap, ipnt_infiltact, ipnt_wind, ipnt_tair, ipnt_rhum, ipnt_clou, ipnt_qsun, ipnt_qeva, ipnt_qcon, ipnt_qlon, ipnt_qfre, ipnt_qfrc, ipnt_qtot
+      use m_sediment, only: jahissigwav, stm_included, stmpar, ustokes, hwav, twav, phiwav, rlabda, uorb, sedtra, fp, mtd, sed
+      use Timers, only: timon, timstrt, timstop
+      use m_gettaus, only: gettaus
+      use m_gettauswave, only: gettauswave
+      use m_get_kbot_ktop, only: getkbotktop
+      use m_get_Lbot_Ltop, only: getlbotltop
+      use m_get_Lbot_Ltop_max, only: getlbotltopmax
+      use m_get_layer_indices, only: getlayerindices
+      use m_get_layer_indices_l_max, only: getlayerindiceslmax
+      use m_reconstruct_ucz, only: reconstructucz
+      use m_get_ucx_ucy_eul_mag, only: getucxucyeulmag
+      use m_get_link1, only: getlink1
       use m_fm_wq_processes, only: kbx, wqbot, waqoutputs
-      use m_flowgeom
-      use m_observations_data
-      use m_sediment
-      use m_waves, only: hwav, twav, phiwav, rlabda, uorb, ustokes
       use m_xbeach_data, only: R
-      use m_ship
-      use Timers
-      use m_alloc
       use fm_statistical_output, only: model_is_3d
-      use m_gettaus
-      use m_gettauswave
-      use m_get_kbot_ktop
-      use m_get_Lbot_Ltop
-      use m_get_Lbot_Ltop_max
-      use m_get_layer_indices
-      use m_get_layer_indices_l_max
-      use m_reconstruct_ucz
-      use m_get_ucx_ucy_eul_mag
-      use m_get_link1
       use m_links_to_centers, only: links_to_centers
-      use m_density, only: density_at_cell
-      use m_wind, only: wx, wy, jawind, japatm, patm, jarain, rain, airdensity, tair, rhum, clou
-      use m_turbulence, only: in_situ_density, potential_density
+      use m_wind, only: wx, wy, jawind, air_pressure_available, air_pressure, jarain, rain, air_density, air_temperature, relative_humidity, cloudiness
 
       implicit none
 
@@ -78,7 +79,7 @@ contains
       integer :: link_id_nearest
       integer :: kmx_const, kk_const, nlyrs
       real(kind=dp) :: wavfac
-      real(kind=dp) :: dens, prsappr, drhodz, rhomea
+      real(kind=dp) :: dens
       real(kind=dp) :: ux, uy, um
       real(kind=dp), allocatable :: wa(:, :)
       real(kind=dp), allocatable :: frac(:, :)
@@ -93,17 +94,19 @@ contains
       if (timon) call timstrt("fill_valobs", handle_extra(55))
       !
       if (.not. allocated(ueux)) then
-         call realloc(ueux, ndkx, keepExisting=.false., fill=0d0)
-         call realloc(ueuy, ndkx, keepExisting=.false., fill=0d0)
+         call realloc(ueux, ndkx, keepExisting=.false., fill=0.0_dp)
+         call realloc(ueuy, ndkx, keepExisting=.false., fill=0.0_dp)
       end if
       !
-      if (jawave > 0) then
+      if (jawave > NO_WAVES) then
          if (jahissigwav == 0) then
-            wavfac = 1d0
+            wavfac = 1.0_dp
          else
-            wavfac = sqrt(2d0)
+            wavfac = sqrt(2.0_dp)
          end if
-         if (allocated(wa)) deallocate (wa)
+         if (allocated(wa)) then
+            deallocate (wa)
+         end if
          allocate (wa(1:2, 1:max(kmx, 1)))
       end if
 
@@ -113,7 +116,7 @@ contains
       end if
 
       if (jahistaucurrent > 0) then
-         if ((jawave == 0 .or. flowWithoutWaves)) then
+         if ((jawave == NO_WAVES .or. flowWithoutWaves)) then
             ! fill taus
             call gettaus(1, 1)
 
@@ -140,10 +143,14 @@ contains
       !
       if (stm_included .and. jased > 0) then
          if (stmpar%morlyr%settings%iunderlyr == 2) then
-            if (allocated(frac)) deallocate (frac)
+            if (allocated(frac)) then
+               deallocate (frac)
+            end if
             allocate (frac(stmpar%lsedtot, 1:stmpar%morlyr%settings%nlyr))
             frac = dmiss
-            if (allocated(poros)) deallocate (poros)
+            if (allocated(poros)) then
+               deallocate (poros)
+            end if
             allocate (poros(1:stmpar%morlyr%settings%nlyr))
             poros = dmiss
          end if
@@ -187,8 +194,8 @@ contains
                nlayb = 1
             end if
 
-            if (jawave > 0 .and. .not. flowWithoutWaves) then
-               wa = 0d0
+            if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
+               wa = 0.0_dp
                call linkstocentercartcomp(k, ustokes, wa) ! wa now 2*1 value or 2*1 vertical slice
             end if
 
@@ -208,8 +215,8 @@ contains
 
             valobs(i, IPNT_CMX) = cmxobs(i)
             if (jawind > 0) then
-               valobs(i, IPNT_wx) = 0d0
-               valobs(i, IPNT_wy) = 0d0
+               valobs(i, IPNT_wx) = 0.0_dp
+               valobs(i, IPNT_wy) = 0.0_dp
                do LL = 1, nd(k)%lnx
                   LLL = abs(nd(k)%ln(LL))
                   k1 = ln(1, LLL); k2 = ln(2, LLL)
@@ -218,19 +225,19 @@ contains
                   valobs(i, IPNT_wy) = valobs(i, IPNT_wy) + wy(LLL) * wcL(k3, LLL)
                end do
             end if
-            if (jaPATM > 0 .and. allocated(patm)) then
-               valobs(i, IPNT_PATM) = PATM(k)
+            if (air_pressure_available .and. allocated(air_pressure)) then
+               valobs(i, IPNT_PATM) = air_pressure(k)
             end if
 
-            if (jawave == 4 .and. allocated(R)) then
+            if (jawave == WAVE_SURFBEAT .and. allocated(R)) then
                valobs(i, IPNT_WAVER) = R(k)
             end if
 
-            if (jawave > 0 .and. allocated(hwav)) then
+            if (jawave > NO_WAVES .and. allocated(hwav)) then
                valobs(i, IPNT_WAVEH) = hwav(k) * wavfac
                valobs(i, IPNT_WAVET) = twav(k)
                if (.not. flowWithoutWaves) then
-                  valobs(i, IPNT_WAVED) = modulo(270d0 - phiwav(k), 360d0) ! Direction from
+                  valobs(i, IPNT_WAVED) = modulo(270.0_dp - phiwav(k), 360.0_dp) ! Direction from
                   valobs(i, IPNT_WAVEL) = rlabda(k)
                   valobs(i, IPNT_WAVEU) = uorb(k)
                end if
@@ -258,7 +265,7 @@ contains
                   ii = j - IVAL_SSCY1 + 1
                   valobs(i, IPNT_SSCY1 + ii - 1) = sedtra%sscy(k, ii)
                end do
-               if (jawave > 0 .and. .not. flowWithoutWaves) then
+               if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
                   do j = IVAL_SBWX1, IVAL_SBWXN
                      ii = j - IVAL_SBWX1 + 1
                      valobs(i, IPNT_SBWX1 + ii - 1) = sedtra%sbwx(k, ii)
@@ -298,13 +305,13 @@ contains
                            frac(l, n) = stmpar%morlyr%state%msed(l, n, k) / (dens * stmpar%morlyr%state%svfrac(n, k) * &
                                                                              stmpar%morlyr%state%thlyr(n, k))
                         else
-                           frac(l, n) = 0d0
+                           frac(l, n) = 0.0_dp
                         end if
                      end do
                   end do
                   !
                   if (stmpar%morlyr%settings%iporosity > 0) then
-                     poros = 1d0 - stmpar%morlyr%state%svfrac(:, k)
+                     poros = 1.0_dp - stmpar%morlyr%state%svfrac(:, k)
                   end if
                   !
                   do klay = 1, nlyrs
@@ -375,7 +382,7 @@ contains
                klay = kk - kb + nlayb
 
                if (model_is_3D()) then
-                  valobs(i, IPNT_ZCS + klay - 1) = 0.5d0 * (zws(kk) + zws(kk - 1))
+                  valobs(i, IPNT_ZCS + klay - 1) = 0.5_dp * (zws(kk) + zws(kk - 1))
                end if
 
                if (jahisvelocity > 0 .or. jahisvelvec > 0) then
@@ -383,7 +390,7 @@ contains
                   valobs(i, IPNT_UCY + klay - 1) = ueuy(kk)
                end if
 
-               if (jawave > 0 .and. .not. flowWithoutWaves) then
+               if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
                   if (hs(k) > epshu) then
                      if (kmx == 0) then
                         kk_const = 1
@@ -416,7 +423,7 @@ contains
                if (jahisvelocity > 0) then
                   valobs(i, IPNT_UMAG + klay - 1) = ucmag(kk)
                end if
-               valobs(i, IPNT_QMAG + klay - 1) = 0.5d0 * (squ(kk) + sqi(kk))
+               valobs(i, IPNT_QMAG + klay - 1) = 0.5_dp * (squ(kk) + sqi(kk))
 
                if (kmx == 0) then
                   kmx_const = 1 ! to make numbering below work
@@ -472,19 +479,17 @@ contains
                   valobs(i, IPNT_ZWS + klay - 1) = zws(kk)
                   if (iturbulencemodel >= 2 .and. jahistur > 0) then
                      valobs(i, IPNT_VICWWS + klay - 1) = vicwws(kk)
+                     valobs(i, IPNT_DIFWWS + klay - 1) = difwws(kk)
                   end if
                   if ((jasal > 0 .or. jatem > 0 .or. jased > 0) .and. jahisrho > 0) then
                      if (zws(kt) - zws(kb - 1) > epshu .and. kk > kb - 1 .and. kk < kt) then
-                        if (apply_thermobaricity) then
-                           prsappr = ag * rhomean * (zws(kt) - zws(kk))
-                           drhodz = (density_at_cell(kk + 1, prsappr) - density_at_cell(kk, prsappr)) / max(0.5d0 * (zws(kk + 1) - zws(kk - 1)), epshs)
-                        else
-                           drhodz = (rho(kk + 1) - rho(kk)) / max(0.5d0 * (zws(kk + 1) - zws(kk - 1)), epshs)
-                        end if
-                        rhomea = 0.5d0 * (rho(kk + 1) + rho(kk))
-                        valobs(i, IPNT_BRUV + klay - 1) = -ag * drhodz / rhomea
+                        valobs(i, IPNT_BRUV + klay - 1) = drhodz(kk) * brunt_vaisala_coefficient
                      end if
                   end if
+                  if (idensform > 0 .and. jaRichardsononoutput > 0) then
+                     valobs(i, IPNT_RICHS + klay - 1) = richs(kk)
+                  end if
+
                   if (IVAL_WS1 > 0) then
                      do j = IVAL_WS1, IVAL_WSN
                         ii = j - IVAL_WS1 + 1
@@ -524,17 +529,17 @@ contains
                valobs(i, IPNT_RAIN) = rain(k)
             end if
 
-            if (allocated(airdensity) .and. jahis_airdensity > 0) then
-               valobs(i, IPNT_AIRDENSITY) = airdensity(k)
+            if (allocated(air_density) .and. jahis_airdensity > 0) then
+               valobs(i, IPNT_AIRDENSITY) = air_density(k)
             end if
 
 !        Infiltration
             if ((infiltrationmodel == DFM_HYD_INFILT_CONST .or. infiltrationmodel == DFM_HYD_INFILT_HORTON) .and. jahisinfilt > 0) then
-               valobs(i, IPNT_INFILTCAP) = infiltcap(k) * 1d3 * 3600d0 ! m/s -> mm/hr
-               if (ba(k) > 0d0) then
-                  valobs(i, IPNT_INFILTACT) = infilt(k) / ba(k) * 1d3 * 3600d0 ! m/s -> mm/hr
+               valobs(i, IPNT_INFILTCAP) = infiltcap(k) * 1d3 * 3600.0_dp ! m/s -> mm/hr
+               if (ba(k) > 0.0_dp) then
+                  valobs(i, IPNT_INFILTACT) = infilt(k) / ba(k) * 1d3 * 3600.0_dp ! m/s -> mm/hr
                else
-                  valobs(i, IPNT_INFILTACT) = 0d0
+                  valobs(i, IPNT_INFILTACT) = 0.0_dp
                end if
             end if
 
@@ -546,12 +551,12 @@ contains
                end if
 
                if (jatem > 1) then ! also heat modelling involved
-                  valobs(i, IPNT_TAIR) = Tair(k)
+                  valobs(i, IPNT_TAIR) = air_temperature(k)
                end if
 
-               if (jatem == 5 .and. allocated(Rhum) .and. allocated(Clou)) then
-                  valobs(i, IPNT_RHUM) = Rhum(k)
-                  valobs(i, IPNT_CLOU) = Clou(k)
+               if (jatem == 5 .and. allocated(relative_humidity) .and. allocated(cloudiness)) then
+                  valobs(i, IPNT_RHUM) = relative_humidity(k)
+                  valobs(i, IPNT_CLOU) = cloudiness(k)
                end if
 
                if (jatem == 5) then
@@ -574,7 +579,9 @@ contains
 
 !  No need to copy empty layers from top anymore, they have been filled with dmiss
 
-      if (allocated(wa)) deallocate (wa)
+      if (allocated(wa)) then
+         deallocate (wa)
+      end if
 
       if (timon) call timstop(handle_extra(55))
       return

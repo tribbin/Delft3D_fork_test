@@ -1,7 +1,7 @@
 module bedcomposition_module
 !----- GPL ---------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2011-2024.                                
+!  Copyright (C)  Stichting Deltares, 2011-2025.                                
 !                                                                               
 !  This program is free software: you can redistribute it and/or modify         
 !  it under the terms of the GNU General Public License as published by         
@@ -157,7 +157,7 @@ type bedcomp_settings
     real(fp) , dimension(:)   , pointer :: thexlyr   ! thickness of exchange layer
     real(fp) , dimension(:)   , pointer :: thtrlyr   ! thickness of transport layer
     real(fp) , dimension(:)   , pointer :: zdiff     ! depth below bed level for which diffusion coefficients are defined, units : m
-    real(fp) , dimension(:)   , pointer :: aldiff    ! diffusion coefficient of the active layer, units : m2/s
+    real(fp) , dimension(:)   , pointer :: aldiff    ! diffusion coefficient of the active layer at cell centres, units : m/s2
     ! 
     ! logicals
     !

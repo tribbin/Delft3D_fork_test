@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -189,9 +189,15 @@ contains
 !   deallocate
       call local_netdealloc()
 
-      if (allocated(linkmask)) deallocate (linkmask)
-      if (allocated(dortho)) deallocate (dortho)
-      if (allocated(iperm)) deallocate (iperm)
+      if (allocated(linkmask)) then
+         deallocate (linkmask)
+      end if
+      if (allocated(dortho)) then
+         deallocate (dortho)
+      end if
+      if (allocated(iperm)) then
+         deallocate (iperm)
+      end if
 
       return
    end subroutine del_badortholinks

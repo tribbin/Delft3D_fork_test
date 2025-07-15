@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -67,9 +67,9 @@ contains
 
    !> IFRCUTP and FRCu are filled, using 1D roughness values from Network structure
    subroutine set_1d_roughnesses()
-      use m_flowgeom
+      use m_flowgeom, only: kcu, lnx1d
+      use unstruc_channel_flow, only: network
       use m_flow, only: frcu, ifrcutp, frcu_mor
-      use unstruc_channel_flow
 
       implicit none
 
@@ -89,13 +89,11 @@ contains
    !! into the 1D network structure for branches, storage nodes,
    !! cross sections and structures, etc.
    subroutine set_1d_indices_in_network()
-      use timers
-      use m_sediment
-      use m_flowgeom
-      use m_flow
-      use m_cross_helper
-      use m_flowparameters
-      use unstruc_channel_flow
+      use timers, only: timstrt, timstop
+      use m_sediment, only: jased, stm_included
+      use m_flowgeom, only: wu1duni
+      use m_flow, only: nonlin1d, nonlin, flow_solver, flow_solver_sre
+      use unstruc_channel_flow, only: default_width, network, cscalculationoption, cs_type_plus
 
       implicit none
       integer handle_tot
@@ -152,12 +150,10 @@ contains
    !! (This replaces the netlink/netnode numbers that were originally
    !! filled in during the network reading stage.)
    subroutine set_linknumbers_in_branches()
-      use unstruc_channel_flow
-      use m_flowgeom
-      use m_sediment
-      use messageHandling
+      use unstruc_channel_flow, only: network, realloc, msgbuf, err_flush, flow1d_eps10
+      use m_flowgeom, only: ln, ndx2d, nd
       use precision_basics, only: comparereal
-      use m_GlobalParameters, only: flow1d_eps10
+      use m_branch, only: t_branch
 
       implicit none
 
@@ -288,11 +284,21 @@ contains
             end if
          end do
 
-         if (allocated(k_tmp)) deallocate (k_tmp)
-         if (allocated(x_tmp)) deallocate (x_tmp)
-         if (allocated(y_tmp)) deallocate (y_tmp)
-         if (allocated(ixy2stor)) deallocate (ixy2stor)
-         if (allocated(name_tmp)) deallocate (name_tmp)
+         if (allocated(k_tmp)) then
+            deallocate (k_tmp)
+         end if
+         if (allocated(x_tmp)) then
+            deallocate (x_tmp)
+         end if
+         if (allocated(y_tmp)) then
+            deallocate (y_tmp)
+         end if
+         if (allocated(ixy2stor)) then
+            deallocate (ixy2stor)
+         end if
+         if (allocated(name_tmp)) then
+            deallocate (name_tmp)
+         end if
       end if
 
    end subroutine set_node_numbers_for_storage_nodes
@@ -348,7 +354,9 @@ contains
       ! cross section)
       line2cross => network%adm%line2cross
       if ((jased > 0 .and. stm_included) .or. (flow_solver == FLOW_SOLVER_SRE)) then
-         if (allocated(gridpoint2cross)) deallocate (gridpoint2cross)
+         if (allocated(gridpoint2cross)) then
+            deallocate (gridpoint2cross)
+         end if
          allocate (gridpoint2cross(ndxi))
          do i = 1, ndxi
             gridpoint2cross(i)%num_cross_sections = 0

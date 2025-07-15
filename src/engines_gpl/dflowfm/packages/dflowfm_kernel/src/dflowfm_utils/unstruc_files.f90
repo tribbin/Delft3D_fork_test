@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -119,8 +119,12 @@ contains
          end if
       end do
 
-      if (allocated(filenames)) deallocate (filenames)
-      if (allocated(lunfils)) deallocate (lunfils)
+      if (allocated(filenames)) then
+         deallocate (filenames)
+      end if
+      if (allocated(lunfils)) then
+         deallocate (lunfils)
+      end if
 
       maxnum = 0
    end subroutine close_all_files

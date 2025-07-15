@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -38,14 +38,14 @@ contains
 
 !> generate partition numbering with METIS
 !!   1D links are supported now
-   module subroutine partition_METIS_to_idomain(Nparts, jacontiguous, method, iseed)
+   module subroutine partition_METIS_to_idomain(idomain, Nparts, jacontiguous, method, iseed)
       use network_data, only: netcell, nump1d2d, numk, numl, lne, lnn
-      use m_partitioninfo, only: idomain
       use m_metis, only: opts, metis_ok
       use m_alloc, only: realloc, aerr
       use MessageHandling, only: LEVEL_ERROR, LEVEL_INFO, LEVEL_WARN, mess
       use m_qnerror, only: qnerror
 
+      integer, intent(out), dimension(:), allocatable :: idomain !< cell-based domain number, dim(nump1d2d or ndx)
       integer, intent(in) :: Nparts !< number of partitions
       integer, intent(in) :: method !< partition method. 1: K-Way, 2: Recursive, 3: Mesh-dual
       integer, intent(in) :: jacontiguous !< enforce contiguous domains (1) or not (0)

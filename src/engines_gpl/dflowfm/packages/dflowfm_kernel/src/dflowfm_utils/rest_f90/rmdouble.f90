@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -42,11 +42,11 @@ contains
 
    subroutine RMDOUBLE(XS, YS, ZS, IPSAM, NS)
       use precision, only: dp
-      use m_missing
-      use m_sferic
+      use m_missing, only: dmiss, xymis
+      use m_sferic, only: jsferic
+      use kdtree2Factory, only: build_kdtree, treeglob, itree_empty, delete_kdtree2, make_queryvector_kdtree, kdtree2_r_count, realloc_results_kdtree, kdtree2_n_nearest
+      use m_wall_clock_time, only: wall_clock_time
       use messagehandling, only: LEVEL_INFO, mess
-      use kdtree2Factory
-      use m_wall_clock_time
 
       integer :: i
       integer :: j
@@ -120,7 +120,9 @@ contains
 
          if (ierror /= 0) then
 !           deallocate permutation array
-            if (allocated(iperm)) deallocate (iperm)
+            if (allocated(iperm)) then
+               deallocate (iperm)
+            end if
 
 !           deallocate kdtree
             if (treeglob%itreestat /= ITREE_EMPTY) call delete_kdtree2(treeglob)
@@ -246,11 +248,15 @@ contains
 1234  continue
 
 !     deallocate
-      if (allocated(newnode)) deallocate (newnode)
+      if (allocated(newnode)) then
+         deallocate (newnode)
+      end if
 
       if (jakdtree == 1) then
 !         deallocate permutation array
-         if (allocated(iperm)) deallocate (iperm)
+         if (allocated(iperm)) then
+            deallocate (iperm)
+         end if
 
 !         deallocate kdtree
          if (treeglob%itreestat /= ITREE_EMPTY) call delete_kdtree2(treeglob)

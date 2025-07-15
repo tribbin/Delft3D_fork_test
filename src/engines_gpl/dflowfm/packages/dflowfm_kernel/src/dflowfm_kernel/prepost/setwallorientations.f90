@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -40,10 +40,10 @@ contains
    !> set wall to flowlinks and wall to flownode oientations
    subroutine setwallorientations()
       use precision, only: dp
-      use m_flowgeom
+      use m_flowgeom, only: csbw, snbw, csbwn, snbwn, mxwalls, lnx, walls, xu, yu, xz, yz
+      use m_sferic, only: jsferic, jasfer3d
+      use m_alloc, only: aerr
       use network_data, only: xk, yk
-      use m_sferic
-      use m_alloc
       use m_missing, only: dmiss
       use geometry_module, only: half, spher2locvec
 
@@ -55,11 +55,19 @@ contains
 
       integer :: ierr
 
-      if (allocated(csbw)) deallocate (csbw)
-      if (allocated(snbw)) deallocate (snbw)
+      if (allocated(csbw)) then
+         deallocate (csbw)
+      end if
+      if (allocated(snbw)) then
+         deallocate (snbw)
+      end if
 
-      if (allocated(csbwn)) deallocate (csbwn)
-      if (allocated(snbwn)) deallocate (snbwn)
+      if (allocated(csbwn)) then
+         deallocate (csbwn)
+      end if
+      if (allocated(snbwn)) then
+         deallocate (snbwn)
+      end if
 
       if (jsferic == 0 .or. jasfer3D == 0) return
 

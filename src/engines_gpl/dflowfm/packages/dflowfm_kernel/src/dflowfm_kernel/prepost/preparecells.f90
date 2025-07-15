@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -65,9 +65,13 @@ contains
       end if
 
       ! generate lne and lnn
-      if (allocated(lne)) deallocate (lne)
+      if (allocated(lne)) then
+         deallocate (lne)
+      end if
       allocate (lne(2, numl))
-      if (allocated(lnn)) deallocate (lnn)
+      if (allocated(lnn)) then
+         deallocate (lnn)
+      end if
       allocate (lnn(numl))
       lne = 0
       lnn = 0

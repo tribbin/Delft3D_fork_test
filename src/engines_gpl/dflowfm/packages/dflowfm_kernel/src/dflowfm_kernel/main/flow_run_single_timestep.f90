@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -49,7 +49,6 @@ contains
       use m_step_reduce_transport_morpho, only: step_reduce_transport_morpho
       use m_step_reduce_hydro, only: step_reduce_hydro
       use m_update_flowanalysis_parameters, only: updateFlowAnalysisParameters
-      use m_setlinktocornerweights, only: setlinktocornerweights
       use m_setlinktocenterweights, only: setlinktocenterweights
       use m_getcellsurface1d, only: getcellsurface1d
 

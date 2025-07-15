@@ -1,0 +1,200 @@
+import jetbrains.buildServer.configs.kotlin.*
+import jetbrains.buildServer.configs.kotlin.buildSteps.*
+import jetbrains.buildServer.configs.kotlin.buildFeatures.*
+import jetbrains.buildServer.configs.kotlin.triggers.*
+
+import Delft3D.template.*
+import Delft3D.linux.*
+import Delft3D.windows.*
+
+object Publish : BuildType({
+
+    templates(
+        TemplateMonitorPerformance,
+        TemplateDockerRegistry
+    )
+
+    name = "Publish Container"
+    description = "Currently only used for publishing the container."
+    buildNumberPattern = "%build.vcs.number%"
+    maxRunningBuilds = 1
+
+    artifactRules = """
+        #teamcity:symbolicLinks=as-is
+        +:examples/dflowfm/examples/**/* => %brand%/examples/
+        +:ci/teamcity/Delft3D/linux/docker/readme.txt => %brand%/
+        +:%brand%_*.tar => %brand%/
+    """.trimIndent()
+
+    vcs {
+        root(DslContext.settingsRoot)
+        cleanCheckout = true
+        branchFilter = """
+            +:<default>
+            +:main
+            +:all/release/*
+        """.trimIndent()
+    }
+
+    features {
+        matrix {
+            param("brand", listOf(
+                value("delft3dfm"),
+                value("dhydro")
+            ))
+        }
+        approval {
+            approvalRules = "group:DIMR_BAKKERS:1"
+        }
+    }
+
+    params {
+        select("release_type", "weekly", display = ParameterDisplay.PROMPT, options = listOf("daily", "weekly", "release"))
+        text("release_version", "2.29.xx", 
+            label = "Release version", 
+            description = "e.g. '2.29.03' or '2025.02'", 
+            display = ParameterDisplay.PROMPT)
+        text("reverse.dep.*.release_version", "2.29.xx", 
+            label = "Release version for dependencies", 
+            description = "e.g. '2.29.03' or '2025.02'", 
+            display = ParameterDisplay.PROMPT)
+        param("reverse.dep.*.product", "all-testbench")
+        param("commit_id_short", "%dep.${LinuxBuild.id}.commit_id_short%")
+        param("source_image", "%dep.${LinuxRuntimeContainers.id}.runtime_container_image%")
+        param("destination_image_generic", "containers.deltares.nl/delft3d/%brand%:%release_type%")
+        param("destination_image_specific", "containers.deltares.nl/delft3d/%brand%:%release_type%-%release_version%")
+    }
+
+    if (DslContext.getParameter("enable_release_publisher").lowercase() == "true") {
+        dependencies {
+            dependency(DIMRbak) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(LinuxTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(WindowsTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(LinuxUnitTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(WindowsUnitTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(LinuxRunAllDockerExamples) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(LinuxLegacyDockerTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+        }
+        triggers {
+            finishBuildTrigger {
+                enabled = true
+                buildType = "DIMR_To_NGHS"
+                successfulOnly = true
+                branchFilter = """
+                    +:main
+                    +:release/*
+                """.trimIndent()
+            }
+        }
+    }
+
+    requirements {
+        contains("teamcity.agent.jvm.os.name", "Linux")
+    }
+
+    steps {
+        dockerCommand {
+            name = "Pull source image"
+            commandType = other {
+                subCommand = "pull"
+                commandArgs = "%source_image%"
+            }
+        }
+        dockerCommand {
+            name = "Tag generic image"
+            commandType = other {
+                subCommand = "tag"
+                commandArgs = "%source_image% %destination_image_generic%"
+            }
+        }
+        dockerCommand {
+            name = "Tag specific image"
+            commandType = other {
+                subCommand = "tag"
+                commandArgs = "%source_image% %destination_image_specific%"
+            }
+        }
+        dockerCommand {
+            name = "Save image as tarball"
+            commandType = other {
+                subCommand = "save"
+                commandArgs = """
+                    -o %brand%_%release_version%-%commit_id_short%.tar
+                    %destination_image_specific%
+                """.trimIndent()
+            }
+        }
+        dockerCommand {
+            name = "Push generic and specific images"
+            commandType = push {
+                namesAndTags = """
+                    "%destination_image_generic%"
+                    "%destination_image_specific%"
+                """.trimIndent()
+            }
+        }
+        script {
+            name = "Replace default image in run_docker.sh scripts"
+            workingDir = "examples/dflowfm"
+            scriptContent = """
+                for file in */run_docker.sh; do
+                    sed -i 's@^image=[^ ]*@image=%destination_image_specific%@' ${'$'}file
+                done
+            """.trimIndent()
+        }
+        script {
+            name = "Replace branding delft3dfm->dhydro"
+            conditions {
+                equals("brand", "dhydro")
+            }
+            scriptContent = """
+                sed -i 's@delft3dfm@dhydro@' ci/teamcity/Delft3D/linux/docker/readme.txt
+                sed -i 's@Delft3D FM@D-HYDRO@' ci/teamcity/Delft3D/linux/docker/readme.txt
+            """.trimIndent()
+        }
+        exec {
+            name = "Create Docker ZIP file in /opt/Testdata/DIMR/DIMR_collectors/DIMRset_lnx64_Docker/"
+            path = "ci/teamcity/Delft3D/scripts/makePublishDockerZip.sh"
+            arguments = """
+                --brand %brand%
+                --release-version %release_version%
+                --commit-id-short %commit_id_short%
+            """.trimIndent()
+        }
+    }
+})

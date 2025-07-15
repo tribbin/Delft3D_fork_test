@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -31,15 +31,14 @@
 !
 
 module m_calbedform
-   use m_solve_2d, only: solve_2d
-   use m_comp_sumhorflux, only: comp_sumhorflux
-   use m_comp_fluxhor3d, only: comp_fluxhor3d
-   use m_comp_dxiau, only: comp_dxiau
-   use m_setucxucy_mor, only: setucxucy_mor
+
+   use m_waveconst
 
    implicit none
 
-   public fm_calbf
+   private
+
+   public fm_calbf, fm_calksc
 
 contains
 
@@ -63,8 +62,8 @@ contains
       use m_waves
       use m_get_kbot_ktop
       use m_get_chezy, only: get_chezy
-      !
-      implicit none
+      use m_setucxucy_mor, only: setucxucy_mor
+      use m_waveconst
       !
       ! The following list of pointer parameters is used to point inside the data structures
       !
@@ -139,7 +138,7 @@ contains
       end if
       czn = 0d0; czu = 0d0; u1eul = 0d0
       !
-      if (jawave > 0 .and. .not. flowWithoutWaves) then
+      if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
          u1eul = u1 - ustokes
          call setucxucy_mor(u1eul)
       end if
@@ -305,13 +304,15 @@ contains
       use message_module
       use m_get_Lbot_Ltop
       use m_fm_advec_diff_2d, only: fm_advec_diff_2d
-      !
-      implicit none
+      use m_turbulence, only: BACKGROUND_DIFFUSION_ON
       !
       ! Global variables
       !
       real(fp), dimension(:), allocatable :: sink
       real(fp), dimension(:), allocatable :: sour
+      !
+      real(kind=dp), dimension(1), parameter :: BEDFORM_BACKGROUND_DIFFUSION_FACTOR = [BACKGROUND_DIFFUSION_ON] !< background diffusion factor [-]. For backward compatibility, it is set to 1.0`, although it would most probably make more sense to be 0. It cannot be a `parameter` because it is `inout` in `comp_fluxhor3D` because it is optional.
+      integer, parameter :: LIMITER_TYPE = 4 !< It should be made equal to a parameter inside, for instance, `m_flowparameters`.
       !
       !Local parameters
       !
@@ -398,7 +399,7 @@ contains
       lsedtot => stmpar%lsedtot
       tcmp => stmpar%morpar%tcmp
       !
-      call realloc(dh,   ndx, keepExisting=.false., fill=0d0)
+      call realloc(dh, ndx, keepExisting=.false., fill=0d0)
       call realloc(uxbf, ndx, keepExisting=.false., fill=0d0)
       call realloc(uybf, ndx, keepExisting=.false., fill=0d0)
       call realloc(sour, ndx, keepExisting=.false., fill=0d0)
@@ -638,7 +639,7 @@ contains
             kb = ln(1, L); ki = ln(2, L)
             dh(kb) = dh(ki)
          end do
-         call fm_advec_diff_2d(dh, ubedformu, qbedformn, sour, sink, diff, 4, ierror)
+         call fm_advec_diff_2d(dh, ubedformu, qbedformn, sour, sink, diff, BEDFORM_BACKGROUND_DIFFUSION_FACTOR, LIMITER_TYPE, ierror)
       end do
       !
       dts = dtsori
@@ -663,8 +664,7 @@ contains
       use m_rdtrt
       use m_waves
       use m_get_kbot_ktop
-      !
-      implicit none
+      use m_setucxucy_mor, only: setucxucy_mor
       !
       logical, pointer :: spatial_bedform
       real(fp), dimension(:), pointer :: sedd50
@@ -731,7 +731,7 @@ contains
       z0rou = 0d0; deltas = 0d0
       !
       ! Calculate Eulerian velocities at old time level
-      if (jawave > 0 .and. .not. flowWithoutWaves) then
+      if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
          if (.not. allocated(u0eul)) then
             allocate (u0eul(1:lnkx), stat=ierr)
          end if
@@ -770,7 +770,7 @@ contains
          relaxd = exp(-dt_user / max(1.0e-20_fp, par6))
          !
          maxdepfrac = 0.05d0
-         if (v2dwbl > 0 .and. jawave > 0 .and. kmx > 0) then
+         if (v2dwbl > 0 .and. jawave > NO_WAVES .and. kmx > 0) then
             deltas = 0d0
             do L = 1, lnx
                k1 = ln(1, L); k2 = ln(2, L)
@@ -789,7 +789,7 @@ contains
                call getkbotktop(k, kb, kt)
                kmaxx = kb
                !
-               if (v2dwbl > 0 .and. (jawave > 0) .and. .not. flowWithoutWaves .and. kmx > 0) then
+               if (v2dwbl > 0 .and. (jawave > NO_WAVES) .and. .not. flowWithoutWaves .and. kmx > 0) then
                   !
                   ! Determine representative 2Dh velocity based on velocities in first layer above wave boundary layer
                   ! kmaxx is the first layer with its centre above the wave boundary layer
@@ -816,7 +816,7 @@ contains
                   u2dh = umod * (log((1d0 + hs(k)) / z0rou(k)) - 1d0) / (log(zz / z0rou(k)) - 1d0)
                end if
                !
-               if (jawave > 0 .and. .not. flowWithoutWaves) then
+               if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then
                   hh = hwav(k) * sqrt(2.0_fp)
                   llabda = max(0.1_fp, rlabda(k))
                   arg = 2.0_fp * pi * depth / llabda

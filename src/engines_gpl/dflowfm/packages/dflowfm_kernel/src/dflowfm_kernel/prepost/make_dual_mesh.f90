@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -213,11 +213,21 @@ contains
 1234  continue
 
 !  deallocate
-      if (allocated(xk_new)) deallocate (xk_new)
-      if (allocated(yk_new)) deallocate (yk_new)
-      if (allocated(zk_new)) deallocate (zk_new)
-      if (allocated(kn_new)) deallocate (kn_new)
-      if (allocated(newnode)) deallocate (newnode)
+      if (allocated(xk_new)) then
+         deallocate (xk_new)
+      end if
+      if (allocated(yk_new)) then
+         deallocate (yk_new)
+      end if
+      if (allocated(zk_new)) then
+         deallocate (zk_new)
+      end if
+      if (allocated(kn_new)) then
+         deallocate (kn_new)
+      end if
+      if (allocated(newnode)) then
+         deallocate (newnode)
+      end if
 
       return
 

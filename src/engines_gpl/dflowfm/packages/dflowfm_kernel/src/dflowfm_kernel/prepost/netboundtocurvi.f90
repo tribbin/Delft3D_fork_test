@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -176,9 +176,13 @@ contains
       end if
 
 !  allocate
-      if (allocated(edgevel)) deallocate (edgevel)
+      if (allocated(edgevel)) then
+         deallocate (edgevel)
+      end if
       allocate (edgevel(mc - 1))
-      if (allocated(ifront)) deallocate (ifront)
+      if (allocated(ifront)) then
+         deallocate (ifront)
+      end if
       allocate (ifront(mc))
 
 !  set the front mask
@@ -255,8 +259,12 @@ contains
       call restorepol()
 
 !  deallocate
-      if (allocated(edgevel)) deallocate (edgevel)
-      if (allocated(ifront)) deallocate (ifront)
+      if (allocated(edgevel)) then
+         deallocate (edgevel)
+      end if
+      if (allocated(ifront)) then
+         deallocate (ifront)
+      end if
 
 !   call netboundstopoly_deallocatemasks()
 

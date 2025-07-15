@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -164,8 +164,12 @@ contains
          end do
 
 !      deallocate
-         if (allocated(x)) deallocate (x)
-         if (allocated(y)) deallocate (y)
+         if (allocated(x)) then
+            deallocate (x)
+         end if
+         if (allocated(y)) then
+            deallocate (y)
+         end if
 
 !      plot grid
          call tekgrid(i)

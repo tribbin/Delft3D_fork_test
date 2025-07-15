@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -56,7 +56,9 @@ contains
 
       if (.not. (ibedlevtyp == 1 .or. ibedlevtyp == 6) .and. jaceneqtr == 1 .and. .not. allocated(zn2rn)) then ! netnode depth + netcell fluxes                                                        !
 
-         if (allocated(zk1)) deallocate (zk1)
+         if (allocated(zk1)) then
+            deallocate (zk1)
+         end if
          allocate (zk1(numk), stat=ierr)
          call aerr('zk1(numk)', ierr, numk); zk1 = 0d0
 

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -322,9 +322,15 @@ contains
 1234  continue
 
 !  deallocate
-      if (allocated(jarefine)) deallocate (jarefine)
-      if (allocated(jalink)) deallocate (jalink)
-      if (allocated(linkbrother)) deallocate (linkbrother)
+      if (allocated(jarefine)) then
+         deallocate (jarefine)
+      end if
+      if (allocated(jalink)) then
+         deallocate (jalink)
+      end if
+      if (allocated(linkbrother)) then
+         deallocate (linkbrother)
+      end if
       if (allocated(zss)) then
          call deallocate_sampleHessian()
          iHesstat = iHesstat_DIRTY
@@ -346,7 +352,9 @@ contains
 
          integer :: k
 
-         if (allocated(kc_sav)) deallocate (kc_sav)
+         if (allocated(kc_sav)) then
+            deallocate (kc_sav)
+         end if
 
          if (numk < 1) goto 1234
 
@@ -949,7 +957,9 @@ contains
 
 !     deallocate
 !      if ( allocated(janode) ) deallocate(janode)
-         if (allocated(jalin)) deallocate (jalin)
+         if (allocated(jalin)) then
+            deallocate (jalin)
+         end if
 
          return
       end subroutine smooth_jarefine
@@ -962,7 +972,8 @@ contains
          use geometry_module, only: getcircumcenter
          use m_find_common_node
          use m_new_link
-         use network_data, only: kn3typ, kn, xk, yk, lnn, dcenterinside, circumcenter_method, xzw, yzw
+         use network_data, only: kn3typ, kn, xk, yk, lnn, dcenterinside, xzw, yzw
+         use m_circumcenter_method, only: circumcenter_method
 
          implicit none
 

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -50,8 +50,12 @@ contains
 
       integer, parameter :: MAXOP = 64
       integer :: NUMK, NUML, KEY
-      real(kind=dp) XK(NUMK), YK(NUMK), ZK(NUMK), XI, YI, ZI
-      integer KN(3, NUML)
+      real(kind=dp) :: XI, YI, ZI
+      real(kind=dp), dimension(numk), intent(in) :: XK
+      real(kind=dp), dimension(numk), intent(in) :: YK
+      real(kind=dp), dimension(numk), intent(in) :: ZK
+      integer, dimension(3, NUML), intent(inout) :: KN
+
       integer, intent(inout) :: kndefault !< Default uniform value (e.g. kn3typ), will be changed too at call site when user changes it in the dialog.
       character(len=40) OPTION(MAXOP)
 
@@ -164,7 +168,7 @@ contains
       end do
       call READYY('CHANGE FIELD VALUES', -1d0)
       KEY = 3
-      return
+
    end subroutine PLUSABSI
 
 end module m_plusabsi

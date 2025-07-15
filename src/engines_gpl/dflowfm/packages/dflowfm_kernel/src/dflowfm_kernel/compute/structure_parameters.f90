@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -34,23 +34,20 @@ module m_structure_parameters
    private
    public :: structure_parameters
 contains
-! =================================================================================================
-! =================================================================================================
+
    subroutine structure_parameters
-      use m_flowgeom, only: ln, wu, bob
-      use m_flow
-      use m_structures
-      use fm_external_forcings_data, only: ngenstru, dambreakLinksActualLength 
-      use m_partitioninfo
-      use m_flowtimes
-      use m_missing, only: dmiss
-      use unstruc_channel_flow, only: network
-      use m_1d_structures
-      use m_compound
-      use m_GlobalParameters
+      use m_flowgeom, only: ln, wu
+      use m_flow, only: dp, npumpsg, ngatesg, ncdamsg, ncgensg, ngategen, nweirgen, ngenstru, aerr, dmiss, pumpswithlevels, l1pumpsg, l2pumpsg, kpump, l1gatesg, l2gatesg, kgate, q1, s1, l1cdamsg, l2cdamsg, kcdam, l1cgensg, l2cgensg, kcgen, hu, epshu, hs, epshs, gate2cgen, zcgen, weir2cgen, genstru2cgen
+      use m_structures, only: numvals_pump, numvals_gate, numvals_cdam, numvals_cgen, numvals_gategen, numvals_weirgen, numvals_genstru, numvals_dambreak, network, numvals_uniweir, numvals_orifgen, numvals_culvert, numvals_bridge, numvals_cmpstru, numvals_longculvert, valpump, numvals_common_pump, fill_valstruct_perlink, valgate, valcdam, valcgen, valgategen, ival_width, ival_widthwet, ival_dis, ival_widthup, ival_s1up, ival_widthdn, ival_s1dn, ival_widthupdn, ival_head, ival_gate_widthwet, ival_gate_flowh, ival_gate_count, ival_gate_openw, ival_gate_edgel, ival_gate_sillh, valweirgen, fill_valstruct_per_structure, valorifgen, valbridge, valculvert, ival_cl_crestl, ival_cl_state, ival_cl_edgel, ival_cl_openh, valuniweir, ival_uw_crestl, valdambreak, valgenstru, ival_openw, ival_edgel, ival_crestl, valcmpstru, vallongculvert, average_valstruct, ival_crestw, ival_pp_cap, ival_pp_disdir, ival_pp_stag, ival_pp_s1suc, ival_pp_s1del, ival_pp_head, ival_pp_red
+      use m_flowtimes, only: ti_his, time1
+      use m_1d_structures, only: get_crest_level, get_culvert_state, get_gle, get_opening_height, getpumpcapacity, getpumpstage, getpumpreductionfactor
+      use m_GlobalParameters, only: st_pump, st_weir, st_unset, st_orifice, st_bridge, st_culvert, st_uni_weir, st_general_st, st_compound, st_longculvert
+      use m_partitioninfo, only: jampi, reducebuf, nreducebuf, my_rank, idomain, reduce_crs
       use m_longculverts, only: nlongculverts, longculverts, newculverts
-      use m_dambreak_breach, only: waterLevelsDambreakUpStream, waterLevelsDambreakDownStream, normalVelocityDambreak, & 
-            breachWidthDerivativeDambreak, waterLevelJumpDambreak
+      use m_dambreak_breach, only: fill_dambreak_values, n_db_signals
+      use m_link_ghostdata, only: link_ghostdata
+      use m_1d_structures, only: t_structure
+      use m_compound, only: t_compound
 
       integer :: i, n, L, Lf, La, ierr, k, ku, kd, istru, nlinks
       real(kind=dp) :: dir
@@ -64,7 +61,7 @@ contains
          if (.not. allocated(reducebuf)) then
             nreducebuf = npumpsg * NUMVALS_PUMP + ngatesg * NUMVALS_GATE + ncdamsg * NUMVALS_CDAM + ncgensg * NUMVALS_CGEN &
                          + ngategen * NUMVALS_GATEGEN + nweirgen * NUMVALS_WEIRGEN + ngenstru * NUMVALS_GENSTRU + ngenstru * NUMVALS_GENSTRU &
-                         + ndambreaksignals * NUMVALS_DAMBREAK + network%sts%numUniWeirs * NUMVALS_UNIWEIR + network%sts%numOrifices * NUMVALS_ORIFGEN &
+                         + n_db_signals * NUMVALS_DAMBREAK + network%sts%numUniWeirs * NUMVALS_UNIWEIR + network%sts%numOrifices * NUMVALS_ORIFGEN &
                          + network%sts%numCulverts * NUMVALS_CULVERT + network%sts%numBridges * NUMVALS_BRIDGE + network%cmps%count * NUMVALS_CMPSTRU &
                          + nlongculverts * NUMVALS_LONGCULVERT
             allocate (reducebuf(nreducebuf), stat=ierr)
@@ -528,59 +525,7 @@ contains
       ! == dambreak
       !
       if (allocated(valdambreak)) then
-         do n = 1, ndambreaksignals
-            ! valdambreak(NUMVALS_DAMBREAK,n) is the cumulative over time, we do not reset it to 0
-            valdambreak(1:NUMVALS_DAMBREAK - 1, n) = 0.0_dp
-            istru = dambreaks(n)
-            do L = L1dambreaksg(n), L2dambreaksg(n)
-               if (activeDambreakLinks(L) /= 1) then
-                  cycle
-               end if
-
-               Lf = kdambreak(3, L)
-               La = abs(Lf)
-               if (jampi > 0) then
-                  call link_ghostdata(my_rank, idomain(ln(1, La)), idomain(ln(2, La)), jaghost, idmn_ghost)
-                  if (jaghost == 1) cycle
-               end if
-               dir = 1.0_dp
-               if (Ln(1, La) /= kdambreak(1, L)) then
-                  dir = -1.0_dp
-               end if
-               valdambreak(IVAL_WIDTH, n) = valdambreak(IVAL_WIDTH, n) + dambreakLinksActualLength(L)
-               valdambreak(IVAL_DB_CRESTW, n) = valdambreak(IVAL_DB_CRESTW, n) + dambreakLinksActualLength(L)
-               if (hu(La) > epshu) then
-                  valdambreak(IVAL_WIDTHWET, n) = valdambreak(IVAL_WIDTHWET, n) + dambreakLinksActualLength(L)
-                  valdambreak(IVAL_DIS, n) = valdambreak(IVAL_DIS, n) + q1(La) * dir
-                  valdambreak(IVAL_AREA, n) = valdambreak(IVAL_AREA, n) + au(La) ! flow area
-               end if
-            end do
-            if (L2dambreaksg(n) < L1dambreaksg(n)) then ! NOTE: valdambreak(IVAL_DB_DISCUM,n) in a parallel simulation already gets values after mpi communication
-               ! from the previous timestep. In the case that the dambreak does not exist on the current domain, it should
-               ! not contribute to the cumulative discharge in the coming mpi communication so we set it to 0.
-               valdambreak(IVAL_DB_DISCUM, n) = 0.0_dp
-            else
-               if (network%sts%struct(istru)%dambreak%width > 0.0_dp) then
-                  valdambreak(IVAL_DB_CRESTH, n) = network%sts%struct(istru)%dambreak%crl ! crest level
-               else
-                  valdambreak(1:NUMVALS_DAMBREAK - 1, n) = dmiss ! No breach started yet, set FillValue
-                  La = abs(kdambreak(3, LStartBreach(n)))
-                  valdambreak(IVAL_DB_CRESTH, n) = bob(1, La) ! No breach started yet, use bob as 'crest'.
-                  valdambreak(IVAL_DB_CRESTW, n) = 0.0_dp ! No breach started yet, set crest width to 0
-                  cycle
-               end if
-               ! TODO: UNST-5102: code below needs checking: when dambreak #n not active in current partition,
-               ! most values below *are* available (based on other partitions). And in the code ahead, a call to reduce_crs
-               ! assumes that all values are present and will be sum-reduced in a flowlinkwidth-weighted manner.
-               valdambreak(IVAL_S1UP, n) = waterLevelsDambreakUpStream(n)
-               valdambreak(IVAL_S1DN, n) = waterLevelsDambreakDownStream(n)
-               valdambreak(IVAL_HEAD, n) = valdambreak(IVAL_S1UP, n) - valdambreak(IVAL_S1DN, n)
-               valdambreak(IVAL_VEL, n) = normalVelocityDambreak(n)
-               valdambreak(IVAL_DB_JUMP, n) = waterLevelJumpDambreak(n)
-               valdambreak(IVAL_DB_TIMEDIV, n) = breachWidthDerivativeDambreak(n)
-               valdambreak(IVAL_DB_DISCUM, n) = valdambreak(IVAL_DB_DISCUM, n) + valdambreak(IVAL_DIS, n) * timstep ! cumulative discharge
-            end if
-         end do
+         call fill_dambreak_values(timstep, valdambreak)
       end if
       !
       ! === General structures (from new ext file)
@@ -721,8 +666,8 @@ contains
             call fill_reduce_buffer(valgenstru, ngenstru * NUMVALS_GENSTRU)
             n = 1
          end if
-         if (ndambreaksignals > 0 .and. allocated(valdambreak)) then
-            call fill_reduce_buffer(valdambreak, ndambreaksignals * NUMVALS_DAMBREAK)
+         if (n_db_signals > 0 .and. allocated(valdambreak)) then
+            call fill_reduce_buffer(valdambreak, n_db_signals * NUMVALS_DAMBREAK)
             n = 1
          end if
          if (allocated(valuniweir) .and. network%sts%numUniWeirs > 0) then
@@ -829,8 +774,8 @@ contains
 
       ! === Dambreak
       if (jampi > 0 .and. ti_his > 0) then
-         if (ndambreaksignals > 0 .and. allocated(valdambreak)) then
-            call substitute_reduce_buffer(valdambreak, ndambreaksignals * NUMVALS_DAMBREAK)
+         if (n_db_signals > 0 .and. allocated(valdambreak)) then
+            call substitute_reduce_buffer(valdambreak, n_db_signals * NUMVALS_DAMBREAK)
          end if
       end if
 

@@ -2,7 +2,7 @@ module m_rdtrt
 
 !----- GPL ---------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2011-2024.
+!  Copyright (C)  Stichting Deltares, 2011-2025.
 !
 !  This program is free software: you can redistribute it and/or modify
 !  it under the terms of the GNU General Public License as published by
@@ -379,8 +379,6 @@ subroutine rdtrt(lundia    ,error     ,lftrto    ,dt        , &
     !
     txtput1 = 'DtTrt'
     write (msgtmp, '(a,a,f7.3,a)') txtput1,': ',rtimtt*d3d_tunit,' seconds'
-    call SetMessage(LEVEL_INFO, msgtmp)
-    write (msgtmp, '(a,a,i5,a)') txtput1,': every ',itimtt,' timesteps'
     call SetMessage(LEVEL_INFO, msgtmp)
     !
     ! Trtdef: trachytope definition file (must exist, no default)

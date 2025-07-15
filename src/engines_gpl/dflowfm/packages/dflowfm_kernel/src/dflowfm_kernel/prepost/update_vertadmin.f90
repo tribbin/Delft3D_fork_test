@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -45,9 +45,9 @@ contains
 
    subroutine update_vertadmin()
       use precision, only: dp
-      use m_partitioninfo
-      use m_flowgeom
-      use m_flow
+      use m_partitioninfo, only: jampi, update_ghosts, itype_sall, update_ghostboundvals, itype_u
+      use m_flowgeom, only: ndx, bl, lnx
+      use m_flow, only: kmx, kmxn, kmxl
       use messagehandling, only: LEVEL_INFO, LEVEL_ERROR, mess
 
       character(len=128) :: mesg
@@ -97,7 +97,9 @@ contains
          end if
       end do
 
-      if (allocated(dum)) deallocate (dum)
+      if (allocated(dum)) then
+         deallocate (dum)
+      end if
       allocate (dum(1, Lnx))
 
 !  kmxL: filly dummy array
@@ -162,7 +164,9 @@ contains
       end if
 
 1234  continue
-      if (allocated(dum)) deallocate (dum)
+      if (allocated(dum)) then
+         deallocate (dum)
+      end if
 
       return
    end subroutine update_vertadmin

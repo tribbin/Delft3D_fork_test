@@ -1,7 +1,7 @@
 module m_Roughness
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This program is free software: you can redistribute it and/or modify
 !  it under the terms of the GNU Affero General Public License as
@@ -241,7 +241,7 @@ contains
       case (R_MANNING)
          frictionTypeIntegerToString = 'Manning'
       case (R_WALL_LAW_NIKURADSE)
-         frictionTypeIntegerToString = 'WallLawNikuradse'
+         frictionTypeIntegerToString = 'wallLawNikuradse'
       case (R_WHITE_COLEBROOK)
          frictionTypeIntegerToString = 'WhiteColebrook'
       case (R_NIKURADSE)
@@ -249,7 +249,7 @@ contains
       case (R_STRICKLER)
          frictionTypeIntegerToString = 'Strickler'
       case (R_BOS_BIJKERK)
-         frictionTypeIntegerToString = 'deBosBijkerk'
+         frictionTypeIntegerToString = 'DeBosBijkerk'
       case default
          frictionTypeIntegerToString = 'unknown'
       end select

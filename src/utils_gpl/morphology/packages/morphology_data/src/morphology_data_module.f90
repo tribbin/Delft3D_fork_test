@@ -1,7 +1,7 @@
 module morphology_data_module
 !----- GPL ---------------------------------------------------------------------
 !                                                                               
-!  Copyright (C)  Stichting Deltares, 2011-2024.                                
+!  Copyright (C)  Stichting Deltares, 2011-2025.                                
 !                                                                               
 !  This program is free software: you can redistribute it and/or modify         
 !  it under the terms of the GNU General Public License as published by         
@@ -290,6 +290,15 @@ type moroutputtype
     logical :: blave
     logical :: bamor
     logical :: wumor
+    logical :: aldiff
+    logical :: bodsed
+    logical :: dpsed
+    logical :: thlyr
+    logical :: preload
+    logical :: sedconc
+    logical :: morfac
+    logical :: sxytot
+    logical :: sxyavg
 end type moroutputtype
 
 !
@@ -1719,6 +1728,7 @@ subroutine initmoroutput(moroutput, def)
     moroutput%morstats     = .false.
     !
     moroutput%aks           = no
+    moroutput%sxyavg        = yes
     moroutput%cumavg        = no
     moroutput%dg            = no
     moroutput%dgsd          = no
@@ -1731,14 +1741,19 @@ subroutine initmoroutput(moroutput, def)
     moroutput%frac          = no
     moroutput%lyrfrac       = yes
     moroutput%msed          = yes
+    moroutput%bodsed        = yes
+    moroutput%dpsed         = yes
+    moroutput%thlyr         = yes
     moroutput%mudfrac       = no
     moroutput%percentiles   = no
     moroutput%poros         = yes
     moroutput%rca           = yes
     moroutput%rsedeq        = yes
+    moroutput%sedconc       = yes
     moroutput%sandfrac      = no
     moroutput%sedpar        = no
     moroutput%seddif        = no
+    moroutput%sxytot        = yes
     moroutput%sbuuvv        = yes
     moroutput%sbcuv         = no
     moroutput%sscuv         = no
@@ -1761,6 +1776,9 @@ subroutine initmoroutput(moroutput, def)
     moroutput%blave         = no
     moroutput%bamor         = no
     moroutput%wumor         = no
+    moroutput%aldiff        = no
+    moroutput%preload       = yes
+    moroutput%morfac        = yes
 end subroutine initmoroutput
 
 

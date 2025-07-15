@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -420,12 +420,20 @@ contains
 
 !  write(6,"('cutcelwu:', I4)") 9
 
-      if (allocated(knp)) deallocate (KNP)
+      if (allocated(knp)) then
+         deallocate (knp)
+      end if
 
       if (jamasks == 1) then
-         if (allocated(Lmask)) deallocate (Lmask)
-         if (allocated(xmL)) deallocate (xmL)
-         if (allocated(ymL)) deallocate (ymL)
+         if (allocated(Lmask)) then
+            deallocate (Lmask)
+         end if
+         if (allocated(xmL)) then
+            deallocate (xmL)
+         end if
+         if (allocated(ymL)) then
+            deallocate (ymL)
+         end if
       end if
 
       call READYY('CUTCELWU', -1d0)

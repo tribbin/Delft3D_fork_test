@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -39,16 +39,18 @@ contains
 
    subroutine samples_to_cellmask2()
 
-      use network_data
-      use m_samples
+      use network_data, only: cellmask, nump1d2d, increasepol, nump, npl, netcell, xpl, xk, ypl, yk, zpl
+      use m_samples, only: zs, ns, xs, ys
+      use geometry_module, only: dbpinpol_optinside_perpol2, ipolyfound
       use m_missing, only: dmiss
-      use geometry_module ! , only: pinpok
 
       implicit none
 
       integer :: i, in, k, kk, n, nn, num
 
-      if (allocated(cellmask)) deallocate (cellmask)
+      if (allocated(cellmask)) then
+         deallocate (cellmask)
+      end if
       allocate (cellmask(nump1d2d)); cellmask = 0
 
       zs(1:ns) = 1

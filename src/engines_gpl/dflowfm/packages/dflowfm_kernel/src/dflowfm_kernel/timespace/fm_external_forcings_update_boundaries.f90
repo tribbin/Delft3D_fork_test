@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -259,14 +259,9 @@ contains
          success = success .and. ec_gettimespacevalue(ecInstancePtr, item_gateloweredgelevel, irefdate, tzone, tunit, time, zgate)
       end if
 
-      !dambreak
-      if (ndambreaksignals > 0) then
-         ! Variable ndambreaksignals is >0 for all partitions if there is a dambreak, even if it is outside of a partition.
-         ! In a parallel simulation, we need to call this subroutine even in a special situation that there is no dambreak
-         ! on the current subdomain (i.e. ndambreaklinks == 0), because this subroutine calls function
-         ! getAverageQuantityFromLinks, which involves mpi communication among all subdomains. However, in this special situation,
-         ! all the necessary variables will be set to 0 and will not participate the dambreak related computation in this subroutine.
-         call update_dambreak_breach(time, dts)
+      if (update_dambreak_breach(time, dts) /= 0) then
+         success = .false.
+         goto 888
       end if
 
       if (network%rgs%timeseries_defined) then

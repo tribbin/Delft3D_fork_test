@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -197,7 +197,11 @@ contains
 
       if (met == 4) then
          npdf = 20
-         if (allocated(xpdf)) deallocate (xpdf, ypdf); allocate (xpdf(npdf), ypdf(npdf)); xpdf = 0d0
+         if (allocated(xpdf)) then
+            deallocate (xpdf, ypdf)
+         end if
+         allocate (xpdf(npdf), ypdf(npdf))
+         xpdf = 0d0
          aa = 1d0
          do i = 1, npdf - 1
             aa = 0.6666d0 * aa

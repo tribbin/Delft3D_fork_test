@@ -29,7 +29,7 @@ if (UNIX)
                          FLAP
                          netcdff)
 
-    target_link_libraries(${executable_name}
+    target_link_libraries(${executable_name} PRIVATE
                           ${oss_dependencies})
 endif(UNIX)
 
@@ -41,7 +41,7 @@ if (WIN32)
                          FLAP
                          netcdff)
 
-    target_link_libraries(${executable_name} ${oss_dependencies})
+    target_link_libraries(${executable_name} PRIVATE ${oss_dependencies})
 endif(WIN32)
 
 if(UNIX)
@@ -59,7 +59,7 @@ endif(WIN32)
 set_source_files_properties(${fortran_version_file}
                             PROPERTIES COMPILE_OPTIONS "${file_preprocessor_flag}")
 
-#target_link_libraries(${executable_name} netcdf)
+#target_link_libraries(${executable_name} PRIVATE netcdf)
 
 if (WIN32)
     include_directories(${tecplot_path}
@@ -75,7 +75,7 @@ if (WIN32)
                             "${checkout_src_root}/third_party_open/pthreads/bin/x64"
                             "${checkout_src_root}/third_party_open/Tecplot/lib/x64")
 
-    target_link_libraries(${executable_name}
+    target_link_libraries(${executable_name} PRIVATE
                           "comctl32.lib"
                           "wsock32.lib"
                           "netapi32.lib"
@@ -102,7 +102,7 @@ endif(WIN32)
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${sources} ${fortran_version_file})
 set_target_properties (${executable_name} PROPERTIES FOLDER tools_gpl/dfmoutput)
 install(TARGETS ${executable_name} RUNTIME  DESTINATION bin)
-
+install(PROGRAMS ${CMAKE_SOURCE_DIR}/../engines_gpl/dflowfm/scripts/runscripts/run_dfmoutput.${platform_extension}         DESTINATION bin)
 
 # Set post-build step
 set(install_dir ${CMAKE_BINARY_DIR})

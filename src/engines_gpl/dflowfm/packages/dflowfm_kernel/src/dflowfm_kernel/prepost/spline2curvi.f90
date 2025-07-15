@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -284,7 +284,9 @@ contains
 
 !  deallocate
       if (allocated(edgevel)) deallocate (edgevel, nfac1, dgrow1, nlist)
-      if (allocated(ifront)) deallocate (ifront)
+      if (allocated(ifront)) then
+         deallocate (ifront)
+      end if
       if (allocated(xg1)) deallocate (xg1, yg1, sg1)
       call deallocate_splineprops()
 

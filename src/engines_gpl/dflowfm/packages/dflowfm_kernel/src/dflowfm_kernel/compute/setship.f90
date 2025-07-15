@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -93,7 +93,9 @@ contains
          ymns = minval(yk(1:numk)) + 20d0
 
          javiusp = 1
-         if (allocated(viusp)) deallocate (viusp)
+         if (allocated(viusp)) then
+            deallocate (viusp)
+         end if
          allocate (viusp(lnx), stat=ierr); viusp = 0d0
 
          shu = 0d0

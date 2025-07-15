@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -50,10 +50,12 @@ contains
       use string_module, only: str_upper
       use timespace_parameters
       use timespace
-      use fm_external_forcings_utils, only: get_tracername, get_sedfracname
+      use fm_external_forcings_utils, only: get_tracername, get_sedfracname, get_constituent_name
+      use m_transportdata, only: NAMLEN
       use timespace_read, only: maxnamelen
       use precision, only: dp
       use unstruc_messages, only: callback_msg
+      use m_waveconst
 
       character(len=*), intent(in) :: name !< Name for the target Quantity, possibly compounded with a tracer name.
       real(kind=dp), dimension(:), intent(in) :: x !< Array of x-coordinates for the target ElementSet.
@@ -127,6 +129,7 @@ contains
       logical :: success
       logical :: quiet_
       character(len=NAMTRACLEN) :: trname, sfname, qidname
+      character(len=NAMLEN) :: constituent_name
       character(len=20) :: waqinput
       integer, external :: findname
       type(tEcMask) :: srcmask
@@ -182,6 +185,7 @@ contains
       call get_tracername(name, trname, qidname)
       call get_sedfracname(name, sfname, qidname)
       call get_waqinputname(name, waqinput, qidname)
+      call get_constituent_name(name, constituent_name, qidname)
       target_name = qidname
 
       call clearECMessage()
@@ -191,14 +195,17 @@ contains
       ! ============================================================
       location = filename
       if (ec_filetype == provFile_bc) then
-         if (.not. ecCreateInitializeBCFileReader(ecInstancePtr, forcingfile, location, qidname, &
+         ! NOTE: In .bc files, the quantity name must include a tracer/sedfrac/waq function/constituent name, so use original name:
+         if (.not. ecCreateInitializeBCFileReader(ecInstancePtr, forcingfile, location, name, &
                                                   refdate_mjd, tzone, ec_second, fileReaderId)) then
 
             if (.not. quiet_) then
                message = dumpECMessageStack(LEVEL_WARN, callback_msg)
             end if
-            message = 'Boundary '''//trim(qidname)//''', location='''//trim(location)//''', file='''//trim(forcingfile)//''' failed!'
+            message = 'Adding time-space-relation for forcing '''//trim(name)//''', location='''//trim(location)//''', file='''//trim(forcingfile)//''' failed!'
             call mess(LEVEL_ERROR, message)
+
+            goto 1234
          end if
       else
          !success = ecSetFileReaderProperties(ecInstancePtr, fileReaderId, ec_filetype, filename, refdate_mjd, tzone, ec_second, name, forcingfile=forcingfile, dtnodal=dtnodal)
@@ -327,7 +334,7 @@ contains
       ! Construct the target field and the target item
       ! ==============================================
       ! determine which target item (id) will be created, and which FM data array has to be used
-      if (.not. fm_ext_force_name_to_ec_item(trname, sfname, waqinput, qidname, &
+      if (.not. fm_ext_force_name_to_ec_item(trname, sfname, waqinput, constituent_name, qidname, &
                                              targetItemPtr1, targetItemPtr2, targetItemPtr3, targetItemPtr4, &
                                              dataPtr1, dataPtr2, dataPtr3, dataPtr4)) then
          return
@@ -399,7 +406,7 @@ contains
          end if
       end if
       if (associated(targetItemPtr4)) then
-         ! fourth field (e.g. for 'humidity_airtemperatur_cloudiness_solarradiation'
+         ! fourth field (e.g. for 'humidity_airtemperature_cloudiness_solarradiation'
          fieldId_4 = ecCreateField(ecInstancePtr)
          if (success) success = ecSetField1dArray(ecInstancePtr, fieldId_4, dataPtr4)
          if (success) success = ecSetFieldMissingValue(ecInstancePtr, fieldId_4, dmiss)
@@ -433,7 +440,7 @@ contains
       converterId = ecCreateConverter(ecInstancePtr)
 
       select case (target_name)
-      case ('shiptxy', 'movingstationtxy', 'discharge_salinity_temperature_sorsin', 'pump', 'valve1D', 'damlevel', 'gateloweredgelevel', 'generalstructure', 'lateral_discharge', 'dambreakLevelsAndWidths')
+      case ('shiptxy', 'movingstationtxy', 'discharge_salinity_temperature_sorsin', 'pump', 'valve1D', 'damlevel', 'gateloweredgelevel', 'generalstructure', 'lateral_discharge', 'dambreakLevelsAndWidths', 'sourcesink_discharge', 'sourcesink_constituentDelta')
          ! for the FM 'target' arrays, the index is provided by the caller
          if (.not. present(targetIndex)) then
             message = 'Internal program error: missing targetIndex for quantity '''//trim(target_name)
@@ -451,7 +458,8 @@ contains
          ! Each qhbnd polytim file replaces exactly one element in the target data array.
          ! Converter will put qh value in target_array(n_qhbnd)
       case ('windx', 'windy', 'windxy', 'stressxy', 'airpressure', 'atmosphericpressure', 'airpressure_windx_windy', 'airdensity', &
-            'airpressure_windx_windy_charnock', 'charnock', 'airpressure_stressx_stressy', 'humidity', 'dewpoint', 'airtemperature', 'cloudiness', 'solarradiation', 'longwaveradiation')
+            'airpressure_windx_windy_charnock', 'charnock', 'airpressure_stressx_stressy', 'humidity', 'dewpoint', 'airtemperature', &
+            'cloudiness', 'solarradiation', 'longwaveradiation')
          if (present(srcmaskfile)) then
             if (ec_filetype == provFile_arcinfo .or. ec_filetype == provFile_curvi) then
                if (.not. ecParseARCinfoMask(srcmaskfile, srcmask, fileReaderPtr)) then
@@ -475,7 +483,9 @@ contains
          if (present(srcmaskfile)) then
             if (allocated(srcmask%msk)) deallocate (srcmask%msk)
             allocate (srcmask%msk(ndx))
-            if (allocated(transformcoef)) deallocate (transformcoef)
+            if (allocated(transformcoef)) then
+               deallocate (transformcoef)
+            end if
             allocate (transformcoef(1))
             if (present(targetMaskSelect)) then
                if (targetMaskSelect == 'i') then
@@ -506,7 +516,9 @@ contains
                return
             end if
             if (allocated(srcmask%msk)) deallocate (srcmask%msk)
-            if (allocated(transformcoef)) deallocate (transformcoef)
+            if (allocated(transformcoef)) then
+               deallocate (transformcoef)
+            end if
          else
             success = initializeConverter(ecInstancePtr, converterId, ec_convtype, ec_operand, ec_method)
          end if
@@ -667,7 +679,7 @@ contains
          ! the name of the source item created by the file reader will be the same as the ext.force. quant name
          sourceItemName = target_name
          ! this file contains wave data
-         if (jawave == 3) then
+         if (jawave == WAVE_SWAN_ONLINE) then
             ! wave data is read from a com.nc file produced by D-Waves which contains one time field only
             fileReaderPtr%one_time_field = .true.
          end if
@@ -689,6 +701,20 @@ contains
             sourceItemName = 'air_pressure'
          else
             call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity wind_p.')
+            return
+         end if
+      case ('pseudoAirPressure')
+         if (ec_filetype == provFile_netcdf) then
+            sourceItemName = 'air_pressure'
+         else
+            call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
+            return
+         end if
+      case ('waterLevelCorrection')
+         if (ec_filetype == provFile_netcdf) then
+            sourceItemName = 'sea_surface_height'
+         else
+            call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
             return
          end if
       case ('windx')
@@ -904,10 +930,10 @@ contains
                if (success) success = ecAddConnectionSourceItem(ecInstancePtr, connectionId, sourceItemId_3)
             end if
             if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hac_humidity)
-            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hac_airtemperature)
+            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hac_air_temperature)
             if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hac_cloudiness)
             if (success) success = ecAddItemConnection(ecInstancePtr, item_hac_humidity, connectionId)
-            if (success) success = ecAddItemConnection(ecInstancePtr, item_hac_airtemperature, connectionId)
+            if (success) success = ecAddItemConnection(ecInstancePtr, item_hac_air_temperature, connectionId)
             if (success) success = ecAddItemConnection(ecInstancePtr, item_hac_cloudiness, connectionId)
             if (.not. success) then
                goto 1234
@@ -951,14 +977,14 @@ contains
             return
          end if
 
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hacs_humidity)
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hacs_airtemperature)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hacs_relative_humidity)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hacs_air_temperature)
          if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hacs_cloudiness)
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hacs_solarradiation)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_hacs_humidity, connectionId)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_hacs_airtemperature, connectionId)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_hacs_solar_radiation)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_hacs_relative_humidity, connectionId)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_hacs_air_temperature, connectionId)
          if (success) success = ecAddItemConnection(ecInstancePtr, item_hacs_cloudiness, connectionId)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_hacs_solarradiation, connectionId)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_hacs_solar_radiation, connectionId)
          if (.not. success) then
             goto 1234
          end if
@@ -979,11 +1005,11 @@ contains
             call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
             return
          end if
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dac_dewpoint)
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dac_airtemperature)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dac_dew_point_temperature)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dac_air_temperature)
          if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dac_cloudiness)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_dac_dewpoint, connectionId)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_dac_airtemperature, connectionId)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_dac_dew_point_temperature, connectionId)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_dac_air_temperature, connectionId)
          if (success) success = ecAddItemConnection(ecInstancePtr, item_dac_cloudiness, connectionId)
       case ('dewpoint_airtemperature_cloudiness_solarradiation')
          if (ec_filetype == provFile_netcdf) then
@@ -1003,14 +1029,14 @@ contains
             call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
             return
          end if
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dacs_dewpoint)
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dacs_airtemperature)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dacs_dew_point_temperature)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dacs_air_temperature)
          if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dacs_cloudiness)
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dacs_solarradiation)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_dewpoint, connectionId)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_airtemperature, connectionId)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_dacs_solar_radiation)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_dew_point_temperature, connectionId)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_air_temperature, connectionId)
          if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_cloudiness, connectionId)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_solarradiation, connectionId)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_dacs_solar_radiation, connectionId)
       case ('humidity')
          sourceItemName = 'relative_humidity'
       case ('dewpoint')
@@ -1022,13 +1048,13 @@ contains
                goto 1234
             end if
             success = ecAddConnectionSourceItem(ecInstancePtr, connectionId, sourceItemId)
-            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_airtemperature)
-            if (success) success = ecAddItemConnection(ecInstancePtr, item_airtemperature, connectionId)
+            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_air_temperature)
+            if (success) success = ecAddItemConnection(ecInstancePtr, item_air_temperature, connectionId)
          elseif (ec_filetype == provFile_netcdf) then
             sourceItemId = ecFindItemInFileReader(ecInstancePtr, fileReaderId, 'air_temperature')
             success = ecAddConnectionSourceItem(ecInstancePtr, connectionId, sourceItemId)
-            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_airtemperature)
-            if (success) success = ecAddItemConnection(ecInstancePtr, item_airtemperature, connectionId)
+            if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_air_temperature)
+            if (success) success = ecAddItemConnection(ecInstancePtr, item_air_temperature, connectionId)
             if (.not. success) then
                goto 1234
             end if
@@ -1049,8 +1075,8 @@ contains
             call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
             return
          end if
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_airdensity)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_airdensity, connectionId)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_air_density)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_air_density, connectionId)
       case ('solarradiation')
          if (ec_filetype == provFile_netcdf) then
             sourceItemName = 'surface_net_downward_shortwave_flux'
@@ -1069,10 +1095,10 @@ contains
             call mess(LEVEL_FATAL, 'm_meteo::ec_addtimespacerelation: Unsupported filetype for quantity '//trim(target_name)//'.')
             return
          end if
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_nudge_tem)
-         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_nudge_sal)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_nudge_tem, connectionId)
-         if (success) success = ecAddItemConnection(ecInstancePtr, item_nudge_sal, connectionId)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_nudge_temperature)
+         if (success) success = ecAddConnectionTargetItem(ecInstancePtr, connectionId, item_nudge_salinity)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_nudge_temperature, connectionId)
+         if (success) success = ecAddItemConnection(ecInstancePtr, item_nudge_salinity, connectionId)
       case ('waqfunction')
          if (.not. checkFileType(ec_filetype, provFile_uniform, target_name)) then
             return

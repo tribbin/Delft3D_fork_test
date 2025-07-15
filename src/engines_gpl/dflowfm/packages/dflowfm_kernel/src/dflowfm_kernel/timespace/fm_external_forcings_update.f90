@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -29,30 +29,40 @@
 
 submodule(fm_external_forcings) fm_external_forcings_update
    use timers, only: timstrt, timstop
-   use m_flowtimes
-   use m_flowgeom
-   use m_flow
-   use m_meteo
-   use m_calbedform
-   use m_bedform
-   use dfm_error
+   use m_flowtimes, only: handle_ext, irefdate, tunit, time1
+   use m_flowgeom, only: ndx
+   use m_meteo, only: ec_gettimespacevalue, ecgetvalues, twav, success, air_pressure, pavbnd, ja_airdensity, item_air_density, air_density, ja_computed_airdensity, item_atmosphericpressure, &
+                      item_air_temperature, air_temperature, item_dew_point_temperature, dew_point_temperature, update_wind_stress_each_time_step, jatem, ja_friction_coefficient_time_dependent, item_frcu, frcu, tzone, &
+                      ecsupporttimeunitconversionfactor, ncdamsg, item_damlevel, zcdam, ncgensg, item_generalstructure, zcgen, npumpsg, item_pump, qpump, item_longculvert_valve_relative_opening, &
+                      nvalv, item_valve1d, jatidep, jaselfal, ecinstanceptr, item_lateraldischarge, npumpswithlevels, numsrc, item_discharge_salinity_temperature_sorsin, qstss, item_sourcesink_discharge, &
+                      item_sourcesink_constituent_delta, jasubsupl, jaheat_eachstep, jacali, jatrt, stm_included, jased, item_nudge_temperature, ec_undef_int, janudge, itempforcingtyp, btempforcingtyph, &
+                      item_relative_humidity, btempforcingtypa, btempforcingtyps, item_solar_radiation, btempforcingtypc, item_cloudiness, btempforcingtypl, item_long_wave_radiation, btempforcingtypd, &
+                      relative_humidity, calculate_relative_humidity, jawave, waveforcing, message, dumpecmessagestack, level_error, hwavcom, phiwav, sxwav, sywav, sbxwav, sbywav, dsurf, &
+                      dwcap, mxwav, mywav, hs, epshu, twavcom, flowwithoutwaves, nbndu, kbndu, nbndz, kbndz, nbndn, kbndn, item_hrms, ecgetvalues, item_tp, item_dir, item_fx, item_fy, item_wsbu, &
+                      item_mx, item_my, uorbwav, item_ubot, item_dissurf, item_diswcap, item_wsbv, item_distot, ecgetvalues, item_sea_ice_area_fraction, item_sea_ice_thickness, jarain, item_rainfall, &
+                      item_rainfall_rate, item_pump_capacity, item_culvert_valveopeningheight, item_weir_crestlevel, item_orifice_crestlevel, item_orifice_gateloweredgelevel, item_gate_crestlevel, &
+                      item_gate_gateloweredgelevel, item_gate_gateopeningwidth, item_general_structure_crestlevel, item_general_structure_gateloweredgelevel, item_general_structure_crestwidth, &
+                      item_general_structure_gateopeningwidth, sdu_first, subsupl_tp, subsupl, item_subsiduplift, subsupl_t0, nbndt, kbndt
+   use ieee_arithmetic, only: ieee_is_nan
+   use m_bedform, only: bfm_included, bfmpar
+   use dfm_error, only: dfm_noerr, dfm_extforcerror
    use m_calibration, only: calibration_backup_frcu
-   use unstruc_channel_flow
-   use time_class
-   use m_longculverts
+   use unstruc_channel_flow, only: network
+   use time_class, only: c_time, ecgetvalues
+   use m_longculverts, only: nlongculverts
    use m_nearfield, only: nearfield_mode, NEARFIELD_UPDATED, addNearfieldData
    use m_airdensity, only: get_airdensity
-   use dfm_error
    use m_laterals, only: numlatsg
    use m_physcoef, only: BACKGROUND_AIR_PRESSURE
    use m_flow_initwaveforcings_runtime, only: flow_initwaveforcings_runtime
+   use m_waveconst
+
    implicit none
 
    integer, parameter :: HUMIDITY_AIRTEMPERATURE_CLOUDINESS = 1
    integer, parameter :: HUMIDITY_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION = 2
    integer, parameter :: DEWPOINT_AIRTEMPERATURE_CLOUDINESS = 3
    integer, parameter :: DEWPOINT_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION = 4
-   integer, parameter :: DEWPOINT = 5
 
    integer :: ierr !< error flag
    logical :: l_set_frcu_mor = .false.
@@ -73,40 +83,60 @@ contains
       use precision, only: dp
       use m_update_zcgen_widths_and_heights, only: update_zcgen_widths_and_heights
       use m_update_pumps_with_levels, only: update_pumps_with_levels
-      use m_heatu
-      use m_flow_trachyupdate
-      use m_flow_trachy_needs_update
-      use m_set_frcu_mor
+      use m_heatu, only: heatu
+      use m_flow_trachyupdate, only: flow_trachyupdate
+      use m_flow_trachy_needs_update, only: flow_trachy_needs_update
+      use m_set_frcu_mor, only: set_frcu_mor
       use m_physcoef, only: BACKGROUND_AIR_PRESSURE
+      use m_transportdata, only: numconst
+      use m_calbedform, only: fm_calbf, fm_calksc
+      use m_meteo, only: item_apwxwy_p, item_atmosphericpressure, item_hac_air_temperature, item_hacs_air_temperature, item_dac_air_temperature, item_dacs_air_temperature, item_air_temperature, item_dac_dew_point_temperature, item_dacs_dew_point_temperature, item_dew_point_temperature
+
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
       logical, intent(in) :: initialization !< initialization phase
       integer, intent(out) :: iresult !< Integer error status: DFM_NOERR==0 if succesful.
+
+      integer :: i_const
 
       call timstrt('External forcings', handle_ext)
 
       success = .true.
 
-      if (allocated(patm)) then
+      if (allocated(air_pressure)) then
          ! Set the initial value to PavBnd (if provided by user) or BACKGROUND_AIR_PRESSURE with each update.
          ! An initial/reference value is required since .spw files may contain pressure drops/differences.
-         ! patm may later be overridden by spatially varying air pressure values.
+         ! air_pressure may later be overridden by spatially varying air pressure values.
          if (PavBnd > 0) then
-            patm(:) = PavBnd
+            air_pressure(:) = PavBnd
          else
-            patm(:) = BACKGROUND_AIR_PRESSURE
+            air_pressure(:) = BACKGROUND_AIR_PRESSURE
          end if
       end if
 
       call retrieve_icecover(time_in_seconds)
 
       if (ja_airdensity > 0) then
-         call get_timespace_value_by_item_array_consider_success_value(item_airdensity, airdensity, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_air_density, time_in_seconds)
       end if
       if (ja_computed_airdensity == 1) then
-         call get_timespace_value_by_item_array_consider_success_value(item_atmosphericpressure, patm, time_in_seconds)
-         call get_timespace_value_by_item_array_consider_success_value(item_airtemperature, tair, time_in_seconds)
-         call get_timespace_value_by_item_array_consider_success_value(item_humidity, rhum, time_in_seconds)
-         call get_airdensity(patm, tair, rhum, airdensity, iresult)
+         ! air pressure items
+         call get_timespace_value_by_item_and_consider_success_value(item_apwxwy_p, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_atmosphericpressure, time_in_seconds)
+
+         ! air temperature items
+         call get_timespace_value_by_item_and_consider_success_value(item_hac_air_temperature, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_hacs_air_temperature, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_dac_air_temperature, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_dacs_air_temperature, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_air_temperature, time_in_seconds)
+
+         ! dew point temperature items
+         call get_timespace_value_by_item_and_consider_success_value(item_dac_dew_point_temperature, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_dacs_dew_point_temperature, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_dew_point_temperature, time_in_seconds)
+
+         ! Compute air_density based on air_pressure, air_temperature and dew_point_temperature
+         call get_airdensity(air_pressure, air_temperature, dew_point_temperature, air_density, iresult)
       end if
 
       if (update_wind_stress_each_time_step == 0) then ! Update wind in set_external_forcing (each user timestep)
@@ -154,7 +184,7 @@ contains
       end if
 
       if (jatidep > 0 .or. jaselfal > 0) then
-         call flow_settidepotential(time_in_seconds / 60d0)
+         call flow_settidepotential(time_in_seconds / 60.0_dp)
       end if
 
       if (numlatsg > 0) then
@@ -170,6 +200,12 @@ contains
          ! qstss must be an argument when calling ec_gettimespacevalue.
          ! It might be reallocated after initialization (when coupled to Cosumo).
          success = success .and. ec_gettimespacevalue(ecInstancePtr, item_discharge_salinity_temperature_sorsin, irefdate, tzone, tunit, time_in_seconds, qstss)
+
+         !success = success .and. ec_gettimespacevalue(ecInstancePtr, item_sourcesink_discharge, irefdate, tzone, tunit, time_in_seconds, qstss)
+         call get_timespace_value_by_item_and_consider_success_value(item_sourcesink_discharge, time_in_seconds)
+         do i_const = 1, numconst
+            call get_timespace_value_by_item_and_consider_success_value(item_sourcesink_constituent_delta(i_const), time_in_seconds)
+         end do
       end if
 
       if (jasubsupl > 0) then
@@ -189,7 +225,7 @@ contains
       end if
 
       if (jatem > 1 .and. jaheat_eachstep == 0) then
-         call heatu(time_in_seconds / 3600d0)
+         call heatu(time_in_seconds / 3600.0_dp)
       end if
 
       if (bfm_included .and. .not. initialization) then
@@ -228,34 +264,24 @@ contains
       end if
 
       ! Update nudging temperature (and salinity)
-      if (item_nudge_tem /= ec_undef_int .and. janudge > 0) then
-         success = success .and. ec_gettimespacevalue(ecInstancePtr, item_nudge_tem, irefdate, tzone, tunit, time_in_seconds)
+      if (item_nudge_temperature /= ec_undef_int .and. janudge > 0) then
+         success = success .and. ec_gettimespacevalue(ecInstancePtr, item_nudge_temperature, irefdate, tzone, tunit, time_in_seconds)
       end if
 
       iresult = DFM_NOERR
 
    end subroutine set_external_forcings
 
-!> get_timespace_value_by_item_and_array_and_consider_success_value
-   subroutine get_timespace_value_by_item_array_consider_success_value(item, array, time_in_seconds)
-      use precision, only: dp
-
-      integer, intent(in) :: item !< Item for getting values
-      real(kind=dp), intent(inout) :: array(:) !< Array that stores the values
-      real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
-
-      success = success .and. ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds, array)
-
-   end subroutine get_timespace_value_by_item_array_consider_success_value
-
 !> set_temperature_models
    subroutine set_temperature_models(time_in_seconds)
       use precision, only: dp
+      use messagehandling, only: LEVEL_WARN, mess
+
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
       logical :: foundtempforcing
 
-      ! Update arrays rhum, tair and clou in a single method call.
+      ! Update arrays relative_humidity, air_temperature and cloudiness in a single method call.
       ! Nothing happens in case quantity 'humidity_airtemperature_cloudiness' has never been added through ec_addtimespacerelation.
       select case (itempforcingtyp)
       case (HUMIDITY_AIRTEMPERATURE_CLOUDINESS)
@@ -266,22 +292,20 @@ contains
          call get_timespace_value_by_name_and_consider_success_value('dewpoint_airtemperature_cloudiness', time_in_seconds)
       case (DEWPOINT_AIRTEMPERATURE_CLOUDINESS_SOLARRADIATION)
          call get_timespace_value_by_name_and_consider_success_value('dewpoint_airtemperature_cloudiness_solarradiation', time_in_seconds)
-      case (DEWPOINT)
-         call get_timespace_value_by_name_and_consider_success_value('dewpoint', time_in_seconds)
       end select
 
       foundtempforcing = (itempforcingtyp >= 1 .and. itempforcingtyp <= 4)
 
       if (btempforcingtypH) then
-         call get_timespace_value_by_item_and_consider_success_value(item_humidity, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_relative_humidity, time_in_seconds)
          foundtempforcing = .true.
       end if
       if (btempforcingtypA) then
-         call get_timespace_value_by_item_and_consider_success_value(item_airtemperature, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_air_temperature, time_in_seconds)
          foundtempforcing = .true.
       end if
       if (btempforcingtypS) then
-         call get_timespace_value_by_item_and_consider_success_value(item_solarradiation, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_solar_radiation, time_in_seconds)
          foundtempforcing = .true.
       end if
       if (btempforcingtypC) then
@@ -289,13 +313,19 @@ contains
          foundtempforcing = .true.
       end if
       if (btempforcingtypL) then
-         call get_timespace_value_by_item_and_consider_success_value(item_longwaveradiation, time_in_seconds)
+         call get_timespace_value_by_item_and_consider_success_value(item_long_wave_radiation, time_in_seconds)
          foundtempforcing = .true.
+      end if
+      if (btempforcingtypD) then
+         call get_timespace_value_by_item_and_consider_success_value(item_dew_point_temperature, time_in_seconds)
+         foundtempforcing = .true.
+         ! Conversion to relative humidity is required for heatun.f90. The dew_point_temperature and air_temperature arrays have just been updated.
+         relative_humidity = calculate_relative_humidity(dew_point_temperature, air_temperature)
       end if
 
       if (.not. foundtempforcing) then
          call mess(LEVEL_WARN, &
-                   'No humidity, airtemperature, cloudiness and solar radiation forcing found, setting temperature model [physics:Temperature] = 1 (Only transport)')
+                   'No humidity or dewpoint, airtemperature and cloudiness forcing found, setting temperature model [physics:Temperature] = 1 (Only transport)')
          jatem = 1
       end if
 
@@ -321,6 +351,18 @@ contains
       success = success .and. ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds)
 
    end subroutine get_timespace_value_by_item_and_consider_success_value
+
+   !> get_timespace_value_by_item_array_consider_success_value
+   subroutine get_timespace_value_by_item_array_consider_success_value(item, array, time_in_seconds)
+      use precision, only: dp
+
+      integer, intent(in) :: item !< Item for getting values
+      real(kind=dp), intent(inout) :: array(:) !< Array that stores the values
+      real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
+
+      success = success .and. ec_gettimespacevalue(ecInstancePtr, item, irefdate, tzone, tunit, time_in_seconds, array)
+
+   end subroutine get_timespace_value_by_item_array_consider_success_value
 
    !> get_timespace_value_by_item_and_array
    subroutine get_timespace_value_by_item_and_array(item, array, time_in_seconds)
@@ -350,6 +392,7 @@ contains
       use ieee_arithmetic, only: ieee_is_nan
       use m_compute_wave_parameters, only: compute_wave_parameters
       use unstruc_messages, only: callback_msg
+      use messagehandling, only: LEVEL_WARN, msgbuf, warn_flush
 
       logical, intent(in) :: initialization !< initialization phase
 
@@ -357,19 +400,19 @@ contains
 
       integer :: k
 
-      if (jawave == 3 .or. jawave == 6 .or. jawave == 7) then
+      if (jawave == WAVE_SWAN_ONLINE .or. jawave == WAVE_NC_OFFLINE) then
 
          if (.not. initialization) then
             !
-            if (jawave == 7 .and. waveforcing == 1) then
+            if (jawave == WAVE_NC_OFFLINE .and. waveforcing == WAVEFORCING_RADIATION_STRESS) then
                !
                call set_parameters_for_radiation_stress_driven_forces()
                !
-            elseif (jawave == 7 .and. waveforcing == 2) then
+            elseif (jawave == WAVE_NC_OFFLINE .and. waveforcing == WAVEFORCING_DISSIPATION_TOTAL) then
                !
                call set_parameters_for_dissipation_driven_forces()
                !
-            elseif (jawave == 7 .and. waveforcing == 3) then
+            elseif (jawave == WAVE_NC_OFFLINE .and. waveforcing == WAVEFORCING_DISSIPATION_3D) then
                !
                call set_parameters_for_3d_dissipation_driven_forces()
             else
@@ -401,7 +444,7 @@ contains
             message = dumpECMessageStack(LEVEL_ERROR, callback_msg)
          end if
 
-         if (jawave == 7) then
+         if (jawave == WAVE_NC_OFFLINE) then
             ! If wave model and flow model do not cover each other exactly, NaN values can propagate in the flow model.
             ! Correct for this by setting values to zero
             do k = 1, ndx
@@ -416,17 +459,17 @@ contains
                    ieee_is_nan(mxwav(k)) .or. &
                    ieee_is_nan(mywav(k)) .or. &
                    hs(k) <= epshu) then
-                  hwavcom(k) = 0d0
-                  twavcom(k) = 0d0
-                  sxwav(k) = 0d0
-                  sywav(k) = 0d0
-                  sbxwav(k) = 0d0
-                  sbywav(k) = 0d0
-                  dsurf(k) = 0d0
-                  dwcap(k) = 0d0
-                  mxwav(k) = 0d0
-                  mywav(k) = 0d0
-                  phiwav(k) = 270d0
+                  hwavcom(k) = 0.0_dp
+                  twavcom(k) = 0.0_dp
+                  sxwav(k) = 0.0_dp
+                  sywav(k) = 0.0_dp
+                  sbxwav(k) = 0.0_dp
+                  sbywav(k) = 0.0_dp
+                  dsurf(k) = 0.0_dp
+                  dwcap(k) = 0.0_dp
+                  mxwav(k) = 0.0_dp
+                  mywav(k) = 0.0_dp
+                  phiwav(k) = 270.0_dp
                end if
             end do
             phiwav = convert_wave_direction_from_nautical_to_cartesian(phiwav)
@@ -440,26 +483,26 @@ contains
          !          NOTE:
          !                not necessary are; tmean (Tm01), urms, wavedirpeak
          !
-         ! For badly converged SWAN sums, dwcap and dsurf can be NaN. Put these to 0d0,
+         ! For badly converged SWAN sums, dwcap and dsurf can be NaN. Put these to 0.0_dp,
          ! as they cause saad errors as a result of NaNs in the turbulence model
          if (.not. flowwithoutwaves) then
             if (allocated(dsurf) .and. allocated(dwcap)) then
                if (any(ieee_is_nan(dsurf)) .or. any(ieee_is_nan(dwcap))) then
-                  write (msgbuf, '(a)') 'Surface dissipation fields from SWAN contain NaN values, which have been converted to 0d0. &
+                  write (msgbuf, '(a)') 'Surface dissipation fields from SWAN contain NaN values, which have been converted to 0.0_dp. &
                                        & Check the correctness of the wave results before running the coupling.'
                   call warn_flush() ! No error, just warning and continue
                   !
                   where (ieee_is_nan(dsurf))
-                     dsurf = 0d0
+                     dsurf = 0.0_dp
                   end where
                   !
                   where (ieee_is_nan(dwcap))
-                     dwcap = 0d0
+                     dwcap = 0.0_dp
                   end where
                end if
             end if
 
-            all_wave_variables = .not. (jawave == 7 .and. waveforcing /= 3)
+            all_wave_variables = .not. (jawave == WAVE_NC_OFFLINE .and. waveforcing /= WAVEFORCING_DISSIPATION_3D)
             call select_wave_variables_subgroup(all_wave_variables)
 
             ! In MPI case, partition ghost cells are filled properly already, open boundaries are not
@@ -485,7 +528,7 @@ contains
             end if
          end if
 
-         if (jawave > 0) then
+         if (jawave > NO_WAVES) then
             ! this call  is needed for bedform updates with van Rijn 2007 (cal_bf, cal_ksc below)
             ! These subroutines need uorb, rlabda
             call compute_wave_parameters()
@@ -495,20 +538,20 @@ contains
 
    end subroutine set_wave_parameters
 
-   subroutine get_values_and_consider_jawave6(item)
+   subroutine get_values_and_consider_fww(item)
 
       integer, intent(in) :: item
 
       success_copy = success
       success = success .and. ecGetValues(ecInstancePtr, item, ecTime)
-      if (jawave == 6) success = success_copy
+      if (flowwithoutwaves) success = success_copy ! used to be jawave=6, but this is only real use case
 
-   end subroutine get_values_and_consider_jawave6
+   end subroutine get_values_and_consider_fww
 
 !> set wave parameters for jawave==3 (online wave coupling) and jawave==6 (SWAN data for D-WAQ)
    subroutine set_all_wave_parameters()
       ! This part must be skipped during initialization
-      if (jawave == 3) then
+      if (jawave == WAVE_SWAN_ONLINE) then
          ! Finally the delayed external forcings can be initialized
          success = flow_initwaveforcings_runtime()
       end if
@@ -520,34 +563,34 @@ contains
          success = success .and. ecGetValues(ecInstancePtr, item_tp, ecTime)
       end if
       if (allocated(phiwav)) then
-         call get_values_and_consider_jawave6(item_dir)
+         call get_values_and_consider_fww(item_dir)
       end if
       if (allocated(sxwav)) then
-         call get_values_and_consider_jawave6(item_fx)
+         call get_values_and_consider_fww(item_fx)
       end if
       if (allocated(sywav)) then
-         call get_values_and_consider_jawave6(item_fy)
+         call get_values_and_consider_fww(item_fy)
       end if
       if (allocated(sbxwav)) then
-         call get_values_and_consider_jawave6(item_wsbu)
+         call get_values_and_consider_fww(item_wsbu)
       end if
       if (allocated(sbywav)) then
-         call get_values_and_consider_jawave6(item_wsbv)
+         call get_values_and_consider_fww(item_wsbv)
       end if
       if (allocated(mxwav)) then
-         call get_values_and_consider_jawave6(item_mx)
+         call get_values_and_consider_fww(item_mx)
       end if
       if (allocated(mywav)) then
-         call get_values_and_consider_jawave6(item_my)
+         call get_values_and_consider_fww(item_my)
       end if
       if (allocated(uorbwav)) then
-         call get_values_and_consider_jawave6(item_ubot)
+         call get_values_and_consider_fww(item_ubot)
       end if
       if (allocated(dsurf)) then
-         call get_values_and_consider_jawave6(item_dissurf)
+         call get_values_and_consider_fww(item_dissurf)
       end if
       if (allocated(dwcap)) then
-         call get_values_and_consider_jawave6(item_diswcap)
+         call get_values_and_consider_fww(item_diswcap)
       end if
 
    end subroutine set_all_wave_parameters
@@ -555,38 +598,38 @@ contains
 !> set wave parameters for jawave == 7 (offline wave coupling) and waveforcing == 1 (wave forces via radiation stress)
    subroutine set_parameters_for_radiation_stress_driven_forces()
 
-      twav(:) = 0d0
+      twav(:) = 0.0_dp
       success = success .and. ecGetValues(ecInstancePtr, item_dir, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_hrms, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_tp, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_fx, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_fy, ecTime)
-      mxwav(:) = 0d0
-      mywav(:) = 0d0
-      uorbwav(:) = 0d0
+      mxwav(:) = 0.0_dp
+      mywav(:) = 0.0_dp
+      uorbwav(:) = 0.0_dp
 
    end subroutine set_parameters_for_radiation_stress_driven_forces
    !> set wave parameters for jawave == 7 (offline wave coupling) and waveforcing == 2 (wave forces via total dissipation)
    subroutine set_parameters_for_dissipation_driven_forces()
 
-      twav(:) = 0d0
+      twav(:) = 0.0_dp
       success = success .and. ecGetValues(ecInstancePtr, item_dir, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_hrms, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_tp, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_dir, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_distot, ecTime)
-      sxwav(:) = 0d0
-      sywav(:) = 0d0
-      mxwav(:) = 0d0
-      mywav(:) = 0d0
-      uorbwav(:) = 0d0
+      sxwav(:) = 0.0_dp
+      sywav(:) = 0.0_dp
+      mxwav(:) = 0.0_dp
+      mywav(:) = 0.0_dp
+      uorbwav(:) = 0.0_dp
 
    end subroutine set_parameters_for_dissipation_driven_forces
 
    !> set wave parameters for jawave == 7 (offline wave coupling) and waveforcing == 3 (wave forces via 3D dissipation distribution)
    subroutine set_parameters_for_3d_dissipation_driven_forces()
 
-      twav(:) = 0d0
+      twav(:) = 0.0_dp
       success = success .and. ecGetValues(ecInstancePtr, item_tp, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_dir, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_hrms, ecTime)
@@ -594,11 +637,11 @@ contains
       success = success .and. ecGetValues(ecInstancePtr, item_fy, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_dissurf, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_diswcap, ecTime)
-      sbxwav(:) = 0d0
-      sbywav(:) = 0d0
-      mxwav(:) = 0d0
-      mywav(:) = 0d0
-      uorbwav(:) = 0d0
+      sbxwav(:) = 0.0_dp
+      sbywav(:) = 0.0_dp
+      mxwav(:) = 0.0_dp
+      mywav(:) = 0.0_dp
+      uorbwav(:) = 0.0_dp
 
    end subroutine set_parameters_for_3d_dissipation_driven_forces
 
@@ -609,8 +652,8 @@ contains
       real(kind=dp), intent(in) :: nautical_wave_direction !< wave direction [degrees] in nautical  convention
       real(kind=dp) :: cartesian_wave_direction !< wave direction [degrees] in cartesian convention
 
-      real(kind=dp), parameter :: MAX_RANGE_IN_DEGREES = 360d0
-      real(kind=dp), parameter :: CONVERSION_PARAMETER_IN_DEGREES = 270d0
+      real(kind=dp), parameter :: MAX_RANGE_IN_DEGREES = 360.0_dp
+      real(kind=dp), parameter :: CONVERSION_PARAMETER_IN_DEGREES = 270.0_dp
 
       cartesian_wave_direction = modulo(CONVERSION_PARAMETER_IN_DEGREES - nautical_wave_direction, MAX_RANGE_IN_DEGREES)
 
@@ -623,8 +666,8 @@ contains
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
 
       if (ja_icecover == ICECOVER_EXT) then
-         ice_af = 0.d0
-         ice_h = 0.d0
+         ice_af = 0.0_dp
+         ice_h = 0.0_dp
          if (item_sea_ice_area_fraction /= ec_undef_int) then
             call get_timespace_value_by_item_and_consider_success_value(item_sea_ice_area_fraction, time_in_seconds)
          end if
@@ -652,7 +695,7 @@ contains
 
    end subroutine retrieve_rainfall
 
-!> update_network_data
+   !> update_network_data
    subroutine update_network_data(time_in_seconds)
       use precision, only: dp
       real(kind=dp), intent(in) :: time_in_seconds !< Time in seconds
@@ -676,6 +719,12 @@ contains
       if (network%sts%numOrifices > 0) then
          call get_timespace_value_by_item(item_orifice_crestLevel, time_in_seconds)
          call get_timespace_value_by_item(item_orifice_gateLowerEdgeLevel, time_in_seconds)
+      end if
+
+      if (network%sts%numGates > 0) then
+         call get_timespace_value_by_item(item_gate_crestLevel, time_in_seconds)
+         call get_timespace_value_by_item(item_gate_gateLowerEdgeLevel, time_in_seconds)
+         call get_timespace_value_by_item(item_gate_gateOpeningWidth, time_in_seconds)
       end if
 
       if (network%sts%numGeneralStructures > 0) then

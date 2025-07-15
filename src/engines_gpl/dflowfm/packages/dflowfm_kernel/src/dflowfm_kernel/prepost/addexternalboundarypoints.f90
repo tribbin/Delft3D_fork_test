@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -318,7 +318,9 @@ contains
             istart = nopenbndlin(i)
          end do
          call restorepol()
-         if (allocated(kdum)) deallocate (kdum)
+         if (allocated(kdum)) then
+            deallocate (kdum)
+         end if
       end if ! nbnd1d2d > 0
    end subroutine addexternalboundarypoints
 

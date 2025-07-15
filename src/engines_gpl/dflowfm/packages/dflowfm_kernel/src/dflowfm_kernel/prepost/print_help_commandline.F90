@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -41,7 +41,7 @@ module m_print_help_commandline
 contains
 
    subroutine print_help_commandline()
-      use m_gui
+      use m_gui, only: jagui
       use system_utils, only: FILESEP
 
       character(len=255) :: progarg
@@ -133,7 +133,7 @@ contains
       write (*, *) '          directional=[01]'
       write (*, *) '          outsidecell=[01]'
       write (*, *) '          drypointsfile=<filename (*.pol, or cutcellpolygons.lst)>'
-      write (*, *) '          circumcenter=[123]'
+      write (*, *) '          circumcentermethod=(internalNetlinksEdge | internalNetlinksLoop | allNetlinksLoop)'
       write (*, *) ' '
       write (*, *) '  --make1d2dlinks[:OPTS] NETFILE [-o OUTPUTFILE]'
       write (*, *) '      Make 1d2d links for the given NETFILE and save the resulting net.'

@@ -1,6 +1,6 @@
 !----- GPL ---------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2011-2024.
+!  Copyright (C)  Stichting Deltares, 2011-2025.
 !
 !  This program is free software: you can redistribute it and/or modify
 !  it under the terms of the GNU General Public License as published by
@@ -600,6 +600,9 @@
                      'should be larger than the value for "z-layers-bot"')
          endif
       endif
+
+      call hyd%file_hyd%close()
+      ilun = 0
 
       return
  900  continue

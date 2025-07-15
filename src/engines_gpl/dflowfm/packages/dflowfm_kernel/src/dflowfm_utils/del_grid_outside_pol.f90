@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -42,10 +42,10 @@ contains
 
    ! delete curviliniar grid outside polygon(s)
    subroutine del_grid_outside_pol()
-      use m_grid
-      use m_polygon
-      use m_tpoly
-      use m_missing
+      use m_grid, only: mc, nc, xc, yc
+      use m_polygon, only: npl
+      use m_tpoly, only: pol_to_tpoly, dbpinpol_tpoly, dealloc_tpoly, tpoly
+      use m_missing, only: dmiss
 
       type(tpoly), dimension(:), allocatable :: pols
 
@@ -122,8 +122,12 @@ contains
 1234  continue
 
       call dealloc_tpoly(pols)
-      if (allocated(kn)) deallocate (kn)
-      if (allocated(kc)) deallocate (kc)
+      if (allocated(kn)) then
+         deallocate (kn)
+      end if
+      if (allocated(kc)) then
+         deallocate (kc)
+      end if
 
       return
    end subroutine del_grid_outside_pol

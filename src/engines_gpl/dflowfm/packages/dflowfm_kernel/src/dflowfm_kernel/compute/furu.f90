@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -35,6 +35,7 @@ module m_furu
    use m_getustbcfuhi
    use m_furu_structures
    use m_furusobekstructures
+   use m_waveconst
 
    implicit none
 
@@ -96,7 +97,7 @@ contains
             if (hu(L) > 0) then
 
                if (kmx > 0) then
-                  if (.not. (iadv(L) == 21 .or. iadv(L) >= 23 .and. iadv(L) <= 25)) then ! in 3D, only do this for weir points
+                  if (.not. (iadv(L) == IADV_SUBGRID_WEIR .or. iadv(L) >= IADV_RAJARATNAM_WEIR .and. iadv(L) <= IADV_VILLEMONTE_WEIR)) then ! in 3D, only do this for weir points
                      cycle
                   end if
                end if
@@ -106,7 +107,7 @@ contains
                slopec = 0d0
                if (L > lnx1D) then
                   if (Slopedrop2D > 0) then ! 2D droplosses at ridge points and at 2D/1D2D couplings
-                     if (iadv(L) == 8) then
+                     if (iadv(L) == IADV_ORIGINAL_LATERAL_OVERFLOW) then
                         hup = s0(k2) - (min(bob(1, L), bob(2, L)) + twot * hu(L))
                         if (hup < 0) then
                            slopec = hup
@@ -118,7 +119,7 @@ contains
                         end if
                      end if
                   end if
-               else if (iadv(L) == 8) then ! 1d or 1D2D droplosses, coding to avoid evaluating array iadv as long as possible,
+               else if (iadv(L) == IADV_ORIGINAL_LATERAL_OVERFLOW) then ! 1d or 1D2D droplosses, coding to avoid evaluating array iadv as long as possible,
                   hup = s0(k2) - (max(bob(1, L), bob(2, L)) + twot * hu(L))
                   if (hup < 0) then
                      slopec = hup
@@ -174,7 +175,7 @@ contains
 
 10             continue
 
-               if (jawave > 0 .and. .not. flowWithoutWaves) then ! Delft3D-Wave Stokes-drift correction
+               if (jawave > NO_WAVES .and. .not. flowWithoutWaves) then ! Delft3D-Wave Stokes-drift correction
 
                   if (modind < 9) then
                      frL = cfwavhi(L) * hypot(u1L - ustokes(L), v(L) - vstokes(L))
@@ -193,7 +194,7 @@ contains
                   end if
 
                else if (ifxedweirfrictscheme > 0) then
-                  if (iadv(L) == 21 .or. kcu(L) == 3) then
+                  if (iadv(L) == IADV_SUBGRID_WEIR .or. kcu(L) == 3) then
                      call fixedweirfriction2D(L, k1, k2, frL)
                   else
                      frL = cfuhi(L) * sqrt(u1L * u1L + v2) ! g / (H.C.C) = (g.K.K) / (A.A) travels in cfu
@@ -325,7 +326,7 @@ contains
             vLL = v(LL); v(LL) = 0d0
             call getustbcfuhi(LL, LL, ustbLL, cfuhi(LL), hdzb, z00, cfuhi3D) ! call with Lb = LL => layer integral profile
             ! JRE with HK, used to be in getustb
-            if (jawave > 0 .and. jawaveStokes >= 1) then ! Ustokes correction at bed
+            if (jawave > NO_WAVES .and. jawaveStokes >= STOKES_DRIFT_DEPTHUNIFORM) then ! Ustokes correction at bed
                adve(Lb) = adve(Lb) - cfuhi3D * ustokes(Lb)
             end if
             v(LL) = vLL
@@ -367,7 +368,7 @@ contains
 
       call furusobekstructures()
 
-      if (jawave == 3 .or. jawave >= 6 .and. .not. flowWithoutWaves) then
+      if ((jawave == WAVE_SWAN_ONLINE .or. jawave == WAVE_NC_OFFLINE) .and. .not. flowWithoutWaves) then
          if (kmx == 0) then
             !   add wave-induced mass fluxes on boundaries to convert euler input to GLM
             do L = Lnxi + 1, Lnx

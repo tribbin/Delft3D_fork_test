@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -281,7 +281,9 @@ contains
          end do
          if (allocated(xin)) deallocate (xin, yin)
          if (allocated(xout)) deallocate (xout, yout)
-         if (allocated(ipoLout)) deallocate (ipoLout)
+         if (allocated(ipoLout)) then
+            deallocate (ipoLout)
+         end if
 
       else if (key >= 49 .and. key <= 57) then ! keypad, for moving around
          call moveprobe(key - 48, kk, xp, yp)

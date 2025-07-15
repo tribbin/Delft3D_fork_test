@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -60,14 +60,18 @@ contains
       type(tcrspath), dimension(:), allocatable :: Path
       integer, dimension(:), allocatable :: idum
 
-      if (allocated(Cpil)) deallocate (Cpil)
+      if (allocated(Cpil)) then
+         deallocate (Cpil)
+      end if
       if (japillar == 1) then
          allocate (Cpil(ndx))
       else if (japillar == 3) then
          allocate (Cpil(lnx))
       end if
 
-      if (allocated(idum)) deallocate (idum)
+      if (allocated(idum)) then
+         deallocate (idum)
+      end if
       allocate (idum(1))
       idum = 0
 

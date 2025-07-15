@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -99,7 +99,9 @@ contains
          end do
 
 !        deallocate
-         if (allocated(imask)) deallocate (imask)
+         if (allocated(imask)) then
+            deallocate (imask)
+         end if
       end if
 
       if (jampi == 1) then

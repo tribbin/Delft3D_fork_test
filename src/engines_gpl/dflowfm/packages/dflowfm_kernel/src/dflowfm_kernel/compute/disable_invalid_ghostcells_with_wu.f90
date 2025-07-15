@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -83,7 +83,9 @@ contains
       ierror = 0
 1234  continue
 
-      if (allocated(imask)) deallocate (imask)
+      if (allocated(imask)) then
+         deallocate (imask)
+      end if
 
       return
    end subroutine disable_invalid_ghostcells_with_wu

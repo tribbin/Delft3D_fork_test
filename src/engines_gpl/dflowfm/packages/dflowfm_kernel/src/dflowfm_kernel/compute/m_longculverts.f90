@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -109,18 +109,20 @@ contains
    !> Loads the long culverts from a structures.ini file and
    !! creates extra netnodes+links for them.
    subroutine convertLongCulvertsAsNetwork(structurefile, jaKeepExisting, culvertprefix, structures_output, crsdef_output, ierr, crsdeffile)
-      use dfm_error
+      use dfm_error, only: dfm_noerr, dfm_wronginput
+      use m_polygon, only: savepol, xpl, ypl, zpl, npl, increasepol, restorepol
+      use m_missing, only: dmiss
+      use m_Roughness, only: frictiontypestringtointeger
+      use m_readstructures, only: allowedflowdirtoint, get_value_or_addto_forcinglist
+      use messagehandling, only: mess, level_error, msgbuf, err_flush, setmessage
+      use properties, only: tree_create, prop_inifile, tree_create_node, tree_put_data, node_value, tree_num_nodes, tree_get_name, prop_get, prop_set, tree_remove_child_by_name, prop_write_inifile, tree_destroy
+      use unstruc_channel_flow, only: st_longculvert, network
+      use m_save_ugrid_state, only: nbranchids, meshgeom1d
+      use system_utils, only: split_filename, cat_filename
       use string_module, only: strcmpi
-      use m_polygon
-      use m_missing
-      use m_Roughness
-      use m_readstructures
-      use messageHandling
-      use properties
-      use unstruc_channel_flow
-      use m_save_ugrid_state
-      use system_utils
       use m_filez, only: newfil
+      use tree_data_types, only: tree_data
+      use tree_structures, only: maxlen
 
       implicit none
 
@@ -278,10 +280,8 @@ contains
             longculverts(nlongculverts)%bl = zpl(npl + 1:npl + numcoords)
             npl = npl + numcoords + 1 ! TODO: UNST-4328: success1 checking done later in readStructureFile().
 
+            txt = 'both'
             call prop_get(str_ptr, '', 'allowedFlowdir', txt, success)
-            if (.not. success) then
-               txt = 'both'
-            end if
             longculverts(nlongculverts)%allowed_flowdir = allowedFlowDirToInt(txt)
 
             call prop_get(str_ptr, '', 'width', longculverts(nlongculverts)%width, success)
@@ -520,10 +520,8 @@ contains
                call SetMessage(LEVEL_ERROR, 'valveRelativeOpening not found for long culvert: '//trim(st_id))
             end if
 
+            txt = 'both'
             call prop_get(str_ptr, '', 'allowedFlowdir', txt, success)
-            if (.not. success) then
-               txt = 'both'
-            end if
             longculverts(nlongculverts)%allowed_flowdir = allowedFlowDirToInt(txt)
 
             call prop_get(str_ptr, '', 'branchId', longculverts(nlongculverts)%branchId, success)
@@ -555,10 +553,8 @@ contains
                allocate (longculverts(nlongculverts)%netlinks(numcoords - 1))
                allocate (longculverts(nlongculverts)%flowlinks(numcoords - 1))
                longculverts(nlongculverts)%flowlinks = -999
+               txt = 'both'
                call prop_get(str_ptr, '', 'allowedFlowdir', txt, success)
-               if (.not. success) then
-                  txt = 'both'
-               end if
                longculverts(nlongculverts)%allowed_flowdir = allowedFlowDirToInt(txt)
 
                call prop_get(str_ptr, '', 'width', longculverts(nlongculverts)%width, success)

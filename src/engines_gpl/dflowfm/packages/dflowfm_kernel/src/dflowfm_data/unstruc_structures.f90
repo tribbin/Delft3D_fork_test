@@ -2,7 +2,7 @@ module m_structures
 
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
 !  Delft3D is free software: you can redistribute it and/or modify
@@ -36,56 +36,12 @@ module m_structures
    use unstruc_channel_flow, only: network
    use MessageHandling
    use m_flowparameters, only: jahiscgen, jahispump, jahisgate, jahiscdam, jahisweir, jahisdambreak, jahisorif, jahisculv, jahisuniweir, jahiscmpstru, jahislongculv, jahisbridge
+   use m_structures_indices ! all of these indices are used in the module
 
    implicit none
 
    type(tree_data), pointer, public :: strs_ptr !< A property list with all input structure specifications of the current model. Not the actual structure set.
    integer :: jaoldstr !< tmp backwards comp: we cannot mix structures from EXT and from structure-input files. Use one or the other.
-
-! COMMON indices for all structure types:
-   integer, parameter :: NUMVALS_COMMON = 11 !< Number of common variables for all structure types except for pump and gate (new)
-   integer, parameter :: IVAL_WIDTH = 1 !< Index of total width
-   integer, parameter :: IVAL_WIDTHWET = 2 !< Index of total width of wet links
-   integer, parameter :: IVAL_WIDTHUP = 3 !< Index of wet flow link width on upstream side
-   integer, parameter :: IVAL_WIDTHDN = 4 !< Index of wet flow link width on downstream side
-   integer, parameter :: IVAL_WIDTHUPDN = 5 !< Index of width of wet flow links that have both upstream and downstream nodes wet
-   integer, parameter :: IVAL_DIS = 6 !< Index of discharge
-   integer, parameter :: IVAL_S1UP = 7 !< Index of water level at upstream
-   integer, parameter :: IVAL_S1DN = 8 !< Index of water level at downstream
-   integer, parameter :: IVAL_HEAD = 9 !< Index of head of the structure
-   integer, parameter :: IVAL_AREA = 10 !< Index of flow area of the structure
-   integer, parameter :: IVAL_VEL = 11 !< Index of flow velocity
-
- !! For general structure, weir, orifice, because they share some common output variables
-   ! Followings are extra variables for general structure, weir and orifice:
-   integer, parameter :: IVAL_S1ONCREST = NUMVALS_COMMON + 1 !< Index of water level on crest
-   integer, parameter :: IVAL_CRESTL = NUMVALS_COMMON + 2 !< Index of crest level
-   integer, parameter :: IVAL_CRESTW = NUMVALS_COMMON + 3 !< Index of crest width
-   integer, parameter :: IVAL_STATE = NUMVALS_COMMON + 4 !< Index of state (0: closed, 1: free weir, 2: drowned/submerged weir)
-   integer, parameter :: IVAL_FORCEDIF = NUMVALS_COMMON + 5 !< Index of force difference per unit width
-   ! Followings are extra variables for general structure and orifice:
-   integer, parameter :: IVAL_OPENW = NUMVALS_COMMON + 6 !< Index of gate opening width
-   integer, parameter :: IVAL_EDGEL = NUMVALS_COMMON + 7 !< Index of gate lower edge level
-   integer, parameter :: IVAL_OPENH = NUMVALS_COMMON + 8 !< Index of gate opening height
-   ! Followings are extra variables only for general structure:
-   integer, parameter :: IVAL_UPPL = NUMVALS_COMMON + 9 !< Index of gate upper edge level
-   integer, parameter :: IVAL_DIS_OPEN = NUMVALS_COMMON + 10 !< Index of discharge through gate opening
-   integer, parameter :: IVAL_DIS_OVER = NUMVALS_COMMON + 11 !< Index of discharge over gate
-   integer, parameter :: IVAL_DIS_UNDER = NUMVALS_COMMON + 12 !< Index of discharge under gate
-   integer, parameter :: IVAL_AREA_OPEN = NUMVALS_COMMON + 13 !< Index of flow area through gate opening
-   integer, parameter :: IVAL_AREA_OVER = NUMVALS_COMMON + 14 !< Index of flow area over gate
-   integer, parameter :: IVAL_AREA_UNDER = NUMVALS_COMMON + 15 !< Index of flow area under gate
-   integer, parameter :: IVAL_VEL_OPEN = NUMVALS_COMMON + 16 !< Index of velocity through gate opening
-   integer, parameter :: IVAL_VEL_OVER = NUMVALS_COMMON + 17 !< Index of velocity over gate
-   integer, parameter :: IVAL_VEL_UNDER = NUMVALS_COMMON + 18 !< Index of velocity under gate
-   integer, parameter :: IVAL_COUNT = NUMVALS_COMMON + 19 !< Index of counters of partitions for parallel
-
-   integer, parameter :: NUMEXTVALS_GENSTRU = 19 ! Number of extra variables for general structure, including last one as a counter
-   integer, parameter :: NUMEXTVALS_WEIRGEN = 6 ! Number of extra variables for weir, including last one as a counter
-   integer, parameter :: NUMEXTVALS_ORIFGEN = 9 ! Number of extra variables for orifice, including last one as a counter
-   integer, parameter :: NUMVALS_GENSTRU = NUMVALS_COMMON + NUMEXTVALS_GENSTRU !< Total number of variables for general structure (new exe file)
-   integer, parameter :: NUMVALS_WEIRGEN = NUMVALS_COMMON + NUMEXTVALS_WEIRGEN !< Total number of variables for weir
-   integer, parameter :: NUMVALS_ORIFGEN = NUMVALS_COMMON + NUMEXTVALS_ORIFGEN !< Total number of variables for orifice
 
    real(kind=dp), dimension(:, :), allocatable, target :: valgenstru !< Array for general structure, (1:NUMVALS_GENSTRU,:), the first index include 1:NUMVALS_COMMON (see definitation at top),
    !< and extra varaibles have indices: IVAL_S1ONCREST, IVAL_CRESTL, IVAL_CRESTW, IVAL_STATE,
@@ -99,83 +55,30 @@ module m_structures
    real(kind=dp), dimension(:, :), allocatable, target :: valorifgen !< Array for orifice, (1:NUMVALS_ORIFGEN,:), the first index include 1:NUMVALS_COMMON (see definitation at top),
    !< and extra varaibles have indices: IVAL_S1ONCREST, IVAL_CRESTL, IVAL_CRESTW, IVAL_STATE,
    !<                                   IVAL_FORCEDIF, IVAL_OPENW, IVAL_EDGEL, IVAL_OPENH, the last one NUMVALS_ORIFGEN is the counter
-   ! Bridge, extra variables:
-   integer, parameter :: IVAL_BLUP = NUMVALS_COMMON + 1 !< Index of bed level up
-   integer, parameter :: IVAL_BLDN = NUMVALS_COMMON + 2 !< Index of bed level down
-   integer, parameter :: IVAL_BLACTUAL = NUMVALS_COMMON + 3 !< Index of actual bed level (crest)
-   integer, parameter :: NUMEXTVALS_BRIDGE = 3 !< Number of extra variables for bridge
-   integer, parameter :: NUMVALS_BRIDGE = NUMVALS_COMMON + NUMEXTVALS_BRIDGE !< Total number of variables for bridge
+
    real(kind=dp), dimension(:, :), allocatable, target :: valbridge !< Array for bridge(1:NUMVALS_BRIDGE,:), the first dimension of this array contains
    !< NUMVALS_COMMON common variables (see definitation at top) and NUMEXTVALS_BRIDGE extra variables here.
 
-   ! Dambreak, extra variables:
-   integer, parameter :: IVAL_DB_CRESTH = NUMVALS_COMMON + 1 !< Index of crest level for dambreak
-   integer, parameter :: IVAL_DB_CRESTW = NUMVALS_COMMON + 2 !< Index of crest width for dambreak
-   integer, parameter :: IVAL_DB_JUMP = NUMVALS_COMMON + 3 !< Index of water level jump for dambreak
-   integer, parameter :: IVAL_DB_TIMEDIV = NUMVALS_COMMON + 4 !< Index of breach width time derivative for dambreak
-   integer, parameter :: IVAL_DB_DISCUM = NUMVALS_COMMON + 5 !< Index of cumulative discharge for dambreak
-   integer, parameter :: NUMEXTVALS_DAMBREAK = 5 !< Number of extra variables for dambreak
-   integer, parameter :: NUMVALS_DAMBREAK = NUMVALS_COMMON + NUMEXTVALS_DAMBREAK !< Total number of variables for dambreak
    real(kind=dp), dimension(:, :), allocatable, target :: valdambreak !< Array for dambreak, (1:NUMVALS_DAMBREAK,:), the first dimension of this array contains
    !< NUMVALS_COMMON common variables (see definitation at top) and NUMEXTVALS_DAMBREAK extra variables here.
-   ! Culvert, extra variables:
-   integer, parameter :: IVAL_CL_CRESTL = NUMVALS_COMMON + 1 !< Index of culvert crest level
-   integer, parameter :: IVAL_CL_STATE = NUMVALS_COMMON + 2 !< Index of culvert state (0: closed, 1: free weir, 2: drowned/submerged weir)
-   integer, parameter :: IVAL_CL_EDGEL = NUMVALS_COMMON + 3 !< Index of culvert gate lower edge level
-   integer, parameter :: IVAL_CL_OPENH = NUMVALS_COMMON + 4 !< Index of culvert gate opening height
-   integer, parameter :: NUMEXTVALS_CULVERT = 4 !< Number of extra variables for culvertt
-   integer, parameter :: NUMVALS_CULVERT = NUMVALS_COMMON + NUMEXTVALS_CULVERT !< Total number of variables for culvert
+
    real(kind=dp), dimension(:, :), allocatable, target :: valculvert !< Array for culvert(1:NUMVALS_CULVERT,:), the first dimension of this array contains
    !< NUMVALS_COMMON common variables (see definitation at top) and above extra variables.
 
-   ! Univeral weir, extra variables:
-   integer, parameter :: IVAL_UW_CRESTL = NUMVALS_COMMON + 1 !< Index of universal weir crest level
-   integer, parameter :: NUMEXTVALS_UNIWEIR = 1 !< Number of extra variables for universal weir
-   integer, parameter :: NUMVALS_UNIWEIR = NUMVALS_COMMON + NUMEXTVALS_UNIWEIR !< Total number of variables for universal weir
    real(kind=dp), dimension(:, :), allocatable, target :: valuniweir !< Array for universal weir(1:NUMVALS_UNIWEIR,:), the first dimension of this array contains
    !< NUMVALS_COMMON common variables (see definitation at top) and above extra variables.
 
-   ! gate (new),  extra variables:
-   integer, parameter :: NUMVALS_COMMON_GATE = 8 !< Number of common variables shared by gate
-   integer, parameter :: IVAL_GATE_FLOWH = NUMVALS_COMMON_GATE + 1 !< Upstream average water level
-   integer, parameter :: IVAL_GATE_COUNT = NUMVALS_COMMON_GATE + 2 !< Counter
-   integer, parameter :: IVAL_GATE_OPENW = NUMVALS_COMMON_GATE + 3 !< Gate opening width
-   integer, parameter :: IVAL_GATE_EDGEL = NUMVALS_COMMON_GATE + 4 !< Gate lower edge level
-   integer, parameter :: IVAL_GATE_SILLH = NUMVALS_COMMON_GATE + 5 !< Gate crest level (via general structure)
-   integer, parameter :: IVAL_GATE_WIDTHWET = NUMVALS_COMMON_GATE + 6 !< Width of wet links at upstream (used for IVAL_GATE_FLOWH)
-   integer, parameter :: NUMEXTVALS_GATE = 6 !< Number of extra variables for gate
-   integer, parameter :: NUMVALS_GATEGEN = NUMVALS_COMMON_GATE + NUMEXTVALS_GATE !< Total number of variables for gate
    real(kind=dp), dimension(:, :), allocatable, target :: valgategen !< Array for (new) gate (1:NUMVALS_GATEGEN,:), the first dimension of this array contains
    !< NUMVALS_COMMON_GATE common variables (see definitation at top) and NUMEXTVALS_GATE extra variables.
 
-   ! Compound structure
-   integer, parameter :: NUMVALS_CMPSTRU = NUMVALS_COMMON !< Total number of variables for compound structure, no extra variables.
    real(kind=dp), dimension(:, :), allocatable, target :: valcmpstru !< Array for compound structure(1:NUMVALS_CMPSTRU,:)
 
-   ! Pump shares the first 9 indices in common indices, extra variables are as follows:
-   integer, parameter :: NUMVALS_COMMON_PUMP = 9 !< Number of common variables shared by pump
-   integer, parameter :: IVAL_PP_CAP = NUMVALS_COMMON_PUMP + 1 !< Pump capacity
-   integer, parameter :: IVAL_PP_STAG = NUMVALS_COMMON_PUMP + 2 !< Actual pump stage
-   integer, parameter :: IVAL_PP_HEAD = NUMVALS_COMMON_PUMP + 3 !< Pump head
-   integer, parameter :: IVAL_PP_RED = NUMVALS_COMMON_PUMP + 4 !< Pump reduction factor
-   integer, parameter :: IVAL_PP_S1DEL = NUMVALS_COMMON_PUMP + 5 !< Pump water level at delivery side
-   integer, parameter :: IVAL_PP_S1SUC = NUMVALS_COMMON_PUMP + 6 !< Pump water level at suction side
-   integer, parameter :: IVAL_PP_DISDIR = NUMVALS_COMMON_PUMP + 7 !< Pump discharge w.r.t. pumping orientation (same sign as capacity)
-   integer, parameter :: NUMEXTVALS_PUMP = 7 !< Number of extra variables for pump
-   integer, parameter :: NUMVALS_PUMP = NUMVALS_COMMON_PUMP + NUMEXTVALS_PUMP !< Total number of variables for pump
    real(kind=dp), dimension(:, :), allocatable, target :: valpump !< Array for pump, (1:NUMVALS_PUMP,:), the first dimension of this array contains
    !< NUMVALS_COMMON_PUMP common variables (see definitation at top) and NUMEXTVALS_PUMP extra variables.
 
-   ! Long culvert
-   integer, parameter :: IVAL_LC_VALVE = NUMVALS_COMMON + 1 !< long culvert valve relative opening
-   integer, parameter :: NUMEXTVALS_LONGCULV = 1 !< Number of extra variables for long culvert
-   integer, parameter :: NUMVALS_LONGCULVERT = NUMVALS_COMMON + NUMEXTVALS_LONGCULV !< Number of variables for long culvert
    real(kind=dp), dimension(:, :), allocatable, target :: vallongculvert !< Array for long culvert, (1:NUMVALS_LONGCULVERT,:), the first dimension of this array contains
    !< NUMVALS_COMMON common variables (see definitation at top)and above extra variables.
-   ! For old stype structures
-   integer :: NUMVALS_GATE = 5 !< Number of variables for gate
-   integer :: NUMVALS_CDAM = 4 !< Number of variables for controble dam
-   integer :: NUMVALS_CGEN = 4 !< Number of variables for general structure (old ext file)
+
    real(kind=dp), dimension(:, :), allocatable, target :: valgate !< Array for gate;      (1,:) discharge through gate
    real(kind=dp), dimension(:, :), allocatable, target :: valcdam !< Array for cdam;      (1,:) discharge through controlable dam
    !<                      (2,:) Upstream average water levels
@@ -267,20 +170,25 @@ contains
    !> Allocates and initializes all "valstruct"(:,:) arrays.
    !! Used for history output and/or restart file output for hydraulic structures.
    subroutine init_structure_hisvalues()
-      use fm_external_forcings_data, only: npumpsg, ncgensg, ngatesg, ncdamsg, ngategen, ngenstru, nweirgen, ndambreaksignals
-      use m_alloc
+      use fm_external_forcings_data, only: npumpsg, ncgensg, ngatesg, ncdamsg, ngategen, ngenstru, nweirgen
+
       use m_flowtimes, only: ti_rst
       use m_longculverts, only: nlongculverts
+      use m_dambreak_breach, only: n_db_signals
       implicit none
 
       if ((ti_rst > 0 .or. jahispump > 0) .and. npumpsg > 0) then
-         if (allocated(valpump)) deallocate (valpump)
+         if (allocated(valpump)) then
+            deallocate (valpump)
+         end if
          allocate (valpump(NUMVALS_PUMP, npumpsg))
          valpump = 0.0_dp
       end if
       if (ti_rst > 0 .or. jahiscgen > 0) then
          if (ncgensg > 0) then
-            if (allocated(valcgen)) deallocate (valcgen)
+            if (allocated(valcgen)) then
+               deallocate (valcgen)
+            end if
             allocate (valcgen(NUMVALS_CGEN, ncgensg)); valcgen = 0.0_dp
          end if
 
@@ -288,22 +196,30 @@ contains
             ngenstru = network%sts%numGeneralStructures
          end if
          if (ngenstru > 0) then
-            if (allocated(valgenstru)) deallocate (valgenstru)
+            if (allocated(valgenstru)) then
+               deallocate (valgenstru)
+            end if
             allocate (valgenstru(NUMVALS_GENSTRU, ngenstru)); valgenstru = 0.0_dp
          end if
       end if
       if (jahisgate > 0) then
          if (ngatesg > 0) then
-            if (allocated(valgate)) deallocate (valgate)
+            if (allocated(valgate)) then
+               deallocate (valgate)
+            end if
             allocate (valgate(NUMVALS_CGEN, ngatesg)); valgate = 0.0_dp
          end if
          if (ngategen > 0) then
-            if (allocated(valgategen)) deallocate (valgategen)
+            if (allocated(valgategen)) then
+               deallocate (valgategen)
+            end if
             allocate (valgategen(NUMVALS_GATEGEN, ngategen)); valgategen = 0.0_dp
          end if
       end if
       if (jahiscdam > 0 .and. ncdamsg > 0) then
-         if (allocated(valcdam)) deallocate (valcdam)
+         if (allocated(valcdam)) then
+            deallocate (valcdam)
+         end if
          allocate (valcdam(NUMVALS_CDAM, ncdamsg)); valcdam = 0.0_dp
       end if
       if (nweirgen == 0) then ! If it is new 1D weir, the weir is stored in the network type
@@ -311,35 +227,51 @@ contains
       end if
 
       if ((ti_rst > 0 .or. jahisweir > 0) .and. nweirgen > 0) then
-         if (allocated(valweirgen)) deallocate (valweirgen)
+         if (allocated(valweirgen)) then
+            deallocate (valweirgen)
+         end if
          allocate (valweirgen(NUMVALS_WEIRGEN, nweirgen)); valweirgen = 0.0_dp
       end if
-      if (jahisdambreak > 0 .and. ndambreaksignals > 0) then
-         if (allocated(valdambreak)) deallocate (valdambreak)
-         allocate (valdambreak(NUMVALS_DAMBREAK, ndambreaksignals)); valdambreak = 0.0_dp
+      if (jahisdambreak > 0 .and. n_db_signals > 0) then
+         if (allocated(valdambreak)) then
+            deallocate (valdambreak)
+         end if
+         allocate (valdambreak(NUMVALS_DAMBREAK, n_db_signals), source=0.0_dp)
       end if
       if ((ti_rst > 0 .or. jahisorif > 0) .and. network%sts%numOrifices > 0) then
-         if (allocated(valorifgen)) deallocate (valorifgen)
+         if (allocated(valorifgen)) then
+            deallocate (valorifgen)
+         end if
          allocate (valorifgen(NUMVALS_ORIFGEN, network%sts%numOrifices)); valorifgen = 0.0_dp
       end if
       if (jahisbridge > 0 .and. network%sts%numBridges > 0) then
-         if (allocated(valbridge)) deallocate (valbridge)
+         if (allocated(valbridge)) then
+            deallocate (valbridge)
+         end if
          allocate (valbridge(NUMVALS_BRIDGE, network%sts%numBridges)); valbridge = 0.0_dp
       end if
       if ((ti_rst > 0 .or. jahisculv > 0) .and. network%sts%numCulverts > 0) then
-         if (allocated(valculvert)) deallocate (valculvert)
+         if (allocated(valculvert)) then
+            deallocate (valculvert)
+         end if
          allocate (valculvert(NUMVALS_CULVERT, network%sts%numCulverts)); valculvert = 0.0_dp
       end if
       if (jahisuniweir > 0 .and. network%sts%numUniWeirs > 0) then
-         if (allocated(valuniweir)) deallocate (valuniweir)
+         if (allocated(valuniweir)) then
+            deallocate (valuniweir)
+         end if
          allocate (valuniweir(NUMVALS_UNIWEIR, network%sts%numUniWeirs)); valuniweir = 0.0_dp
       end if
       if (jahiscmpstru > 0 .and. network%cmps%count > 0) then
-         if (allocated(valcmpstru)) deallocate (valcmpstru)
+         if (allocated(valcmpstru)) then
+            deallocate (valcmpstru)
+         end if
          allocate (valcmpstru(NUMVALS_CMPSTRU, network%cmps%count)); valcmpstru = 0.0_dp
       end if
       if (jahislongculv > 0 .and. nlongculverts > 0) then
-         if (allocated(vallongculvert)) deallocate (vallongculvert)
+         if (allocated(vallongculvert)) then
+            deallocate (vallongculvert)
+         end if
          allocate (vallongculvert(NUMVALS_LONGCULVERT, nlongculverts)); vallongculvert = 0.0_dp
       end if
 
@@ -376,7 +308,9 @@ contains
 !> Resets only structures variables intended for a restart of an existing flow simulation (same MDU).
 !! Upon loading of new model/MDU, call default_structures() instead.
    subroutine reset_structures()
-      if (allocated(gates)) deallocate (gates)
+      if (allocated(gates)) then
+         deallocate (gates)
+      end if
    end subroutine reset_structures
 
 !> Fills the valstruct array for one given structure on a given link L.
@@ -386,10 +320,10 @@ contains
       use m_flow, only: q1, s1, au, hu, hs
       use m_flowgeom, only: wu, ln, teta, bl
       use m_1d_structures, only: get_discharge_under_compound_struc
-      use m_General_Structure
-      use m_GlobalParameters
-      use m_longculverts
+      use m_GlobalParameters, only: st_longculvert, st_pump, st_general_st, st_weir, st_orifice, st_bridge
+      use m_longculverts, only: longculverts
       use m_flowparameters, only: epshs, epshu
+      use m_general_structure, only: t_generalstructure
       implicit none
       real(kind=dp), dimension(:), intent(inout) :: valstruct !< Output values on structure (e.g. valweirgen(:)):
       !< (IVAL_WIDTH) total width, no matter dry or not
@@ -898,7 +832,8 @@ contains
       use m_1d_structures
       use m_longculverts
       use m_GlobalParameters, only: ST_LONGCULVERT
-      use m_partitioninfo, only: my_rank, jampi, idomain, link_ghostdata
+      use m_partitioninfo, only: my_rank, jampi, idomain
+      use m_link_ghostdata, only: link_ghostdata
       use m_flowgeom, only: ln
       implicit none
       integer, intent(in) :: istrtypein !< The type of the structure. May differ from the struct%type, for example:
@@ -953,8 +888,9 @@ contains
 !> Get the total number of structures of a certain type
    function get_number_of_structures(struc_type_id) result(number_of_structures)
       use m_GlobalParameters
-      use fm_external_forcings_data, only: ncdamsg, ndambreaksignals, ngatesg
+      use fm_external_forcings_data, only: ncdamsg, ngatesg
       use unstruc_channel_flow, only: network
+      use m_dambreak_breach, only: n_db_signals
 
       integer, intent(in) :: struc_type_id !< The id of the type of the structure (e.g. ST_CULVERT)
       integer :: number_of_structures
@@ -963,7 +899,7 @@ contains
       case (ST_DAM)
          number_of_structures = ncdamsg
       case (ST_DAMBREAK)
-         number_of_structures = ndambreaksignals
+         number_of_structures = n_db_signals
       case (ST_GATE)
          number_of_structures = ngatesg
       case (ST_COMPOUND)
@@ -983,7 +919,8 @@ contains
       use network_data, only: xk, yk
       use m_longculverts
       use m_GlobalParameters, only: ST_LONGCULVERT
-      use m_partitioninfo, only: jampi, idomain, my_rank, link_ghostdata
+      use m_partitioninfo, only: jampi, idomain, my_rank
+      use m_link_ghostdata, only: link_ghostdata
       use m_flowgeom, only: ln
       implicit none
       integer, intent(in) :: istrtypein !< The type of the structure. May differ from the struct%type, for example:
@@ -1553,9 +1490,15 @@ contains
          return
       end select
 
-      if (allocated(geomXStructInput)) deallocate (geomXStructInput)
-      if (allocated(geomYStructInput)) deallocate (geomYStructInput)
-      if (allocated(nNodesStructInput)) deallocate (nNodesStructInput)
+      if (allocated(geomXStructInput)) then
+         deallocate (geomXStructInput)
+      end if
+      if (allocated(geomYStructInput)) then
+         deallocate (geomYStructInput)
+      end if
+      if (allocated(nNodesStructInput)) then
+         deallocate (nNodesStructInput)
+      end if
 
       nNodeTot = 0
       i = 1
@@ -1637,6 +1580,7 @@ contains
    subroutine retrieve_set_of_flowlinks_for_polyline_structure(struc_type_id, i_struc, links)
       use MessageHandling, only: mess, LEVEL_ERROR
       use m_GlobalParameters
+      use m_dambreak_breach, only: retrieve_set_of_flowlinks_dambreak
 
       integer, intent(in) :: struc_type_id !< The id of the type of the structure (e.g. ST_CULVERT)
       integer, intent(in) :: i_struc !< Index of the structure of this type
@@ -1652,7 +1596,7 @@ contains
       case (ST_DAM)
          call retrieve_set_of_flowlinks_dam(i_struc, links)
       case (ST_DAMBREAK)
-         call retrieve_set_of_flowlinks_dambreak(i_struc, links)
+         links = retrieve_set_of_flowlinks_dambreak(i_struc)
       case (ST_GATE)
          call retrieve_set_of_flowlinks_gate(i_struc, links)
       case (ST_COMPOUND)
@@ -1718,27 +1662,6 @@ contains
       end do
 
    end subroutine retrieve_set_of_flowlinks_dam
-
-!> Retrieve the set of snapped flowlinks for a dambreak
-   subroutine retrieve_set_of_flowlinks_dambreak(i_dambreak, links)
-      use fm_external_forcings_data, only: L1dambreaksg, L2dambreaksg, kdambreak
-
-      integer, intent(in) :: i_dambreak !< Index of the dambreak
-      integer, dimension(:), allocatable, intent(out) :: links !< The set of flowlinks that this dambreak has been snapped to
-
-      integer :: n_links !< Total number of flowlinks in the set
-      integer :: k, i
-
-      n_links = L2dambreaksg(i_dambreak) + 1 - L1dambreaksg(i_dambreak)
-      allocate (links(n_links), source=-999)
-
-      i = 0
-      do k = L1dambreaksg(i_dambreak), L2dambreaksg(i_dambreak)
-         i = i + 1
-         links(i) = kdambreak(3, k)
-      end do
-
-   end subroutine retrieve_set_of_flowlinks_dambreak
 
 !> Retrieve the set of snapped flowlinks for a gate
    subroutine retrieve_set_of_flowlinks_gate(i_gate, links)

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -41,8 +41,8 @@ contains
 
    subroutine smooth_samples(MXSAM, MYSAM, NS, NDIM, Nsamplesmooth, zs, zss)
       use precision, only: dp
-      use m_missing
-      use m_readyy
+      use m_missing, only: dmiss
+      use m_readyy, only: readyy
 
       integer, intent(in) :: MXSAM, MYSAM !< structured block sizes (>0) or not structured (0)
       integer, intent(in) :: NS !< number of samples
@@ -128,7 +128,9 @@ contains
 1234  continue
 
 !  deallocate
-      if (allocated(zsdum)) deallocate (zsdum)
+      if (allocated(zsdum)) then
+         deallocate (zsdum)
+      end if
 
       return
    end subroutine smooth_samples

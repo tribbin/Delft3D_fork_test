@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -42,10 +42,10 @@ contains
 
    subroutine setcentertolinkorientations()
       use precision, only: dp
-      use m_flowgeom
+      use m_flowgeom, only: csb, snb, lnx, lncn, ln, xz, yz
+      use m_sferic, only: jsferic, jasfer3d
+      use m_alloc, only: aerr
       use network_data, only: xk, yk
-      use m_sferic
-      use m_alloc
       use geometry_module, only: half, spher2locvec
       use m_missing, only: dmiss
 
@@ -58,8 +58,12 @@ contains
 
       real(kind=dp), parameter :: dtol = 1d-8
 
-      if (allocated(csb)) deallocate (csb)
-      if (allocated(snb)) deallocate (snb)
+      if (allocated(csb)) then
+         deallocate (csb)
+      end if
+      if (allocated(snb)) then
+         deallocate (snb)
+      end if
 
       if (jsferic == 0 .or. jasfer3D == 0) return
 

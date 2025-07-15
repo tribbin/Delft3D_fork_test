@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -107,8 +107,12 @@ contains
       end do
 
 !deallocate
-      if (allocated(dzdx)) deallocate (dzdx)
-      if (allocated(dzdy)) deallocate (dzdy)
+      if (allocated(dzdx)) then
+         deallocate (dzdx)
+      end if
+      if (allocated(dzdy)) then
+         deallocate (dzdy)
+      end if
 
    end subroutine extrapolate_bedlevel_at_boundaries
 

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -57,6 +57,7 @@ module m_flow_geominit
    use m_iadvecini, only: iadvecini
    use m_getdxofconnectedkcu1, only: getdxofconnectedkcu1
    use m_wind, only: jawindpartialdry
+   use m_waveconst
 
    implicit none
 
@@ -360,7 +361,9 @@ contains
          call aerr('bl_ave(ndx)', ierr, ndx)
       end if
 
-      if (allocated(kfs)) deallocate (kfs)
+      if (allocated(kfs)) then
+         deallocate (kfs)
+      end if
       allocate (kfs(ndx)); kfs = 0
 
       ! Reallocate circumcenters with extra space for 1D nodes, but keep existing 2D data.
@@ -500,7 +503,9 @@ contains
       call readyy('geominit-NODELINKS         ', 0.5d0)
 
       if (allocated(ln)) deallocate (ln, lncn, bob, bob0, dx, dxi, wu, wui, kcu, csu, snu, acl, iadv, teta, wu_mor, wu1D2D, hh1D2D)
-      if (allocated(ibot)) deallocate (ibot)
+      if (allocated(ibot)) then
+         deallocate (ibot)
+      end if
       allocate (ln(2, lnx), stat=ierr)
       call aerr('ln   (2,lnx)', ierr, 2 * lnx)
       allocate (lncn(2, lnx), stat=ierr)
@@ -876,7 +881,9 @@ contains
 
       call set_1d_indices_in_network()
 
-      if (allocated(prof1D)) deallocate (prof1D)
+      if (allocated(prof1D)) then
+         deallocate (prof1D)
+      end if
       allocate (prof1D(3, lnx1D), stat=ierr)
       call aerr('prof1D(3,lnx1D)', ierr, 2 * lnx1D)
       do L = 1, lnx1D
@@ -891,11 +898,15 @@ contains
          end if
       end do
 
-      if (allocated(Lbnd1D)) deallocate (Lbnd1D)
+      if (allocated(Lbnd1D)) then
+         deallocate (Lbnd1D)
+      end if
       allocate (Lbnd1D(lnxi + 1:lnx), stat=ierr); Lbnd1D = 0
       call aerr('Lbnd1D(lnxi+1:lnx)', ierr, lnx - lnxi + 1)
 
-      if (allocated(grounlay)) deallocate (grounLay)
+      if (allocated(grounlay)) then
+         deallocate (grounlay)
+      end if
       if (lnx1D > 0) then
          allocate (grounLay(lnx1D), stat=ierr); grounLay = dmiss
          call aerr('grounLay(lnx1D)', ierr, Lnx1D)
@@ -966,7 +977,9 @@ contains
       end do
       mx1Dend = k
 
-      if (allocated(n1Dend)) deallocate (n1Dend)
+      if (allocated(n1Dend)) then
+         deallocate (n1Dend)
+      end if
       allocate (n1Dend(mx1Dend), stat=ierr); n1Dend = 0
       call aerr('n1Dend(mx1Dend)', ierr, mx1Dend)
 
@@ -1059,7 +1072,9 @@ contains
       end do
 
       ! call message ('cutcell call 4',' ',' ')
-      if (allocated(kfs)) deallocate (kfs)
+      if (allocated(kfs)) then
+         deallocate (kfs)
+      end if
       fnam = '*.cut'
       n12 = 4
       allocate (kfs(ndx)); kfs = 0
@@ -1097,7 +1112,9 @@ contains
       n12 = 5; fnam = '*.cut'
       ! call message ('cutcell call 5',' ',' ')
 
-      if (allocated(numlimdt)) deallocate (numlimdt)
+      if (allocated(numlimdt)) then
+         deallocate (numlimdt)
+      end if
       allocate (numlimdt(ndx), stat=ierr); numlimdt = 0
       call aerr('numlimdt(ndx)', ierr, ndx)
       if (numlimdt_baorg > 0) then ! if prev_numlimdt(k) > numlimdt_baorg then ba(k) = baorg(k) in cutcell
@@ -1158,7 +1175,9 @@ contains
          end if
       end do
 
-      if (allocated(walls)) deallocate (walls)
+      if (allocated(walls)) then
+         deallocate (walls)
+      end if
       allocate (walls(17, nw), stat=ierr); walls = 0
       call aerr('walls(17,nw)', ierr, nw * 17)
 
@@ -1481,7 +1500,7 @@ contains
       end if
 
 !JRE
-      if (jawave == 4) then
+      if (jawave == WAVE_SURFBEAT) then
          call xbeach_makethetagrid()
          call makethindamadmin()
          ! now that ntheta is determined:

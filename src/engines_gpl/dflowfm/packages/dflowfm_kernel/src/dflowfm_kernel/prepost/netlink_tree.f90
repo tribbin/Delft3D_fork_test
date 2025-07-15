@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -44,8 +44,8 @@ contains
    subroutine netlink_tree(phase)
       use precision, only: dp
       use network_data, only: numl, xk, yk, kn
-      use kdtree2Factory
-      use m_missing
+      use kdtree2Factory, only: build_kdtree, treeglob, realloc_results_kdtree, itree_empty, delete_kdtree2
+      use m_missing, only: dmiss
       use m_sferic, only: jsferic, jasfer3D
       use geometry_module, only: half
 
@@ -70,8 +70,12 @@ contains
          call build_kdtree(treeglob, numL, xuL, yuL, ierror, jsferic, dmiss)
          call realloc_results_kdtree(treeglob, 1) ! safety
 
-         if (allocated(xuL)) deallocate (xuL)
-         if (allocated(yuL)) deallocate (yuL)
+         if (allocated(xuL)) then
+            deallocate (xuL)
+         end if
+         if (allocated(yuL)) then
+            deallocate (yuL)
+         end if
 
       end if
 

@@ -1,6 +1,6 @@
 !----- AGPL --------------------------------------------------------------------
 !
-!  Copyright (C)  Stichting Deltares, 2017-2024.
+!  Copyright (C)  Stichting Deltares, 2017-2025.
 !
 !  This file is part of Delft3D (D-Flow Flexible Mesh component).
 !
@@ -45,13 +45,13 @@ contains
       use m_tranfn2, only: tranfn2
       use m_get_polstartend, only: get_polstartend
       use precision, only: dp
-      use m_grid
-      use m_gridsettings
-      use m_alloc
-      use m_missing
-      use m_polygon
-      use m_qnerror
-      use m_increase_grid
+      use m_grid, only: mc, nc, xc, yc
+      use m_gridsettings, only: mfac, nfac
+      use m_alloc, only: realloc
+      use m_missing, only: dmiss
+      use m_polygon, only: npl, xpl, ypl
+      use m_qnerror, only: qnerror
+      use m_increase_grid, only: increasegrid
 
       integer, intent(in) :: i1, i2_, i3_ !< first, second and third corner point in polygon, respectively
 
@@ -246,10 +246,18 @@ contains
       ierror = 0
 1234  continue
 
-      if (allocated(xh)) deallocate (xh)
-      if (allocated(yh)) deallocate (yh)
-      if (allocated(xg)) deallocate (xg)
-      if (allocated(yg)) deallocate (yg)
+      if (allocated(xh)) then
+         deallocate (xh)
+      end if
+      if (allocated(yh)) then
+         deallocate (yh)
+      end if
+      if (allocated(xg)) then
+         deallocate (xg)
+      end if
+      if (allocated(yg)) then
+         deallocate (yg)
+      end if
 
       return
    end subroutine pol2curvi_tri
