@@ -31,13 +31,6 @@ object PublishToGui : BuildType({
     }
 
     steps {
-        script {
-            name = "Remove_deleted_files"
-            scriptContent = """
-                python.exe ci/DIMRset_delivery/utils/path_sync.py --source source/lnx64 --target target/lnx64
-                python.exe ci/DIMRset_delivery/utils/path_sync.py --source source/x64 --target target/x64
-            """.trimIndent()
-        }
         nuGetPack {
             name = "Pack DIMR NuGet"
             toolPath = "%teamcity.tool.NuGet.CommandLine.DEFAULT%"
