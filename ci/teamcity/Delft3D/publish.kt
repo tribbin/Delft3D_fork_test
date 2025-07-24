@@ -186,6 +186,9 @@ object Publish : BuildType({
         }
         script {
             name = "Generate Apptainer SIF file"
+            conditions {
+                equals("brand", "delft3dfm")
+            }
             workingDir = "src/scripts_lgpl/singularity"
             scriptContent = """
                 apptainer pull docker-daemon:%destination_image_specific%
@@ -193,10 +196,13 @@ object Publish : BuildType({
         }
         script {
             name = "Apptainer save for DFS-drive"
+            conditions {
+                equals("brand", "delft3dfm")
+            }
             workingDir = "src/scripts_lgpl/singularity"
             scriptContent = """
-                tar -czfv delft3dfm_%release_type%-%release_version%.tar.gz \
-                    delft3dfm_%release_type%-%release_version%.sif \
+                tar -czfv %brand%_%release_type%-%release_version%.tar.gz \
+                    %brand%_%release_type%-%release_version%.sif \
                     execute_singularity.sh \
                     readme.txt \
                     run_singularity.sh \
@@ -206,7 +212,7 @@ object Publish : BuildType({
                     execute_singularity_tc.sh
                 
                 # Copy the artifact to network
-                cp -vf delft3dfm_%release_type%-%release_version%.tar.gz /opt/Testdata/DIMR/DIMR_collectors/DIMRset_lnx64_Singularity
+                cp -vf %brand%_%release_type%-%release_version%.tar.gz /opt/Testdata/DIMR/DIMR_collectors/DIMRset_lnx64_Singularity
             """.trimIndent()
         }
     }
