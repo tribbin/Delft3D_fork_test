@@ -548,8 +548,8 @@ contains
       logical :: ex !< flag indicating whether file exists
       logical :: flag
       logical :: success
-      logical :: activate_num_accur !< TRUE when parameters are specified for "num accur"
-      logical :: activate_num_stopc !< TRUE when parameters are specified for "num stopc"
+      logical :: enable_num_accur !< TRUE when parameters are specified for "num accur"
+      logical :: enable_num_stopc !< TRUE when parameters are specified for "num stopc"
       real :: def_startdir
       real :: def_enddir
       real :: def_freqmin
@@ -1210,8 +1210,8 @@ contains
       sr%cdd = 0.5
       sr%css = 0.5
 
-      activate_num_accur = .false.
-      activate_num_stopc = .false.
+      enable_num_accur = .false.
+      enable_num_stopc = .false.
       
       sr%tolerance_relative = -1.0 ! Default value will be set after checking whether "num accur" or "num stopc" is used
       sr%tolerance_absolute = DEFAULT_TOLERANCE_ABSOLUTE_STOPC
@@ -1242,37 +1242,37 @@ contains
       !
       ! "num stopc" parameters
       if ( prop_get_checked(sr, mdw_ptr, 'Numerics', 'DRelHinc', sr%tolerance_relative, 0.0, 1.0) ) then
-         activate_num_stopc = .true.
+         enable_num_stopc = .true.
       end if
       if ( prop_get_checked(sr, mdw_ptr, 'Numerics', 'DAbsHinc', sr%tolerance_absolute, 0.0, 100.0) ) then
-         activate_num_stopc = .true.
+         enable_num_stopc = .true.
       end if
       !
       ! "num accur" parameters
       if ( prop_get_checked(sr, mdw_ptr, 'Numerics', 'RChHsTm01', sr%tolerance_relative, 0.0, 1.0) ) then
-         activate_num_accur = .true.
+         enable_num_accur = .true.
       end if
       if ( prop_get_checked(sr, mdw_ptr, 'Numerics', 'RChMeanHs', sr%tolerance_absolute_wave_height, 0.0, 100.0) ) then
-         activate_num_accur = .true.
+         enable_num_accur = .true.
       end if
       if ( prop_get_checked(sr, mdw_ptr, 'Numerics', 'RChMeanTm01', sr%tolerance_absolute_wave_period, 0.0, 100.0) ) then
-         activate_num_accur = .true.
+         enable_num_accur = .true.
       end if
       !
-      ! Check (combinations of) activate_num_accur and activate_num_stopc
-      if (activate_num_accur .and. activate_num_stopc) then
+      ! Check (combinations of) enable_num_accur and enable_num_stopc
+      if (enable_num_accur .and. enable_num_stopc) then
          write (*, *) 'SWAN_INPUT: Tolerances specified for both "num_accur" and "num_stopc"'
          call handle_errors_mdw(sr)
       end if
-      if (activate_num_accur == .false. .and. activate_num_stopc == .false.) then
-         activate_num_stopc = .true.
+      if (enable_num_accur == .false. .and. enable_num_stopc == .false.) then
+         enable_num_stopc = .true.
       end if
-      if (activate_num_stopc) then
+      if (enable_num_stopc) then
          sr%num_type = NUM_STOPC
          if (sr%tolerance_relative < 0.0) then
             sr%tolerance_relative = DEFAULT_TOLERANCE_RELATIVE_STOPC
          end if
-      else if (activate_num_accur) then
+      else if (enable_num_accur) then
          sr%num_type = NUM_ACCUR
          if (sr%tolerance_relative < 0.0) then
             sr%tolerance_relative = DEFAULT_TOLERANCE_ACCUR
