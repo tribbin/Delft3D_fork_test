@@ -102,6 +102,15 @@ object Sign : BuildType({
                 }
             }
         }
+        pullRequests {
+            provider = gitlab {
+                authType = token {
+                    token = "%gitlab_private_access_token%"
+                }
+                filterSourceBranch = "+:*"
+                ignoreDrafts = true
+            }
+        }
     }
 
     failureConditions {
