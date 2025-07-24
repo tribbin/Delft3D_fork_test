@@ -184,5 +184,30 @@ object Publish : BuildType({
                 --commit-id-short %commit_id_short%
             """.trimIndent()
         }
+        script {
+            name = "Generate Apptainer SIF file"
+            workingDir = "src/scripts_lgpl/singularity"
+            scriptContent = """
+                apptainer pull docker-daemon:%destination_image_specific%
+            """.trimIndent()
+        }
+        script {
+            name = "Apptainer save for DFS-drive"
+            workingDir = "src/scripts_lgpl/singularity"
+            scriptContent = """
+                tar -czfv delft3dfm_%release_type%-%release_version%.tar.gz \
+                    delft3dfm_%release_type%-%release_version%.sif \
+                    execute_singularity.sh \
+                    readme.txt \
+                    run_singularity.sh \
+                    submit_singularity.sh \
+                    execute_singularity_h7.sh \
+                    submit_singularity_h7.sh \
+                    execute_singularity_tc.sh
+                
+                # Copy the artifact to network
+                cp -vf delft3dfm_%release_type%-%release_version%.tar.gz /opt/Testdata/DIMR/DIMR_collectors/DIMRset_lnx64_Singularity
+            """.trimIndent()
+        }
     }
 })
