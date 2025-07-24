@@ -1,10 +1,10 @@
 import jetbrains.buildServer.configs.kotlin.*
 import jetbrains.buildServer.configs.kotlin.buildSteps.*
 import jetbrains.buildServer.configs.kotlin.buildFeatures.*
-import jetbrains.buildServer.configs.kotlin.triggers.*
 
 import Delft3D.template.*
 import Delft3D.linux.*
+import Delft3D.windows.*
 
 object Publish : BuildType({
 
@@ -42,48 +42,77 @@ object Publish : BuildType({
                 value("dhydro")
             ))
         }
+        approval {
+            approvalRules = "group:DIMR_BAKKERS:1"
+        }
+    }
+
+    params {
+        select("release_type", "weekly", display = ParameterDisplay.PROMPT, options = listOf("daily", "weekly", "release"))
+        text("release_version", "2.29.xx", 
+            label = "Release version", 
+            description = "e.g. '2.29.03' or '2025.02'", 
+            display = ParameterDisplay.PROMPT)
+        text("reverse.dep.*.release_version", "2.29.xx", 
+            label = "Release version for dependencies", 
+            description = "e.g. '2.29.03' or '2025.02'", 
+            display = ParameterDisplay.PROMPT)
+        param("reverse.dep.*.product", "all-testbench")
+        param("commit_id_short", "%dep.${LinuxBuild.id}.commit_id_short%")
+        param("source_image", "%dep.${LinuxRuntimeContainers.id}.runtime_container_image%")
+        param("destination_image_generic", "containers.deltares.nl/delft3d/%brand%:%release_type%")
+        param("destination_image_specific", "containers.deltares.nl/delft3d/%brand%:%release_type%-%release_version%")
     }
 
     if (DslContext.getParameter("enable_release_publisher").lowercase() == "true") {
         dependencies {
-            snapshot(AbsoluteId("DIMR_To_NGHS")) {
-                onDependencyFailure = FailureAction.FAIL_TO_START
-                onDependencyCancel = FailureAction.CANCEL
+            dependency(DIMRbak) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
             }
-            dependency(LinuxRuntimeContainers) {
+            dependency(LinuxTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(WindowsTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(LinuxUnitTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(WindowsUnitTest) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(LinuxRunAllDockerExamples) {
+                snapshot {
+                    onDependencyFailure = FailureAction.FAIL_TO_START
+                    onDependencyCancel = FailureAction.CANCEL
+                }
+            }
+            dependency(LinuxLegacyDockerTest) {
                 snapshot {
                     onDependencyFailure = FailureAction.FAIL_TO_START
                     onDependencyCancel = FailureAction.CANCEL
                 }
             }
         }
-        triggers {
-            finishBuildTrigger {
-                enabled = true
-                buildType = "DIMR_To_NGHS"
-                successfulOnly = true
-                branchFilter = """
-                    +:main
-                    +:release/*
-                """.trimIndent()
-            }
-        }
     }
 
     requirements {
         contains("teamcity.agent.jvm.os.name", "Linux")
-    }
-
-    params {
-        select("release_type", "weekly", display = ParameterDisplay.PROMPT, options = listOf("daily", "weekly", "release"))
-        text("release_version", "%dep.Dimr_DimrCollector.DIMRset_ver%", 
-            label = "Release version", 
-            description = "e.g. '2.29.03' or '2025.02'", 
-            display = ParameterDisplay.PROMPT)
-        param("commit_id_short", "%dep.${LinuxBuild.id}.commit_id_short%")
-        param("source_image", "%dep.${LinuxRuntimeContainers.id}.runtime_container_image%")
-        param("destination_image_generic", "containers.deltares.nl/delft3d/%brand%:%release_type%")
-        param("destination_image_specific", "containers.deltares.nl/delft3d/%brand%:%release_type%-%release_version%")
     }
 
     steps {
@@ -153,6 +182,31 @@ object Publish : BuildType({
                 --brand %brand%
                 --release-version %release_version%
                 --commit-id-short %commit_id_short%
+            """.trimIndent()
+        }
+        script {
+            name = "Generate Apptainer SIF file"
+            workingDir = "src/scripts_lgpl/singularity"
+            scriptContent = """
+                apptainer pull docker-daemon:%destination_image_specific%
+            """.trimIndent()
+        }
+        script {
+            name = "Apptainer save for DFS-drive"
+            workingDir = "src/scripts_lgpl/singularity"
+            scriptContent = """
+                tar -czfv delft3dfm_%release_type%-%release_version%.tar.gz \
+                    delft3dfm_%release_type%-%release_version%.sif \
+                    execute_singularity.sh \
+                    readme.txt \
+                    run_singularity.sh \
+                    submit_singularity.sh \
+                    execute_singularity_h7.sh \
+                    submit_singularity_h7.sh \
+                    execute_singularity_tc.sh
+                
+                # Copy the artifact to network
+                cp -vf delft3dfm_%release_type%-%release_version%.tar.gz /opt/Testdata/DIMR/DIMR_collectors/DIMRset_lnx64_Singularity
             """.trimIndent()
         }
     }
