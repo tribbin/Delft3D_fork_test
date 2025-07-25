@@ -2697,15 +2697,31 @@ contains
 
          ! Ice model
          if (ja_icecover /= ICECOVER_NONE) then
-            call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_S1), valobs(:, IPNT_ICE_S1))
-            call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_ZMIN), valobs(:, IPNT_ICE_ZMIN))
-            call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_ZMAX), valobs(:, IPNT_ICE_ZMAX))
-            call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_AREA_FRACTION), valobs(:, IPNT_ICE_AREA_FRACTION))
-            call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_THICKNESS), valobs(:, IPNT_ICE_THICKNESS))
-            call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_PRESSURE), valobs(:, IPNT_ICE_PRESSURE))
-            if (ja_icecover == ICECOVER_SEMTNER) then
+            if (IPNT_ICE_S1 > 0) then
+               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_S1), valobs(:, IPNT_ICE_S1))
+            end if
+            if (IPNT_ICE_ZMIN > 0) then
+               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_ZMIN), valobs(:, IPNT_ICE_ZMIN))
+            end if
+            if (IPNT_ICE_ZMAX > 0) then
+               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_ZMAX), valobs(:, IPNT_ICE_ZMAX))
+            end if
+            if (IPNT_ICE_AREA_FRACTION > 0) then
+               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_AREA_FRACTION), valobs(:, IPNT_ICE_AREA_FRACTION))
+            end if
+            if (IPNT_ICE_THICKNESS > 0) then
+               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_THICKNESS), valobs(:, IPNT_ICE_THICKNESS))
+            end if
+            if (IPNT_ICE_PRESSURE > 0) then
+               call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_PRESSURE), valobs(:, IPNT_ICE_PRESSURE))
+            end if
+            if (IPNT_ICE_TEMPERATURE > 0) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_ICE_TEMPERATURE), valobs(:, IPNT_ICE_TEMPERATURE))
+            end if
+            if (IPNT_SNOW_THICKNESS > 0) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SNOW_THICKNESS), valobs(:, IPNT_SNOW_THICKNESS))
+            end if
+            if (IPNT_SNOW_TEMPERATURE > 0) then
                call add_stat_output_items(output_set, output_config_set%configs(IDX_HIS_SNOW_TEMPERATURE), valobs(:, IPNT_SNOW_TEMPERATURE))
             end if
          end if
