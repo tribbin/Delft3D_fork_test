@@ -3504,7 +3504,7 @@ inpupr,inpuit,inpunm,inpude,inpudo,inpusx
 "Sed_IM1   ","TaucSIM1  ",   5,"Y","x",1
 "Sed_IM1   ","Depth     ",   6,"N","x",1
 "Sed_IM1   ","DELT      ",   7,"N","x",1
-"Sed_IM1   ","728888th  ",   8,"Y","x",1
+"Sed_IM1   ","MinDepth  ",   8,"Y","x",1
 "Sed_IM1   ","FrIM1SedS2",   9,"Y","x",1
 "Sed_IM1   ","FrTIMS2   ",  10,"Y","x",1
 "Sed_IM1   ","FrTIMS2Max",  11,"Y","x",1

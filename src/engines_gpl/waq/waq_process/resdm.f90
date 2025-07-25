@@ -124,7 +124,7 @@ contains
 
         !
         ! Check for the switch: is the classic resuspension model correctly set up?
-        if ( nint(process_space_real(ipnt(id_switch_buffer))) /= 1 ) then
+        if ( nint(process_space_real(ipnt(id_switch_buffer))) /= 0 ) then
             call get_log_unit_number( lunrep )
             write(lunrep, '(a)' ) 'Please set the process parameter "SwResBuf" to 0', &
                                   'otherwise resuspension is not accounted for correctly', &
