@@ -65,15 +65,19 @@ for dir in */ ; do
         echo "Found $script_name in $dir. Executing..."
         found_scripts=$((found_scripts + 1))
         
+        # Start test reporting for TeamCity
+        test_name="${dir%/}_${container_runtime}"
+        echo "##teamcity[testStarted name='$test_name']"
+        
         # Run the script with the appropriate image format
         "${dir}${script_name}" --image "$container_image"
         
-        # Check exit status
-        if [ $? -ne 0 ]; then
-            echo "##teamcity[message text='$script_name in $dir exited with non-zero status (exit code: $?)' status='ERROR']"
-        else
-            echo "##teamcity[message text='Successfully executed $script_name in $dir' status='NORMAL']"
+        # Check exit status and report test result
+        exit_code=$?
+        if [ $exit_code -ne 0 ]; then
+            echo "##teamcity[testFailed name='$test_name' message='Script exited with code $exit_code']"
         fi
+        echo "##teamcity[testFinished name='$test_name']"
     else
         echo "No $script_name found in $dir."
     fi
