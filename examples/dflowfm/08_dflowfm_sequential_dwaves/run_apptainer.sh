@@ -8,10 +8,6 @@
 # Defaults to daily build; can also be overridden (for automation) with: --image <container-name>
 image=containers.deltares.nl/delft3d/delft3dfm:daily
 
-# Additional options, like increased shared memory for parallel runs.
-apptainer_options=""
-#apptainer_options="--memory 4G"
-
 # Directory containing the entire model, that will be mounted inside the container.
 # Default: the location of this script.
 model_dir=$(dirname "$(realpath "$0")")
@@ -34,7 +30,7 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
-run_cmd="apptainer run --no-cgroups ${apptainer_options} --bind \"${model_dir}:/data\" --pwd \"/data/${work_dir}\" $image \"$command\""
+run_cmd="apptainer run --bind \"${model_dir}:/data\" --pwd \"/data/${work_dir}\" $image \"$command\""
 
 echo "[INFO] $run_cmd"
 
