@@ -1563,6 +1563,7 @@ contains
       use m_lateral_helper_fuctions, only: prepare_lateral_mask
       use fm_external_forcings_data, only: success
       use fm_external_forcings_utils, only: split_qid
+      use m_heatfluxes, only: secchisp
       use m_wind, only: ICdtyp
       use m_fm_icecover, only: ja_ice_area_fraction_read, ja_ice_thickness_read, fm_ice_activate_by_ext_forces
       use m_meteo, only: ec_addtimespacerelation
@@ -1721,6 +1722,12 @@ contains
          else
             ja_ice_thickness_read = 1
          end if
+
+      case ('secchidepth')
+         call realloc(secchisp, ndx, keepExisting=.true., fill=dmiss, stat = ierr)
+         target_location_type = UNC_LOC_S
+         target_array => secchisp
+
       case ('stemdiameter')
 
          if (.not. allocated(stemdiam)) then
@@ -1972,6 +1979,8 @@ contains
                                   PotEvap, ActEvap
       use m_grw, only: jaintercept2D
       use m_fm_icecover, only: fm_ice_activate_by_ext_forces
+      use m_heatfluxes, only: jasecchisp, secchisp
+      use m_physcoef, only: secchidepth
       use m_meteo, only: ec_addtimespacerelation
       use m_vegetation, only: stemheight, stemheightstd
       use fm_location_types, only: UNC_LOC_S, UNC_LOC_U
@@ -1985,6 +1994,7 @@ contains
       character(len=*), intent(in) :: qid !< Quantity identifier.
 
       integer :: idum
+      integer :: n
       real(kind=dp), external :: ran0
       character(len=idlen) :: qid_base, qid_specific
 
@@ -2022,6 +2032,13 @@ contains
          if (qid == 'interceptionlayerthickness') then
             jaintercept2D = 1
          end if
+      case ('secchidepth')
+         jaSecchisp = 1
+         do n = 1, ndx
+            if (secchisp(n) == dmiss) then
+               secchisp(n) = secchidepth
+            end if
+         end do
       case ('stemheight')
          if (stemheightstd > 0.0_dp) then
             stemheight = stemheight * (1.0_dp + stemheightstd * (ran0(idum) - 0.5_dp))
