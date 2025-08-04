@@ -20,6 +20,7 @@ from settings.teamcity_settings import (
     PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT,
     TEAMCITY_IDS,
 )
+from typing import Dict
 
 
 class DimrAutomation(object):
@@ -51,26 +52,29 @@ class DimrAutomation(object):
         self.__ssh_client = ssh_client
         self.__git_client = git_client
 
-        self.__branch_name = None
-        self.__kernel_versions = None
-        self.__dimr_version = None
-
     def run(self, build_id_chain: str, dry_run: bool = False) -> None:
         """Runs the actual DIMR release automation steps."""
         self.__assert_preconditions(dry_run)
-        self.__get_kernel_versions(build_id_chain, dry_run)
-        self.__download_and_install_artifacts(build_id_chain, dry_run)
+
+        extractor = KernelVersionExtractor(self.__teamcity)
+
+        branch_name = extractor.get_branch_name(build_id_chain, dry_run)
+        kernel_versions = extractor.get_latest_kernel_versions(build_id_chain, dry_run)
+        dimr_version = extractor.get_dimr_version(kernel_versions)
+        extractor.assert_all_versions_have_been_extracted()
+
+        self.__download_and_install_artifacts(build_id_chain, dimr_version, branch_name,dry_run)
         if dry_run:
             print(f"{DRY_RUN_PREFIX} Would tag commit with:", 
-                  f"commit={self.__kernel_versions['build.vcs.number']}, tag=DIMRset_{self.__dimr_version}")
+                  f"commit={kernel_versions['build.vcs.number']}, tag=DIMRset_{dimr_version}")
         else:
             self.__git_client.tag_commit(
-                self.__kernel_versions["build.vcs.number"], f"DIMRset_{self.__dimr_version}"
+                kernel_versions["build.vcs.number"], f"DIMRset_{dimr_version}"
             )
-        self.__pin_and_tag_builds(build_id_chain, dry_run)
-        self.__update_excel_sheet(dry_run)
-        self.__prepare_email(build_id_chain, dry_run)  # depending on TC tags
-        self.__update_public_wiki(build_id_chain, dry_run)
+        self.__pin_and_tag_builds(build_id_chain, dimr_version, dry_run)
+        self.__update_excel_sheet(kernel_versions, dimr_version, dry_run)
+        self.__prepare_email(build_id_chain, kernel_versions, dimr_version, dry_run)
+        self.__update_public_wiki(build_id_chain, dimr_version, dry_run)
 
     def __assert_preconditions(self, dry_run: bool) -> None:
         """Asserts some preconditions are met before the script is fully run."""
@@ -82,34 +86,20 @@ class DimrAutomation(object):
         )
         preconditions.assert_preconditions(dry_run)
 
-    def __get_kernel_versions(self, build_id_chain: str, dry_run: bool) -> None:
-        """
-        Extract and set the kernel versions based on the information that has been manually
-        set in the TeamCity build settings.
-        """
-        extractor = KernelVersionExtractor(teamcity=self.__teamcity)
-
-        self.__branch_name = extractor.get_branch_name(build_id_chain, dry_run)
-
-        self.__kernel_versions = extractor.get_latest_kernel_versions(build_id_chain, dry_run)
-        extractor.assert_all_versions_have_been_extracted()
-
-        self.__dimr_version = extractor.get_dimr_version()
-
-    def __update_public_wiki(self, build_id_chain: str, dry_run: bool) -> None:
+    def __update_public_wiki(self, build_id_chain: str, dimr_version: str, dry_run: bool) -> None:
         """Updates the Public Wiki."""
         if dry_run:
-            print(f"{DRY_RUN_PREFIX} Would update public wiki for DIMR version:", self.__dimr_version)
+            print(f"{DRY_RUN_PREFIX} Would update public wiki for DIMR version:", dimr_version)
             return
         print("Updating the public wiki...")
         public_wiki = PublicWikiHelper(
             atlassian=self.__atlassian,
             teamcity=self.__teamcity,
-            dimr_version=self.__dimr_version,
+            dimr_version=dimr_version,
         )
         public_wiki.update_public_wiki(build_id_chain)
 
-    def __download_and_install_artifacts(self, build_id_chain: str, dry_run: bool) -> None:
+    def __download_and_install_artifacts(self, build_id_chain: str, dimr_version: str, branch_name: str, dry_run: bool) -> None:
         """Downloads the artifacts and installs them on Linux machine."""
         if dry_run:
             print(f"{DRY_RUN_PREFIX} Would download artifacts for build from TeamCity:", build_id_chain)
@@ -119,25 +109,25 @@ class DimrAutomation(object):
         helper = ArtifactInstallHelper(
             teamcity=self.__teamcity,
             ssh_client=self.__ssh_client,
-            dimr_version=self.__dimr_version,
-            branch_name=self.__branch_name,
+            dimr_version=dimr_version,
+            branch_name=branch_name,
         )
         helper.publish_artifacts_to_network_drive(build_id_chain)
         helper.publish_weekly_dimr_via_h7()
 
-    def __pin_and_tag_builds(self, build_id_chain: str, dry_run: bool) -> None:
+    def __pin_and_tag_builds(self, build_id_chain: str, dimr_version: str, dry_run: bool) -> None:
         """Pin and tag the appropriate builds."""
         if dry_run:
             print(f"{DRY_RUN_PREFIX} Would pin and tag builds in TeamCity for build chain:", build_id_chain)
-            print(f"{DRY_RUN_PREFIX} Would add tag:", f"DIMRset_{self.__dimr_version}")
+            print(f"{DRY_RUN_PREFIX} Would add tag:", f"DIMRset_{dimr_version}")
             return
-        helper = PinHelper(teamcity=self.__teamcity, dimr_version=self.__dimr_version)
+        helper = PinHelper(teamcity=self.__teamcity, dimr_version=dimr_version)
         helper.pin_and_tag_builds(build_id_chain)
 
-    def __update_excel_sheet(self, dry_run: bool) -> None:
+    def __update_excel_sheet(self, kernel_versions: Dict[str, str], dimr_version: str, dry_run: bool) -> None:
         """Updates the Excel sheet with this week's release information."""
         if dry_run:
-            print(f"{DRY_RUN_PREFIX} Would update Excel sheet with DIMR version:", self.__dimr_version)
+            print(f"{DRY_RUN_PREFIX} Would update Excel sheet with DIMR version:", dimr_version)
             print(f"{DRY_RUN_PREFIX} Would download Excel from network drive")
             print(f"{DRY_RUN_PREFIX} Would append new row with release information")
             print(f"{DRY_RUN_PREFIX} Would upload updated Excel back to network drive")
@@ -151,8 +141,8 @@ class DimrAutomation(object):
         helper = ExcelHelper(
             teamcity=self.__teamcity,
             filepath=VERSIONS_EXCEL_FILENAME,
-            dimr_version=self.__dimr_version,
-            kernel_versions=self.__kernel_versions,
+            dimr_version=dimr_version,
+            kernel_versions=kernel_versions,
             parser=parser,
         )
         helper.append_row()
@@ -160,16 +150,16 @@ class DimrAutomation(object):
             LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME, path_to_excel_file, Direction.TO
         )
 
-    def __prepare_email(self, build_id_chain: str, dry_run: bool) -> None:
+    def __prepare_email(self, build_id_chain: str, kernel_versions: Dict[str, str], dimr_version: str, dry_run: bool) -> None:
         if dry_run:
-            print(f"{DRY_RUN_PREFIX} Would prepare email template for DIMR version:", self.__dimr_version)
+            print(f"{DRY_RUN_PREFIX} Would prepare email template for DIMR version:", dimr_version)
             return
         parser = self.__get_testbank_result_parser()
         previous_parser = self.__get_previous_testbank_result_parser(build_id_chain)
 
         helper = EmailHelper(
-            dimr_version=self.__dimr_version,
-            kernel_versions=self.__kernel_versions,
+            dimr_version=dimr_version,
+            kernel_versions=kernel_versions,
             current_parser=parser,
             previous_parser=previous_parser,
         )

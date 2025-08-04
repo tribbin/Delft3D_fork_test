@@ -83,12 +83,12 @@ class KernelVersionExtractor(object):
         self.__branch_name = branch_name_property["value"]
         return self.__branch_name
 
-    def get_dimr_version(self) -> str:
+    def get_dimr_version(self, kernel_versions: Dict[str, str]) -> str:
         """ Extracts and returns the DIMR version that requires automated release. """
-        if self.__kernel_versions is None:
+        if kernel_versions is None:
             raise AssertionError("Could not extract the DIMR version: the kernel versions have not yet been extracted")
-        self.__dimr_version = self.__kernel_versions["DIMRset_ver"]
-        return self.__dimr_version
+        dimr_version = kernel_versions["DIMRset_ver"]
+        return dimr_version
 
     def __extract_kernel_versions(self, build_info: Dict[str, Any]) -> Dict[str, str]:
         """
