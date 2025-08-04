@@ -20,4 +20,4 @@ NAME_COLUMN = "C"
 RELATIVE_PATH_TO_OUTPUT_FOLDER = "..\\..\\output\\"
 
 # Dry-run mode prefix
-DRY_RUN_PREFIX = "🔍 DRY-RUN:"
+DRY_RUN_PREFIX = "[DRY-RUN]"
