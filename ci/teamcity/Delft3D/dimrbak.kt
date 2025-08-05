@@ -65,27 +65,10 @@ object DIMRbak : BuildType({
     }
 
     steps {
-
-        
-        python {
-            name = "Generate test report summary"
-            command = file {
-                filename = "teamcity_retrieve_engine_test_status_dpc.py"
-                scriptArguments = """
-                    --username "%svn_buildserver_username%"
-                    --password "%svn_buildserver_password%"
-                    --build_id "%teamcity.build.id%"
-                """.trimIndent()
-            }
-            workingDir = "ci/DIMRset_delivery/src"
-            environment = venv {
-                requirementsFile = "../requirements.txt"
-            }
-        }
         python {
             name = "Assert access rights"
             command = file {
-                filename = "step1_assert_preconditions.py"
+                filename = "assert_preconditions.py"
                 scriptArguments = """
                     --atlassian-username "%dimrbakker_username%"
                     --atlassian-password "%dimrbakker_password%"
@@ -105,9 +88,24 @@ object DIMRbak : BuildType({
             }
         }
         python {
+            name = "Generate test report summary"
+            command = file {
+                filename = "teamcity_retrieve_engine_test_status_dpc.py"
+                scriptArguments = """
+                    --username "%svn_buildserver_username%"
+                    --password "%svn_buildserver_password%"
+                    --build_id "%teamcity.build.id%"
+                """.trimIndent()
+            }
+            workingDir = "ci/DIMRset_delivery/src"
+            environment = venv {
+                requirementsFile = "../requirements.txt"
+            }
+        }
+        python {
             name = "Download artifacts from TeamCity and on file share using H7"
             command = file {
-                filename = "step2_download_and_install_artifacts.py"
+                filename = "download_and_install_artifacts.py"
                 scriptArguments = """
                     --teamcity-username "%dimrbakker_username%"
                     --teamcity-password "%dimrbakker_password%"
@@ -125,7 +123,7 @@ object DIMRbak : BuildType({
         python {
             name = "Update Excel sheet"
             command = file {
-                filename = "step3_update_excel_sheet.py"
+                filename = "update_excel_sheet.py"
                 scriptArguments = """
                     --teamcity-username "%dimrbakker_username%"
                     --teamcity-password "%dimrbakker_password%"
@@ -143,7 +141,7 @@ object DIMRbak : BuildType({
         python {
             name = "Prepare email template"
             command = file {
-                filename = "step4_prepare_email.py"
+                filename = "prepare_email.py"
                 scriptArguments = """
                     --teamcity-username "%dimrbakker_username%"
                     --teamcity-password "%dimrbakker_password%"
@@ -159,7 +157,7 @@ object DIMRbak : BuildType({
         python {
             name = "Update public wiki"
             command = file {
-                filename = "step5_update_public_wiki.py"
+                filename = "update_public_wiki.py"
                 scriptArguments = """
                     --atlassian-username "%dimrbakker_username%"
                     --atlassian-password "%dimrbakker_password%"
@@ -177,7 +175,7 @@ object DIMRbak : BuildType({
         python {
             name = "Pin and tag builds"
             command = file {
-                filename = "step6_pin_and_tag_builds.py"
+                filename = "pin_and_tag_builds.py"
                 scriptArguments = """
                     --teamcity-username "%dimrbakker_username%"
                     --teamcity-password "%dimrbakker_password%"
