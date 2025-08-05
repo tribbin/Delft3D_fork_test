@@ -119,10 +119,9 @@ object TestPythonCiTools : BuildType({
             environment = venv {
                 requirementsFile = "requirements.txt"
             }
-            command = script {
-                content = """
-                    python -m ruff check src/ --output-format=junit --output-file=ruff_dimrset.xml || echo "Linting completed with warnings"
-                """.trimIndent()
+            command = module {
+                module = "ruff"
+                scriptArguments = "check src/ --output-format=junit --output-file=ruff_dimrset.xml"
             }
         }
         python {
