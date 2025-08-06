@@ -1,13 +1,13 @@
 import os
 from typing import Dict, Optional
 
-from ..settings.email_settings import (
+from ci_tools.dimrset_delivery.helpers.testbank_result_parser import TestbankResultParser
+from ci_tools.dimrset_delivery.settings.email_settings import (
     LOWER_BOUND_PERCENTAGE_SUCCESSFUL_TESTS,
     RELATIVE_PATH_TO_EMAIL_TEMPLATE,
 )
-from ..settings.general_settings import RELATIVE_PATH_TO_OUTPUT_FOLDER
-from ..settings.teamcity_settings import KERNELS
-from .testbank_result_parser import TestbankResultParser
+from ci_tools.dimrset_delivery.settings.general_settings import RELATIVE_PATH_TO_OUTPUT_FOLDER
+from ci_tools.dimrset_delivery.settings.teamcity_settings import KERNELS
 
 
 class EmailHelper(object):

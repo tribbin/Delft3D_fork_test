@@ -6,13 +6,13 @@ Provides shared initialization and helper functions.
 
 from typing import Tuple
 
-from .helpers.git_client import GitClient
-from .helpers.ssh_client import SshClient
-from .helpers.testbank_result_parser import TestbankResultParser
-from .lib.atlassian import Atlassian
-from .lib.teamcity import TeamCity
-from .settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
-from .settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
+from ci_tools.dimrset_delivery.helpers.git_client import GitClient
+from ci_tools.dimrset_delivery.helpers.ssh_client import SshClient
+from ci_tools.dimrset_delivery.helpers.testbank_result_parser import TestbankResultParser
+from ci_tools.dimrset_delivery.lib.atlassian import Atlassian
+from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
+from ci_tools.dimrset_delivery.settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
 
 
 def initialize_clients(

@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional, Union
 import requests
 from requests import Response
 
-from ..settings.general_settings import DRY_RUN_PREFIX
-from ..settings.teamcity_settings import TeamcityIds
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.teamcity_settings import TeamcityIds
 
 
 class TeamCity(object):

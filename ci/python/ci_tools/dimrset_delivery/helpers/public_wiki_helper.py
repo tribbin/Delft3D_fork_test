@@ -2,9 +2,9 @@ import os
 from datetime import datetime, timezone
 from typing import Tuple
 
-from ..lib.atlassian import Atlassian
-from ..lib.teamcity import TeamCity
-from ..settings.atlassian_settings import (
+from ci_tools.dimrset_delivery.lib.atlassian import Atlassian
+from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
+from ci_tools.dimrset_delivery.settings.atlassian_settings import (
     DIMR_MAJOR_PAGE_PREFIX,
     DIMR_MINOR_PAGE_PREFIX,
     DIMR_PATCH_PAGE_PREFIX,
@@ -16,7 +16,7 @@ from ..settings.atlassian_settings import (
 )
 
 # from settings.teamcity_settings import *
-from ..settings.teamcity_settings import (
+from ci_tools.dimrset_delivery.settings.teamcity_settings import (
     PATH_TO_LINUX_VERSION_ARTIFACT,
     PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT,
     PATH_TO_WINDOWS_VERSION_ARTIFACT,

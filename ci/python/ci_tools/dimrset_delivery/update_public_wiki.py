@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Update the Public Wiki with the new DIMR release information."""
 
-from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
-from .helpers.public_wiki_helper import PublicWikiHelper
-from .settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.dimr_context import (
+    DimrAutomationContext,
+    create_context_from_args,
+    parse_common_arguments,
+)
+from ci_tools.dimrset_delivery.helpers.public_wiki_helper import PublicWikiHelper
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 def update_public_wiki(context: DimrAutomationContext) -> None:

@@ -6,8 +6,12 @@ from typing import List, Optional
 
 from pyparsing import Enum
 
-from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
-from .settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.dimr_context import (
+    DimrAutomationContext,
+    create_context_from_args,
+    parse_common_arguments,
+)
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 """
 This script retrieves test results from TeamCity for DIMR release builds.

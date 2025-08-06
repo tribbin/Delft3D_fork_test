@@ -3,7 +3,7 @@ from enum import Enum
 import paramiko
 from scp import SCPClient  # type: ignore[import-untyped]
 
-from ..settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class Direction(Enum):

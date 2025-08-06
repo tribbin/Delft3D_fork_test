@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Union
 
 import requests
 
-from ..settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class Atlassian(object):

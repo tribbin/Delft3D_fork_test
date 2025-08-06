@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Download the artifacts and install them on Linux machine."""
 
-from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
-from .helpers.artifact_install_helper import ArtifactInstallHelper
-from .settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.dimr_context import (
+    DimrAutomationContext,
+    create_context_from_args,
+    parse_common_arguments,
+)
+from ci_tools.dimrset_delivery.helpers.artifact_install_helper import ArtifactInstallHelper
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 def download_and_install_artifacts(context: DimrAutomationContext) -> None:

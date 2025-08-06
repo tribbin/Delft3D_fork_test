@@ -3,12 +3,16 @@
 
 from typing import Optional
 
-from .common_utils import get_testbank_result_parser
-from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
-from .helpers.email_helper import EmailHelper
-from .helpers.testbank_result_parser import TestbankResultParser
-from .settings.general_settings import DRY_RUN_PREFIX
-from .settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
+from ci_tools.dimrset_delivery.common_utils import get_testbank_result_parser
+from ci_tools.dimrset_delivery.dimr_context import (
+    DimrAutomationContext,
+    create_context_from_args,
+    parse_common_arguments,
+)
+from ci_tools.dimrset_delivery.helpers.email_helper import EmailHelper
+from ci_tools.dimrset_delivery.helpers.testbank_result_parser import TestbankResultParser
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
 
 
 def prepare_email(context: DimrAutomationContext) -> None:

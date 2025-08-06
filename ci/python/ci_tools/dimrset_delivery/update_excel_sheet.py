@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Update the Excel sheet with this week's release information."""
 
-from .common_utils import get_testbank_result_parser
-from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
-from .helpers.excel_helper import ExcelHelper
-from .helpers.ssh_client import Direction
-from .settings.general_settings import DRY_RUN_PREFIX, LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME
+from ci_tools.dimrset_delivery.common_utils import get_testbank_result_parser
+from ci_tools.dimrset_delivery.dimr_context import (
+    DimrAutomationContext,
+    create_context_from_args,
+    parse_common_arguments,
+)
+from ci_tools.dimrset_delivery.helpers.excel_helper import ExcelHelper
+from ci_tools.dimrset_delivery.helpers.ssh_client import Direction
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX, LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME
 
 
 def update_excel_sheet(context: DimrAutomationContext) -> None:

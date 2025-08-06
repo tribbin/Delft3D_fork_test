@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Pin and tag the appropriate builds in TeamCity."""
 
-from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
-from .helpers.pin_helper import PinHelper
-from .settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.dimr_context import (
+    DimrAutomationContext,
+    create_context_from_args,
+    parse_common_arguments,
+)
+from ci_tools.dimrset_delivery.helpers.pin_helper import PinHelper
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 def pin_and_tag_builds(context: DimrAutomationContext) -> None:

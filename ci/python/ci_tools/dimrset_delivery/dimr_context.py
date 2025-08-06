@@ -8,12 +8,12 @@ import argparse
 from getpass import getpass
 from typing import Any, Dict, Optional
 
-from .helpers.git_client import GitClient
-from .helpers.ssh_client import SshClient
-from .lib.atlassian import Atlassian
-from .lib.teamcity import TeamCity
-from .settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
-from .settings.teamcity_settings import KERNELS
+from ci_tools.dimrset_delivery.helpers.git_client import GitClient
+from ci_tools.dimrset_delivery.helpers.ssh_client import SshClient
+from ci_tools.dimrset_delivery.lib.atlassian import Atlassian
+from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
+from ci_tools.dimrset_delivery.settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.teamcity_settings import KERNELS
 
 
 class DimrAutomationContext:

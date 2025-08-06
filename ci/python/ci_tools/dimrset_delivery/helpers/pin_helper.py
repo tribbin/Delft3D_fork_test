@@ -1,4 +1,4 @@
-from ..lib.teamcity import TeamCity
+from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 
 
 class PinHelper(object):

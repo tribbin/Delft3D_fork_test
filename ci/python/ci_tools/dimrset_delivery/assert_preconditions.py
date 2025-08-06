@@ -3,12 +3,16 @@
 
 import os
 
-from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
-from .helpers.git_client import GitClient
-from .helpers.ssh_client import SshClient
-from .lib.atlassian import Atlassian
-from .lib.teamcity import TeamCity
-from .settings.general_settings import DRY_RUN_PREFIX, LINUX_ADDRESS, NETWORK_BASE_PATH
+from ci_tools.dimrset_delivery.dimr_context import (
+    DimrAutomationContext,
+    create_context_from_args,
+    parse_common_arguments,
+)
+from ci_tools.dimrset_delivery.helpers.git_client import GitClient
+from ci_tools.dimrset_delivery.helpers.ssh_client import SshClient
+from ci_tools.dimrset_delivery.lib.atlassian import Atlassian
+from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX, LINUX_ADDRESS, NETWORK_BASE_PATH
 
 
 class PreconditionsHelper(object):

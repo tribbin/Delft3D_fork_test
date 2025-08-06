@@ -1,7 +1,7 @@
 import subprocess
 import sys
 
-from ..settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class GitClient(object):
