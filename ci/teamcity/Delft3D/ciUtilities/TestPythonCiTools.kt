@@ -11,9 +11,9 @@ import Delft3D.step.*
 
 object TestPythonCiTools : BuildType({
     id("TestPythonCiTools")
-    name = "Test Python CI tools and DIMRset Delivery"
+    name = "Test Python CI tools"
     description = """
-        Runs tests and quality checks on the python CI tools and DIMRset delivery scripts.
+        Runs tests and quality checks on the python CI tools (including DIMRset delivery).
     """.trimIndent()
 
     // The name `coverage.zip` for the pytest coverage report should not be changed.
@@ -22,8 +22,6 @@ object TestPythonCiTools : BuildType({
     artifactRules = """
         +:ci/python/*.xml => report
         +:ci/python/htmlcov/* => coverage.zip
-        +:ci/DIMRset_delivery/*.xml => report
-        +:ci/DIMRset_delivery/htmlcov/* => coverage_dimrset.zip
     """.trimIndent()
 
     templates(
@@ -46,9 +44,6 @@ object TestPythonCiTools : BuildType({
                 +:/ci/python/**/*.py
                 +:/ci/python/pyproject.toml
                 +:/ci/python/uv.lock
-                +:/ci/DIMRset_delivery/**/*.py
-                +:/ci/DIMRset_delivery/requirements.txt
-                +:/ci/DIMRset_delivery/pytest.ini
             """.trimIndent()
             branchFilter = "+:pull/*"
         }
@@ -112,36 +107,6 @@ object TestPythonCiTools : BuildType({
                 """.trimIndent()
             }
         }
-        python {
-            name = "Run DIMRset delivery linter"
-            workingDir = "ci/DIMRset_delivery"
-            pythonVersion = customPython { executable = "python3.11" }
-            environment = venv {
-                requirementsFile = "requirements.txt"
-            }
-            command = module {
-                module = "ruff"
-                scriptArguments = "check src/ --output-format=junit --output-file=ruff_dimrset.xml"
-            }
-        }
-        python {
-            name = "Run DIMRset delivery tests"
-            workingDir = "ci/DIMRset_delivery"
-            pythonVersion = customPython { executable = "python3.11" }
-            environment = venv {
-                requirementsFile = "requirements.txt"
-            }
-            command = module {
-                module = "pytest"
-                scriptArguments = """
-                    test/
-                    --junitxml=pytest_dimrset.xml
-                    --cov-report=html
-                    --cov=src
-                    --verbose
-                """.trimIndent()
-            }
-        }
     }
 
     features {
@@ -151,8 +116,6 @@ object TestPythonCiTools : BuildType({
                 +:ci/python/ruff.xml
                 +:ci/python/mypy.xml
                 +:ci/python/pytest.xml
-                +:ci/DIMRset_delivery/ruff_dimrset.xml
-                +:ci/DIMRset_delivery/pytest_dimrset.xml
             """.trimIndent()
         }
     }
