@@ -32,6 +32,11 @@ def update_excel_sheet(context: DimrAutomationContext) -> None:
     parser = get_testbank_result_parser()
     path_to_excel_file = f"/p/d-hydro/dimrset/{VERSIONS_EXCEL_FILENAME}"
 
+    if context.ssh_client is None:
+        raise ValueError("SSH client is required but not initialized")
+    if context.teamcity is None:
+        raise ValueError("TeamCity client is required but not initialized")
+
     context.ssh_client.secure_copy(LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME, path_to_excel_file, Direction.FROM)
     helper = ExcelHelper(
         teamcity=context.teamcity,

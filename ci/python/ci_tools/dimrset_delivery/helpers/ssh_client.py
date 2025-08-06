@@ -114,8 +114,10 @@ class SshClient(object):
                 address, username=self.__username, password=self.__password, timeout=self.__connect_timeout
             )
             transport = self.__client.get_transport()
-            transport.set_keepalive(60)
-            transport.sock.settimeout(120)
+            if transport is not None:
+                transport.set_keepalive(60)
+                if transport.sock is not None:
+                    transport.sock.settimeout(120)
             with SCPClient(self.__client.get_transport()) as scp_client:
                 scp_client.channel.settimeout(120)
                 if direction == Direction.TO:

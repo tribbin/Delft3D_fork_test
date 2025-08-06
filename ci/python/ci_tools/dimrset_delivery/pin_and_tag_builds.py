@@ -29,6 +29,11 @@ def pin_and_tag_builds(context: DimrAutomationContext) -> None:
         )
         return
 
+    if context.teamcity is None:
+        raise ValueError("TeamCity client is required but not initialized")
+    if context.git_client is None:
+        raise ValueError("Git client is required but not initialized")
+
     helper = PinHelper(teamcity=context.teamcity, dimr_version=dimr_version)
     helper.pin_and_tag_builds(context.build_id)
 

@@ -23,6 +23,11 @@ def update_public_wiki(context: DimrAutomationContext) -> None:
         print(f"{DRY_RUN_PREFIX} Would update public wiki for DIMR version:", dimr_version)
         return
 
+    if context.atlassian is None:
+        raise ValueError("Atlassian client is required but not initialized")
+    if context.teamcity is None:
+        raise ValueError("TeamCity client is required but not initialized")
+
     public_wiki = PublicWikiHelper(
         atlassian=context.atlassian,
         teamcity=context.teamcity,

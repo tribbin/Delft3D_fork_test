@@ -1,6 +1,6 @@
 import json
 from types import SimpleNamespace
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Union
 
 import requests
 
@@ -53,7 +53,9 @@ class Atlassian(object):
 
         if dry_run:
             print(f"{DRY_RUN_PREFIX} GET request: {endpoint}")
-            result = SimpleNamespace(status_code=200, content=b"dry-run mock")
+            result: Union[SimpleNamespace, requests.Response] = SimpleNamespace(
+                status_code=200, content=b"dry-run mock"
+            )
         else:
             result = requests.get(url=endpoint, headers=self.__default_headers, auth=self.__auth, verify=False)
 
@@ -61,7 +63,7 @@ class Atlassian(object):
             print("Successfully connected to the Atlassian Confluence API.")
             return True
         print("Could not connect to the Atlassian Confluence API:")
-        print(f"Error : {result.status_code} - {result.content}")
+        print(f"Error : {result.status_code} - {result.content.decode('utf-8')}")
         return False
 
     def get_page_info_for_parent_page(self, parent_page_id: str) -> Optional[Dict[str, Any]]:
@@ -90,9 +92,10 @@ class Atlassian(object):
         endpoint = f"{self.__rest_uri}content/search?cql=parent={parent_page_id}"
         result = requests.get(url=endpoint, headers=self.__default_headers, auth=self.__auth, verify=False)
         if result.status_code == 200:
-            return result.json()
+            json_response: Dict[str, Any] = result.json()
+            return json_response
         print(f"Could not get page info for page {parent_page_id}:")
-        print(f"{result.status_code} - {result.content}")
+        print(f"{result.status_code} - {result.content.decode('utf-8')}")
         return None
 
     def create_public_wiki_page(
@@ -139,9 +142,11 @@ class Atlassian(object):
         )
         if result.status_code == 200:
             print("Successfully created page.")
-            return result.json()["id"]
+            json_response: Dict[str, Any] = result.json()
+            page_id: str = json_response["id"]
+            return page_id
         print("Could not create page:")
-        print(f"Error : {result.status_code} - {result.content}")
+        print(f"Error : {result.status_code} - {result.content.decode('utf-8')}")
         return None
 
     def update_page(self, page_id: str, page_title: str, content: str, next_version: Optional[int] = None) -> bool:
@@ -169,10 +174,11 @@ class Atlassian(object):
         """
         if next_version is None:
             current_version = self.get_page_version(page_id)
-            next_version = current_version + 1
-            if next_version is None:
+            if current_version is None:
                 print("Could not update page:")
                 print("Could not retrieve the current version of the page.")
+                return False
+            next_version = current_version + 1
 
         payload = json.dumps(
             {
@@ -190,7 +196,7 @@ class Atlassian(object):
         )
         if result.status_code != 200:
             print("Could not update page:")
-            print(f"Error : {result.status_code} - {result.content}")
+            print(f"Error : {result.status_code} - {result.content.decode('utf-8')}")
             return False
         print("Successfully updated page.")
         return True
@@ -215,7 +221,9 @@ class Atlassian(object):
         endpoint = f"{self.__rest_uri}content/{page_id}"
         result = requests.get(url=endpoint, headers=self.__default_headers, auth=self.__auth, verify=False)
         if result.status_code == 200:
-            return result.json()["version"]["number"]
+            json_response: Dict[str, Any] = result.json()
+            version_number: int = json_response["version"]["number"]
+            return version_number
         print(f"Could not get the version of page {page_id}:")
-        print(f"{result.status_code} - {result.content}")
+        print(f"{result.status_code} - {result.content.decode('utf-8')}")
         return None

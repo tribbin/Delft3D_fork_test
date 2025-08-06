@@ -26,6 +26,11 @@ def download_and_install_artifacts(context: DimrAutomationContext) -> None:
         print(f"{DRY_RUN_PREFIX} Would publish weekly DIMR via H7")
         return
 
+    if context.teamcity is None:
+        raise ValueError("TeamCity client is required but not initialized")
+    if context.ssh_client is None:
+        raise ValueError("SSH client is required but not initialized")
+
     helper = ArtifactInstallHelper(
         teamcity=context.teamcity,
         ssh_client=context.ssh_client,

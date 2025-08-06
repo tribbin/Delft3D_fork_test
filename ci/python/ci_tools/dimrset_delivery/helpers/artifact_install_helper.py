@@ -34,7 +34,7 @@ def extract_archive(archive_path: str, target_path: str) -> None:
             for member in tar.getmembers():
                 # Strip the Unix permission bits when on Windows
                 if os.name == "nt":
-                    member.mode = None
+                    member.mode = 0o644  # Default file permissions for Windows
                 tar.extract(member, path=target_path)
     elif archive_path.endswith(".zip"):
         with zipfile.ZipFile(archive_path, "r") as zip_ref:
@@ -75,8 +75,14 @@ class ArtifactInstallHelper(object):
             build_id_chain, TeamcityIds.DELFT3D_LINUX_COLLECT_BUILD_TYPE_ID.value
         )
 
-        self.__publish_artifact_to_file_share(windows_collect_id, NAME_OF_DIMR_RELEASE_SIGNED_WINDOWS_ARTIFACT)
-        self.__publish_artifact_to_file_share(linux_collect_id, NAME_OF_DIMR_RELEASE_SIGNED_LINUX_ARTIFACT)
+        self.__publish_artifact_to_file_share(
+            str(windows_collect_id) if windows_collect_id is not None else "",
+            NAME_OF_DIMR_RELEASE_SIGNED_WINDOWS_ARTIFACT
+        )
+        self.__publish_artifact_to_file_share(
+            str(linux_collect_id) if linux_collect_id is not None else "",
+            NAME_OF_DIMR_RELEASE_SIGNED_LINUX_ARTIFACT
+        )
 
     def publish_weekly_dimr_via_h7(self) -> None:
         """Installs DIMR on the Linux machine via SSH."""
@@ -114,6 +120,8 @@ class ArtifactInstallHelper(object):
             None
         """
         artifact_names = self.__teamcity.get_build_artifact_names(build_id=build_id)
+        if artifact_names is None:
+            raise ValueError(f"Could not retrieve artifact names for build {build_id}")
         artifacts_to_download = [a["name"] for a in artifact_names["file"] if artifact_name_key in a["name"]]
         self.__download_and_unpack_dimr_artifacts_via_h7(
             artifacts_to_download=artifacts_to_download,
@@ -135,6 +143,9 @@ class ArtifactInstallHelper(object):
         for artifact_to_download in artifacts_to_download:
             print(f"Downloading {artifact_to_download}...")
             artifact = self.__teamcity.get_build_artifact(build_id=build_id, path_to_artifact=artifact_to_download)
+
+            if artifact is None:
+                raise ValueError(f"Could not download artifact {artifact_to_download}")
 
             with open(artifact_to_download, "wb") as f:
                 f.write(artifact)

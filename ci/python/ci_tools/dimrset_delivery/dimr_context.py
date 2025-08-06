@@ -6,7 +6,7 @@ Handles initialization and provides common functionality.
 
 import argparse
 from getpass import getpass
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from .helpers.git_client import GitClient
 from .helpers.ssh_client import SshClient
@@ -58,19 +58,34 @@ class DimrAutomationContext:
             print("Git credentials:")
             git_username = git_username or input("Enter your Git username:")
             git_pat = git_pat or getpass(prompt="Enter your Git PAT:", stream=None)
-        self.atlassian = (
-            Atlassian(username=atlassian_username, password=atlassian_password) if require_atlassian else None
-        )
-        self.teamcity = TeamCity(username=teamcity_username, password=teamcity_password) if require_teamcity else None
-        self.ssh_client = (
-            SshClient(username=ssh_username, password=ssh_password, connect_timeout=30) if require_ssh else None
-        )
-        self.git_client = GitClient(DELFT3D_GIT_REPO, git_username, git_pat) if require_git else None
+        self.atlassian = None
+        if require_atlassian:
+            if not atlassian_username or not atlassian_password:
+                raise ValueError("Atlassian credentials are required but not provided")
+            self.atlassian = Atlassian(username=atlassian_username, password=atlassian_password)
+
+        self.teamcity = None
+        if require_teamcity:
+            if not teamcity_username or not teamcity_password:
+                raise ValueError("TeamCity credentials are required but not provided")
+            self.teamcity = TeamCity(username=teamcity_username, password=teamcity_password)
+
+        self.ssh_client = None
+        if require_ssh:
+            if not ssh_username or not ssh_password:
+                raise ValueError("SSH credentials are required but not provided")
+            self.ssh_client = SshClient(username=ssh_username, password=ssh_password, connect_timeout=30)
+
+        self.git_client = None
+        if require_git:
+            if not git_username or not git_pat:
+                raise ValueError("Git credentials are required but not provided")
+            self.git_client = GitClient(DELFT3D_GIT_REPO, git_username, git_pat)
 
         # Cache for commonly needed data
-        self._kernel_versions = None
-        self._dimr_version = None
-        self._branch_name = None
+        self._kernel_versions: Optional[Dict[str, str]] = None
+        self._dimr_version: Optional[str] = None
+        self._branch_name: Optional[str] = None
 
     def print_status(self, message: str) -> None:
         """Print status message with dry-run prefix if applicable.
@@ -103,7 +118,11 @@ class DimrAutomationContext:
                     KERNELS[1].name_for_extracting_revision: "abcdefghijklmnopqrstuvwxyz01234567890123",
                 }
             else:
+                if self.teamcity is None:
+                    raise ValueError("TeamCity client is required but not initialized")
                 publish_build_info = self.teamcity.get_build_info_for_build_id(self.build_id)
+                if publish_build_info is None:
+                    raise ValueError("Could not retrieve build info from TeamCity")
                 self._kernel_versions = self._extract_kernel_versions(publish_build_info)
         return self._kernel_versions
 
@@ -138,7 +157,11 @@ class DimrAutomationContext:
                 self._branch_name = "main"
                 self.print_status(f"simulating '{self._branch_name}' branch")
             else:
+                if self.teamcity is None:
+                    raise ValueError("TeamCity client is required but not initialized")
                 latest_publish_build_info = self.teamcity.get_build_info_for_build_id(self.build_id)
+                if latest_publish_build_info is None:
+                    raise ValueError("Could not retrieve build info from TeamCity")
                 branch_name_property = next(
                     (
                         prop
@@ -147,18 +170,20 @@ class DimrAutomationContext:
                     ),
                     None,
                 )
+                if branch_name_property is None:
+                    raise ValueError("Could not find branch name in build properties")
                 self._branch_name = branch_name_property["value"]
         return self._branch_name
 
-    def _extract_kernel_versions(self, build_info: dict) -> Dict[str, str]:
+    def _extract_kernel_versions(self, build_info: Dict[str, Any]) -> Dict[str, str]:
         """Extract kernel versions from build info."""
-        kernel_versions = {}
+        kernel_versions: Dict[str, str] = {}
         for kernel in KERNELS:
-            kernel_versions[kernel.name_for_extracting_revision] = None
+            kernel_versions[kernel.name_for_extracting_revision] = ""
 
-        for kernel in build_info["resultingProperties"]["property"]:
-            if any(k.name_for_extracting_revision == kernel["name"] for k in KERNELS):
-                kernel_versions[kernel["name"]] = kernel["value"]
+        for kernel_prop in build_info["resultingProperties"]["property"]:
+            if any(k.name_for_extracting_revision == kernel_prop["name"] for k in KERNELS):
+                kernel_versions[kernel_prop["name"]] = kernel_prop["value"]
 
         return kernel_versions
 

@@ -81,6 +81,15 @@ def assert_preconditions(context: DimrAutomationContext) -> None:
     """
     context.print_status("Asserting preconditions...")
 
+    if context.atlassian is None:
+        raise ValueError("Atlassian client is required but not initialized")
+    if context.teamcity is None:
+        raise ValueError("TeamCity client is required but not initialized")
+    if context.ssh_client is None:
+        raise ValueError("SSH client is required but not initialized")
+    if context.git_client is None:
+        raise ValueError("Git client is required but not initialized")
+
     preconditions = PreconditionsHelper(
         atlassian=context.atlassian,
         teamcity=context.teamcity,
