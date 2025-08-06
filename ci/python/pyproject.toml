@@ -11,6 +11,11 @@ dependencies = [
     "httpx>=0.28.1",
     "minio==7.2.15",
     "s3-path-wrangler~=0.5.0",
+    "requests",
+    "paramiko",
+    "scp",
+    "python-certifi-win32",
+    "pyparsing",
 ]
 
 [project.optional-dependencies]
@@ -27,7 +32,15 @@ verschilanalyse = [
     "types-openpyxl~=3.1.5",
     "junit-xml~=1.9",
 ]
-all = ["ci-tools[verschilanalyse,dev]"]
+dimrset_delivery = [
+    "requests",
+    "paramiko", 
+    "scp",
+    "python-certifi-win32",
+    "pyparsing",
+    "openpyxl~=3.1.5",
+]
+all = ["ci-tools[verschilanalyse,dimrset_delivery,dev]"]
 
 [project.scripts]
 minio-sync = "ci_tools.minio.synchronize.cli:CommandLine.run"

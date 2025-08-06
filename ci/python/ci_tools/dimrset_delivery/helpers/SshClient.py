@@ -2,7 +2,7 @@ import paramiko
 from scp import SCPClient
 from enum import Enum
 
-from settings.general_settings import DRY_RUN_PREFIX
+from ..settings.general_settings import DRY_RUN_PREFIX
 
 class Direction(Enum):
     TO = "to"     # local to remote

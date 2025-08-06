@@ -5,10 +5,7 @@ import os
 from unittest.mock import Mock, patch, mock_open
 from io import StringIO
 
-# Add src directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from teamcity_retrieve_engine_test_status_dpc import (  
+from ci_tools.dimrset_delivery.teamcity_retrieve_engine_test_status_dpc import (  
     TestResult, 
     TestResultExecutiveSummary, 
     ConfigurationTestResult,

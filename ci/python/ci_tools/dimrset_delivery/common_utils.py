@@ -7,11 +7,11 @@ import argparse
 from getpass import getpass
 from typing import Tuple
 
-from helpers.GitClient import GitClient
-from helpers.SshClient import SshClient
-from lib.Atlassian import Atlassian
-from lib.TeamCity import TeamCity
-from settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
+from .helpers.GitClient import GitClient
+from .helpers.SshClient import SshClient
+from .lib.Atlassian import Atlassian
+from .lib.TeamCity import TeamCity
+from .settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
 
 
 def parse_common_arguments() -> argparse.Namespace:

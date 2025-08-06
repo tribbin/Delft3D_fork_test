@@ -7,12 +7,12 @@ import argparse
 from getpass import getpass
 from typing import Dict, Optional
 
-from helpers.GitClient import GitClient
-from helpers.SshClient import SshClient
-from lib.Atlassian import Atlassian
-from lib.TeamCity import TeamCity
-from settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
-from settings.teamcity_settings import KERNELS
+from .helpers.GitClient import GitClient
+from .helpers.SshClient import SshClient
+from .lib.Atlassian import Atlassian
+from .lib.TeamCity import TeamCity
+from .settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
+from .settings.teamcity_settings import KERNELS
 
 
 class DimrAutomationContext:

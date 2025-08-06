@@ -1,7 +1,7 @@
 from enum import Enum
 
-from helpers.KernelData import KernelData
-from helpers.ToolData import ToolData
+from ..helpers.KernelData import KernelData
+from ..helpers.ToolData import ToolData
 
 # All kernels for which the versions are set in the configuration parameters of 2.Dimr_collector_release
 KERNELS = [

@@ -1,7 +1,7 @@
 import subprocess
 import sys
 
-from settings.general_settings import DRY_RUN_PREFIX
+from ..settings.general_settings import DRY_RUN_PREFIX
 
 class GitClient(object):
     """Class responsible for tagging Git commits."""

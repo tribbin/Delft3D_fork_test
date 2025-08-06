@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import requests
 from typing import Dict, Any
 
-from settings.general_settings import DRY_RUN_PREFIX
+from ..settings.general_settings import DRY_RUN_PREFIX
 
 
 class Atlassian(object):

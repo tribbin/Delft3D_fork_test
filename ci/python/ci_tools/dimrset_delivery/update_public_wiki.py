@@ -4,9 +4,9 @@ DIMR Automation Step 5: Update Public Wiki
 This script updates the Public Wiki with the new DIMR release information.
 """
 
-from dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
-from helpers.PublicWikiHelper import PublicWikiHelper
-from settings.general_settings import DRY_RUN_PREFIX
+from .dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
+from .helpers.PublicWikiHelper import PublicWikiHelper
+from .settings.general_settings import DRY_RUN_PREFIX
 
 
 def update_public_wiki(context: DimrAutomationContext) -> None:

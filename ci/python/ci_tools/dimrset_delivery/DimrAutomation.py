@@ -1,20 +1,20 @@
-from helpers.ArtifactInstallHelper import ArtifactInstallHelper
-from helpers.EmailHelper import EmailHelper
-from helpers.ExcelHelper import ExcelHelper
-from helpers.GitClient import GitClient
-from helpers.PinHelper import PinHelper
-from helpers.PreconditionsHelper import PreconditionsHelper
-from helpers.PublicWikiHelper import PublicWikiHelper
-from helpers.SshClient import Direction, SshClient
-from helpers.TestbankResultParser import TestbankResultParser
-from lib.Atlassian import Atlassian
-from lib.TeamCity import TeamCity
-from settings.general_settings import (
+from .helpers.ArtifactInstallHelper import ArtifactInstallHelper
+from .helpers.EmailHelper import EmailHelper
+from .helpers.ExcelHelper import ExcelHelper
+from .helpers.GitClient import GitClient
+from .helpers.PinHelper import PinHelper
+from .helpers.PreconditionsHelper import PreconditionsHelper
+from .helpers.PublicWikiHelper import PublicWikiHelper
+from .helpers.SshClient import Direction, SshClient
+from .helpers.TestbankResultParser import TestbankResultParser
+from .lib.Atlassian import Atlassian
+from .lib.TeamCity import TeamCity
+from .settings.general_settings import (
     DRY_RUN_PREFIX,
     LINUX_ADDRESS,
     VERSIONS_EXCEL_FILENAME,
 )
-from settings.teamcity_settings import (
+from .settings.teamcity_settings import (
     KERNELS,
     PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT,
 )

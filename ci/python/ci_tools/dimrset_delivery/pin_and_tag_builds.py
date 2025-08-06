@@ -4,9 +4,9 @@ DIMR Automation Step 6: Pin and Tag Builds
 This script pins and tags the appropriate builds in TeamCity.
 """
 
-from dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
-from helpers.PinHelper import PinHelper
-from settings.general_settings import DRY_RUN_PREFIX
+from .dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
+from .helpers.PinHelper import PinHelper
+from .settings.general_settings import DRY_RUN_PREFIX
 
 
 def pin_and_tag_builds(context: DimrAutomationContext) -> None:

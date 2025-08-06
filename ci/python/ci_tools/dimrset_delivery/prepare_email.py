@@ -6,11 +6,11 @@ This script prepares a mail template for the release notification.
 
 from typing import Optional
 
-from dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
-from helpers.EmailHelper import EmailHelper
-from helpers.TestbankResultParser import TestbankResultParser
-from settings.general_settings import DRY_RUN_PREFIX
-from settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
+from .dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
+from .helpers.EmailHelper import EmailHelper
+from .helpers.TestbankResultParser import TestbankResultParser
+from .settings.general_settings import DRY_RUN_PREFIX
+from .settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
 
 
 def prepare_email(context: DimrAutomationContext) -> None:

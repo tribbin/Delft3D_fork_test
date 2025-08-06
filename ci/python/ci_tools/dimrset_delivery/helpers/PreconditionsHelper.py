@@ -1,10 +1,10 @@
 import os
 
-from helpers.SshClient import SshClient
-from helpers.GitClient import GitClient
-from lib.Atlassian import Atlassian
-from lib.TeamCity import TeamCity
-from settings.general_settings import DRY_RUN_PREFIX, NETWORK_BASE_PATH, LINUX_ADDRESS
+from .SshClient import SshClient
+from .GitClient import GitClient
+from ..lib.Atlassian import Atlassian
+from ..lib.TeamCity import TeamCity
+from ..settings.general_settings import DRY_RUN_PREFIX, NETWORK_BASE_PATH, LINUX_ADDRESS
 
 
 class PreconditionsHelper(object):

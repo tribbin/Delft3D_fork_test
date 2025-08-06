@@ -2,9 +2,9 @@ from datetime import date
 from typing import Dict, List
 from openpyxl import load_workbook, worksheet
 
-from helpers.TestbankResultParser import TestbankResultParser
-from lib.TeamCity import TeamCity
-from settings.general_settings import SHEET_NAME, NAME_COLUMN
+from .TestbankResultParser import TestbankResultParser
+from ..lib.TeamCity import TeamCity
+from ..settings.general_settings import SHEET_NAME, NAME_COLUMN
 
 
 class ExcelHelper(object):

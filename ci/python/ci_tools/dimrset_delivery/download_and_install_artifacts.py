@@ -4,9 +4,9 @@ DIMR Automation Step 2: Download and Install Artifacts
 This script downloads the artifacts and installs them on Linux machine.
 """
 
-from dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
-from helpers.ArtifactInstallHelper import ArtifactInstallHelper
-from settings.general_settings import DRY_RUN_PREFIX
+from .dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
+from .helpers.ArtifactInstallHelper import ArtifactInstallHelper
+from .settings.general_settings import DRY_RUN_PREFIX
 
 
 def download_and_install_artifacts(context: DimrAutomationContext) -> None:

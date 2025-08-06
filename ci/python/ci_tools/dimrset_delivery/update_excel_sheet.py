@@ -4,12 +4,12 @@ DIMR Automation Step 3: Update Excel Sheet
 This script updates the Excel sheet with this week's release information.
 """
 
-from dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
-from helpers.ExcelHelper import ExcelHelper
-from helpers.SshClient import Direction
-from helpers.TestbankResultParser import TestbankResultParser
-from settings.general_settings import DRY_RUN_PREFIX, LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME
-from settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
+from .dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
+from .helpers.ExcelHelper import ExcelHelper
+from .helpers.SshClient import Direction
+from .helpers.TestbankResultParser import TestbankResultParser
+from .settings.general_settings import DRY_RUN_PREFIX, LINUX_ADDRESS, VERSIONS_EXCEL_FILENAME
+from .settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT
 
 
 def update_excel_sheet(context: DimrAutomationContext) -> None:

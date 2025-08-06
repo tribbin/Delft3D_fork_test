@@ -4,8 +4,8 @@ DIMR Automation Step 1: Assert Preconditions
 This script asserts some preconditions are met before the DIMR release process is run.
 """
 
-from dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
-from helpers.PreconditionsHelper import PreconditionsHelper
+from .dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
+from .helpers.PreconditionsHelper import PreconditionsHelper
 
 
 def assert_preconditions(context: DimrAutomationContext) -> None:

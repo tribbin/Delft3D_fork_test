@@ -1,13 +1,13 @@
 import os
 from typing import Dict
 
-from helpers.TestbankResultParser import TestbankResultParser
-from settings.email_settings import (
+from .TestbankResultParser import TestbankResultParser
+from ..settings.email_settings import (
     LOWER_BOUND_PERCENTAGE_SUCCESSFUL_TESTS,
     RELATIVE_PATH_TO_EMAIL_TEMPLATE,
 )
-from settings.general_settings import RELATIVE_PATH_TO_OUTPUT_FOLDER
-from settings.teamcity_settings import KERNELS
+from ..settings.general_settings import RELATIVE_PATH_TO_OUTPUT_FOLDER
+from ..settings.teamcity_settings import KERNELS
 
 
 class EmailHelper(object):

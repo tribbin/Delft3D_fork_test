@@ -1,8 +1,8 @@
 from typing import Any, Dict, List
 
 import requests
-from settings.general_settings import DRY_RUN_PREFIX
-from settings.teamcity_settings import TEAMCITY_IDS
+from ..settings.general_settings import DRY_RUN_PREFIX
+from ..settings.teamcity_settings import TEAMCITY_IDS
 from types import SimpleNamespace
 
 

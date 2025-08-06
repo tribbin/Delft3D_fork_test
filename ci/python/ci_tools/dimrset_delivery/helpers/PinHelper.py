@@ -1,4 +1,4 @@
-from lib.TeamCity import TeamCity
+from ..lib.TeamCity import TeamCity
 
 
 class PinHelper(object):
