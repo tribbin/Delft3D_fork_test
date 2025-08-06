@@ -77,11 +77,10 @@ class ArtifactInstallHelper(object):
 
         self.__publish_artifact_to_file_share(
             str(windows_collect_id) if windows_collect_id is not None else "",
-            NAME_OF_DIMR_RELEASE_SIGNED_WINDOWS_ARTIFACT
+            NAME_OF_DIMR_RELEASE_SIGNED_WINDOWS_ARTIFACT,
         )
         self.__publish_artifact_to_file_share(
-            str(linux_collect_id) if linux_collect_id is not None else "",
-            NAME_OF_DIMR_RELEASE_SIGNED_LINUX_ARTIFACT
+            str(linux_collect_id) if linux_collect_id is not None else "", NAME_OF_DIMR_RELEASE_SIGNED_LINUX_ARTIFACT
         )
 
     def publish_weekly_dimr_via_h7(self) -> None:

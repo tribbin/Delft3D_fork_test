@@ -123,7 +123,7 @@ class PublicWikiHelper(object):
         )
         linux_version_artifact = self.__teamcity.get_build_artifact(
             build_id=str(linux_collect_id) if linux_collect_id is not None else "",
-            path_to_artifact=PATH_TO_LINUX_VERSION_ARTIFACT
+            path_to_artifact=PATH_TO_LINUX_VERSION_ARTIFACT,
         )
 
         if windows_version_artifact is None or linux_version_artifact is None:
