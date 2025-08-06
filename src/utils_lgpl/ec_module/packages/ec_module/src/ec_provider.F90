@@ -2639,7 +2639,7 @@ contains
          ncstdnames(2) = 'air_temperature'
          ncvarnames(3) = 'tcc' ! cloud cover (fraction)
          ncstdnames(3) = 'cloud_area_fraction'
-         ncvarnames(4) = 'ssr' ! outgoing SW radiation at the top-of-the-atmosphere
+         ncvarnames(4) = 'ssr'
          ncstdnames(4) = 'surface_net_downward_shortwave_flux'
       case ('solarradiation')
          ncvarnames(1) = 'ssrd' ! outgoing SW radiation at the top-of-the-atmosphere
