@@ -63,6 +63,7 @@ object TestPythonCiTools : BuildType({
                 module = "ruff"
                 scriptArguments = "format --diff"
             }
+            executionPolicy = ExecutionPolicy.ALWAYS
         }
         python {
             name = "Run linter"
@@ -76,6 +77,7 @@ object TestPythonCiTools : BuildType({
                 module = "ruff"
                 scriptArguments = "check --output-format=junit --output-file=ruff.xml"
             }
+            executionPolicy = ExecutionPolicy.ALWAYS
         }
         python {
             name = "Run type checker"
@@ -89,6 +91,7 @@ object TestPythonCiTools : BuildType({
                 module = "mypy"
                 scriptArguments = "ci_tools --junit-xml=mypy.xml"
             }
+            executionPolicy = ExecutionPolicy.ALWAYS
         }
         python {
             name = "Run unit tests"
@@ -106,6 +109,7 @@ object TestPythonCiTools : BuildType({
                     --cov=.
                 """.trimIndent()
             }
+            executionPolicy = ExecutionPolicy.ALWAYS
         }
     }
 
