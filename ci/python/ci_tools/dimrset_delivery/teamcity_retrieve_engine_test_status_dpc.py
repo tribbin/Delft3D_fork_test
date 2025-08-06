@@ -1,13 +1,13 @@
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from io import TextIOWrapper
 from typing import List, Optional
 
 import requests
 from pyparsing import Enum
 
-from .dimr_context import DimrAutomationContext, parse_common_arguments, create_context_from_args
+from .dimr_context import DimrAutomationContext, create_context_from_args, parse_common_arguments
 from .settings.general_settings import DRY_RUN_PREFIX
 
 """
@@ -26,24 +26,24 @@ teamcity_retrieve_engine_test_status_dpc.py --build_id 123456 --teamcity-usernam
 
 For complete list of arguments and options, run:
 teamcity_retrieve_engine_test_status_dpc.py --help
-  
+
 Output: Creates 'teamcity_retrieve_release_engine_test_status.txt' with detailed test results
 """
 BASE_URL = "https://dpcbuild.deltares.nl"
 REST_API_URL = f"{BASE_URL}/httpAuth/app/rest"
-PROJECTS_URL = f"{REST_API_URL}/projects/id:"
-TEST_OCCURRENCES = "./testOccurrences"
 HEADER_FMT = "{:>12s} {:>8s} {:>8s} {:>8s} {:>8s} {:>8s} {:>8s}  ---  {:24s} (#{:s})"
 
 
-class FILTERED_LIST(Enum):
+class FilteredList(Enum):
+    """Enum for filtering build types in TeamCity dependency chains."""
+
     DIMRSET_AGGREGATED_RELEASE_RESULTS_LINUX = "Dimr_DimrCollectors_DIMRsetAggregatedReleaseResultsLinux"
     DIMRSET_AGGREGATED_RELEASE_RESULTS_WINDOWS = "Dimr_DimrCollectors_DIMRsetAggregatedReleaseResultsWindows"
     DELFT3D_WINDOWS_TEST = "Delft3D_WindowsTest"
     DELFT3D_LINUX_TEST = "Delft3D_LinuxTest"
 
 
-class TestResultSummary(object):
+class TestResultSummary:
     """A class to store summary data for test results."""
 
     def __init__(self, name: str) -> None:
@@ -55,20 +55,20 @@ class TestResultSummary(object):
         self.sum_muted = 0
 
 
-class TestResultExecutiveSummary(object):
+class TestResultExecutiveSummary:
     """A class to store data for test result summary."""
 
     def __init__(self, passed: int, failed: int) -> None:
         self.passed = passed
         self.failed = failed
         self.total = passed + failed
-        a = 0.0
+        percentage = 0.0
         if self.total > 0:
-            a = float(self.passed) / float(self.total) * 100.0
-        self.percentage = a
+            percentage = self.passed / self.total * 100.0
+        self.percentage = percentage
 
 
-class ExecutiveSummary(object):
+class ExecutiveSummary:
     """A class to store executive summary data for test results."""
 
     def __init__(self, name: str, summary: list[TestResultSummary]) -> None:
@@ -76,7 +76,7 @@ class ExecutiveSummary(object):
         self.summary = summary
 
 
-class TestResult(object):
+class TestResult:
     """A class to store configuration test results info."""
 
     def __init__(
@@ -110,7 +110,7 @@ class TestResult(object):
         return self.failed + self.exception + self.ignored + self.muted
 
 
-class ConfigurationTestResult(object):
+class ConfigurationTestResult:
     """A class to store configuration test results info."""
 
     def __init__(
@@ -194,7 +194,7 @@ def log_to_file(log_file: TextIOWrapper, *args: str) -> None:
 
 def log_executive_summary(log_file: TextIOWrapper, summarydata: ExecutiveSummary) -> None:
     """Log executive summary to a file.
-    
+
     Parameters
     ----------
     log_file : TextIOWrapper
@@ -210,7 +210,7 @@ def log_executive_summary(log_file: TextIOWrapper, summarydata: ExecutiveSummary
         not_passed = summary.sum_failed + summary.sum_exception + summary.sum_ignored + summary.sum_muted
         percentage = 0.0
         if total > 0:
-            percentage = float(summary.sum_passed) / float(total) * 100.0
+            percentage = summary.sum_passed / total * 100.0
 
         log_to_file(log_file, f"\nSummary: {summary.name}")
         log_to_file(log_file, f"Total tests   : {total:6d}")
@@ -220,12 +220,12 @@ def log_executive_summary(log_file: TextIOWrapper, summarydata: ExecutiveSummary
         log_to_file(log_file, f"    Exception : {summary.sum_exception:6d}")
         log_to_file(log_file, f"    Ignored   : {summary.sum_ignored:6d}")
         log_to_file(log_file, f"    Muted     : {summary.sum_muted:6d}")
-        log_to_file(log_file, f"    Percentage: {float(percentage):6.2f}")
+        log_to_file(log_file, f"    Percentage: {percentage:6.2f}")
 
 
 def log_result_list(log_file: TextIOWrapper, name: str, engines: List[ConfigurationTestResult]) -> None:
     """Log engine list to a file.
-    
+
     Parameters
     ----------
     log_file : TextIOWrapper
@@ -252,7 +252,7 @@ def log_result_list(log_file: TextIOWrapper, name: str, engines: List[Configurat
 
 def log_coniguration_line(log_file: TextIOWrapper, line: ConfigurationTestResult) -> None:
     """Log configuration line to a file.
-    
+
     Parameters
     ----------
     log_file : TextIOWrapper
@@ -262,7 +262,7 @@ def log_coniguration_line(log_file: TextIOWrapper, line: ConfigurationTestResult
     """
     total = line.get_total()
     if total != 0:
-        percentage = float(line.test_result.passed) / float(total) * 100.0
+        percentage = line.test_result.passed / total * 100.0
     else:
         percentage = 0
     if total > 0:
@@ -292,12 +292,14 @@ def log_coniguration_line(log_file: TextIOWrapper, line: ConfigurationTestResult
         for exception in line.exceptions:
             log_to_file(
                 log_file,
-                f"                                                                            xxx  Exception {exception}",
+                f"                                                           "
+                f"                 xxx  Exception {exception}",
             )
 
+
 def get_build_dependency_chain(
-    context: DimrAutomationContext, filtered_list: Optional[list[FILTERED_LIST]] = None
-) -> list:
+    context: DimrAutomationContext, filtered_list: Optional[list[FilteredList]] = None
+) -> list[str]:
     """
     Get dependency chain of all dependent builds for a given build ID from TeamCity.
 
@@ -305,12 +307,12 @@ def get_build_dependency_chain(
     ----------
     context : DimrAutomationContext
         The automation context containing TeamCity client and build configuration.
-    filtered_list : Optional[list[FILTERED_LIST]], optional
+    filtered_list : Optional[list[FilteredList]], optional
         Optional filter to include only builds whose buildTypeId matches one of the values.
 
     Returns
     -------
-    list
+    list[str]
         List of dependent build IDs (snapshot dependencies).
     """
     if context.dry_run:
@@ -320,12 +322,15 @@ def get_build_dependency_chain(
             print(f"{DRY_RUN_PREFIX} Would filter by build types: {filter_values}")
         # Return mock dependency chain for dry run
         return ["123456", "123457", "123458"]
-    
+
     # Use the existing TeamCity method to get filtered dependent builds
     if filtered_list:
         # For now, we'll use the existing method and then filter manually
-        # as the TeamCity class method uses TEAMCITY_IDS enum, not our FILTERED_LIST
-        endpoint = f"{context.teamcity._TeamCity__rest_uri}builds?locator=defaultFilter:false,snapshotDependency(to:(id:{build_id})),count:1000&fields=build(id,buildTypeId)"
+        # as the TeamCity class method uses TEAMCITY_IDS enum, not our FilteredList
+        endpoint = (
+            f"{context.teamcity._TeamCity__rest_uri}builds?locator=defaultFilter:false,"
+            f"snapshotDependency(to:(id:{context.build_id})),count:1000&fields=build(id,buildTypeId)"
+        )
         result = requests.get(
             url=endpoint, headers=context.teamcity._TeamCity__default_headers, auth=context.teamcity._TeamCity__auth
         )
@@ -333,7 +338,7 @@ def get_build_dependency_chain(
             build_data = result.json()
             dependency_chain = []
             filter_values = [item.value for item in filtered_list]
-            
+
             for build in build_data.get("build", []):
                 dep_id = build.get("id")
                 build_type_id = build.get("buildTypeId")
@@ -347,7 +352,10 @@ def get_build_dependency_chain(
         # If no filter, get all dependencies
         return context.teamcity.get_filtered_dependent_build_ids(context.build_id)
 
-def get_build_test_results_from_teamcity(context: DimrAutomationContext, build_id: int) -> Optional[ConfigurationTestResult]:
+
+def get_build_test_results_from_teamcity(
+    context: DimrAutomationContext, build_id: int
+) -> Optional[ConfigurationTestResult]:
     """
     Fetch test results for a given build ID using the TeamCity client.
 
@@ -368,23 +376,23 @@ def get_build_test_results_from_teamcity(context: DimrAutomationContext, build_i
         # Return mock test result for dry run
         return ConfigurationTestResult(
             name=f"{DRY_RUN_PREFIX} Test Configuration / Build {build_id}",
-            build_nr=build_id,
+            build_nr=str(build_id),
             passed=85,
             failed=0,
             ignored=0,
             muted=0,
             status_text=f"{DRY_RUN_PREFIX} SUCCESS",
         )
-    
+
     build_info = context.teamcity.get_full_build_info_for_build_id(build_id)
     if not build_info:
         return None
-    
+
     # Check if there are test results
     test_occurrences = build_info.get("testOccurrences", {})
     if not test_occurrences or int(test_occurrences.get("count", "0")) == 0:
         return None
-    
+
     # Extract build information
     build_nr = build_info.get("number", "Unknown build number")
     status_text = build_info.get("status", "No status available")
@@ -414,12 +422,13 @@ def get_build_test_results_from_teamcity(context: DimrAutomationContext, build_i
         status_text=status_text,
     )
 
+
 if __name__ == "__main__":
-    start_time = datetime.now()
+    start_time = datetime.now(timezone.utc)
 
     args = parse_common_arguments()
     context = create_context_from_args(args, require_atlassian=False, require_git=False, require_ssh=False)
-    
+
     # Extract TeamCity client from context
     if not context.teamcity:
         print("Error: TeamCity credentials are required for this script")
@@ -440,8 +449,8 @@ if __name__ == "__main__":
     dependency_chain = get_build_dependency_chain(
         context,
         [
-            FILTERED_LIST.DELFT3D_WINDOWS_TEST,
-            FILTERED_LIST.DELFT3D_LINUX_TEST,
+            FilteredList.DELFT3D_WINDOWS_TEST,
+            FilteredList.DELFT3D_LINUX_TEST,
         ],
     )
     print(f"Dependency chain for build {build_id}: {dependency_chain}")
@@ -471,12 +480,12 @@ if __name__ == "__main__":
 
     tests_failed = sum(result.get_not_passed_total() for result in result_list)
     print(f"Total test failed: {tests_failed}")
-    
+
     log_to_file(log_file, f"\nStart: {start_time}")
-    log_to_file(log_file, f"End  : {datetime.now()}")
+    log_to_file(log_file, f"End  : {datetime.now(timezone.utc)}")
     log_to_file(log_file, "Ready")
     print(f"\nStart: {start_time}")
-    print(f"End  : {datetime.now()}")
+    print(f"End  : {datetime.now(timezone.utc)}")
     print("Ready")
-    
+
     sys.exit(tests_failed)
