@@ -13,10 +13,10 @@ from ci_tools.dimrset_delivery.common_utils import (
     print_dry_run_message,
 )
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
-from ci_tools.dimrset_delivery.helpers.git_client import GitClient
 from ci_tools.dimrset_delivery.helpers.result_testbank_parser import ResultTestBankParser
-from ci_tools.dimrset_delivery.helpers.ssh_client import SshClient
 from ci_tools.dimrset_delivery.lib.atlassian import Atlassian
+from ci_tools.dimrset_delivery.lib.git_client import GitClient
+from ci_tools.dimrset_delivery.lib.ssh_client import SshClient
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 
 

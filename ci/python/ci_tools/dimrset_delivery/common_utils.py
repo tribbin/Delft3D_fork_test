@@ -7,10 +7,10 @@ Provides shared initialization and helper functions.
 from typing import Optional, Tuple
 
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
-from ci_tools.dimrset_delivery.helpers.git_client import GitClient
 from ci_tools.dimrset_delivery.helpers.result_testbank_parser import ResultTestBankParser
-from ci_tools.dimrset_delivery.helpers.ssh_client import SshClient
 from ci_tools.dimrset_delivery.lib.atlassian import Atlassian
+from ci_tools.dimrset_delivery.lib.git_client import GitClient
+from ci_tools.dimrset_delivery.lib.ssh_client import SshClient
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.settings.general_settings import DELFT3D_GIT_REPO, DRY_RUN_PREFIX
 from ci_tools.dimrset_delivery.settings.teamcity_settings import PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT

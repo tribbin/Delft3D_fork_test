@@ -14,7 +14,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
     parse_common_arguments,
 )
 from ci_tools.dimrset_delivery.helpers.result_testbank_parser import ResultTestBankParser
-from ci_tools.dimrset_delivery.helpers.ssh_client import Direction
+from ci_tools.dimrset_delivery.lib.ssh_client import Direction
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.settings.general_settings import (
     DRY_RUN_PREFIX,

@@ -11,7 +11,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
     create_context_from_args,
     parse_common_arguments,
 )
-from ci_tools.dimrset_delivery.helpers.ssh_client import SshClient
+from ci_tools.dimrset_delivery.lib.ssh_client import SshClient
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX, LINUX_ADDRESS
 from ci_tools.dimrset_delivery.settings.teamcity_settings import (
