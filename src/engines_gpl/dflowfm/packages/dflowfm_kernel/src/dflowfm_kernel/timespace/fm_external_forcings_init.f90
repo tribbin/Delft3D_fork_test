@@ -920,8 +920,7 @@ contains
             btempforcingtypD = .true.
          case ('solarradiation')
             if (net_solar_radiation_available) then
-                write (msgbuf, '(7a)') 'Unsupported data in file ''', file_name, ''': [', group_name, &
-                ']. Line ''quantity = ', trim(quantity), ''' cannot be combined with netsolarradiation.'
+                write (msgbuf, '(7a)') 'quantity = ', trim(quantity), ' cannot be combined with netsolarradiation.'
                 call err_flush()
                 return
             end if
@@ -929,8 +928,7 @@ contains
             solar_radiation_available = .true.
          case ('netsolarradiation')
             if (solar_radiation_available) then
-                write (msgbuf, '(7a)') 'Unsupported data in file ''', file_name, ''': [', group_name, &
-                ']. Line ''quantity = ', trim(quantity), ''' cannot be combined with solarradiation.'
+                write (msgbuf, '(7a)') 'quantity = ', trim(quantity), ' cannot be combined with solarradiation.'
                 call err_flush()
                 return
             end if
