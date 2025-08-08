@@ -8,6 +8,7 @@ from ci_tools.dimrset_delivery.common_utils import (
 )
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.prepare_email import prepare_email
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class TestPrepareEmail:
@@ -79,7 +80,7 @@ class TestPrepareEmail:
         mock_get_parser.assert_not_called()
 
         # Check that print was called with the correct arguments
-        mock_print.assert_called_once_with("[DRY-RUN] Would prepare email template for DIMR version:", "1.2.3")
+        mock_print.assert_called_once_with(f"{DRY_RUN_PREFIX} Would prepare email template for DIMR version:", "1.2.3")
 
 
 class TestParseVersion:

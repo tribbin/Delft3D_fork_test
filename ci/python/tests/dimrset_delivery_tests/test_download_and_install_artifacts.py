@@ -7,6 +7,7 @@ import pytest
 
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext, DimrCredentials, ServiceRequirements
 from ci_tools.dimrset_delivery.download_and_install_artifacts import download_and_install_artifacts
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class TestDownloadAndInstallArtifacts:
@@ -64,9 +65,9 @@ class TestDownloadAndInstallArtifacts:
 
         # Check that dry run messages were printed
         expected_calls = [
-            call("[DRY-RUN] Would download artifacts for build from TeamCity:", "12345"),
-            call("[DRY-RUN] Would publish artifacts to network drive"),
-            call("[DRY-RUN] Would publish weekly DIMR via H7"),
+            call(f"{DRY_RUN_PREFIX} Would download artifacts for build from TeamCity:", "12345"),
+            call(f"{DRY_RUN_PREFIX} Would publish artifacts to network drive"),
+            call(f"{DRY_RUN_PREFIX} Would publish weekly DIMR via H7"),
         ]
         mock_print.assert_has_calls(expected_calls)
 
@@ -323,7 +324,7 @@ class TestIntegration:
             # Assert
             # Verify dry run messages were printed
             mock_print.assert_any_call(
-                "[DRY-RUN] Would download artifacts for build from TeamCity:", "dry-run-build-456"
+                f"{DRY_RUN_PREFIX} Would download artifacts for build from TeamCity:", "dry-run-build-456"
             )
-            mock_print.assert_any_call("[DRY-RUN] Would publish artifacts to network drive")
-            mock_print.assert_any_call("[DRY-RUN] Would publish weekly DIMR via H7")
+            mock_print.assert_any_call(f"{DRY_RUN_PREFIX} Would publish artifacts to network drive")
+            mock_print.assert_any_call(f"{DRY_RUN_PREFIX} Would publish weekly DIMR via H7")

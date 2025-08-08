@@ -18,6 +18,7 @@ from ci_tools.dimrset_delivery.lib.atlassian import Atlassian
 from ci_tools.dimrset_delivery.lib.git_client import GitClient
 from ci_tools.dimrset_delivery.lib.ssh_client import SshClient
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class TestInitializeClients:
@@ -171,7 +172,7 @@ class TestPrintDryRunMessage:
 
         # Assert
         output = mock_stdout.getvalue()
-        assert "[DRY-RUN] - no changes will be made\n" == output
+        assert f"{DRY_RUN_PREFIX} - no changes will be made\n" == output
 
     @patch("sys.stdout", new_callable=StringIO)
     def test_print_dry_run_message_when_dry_run_false(self, mock_stdout: StringIO) -> None:
@@ -190,7 +191,7 @@ class TestPrintDryRunMessage:
         print_dry_run_message(True)
 
         # Assert
-        mock_print.assert_called_once_with("[DRY-RUN] - no changes will be made")
+        mock_print.assert_called_once_with(f"{DRY_RUN_PREFIX} - no changes will be made")
 
     @patch("builtins.print")
     def test_print_dry_run_message_does_not_call_print_when_false(self, mock_print: Mock) -> None:

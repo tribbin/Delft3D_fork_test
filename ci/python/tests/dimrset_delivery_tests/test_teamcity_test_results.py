@@ -3,6 +3,7 @@
 from io import StringIO
 from unittest.mock import Mock
 
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 from ci_tools.dimrset_delivery.teamcity_test_results import (
     ConfigurationTestResult,
     ExecutiveSummary,
@@ -315,13 +316,13 @@ class TestTeamcityTestResults:
 
         # Assert
         assert result is not None
-        assert result.name == "[DRY-RUN] Test Configuration / Build 12345"
+        assert result.name == f"{DRY_RUN_PREFIX} Test Configuration / Build 12345"
         assert result.build_nr == "12345"
         assert result.test_result.passed == 85
         assert result.test_result.failed == 0
         assert result.test_result.ignored == 0
         assert result.test_result.muted == 0
-        assert result.status_text == "[DRY-RUN] SUCCESS"
+        assert result.status_text == f"{DRY_RUN_PREFIX} SUCCESS"
 
     def test_get_build_test_results_from_teamcity_no_build_info(self) -> None:
         """Test get_build_test_results_from_teamcity when no build info is returned."""

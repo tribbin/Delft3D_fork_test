@@ -9,7 +9,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 from ci_tools.dimrset_delivery.common_utils import ResultTestBankParser
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
-from ci_tools.dimrset_delivery.settings.general_settings import VERSIONS_EXCEL_FILENAME
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX, VERSIONS_EXCEL_FILENAME
 from ci_tools.dimrset_delivery.update_excel_sheet import ExcelHelper, update_excel_sheet
 
 
@@ -312,10 +312,10 @@ class TestUpdateExcelSheet:
 
         # Verify dry run messages
         expected_calls = [
-            call("[DRY-RUN] Would update Excel sheet with DIMR version:", self.dimr_version),
-            call("[DRY-RUN] Would download Excel from network drive"),
-            call("[DRY-RUN] Would append new row with release information"),
-            call("[DRY-RUN] Would upload updated Excel back to network drive"),
+            call(f"{DRY_RUN_PREFIX} Would update Excel sheet with DIMR version:", self.dimr_version),
+            call(f"{DRY_RUN_PREFIX} Would download Excel from network drive"),
+            call(f"{DRY_RUN_PREFIX} Would append new row with release information"),
+            call(f"{DRY_RUN_PREFIX} Would upload updated Excel back to network drive"),
         ]
         mock_print.assert_has_calls(expected_calls)
 

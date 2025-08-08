@@ -13,6 +13,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
     create_context_from_args,
     parse_common_arguments,
 )
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class TestDimrAutomationContext:
@@ -228,7 +229,7 @@ class TestDimrAutomationContext:
             )
 
             context.print_status("Test message")
-            mock_print.assert_called_with("[DRY-RUN] Test message")
+            mock_print.assert_called_with(f"{DRY_RUN_PREFIX} Test message")
 
     @patch("builtins.print")
     def test_print_status_normal_mode(self, mock_print: Mock) -> None:

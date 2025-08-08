@@ -6,6 +6,7 @@ import pytest
 
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.pin_and_tag_builds import pin_and_tag_builds
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 
 
 class TestPinAndTagBuilds:
@@ -58,9 +59,9 @@ class TestPinAndTagBuilds:
 
         # Verify dry run messages were printed
         expected_calls = [
-            ("[DRY-RUN] Would pin and tag builds in TeamCity for build chain:", "12345"),
-            ("[DRY-RUN] Would add tag:", "DIMRset_1.2.3"),
-            ("[DRY-RUN] Would tag commit with:", "commit=abc123def, tag=DIMRset_1.2.3"),
+            (f"{DRY_RUN_PREFIX} Would pin and tag builds in TeamCity for build chain:", "12345"),
+            (f"{DRY_RUN_PREFIX} Would add tag:", "DIMRset_1.2.3"),
+            (f"{DRY_RUN_PREFIX} Would tag commit with:", "commit=abc123def, tag=DIMRset_1.2.3"),
         ]
 
         for expected_args in expected_calls:

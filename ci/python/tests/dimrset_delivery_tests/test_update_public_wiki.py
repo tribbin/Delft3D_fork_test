@@ -18,6 +18,7 @@ from ci_tools.dimrset_delivery.settings.atlassian_settings import (
     DIMR_SUBPAGE_SUFFIX,
     RELATIVE_PATH_TO_WIKI_TEMPLATE,
 )
+from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
 from ci_tools.dimrset_delivery.settings.teamcity_settings import (
     PATH_TO_LINUX_VERSION_ARTIFACT,
     PATH_TO_RELEASE_TEST_RESULTS_ARTIFACT,
@@ -518,7 +519,7 @@ class TestUpdatePublicWiki:
         # Assert
         mock_context.print_status.assert_called_once_with("Updating public wiki...")
         mock_context.get_dimr_version.assert_called_once()
-        mock_print.assert_called_once_with("[DRY-RUN] Would update public wiki for DIMR version:", "2.13.03")
+        mock_print.assert_called_once_with(f"{DRY_RUN_PREFIX} Would update public wiki for DIMR version:", "2.13.03")
 
     def test_update_public_wiki_raises_value_error_when_atlassian_is_none(self, mock_context: Mock) -> None:
         """Test that ValueError is raised when Atlassian client is not initialized."""
