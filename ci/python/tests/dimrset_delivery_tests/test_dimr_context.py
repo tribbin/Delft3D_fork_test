@@ -37,7 +37,7 @@ class TestDimrAutomationContext:
         require_git: bool = True,
         credentials: Optional[DimrCredentials] = None,
         requirements: Optional[ServiceRequirements] = None,
-    ):
+    ) -> DimrAutomationContext:
         """Create a DimrAutomationContext with specified parameters."""
         # If credentials and requirements are provided directly, use them
         if credentials is not None and requirements is not None:
