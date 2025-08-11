@@ -340,7 +340,7 @@ class TeamCity(object):
             sys.exit(result.status_code)
         return True
 
-    def get_filtered_dependent_build_ids(self, build_id: str, filtered_ids: List[str]) -> List[str]:
+    def get_dependent_build_ids_with_filter(self, build_id: str, filtered_ids: List[str]) -> List[str]:
         """
         Get a list of build IDs for builds related to a specific build, filtered by buildTypeIds from the provided list.
 
@@ -370,7 +370,6 @@ class TeamCity(object):
         if result.status_code == 200:
             build_data = result.json()
             build_ids = []
-            build_ids.append(f"{build_id}")  # Include the original build ID
             for build in build_data.get("build", []):
                 dependency_build_id = str(build.get("id"))
                 build_type_id = build.get("buildTypeId")

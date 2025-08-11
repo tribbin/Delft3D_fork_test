@@ -17,7 +17,8 @@ def pin_and_tag_builds_teamcity(teamcity: TeamCity, dimr_version: str, build_id_
     teamcity.add_tag_to_build_with_dependencies(build_id_chain, tag=tag)
     # Only pin specific builds
     teamcity_ids_list = [member.value for member in TeamcityIds]
-    build_ids_to_pin = teamcity.get_filtered_dependent_build_ids(build_id_chain, teamcity_ids_list)
+    build_ids_to_pin = teamcity.get_dependent_build_ids_with_filter(build_id_chain, teamcity_ids_list)
+    build_ids_to_pin.append(build_id_chain)
     for build_id in build_ids_to_pin:
         teamcity.pin_build(build_id=build_id)
 

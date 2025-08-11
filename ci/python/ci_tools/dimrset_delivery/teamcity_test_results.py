@@ -306,28 +306,11 @@ def get_build_dependency_chain(
 
     # Use the existing TeamCity method to get filtered dependent builds
     if filtered_list:
-        # Get all dependent builds first, then filter by build type
-        teamcity_ids_list = [member.value for member in TeamcityIds]
-        all_dependent_builds = context.teamcity.get_filtered_dependent_build_ids(context.build_id, teamcity_ids_list)
-
-        # If we need to filter by specific build types, we need to check each build
-        dependency_chain = []
+        # Convert FilteredList enum values to strings for the TeamCity API
         filter_values = [item.value for item in filtered_list]
-
-        # For each dependent build, check if it matches our filter
-        for dep_build_id in all_dependent_builds:
-            build_info = context.teamcity.get_build_info_for_build_id(dep_build_id)
-            if build_info:
-                build_type = build_info.get("buildType", {})
-                build_type_id = build_type.get("id", "")
-                if build_type_id in filter_values:
-                    dependency_chain.append(dep_build_id)
-
-        return dependency_chain
+        return context.teamcity.get_dependent_build_ids_with_filter(context.build_id, filter_values)
     else:
-        # If no filter, get all dependencies
-        teamcity_ids_list = [member.value for member in TeamcityIds]
-        return context.teamcity.get_filtered_dependent_build_ids(context.build_id, teamcity_ids_list)
+        return context.teamcity.get_dependent_build_ids_with_filter(context.build_id, [])
 
 
 def get_build_test_results_from_teamcity(
