@@ -245,13 +245,6 @@ class TestParseVersion:
         assert parse_version("DIMRset_1.2") == (1, 2)
         assert parse_version("DIMRset_1.2.3.4") == (1, 2, 3, 4)
 
-    def test_invalid_prefix_returns_none(self) -> None:
-        """Test that tag without DIMRset prefix returns None."""
-        # Act & Assert
-        assert parse_version("NotDIMRset_1.2.3") is None
-        assert parse_version("1.2.3") is None
-        assert parse_version("") is None
-
     def test_invalid_version_format_returns_none(self) -> None:
         """Test that invalid version format returns None."""
         # Act & Assert
@@ -262,21 +255,11 @@ class TestParseVersion:
         assert parse_version("DIMRset_") is None
         assert parse_version("DIMRset_1.") is None
         assert parse_version("DIMRset_.1") is None
-
-    def test_none_input_returns_none(self) -> None:
-        """Test that None input returns None."""
-        # Act & Assert
-        assert parse_version(None) is None
-
-    def test_empty_string_returns_none(self) -> None:
-        """Test that empty string returns None."""
-        # Act & Assert
-        assert parse_version("") is None
-
-    def test_dimrset_prefix_only_returns_none(self) -> None:
-        """Test that DIMRset prefix without version returns None."""
-        # Act & Assert
         assert parse_version("DIMRset_") is None
+        assert parse_version("NotDIMRset_1.2.3") is None
+        assert parse_version("1.2.3") is None
+        assert parse_version(None) is None
+        assert parse_version("") is None
 
 
 class TestIntegration:
