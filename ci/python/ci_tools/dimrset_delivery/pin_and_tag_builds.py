@@ -8,6 +8,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 )
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.teamcity_settings import TeamcityIds
 
 
 def pin_and_tag_builds_teamcity(teamcity: TeamCity, dimr_version: str, build_id_chain: str) -> None:
@@ -15,7 +16,8 @@ def pin_and_tag_builds_teamcity(teamcity: TeamCity, dimr_version: str, build_id_
     tag = f"DIMRset_{dimr_version}"
     teamcity.add_tag_to_build_with_dependencies(build_id_chain, tag=tag)
     # Only pin specific builds
-    build_ids_to_pin = teamcity.get_filtered_dependent_build_ids(build_id_chain)
+    teamcity_ids_list = [member.value for member in TeamcityIds]
+    build_ids_to_pin = teamcity.get_filtered_dependent_build_ids(build_id_chain, teamcity_ids_list)
     for build_id in build_ids_to_pin:
         teamcity.pin_build(build_id=build_id)
 

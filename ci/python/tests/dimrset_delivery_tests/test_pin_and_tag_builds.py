@@ -7,6 +7,7 @@ import pytest
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.pin_and_tag_builds import pin_and_tag_builds
 from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.teamcity_settings import TeamcityIds
 
 
 class TestPinAndTagBuilds:
@@ -38,7 +39,8 @@ class TestPinAndTagBuilds:
         self.mock_context.teamcity.add_tag_to_build_with_dependencies.assert_called_once_with(
             "12345", tag="DIMRset_1.2.3"
         )
-        self.mock_context.teamcity.get_filtered_dependent_build_ids.assert_called_once_with("12345")
+        teamcity_ids_list = [member.value for member in TeamcityIds]
+        self.mock_context.teamcity.get_filtered_dependent_build_ids.assert_called_once_with("12345", teamcity_ids_list)
         self.mock_context.teamcity.pin_build.assert_any_call(build_id="id1")
         self.mock_context.teamcity.pin_build.assert_any_call(build_id="id2")
         self.mock_context.git_client.tag_commit.assert_called_once_with("abc123def", "DIMRset_1.2.3")
@@ -112,7 +114,8 @@ class TestPinAndTagBuilds:
         self.mock_context.teamcity.add_tag_to_build_with_dependencies.assert_called_once_with(
             "12345", tag="DIMRset_2.0.0"
         )
-        self.mock_context.teamcity.get_filtered_dependent_build_ids.assert_called_once_with("12345")
+        teamcity_ids_list = [member.value for member in TeamcityIds]
+        self.mock_context.teamcity.get_filtered_dependent_build_ids.assert_called_once_with("12345", teamcity_ids_list)
         self.mock_context.teamcity.pin_build.assert_called_once_with(build_id="id3")
         self.mock_context.git_client.tag_commit.assert_called_once_with("xyz789abc", "DIMRset_2.0.0")
 

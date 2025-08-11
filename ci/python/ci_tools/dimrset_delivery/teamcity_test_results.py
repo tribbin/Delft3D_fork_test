@@ -12,6 +12,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
     parse_common_arguments,
 )
 from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
+from ci_tools.dimrset_delivery.settings.teamcity_settings import TeamcityIds
 
 """
 This script retrieves test results from TeamCity for DIMR release builds.
@@ -306,7 +307,8 @@ def get_build_dependency_chain(
     # Use the existing TeamCity method to get filtered dependent builds
     if filtered_list:
         # Get all dependent builds first, then filter by build type
-        all_dependent_builds = context.teamcity.get_filtered_dependent_build_ids(context.build_id)
+        teamcity_ids_list = [member.value for member in TeamcityIds]
+        all_dependent_builds = context.teamcity.get_filtered_dependent_build_ids(context.build_id, teamcity_ids_list)
 
         # If we need to filter by specific build types, we need to check each build
         dependency_chain = []
@@ -324,7 +326,8 @@ def get_build_dependency_chain(
         return dependency_chain
     else:
         # If no filter, get all dependencies
-        return context.teamcity.get_filtered_dependent_build_ids(context.build_id)
+        teamcity_ids_list = [member.value for member in TeamcityIds]
+        return context.teamcity.get_filtered_dependent_build_ids(context.build_id, teamcity_ids_list)
 
 
 def get_build_test_results_from_teamcity(

@@ -6,7 +6,6 @@ import requests
 from requests import Response
 
 from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX
-from ci_tools.dimrset_delivery.settings.teamcity_settings import TeamcityIds
 
 
 class TeamCity(object):
@@ -341,9 +340,9 @@ class TeamCity(object):
             sys.exit(result.status_code)
         return True
 
-    def get_filtered_dependent_build_ids(self, build_id: str) -> List[str]:
+    def get_filtered_dependent_build_ids(self, build_id: str, filtered_ids: List[str]) -> List[str]:
         """
-        Get a list of build IDs for builds related to a specific build, filtered by buildTypeIds from TeamcityIds Enum.
+        Get a list of build IDs for builds related to a specific build, filtered by buildTypeIds from the provided list.
 
         Uses the following TeamCity REST API endpoint:
         /app/rest/builds?locator=defaultFilter:false,snapshotDependency(to:(id:<build_id>)),count:1000&fields=build(id,buildTypeId)
@@ -352,15 +351,17 @@ class TeamCity(object):
         ----------
         build_id : str
             The ID of the build to filter related builds.
+        filtered_ids : List[str]
+            The list of TeamCity build type IDs to filter by.
 
         Returns
         -------
         List[str]
             A list of build IDs for builds matching the snapshot dependency
-            and whose buildTypeId is in TeamcityIds.
+            and whose buildTypeId is in the provided list.
             Returns an empty list if the request failed or no matching builds are found.
         """
-        build_type_ids = [member.value for member in TeamcityIds]
+        build_type_ids = filtered_ids
         endpoint = (
             f"{self.__rest_uri}builds?locator=defaultFilter:false,"
             f"snapshotDependency(to:(id:{build_id})),count:1000&fields=build(id,buildTypeId)"
