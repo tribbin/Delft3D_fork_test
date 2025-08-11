@@ -173,7 +173,7 @@ class Atlassian(object):
             Returns true if the page was successfully updated.
         """
         if next_version is None:
-            current_version = self.get_page_version(page_id)
+            current_version = self.__get_page_version(page_id)
             if current_version is None:
                 print("Could not update page:")
                 print("Could not retrieve the current version of the page.")
@@ -201,7 +201,7 @@ class Atlassian(object):
         print("Successfully updated page.")
         return True
 
-    def get_page_version(self, page_id: str) -> Optional[int]:
+    def __get_page_version(self, page_id: str) -> Optional[int]:
         """
         Get the current version of a page.
 
