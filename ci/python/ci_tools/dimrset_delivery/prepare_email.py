@@ -21,6 +21,31 @@ from ci_tools.dimrset_delivery.settings.email_settings import (
 from ci_tools.dimrset_delivery.settings.general_settings import DRY_RUN_PREFIX, RELATIVE_PATH_TO_OUTPUT_FOLDER
 from ci_tools.dimrset_delivery.settings.teamcity_settings import KERNELS
 
+# Mock data for dry-run mode
+MOCK_CURRENT_TEST_RESULTS = """
+Summary: All
+Total tests   :   2000
+    Passed    :   2000
+    Not passed:      0
+    Failed    :      0
+    Exception :      0
+    Ignored   :      0
+    Muted     :      0
+    Percentage: 100.00
+"""
+
+MOCK_PREVIOUS_TEST_RESULTS = """
+Summary: All
+Total tests   :   1900
+    Passed    :   1800
+    Not passed:      20
+    Failed    :      20
+    Exception :      20
+    Ignored   :      20
+    Muted     :      20
+    Percentage: 94.74
+"""
+
 
 def prepare_email(context: DimrAutomationContext) -> None:
     """Prepare a mail template for the release notification.
@@ -37,11 +62,13 @@ def prepare_email(context: DimrAutomationContext) -> None:
     dimr_version = context.get_dimr_version()
 
     if context.dry_run:
-        print(f"{DRY_RUN_PREFIX} Would prepare email template for DIMR version:", dimr_version)
-        return
-
-    parser = get_testbank_result_parser()
-    previous_parser = get_previous_testbank_result_parser(context)
+        print(f"{DRY_RUN_PREFIX} Preparing email template for DIMR version:", dimr_version)
+        # Create mock parsers with sensible default values for dry-run
+        parser = ResultTestBankParser(MOCK_CURRENT_TEST_RESULTS.strip())
+        previous_parser = ResultTestBankParser(MOCK_PREVIOUS_TEST_RESULTS.strip())
+    else:
+        parser = get_testbank_result_parser()
+        previous_parser = get_previous_testbank_result_parser(context)
 
     helper = EmailHelper(
         dimr_version=dimr_version,
