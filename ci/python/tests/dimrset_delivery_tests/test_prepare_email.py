@@ -92,6 +92,146 @@ def test_load_and_save_template(tmp_path: Path) -> None:
     assert "Hello" in content
 
 
+class TestEmailHelper:
+    """Unit tests for EmailHelper class methods."""
+
+    def test_generate_wiki_link(self) -> None:
+        """Test wiki link generation for different version formats."""
+        helper = make_helper(dimr_version="1.2.3")
+        # Access the private method using name mangling
+        wiki_link = helper._EmailHelper__generate_wiki_link()  # type: ignore
+
+        expected_url = "https://publicwiki.deltares.nl/display/PROJ/DIMRset+release+1.2.3"
+        expected_link = f'<a href="{expected_url}">{expected_url}</a>'
+        assert wiki_link == expected_link
+
+    def test_generate_wiki_link_with_different_versions(self) -> None:
+        """Test wiki link generation with different version formats."""
+        test_cases = ["2025.01", "10.20.30", "1.0.0", "2.29.03"]
+
+        for version in test_cases:
+            helper = make_helper(dimr_version=version)
+            wiki_link = helper._EmailHelper__generate_wiki_link()  # type: ignore
+
+            expected_url = f"https://publicwiki.deltares.nl/display/PROJ/DIMRset+release+{version}"
+            expected_link = f'<a href="{expected_url}">{expected_url}</a>'
+            assert wiki_link == expected_link
+
+    @patch("ci_tools.dimrset_delivery.prepare_email.KERNELS", [])
+    def test_get_email_friendly_kernel_name_empty_kernels(self) -> None:
+        """Test kernel name mapping with empty KERNELS list."""
+        helper = make_helper()
+        result = helper._EmailHelper__get_email_friendly_kernel_name("unknown_kernel")  # type: ignore
+        assert result == ""
+
+    @patch("ci_tools.dimrset_delivery.prepare_email.KERNELS")
+    def test_get_email_friendly_kernel_name_found(self, mock_kernels: Mock) -> None:
+        """Test kernel name mapping when kernel is found."""
+        # Mock kernel config object
+        mock_kernel = Mock()
+        mock_kernel.name_for_extracting_revision = "kernel_internal"
+        mock_kernel.name_for_email = "Kernel Display Name"
+        mock_kernels.__iter__.return_value = [mock_kernel]
+
+        helper = make_helper()
+        result = helper._EmailHelper__get_email_friendly_kernel_name("kernel_internal")  # type: ignore
+        assert result == "Kernel Display Name"
+
+    @patch("ci_tools.dimrset_delivery.prepare_email.KERNELS")
+    def test_get_email_friendly_kernel_name_not_found(self, mock_kernels: Mock) -> None:
+        """Test kernel name mapping when kernel is not found."""
+        # Mock kernel config object that doesn't match
+        mock_kernel = Mock()
+        mock_kernel.name_for_extracting_revision = "other_kernel"
+        mock_kernel.name_for_email = "Other Kernel"
+        mock_kernels.__iter__.return_value = [mock_kernel]
+
+        helper = make_helper()
+        result = helper._EmailHelper__get_email_friendly_kernel_name("unknown_kernel")  # type: ignore
+        assert result == ""
+
+    @patch("ci_tools.dimrset_delivery.prepare_email.LOWER_BOUND_PERCENTAGE_SUCCESSFUL_TESTS", 100)
+    def test_generate_summary_table_html_no_previous_parser(self) -> None:
+        """Test HTML table generation without previous parser."""
+        kernel_versions = {"kernel1": "1.0.0", "kernel2": "2.0.0", "DIMRset_ver": "should_be_skipped"}
+        helper = make_helper(dimr_version="1.2.3", kernel_versions=kernel_versions, passing="95", exceptions="0")
+
+        with patch.object(helper, "_EmailHelper__get_email_friendly_kernel_name", side_effect=lambda k: f"Display_{k}"):
+            html = helper._EmailHelper__generate_summary_table_html()  # type: ignore
+
+        # Check that DIMRset_ver is skipped
+        assert "DIMRset_ver" not in html
+        assert "should_be_skipped" not in html
+
+        # Check kernel information is included
+        assert "Display_kernel1" in html
+        assert "1.0.0" in html
+        assert "Display_kernel2" in html
+        assert "2.0.0" in html
+
+        # Check test results (95% < 100% threshold, so should be fail class)
+        assert '<span class="fail">95%</span>' in html
+        assert "Total tests: 100" in html
+        assert "Passed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 95" in html
+
+        # Check no previous data message
+        assert "no previous data" in html
+
+        # Check exceptions (0 should be success class)
+        assert '<span class="success">0</span>' in html
+
+    @patch("ci_tools.dimrset_delivery.prepare_email.LOWER_BOUND_PERCENTAGE_SUCCESSFUL_TESTS", 90)
+    def test_generate_summary_table_html_with_previous_parser_success(self) -> None:
+        """Test HTML table generation with previous parser - success case."""
+        helper = make_helper(
+            dimr_version="1.2.3",
+            kernel_versions={"kernel1": "1.0.0"},
+            passing="95",
+            exceptions="0",
+            prev_passing="92",
+            prev_exceptions="1",
+        )
+
+        with patch.object(helper, "_EmailHelper__get_email_friendly_kernel_name", return_value="Kernel1"):
+            html = helper._EmailHelper__generate_summary_table_html()  # type: ignore
+
+        # Check test results (95% > 90% threshold, so should be success class)
+        assert '<span class="success">95%</span>' in html
+
+        # Check previous results (92% > 90% threshold, so should be success class)
+        assert 'Green testbank was (<span class="success">92%</span>)' in html
+
+        # Check comparative data
+        assert "Total tests: 100 was (100)" in html
+        assert "Passed&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 95 was (95)" in html
+
+        # Check exceptions (0 should be success, 1 should be fail)
+        assert '<span class="success">0</span>' in html
+        assert 'was <span class="fail">1</span>' in html
+
+    def test_insert_summary_table_header(self) -> None:
+        """Test summary table header insertion."""
+        helper = make_helper(dimr_version="2.29.03")
+        helper._EmailHelper__template = "Version: @@@DIMR_VERSION@@@ Link: @@@LINK_TO_PUBLIC_WIKI@@@"  # type: ignore
+
+        helper._EmailHelper__insert_summary_table_header()  # type: ignore
+
+        expected_link = '<a href="https://publicwiki.deltares.nl/display/PROJ/DIMRset+release+2.29.03">https://publicwiki.deltares.nl/display/PROJ/DIMRset+release+2.29.03</a>'
+        expected_template = f"Version: 2.29.03 Link: {expected_link}"
+
+        assert helper._EmailHelper__template == expected_template  # type: ignore
+
+    def test_insert_summary_table(self) -> None:
+        """Test summary table insertion."""
+        helper = make_helper()
+        helper._EmailHelper__template = "Table: @@@SUMMARY_TABLE_BODY@@@"  # type: ignore
+
+        with patch.object(helper, "_EmailHelper__generate_summary_table_html", return_value="<table>content</table>"):
+            helper._EmailHelper__insert_summary_table()  # type: ignore
+
+        assert helper._EmailHelper__template == "Table: <table>content</table>"  # type: ignore
+
+
 # @patch("ci_tools.dimrset_delivery.prepare_email.get_testbank_result_parser")
 # @patch("builtins.print")
 # def test_prepare_email_dry_run(
