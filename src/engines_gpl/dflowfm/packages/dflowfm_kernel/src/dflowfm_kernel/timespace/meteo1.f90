@@ -6397,7 +6397,6 @@ module m_meteo
    integer, target :: item_air_temperature !< 'airtemperature' quantity
    integer, target :: item_cloudiness !< 'cloudiness' quantity
    integer, target :: item_solar_radiation !< 'solarradiation' quantity
-   integer, target :: item_net_solar_radiation !< 'netsolarradiation' quantity
    integer, target :: item_long_wave_radiation !< 'longwaveradiation' quantity
 
    integer, target :: item_discharge_salinity_temperature_sorsin !< Unique Item id of the ext-file's 'discharge_salinity_temperature_sorsin' quantity
@@ -6564,7 +6563,6 @@ contains
       item_air_temperature = ec_undef_int
       item_cloudiness = ec_undef_int
       item_solar_radiation = ec_undef_int
-      item_net_solar_radiation = ec_undef_int
       item_long_wave_radiation = ec_undef_int
       item_hac_humidity = ec_undef_int
       item_hac_air_temperature = ec_undef_int
@@ -7005,8 +7003,8 @@ contains
          itemPtr1 => item_solar_radiation
          dataPtr1 => solar_radiation
       case ('netsolarradiation')
-         itemPtr1 => item_net_solar_radiation
-         dataPtr1 => net_solar_radiation
+         itemPtr1 => item_solar_radiation
+         dataPtr1 => solar_radiation
       case ('longwaveradiation')
          itemPtr1 => item_long_wave_radiation
          dataPtr1 => long_wave_radiation

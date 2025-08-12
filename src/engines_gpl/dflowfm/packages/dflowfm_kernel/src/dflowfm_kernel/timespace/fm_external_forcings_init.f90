@@ -629,7 +629,7 @@ contains
                         water_level_correction_available
       use m_flowgeom, only: ndx, lnx, xz, yz
       use m_flowparameters, only: btempforcingtypA, btempforcingtypC, btempforcingtypD, btempforcingtypH, btempforcingtypL, &
-                                  btempforcingtypS, btempforcingtypN, itempforcingtyp
+                                  btempforcingtypS, itempforcingtyp
       use timespace, only: timespaceinitialfield
       use m_meteo, only: ec_addtimespacerelation
       use dfm_error, only: DFM_NOERR
@@ -932,7 +932,7 @@ contains
                 call err_flush()
                 return
             end if
-            btempforcingtypN = .true.
+            btempforcingtypS = .true.
             net_solar_radiation_available = .true.
          case ('longwaveradiation')
             btempforcingtypL = .true.
@@ -1210,7 +1210,7 @@ contains
 
    !> Scan the quantity name for heat relatede quantities.
    function scan_for_heat_quantities(quantity, kx) result(success)
-      use m_wind, only: air_temperature, cloudiness, dew_point_temperature, relative_humidity, solar_radiation, net_solar_radiation, long_wave_radiation
+      use m_wind, only: air_temperature, cloudiness, dew_point_temperature, relative_humidity, solar_radiation, long_wave_radiation
       use m_flowgeom, only: ndx
       use m_alloc, only: aerr, realloc
 
@@ -1241,8 +1241,8 @@ contains
          call realloc(solar_radiation, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
          call aerr('solar_radiation(ndx)', ierr, ndx)
       case ('netsolarradiation')
-         call realloc(net_solar_radiation, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
-         call aerr('net_solar_radiation(ndx)', ierr, ndx)
+         call realloc(solar_radiation, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
+         call aerr('solar_radiation(ndx)', ierr, ndx)
       case ('longwaveradiation')
          call realloc(long_wave_radiation, ndx, stat=ierr, fill=0.0_dp, keepexisting=.false.)
          call aerr('long_wave_radiation(ndx)', ierr, ndx)

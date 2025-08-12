@@ -173,7 +173,7 @@ contains
 
          ! Solar radiation restricted by presence of clouds and/or reflection of water surface (albedo)
          if (net_solar_radiation_available) then
-            net_solar_radiation_in_cell = net_solar_radiation(n)
+            net_solar_radiation_in_cell = solar_radiation(n)
          else if (solar_radiation_available) then
             net_solar_radiation_in_cell = solar_radiation(n) * (1.0_dp - albedo)
          else ! Calculate solar radiation from cloud coverage specified in file

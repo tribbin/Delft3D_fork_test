@@ -1046,14 +1046,14 @@ contains
 
             else if (qid == 'netsolarradiation') then
 
-               if (.not. allocated(net_solar_radiation)) then
-                  allocate (net_solar_radiation(ndx), stat=ierr)
-                  call aerr('net_solar_radiation(ndx)', ierr, ndx)
-                  net_solar_radiation = 0.0_dp
+               if (.not. allocated(solar_radiation)) then
+                  allocate (solar_radiation(ndx), stat=ierr)
+                  call aerr('solar_radiation(ndx)', ierr, ndx)
+                  solar_radiation = 0.0_dp
                end if
                success = ec_addtimespacerelation(qid, xz, yz, kcs, kx, filename, filetype, method, operand, varname=varname)
                if (success) then
-                  btempforcingtypN = .true.
+                  btempforcingtypS = .true.
                   net_solar_radiation_available = .true.
                end if
 
