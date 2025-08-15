@@ -233,12 +233,13 @@ inpupr,inpuit,inpunm,inpude,inpudo,inpusx
 "Temperatur","SwEmersion",  11,"Y","x",1
 "Temperatur","LocSedDept",  12,"Y","x",1
 "Temperatur","ThSedDT   ",  13,"Y","x",1
-"Temperatur","RadSurf   ",  14,"N","x",1
+"Temperatur","RadSW     ",  14,"N","x",1
 "Temperatur","RadMax    ",  15,"Y","x",1
 "Temperatur","RTradmax  ",  16,"Y","x",1
 "Temperatur","DelTradmax",  17,"Y","x",1
 "Temperatur","DelTev    ",  18,"Y","x",1
 "Temperatur","DelTrad   ",  19,"N"," ",1
+"Temperatur","AirTemp   ",  20,"Y","x",1
 "Salinchlor","Cl        ",   1,"Y","x",1
 "Salinchlor","Temp      ",   2,"Y","x",1
 "Salinchlor","SWSalCl   ",   3,"Y","x",1
