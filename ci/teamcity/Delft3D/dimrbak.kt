@@ -89,24 +89,6 @@ object DIMRbak : BuildType({
             }
         }
         python {
-            name = "Generate test report summary"
-            command = module {
-                module = "ci_tools.dimrset_delivery.teamcity_test_results"
-                scriptArguments = """
-                    --build_id "%teamcity.build.id%"
-                    --teamcity-username "%dimrbakker_username%"
-                    --teamcity-password "%dimrbakker_password%"
-                    %dry_run%
-                """.trimIndent()
-            }
-            workingDir = "ci/python"
-            environment = venv {
-                requirementsFile = ""
-                pipArgs = "--editable .[all]"
-            }
-            executionMode = BuildStep.ExecutionMode.ALWAYS
-        }
-        python {
             name = "Download artifacts from TeamCity and on file share using H7"
             command = module {
                 module = "ci_tools.dimrset_delivery.download_and_install_artifacts"
@@ -116,64 +98,6 @@ object DIMRbak : BuildType({
                     --teamcity-password "%dimrbakker_password%"
                     --ssh-username "%dimrbakker_username%"
                     --ssh-password "%dimrbakker_password%"
-                    %dry_run%
-                """.trimIndent()
-            }
-            workingDir = "ci/python"
-            environment = venv {
-                requirementsFile = ""
-                pipArgs = "--editable .[all]"
-            }
-            executionMode = BuildStep.ExecutionMode.ALWAYS
-        }
-        python {
-            name = "Update Excel sheet"
-            command = module {
-                module = "ci_tools.dimrset_delivery.update_excel_sheet"
-                scriptArguments = """
-                    --build_id "%teamcity.build.id%"
-                    --teamcity-username "%dimrbakker_username%"
-                    --teamcity-password "%dimrbakker_password%"
-                    --ssh-username "%dimrbakker_username%"
-                    --ssh-password "%dimrbakker_password%"
-                    %dry_run%
-                """.trimIndent()
-            }
-            workingDir = "ci/python"
-            environment = venv {
-                requirementsFile = ""
-                pipArgs = "--editable .[all]"
-            }
-            executionMode = BuildStep.ExecutionMode.ALWAYS
-        }
-        python {
-            name = "Prepare email template"
-            command = module {
-                module = "ci_tools.dimrset_delivery.prepare_email"
-                scriptArguments = """
-                    --build_id "%teamcity.build.id%"
-                    --teamcity-username "%dimrbakker_username%"
-                    --teamcity-password "%dimrbakker_password%"
-                    %dry_run%
-                """.trimIndent()
-            }
-            workingDir = "ci/python"
-            environment = venv {
-                requirementsFile = ""
-                pipArgs = "--editable .[all]"
-            }
-            executionMode = BuildStep.ExecutionMode.ALWAYS
-        }
-        python {
-            name = "Update public wiki"
-            command = module {
-                module = "ci_tools.dimrset_delivery.update_public_wiki"
-                scriptArguments = """
-                    --build_id "%teamcity.build.id%"
-                    --atlassian-username "%dimrbakker_username%"
-                    --atlassian-password "%dimrbakker_password%"
-                    --teamcity-username "%dimrbakker_username%"
-                    --teamcity-password "%dimrbakker_password%"
                     %dry_run%
                 """.trimIndent()
             }
@@ -203,6 +127,78 @@ object DIMRbak : BuildType({
                 pipArgs = "--editable .[all]"
             }
             executionMode = BuildStep.ExecutionMode.ALWAYS
+        }
+        python {
+            name = "Generate test report summary"
+            command = module {
+                module = "ci_tools.dimrset_delivery.teamcity_test_results"
+                scriptArguments = """
+                    --build_id "%teamcity.build.id%"
+                    --teamcity-username "%dimrbakker_username%"
+                    --teamcity-password "%dimrbakker_password%"
+                    %dry_run%
+                """.trimIndent()
+            }
+            workingDir = "ci/python"
+            environment = venv {
+                requirementsFile = ""
+                pipArgs = "--editable .[all]"
+            }
+        }
+        python {
+            name = "Update Excel sheet"
+            command = module {
+                module = "ci_tools.dimrset_delivery.update_excel_sheet"
+                scriptArguments = """
+                    --build_id "%teamcity.build.id%"
+                    --teamcity-username "%dimrbakker_username%"
+                    --teamcity-password "%dimrbakker_password%"
+                    --ssh-username "%dimrbakker_username%"
+                    --ssh-password "%dimrbakker_password%"
+                    %dry_run%
+                """.trimIndent()
+            }
+            workingDir = "ci/python"
+            environment = venv {
+                requirementsFile = ""
+                pipArgs = "--editable .[all]"
+            }
+        }
+        python {
+            name = "Prepare email template"
+            command = module {
+                module = "ci_tools.dimrset_delivery.prepare_email"
+                scriptArguments = """
+                    --build_id "%teamcity.build.id%"
+                    --teamcity-username "%dimrbakker_username%"
+                    --teamcity-password "%dimrbakker_password%"
+                    %dry_run%
+                """.trimIndent()
+            }
+            workingDir = "ci/python"
+            environment = venv {
+                requirementsFile = ""
+                pipArgs = "--editable .[all]"
+            }
+        }
+        python {
+            name = "Update public wiki"
+            command = module {
+                module = "ci_tools.dimrset_delivery.update_public_wiki"
+                scriptArguments = """
+                    --build_id "%teamcity.build.id%"
+                    --atlassian-username "%dimrbakker_username%"
+                    --atlassian-password "%dimrbakker_password%"
+                    --teamcity-username "%dimrbakker_username%"
+                    --teamcity-password "%dimrbakker_password%"
+                    %dry_run%
+                """.trimIndent()
+            }
+            workingDir = "ci/python"
+            environment = venv {
+                requirementsFile = ""
+                pipArgs = "--editable .[all]"
+            }
         }
     }
 })
