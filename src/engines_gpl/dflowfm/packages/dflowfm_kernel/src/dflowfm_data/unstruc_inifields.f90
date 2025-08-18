@@ -1574,7 +1574,7 @@ contains
       use processes_input, only: paname, painp, num_spatial_parameters, &
                                  funame, funinp, num_time_functions, &
                                  sfunname, sfuninp, num_spatial_time_fuctions
-      use m_physcoef, only: dicoww, t_dicoww, realloc
+      use m_physcoef, only: dicoww, class_dicoww, realloc
 
       implicit none
 
@@ -1716,7 +1716,7 @@ contains
          target_array => secchisp
       case ('backgroundverticaleddydiffusivitycoefficient')
          target_location_type = UNC_LOC_S
-         call realloc(t_dicoww, ndx, dicoww, target_array)
+         call realloc(class_dicoww, ndx, dicoww, target_array)
       case ('stemdiameter')
          if (.not. allocated(stemdiam)) then
             allocate (stemdiam(ndx), stat=ierr)

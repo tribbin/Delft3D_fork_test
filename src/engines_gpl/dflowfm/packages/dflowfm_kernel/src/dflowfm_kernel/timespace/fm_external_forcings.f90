@@ -2804,9 +2804,9 @@ contains
       ! (needed to disable possibly invalid statistical output items)
       call check_model_has_structures_across_partitions
 
-      ! Set t_dicoww to scalar value if not read from inifields file
-      if (.not. allocated(t_dicoww)) then
-         call realloc(t_dicoww, dicoww)
+      ! Set class_dicoww to scalar value if not read from inifields file
+      if (.not. allocated(class_dicoww)) then
+         call realloc(class_dicoww, dicoww)
       end if
 
    end subroutine finalize

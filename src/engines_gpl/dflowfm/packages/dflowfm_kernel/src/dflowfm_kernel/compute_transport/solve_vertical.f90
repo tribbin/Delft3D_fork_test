@@ -243,7 +243,7 @@ contains
    end subroutine solve_vertical
 
    pure function get_difsedw(k, j)
-      use m_physcoef, only: t_dicoww, dicoww_t, dicoww_scalar_t, dicoww_array_t
+      use m_physcoef, only: class_dicoww, dicoww_t, dicoww_scalar_t, dicoww_array_t
       use m_transport, only: molecular_diffusion_coeff
       use precision, only: dp
       integer, intent(in) :: k ! base node index (1:Ndxi)
@@ -251,7 +251,7 @@ contains
       real(kind=dp) :: get_difsedw ! return value
 
       !total diffusivity is user specified diffusivity plus molecular diffusivity depending on constituent
-      get_difsedw = t_dicoww%get(k) + molecular_diffusion_coeff(j)
+      get_difsedw = class_dicoww%get(k) + molecular_diffusion_coeff(j)
    end function get_difsedw
 
 end module m_solve_vertical
