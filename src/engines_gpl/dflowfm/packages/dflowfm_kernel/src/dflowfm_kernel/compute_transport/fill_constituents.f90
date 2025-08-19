@@ -121,7 +121,7 @@ contains
          if (dicouv >= 0.0_dp) then
             difsedu(ISALT) = difmolsal
          end if
-         if (constant_dicoww > 0) then
+         if (constant_dicoww >= 0) then
             molecular_diffusion_coeff(ISALT) = difmolsal
             sigdifi(ISALT) = 1.0_dp / Schmidt_number_salinity
          end if
@@ -131,7 +131,7 @@ contains
          if (dicouv >= 0.0_dp) then
             difsedu(ITEMP) = difmoltem
          end if
-         if (constant_dicoww > 0) then
+         if (constant_dicoww >= 0) then
             molecular_diffusion_coeff(ITEMP) = difmoltem
             sigdifi(ITEMP) = 1.0_dp / Prandtl_number_temperature
          end if
@@ -147,7 +147,7 @@ contains
          do jsed = 1, mxgr
             iconst = ISED1 + jsed - 1
             if (dicouv >= 0.0_dp) difsedu(iconst) = 0.0_dp
-            if (constant_dicoww > 0) then
+            if (constant_dicoww >= 0) then
                molecular_diffusion_coeff(iconst) = 0.0_dp
                sigdifi(iconst) = 1.0_dp / sigsed(jsed)
             end if
@@ -158,7 +158,7 @@ contains
       if (ITRA1 > 0) then
          do jtra = ITRA1, ITRAN
             difsedu(jtra) = difmoltracer
-            if (constant_dicoww > 0) then
+            if (constant_dicoww >= 0) then
                molecular_diffusion_coeff(jtra) = difmoltracer
                sigdifi(jtra) = 1.0_dp / Schmidt_number_tracer
             end if
