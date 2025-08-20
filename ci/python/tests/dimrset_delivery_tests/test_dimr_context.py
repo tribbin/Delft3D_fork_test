@@ -283,7 +283,7 @@ class TestDimrAutomationContext:
             )
 
             context.log("Test message")
-            mock_print.assert_called_with("Test message", sep=" ")
+            mock_print.assert_called_with("Test message")
 
     def test_get_kernel_versions_dry_run_mode(self) -> None:
         """Test get_kernel_versions method in dry run mode."""

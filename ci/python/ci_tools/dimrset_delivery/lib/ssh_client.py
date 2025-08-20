@@ -5,6 +5,7 @@ from scp import SCPClient  # type: ignore
 
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.lib.connection_service_interface import ConnectionServiceInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class Direction(Enum):
@@ -76,36 +77,39 @@ class SshClient(ConnectionServiceInterface):
                 )
                 success = True
             except Exception as e:
-                self.__context.log(f"Failed to establish SSH connection to '{self.__address}': {e}")
+                self.__context.log(
+                    f"Failed to establish SSH connection to '{self.__address}': {e}", severity=LogLevel.ERROR
+                )
                 success = False
             finally:
                 self._client.close()
                 self.__context.log(f"Close SSH connection to '{self.__address}' with '{self.__username}'.")
         return success
 
-    def execute(self, command: str) -> None:
-        """Execute a command on the remote address.
-
-        Parameters
-        ----------
-        command : str
-            Command to execute on the remote address.
-
-        Raises
-        ------
-        AssertionError
-            If the command fails to execute on the remote address.
-        """
+    def execute(self, command: str) -> bool:
+        """Execute a command on the remote address."""
+        success = False
         try:
             self._client.connect(
                 self.__address, username=self.__username, password=self.__password, timeout=self.__connect_timeout
             )
-            self._client.exec_command(command)
+            _, stdout, _ = self._client.exec_command(command)
+            exit_status = stdout.channel.recv_exit_status()
+            if exit_status == 0:
+                self.__context.log(f"Successfully executed command '{command}' on '{self.__address}'.")
+                success = True
+            else:
+                self.__context.log(
+                    f"Command '{command}' failed with exit status {exit_status} on '{self.__address}'.",
+                    severity=LogLevel.ERROR,
+                )
         except Exception as e:
-            raise AssertionError(f"Could not execute command '{command}' on '{self.__address}':\n{e}") from e
+            self.__context.log(
+                f"Could not execute command '{command}' on '{self.__address}':\n{e}", severity=LogLevel.ERROR
+            )
         finally:
             self._client.close()
-            self.__context.log(f"Successfully executed command '{command}' on '{self.__address}'.")
+        return success
 
     def secure_copy(self, local_path: str, remote_path: str, direction: Direction = Direction.TO) -> None:
         """Copy a file to or from the remote address using SCP.

@@ -17,6 +17,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 from ci_tools.dimrset_delivery.lib.ssh_client import Direction
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.step_executer_interface import StepExecutorInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class ExcelHelper(StepExecutorInterface):
@@ -72,7 +73,7 @@ class ExcelHelper(StepExecutorInterface):
         path_to_excel_file = f"/p/d-hydro/dimrset/{self.__context.settings.versions_excel_filename}"
 
         if self.__services.ssh is None:
-            self.__context.log("SSH client is required but not initialized")
+            self.__context.log("SSH client is required but not initialized", severity=LogLevel.ERROR)
             return False
         if self.__services.teamcity is None:
             self.__context.log("TeamCity client is required but not initialized")
@@ -183,7 +184,7 @@ if __name__ == "__main__":
             context.log("Finished successfully!")
             sys.exit(0)
         else:
-            context.log("Failed Excel sheet update!")
+            context.log("Failed Excel sheet update!", severity=LogLevel.ERROR)
             sys.exit(1)
 
     except KeyboardInterrupt:

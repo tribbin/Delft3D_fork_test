@@ -9,6 +9,7 @@ from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.settings.teamcity_settings import Settings
 from ci_tools.dimrset_delivery.step_4_update_excel_sheet import ExcelHelper
+from ci_tools.example_utils.logger import LogLevel
 
 
 class TestUpdateExcelSheet:
@@ -97,10 +98,12 @@ class TestUpdateExcelSheet:
         mock_services.ssh = None
         helper = ExcelHelper(context=self.mock_context, services=mock_services)
 
-        # Act & Assert
+        # Act
         result = helper.execute_step()
+
+        # Assert
         assert result is False
-        self.mock_context.log.assert_any_call("SSH client is required but not initialized")
+        self.mock_context.log.assert_any_call("SSH client is required but not initialized", severity=LogLevel.ERROR)
 
     @patch("ci_tools.dimrset_delivery.step_4_update_excel_sheet.get_testbank_result_parser")
     def test_update_excel_sheet_raises_error_when_teamcity_missing(self, mock_get_parser: Mock) -> None:

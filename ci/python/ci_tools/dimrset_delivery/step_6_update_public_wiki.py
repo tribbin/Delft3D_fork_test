@@ -13,6 +13,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 )
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.step_executer_interface import StepExecutorInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class WikiPublisher(StepExecutorInterface):
@@ -71,10 +72,10 @@ class WikiPublisher(StepExecutorInterface):
             self.__context.log(f"Would update public wiki for DIMR version: {self.__context.dimr_version}")
 
         if self.__atlassian is None:
-            self.__context.log("Atlassian client is required but not initialized")
+            self.__context.log("Atlassian client is required but not initialized", severity=LogLevel.ERROR)
             return False
         if self.__teamcity is None:
-            self.__context.log("TeamCity client is required but not initialized")
+            self.__context.log("TeamCity client is required but not initialized", severity=LogLevel.ERROR)
             return False
 
         self.update_public_wiki()
@@ -348,7 +349,7 @@ if __name__ == "__main__":
             context.log("Finished successfully!")
             sys.exit(0)
         else:
-            context.log("Failed public wiki update!")
+            context.log("Failed public wiki update!", severity=LogLevel.ERROR)
             sys.exit(1)
 
     except KeyboardInterrupt:

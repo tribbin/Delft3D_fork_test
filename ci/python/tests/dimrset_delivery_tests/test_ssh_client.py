@@ -5,6 +5,7 @@ import pytest
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.lib.ssh_client import Direction, SshClient
 from ci_tools.dimrset_delivery.settings.teamcity_settings import Settings
+from ci_tools.example_utils.logger import LogLevel
 
 
 def test_test_connection_success() -> None:
@@ -89,9 +90,11 @@ def test_execute_fail() -> None:
         patch.object(client._client, "exec_command", side_effect=Exception("fail")),
         patch.object(client._client, "close") as mock_close,
     ):
-        # Act & Assert
-        with pytest.raises(AssertionError):
-            client.execute("ls")
+        # Act
+        client.execute("ls")
+
+        # Assert
+        mock_context.log.assert_called_with("Could not execute command 'ls' on 'host':\nfail", severity=LogLevel.ERROR)
         mock_connect.assert_called_once()
         mock_close.assert_called_once()
 

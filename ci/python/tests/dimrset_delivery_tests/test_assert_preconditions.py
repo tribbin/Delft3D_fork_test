@@ -11,6 +11,7 @@ from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.settings.teamcity_settings import Settings
 from ci_tools.dimrset_delivery.step_0_assert_preconditions import PreconditionsChecker
+from ci_tools.example_utils.logger import LogLevel
 
 
 class TestAssertPreconditionsFunction:
@@ -63,10 +64,12 @@ class TestAssertPreconditionsFunction:
         self.mock_services.teamcity.test_connection.return_value = False
         checker = PreconditionsChecker(self.mock_context, self.mock_services)
 
-        # Act & Assert
+        # Act
         result = checker.execute_step()
+
+        # Assert
         assert not result
-        self.mock_context.log.assert_any_call("Failed to connect to the TeamCity REST API.")
+        self.mock_context.log.assert_any_call("Failed to connect to the TeamCity REST API.", severity=LogLevel.ERROR)
 
     def test_assert_preconditions_atlassian_failure(self) -> None:
         """Test preconditions check fails when Atlassian connection fails."""
@@ -75,10 +78,12 @@ class TestAssertPreconditionsFunction:
         self.mock_services.atlassian.test_connection.return_value = False
         checker = PreconditionsChecker(self.mock_context, self.mock_services)
 
-        # Act & Assert
+        # Act
         result = checker.execute_step()
+
+        # Assert
         assert not result
-        self.mock_context.log.assert_any_call("Failed to connect to the Atlassian REST API.")
+        self.mock_context.log.assert_any_call("Failed to connect to the Atlassian REST API.", severity=LogLevel.ERROR)
 
     @patch("os.path.exists")
     def test_assert_preconditions_network_path_not_exists(self, mock_os_exists: Mock) -> None:
@@ -89,10 +94,12 @@ class TestAssertPreconditionsFunction:
         mock_os_exists.return_value = False
         checker = PreconditionsChecker(self.mock_context, self.mock_services)
 
-        # Act & Assert
+        # Act
         result = checker.execute_step()
+
+        # Assert
         assert not result
-        self.mock_context.log.assert_any_call("Access check failed for test_path.")
+        self.mock_context.log.assert_any_call("Access check failed for test_path.", severity=LogLevel.ERROR)
 
     @patch("os.access")
     @patch("os.path.exists")
@@ -105,10 +112,12 @@ class TestAssertPreconditionsFunction:
         mock_os_access.return_value = False
         checker = PreconditionsChecker(self.mock_context, self.mock_services)
 
-        # Act & Assert
+        # Act
         result = checker.execute_step()
+
+        # Assert
         assert not result
-        self.mock_context.log.assert_any_call("Access check failed for test_path.")
+        self.mock_context.log.assert_any_call("Access check failed for test_path.", severity=LogLevel.ERROR)
 
     @patch("os.access")
     @patch("os.path.exists")
@@ -121,10 +130,12 @@ class TestAssertPreconditionsFunction:
         mock_os_access.side_effect = OSError("Permission denied")
         checker = PreconditionsChecker(self.mock_context, self.mock_services)
 
-        # Act & Assert
+        # Act
         result = checker.execute_step()
+
+        # Assert
         assert not result
-        self.mock_context.log.assert_any_call("Could not access test_path: Permission denied")
+        self.mock_context.log.assert_any_call("Could not access test_path: Permission denied", severity=LogLevel.ERROR)
 
     @patch("os.access")
     @patch("os.path.exists")
@@ -138,10 +149,14 @@ class TestAssertPreconditionsFunction:
         self.mock_services.ssh.test_connection.side_effect = ConnectionError("SSH connection failed")
         checker = PreconditionsChecker(self.mock_context, self.mock_services)
 
-        # Act & Assert
+        # Act
         result = checker.execute_step()
+
+        # Assert
         assert not result
-        self.mock_context.log.assert_any_call("Exception during connection check: SSH connection failed")
+        self.mock_context.log.assert_any_call(
+            "Exception during connection check: SSH connection failed", severity=LogLevel.ERROR
+        )
 
     @patch("os.access")
     @patch("os.path.exists")
@@ -156,10 +171,14 @@ class TestAssertPreconditionsFunction:
         self.mock_services.git.test_connection.side_effect = ConnectionError("Git connection failed")
         checker = PreconditionsChecker(self.mock_context, self.mock_services)
 
-        # Act & Assert
+        # Act
         result = checker.execute_step()
+
+        # Assert
         assert not result
-        self.mock_context.log.assert_any_call("Exception during connection check: Git connection failed")
+        self.mock_context.log.assert_any_call(
+            "Exception during connection check: Git connection failed", severity=LogLevel.ERROR
+        )
 
     def test_assert_preconditions_dry_run_mode(self) -> None:
         """Test preconditions check in dry-run mode."""

@@ -6,6 +6,7 @@ import requests
 
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.lib.connection_service_interface import ConnectionServiceInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class Atlassian(ConnectionServiceInterface):
@@ -138,7 +139,7 @@ class Atlassian(ConnectionServiceInterface):
             page_id: str = json_response["id"]
             return page_id
         self.__context.log("Could not create page:")
-        self.__context.log(f"Error : {result.status_code} - {result.content.decode('utf-8')}")
+        self.__context.log(f"Error : {result.status_code} - {result.content.decode('utf-8')}", severity=LogLevel.ERROR)
         return None
 
     def update_page(self, page_id: str, page_title: str, content: str, next_version: Optional[int] = None) -> bool:
@@ -185,7 +186,9 @@ class Atlassian(ConnectionServiceInterface):
         )
         if result.status_code != 200:
             self.__context.log("Could not update page:")
-            self.__context.log(f"Error : {result.status_code} - {result.content.decode('utf-8')}")
+            self.__context.log(
+                f"Error : {result.status_code} - {result.content.decode('utf-8')}", severity=LogLevel.ERROR
+            )
             return False
         self.__context.log("Successfully updated page.")
         return True

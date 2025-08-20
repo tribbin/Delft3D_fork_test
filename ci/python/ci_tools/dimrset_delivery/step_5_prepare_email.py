@@ -16,6 +16,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.settings.teamcity_settings import KERNELS
 from ci_tools.dimrset_delivery.step_executer_interface import StepExecutorInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class EmailHelper(StepExecutorInterface):
@@ -313,7 +314,7 @@ if __name__ == "__main__":
             context.log("Finished successfully!")
             sys.exit(0)
         else:
-            context.log("Failed email template preparation!")
+            context.log("Failed email template preparation!", severity=LogLevel.ERROR)
             sys.exit(1)
 
     except KeyboardInterrupt:

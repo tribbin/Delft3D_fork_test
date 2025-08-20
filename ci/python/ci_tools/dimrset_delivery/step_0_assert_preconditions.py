@@ -13,6 +13,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 from ci_tools.dimrset_delivery.lib.connection_service_interface import ConnectionServiceInterface
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.step_executer_interface import StepExecutorInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class PreconditionsChecker(StepExecutorInterface):
@@ -56,7 +57,7 @@ class PreconditionsChecker(StepExecutorInterface):
                 error_count += 1
 
         except (ValueError, AssertionError) as e:
-            self.context.log(f"Preconditions check failed: {str(e)}")
+            self.context.log(f"Preconditions check failed: {str(e)}", severity=LogLevel.ERROR)
             error_count += 1
             raise
         except Exception as e:
@@ -96,7 +97,7 @@ class PreconditionsChecker(StepExecutorInterface):
             )
             return teamcity_ok and atlassian_ok and git_ok and ssh_ok
         except Exception as e:
-            self.context.log(f"Exception during connection check: {e}")
+            self.context.log(f"Exception during connection check: {e}", severity=LogLevel.ERROR)
             return False
 
     def __check_connection(self, client: Optional[ConnectionServiceInterface], name: str) -> bool:
@@ -121,7 +122,7 @@ class PreconditionsChecker(StepExecutorInterface):
             return False
         self.context.log(f"Testing {name} connection...")
         if not client.test_connection(self.context.dry_run):
-            self.context.log(f"Failed to connect to the {name} REST API.")
+            self.context.log(f"Failed to connect to the {name} REST API.", severity=LogLevel.ERROR)
             return False
         self.context.log(f"{name} connection successful")
         return True
@@ -150,10 +151,14 @@ class PreconditionsChecker(StepExecutorInterface):
                     f"Successfully checked for read and write access to {self.context.settings.network_base_path}."
                 )
                 return True
-            self.context.log(f"Access check failed for {self.context.settings.network_base_path}.")
+            self.context.log(
+                f"Access check failed for {self.context.settings.network_base_path}.", severity=LogLevel.ERROR
+            )
             return False
         except OSError as e:
-            self.context.log(f"Could not access {self.context.settings.network_base_path}: {e}")
+            self.context.log(
+                f"Could not access {self.context.settings.network_base_path}: {e}", severity=LogLevel.ERROR
+            )
             return False
 
 
@@ -168,7 +173,7 @@ if __name__ == "__main__":
             context.log("Finished successfully!")
             sys.exit(0)
         else:
-            context.log("Preconditions check failed!")
+            context.log("Preconditions check failed!", severity=LogLevel.ERROR)
             sys.exit(1)
 
     except KeyboardInterrupt:

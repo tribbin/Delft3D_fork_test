@@ -10,6 +10,7 @@ from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.settings.teamcity_settings import Settings, TeamcityIds
 from ci_tools.dimrset_delivery.step_1_download_and_install_artifacts import ArtifactInstaller
+from ci_tools.example_utils.logger import LogLevel
 
 
 class TestDownloadAndInstallArtifacts:
@@ -93,10 +94,12 @@ class TestDownloadAndInstallArtifacts:
         mock_services.ssh = Mock(spec=SshClient)
         installer = ArtifactInstaller(mock_context, mock_services)
 
-        # Act & Assert
+        # Act
         result = installer.execute_step()
+
+        # Assert
         assert not result
-        mock_context.log.assert_called_with("TeamCity client is required but not initialized")
+        mock_context.log.assert_called_with("TeamCity client is required but not initialized", severity=LogLevel.ERROR)
 
     def test_download_and_install_artifacts_missing_ssh_client(self) -> None:
         """Test download_and_install_artifacts raises error when SSH client is missing."""
@@ -111,10 +114,12 @@ class TestDownloadAndInstallArtifacts:
         mock_services.ssh = None
         installer = ArtifactInstaller(mock_context, mock_services)
 
-        # Act & Assert
+        # Act
         result = installer.execute_step()
+
+        # Assert
         assert not result
-        mock_context.log.assert_called_with("SSH client is required but not initialized")
+        mock_context.log.assert_called_with("SSH client is required but not initialized", severity=LogLevel.ERROR)
 
     @patch("ci_tools.dimrset_delivery.step_1_download_and_install_artifacts.ArtifactInstaller")
     @patch("builtins.print")

@@ -4,9 +4,8 @@ from dataclasses import dataclass
 from getpass import getpass
 from typing import Dict, Optional
 
-from ci_tools.dimrset_delivery.settings.teamcity_settings import (
-    Settings,
-)
+from ci_tools.dimrset_delivery.settings.teamcity_settings import Settings
+from ci_tools.example_utils.logger import Logger, LogLevel
 
 
 @dataclass
@@ -54,6 +53,7 @@ class DimrAutomationContext:
         dry_run: bool = False,
         credentials: Optional[DimrCredentials] = None,
         requirements: Optional[ServiceRequirements] = None,
+        teamcity_logger: bool = False,
     ) -> None:
         """
         Initialize DIMR automation context.
@@ -92,8 +92,9 @@ class DimrAutomationContext:
         self.kernel_versions: Dict[str, str] = {}
         self.dimr_version: str = ""
         self.branch_name: str = ""
+        self.logger = Logger(teamcity_logger)
 
-    def log(self, *args: object, sep: str = " ") -> None:
+    def log(self, *args: object, sep: str = " ", severity: LogLevel = LogLevel.NORMAL) -> None:
         """
         Print status message with dry-run prefix if applicable.
 
@@ -104,11 +105,11 @@ class DimrAutomationContext:
         sep : str, optional
             Separator between objects. Default is a space.
         """
+        message = f"{sep.join(str(arg) for arg in args)}"
         if self.dry_run:
-            message = f"{self.settings.dry_run_prefix}{sep}{sep.join(str(arg) for arg in args)}"
-            print(message)
-        else:
-            print(*args, sep=sep)
+            message = f"{self.settings.dry_run_prefix}{sep}{message}"
+
+        self.logger.log(message, severity)
 
     def _prompt_for_credentials(self, credentials: DimrCredentials, requirements: ServiceRequirements) -> None:
         """
@@ -238,7 +239,11 @@ def create_context_from_args(
         atlassian=require_atlassian, teamcity=require_teamcity, ssh=require_ssh, git=require_git
     )
     context = DimrAutomationContext(
-        build_id=args.build_id, dry_run=args.dry_run, credentials=credentials, requirements=requirements
+        build_id=args.build_id,
+        dry_run=args.dry_run,
+        credentials=credentials,
+        requirements=requirements,
+        teamcity_logger=True,
     )
 
     return context

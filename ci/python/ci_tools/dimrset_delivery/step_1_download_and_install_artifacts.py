@@ -14,6 +14,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 )
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.step_executer_interface import StepExecutorInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class ArtifactInstaller(StepExecutorInterface):
@@ -92,10 +93,10 @@ class ArtifactInstaller(StepExecutorInterface):
             return True
 
         if self.services.teamcity is None:
-            self.context.log("TeamCity client is required but not initialized")
+            self.context.log("TeamCity client is required but not initialized", severity=LogLevel.ERROR)
             return False
         if self.services.ssh is None:
-            self.context.log("SSH client is required but not initialized")
+            self.context.log("SSH client is required but not initialized", severity=LogLevel.ERROR)
             return False
 
         self.__download_and_deploy_artifacts()
@@ -333,7 +334,7 @@ if __name__ == "__main__":
             context.log("Finished successfully!")
             sys.exit(0)
         else:
-            context.log("Deploying artifacts failed!")
+            context.log("Deploying artifacts failed!", severity=LogLevel.ERROR)
             sys.exit(1)
 
     except KeyboardInterrupt:

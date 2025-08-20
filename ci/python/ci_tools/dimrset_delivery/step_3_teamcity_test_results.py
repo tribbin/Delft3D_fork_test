@@ -14,6 +14,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.step_executer_interface import StepExecutorInterface
 from ci_tools.dimrset_delivery.teamcity_types import ConfigurationTestResult, ResultInfo
+from ci_tools.example_utils.logger import LogLevel
 
 """
 This script retrieves test results from TeamCity for DIMR release builds.
@@ -153,7 +154,7 @@ class TeamCityTestResultWriter(StepExecutorInterface):
         start_time = datetime.now(timezone.utc)
 
         if not self.__services.teamcity:
-            self.__context.log("Error: TeamCity credentials are required for this script")
+            self.__context.log("Error: TeamCity credentials are required for this script", severity=LogLevel.ERROR)
             return False
 
         output_file = "teamcity_test_results.txt"
@@ -373,7 +374,7 @@ if __name__ == "__main__":
             context.log("Finished successfully!")
             sys.exit(0)
         else:
-            context.log("Failed Test Result Writer!")
+            context.log("Failed Test Result Writer!", severity=LogLevel.ERROR)
             sys.exit(1)
 
     except KeyboardInterrupt:

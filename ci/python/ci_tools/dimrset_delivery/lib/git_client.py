@@ -3,6 +3,7 @@ import sys
 
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.lib.connection_service_interface import ConnectionServiceInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class GitClient(ConnectionServiceInterface):
@@ -59,8 +60,7 @@ class GitClient(ConnectionServiceInterface):
             )
             if result.returncode != 0:
                 self.__context.log(
-                    f"##teamcity[message text='Failed to create tag {tag_name} for commit {commit_hash}.' "
-                    f"status='ERROR']"
+                    f"Failed to create tag {tag_name} for commit {commit_hash}.", severity=LogLevel.ERROR
                 )
                 sys.exit(1)
 
@@ -75,15 +75,10 @@ class GitClient(ConnectionServiceInterface):
             if result.returncode == 0:
                 self.__context.log(f"Tag '{tag_name}' pushed to remote repository successfully.")
             else:
-                self.__context.log(
-                    f"##teamcity[message text='Failed to push tag '{tag_name}' to remote repository; "
-                    f"return code: {result.returncode}.' status='ERROR']"
-                )
+                self.__context.log(f"Failed to push tag '{tag_name}' to remote repository", severity=LogLevel.ERROR)
                 sys.exit(1)
         except Exception as e:
-            self.__context.log(
-                f"##teamcity[message text='An error occurred while adding tag to Git: {e}.' status='ERROR']"
-            )
+            self.__context.log(f"An error occurred while adding tag to Git: {e}.", severity=LogLevel.ERROR)
             sys.exit(1)
 
     def test_connection(self, dry_run: bool) -> bool:
@@ -113,19 +108,14 @@ class GitClient(ConnectionServiceInterface):
                 success = True
             else:
                 self.__context.log(
-                    (
-                        f"##teamcity[message text='Failed to read from the repository; "
-                        f"return code {result.returncode}.' status='ERROR']"
-                    )
+                    f"Failed to read from the repository return code {result.returncode}.", severity=LogLevel.ERROR
                 )
                 success = False
 
             return success
 
         except Exception as e:
-            self.__context.log(
-                f"##teamcity[message text='An error occurred while testing Git connection: {e}.' status='ERROR']"
-            )
+            self.__context.log(f"An error occurred while testing Git connection: {e}.", severity=LogLevel.ERROR)
             return False
 
     def _get_authenticated_url(self) -> str:

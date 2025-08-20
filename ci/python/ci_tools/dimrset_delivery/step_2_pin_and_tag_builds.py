@@ -10,6 +10,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
 )
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.step_executer_interface import StepExecutorInterface
+from ci_tools.example_utils.logger import LogLevel
 
 
 class PinAndTagger(StepExecutorInterface):
@@ -70,10 +71,10 @@ class PinAndTagger(StepExecutorInterface):
         self.__context.log("Pinning and tagging builds...")
 
         if self.__teamcity is None:
-            self.__context.log("TeamCity client is required but not initialized.")
+            self.__context.log("TeamCity client is required but not initialized.", severity=LogLevel.ERROR)
             return False
         if self.__git_client is None:
-            self.__context.log("Git client is required but not initialized.")
+            self.__context.log("Git client is required but not initialized.", severity=LogLevel.ERROR)
             return False
 
         try:
@@ -91,7 +92,7 @@ class PinAndTagger(StepExecutorInterface):
             self.__context.log("Build pinning and tagging completed successfully!")
             return True
         except Exception as e:
-            self.__context.log(f"Error during build tagging: {e}")
+            self.__context.log(f"Error during build tagging: {e}", severity=LogLevel.ERROR)
             return False
 
     def __pin_and_tag_builds_teamcity(self) -> None:
@@ -127,7 +128,7 @@ if __name__ == "__main__":
             context.log("Finished successfully!")
             sys.exit(0)
         else:
-            context.log("Failed pinning and tagging!")
+            context.log("Failed pinning and tagging!", severity=LogLevel.ERROR)
             sys.exit(1)
 
     except KeyboardInterrupt:

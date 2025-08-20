@@ -20,6 +20,7 @@ from ci_tools.dimrset_delivery.dimr_context import (
     parse_common_arguments,
 )
 from ci_tools.dimrset_delivery.services import Services
+from ci_tools.example_utils.logger import LogLevel
 
 
 class StepResult:
@@ -80,7 +81,7 @@ class DimrDeliveryPipeline:
                 step_name = f"Step {step_num}: {step_desc}"
                 step_scripts.append((step_name, file))
         if not step_scripts:
-            self.context.log("No step scripts found in directory.")
+            self.context.log("No step scripts found in directory.", severity=LogLevel.ERROR)
             self._print_summary(start_time, failed_early=True)
             return False
 

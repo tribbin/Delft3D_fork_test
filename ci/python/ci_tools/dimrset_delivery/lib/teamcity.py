@@ -9,6 +9,7 @@ from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.lib.connection_service_interface import ConnectionServiceInterface
 from ci_tools.dimrset_delivery.settings.teamcity_settings import KERNELS
 from ci_tools.dimrset_delivery.teamcity_types import ConfigurationTestResult
+from ci_tools.example_utils.logger import LogLevel
 
 
 class TeamCity(ConnectionServiceInterface):
@@ -66,8 +67,11 @@ class TeamCity(ConnectionServiceInterface):
             self.__context.log("Successfully connected to the TeamCity API.")
             success = True
         else:
-            self.__context.log("Could not connect to the TeamCity API:")
-            self.__context.log(f"Error: {result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+            self.__context.log("Could not connect to the TeamCity API:", severity=LogLevel.ERROR)
+            self.__context.log(
+                f"Error: {result.status_code} - {result.content.decode('utf-8', errors='replace')}",
+                severity=LogLevel.ERROR,
+            )
             success = False
 
         return success
@@ -120,8 +124,10 @@ class TeamCity(ConnectionServiceInterface):
         if result.status_code == 200:
             json_result: Dict[str, Any] = result.json()
             return json_result
-        self.__context.log(f"Could not retrieve builds for build id {build_configuration_id}:")
-        self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+        self.__context.log(f"Could not retrieve builds for build id: {build_configuration_id}", severity=LogLevel.ERROR)
+        self.__context.log(
+            f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}", severity=LogLevel.ERROR
+        )
         sys.exit(result.status_code)
 
     def get_build_info_for_build_id(self, build_id: str) -> Optional[Dict[str, Any]]:
@@ -151,8 +157,10 @@ class TeamCity(ConnectionServiceInterface):
         if result.status_code == 200:
             build_info: Dict[str, Any] = result.json()
             return build_info
-        self.__context.log(f"Could not retrieve build info for build id {build_id}:")
-        self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+        self.__context.log(f"Could not retrieve build info for build id: {build_id}", severity=LogLevel.ERROR)
+        self.__context.log(
+            f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}", severity=LogLevel.ERROR
+        )
         sys.exit(result.status_code)
 
     def get_full_build_info_for_build_id(self, build_id: str) -> Optional[Dict[str, Any]]:
@@ -174,7 +182,7 @@ class TeamCity(ConnectionServiceInterface):
         if result.status_code == 200:
             full_build_info: Dict[str, Any] = result.json()
             return full_build_info
-        self.__context.log(f"Could not retrieve build info for build id {build_id}:")
+        self.__context.log(f"Could not retrieve build info for build id: {build_id}")
         self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
         return None
 
@@ -203,8 +211,10 @@ class TeamCity(ConnectionServiceInterface):
         if result.status_code == 200:
             artifact_names: Dict[str, Any] = result.json()
             return artifact_names
-        self.__context.log(f"Could not get artifact names for build id {build_id}:")
-        self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+        self.__context.log(f"Could not get artifact names for build id: {build_id}", severity=LogLevel.ERROR)
+        self.__context.log(
+            f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}", severity=LogLevel.ERROR
+        )
         sys.exit(result.status_code)
 
     def get_build_artifact(self, build_id: str, path_to_artifact: str) -> Optional[bytes]:
@@ -232,8 +242,12 @@ class TeamCity(ConnectionServiceInterface):
         result = requests.get(url=endpoint, headers=self.__default_headers, auth=self.__auth)
         if result.status_code == 200:
             return result.content
-        self.__context.log(f"Could not get artifact for build id {build_id} and path {path_to_artifact}:")
-        self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+        self.__context.log(
+            f"Could not get artifact for build id {build_id} and path '{path_to_artifact}'", severity=LogLevel.ERROR
+        )
+        self.__context.log(
+            f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}", severity=LogLevel.ERROR
+        )
         sys.exit(result.status_code)
 
     def pin_build(self, build_id: str) -> bool:
@@ -289,8 +303,10 @@ class TeamCity(ConnectionServiceInterface):
         payload = tag
         result = requests.post(url=endpoint, headers=headers, auth=self.__auth, data=payload)
         if result.status_code != 200:
-            self.__context.log(f"Could not add {tag} tag to build with build id {build_id}:")
-            self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+            self.__context.log(f"Could not add {tag} tag to build with build id: {build_id}", severity=LogLevel.ERROR)
+            self.__context.log(
+                f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}", severity=LogLevel.ERROR
+            )
             sys.exit(result.status_code)
 
         endpoint = f"{self.__rest_uri}builds/multiple/snapshotDependency:(to:(id:{build_id})),count:1000/tags"
@@ -302,8 +318,12 @@ class TeamCity(ConnectionServiceInterface):
         payload = f'{{"tag":[{{"name":"{tag}"}}]}}'
         result = requests.post(url=endpoint, headers=headers, auth=self.__auth, data=payload)
         if result.status_code != 200:
-            self.__context.log(f"Could not add {tag} tag to dependencies of build with build id {build_id}:")
-            self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+            self.__context.log(
+                f"Could not add {tag} tag to dependencies of build with build id: {build_id}", severity=LogLevel.ERROR
+            )
+            self.__context.log(
+                f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}", severity=LogLevel.ERROR
+            )
             sys.exit(result.status_code)
         return True
 
@@ -349,8 +369,10 @@ class TeamCity(ConnectionServiceInterface):
                 if dependency_build_id and build_type_id and build_type_id in build_type_ids:
                     build_ids.append(dependency_build_id)
             return build_ids
-        self.__context.log(f"Could not retrieve build info for build id {build_id}:")
-        self.__context.log(f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}")
+        self.__context.log(f"Could not retrieve build info for build id {build_id}:", severity=LogLevel.ERROR)
+        self.__context.log(
+            f"{result.status_code} - {result.content.decode('utf-8', errors='replace')}", severity=LogLevel.ERROR
+        )
         sys.exit(result.status_code)
 
     def get_dependent_build_id(self, build_id: str, dependent_build_type: str) -> Optional[int]:
