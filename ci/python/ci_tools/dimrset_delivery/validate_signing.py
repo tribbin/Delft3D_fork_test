@@ -96,7 +96,7 @@ def validate_signing_status(
     files_that_should_be_signed_with_issued_to: list,
     files_that_should_not_be_signed: list[Path],
     developer_prompt: str,
-) -> tuple:
+) -> tuple[str, bool]:
     """Validate the signing status of a file.
 
     Parameters
