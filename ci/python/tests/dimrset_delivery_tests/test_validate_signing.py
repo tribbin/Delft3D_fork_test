@@ -1,6 +1,7 @@
 """Tests for validate_signing.py."""
 
 from io import StringIO
+import os
 from pathlib import Path
 from unittest.mock import Mock, patch
 
@@ -143,7 +144,9 @@ class TestValidateSigningStatus:
         # Arrange
         file = "test_file.exe"
         directory = "/test/dir"
-        files_that_should_be_signed_with_issued_to = [{"file": "test_file.exe", "issuedTo": "Deltares"}]
+        filepath = os.path.join(directory, file)
+        filepath = os.path.normpath(filepath)
+        files_that_should_be_signed_with_issued_to = [{"file": file, "issuedTo": "Deltares"}]
         files_that_should_not_be_signed = []
         developer_prompt = "vcvars64.bat"
         mock_verify.return_value = ("Verified", "Deltares")
@@ -160,7 +163,7 @@ class TestValidateSigningStatus:
         # Assert
         assert is_valid is True
         assert "File is correctly signed: test_file.exe by Deltares" in message
-        mock_verify.assert_called_once_with("/test/dir/test_file.exe", developer_prompt)
+        mock_verify.assert_called_once_with(filepath, developer_prompt)
 
     @patch("ci_tools.dimrset_delivery.validate_signing.verify_signing_authority")
     def test_validate_signing_status_incorrectly_signed_file_wrong_issuer(self, mock_verify: Mock) -> None:
@@ -168,7 +171,7 @@ class TestValidateSigningStatus:
         # Arrange
         file = "test_file.exe"
         directory = "/test/dir"
-        files_that_should_be_signed_with_issued_to = [{"file": "test_file.exe", "issuedTo": "Deltares"}]
+        files_that_should_be_signed_with_issued_to = [{"file": file, "issuedTo": "Deltares"}]
         files_that_should_not_be_signed = []
         developer_prompt = "vcvars64.bat"
         mock_verify.return_value = ("Verified", "WrongIssuer")
@@ -192,7 +195,7 @@ class TestValidateSigningStatus:
         # Arrange
         file = "test_file.exe"
         directory = "/test/dir"
-        files_that_should_be_signed_with_issued_to = [{"file": "test_file.exe", "issuedTo": "Deltares"}]
+        files_that_should_be_signed_with_issued_to = [{"file": file, "issuedTo": "Deltares"}]
         files_that_should_not_be_signed = []
         developer_prompt = "vcvars64.bat"
         mock_verify.return_value = ("Not Verified", "")
@@ -264,6 +267,8 @@ class TestValidateSigningStatus:
         # Arrange
         file = "unknown_file.txt"
         directory = "/test/dir"
+        filepath = os.path.join(directory, file)
+        filepath = os.path.normpath(filepath)
         files_that_should_be_signed_with_issued_to = []
         files_that_should_not_be_signed = []
         developer_prompt = "vcvars64.bat"
@@ -281,7 +286,7 @@ class TestValidateSigningStatus:
         # Assert
         assert is_valid is True
         assert message == ""
-        mock_verify.assert_called_once_with("/test/dir/unknown_file.txt", developer_prompt)
+        mock_verify.assert_called_once_with(filepath, developer_prompt)
 
 
 class TestSigningIsValid:

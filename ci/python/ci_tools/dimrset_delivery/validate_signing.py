@@ -118,6 +118,7 @@ def validate_signing_status(
         A message indicating the validation result and a boolean indicating if the validation was successful.
     """
     filepath = os.path.join(directory, file)
+    filepath = os.path.normpath(filepath)
     status, issued_to = verify_signing_authority(filepath, developer_prompt)
     if status == "Error":
         return f"Error occurred while verifying signing for file: {file}", False
