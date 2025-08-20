@@ -2429,65 +2429,6 @@ contains
                         if (ii == nfiles) then
                            itmpvar2D(:, 1:nitemglob) = itmpvar2D_tmp(:, 1:nitemglob)
                         end if
-                        !else if (var_loctype(iv) == UNC_LOC_S) then ! variables that locate on faces, temporaly disabled
-                        !    if (var_types(iv) == nf90_int .or. var_types(iv) == nf90_short) then
-                        !      nfacecount = sum(nump(1:ii-1))
-                        !      do ip=1, item_counts(ii)
-                        !         if (item_domain(nfacecount+ip) == ii-1) then
-                        !            ifaceglob = face_c2g(nfacecount+ip)
-                        !            if (ifaceglob > 0) then
-                        !               nitemglob = nitemglob + 1
-                        !               itmpvar1D_tmp(ifaceglob) = itmpvar1D(nitemglob0+ip)
-                        !            end if
-                        !         end if
-                        !      end do
-                        !      if (ii==nfiles) then
-                        !          itmpvar1D(1:nitemglob) = itmpvar1D_tmp(1:nitemglob)
-                        !      end if
-                        !   else if (var_types(iv) == nf90_byte) then
-                        !      nfacecount = sum(nump(1:ii-1))
-                        !      do ip=1, item_counts(ii)
-                        !         if (item_domain(nfacecount+ip) == ii-1) then
-                        !            ifaceglob = face_c2g(nfacecount+ip)
-                        !            if (ifaceglob > 0) then
-                        !               nitemglob = nitemglob + 1
-                        !               btmpvar1D_tmp(ifaceglob,itm:itm) = btmpvar1D(nitemglob0+ip,itm:itm)
-                        !            end if
-                        !         end if
-                        !      end do
-                        !      if (ii==nfiles) then
-                        !          btmpvar1D(1:nitemglob,itm:itm) = btmpvar1D_tmp(1:nitemglob,itm:itm)
-                        !      end if
-                        !   else
-                        !      nfacecount = sum(nump(1:ii-1))
-                        !      if (tmpvarDim == 1) then
-                        !         do ip=1, item_counts(ii)
-                        !            if (item_domain(nfacecount+ip) == ii-1) then
-                        !               ifaceglob = face_c2g(nfacecount+ip)
-                        !               if (ifaceglob > 0) then
-                        !                  nitemglob = nitemglob + 1
-                        !                  tmpvar1D_tmp(ifaceglob) = tmpvar1D(nitemglob0+ip)
-                        !               end if
-                        !            end if
-                        !         end do
-                        !         if (ii==nfiles) then
-                        !             tmpvar1D(1:nitemglob) = tmpvar1D_tmp(1:nitemglob)
-                        !         end if
-                        !      else if (tmpvarDim == 2) then
-                        !         do ip=1, item_counts(ii)
-                        !            if (item_domain(nfacecount+ip) == ii-1) then
-                        !               ifaceglob = face_c2g(nfacecount+ip)
-                        !               if (ifaceglob > 0) then
-                        !                  nitemglob = nitemglob + 1
-                        !                  tmpvar2D_tmp(:,ifaceglob)=tmpvar2D(:,nitemglob0+ip)
-                        !               end if
-                        !            end if
-                        !         end do
-                        !         if (ii==nfiles) then
-                        !            tmpvar2D(:,1:nitemglob) = tmpvar2D_tmp(:,1:nitemglob)
-                        !         end if
-                        !      end if
-                        !   end if
                      else if (jaugrid == 1 .and. topodim(imesh, ii) == 1 .and. var_loctype(iv, itopo) == UNC_LOC_CN) then
                         ! For 1D mesh, the node indices in the merged file are read directly from flowelem_globalnr into node_c2g.
                         ! So for variables that locate on nodes, we do not use the shift method, but use the global numbers in node_c2g.
