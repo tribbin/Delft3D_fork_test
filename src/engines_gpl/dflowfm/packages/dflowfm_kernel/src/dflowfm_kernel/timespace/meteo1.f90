@@ -7351,8 +7351,6 @@ contains
 
    !> Computes relative humidity (%) from dew point and air temperature (degC)
    pure elemental function calculate_relative_humidity(td, tm) result(rh)
-      use physicalconsts, only: celsius_to_kelvin
-
       real(kind=dp), intent(in) :: td !< dew point temperature temperature (degC)
       real(kind=dp), intent(in) :: tm !< air temperature (degC)
       real(kind=dp) :: rh !< relative humidity (%)

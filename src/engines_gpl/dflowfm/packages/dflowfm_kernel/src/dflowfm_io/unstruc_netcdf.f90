@@ -5279,7 +5279,6 @@ contains
       use messagehandling, only: err_flush
       use m_nudge, only: nudge_rate, nudge_temperature, nudge_salinity
       use m_turbulence, only: in_situ_density, potential_density
-      use physicalconsts, only: celsius_to_kelvin
 
       implicit none
 
@@ -7647,15 +7646,13 @@ contains
             ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ice_pressure, UNC_LOC_S, ice_pressure, jabndnd=jabndnd_)
          end if
          if (ice_mapout%ice_temperature) then
-            work1d = real(celsius_to_kelvin(ice_temperature), dp)
-            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ice_temperature, UNC_LOC_S, work1d, jabndnd=jabndnd_)
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_ice_temperature, UNC_LOC_S, ice_temperature, jabndnd=jabndnd_)
          end if
          if (ice_mapout%snow_thickness) then
             ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_snow_thickness, UNC_LOC_S, snow_thickness, jabndnd=jabndnd_)
          end if
          if (ice_mapout%snow_temperature) then
-            work1d = real(celsius_to_kelvin(snow_temperature), dp)
-            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_snow_temperature, UNC_LOC_S, work1d, jabndnd=jabndnd_)
+            ierr = unc_put_var_map(mapids%ncid, mapids%id_tsp, mapids%id_snow_temperature, UNC_LOC_S, snow_temperature, jabndnd=jabndnd_)
          end if
       end if
 
@@ -8197,7 +8194,6 @@ contains
       use m_get_chezy, only: get_chezy
       use m_turbulence, only: in_situ_density, potential_density
       use m_waves, only: uorb
-      use physicalconsts, only: celsius_to_kelvin
 
       implicit none
 
@@ -8250,7 +8246,6 @@ contains
       real(kind=dp), dimension(:), allocatable :: toutput
       real(kind=dp), dimension(:, :), allocatable :: toutputx, toutputy
       real(kind=dp), dimension(:), allocatable :: rks
-      real(kind=dp), dimension(:), allocatable :: work1d
 
       integer, dimension(:), allocatable :: idum
 
@@ -9484,7 +9479,7 @@ contains
                call definencvar(imapfile, id_ice_pressure(iid), nf90_double, idims, 'ice_pressure', 'Pressure exerted by the floating ice cover', 'N m-2', 'FlowElem_xcc FlowElem_ycc')
             end if
             if (ice_mapout%ice_temperature) then
-                  call definencvar(imapfile, id_ice_temperature(iid), nf90_double, idims, 'ice_temperature', 'Temperature of the floating ice cover', 'degC', 'FlowElem_xcc FlowElem_ycc')
+                  call definencvar(imapfile, id_ice_temperature(iid), nf90_double, idims, 'ice_temperature', 'Temperature of the floating ice cover', 'K', 'FlowElem_xcc FlowElem_ycc')
             end if
             if (ice_mapout%snow_thickness) then
                   call definencvar(imapfile, id_snow_thickness(iid), nf90_double, idims, 'snow_thickness', 'Thickness of the snow layer', 'm', 'FlowElem_xcc FlowElem_ycc')
@@ -10987,15 +10982,13 @@ contains
             ierr = nf90_put_var(imapfile, id_ice_pressure(iid), ice_pressure, [1, itim], [ndxndxi, 1])
          end if
          if (ice_mapout%ice_temperature) then
-            work1d = real(celsius_to_kelvin(ice_temperature), dp)
-            ierr = nf90_put_var(imapfile, id_ice_temperature(iid), work1d, [1, itim], [ndxndxi, 1])
+            ierr = nf90_put_var(imapfile, id_ice_temperature(iid), ice_temperature, [1, itim], [ndxndxi, 1])
          end if
          if (ice_mapout%snow_thickness) then
             ierr = nf90_put_var(imapfile, id_snow_thickness(iid), snow_thickness, [1, itim], [ndxndxi, 1])
          end if
          if (ice_mapout%snow_temperature) then
-            work1d = real(celsius_to_kelvin(snow_temperature), dp)
-            ierr = nf90_put_var(imapfile, id_snow_temperature(iid), work1d, [1, itim], [ndxndxi, 1])
+            ierr = nf90_put_var(imapfile, id_snow_temperature(iid), snow_temperature, [1, itim], [ndxndxi, 1])
          end if
       end if
       

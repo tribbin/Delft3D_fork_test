@@ -256,7 +256,7 @@ contains
       use m_flow, only: hu
       use m_flowgeom, only: nd
       use m_physcoef, only: vonkar
-      use physicalconsts, only: celsius_to_kelvin
+      use physicalconsts, only: celsius_to_kelvin, kelvin_to_celsius
       use m_heatfluxes, only: cpw
       use m_wind, only: air_temperature
       use ieee_arithmetic, only: ieee_is_nan
@@ -264,25 +264,28 @@ contains
       integer, intent(in) :: n !< node number
       real(fp), intent(in) :: Qlong_ice !< part of Qlong computed in HEATUN
       real(fp), intent(in) :: tempwat !< temperature of water at top layer [degC]
-      real(fp), intent(in) :: saltcon !< salinity of water at top layer [degC]
+      real(fp), intent(in) :: saltcon !< salinity of water at top layer [ppt]
       real(fp), intent(in) :: wind !< wind speed [m/s]
 
       integer :: iter !< iteration number
       integer :: icount !< number of flow links
       integer :: LL !< flow link index
       logical :: converged !< flag for convergence in iterative process for computation of effective back radiation based on ice or snow
+            
       real(fp) :: b !< empirical constant in computation of c_tz
       real(fp) :: p_r !< molecular Prandtl number (-)
       real(fp) :: p_rt !< turbulent Prandtl number (-)
       real(fp) :: kin_vis !< kinematic viscosity (kg m-1 s-1)
       real(fp) :: t_freeze !< freezing temperature of water (degC)
+      real(fp) :: t_ref !< reference temperature (K)
       real(fp) :: sum !< sum of water depths at flow links (m)
       real(fp) :: b_t !< molecular sublayer correction
       real(fp) :: c_tz !< heat transfer coefficient (J m-2 s-1 K-1)
-      real(fp) :: conduc !< auxiliary variable with conductivity of ice (J m-1 s-1 K-1) or product of conductivity of ice times conductivity of snow (J**2 m-2 s-2 K-2)
-      real(fp) :: D_t !< temperature difference (degC)
-      real(fp) :: D_ice !< auxiliary variable with thickness of ice (m) or product of thickness of ice&snow times conductivity of ice&snow (J s-1 K-1)
-      real(fp) :: tsi !< surface temperature with surface being either water, ice or snow (degC)
+      real(fp) :: D_t !< temperature difference (degC or K)
+      real(fp) :: effective_ice_thickness !< auxiliary variable with the effective ice thickness (m)
+      real(fp) :: temp_min !< lower limit for the ice/snow temperature (K)
+      real(fp) :: temp_max !< upper limit for the ice/snow temperature (K)
+      real(fp) :: tsi !< surface temperature with surface being either water, ice or snow (K)
       real(fp) :: coef1 !< auxiliary variable; see D-Flow FM Technical Reference Manual for a detailed description (J m-2 s-1)
       real(fp) :: coef2 !< auxiliary variable; see D-Flow FM Technical Reference Manual for a detailed description (J m-2 s-1 k-1)
       real(fp) :: alpha !< relaxation factor (-)
@@ -302,9 +305,12 @@ contains
       ustar = 0.025_fp * wind ! See Eq. (12.5) in D-Flow FM User Manual: ustar = sqrt(C_D) * U_10
       hdz = 0.0_fp
       converged = .false.
+      temp_min = celsius_to_kelvin(-25.0_fp)
+      temp_max = celsius_to_kelvin(0.0_fp)
 
       ! Compute freezing point
       t_freeze = freezing_temperature(saltcon)
+      t_ref = celsius_to_kelvin(0.0_fp) ! 0.0 or t_freeze ?
 
       select case (ja_icecover)
       case (ICECOVER_SEMTNER)
@@ -313,12 +319,10 @@ contains
          ! Compute conductivity, depending on the presence of both ice and snow
          !
          if (snow_thickness(n) < 0.001_fp) then
-            conduc = ice_conductivity
-            D_ice = max(0.01_fp, ice_thickness(n))
+            effective_ice_thickness = max(0.01_fp, ice_thickness(n))
             tsi = ice_temperature(n)
          else
-            conduc = (ice_conductivity * snow_conductivity)
-            D_ice = (max(0.01_fp, ice_thickness(n)) * snow_conductivity + max(0.01_fp, snow_thickness(n)) * ice_conductivity)
+            effective_ice_thickness = max(0.01_fp, ice_thickness(n)) + max(0.01_fp, snow_thickness(n)) * (ice_conductivity / snow_conductivity)
             tsi = snow_temperature(n)
          end if
          !
@@ -326,9 +330,10 @@ contains
          ! including an iteration proces
          !
          do iter = 1, 5
-            coef1 = Qlong_ice * (celsius_to_kelvin(tsi))**4.0_fp
-            coef2 = 4.0_fp * Qlong_ice * (celsius_to_kelvin(tsi))**3.0_fp
-            D_t = (qh_air2ice(n) - coef1 - conduc * tsi / D_ice) / (coef2 + conduc / D_ice)
+            coef1 = Qlong_ice * tsi**4.0_fp
+            coef2 = 4.0_fp * Qlong_ice * tsi**3.0_fp
+            D_t = (qh_air2ice(n) - coef1 - ice_conductivity * (tsi - t_ref) / effective_ice_thickness) &
+               & / (coef2 + ice_conductivity / effective_ice_thickness)
             tsi = tsi + D_t
             if (abs(D_t) < 1e-2_fp) then
                converged = .true.
@@ -345,10 +350,10 @@ contains
                alpha = 0.5_fp
                if (snow_thickness(n) > 0.001_fp) then
                   snow_temperature(n) = alpha * tsi + (1.0_fp - alpha) * snow_temperature(n)
-                  snow_temperature(n) = max(-25.0_fp, min(snow_temperature(n), 0.0_fp))
+                  snow_temperature(n) = max(TEMP_MIN, min(snow_temperature(n), TEMP_MAX))
                else
                   ice_temperature(n) = alpha * tsi + (1.0_fp - alpha) * ice_temperature(n)
-                  ice_temperature(n) = max(-25.0_fp, min(ice_temperature(n), 0.0_fp))
+                  ice_temperature(n) = max(TEMP_MIN, min(ice_temperature(n), TEMP_MAX))
                end if
                !
                qh_air2ice(n) = qh_air2ice(n) - Qlong
@@ -367,10 +372,6 @@ contains
                exit ! jump out of the iteration loop
             end if
          end do
-         !
-         if (.not. converged) then
-            !! write (lundia,*) 'Ice iteration not converged for NM =',nm
-         end if
          !
          ! Compute ice to water flux according to Wang (2015)
          !
@@ -416,6 +417,7 @@ contains
       use m_flowgeom, only: ndx
       use m_flowtimes, only: dts
       use m_wind, only: air_temperature, rain, jarain
+      use physicalconsts, only: celsius_to_kelvin
       real(fp), parameter :: MM_TO_M = 1.0_fp / 1000.0_fp !< factor for converting mm to m
       real(fp), parameter :: PER_DAY_TO_PER_S = 1.0_fp / 86400.0_fp !< factor for converting 1/day to 1/s
       real(fp), parameter :: CONV_FACTOR = MM_TO_M * PER_DAY_TO_PER_S !< factor for converting rain in mm/day to m/s
@@ -451,7 +453,7 @@ contains
                      ! snow melt more than snow layer thickness
                      ice_thickness_change = (snow_thickness_change + snow_thickness(n)) * snow_latentheat / ice_latentheat
                      snow_thickness(n) = 0.0_fp
-                     snow_temperature(n) = 0.0_fp
+                     snow_temperature(n) = celsius_to_kelvin(0.0_fp)
                   end if
                   ! ice_thickness_change initialize based on remaining heat exchange with air
                   ! additional ice_thickness_change due to heat exchange with water
@@ -467,7 +469,7 @@ contains
                else
                   ice_thickness(n) = 0.0_fp
                   ice_area_fraction(n) = 0.0_fp
-                  ice_temperature(n) = 0.0_fp
+                  ice_temperature(n) = celsius_to_kelvin(0.0_fp)
                end if
             end if
          end do

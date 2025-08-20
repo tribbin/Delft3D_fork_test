@@ -38,7 +38,7 @@ contains
 
    subroutine heatun(n, time_in_hours, nominal_solar_radiation)
       use precision, only: dp, comparereal, fp
-      use physicalconsts, only: stf, celsius_to_kelvin
+      use physicalconsts, only: stf, celsius_to_kelvin, kelvin_to_celsius
       use m_physcoef, only: ag, rhomean, backgroundsalinity, dalton, epshstem, stanton, sfr, soiltempthick, &
                             BACKGROUND_AIR_PRESSURE, BACKGROUND_HUMIDITY, BACKGROUND_CLOUDINESS, secchidepth2, surftempsmofac, &
                             jadelvappos, zab
@@ -150,11 +150,11 @@ contains
             if (snow_thickness(n) > MIN_THICK) then
                ! ice and snow
                albedo = snow_albedo
-               surface_temperature = snow_temperature(n)
+               surface_temperature = kelvin_to_celsius(snow_temperature(n))
             elseif (ice_thickness(n) > MIN_THICK) then
                ! ice but no snow
                albedo = ice_albedo
-               surface_temperature = ice_temperature(n)
+               surface_temperature = kelvin_to_celsius(ice_temperature(n))
             else
                ! no ice and no snow, but ice_modelling switched on
                surface_temperature = water_temperature_in_cell
