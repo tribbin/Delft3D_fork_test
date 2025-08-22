@@ -6,6 +6,7 @@ from typing import List
 
 from pyparsing import Enum
 
+from ci_tools.dimrset_delivery.common_utils import SummaryResults
 from ci_tools.dimrset_delivery.dimr_context import (
     DimrAutomationContext,
     create_context_from_args,
@@ -247,14 +248,14 @@ def log_executive_summary(log_file: TextIOWrapper, summarydata: ExecutiveSummary
             percentage = summary.sum_passed / total * 100.0
 
         log_to_file(log_file, f"\nSummary: {summary.name}")
-        log_to_file(log_file, f"Total tests   : {total:6d}")
-        log_to_file(log_file, f"    Passed    : {summary.sum_passed:6d}")
-        log_to_file(log_file, f"    Not passed: {not_passed:6d}")
+        log_to_file(log_file, f"{SummaryResults.TOTAL_TESTS.value}   : {total:6d}")
+        log_to_file(log_file, f"    {SummaryResults.PASSED.value}    : {summary.sum_passed:6d}")
+        log_to_file(log_file, f"    {SummaryResults.NOT_PASSED.value}: {not_passed:6d}")
         log_to_file(log_file, f"    Failed    : {summary.sum_failed:6d}")
-        log_to_file(log_file, f"    Exception : {summary.sum_exception:6d}")
+        log_to_file(log_file, f"    {SummaryResults.EXCEPTION.value} : {summary.sum_exception:6d}")
         log_to_file(log_file, f"    Ignored   : {summary.sum_ignored:6d}")
         log_to_file(log_file, f"    Muted     : {summary.sum_muted:6d}")
-        log_to_file(log_file, f"    Percentage: {percentage:6.2f}")
+        log_to_file(log_file, f"    {SummaryResults.PERCENTAGE.value}: {percentage:6.2f}")
 
 
 def log_result_list(log_file: TextIOWrapper, name: str, engines: List[ConfigurationTestResult]) -> None:

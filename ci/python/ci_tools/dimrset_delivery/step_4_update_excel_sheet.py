@@ -8,7 +8,7 @@ from typing import List
 from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
-from ci_tools.dimrset_delivery.common_utils import get_testbank_result_parser
+from ci_tools.dimrset_delivery.common_utils import SummaryResults, get_testbank_result_parser
 from ci_tools.dimrset_delivery.dimr_context import (
     DimrAutomationContext,
     create_context_from_args,
@@ -138,11 +138,11 @@ class ExcelHelper(StepExecutorInterface):
         row.append(self.__kernel_versions["build.vcs.number"])  # Column G (OSS)
         row.append("DRR now in GitHub")  # Column H (RR)
         row.append("FBC now in GitHub")  # Column I (FBC)
-        row.append(self.__parser.get_percentage_total_passing())  # Column J (Percentage passing)
-        row.append(self.__parser.get_total_tests())  # Column K (Total Number of          cases)
-        row.append(self.__parser.get_total_passing())  # Column L (      Number of green    cases)
-        row.append(self.__parser.get_total_failing())  # Column M (      Number of red      cases)
-        row.append(self.__parser.get_total_exceptions())  # Column N (      Number of crashing cases)
+        row.append(self.__parser.get_value(SummaryResults.PERCENTAGE))  # Column J (Percentage passing)
+        row.append(self.__parser.get_value(SummaryResults.TOTAL_TESTS))  # Column K (Total Number of          cases)
+        row.append(self.__parser.get_value(SummaryResults.PASSED))  # Column L (      Number of green    cases)
+        row.append(self.__parser.get_value(SummaryResults.NOT_PASSED))  # Column M (      Number of red      cases)
+        row.append(self.__parser.get_value(SummaryResults.EXCEPTION))  # Column N (      Number of crashing cases)
         row.append("")  # Column O (Docker hub)
         row.append("Flow1D and RR: only Windows")  # Column P (Remarks)
 

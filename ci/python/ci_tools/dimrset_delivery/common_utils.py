@@ -5,34 +5,61 @@ Provides shared initialization and helper functions for DIMR automation.
 """
 
 import re
+from enum import Enum
 from typing import Optional
 
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.services import Services
 
+
+class SummaryResults(str, Enum):
+    """
+    Enum representing summary result keys for DIMR testbank results.
+
+    Members
+    -------
+    TOTAL_TESTS : str
+        Key for total number of tests.
+    PERCENTAGE : str
+        Key for percentage of passing tests.
+    PASSED : str
+        Key for number of passed tests.
+    NOT_PASSED : str
+        Key for number of not passed tests.
+    EXCEPTION : str
+        Key for number of exceptions.
+    """
+
+    TOTAL_TESTS = "Total tests"
+    PASSED = "Passed"
+    NOT_PASSED = "Not passed"
+    EXCEPTION = "Exception"
+    PERCENTAGE = "Percentage"
+
+
 # Mock data for dry-run mode
-MOCK_CURRENT_TEST_RESULTS = """
+MOCK_CURRENT_TEST_RESULTS = f"""
 Summary: All
-Total tests   :   2000
-    Passed    :   2000
-    Not passed:      0
+{SummaryResults.TOTAL_TESTS.value}   :   2000
+    {SummaryResults.PASSED.value}    :   2000
+    {SummaryResults.NOT_PASSED.value}:      0
     Failed    :      0
-    Exception :      0
+    {SummaryResults.EXCEPTION.value} :      0
     Ignored   :      0
     Muted     :      0
-    Percentage: 100.00
+    {SummaryResults.PERCENTAGE.value}: 100.00
 """
 
-MOCK_PREVIOUS_TEST_RESULTS = """
+MOCK_PREVIOUS_TEST_RESULTS = f"""
 Summary: All
-Total tests   :   1900
-    Passed    :   1800
-    Not passed:      20
+{SummaryResults.TOTAL_TESTS.value}   :   1900
+    {SummaryResults.PASSED.value}    :   1800
+    {SummaryResults.NOT_PASSED.value}:      20
     Failed    :      20
-    Exception :      20
+    {SummaryResults.EXCEPTION.value} :      20
     Ignored   :      20
     Muted     :      20
-    Percentage: 94.74
+    {SummaryResults.PERCENTAGE.value}: 94.74
 """
 
 
@@ -52,78 +79,24 @@ class ResultTestBankParser:
         testbank_result : str
             The testbank result as a string.
         """
-        self.testbank_result = testbank_result
+        start_index = testbank_result.find("Summary")
+        self.summary = testbank_result[start_index:]  # get all text from "Summary" to end of file.
 
-    def get_percentage_total_passing(self) -> str:
+    # public uses an enum
+    def get_value(self, key: SummaryResults) -> str:
         """
-        Get the total percentage of passing tests.
-
-        Returns
-        -------
-        str
-            Percentage of passing tests as a string.
-        """
-        start_index = self.testbank_result.find("Summary")
-        substring = self.testbank_result[start_index:]  # get all text from "Summary" to end of file.
-        matches = re.findall(r"Percentage\D*([0-9.]*)", substring)
-        percentage: str = matches[0]
-        return percentage
-
-    def get_total_tests(self) -> str:
-        """
-        Get the total number of tests.
+        Get the value given a key.
 
         Returns
         -------
         str
-            Total number of tests as a string.
+            The key.
         """
-        matches = re.findall(r"Total tests\D*([0-9.]*)", self.testbank_result)
-        total_number: str = matches[0]
-        return total_number
-
-    def get_total_passing(self) -> str:
-        """
-        Get the total number of passing tests.
-
-        Returns
-        -------
-        str
-            Total number of passing tests as a string.
-        """
-        start_index = self.testbank_result.find("Summary")
-        substring = self.testbank_result[start_index:]  # get all text from "Summary" to end of file.
-        matches = re.findall(r"Passed\D*([0-9.]*)", substring)
-        total_number: str = matches[0]
-        return total_number
-
-    def get_total_failing(self) -> str:
-        """
-        Get the total number of failing tests.
-
-        Returns
-        -------
-        str
-            Total number of failing tests as a string.
-        """
-        start_index = self.testbank_result.find("Summary")
-        substring = self.testbank_result[start_index:]  # get all text from "Summary" to end of file.
-        matches = re.findall(r"Not passed\D*([0-9.]*)", substring)
-        total_number: str = matches[0]
-        return total_number
-
-    def get_total_exceptions(self) -> str:
-        """
-        Get the total number of exceptions that occurred.
-
-        Returns
-        -------
-        str
-            Total number of exceptions as a string.
-        """
-        matches = re.findall(r"Exception\D*:\D*([0-9.]*)", self.testbank_result)
-        total_number: str = matches[0]
-        return total_number
+        pattern = rf"{re.escape(key)}\s*:\s*([0-9.]+)"
+        matches = re.findall(pattern, self.summary)
+        if not matches:
+            raise KeyError(f"Key '{key}' not found in summary.")
+        return str(matches[0])
 
 
 def get_testbank_result_parser(context: DimrAutomationContext) -> ResultTestBankParser:

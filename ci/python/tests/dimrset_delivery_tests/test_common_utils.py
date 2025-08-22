@@ -6,6 +6,7 @@ import pytest
 
 from ci_tools.dimrset_delivery.common_utils import (
     ResultTestBankParser,
+    SummaryResults,
     get_previous_testbank_result_parser,
     get_tag_from_build_info,
     get_testbank_result_parser,
@@ -14,6 +15,48 @@ from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.lib.teamcity import TeamCity
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.settings.teamcity_settings import Settings
+
+MOCK_TEST_RESULTS = f"""
+Summary: All
+{SummaryResults.TOTAL_TESTS.value}   :   42
+    {SummaryResults.PASSED.value}    :   40
+    {SummaryResults.NOT_PASSED.value}:      2
+    Failed    :      2
+    {SummaryResults.EXCEPTION.value} :      1
+    Ignored   :      0
+    Muted     :      0
+    {SummaryResults.PERCENTAGE.value}: 95.24
+"""
+
+
+class TestResultTestBankParser:
+    @pytest.mark.parametrize(
+        ("summary_key", "expected"),
+        [
+            (SummaryResults.TOTAL_TESTS, "42"),
+            (SummaryResults.PASSED, "40"),
+            (SummaryResults.NOT_PASSED, "2"),
+            (SummaryResults.EXCEPTION, "1"),
+            (SummaryResults.PERCENTAGE, "95.24"),
+        ],
+    )
+    def test_get_value(self, summary_key: SummaryResults, expected: str) -> None:
+        # Arrange
+        self.parser = ResultTestBankParser(MOCK_TEST_RESULTS)
+
+        # Act
+        value = self.parser.get_value(summary_key)
+
+        # Assert
+        assert value == expected
+
+    def test_get_value_keyerror(self) -> None:
+        # Arrange
+        self.parser = ResultTestBankParser("wrong file")
+
+        # Act & Assert
+        with pytest.raises(KeyError):
+            self.parser.get_value(SummaryResults.TOTAL_TESTS)
 
 
 class TestGetTestResultTestBankParser:

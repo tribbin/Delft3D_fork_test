@@ -5,6 +5,7 @@ import os
 import sys
 
 from ci_tools.dimrset_delivery.common_utils import (
+    SummaryResults,
     get_previous_testbank_result_parser,
     get_testbank_result_parser,
 )
@@ -188,7 +189,7 @@ class EmailHelper(StepExecutorInterface):
         str
             HTML table row for test results.
         """
-        passing_percentage = self.__current_parser.get_percentage_total_passing()
+        passing_percentage = self.__current_parser.get_value(SummaryResults.PERCENTAGE)
         status_span = self.__create_status_span(passing_percentage, is_percentage=True)
 
         row_parts = ["<tr>", "<td></td>", f"<td>{status_span}</td>", "<td><table><tr><td><br />"]
@@ -212,15 +213,15 @@ class EmailHelper(StepExecutorInterface):
         """
         assert self.__previous_parser is not None, "Previous parser must not be None"
 
-        previous_percentage = self.__previous_parser.get_percentage_total_passing()
+        previous_percentage = self.__previous_parser.get_value(SummaryResults.PERCENTAGE)
         previous_span = self.__create_status_span(previous_percentage, is_percentage=True)
 
         return [
             f"Green testbank was ({previous_span})<br />",
-            f"Total tests: {self.__current_parser.get_total_tests()} ",
-            f"was ({self.__previous_parser.get_total_tests()})<br />",
-            f"Passed{self.PASS_SPACING}: {self.__current_parser.get_total_passing()} ",
-            f"was ({self.__previous_parser.get_total_passing()})",
+            f"Total tests: {self.__current_parser.get_value(SummaryResults.TOTAL_TESTS)} ",
+            f"was ({self.__previous_parser.get_value(SummaryResults.TOTAL_TESTS)})<br />",
+            f"Passed{self.PASS_SPACING}: {self.__current_parser.get_value(SummaryResults.PASSED)} ",
+            f"was ({self.__previous_parser.get_value(SummaryResults.PASSED)})",
         ]
 
     def __generate_current_test_info_only(self, passing_percentage: str) -> list[str]:
@@ -241,8 +242,8 @@ class EmailHelper(StepExecutorInterface):
 
         return [
             f"Green testbank: {success_span}<br />",
-            f"Total tests: {self.__current_parser.get_total_tests()}<br />",
-            f"Passed{self.PASS_SPACING}: {self.__current_parser.get_total_passing()}",
+            f"Total tests: {self.__current_parser.get_value(SummaryResults.TOTAL_TESTS)}<br />",
+            f"Passed{self.PASS_SPACING}: {self.__current_parser.get_value(SummaryResults.PASSED)}",
         ]
 
     def __generate_exceptions_row(self) -> str:
@@ -254,13 +255,13 @@ class EmailHelper(StepExecutorInterface):
         str
             HTML table row for exceptions/crashes.
         """
-        total_exceptions = self.__current_parser.get_total_exceptions()
+        total_exceptions = self.__current_parser.get_value(SummaryResults.EXCEPTION)
         status_span = self.__create_status_span(total_exceptions, is_percentage=False)
 
         row_parts = ["<tr>", "<td></td>", f"<td>{status_span}</td>", "<td>"]
 
         if self.__previous_parser is not None:
-            previous_exceptions = self.__previous_parser.get_total_exceptions()
+            previous_exceptions = self.__previous_parser.get_value(SummaryResults.EXCEPTION)
             previous_span = self.__create_status_span(previous_exceptions, is_percentage=False)
             row_parts.append(f"Crashes in testbank (was {previous_span})")
         else:

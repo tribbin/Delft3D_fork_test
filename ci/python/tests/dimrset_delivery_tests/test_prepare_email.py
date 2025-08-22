@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Dict, Optional
 from unittest.mock import Mock, patch
 
-from ci_tools.dimrset_delivery.common_utils import ResultTestBankParser, parse_version
+from ci_tools.dimrset_delivery.common_utils import ResultTestBankParser, SummaryResults, parse_version
 from ci_tools.dimrset_delivery.dimr_context import DimrAutomationContext
 from ci_tools.dimrset_delivery.services import Services
 from ci_tools.dimrset_delivery.settings.teamcity_settings import Settings
@@ -39,10 +39,12 @@ class TestEmailHelper:
 
         # Configure the parser mock with realistic return values
         mock_parser = Mock(spec=ResultTestBankParser)
-        mock_parser.get_percentage_total_passing.return_value = passing
-        mock_parser.get_total_tests.return_value = "100"
-        mock_parser.get_total_passing.return_value = passing
-        mock_parser.get_total_exceptions.return_value = exceptions
+        mock_parser.get_value.side_effect = lambda key: {
+            SummaryResults.PERCENTAGE: passing,
+            SummaryResults.TOTAL_TESTS: "100",
+            SummaryResults.PASSED: passing,
+            SummaryResults.EXCEPTION: exceptions,
+        }.get(key)
 
         with patch(
             "ci_tools.dimrset_delivery.step_5_prepare_email.get_testbank_result_parser", return_value=mock_parser
@@ -181,10 +183,12 @@ class TestEmailHelper:
 
         # Setup previous parser mock
         mock_prev_parser = Mock(spec=ResultTestBankParser)
-        mock_prev_parser.get_percentage_total_passing.return_value = "92"
-        mock_prev_parser.get_total_tests.return_value = "100"
-        mock_prev_parser.get_total_passing.return_value = "95"
-        mock_prev_parser.get_total_exceptions.return_value = "1"
+        mock_prev_parser.get_value.side_effect = lambda key: {
+            SummaryResults.PERCENTAGE: "92",
+            SummaryResults.TOTAL_TESTS: "100",
+            SummaryResults.PASSED: "95",
+            SummaryResults.EXCEPTION: "1",
+        }.get(key)
 
         with patch(
             "ci_tools.dimrset_delivery.step_5_prepare_email.get_previous_testbank_result_parser",
@@ -277,10 +281,12 @@ class TestIntegration:
         """Test email preparation when no previous parser is available."""
         # Arrange
         mock_current_parser = Mock(spec=ResultTestBankParser)
-        mock_current_parser.get_percentage_total_passing.return_value = "95"
-        mock_current_parser.get_total_tests.return_value = "100"
-        mock_current_parser.get_total_passing.return_value = "95"
-        mock_current_parser.get_total_exceptions.return_value = "0"
+        mock_current_parser.get_value.side_effect = lambda key: {
+            SummaryResults.PERCENTAGE: "95",
+            SummaryResults.TOTAL_TESTS: "100",
+            SummaryResults.PASSED: "95",
+            SummaryResults.EXCEPTION: "0",
+        }.get(key)
         mock_get_parser.return_value = mock_current_parser
 
         mock_context = Mock(spec=DimrAutomationContext)
