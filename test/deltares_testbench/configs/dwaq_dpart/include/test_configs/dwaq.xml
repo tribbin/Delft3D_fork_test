@@ -7249,7 +7249,7 @@
         </checks>
     </testCase>
     <testCase name="e03_f10_c05_resbuf" ref="dwaq_default">
-        <path version="2024-01-11T13:20:00">e03_waq/f10_additional_modules/c05_resbuf</path>
+        <path version="2025-08-25T11:23:00">e03_waq/f10_additional_modules/c05_resbuf</path>
         <checks>
             <file name="c05_resbuf.ada" type="NEFIS">
                 <parameters name="DELWAQ_RESULTS">
@@ -7348,7 +7348,7 @@
     <testCase name="e03_f10_c09_resbuf_burial_digging" ref="dwaq_default">
         <path version="2025-07-24T14:05:35.336000">e03_waq/f10_additional_modules/c09_resbuf_burial_digging</path>
         <checks>
-            <file name="test0d_im1_resbuf_digbur.ada" type="NEFIS">
+            <file name="test0d_im1_digbur.ada" type="NEFIS">
                 <parameters name="DELWAQ_RESULTS">
                     <parameter name="SUBST_001" toleranceAbsolute="1.0e-04" toleranceRelative="1.0e-06"/>
                     <parameter name="SUBST_002" toleranceAbsolute="1.0e-04" toleranceRelative="1.0e-06"/>
@@ -7360,7 +7360,7 @@
                     <parameter name="SUBST_008" toleranceAbsolute="1.0e-04" toleranceRelative="1.0e-06"/>
                 </parameters>
             </file>
-            <file name="test0d_im1_resbuf_digbur.hda" type="NEFIS">
+            <file name="test0d_im1_digbur.hda" type="NEFIS">
                 <parameters name="DELWAQ_RESULTS">
                     <parameter name="SUBST_001" toleranceAbsolute="1.0e-04" toleranceRelative="1.0e-06"/>
                     <parameter name="SUBST_002" toleranceAbsolute="1.0e-04" toleranceRelative="1.0e-06"/>
