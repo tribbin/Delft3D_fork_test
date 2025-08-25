@@ -3296,13 +3296,13 @@ contains
       call prop_set(prop_ptr, 'numerics', 'Numlimdt_baorg', Numlimdt_baorg, 'if previous numlimdt > Numlimdt_baorg keep original cell area ba in cutcell')
 
       ! Physics
-      call prop_set(prop_ptr, 'physics', 'UnifFrictCoef', frcuni, 'Uniform friction coefficient (0: no friction)')
-      call prop_set(prop_ptr, 'physics', 'UnifFrictType', ifrctypuni, 'Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: idem, WAQUA style)')
-      call prop_set(prop_ptr, 'physics', 'UnifFrictCoef1D', frcuni1D, 'Uniform friction coefficient in 1D links (0: no friction)')
-      call prop_set(prop_ptr, 'physics', 'UnifFrictCoef1D2D', frcuni1D2D, 'Uniform friction coefficient in 1D links (0: no friction)')
-      call prop_set(prop_ptr, 'physics', 'UnifFrictCoefLin', frcunilin, 'Uniform linear friction coefficient (0: no friction)')
+      call prop_set(prop_ptr, 'physics', 'unifFrictCoef', frcuni, 'Uniform friction coefficient [the unit depends on unifFrictType].')
+      call prop_set(prop_ptr, 'physics', 'unifFrictType', ifrctypuni, 'Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: White-Colebrook in WAQUA)')
+      call prop_set(prop_ptr, 'physics', 'unifFrictCoef1D', frcuni1D, 'Uniform friction coefficient in 1D links [the unit depends on unifFrictType].')
+      call prop_set(prop_ptr, 'physics', 'unifFrictCoef1D2D', frcuni1D2D, 'Uniform friction coefficient in 1D2D links [the unit depends on unifFrictType].')
+      call prop_set(prop_ptr, 'physics', 'unifFrictCoefLin', frcunilin, 'Uniform linear friction coefficient')
       if (writeall .or. frcuni1Dgrounlay > 0) then
-         call prop_set(prop_ptr, 'physics', 'UnifFrictCoef1DgrLay', frcuni1Dgrounlay, 'Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction)')
+         call prop_set(prop_ptr, 'physics', 'unifFrictCoef1DgrLay', frcuni1Dgrounlay, 'Uniform ground layer friction coefficient for ocean models (m/s) (0: no friction)')
       end if
       if (writeall) then
          call prop_set(prop_ptr, 'physics', 'Umodlin', umodlin, 'Linear friction umod, for friction_type=4,5,6')
