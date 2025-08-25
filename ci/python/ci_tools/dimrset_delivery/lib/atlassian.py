@@ -37,7 +37,7 @@ class Atlassian(ConnectionServiceInterface):
         self.__default_headers = {"content-type": "application/json", "accept": "application/json"}
         self.__context = context
 
-    def test_connection(self, dry_run: bool) -> bool:
+    def test_connection(self, dry_run: bool = False) -> bool:
         """
         Test API connection to Atlassian Confluence.
 

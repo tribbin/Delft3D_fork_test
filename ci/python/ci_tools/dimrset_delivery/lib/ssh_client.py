@@ -47,7 +47,7 @@ class SshClient(ConnectionServiceInterface):
         self.__context = context
         self.__address = context.settings.linux_address
 
-    def test_connection(self, dry_run: bool) -> bool:
+    def test_connection(self, dry_run: bool = False) -> bool:
         """Test the SSH connection to the specified address.
 
         Parameters

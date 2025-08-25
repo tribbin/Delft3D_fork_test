@@ -81,7 +81,7 @@ class GitClient(ConnectionServiceInterface):
             self.__context.log(f"An error occurred while adding tag to Git: {e}.", severity=LogLevel.ERROR)
             sys.exit(1)
 
-    def test_connection(self, dry_run: bool) -> bool:
+    def test_connection(self, dry_run: bool = False) -> bool:
         """Test the connection to the Git repository.
 
         Parameters

@@ -42,7 +42,7 @@ class TeamCity(ConnectionServiceInterface):
         }
         self.__context = context
 
-    def test_connection(self, dry_run: bool) -> bool:
+    def test_connection(self, dry_run: bool = False) -> bool:
         """
         Test if the API connection can be established.
 
