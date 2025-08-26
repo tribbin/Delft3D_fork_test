@@ -602,8 +602,10 @@ contains
                 if (num_layers > 1) then
                     if (.not. sumconc1(iout)) then
                         do isegl = 1, noseglmesh2d
-                            if(dlwq_volume_2d(isegl)/=-999.0) then
+                            if (dlwq_volume_2d(isegl) /= -999.0 .and. dlwq_volume_2d(isegl) /= 0.0) then
                                 dlwq_values_2d(isegl) = dlwq_values_2d(isegl) / dlwq_volume_2d(isegl)
+                            else
+                                dlwq_values_2d(isegl) = -999.0
                             endif
                         enddo
                     endif
@@ -659,8 +661,10 @@ contains
                 if (num_layers > 1) then
                     if (.not. sumconc2(iout)) then
                         do isegl = 1, noseglmesh2d
-                            if(dlwq_volume_2d(isegl)/=-999.0) then
+                            if (dlwq_volume_2d(isegl) /= -999.0 .and. dlwq_volume_2d(isegl) /= 0.0) then
                                 dlwq_values_2d(isegl) = dlwq_values_2d(isegl) / dlwq_volume_2d(isegl)
+                            else
+                                dlwq_values_2d(isegl) = -999.0
                             endif
                         enddo
                     endif
