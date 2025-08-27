@@ -69,9 +69,16 @@ def extract_printable_strings(filename: str, min_length: int = 4) -> Generator[s
                     result = ""
             if len(result) >= min_length:
                 yield result
-    except Exception:
-        print(f"Could not read file: {filename}. Skipping.")
-        yield from ()
+    except FileNotFoundError:
+        print(f"File not found: {filename}")
+    except PermissionError:
+        print(f"Permission denied: {filename}")
+    except IsADirectoryError:
+        print(f"Expected a file but got a directory: {filename}")
+    except OSError as e:
+        print(f"OS error while reading {filename}: {e}")
+    except Exception as e:
+        print(f"Unexpected error while reading {filename}: {e}")
 
 
 def list_what_strings(file_path: str, log_file: TextIO) -> None:
