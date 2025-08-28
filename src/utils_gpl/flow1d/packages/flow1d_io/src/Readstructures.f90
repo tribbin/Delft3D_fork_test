@@ -166,7 +166,7 @@ contains
       if (.not. success1) then
          msgbuf = 'Early return, file '//trim(structurefile)//' is a 2D3D structure file, it will be read by function flow_init_structurecontrol_old.'
          call msg_flush()
-         ! TODO: UNST-8867: renable the warning below after support for old structure files is dropped/differences have been explained.
+         ! TODO: UNST-8867: re-enable the warning below after support for old structure files is dropped/differences have been explained.
          ! msgbuf = 'This functionality is deprecated, please convert this file to the current version.'
          ! call warn_flush()
          return

@@ -70,7 +70,7 @@ contains
       call prop_get(prop_ptr, '', trim(key), strvalue, success)
       if (.not. success .or. len_trim(strvalue) == 0) then
          if (is_required_) then
-            write (msgbuf, '(a,a,a,a,a)') 'Field ''', trim(key), ''' is missing in ''', trim(typeandid), '''.'
+            write (msgbuf, '(5a)') 'Field ''', trim(key), ''' is missing in ''', trim(typeandid), '''.'
             call msg_flush()
          end if
           
