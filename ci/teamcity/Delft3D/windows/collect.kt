@@ -56,7 +56,7 @@ object WindowsCollect : BuildType({
             command = file {
                 filename = "ci/python/ci_tools/dimrset_delivery/validate_signing.py"
                 scriptArguments = """
-                    "ci\\python\\ci_tools\\dimrset_delivery\\src\\%dep.${WindowsBuild.id}.product%-binaries.json" 
+                    "ci\\python\\ci_tools\\dimrset_delivery\\%dep.${WindowsBuild.id}.product%-binaries.json" 
                     "C:\\Program Files\\Microsoft Visual Studio\\2022\\Professional\\Common7\\Tools\\VsDevCmd.bat"
                     "x64"
                 """.trimIndent()
