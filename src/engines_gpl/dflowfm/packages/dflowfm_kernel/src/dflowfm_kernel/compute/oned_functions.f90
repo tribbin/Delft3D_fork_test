@@ -505,6 +505,7 @@ contains
       use m_1d_structures
       use m_cross_helper
       use network_data
+      use m_flowparameters, only: eps3
 
       implicit none
 
@@ -578,10 +579,10 @@ contains
             pstor => network%storS%stor(i)
             n1 = pstor%grid_point
             if (n1 <= 0) cycle
-            if (bl(n1) < pstor%storage_area%x(1)) then
-               call setmessage(LEVEL_WARN, 'At node '//trim(pstor%node_id)//' the bedlevel is below the bedlevel of the assigned storage area.')
-               write (msgbuf, '(''The bedlevel (due to invert levels of incoming channels/pipes) = '', g14.2, '' and the bottom level of the storage area is '', g14.2)') &
-                  bl(n1), pstor%storage_area%x(1)
+            if (bl(n1) + eps3 < pstor%storage_area%x(1)) then
+               write (msgbuf, '(a,i0,a)') 'At node ', pstor%node_id, ' the bedlevel is below the bedlevel of the assigned storage area.'
+               call warn_flush()
+               write (msgbuf, '(a,g14.2,a,g14.2,a)') 'The bedlevel (due to invert levels of incoming channels/pipes) = ', bl(n1), ' and the bottom level of the storage area is ', pstor%storage_area%x(1), '.'
                call setmessage(-LEVEL_WARN, msgbuf)
 
             end if
