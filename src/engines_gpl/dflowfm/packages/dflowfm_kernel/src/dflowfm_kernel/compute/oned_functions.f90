@@ -496,15 +496,15 @@ contains
 
    subroutine setbobs_1d()
       use precision, only: dp
-
-      use m_network
-      use m_flowgeom
-      use m_flowtimes
-      use messagehandling
-      use unstruc_channel_flow
-      use m_1d_structures
-      use m_cross_helper
-      use network_data
+      use m_network, only: msgbuf
+      use network_data, only: zkuni
+      use m_flowgeom, only: ndxi, bl, bob, bob0, ndx2D, lnx1d, lnx1Db, kcu, ln, lnxi
+      use m_flowtimes, only: time_user, tstart_user
+      use messagehandling, only: warn_flush, setmessage, LEVEL_WARN
+      use unstruc_channel_flow, only: network, t_network
+      use m_cross_helper, only: getbobs
+      use m_1d_structures, only: get_crest_level, t_structure
+      use m_storage, only: t_storage
       use m_flowparameters, only: eps3
 
       implicit none
