@@ -271,6 +271,8 @@ contains
             qid = 'sea_ice_area_fraction'
          case ('seaicethickness')
             qid = 'sea_ice_thickness'
+         case ('bedrocksurfaceelevation')
+            qid = 'bedrock_surface_elevation'
          end select
          
          if (ja == 1) then
@@ -1642,7 +1644,7 @@ contains
          target_location_type = UNC_LOC_U
          target_array => grounlay
          jagrounlay = 1
-      case ('bedrocksurfaceelevation')
+      case ('bedrock_surface_elevation')
          call initialize_subsupl()
          time_dependent_array = .true.
          select case (ibedlevtyp)
@@ -2025,7 +2027,7 @@ contains
       select case (str_tolower(qid_base))
       case ('initialwaterdepth', 'waterdepth')
          s1(1:ndxi) = bl(1:ndxi) + hs(1:ndxi)
-      case ('bedrocksurfaceelevation')
+      case ('bedrock_surface_elevation')
          jasubsupl = 1
       case ('infiltrationcapacity')
          where (infiltcap /= dmiss)
