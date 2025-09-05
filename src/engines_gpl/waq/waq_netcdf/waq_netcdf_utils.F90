@@ -1439,7 +1439,11 @@ contains
         integer :: i, k
         integer :: ierror
         integer :: cum_layer_var_id, var_z_id, var_sigma_id, dlwq_z_id, dlwq_sigma_id, &
-                   var_sigma_z_id, dlwq_sigma_z_id, var_sigmazdepth_id, dlwq_sigmazdepth_id
+                   var_sigma_z_id, dlwq_sigma_z_id, var_sigmazdepth_id, dlwq_sigmazdepth_id, &
+                   var_interface_sigma_id, dlwq_interface_sigma_id, &
+                   var_interface_z_id, dlwq_interface_z_id, &
+                   var_interface_sigma_z_id, dlwq_interface_sigma_z_id, interfaces_dim_id
+
         character(len = nf90_max_name) :: layer_dim_name, var_name
         real, dimension(size(thickness)) :: z_centre
         real(kind=kind(1.0d0)), dimension(size(thickness)) :: var_value
@@ -1472,13 +1476,27 @@ contains
             return
         endif
 
+        write(layer_dim_name, '(2a)') mesh_name(1:k), '_nInterfacesDlwq'
+        ierror = nf90_def_dim(nc_id, layer_dim_name, num_layers+1, interfaces_dim_id)
+        if (ierror /= 0) then
+            if (dlwqnc_debug) write(*, *) 'Note: Creating interface dimension failed (def_dim): ', ierror
+            if (dlwqnc_debug) write(*, *) 'Note: Name: ', trim(layer_dim_name), ' number: ', num_layers
+            create_layer_dimension = ierror
+            return
+        endif
+
         ! Cumulative sigma/z coordinate
 
         ! Get the layer coordinates - sigma or z (or a combination)
         ! Simply write all elements that might be present, but ignore
         ! the errors that result if they are absent.
-        dlwq_z_id     = 0
-        dlwq_sigma_id = 0
+        dlwq_z_id                 = 0
+        dlwq_sigma_id             = 0
+        dlwq_sigma_z_id           = 0
+        dlwq_sigmazdepth_id       = 0
+        dlwq_interface_z_id       = 0
+        dlwq_interface_sigma_id   = 0
+        dlwq_interface_sigma_z_id = 0
         write(var_name, '(2a)') mesh_name(1:k), '_layer_z'
         ierror = nf90_inq_varid(source_nc_id, var_name, var_z_id)
         if (ierror == nf90_noerr) then
@@ -1505,6 +1523,27 @@ contains
         if (ierror == nf90_noerr) then
             ierror = nf90_def_var(nc_id, trim(var_name) // '_dlwq', nf90_float, dlwq_sigmazdepth_id)
             ierror = copy_variable_attributes(source_nc_id, nc_id, var_sigmazdepth_id, dlwq_sigmazdepth_id)
+        endif
+
+        write(var_name, '(2a)') mesh_name(1:k), '_interface_z'
+        ierror = nf90_inq_varid(source_nc_id, var_name, var_interface_z_id)
+        if (ierror == nf90_noerr) then
+            ierror = nf90_def_var(nc_id, trim(var_name) // '_dlwq', nf90_float, (/ interfaces_dim_id /), dlwq_interface_z_id)
+            ierror = copy_variable_attributes(source_nc_id, nc_id, var_interface_z_id, dlwq_interface_z_id)
+        endif
+
+        write(var_name, '(2a)') mesh_name(1:k), '_interface_sigma'
+        ierror = nf90_inq_varid(source_nc_id, var_name, var_interface_sigma_id)
+        if (ierror == nf90_noerr) then
+            ierror = nf90_def_var(nc_id, trim(var_name) // '_dlwq', nf90_float, (/ interfaces_dim_id /), dlwq_interface_sigma_id)
+            ierror = copy_variable_attributes(source_nc_id, nc_id, var_interface_sigma_id, dlwq_interface_sigma_id)
+        endif
+
+        write(var_name, '(2a)') mesh_name(1:k), '_interface_sigma_z'
+        ierror = nf90_inq_varid(source_nc_id, var_name, var_interface_sigma_z_id)
+        if (ierror == nf90_noerr) then
+            ierror = nf90_def_var(nc_id, trim(var_name) // '_dlwq', nf90_float, (/ interfaces_dim_id /), dlwq_interface_sigma_z_id)
+            ierror = copy_variable_attributes(source_nc_id, nc_id, var_interface_sigma_z_id, dlwq_interface_sigma_z_id)
         endif
 
         ! We have the relevant element, so get the data
@@ -1535,6 +1574,27 @@ contains
             ierror = nf90_get_var(source_nc_id, var_sigmazdepth_id, var_value(1))
             if (ierror == nf90_noerr) then
                 ierror = nf90_put_var(nc_id, dlwq_sigmazdepth_id, real(var_value(1)))
+            endif
+        endif
+
+        if ( dlwq_interface_z_id > 0 ) then
+            ierror = nf90_get_var(source_nc_id, var_interface_z_id, var_value)
+            if (ierror == nf90_noerr) then
+                ierror = nf90_put_var(nc_id, dlwq_interface_z_id, real(var_value))
+            endif
+        endif
+
+        if ( dlwq_interface_sigma_id > 0 ) then
+            ierror = nf90_get_var(source_nc_id, var_interface_sigma_id, var_value)
+            if (ierror == nf90_noerr) then
+                ierror = nf90_put_var(nc_id, dlwq_interface_sigma_id, real(var_value))
+            endif
+        endif
+
+        if ( dlwq_interface_sigma_z_id > 0 ) then
+            ierror = nf90_get_var(source_nc_id, var_interface_sigma_z_id, var_value)
+            if (ierror == nf90_noerr) then
+                ierror = nf90_put_var(nc_id, dlwq_interface_sigma_z_id, real(var_value))
             endif
         endif
 
