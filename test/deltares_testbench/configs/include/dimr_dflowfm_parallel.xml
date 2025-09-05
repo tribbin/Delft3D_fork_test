@@ -421,6 +421,18 @@
         </checks>
     </testCase>
     <testCase name="e02_f203_c05_Waal_trachytopes_2D_single" ref="dimr">
+    <programs>
+          <program ref="dimr" seq="1">
+            <arguments>
+              <argument>-c 4 -m dimr_config.xml</argument>
+            </arguments>
+          </program>
+          <program ref="dfmoutput" seq="2">
+            <arguments>
+              <argument>--mapmerge --listfile dflowfmoutput/map.lst</argument>
+            </arguments>
+          </program>
+        </programs>
         <path version="2025-09-05T12:42:18.655000">e02_dflowfm/f203_3D_trachytopes/c05_Waal_trachytopes_2D_single</path>
         <maxRunTime>60.0</maxRunTime>
         <checks>
