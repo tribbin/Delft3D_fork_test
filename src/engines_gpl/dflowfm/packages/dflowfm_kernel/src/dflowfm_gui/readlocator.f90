@@ -69,7 +69,6 @@ contains
             call InKeyEvent(KEY)
          else
             call InKeyEventIMM(KEY)
-!           reduce key
             call reduce_key(key)
          end if
       end if

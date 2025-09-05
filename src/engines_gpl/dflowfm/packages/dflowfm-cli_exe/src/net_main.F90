@@ -384,13 +384,10 @@ program unstruc
 
          call DRAWNU(KEY) ! Draw model for the first time
       end if
-      if (md_jaAutoStart == MD_AUTOSTART .or. md_jaAutoStart >= MD_AUTOSTARTSTOP) then
-         if (md_jaAutoStart > MD_AUTOSTARTSTOP) then
-            ntek = 0
-         end if
+      if (md_jaAutoStart == MD_AUTOSTART .or. md_jaAutoStart == MD_AUTOSTARTSTOP) then
          idum = FLOW()
          ! TODO: check whether all data (net/s1) is available before starting flow. [AvD]
-         if (idum == DFM_SIGINT .or. md_jaAutoStart >= MD_AUTOSTARTSTOP) then
+         if (idum == DFM_SIGINT .or. md_jaAutoStart == MD_AUTOSTARTSTOP) then
             goto 1234 ! finalize and stop
          end if
       end if
