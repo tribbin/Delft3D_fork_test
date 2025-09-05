@@ -246,8 +246,8 @@ module unstruc_model
    character(len=128) :: md_dambreak_widening_method !< method for dambreak widening
 
    integer, parameter :: IFORMAT_NETCDF = 1
-   integer, parameter :: IFORMAT_TECPLOT = 2
-   integer, parameter :: IFORMAT_NETCDF_AND_TECPLOT = 3
+   integer, parameter :: IFORMAT_TECPLOT = 2 !< No longer_supported, used for error message
+   integer, parameter :: IFORMAT_NETCDF_AND_TECPLOT = 3 !< No longer_supported, used for error message
    integer, parameter :: IFORMAT_UGRID = 4
 
    integer :: md_mapformat !< map file output format (one of IFORMAT_*)
