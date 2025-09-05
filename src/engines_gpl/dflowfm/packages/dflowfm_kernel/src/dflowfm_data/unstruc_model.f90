@@ -1199,9 +1199,8 @@ contains
       end if
 
       call prop_get(md_ptr, 'numerics', 'Turbulenceadvection', javakeps)
-      call prop_get(md_ptr, 'numerics', 'FacLaxTurb', turbulence_lax_factor)
-      call prop_get(md_ptr, 'numerics', 'FacLaxTurbVer', turbulence_lax_vertical)
-      call prop_get(md_ptr, 'numerics', 'FacLaxTurbHor', turbulence_lax_horizontal)
+      call prop_get(md_ptr, 'numerics', 'turbulenceTimeIntegrationFactor', tur_time_int_factor)
+      call prop_get(md_ptr, 'numerics', 'turbulenceTimeIntegrationMethod', tur_time_int_method)
 
       call prop_get(md_ptr, 'numerics', 'Eddyviscositybedfacmax', Eddyviscositybedfacmax)
       call prop_get(md_ptr, 'numerics', 'AntiCreep', jacreep)
@@ -3160,10 +3159,9 @@ contains
          call prop_set(prop_ptr, 'numerics', 'Turbulenceadvection', javakeps, 'Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)')
       end if
 
-      if (writeall .or. (turbulence_lax_factor > 0 .and. kmx > 0)) then
-         call prop_set(prop_ptr, 'numerics', 'FacLaxTurb', turbulence_lax_factor, 'LAX-scheme factor (0.0 - 1.0) for turbulent quantities (0.0: flow links, 0.5: fifty-fifty, 1.0: flow nodes)')
-         call prop_set(prop_ptr, 'numerics', 'FacLaxTurbVer', turbulence_lax_vertical, 'Vertical distribution of turbulence_lax_factor (1: linear increasing from 0.0 to 1.0 in top half only, 2: uniform 1.0 over vertical)')
-         call prop_set(prop_ptr, 'numerics', 'FacLaxTurbHor', turbulence_lax_horizontal, 'Horizontal method of turbulence_lax_factor (1: apply to all cells, 2: only when vertical layers are horizontally connected)')
+      if (writeall .or. (tur_time_int_factor > 0 .and. kmx > 0)) then
+         call prop_set(prop_ptr, 'numerics', 'turbulenceTimeIntegrationFactor', tur_time_int_factor, '[0.0 - 1.0] for turbulent quantities (0.0: Tur0 from links, 1.0: Tur0 maximal mix of values from links with nodes)')
+         call prop_set(prop_ptr, 'numerics', 'turbulenceTimeIntegrationMethod', tur_time_int_method, 'Apply turbulenceTimeIntegrationFactor (1: to all cells, 2: only when vertical layers are horizontally connected)')
       end if
 
       if (writeall .or. Eddyviscositybedfacmax > 0 .and. kmx > 0) then
