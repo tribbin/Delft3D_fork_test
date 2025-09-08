@@ -310,8 +310,6 @@ contains
          else if (janet == 2) then ! add 1D net
             call find1dcells()
          end if
-
-         call delete_dry_points_and_areas()
       end if
 
 !     determine number of cells
@@ -442,7 +440,7 @@ contains
       call delpol()
 
 !     generate partition domain-numbers from partition polygons
-      call partition_pol_to_idomain(1) ! for net
+      call partition_pol_to_idomain(1, jafindcells=0) ! for net
 
 !     restore selecting polygon
       call restorepol()
