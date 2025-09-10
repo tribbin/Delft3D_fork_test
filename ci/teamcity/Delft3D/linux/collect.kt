@@ -100,7 +100,7 @@ object LinuxCollect : BuildType({
                 artifactRules = """
                     oss_artifacts_lnx64_*.tar.gz!lnx64/bin/** => lnx64/bin
                     oss_artifacts_lnx64_*.tar.gz!lnx64/lib/** => lnx64/lib
-                    oss_artifacts_lnx64_*.tar.gz!lnx64/share/** => lnx64/share
+                    ?:oss_artifacts_lnx64_*.tar.gz!lnx64/share/** => lnx64/share
                 """.trimIndent()
             }
         }
