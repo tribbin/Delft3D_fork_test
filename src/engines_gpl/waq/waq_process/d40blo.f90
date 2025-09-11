@@ -600,7 +600,6 @@ contains
                 ENDIF
                 ! END3DL
                 !
-                !! TIMMUL = process_space_real(IP1) -- (AM) not used
                 EXTTOT = process_space_real(IP2)
                 EXTALG = process_space_real(IP3)
                 TEMPER = process_space_real(IP4)
