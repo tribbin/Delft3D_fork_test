@@ -6736,7 +6736,7 @@ contains
 
    !> Convert quantity names as given in user input (ini/ext file)
    !! to accepted standard names (as used in data files and code)
-   function quantity_name_config_file_to_standard_name(quantity_input_name) result (quantity_standard_name)
+   pure function quantity_name_config_file_to_standard_name(quantity_input_name) result (quantity_standard_name)
       character(len=*), intent(in) :: quantity_input_name !< given by the user in ini/ext file
       character(len=:), allocatable :: quantity_standard_name !< known standard name
       
