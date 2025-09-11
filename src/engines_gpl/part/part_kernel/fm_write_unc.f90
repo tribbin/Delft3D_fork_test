@@ -117,7 +117,7 @@ contains
         logical, intent(out)              :: error
         character(len=*), intent(out)     :: msg
 
-
+        type(t_ug_meshgeom) :: meshgeom
         character(len = 10) :: cell_method   !< cell_method for this variable (one of 'mean', 'point', see CF for details).
         character(len = 50) :: cell_measures !< cell_measures for this variable (e.g. 'area: mesh2d_ba', see CF for details).
         integer :: ierr     !< Result status (UG_NOERR==NF90_NOERR if successful).
@@ -171,8 +171,11 @@ contains
         !     num_layers    -- Number of layers (meshgeom%numlayer turns out to be -1), not necessarily equal
         !                      to the number of layers in the hydrodynamics, due to the bottom layer
 
-        associate( crs => hyd%crs, meshgeom => hyd%waqgeom, nosegl => hyd%nosegl, &
-                   meshname => hyd%waqgeom%meshname )
+        associate( crs => hyd%crs, nosegl => hyd%nosegl, meshname => hyd%waqgeom%meshname )
+            ! Copy the mesh geometry structure mask the layer information to avoid double writing it to the mapfile
+            ! by ug_write_mesh_struct, we will add it ourselves if needed.
+            meshgeom = hyd%waqgeom
+            meshgeom%num_layers = 0
 
             ! Note: a bit of trickery here ... we should probably define the concentrations as a 2D array
             if (num_layers > 1) then
