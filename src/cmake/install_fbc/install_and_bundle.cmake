@@ -28,7 +28,6 @@ include(BundleUtilities)
 
 set(BU_CHMOD_BUNDLE_ITEMS ON)
 
-fixup_bundle("${CMAKE_INSTALL_PREFIX}/bin/FBCTools" "${BUILD_LIBRARIES}" "${FBC_THIRDPARTY_x64_LIB_FOLDERS}")
 find_package(Python3 COMPONENTS Interpreter)
 if(Python3_FOUND)
   execute_process(COMMAND find "${CMAKE_INSTALL_PREFIX}/bin" -type f -not -name "*.sh" -not -name "*.xsd" -not -name "*.txt" -exec echo "patched rpath of: " {} \; -exec bash -c "patchelf --set-rpath '$ORIGIN:$ORIGIN/../lib' $1" _ {} \;)

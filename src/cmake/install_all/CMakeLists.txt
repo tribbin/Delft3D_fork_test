@@ -1,0 +1,1 @@
+install(SCRIPT "${checkout_src_root}/cmake/install_all/install_and_bundle.cmake")

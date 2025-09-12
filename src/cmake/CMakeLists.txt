@@ -392,3 +392,8 @@ if(${configuration_type} STREQUAL ${d3d4-suite_configuration})
     message(STATUS "Generating solution for Delft3D4 ...")
     include(configurations/suites/d3d4_configuration.cmake)
 endif()
+
+if(UNIX)
+  # install
+  add_subdirectory(${checkout_src_root}/${install_all_module} install_all)
+endif()

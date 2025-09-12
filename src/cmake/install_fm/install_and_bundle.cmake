@@ -26,9 +26,6 @@ IF(UNIX)
    
    set(BU_CHMOD_BUNDLE_ITEMS 1)
    
-   fixup_bundle("${CMAKE_INSTALL_PREFIX}/bin/dflowfm-cli" "${BUILD_LIBRARIES}" "${THIRDPARTY_x64_LIB_FOLDERS}")
-   fixup_bundle("${CMAKE_INSTALL_PREFIX}/bin/dfmoutput" "${BUILD_LIBRARIES}" "${THIRDPARTY_x64_LIB_FOLDERS}")
-   
    set_rpath("${CMAKE_INSTALL_PREFIX}/bin" "$ORIGIN:$ORIGIN/../lib")
    set_rpath("${CMAKE_INSTALL_PREFIX}/lib" "$ORIGIN")
    set_rpath("${CMAKE_INSTALL_PREFIX}/share" "$ORIGIN/../lib:$ORIGIN")
