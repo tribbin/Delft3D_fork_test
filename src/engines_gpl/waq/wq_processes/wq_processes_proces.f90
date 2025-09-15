@@ -160,7 +160,7 @@ contains
         if (timon) call timstrt ("wq_processes_proces", ithndl)
 
         if ( time_bloom_next == -huge(time_bloom_next) ) then
-            time_bloom_next = itime
+            time_bloom_next = time
         endif
 
         IFRACS = 1
@@ -188,10 +188,11 @@ contains
             prondt(bloom_status_ind) = ndtblo
 
             ! This timestep fractional step ?
-            ! Enclose the time in an interval, rather look for equality, as the time step
-            ! may be dynamic.
-            if ( abs( time - time_bloom_next ) < 0.5_dp * dts ) then
-                time_bloom_next = time_bloom_next + nint(86400.0_dp * a(ipndt))
+            ! Enclose the time in an interval, rather than look for equality, as the time step
+            ! may be dynamic. (The half timestep is to neutralise the rounding errors)
+            if ( time_bloom_next >  time - 0.5_dp * dts .and. &
+                 time_bloom_next <= time + 1.5_dp * dts ) then
+                time_bloom_next = time_bloom_next + 86400.0_dp * a(ipndt)
 
                 flux = 0.0
 
