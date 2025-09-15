@@ -204,7 +204,7 @@ contains
       call realloc(iC, 2 * Ndx + 1, keepExisting=.false., fill=0)
       call realloc(jC, numnonzeros, keepExisting=.false., fill=0)
       call realloc(aC, numnonzeros, keepExisting=.false., fill=0.0_dp)
-      call realloc(dfluxfac, (/2, Lnx/), keepExisting=.false., fill=0.0_dp)
+      call realloc(dfluxfac, [2, Lnx], keepExisting=.false., fill=0.0_dp)
 
 !     fill entries
       ipoint = 0

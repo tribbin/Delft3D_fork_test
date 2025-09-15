@@ -257,7 +257,7 @@ contains
 
          if (numL_new > numcur_L) then
             numcur_L = int(1.2_dp * dble(numL_new) + 1.0_dp)
-            call realloc(kn_new, (/3, numcur_L/), keepExisting=.true., fill=0)
+            call realloc(kn_new, [3, numcur_L], keepExisting=.true., fill=0)
          end if
 
          return

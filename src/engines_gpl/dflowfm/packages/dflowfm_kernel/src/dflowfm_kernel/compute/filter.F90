@@ -339,7 +339,7 @@ contains
 !  allocate other arrays
       call realloc(sol, Lnx, keepExisting=.false., fill=0.0_dp)
       call realloc(ustar, Lnkx, keepExisting=.false., fill=0.0_dp)
-      call realloc(eps, (/kmx, Lnx/), keepExisting=.false., fill=0.0_dp)
+      call realloc(eps, [kmx, Lnx], keepExisting=.false., fill=0.0_dp)
       call realloc(Deltax, Lnx, keepExisting=.false., fill=0.0_dp)
 
 !  get typical mesh width

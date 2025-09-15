@@ -53,7 +53,7 @@ module m_flow_modelinit
 contains
 
    !> Initializes the entire current model (geometry, boundaries, initial state)
- !! @return Error status: error (/=0) or not (0)
+ !! @return Error status: error [=0) or not (0)
    integer function flow_modelinit() result(iresult) ! initialise flowmodel
       use m_flow_geominit, only: flow_geominit
       use m_flow_fourierinit, only: flow_fourierinit

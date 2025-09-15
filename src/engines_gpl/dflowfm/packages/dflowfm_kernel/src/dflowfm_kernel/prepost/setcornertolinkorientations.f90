@@ -84,8 +84,8 @@ contains
          end if
 
 !      compute orientation w.r.t. link mid point
-         call spher2locvec(xk(k3), yk(3), 1, (/xL/), (/yL/), (/1.0_dp/), (/0.0_dp/), csbn(1, L), snbn(1, L), jsferic, jasfer3D, dmiss)
-         call spher2locvec(xk(k4), yk(4), 1, (/xL/), (/yL/), (/1.0_dp/), (/0.0_dp/), csbn(2, L), snbn(2, L), jsferic, jasfer3D, dmiss)
+         call spher2locvec(xk(k3), yk(3), 1, [xL], [yL], [1.0_dp], [0.0_dp], csbn(1, L), snbn(1, L), jsferic, jasfer3D, dmiss)
+         call spher2locvec(xk(k4), yk(4), 1, [xL], [yL], [1.0_dp], [0.0_dp], csbn(2, L), snbn(2, L), jsferic, jasfer3D, dmiss)
       end do
 
       return

@@ -435,12 +435,12 @@ contains
          if (allocated(sbcx_raw)) then
             deallocate (sbcx_raw, sbcy_raw, sswx_raw, sswy_raw, sbwx_raw, sbwy_raw)
          end if
-         call realloc(sbcx_raw, (/ndx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
-         call realloc(sbcy_raw, (/ndx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
-         call realloc(sbwx_raw, (/ndx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
-         call realloc(sbwy_raw, (/ndx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
-         call realloc(sswx_raw, (/ndx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
-         call realloc(sswy_raw, (/ndx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(sbcx_raw, [ndx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(sbcy_raw, [ndx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(sbwx_raw, [ndx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(sbwy_raw, [ndx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(sswx_raw, [ndx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(sswy_raw, [ndx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
       end if
       !
       ! Allocate berm slope index array if wanted
@@ -451,7 +451,7 @@ contains
          call realloc(bermslopeindex, lnx, stat=ierr, fill=.false., keepExisting=.false.)
          call realloc(bermslopeindexbed, lnx, stat=ierr, fill=.false., keepExisting=.false.)
          call realloc(bermslopeindexsus, lnx, stat=ierr, fill=.false., keepExisting=.false.)
-         call realloc(bermslopecontrib, (/lnx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(bermslopecontrib, [lnx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
          if (.not. (ierr == 0)) then
             call mess(LEVEL_WARN, 'unstruc::flow_sedmorinit - Could not allocate bermslope arrays. Bermslope transport switched off.')
             stmpar%morpar%bermslopetransport = .false.
@@ -472,7 +472,7 @@ contains
          if (allocated(avalflux)) then
             deallocate (avalflux)
          end if
-         call realloc(avalflux, (/lnx, stmpar%lsedtot/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(avalflux, [lnx, stmpar%lsedtot], stat=ierr, fill=0.0_dp, keepExisting=.false.)
          !
          ! Warn user if default wetslope is still 10.0 when using dune avalanching. Reset default to reasonable 1.0 in that case.
          if (comparereal(stmpar%morpar%wetslope, 10.0_dp) == 0) then
@@ -527,7 +527,7 @@ contains
             goto 1234
          end if
 
-         call realloc(mergebodsed, (/stmpar%lsedtot, ndx/), stat=ierr, fill=0.0_dp, keepExisting=.false.)
+         call realloc(mergebodsed, [stmpar%lsedtot, ndx], stat=ierr, fill=0.0_dp, keepExisting=.false.)
          !
          if (jamormergedtuser > 0 .and. my_rank == 0) then ! safety, set equal dt_user across mormerge processes once
             call put_get_time_step(stmpar%morpar%mergehandle, dt_user)
