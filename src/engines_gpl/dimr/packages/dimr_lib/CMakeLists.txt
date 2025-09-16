@@ -49,6 +49,7 @@ if(UNIX)
 
     target_link_libraries(${library_name} ${oss_dependencies})
     target_compile_options(${library_name} PRIVATE ${cpp_compiler_flags})
+    set_target_properties(${library_name} PROPERTIES OUTPUT_NAME dimr)
 endif()
 
 if(WIN32)
