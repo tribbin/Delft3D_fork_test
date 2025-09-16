@@ -142,7 +142,7 @@ contains
       if (abs(val1) < 1.0_hp .or. abs(val2) < 1.0_hp) then
          value = val1 - val2
       else
-         value = sign(1.0_hp, val2) * val1 / max(abs(val2), 1.0_hp) - 1.0_hp
+         value = val1 / val2 - 1.0_hp
       end if
 !
       if (abs(value) < eps0) then
