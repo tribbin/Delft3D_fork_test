@@ -92,4 +92,4 @@ endif()
 # Create the vfproj structure
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${source} ${headers} ${rc_version_file})
 set_target_properties (${library_name} PROPERTIES FOLDER engines_gpl/dimr)
-install(PROGRAMS $<TARGET_FILE:${library_name}> RENAME dimr.${library_suffix} DESTINATION lib)
+install(PROGRAMS $<TARGET_FILE:${library_name}> RENAME ${library_prefix}dimr.${library_suffix} DESTINATION lib)
