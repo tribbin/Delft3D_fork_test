@@ -191,11 +191,9 @@ subroutine z_inizm(j         ,nmmaxj    ,nmmax     ,kmax      ,icx       , &
           kfu(nm) = min(1, kcu(nm))
           kfv(nm) = min(1, kcv(nm))
        endif
-       if (kcs(nm) == 1) then
-          dpsmax = max(dpsmax, dps(nm))
-          dpsmin = min(dpsmin, dps(nm))
-       endif
     enddo
+    dpsmax = maxval(dps, mask=kcs==1)
+    dpsmin = minval(dps, mask=kcs==1)
     !
     ! zbot should be lower then maximum depth (zbot<-dpsmax => dpsmax+zbot<0)
     ! otherwise an error is given
