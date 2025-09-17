@@ -41,6 +41,15 @@ object StartVerschilanalyse : BuildType({
         )
         param("current_prefix", "output/weekly/latest")
         param("model_filter", "")
+        checkbox(
+            "send_email",
+            "true",
+            display = ParameterDisplay.NORMAL,
+            label = "Send email report",
+            description = "Send email with verschilanalyse results after completion.",
+            checked = "true", 
+            unchecked = "false",
+        )
     }
 
     triggers {
@@ -117,6 +126,7 @@ object StartVerschilanalyse : BuildType({
                 export START_BUILD_TYPE_ID='${StartVerschilanalyse.id}'
                 export BUILD_ID='%teamcity.build.id%'
                 export BRANCH_NAME='%teamcity.build.branch%'
+                export SEND_EMAIL='%send_email%'
 
                 pushd bundle
                 ./start_verschilanalyse.sh \
