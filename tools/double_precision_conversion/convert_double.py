@@ -67,16 +67,12 @@ class FortranDoubleConverter:
         )
 
         # Pattern to match double precision variable declarations
-        # Matches: double precision :: var, double precision, dimension(...) :: var, etc.
+        # Matches any line starting with double precision
         self.double_precision_pattern = re.compile(
             r'''
             (?P<indent>\s*)             # Capture leading whitespace
             double\s+precision          # "double precision" keywords
-            (?P<attributes>             # Optional attributes like dimension(...), parameter, etc.
-                (?:\s*,\s*\w+(?:\([^)]*\))?)*
-            )
-            \s*::                       # Double colon
-            (?P<rest>.*)                # Rest of the declaration
+            (?P<rest>.*)                # Everything else on the line
             ''',
             re.VERBOSE | re.IGNORECASE
         )
@@ -122,7 +118,7 @@ class FortranDoubleConverter:
 
         return False
 
-    def _convert_literal(self, match: re.Match) -> str:
+    def _convert_literal(self, match) -> str:
         """Convert a single D literal to _dp format."""
         sign = match.group('sign')
         significand = match.group('significand')
@@ -147,22 +143,13 @@ class FortranDoubleConverter:
             # Include exponent with E
             return f"{sign}{significand}e{exponent}_dp"
 
-    def _convert_double_precision_declaration(self, match: re.Match) -> str:
+    def _convert_double_precision_declaration(self, match) -> str:
         """Convert a double precision declaration to real(kind=dp) format."""
         indent = match.group('indent')
-        attributes = match.group('attributes').strip()
-        rest = match.group('rest')
+        rest = match.group('rest').strip()
 
         # Build the new declaration
-        new_declaration = f"{indent}real(kind=dp)"
-
-        # Add attributes if they exist (like dimension(...), parameter, etc.)
-        if attributes:
-            new_declaration += attributes
-
-        new_declaration += " ::" + rest
-
-        return new_declaration
+        return f"{indent}real(kind=dp) {rest}"
 
     def _add_precision_import(self, text: str) -> str:
         """Add 'use precision, only: dp' import if not already present."""
@@ -347,6 +334,14 @@ class FortranDoubleConverter:
     def check_file(self, input_path: Path) -> bool:
         """Check if a file needs conversion without modifying it. Returns True if conversion is needed."""
         try:
+            if input_path.is_dir():
+                print(f"ERROR: {input_path} is a directory. Use --directory flag to process directories.")
+                return False
+
+            if not input_path.exists():
+                print(f"ERROR: {input_path} does not exist.")
+                return False
+
             with open(input_path, 'r', encoding='utf-8') as f:
                 content = f.read()
 
@@ -374,9 +369,15 @@ class FortranDoubleConverter:
 
             return False
 
+        except PermissionError:
+            print(f"ERROR: Permission denied accessing {input_path}")
+            return False
+        except UnicodeDecodeError:
+            print(f"ERROR: Cannot decode {input_path} as UTF-8 (binary file?)")
+            return False
         except Exception as e:
-            print(f"Error checking {input_path}: {e}")
-            return True  # Treat errors as needing attention
+            print(f"ERROR: Unexpected error checking {input_path}: {e}")
+            return False
 
     def check_directory(self, directory: Path, extensions: Optional[List[str]] = None) -> Tuple[int, int]:
         """Check all Fortran files in a directory for needed conversions. Returns (files_processed, files_needing_conversion)."""
