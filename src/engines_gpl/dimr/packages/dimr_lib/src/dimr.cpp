@@ -375,7 +375,7 @@ void Dimr::runParallelInit(dimr_control_block* cb) {
                   log->Write(DEBUG, my_rank, "Master: %s", cb->subBlocks[cb->masterSubBlockId].unit.component->name);
                 }
                 else {
-                  throw Exception(true, Exception::ERR_INVALID_INPUT, "runParallelInit: the specified start element was not found.");
+                  throw Exception(true, Exception::ERR_INVALID_INPUT, "runParallelInit: the specified component in the start element was not found.");
                 }
             }
             else {
