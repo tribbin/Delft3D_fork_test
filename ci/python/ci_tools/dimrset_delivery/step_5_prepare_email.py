@@ -109,8 +109,6 @@ class EmailHelper(StepExecutorInterface):
 
         self.__template = html
 
-
-
     def __create_status_span(self, value: str, is_percentage: bool = False) -> str:
         """
         Create a span with success or fail class based on value.
