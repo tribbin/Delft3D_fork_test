@@ -10,7 +10,7 @@ static void test_version_string(void) {
   char *version_string = NULL;
   get_version_string(&version_string);
   TEST_ASSERT(strlen(version_string) > 0);
-  TEST_ASSERT_EQUAL_STRING_LEN(version_string, "v", 1);
+  TEST_ASSERT_EQUAL_STRING_LEN(version_string, "D", 1);
 }
 
 int main(void) {
