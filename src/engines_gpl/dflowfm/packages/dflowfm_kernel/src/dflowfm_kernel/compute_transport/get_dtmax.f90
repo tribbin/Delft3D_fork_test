@@ -113,24 +113,26 @@ contains
          do k = 1, Ndxi
             dtmax(k) = dtmax_default
 
-            if (jalimitdtdiff == 0) then
-               if (squ(k) > eps10) then
-                  dtmax(k) = min(dtmax(k), cflmx * vol1(k) / squ(k))
+            if (s1(k) - bl(k) > epshu) then
+               if (jalimitdtdiff == 0) then
+                  if (squ(k) > eps10) then
+                     dtmax(k) = min(dtmax(k), cflmx * vol1(k) / squ(k))
+                  end if
+               else
+                  if (sqi(k) + sumdifflim(k) > eps10) then
+                     dtmax(k) = min(dtmax(k), cflmx * vol1(k) / (sqi(k) + sumdifflim(k)))
+                  end if
                end if
-            else
-               if (sqi(k) + sumdifflim(k) > eps10) then
-                  dtmax(k) = min(dtmax(k), cflmx * vol1(k) / (sqi(k) + sumdifflim(k)))
+               
+               if (jampi == 1) then
+!                 do not include ghost cells
+                  if (idomain(k) /= my_rank) cycle
                end if
-            end if
-
-            if (jampi == 1) then
-!              do not include ghost cells
-               if (idomain(k) /= my_rank) cycle
-            end if
-
-            if (dtmax(k) < dtmin_transp) then
-               dtmin_transp = dtmax(k)
-               kk_dtmin = k
+               
+               if (dtmax(k) < dtmin_transp) then
+                  dtmin_transp = dtmax(k)
+                  kk_dtmin = k
+               end if
             end if
 
          end do
@@ -141,51 +143,51 @@ contains
             dtmax(kk) = dtmax_default
 
             if (s1(kk) - bl(kk) > epshu) then
-            call getkbotktop(kk, kb, kt)
-            if (jalimitdtdiff == 0) then
-               if (stm_included .and. ISED1 > 0 .and. jaimplicitfallvelocity == 0) then
-                  bak = ba(kk)
-                  do k = kb, kt
-                     sqtot = sqi(k) + maxval(mtd%ws(k, :)) * bak
-                     if (squ(k) > eps10 .or. sqtot > eps10) then
-                        dtmax(kk) = min(dtmax(kk), vol1(k) / max(squ(k), sqtot))
-                     end if
-                  end do
+               call getkbotktop(kk, kb, kt)
+               if (jalimitdtdiff == 0) then
+                  if (stm_included .and. ISED1 > 0 .and. jaimplicitfallvelocity == 0) then
+                     bak = ba(kk)
+                     do k = kb, kt
+                        sqtot = sqi(k) + maxval(mtd%ws(k, :)) * bak
+                        if (squ(k) > eps10 .or. sqtot > eps10) then
+                           dtmax(kk) = min(dtmax(kk), vol1(k) / max(squ(k), sqtot))
+                        end if
+                     end do
+                  else
+                     do k = kb, kt
+                        if (squ(k) > eps10 .or. sqi(k) > eps10) then
+                           dtmax(kk) = min(dtmax(kk), vol1(k) / max(squ(k), sqi(k)))
+                        end if
+                     end do
+                  end if
                else
-                  do k = kb, kt
-                     if (squ(k) > eps10 .or. sqi(k) > eps10) then
-                        dtmax(kk) = min(dtmax(kk), vol1(k) / max(squ(k), sqi(k)))
-                     end if
-                  end do
+                  if (stm_included .and. ISED1 > 0 .and. jaimplicitfallvelocity == 0) then
+                     bak = ba(kk)
+                     do k = kb, kt
+                        sqtot = sqi(k) + sumdifflim(k) + maxval(mtd%ws(k, :)) * bak
+                        if (sqtot > eps10) then
+                           dtmax(kk) = min(dtmax(kk), vol1(k) / sqtot)
+                        end if
+                     end do
+                  else
+                     do k = kb, kt
+                        if (sqi(k) + sumdifflim(k) > eps10) then
+                           dtmax(kk) = min(dtmax(kk), vol1(k) / (sqi(k) + sumdifflim(k)))
+                        end if
+                     end do
+                  end if
                end if
-            else
-               if (stm_included .and. ISED1 > 0 .and. jaimplicitfallvelocity == 0) then
-                  bak = ba(kk)
-                  do k = kb, kt
-                     sqtot = sqi(k) + sumdifflim(k) + maxval(mtd%ws(k, :)) * bak
-                     if (sqtot > eps10) then
-                        dtmax(kk) = min(dtmax(kk), vol1(k) / sqtot)
-                     end if
-                  end do
-               else
-                  do k = kb, kt
-                     if (sqi(k) + sumdifflim(k) > eps10) then
-                        dtmax(kk) = min(dtmax(kk), vol1(k) / (sqi(k) + sumdifflim(k)))
-                     end if
-                  end do
+               dtmax(kk) = cflmx * dtmax(kk)
+               
+               if (jampi == 1) then
+!                 do not include ghost cells
+                  if (idomain(kk) /= my_rank) cycle
                end if
-            end if
-            dtmax(kk) = cflmx * dtmax(kk)
-
-            if (jampi == 1) then
-!              do not include ghost cells
-               if (idomain(kk) /= my_rank) cycle
-            end if
-
-            if (dtmax(kk) < dtmin_transp) then
-               dtmin_transp = dtmax(kk)
-               kk_dtmin = kk
-            end if
+               
+               if (dtmax(kk) < dtmin_transp) then
+                  dtmin_transp = dtmax(kk)
+                  kk_dtmin = kk
+               end if
             end if
 
          end do
