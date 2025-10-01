@@ -1,3 +1,5 @@
+if(WIN32)
+
 cmake_minimum_required(VERSION 3.15)
 
 project(libzsf)
@@ -134,3 +136,4 @@ add_subdirectory(tests)
 install(
     TARGETS
     zsf RUNTIME DESTINATION lib)
+endif(WIN32)
