@@ -351,7 +351,7 @@ contains
         total_perc_cpu = 0d0
         total_perc_wc = 0d0
         do i = 1, nohandl
-            if (level(i) == -1) cycle
+            if (level(i) < 11) cycle
             call timline (i, lun, perc_cpu_local, perc_wc_local, write_total_time_local)
             total_perc_cpu = total_perc_cpu + perc_cpu_local
             total_perc_wc = total_perc_wc + perc_wc_local
