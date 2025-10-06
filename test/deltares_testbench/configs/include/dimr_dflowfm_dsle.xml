@@ -1,20 +1,18 @@
     <testCases xmlns="http://schemas.deltares.nl/deltaresTestbench_v3">
-        <!-- ======================================================================== -->
-        <testCase name="e121_f02_c01_sequential" ref="dimr_trunk">
-            <path version="2024-01-11T14:00:00">e121_dflowfm_wanda/f02_turbines/c01_sequential</path>
+        <testCase name="e119_f001_c001_2D_ca_1sl_me_uic_cbc" ref="dimr">
+            <path version="2025-10-06T12:33:14.449000">e119_dflowfm_dsle/f001/c001_2D_ca_1sl_me_uic_cbc</path>
+            <maxRunTime>60.0</maxRunTime>
             <checks>
-                <file name="dhydro/DFM_OUTPUT_TurbineTest/TurbineTest_map.nc" type="NETCDF">
+                <file name="dhydro/output/FlowFM_map.nc" type="netcdf">
                     <parameters>
-                        <parameter name="mesh2d_s1" toleranceRelative="0.0001" />
-                        <parameter name="mesh2d_u1" toleranceRelative="0.0001" />
+                        <parameter name="mesh2d_s1" toleranceAbsolute="0.0001" />
+                        <parameter name="mesh2d_sa1" toleranceAbsolute="0.0001" />
                     </parameters>
                 </file>
-                <file name="dhydro/DFM_OUTPUT_TurbineTest/TurbineTest_his.nc" type="NETCDF">
+                <file name="dhydro/output/FlowFM_his.nc" type="netcdf">
                     <parameters>
-                        <parameter name="waterlevel" toleranceRelative="0.0001" />
-                        <parameter name="x_velocity" toleranceRelative="0.0001" />
-                        <parameter name="y_velocity" toleranceRelative="0.0001" />
-                        <parameter name="source_sink_prescribed_discharge" toleranceRelative="0.0001" />
+                        <parameter name="salinity" toleranceAbsolute="0.0001" />
+                        <parameter name="waterlevel" toleranceAbsolute="0.0001" />
                     </parameters>
                 </file>
             </checks>
