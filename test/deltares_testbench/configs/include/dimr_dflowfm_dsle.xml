@@ -123,3 +123,40 @@
                 </file>
             </checks>
         </testCase>
+        <testCase name="e119_f001_c008_3D_ca_2sl_me_uic_cbc" ref="dimr">
+            <path version="2025-10-06T13:57:45.928000">e119_dflowfm_dsle/f001/c008_3D_ca_2sl_me_uic_cbc</path>
+            <maxRunTime>60.0</maxRunTime>
+            <checks>
+                <file name="dhydro/output/FlowFM_map.nc" type="netcdf">
+                    <parameters>
+                        <parameter name="mesh2d_waterdepth" toleranceAbsolute="0.0001" />
+                        <parameter name="mesh2d_sa1" toleranceAbsolute="0.0001" />
+                    </parameters>
+                </file>
+                <file name="dhydro/output/FlowFM_his.nc" type="netcdf">
+                    <parameters>
+                        <parameter name="cross_section_salt" toleranceAbsolute="0.0001" />
+                        <parameter name="cross_section_discharge" toleranceAbsolute="0.0001" />
+                    </parameters>
+                </file>
+            </checks>
+        </testCase>
+        <testCase name="e119_f001_c009_3D_ca_2sl_me_uic_cbc_3s" ref="dimr">
+            <path version="2025-10-06T14:02:04.144000">e119_dflowfm_dsle/f001/c009_3D_ca_2sl_me_uic_cbc_3s</path>
+            <maxRunTime>60.0</maxRunTime>
+            <checks>
+                <file name="dhydro/output/FlowFM_map.nc" type="netcdf">
+                    <parameters>
+                        <parameter name="mesh2d_sa1" toleranceAbsolute="0.0001" />
+                        <parameter name="mesh2d_waterdepth" toleranceAbsolute="0.0001" />
+                    </parameters>
+                </file>
+                <file name="dhydro/output/FlowFM_his.nc" type="netcdf">
+                    <parameters>
+                        <parameter name="cross_section_discharge" toleranceAbsolute="0.0001" />
+                        <parameter name="cross_section_salt" toleranceAbsolute="0.0001" />
+                    </parameters>
+                </file>
+            </checks>
+        </testCase>
+            </testCases>
