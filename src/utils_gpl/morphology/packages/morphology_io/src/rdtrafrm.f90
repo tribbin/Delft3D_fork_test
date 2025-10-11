@@ -29,6 +29,7 @@ module m_rdtrafrm
 !  
 !-------------------------------------------------------------------------------
 use m_depfil_stm
+use precision, only: fp, dp, comparereal, pntrsize
 implicit none
 
 private
@@ -44,6 +45,8 @@ interface setpardef
    module procedure setpardefreal
 end interface setpardef   
 
+real(fp), parameter :: NO_DEFAULT_VALUE = -999999.0_fp !< value used for flagging transport parameters without default value
+
 contains
 
 subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
@@ -52,7 +55,6 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
 ! Reads transport formula and parameters
 !
 !!--declarations----------------------------------------------------------------
-    use precision
     use morphology_data_module, only: trapar_type, MAX_RP, MAX_IP, MAX_SP, WS_MAX_RP, WS_MAX_IP, WS_MAX_SP
     use message_module
     !
@@ -81,7 +83,7 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     character(256)                   , pointer :: dll_name_settle(:)
     integer(pntrsize)                , pointer :: dll_handle_settle(:)
     integer                          , pointer :: dll_integers_settle(:)
-    real(hp)                         , pointer :: dll_reals_settle(:)
+    real(dp)                         , pointer :: dll_reals_settle(:)
     character(256)                   , pointer :: dll_strings_settle(:)
     character(256)                   , pointer :: dll_usrfil_settle(:)
     integer                          , pointer :: iform_settle(:)
@@ -90,7 +92,7 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     character(256)                   , pointer :: dll_name(:)
     integer(pntrsize)                , pointer :: dll_handle(:)
     integer                          , pointer :: dll_integers(:)
-    real(hp)                         , pointer :: dll_reals(:)
+    real(dp)                         , pointer :: dll_reals(:)
     character(256)                   , pointer :: dll_strings(:)
     character(256)                   , pointer :: dll_usrfil(:)
     character(256)                   , pointer :: flstrn(:)
@@ -191,7 +193,7 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     dll_handle    = 0
     dll_usrfil    = ' '
     dll_integers  = 0
-    dll_reals     = 0.0_hp
+    dll_reals     = 0.0_dp
     dll_strings   = ' '
     !
     dll_function_settle  => trapar%dll_function_settle
@@ -209,7 +211,7 @@ subroutine initrafrm(lundia    ,error     ,lsedtot   ,trapar    )
     dll_handle_settle    = 0
     dll_usrfil_settle    = ' '
     dll_integers_settle  = 0
-    dll_reals_settle     = 0.0_hp
+    dll_reals_settle     = 0.0_dp
     dll_strings_settle   = ' '
     iform_settle         = 0
     par_settle           = 0.0_fp
@@ -279,7 +281,7 @@ subroutine rdtrafrm(lundia    ,error     ,filtrn    ,lsedtot   , &
     character(256), dimension(:)   , pointer :: dll_function
     integer(pntrsize), dimension(:), pointer :: dll_handle
     integer       , dimension(:)   , pointer :: dll_integers
-    real(hp)      , dimension(:)   , pointer :: dll_reals
+    real(dp)      , dimension(:)   , pointer :: dll_reals
     character(256), dimension(:)   , pointer :: dll_strings
     character(256), dimension(:)   , pointer :: dll_usrfil
     character(256), dimension(:)   , pointer :: flstrn
@@ -484,7 +486,6 @@ subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
     integer                      , external    :: open_shared_library
     logical                                    :: is_float
     logical                                    :: lex
-    real(fp)                                   :: nodef
     real(fp)       , dimension(:), allocatable :: pardef
     character(3)                               :: key
     character(10)                              :: versionstring
@@ -681,7 +682,7 @@ subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
        nparopt = 0
     else
        call traparams(iform(l),name(l),nparreq   ,nparopt   ,parname(:,l)   , &
-                    & pardef, nodef, noutpar(l), outpar_name(:,l), outpar_longname(:,l))
+                    & pardef, noutpar(l), outpar_name(:,l), outpar_longname(:,l))
        if (name(l) == ' ') then
           error      = .true.
           write(errmsg,'(A,I0,A)') 'Transport formula number ',iform(l),' is not implemented'
@@ -733,10 +734,12 @@ subroutine rdtrafrm0(lundia    ,error     ,iform     ,npar      ,par       , &
           endif
           !
           if (is_float) then
-             error  = .true.
-             errmsg = 'No value obtained for parameter '//trim(parname(i,l))//' without default value.'
-             call write_error(errmsg, unit=lundia)
-             exit
+             if (comparereal(par(i10,l), NO_DEFAULT_VALUE) == 0) then
+                error  = .true.
+                errmsg = 'No value obtained for parameter '//trim(parname(i,l))//' without default value.'
+                call write_error(errmsg, unit=lundia)
+                exit
+             end if
           else
              inquire(file=flname, exist=lex)
              if (lex) then
@@ -1064,7 +1067,7 @@ end subroutine echotrafrm
 
 
 subroutine traparams(iform     ,name      ,nparreq   ,nparopt   ,parkeyw   , &
-                   & pardef    ,nodef     ,noutpar   ,outpar_name, outpar_longname)
+                   & pardef    ,noutpar   ,outpar_name, outpar_longname)
 !!--description-----------------------------------------------------------------
 !
 ! Provides characteristics of built-in transport formulae
@@ -1080,7 +1083,6 @@ subroutine traparams(iform     ,name      ,nparreq   ,nparopt   ,parkeyw   , &
     integer                       , intent(out) :: nparopt
     real(fp)                      , intent(out) :: pardef(:)
     character(*)                  , intent(out) :: parkeyw(:)
-    real(fp)                      , intent(out) :: nodef
     integer        , optional     , intent(out) :: noutpar
     character(*)   , optional     , intent(out) :: outpar_name(:)
     character(*)   , optional     , intent(out) :: outpar_longname(:)
@@ -1090,7 +1092,6 @@ subroutine traparams(iform     ,name      ,nparreq   ,nparopt   ,parkeyw   , &
 !
 !! executable statements -------------------------------------------------------
 !
-    nodef   = -999999.0_fp
     !
     if (iform /= 15) name = ' '
     nparreq = 0
@@ -1099,7 +1100,7 @@ subroutine traparams(iform     ,name      ,nparreq   ,nparopt   ,parkeyw   , &
        noutpar = 0
     endif
     parkeyw = ' '
-    pardef  = nodef
+    pardef  = NO_DEFAULT_VALUE
     if (iform == -4) then
        name       = 'Van der A et al. (2013): SANTOSS extended Van Rijn (2007)'
        nparopt    = 13

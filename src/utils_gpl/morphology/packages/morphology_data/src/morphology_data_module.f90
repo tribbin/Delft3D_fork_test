@@ -1465,7 +1465,6 @@ subroutine nullmorpar(morpar)
     character(256)                       , pointer :: ttlfil
     character(256)                       , pointer :: telfil
     character(256)                       , pointer :: aldifffil
-    character(256)                       , pointer :: flsthetsd
     type (bedbndtype)     , dimension(:) , pointer :: morbnd
     type (cmpbndtype)     , dimension(:) , pointer :: cmpbnd
     !
@@ -1566,7 +1565,6 @@ subroutine nullmorpar(morpar)
     ttlfil              => morpar%ttlfil
     telfil              => morpar%telfil
     aldifffil           => morpar%aldifffil
-    flsthetsd           => morpar%flsthetsd
     !
     istat = 0
     allocate (morpar%moroutput  , STAT = istat)
@@ -1603,7 +1601,7 @@ subroutine nullmorpar(morpar)
     ttlfil             = ' '
     telfil             = ' '
     aldifffil          = ' '
-    flsthetsd          = ' '
+    morpar%flsthetsd = ' '
     !
     morfac             = 1.0_fp
     thresh             = 0.1_fp

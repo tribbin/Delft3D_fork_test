@@ -40,7 +40,7 @@ end subroutine tests_combinepaths
 subroutine test_combine
     use m_combinepaths, only: combinepaths
     
-    character(len=20), dimension(9) :: firstname, secondname, expected
+    character(len=30), dimension(9) :: firstname, secondname, expected
     character(len=:), allocatable   :: combined_name
 
     integer                               :: i

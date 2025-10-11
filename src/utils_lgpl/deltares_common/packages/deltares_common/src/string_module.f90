@@ -592,7 +592,7 @@ contains
    end subroutine find_first_word
 
    !> Determine the index of the first letter in a string.
-      !! Failure is indicated by: index = 0
+   !! Failure is indicated by: index = 0
    pure function find_first_letter(string) result(idx)
       integer :: idx !< index of first letter
       character(len=*), intent(in) :: string !< string to inspect
@@ -1087,7 +1087,7 @@ contains
    
    end subroutine str_split
    
-   !> Convert a string into a single precision floating point value
+   !> Convert the first non-space string into a single precision floating point value
    !! Requires a string as input, returns a value as output.
    !! The value is unassigned in case of a conversion error.
    !! The function returns an error code to flag an error.
@@ -1120,14 +1120,16 @@ contains
    character(len=2), parameter :: SPACE_CHARS = ' '//achar(9) !< space and tab characters
    integer :: i !< loop index for scanning the string
    integer :: ifirst !< index of first character that may represent a real
+   integer :: ilast !< index of last character that may represent a real
    character(len=20) :: fmt !< format string for reading the real number
    
    ifirst = -1
+   ilast = len_trim(string)
    ierr = 0
    do i = 1, len_trim(string)
       if (ifirst < 0) then
          if (index(SPACE_CHARS, string(i:i)) > 0) then
-            ! reading spaces before value
+            ! reading spaces before float
          elseif (index(REAL_CHARS, string(i:i)) > 0) then
             ifirst = i
          else
@@ -1136,7 +1138,11 @@ contains
             return
          end if
       else
-         if (index(REAL_CHARS, string(i:i)) > 0) then
+         if (index(SPACE_CHARS, string(i:i)) > 0) then
+            ! found space after float
+            ilast = i - 1
+            exit
+         elseif (index(REAL_CHARS, string(i:i)) > 0) then
             ! reading character that may represent a real
          else
             ! unsupported character encountered after number reading started
@@ -1153,7 +1159,7 @@ contains
       ierr = 3
    else
       ! number found, try to convert
-      write (fmt, '(a,i0,a)') '(f', len_trim(string) - ifirst + 1, '.0)'
+      write (fmt, '(a,i0,a)') '(f', ilast - ifirst + 1, '.0)'
       read (string(i:len_trim(string)), fmt, iostat=ierr) value
       if (ierr /= 0) then
          ierr = 4
