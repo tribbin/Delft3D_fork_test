@@ -707,7 +707,7 @@ subroutine rdsed(lundia    ,error     ,lsal      ,ltem      ,lsed      , &
           !
           ! If the grain size is not spatially varying, read all sediment size properties.
           !
-          if (flsdia /= ' ') then
+          if (flsdia == ' ') then
              do j = 0, 100
                 seddxx = rmissval
                 if (j == 0) then
@@ -1559,14 +1559,15 @@ subroutine echosed(lundia    ,error     ,lsed      ,lsedtot   , &
           ! sand or bedload.
           !
           txtput1 = '  sed. distribution'
-          if (nseddia(l) == 0 .and. sedtyp(l) > sedpar%min_dxx_sedtyp) then
-             !
-             ! error: no sediment diameter specified!
-             !
-             errmsg = 'Missing sediment diameter data'
-             call write_error(errmsg, unit=lundia)
-             error = .true.
-             return
+          if (nseddia(l) == 0) then
+             ! this is okay for fine fractions ...
+             if (sedtyp(l) >= sedpar%min_dxx_sedtyp) then
+                ! ... but not for coarser fractions that need diameter information
+                errmsg = 'Missing sediment diameter data'
+                call write_error(errmsg, unit=lundia)
+                error = .true.
+                return
+             endif
           elseif (nseddia(l) == 1) then
              !
              ! Just one sediment diameter
