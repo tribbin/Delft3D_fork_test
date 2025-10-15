@@ -26,7 +26,7 @@
 // -------------------------------------------------------------------------------
 
 // --description------------------------------------------------------------------
-// This routine obtains the current working directorty (cwd).
+// This routine obtains the current working directory (cwd).
 // Code based on : https://stackoverflow.com/questions/30279228/is-there-an-alternative-to-getcwd-in-fortran-2003-2008.
 //--------------------------------------------------------------------------------
 

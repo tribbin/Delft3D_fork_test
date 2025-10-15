@@ -104,7 +104,7 @@ object WindowsTest : BuildType({
             executionMode = BuildStep.ExecutionMode.RUN_ON_FAILURE
             conditions { equals("copy_cases", "true") }
             workingDir = "test/deltares_testbench"
-            scriptContent = "xcopy data\\cases copy_cases\\ /E"
+            scriptContent = "xcopy data\\cases copy_cases\\ /E /I /Y"
         }
     }
 
