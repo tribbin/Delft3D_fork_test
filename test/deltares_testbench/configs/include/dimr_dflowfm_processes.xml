@@ -108,7 +108,7 @@
   </checks>
 </testCase>
 <testCase name="e02_f030_c002_frisianinlet_BLOOM" ref="dflowfm_default">
-  <path version="2025-09-03T12:21:43.464000">e02_dflowfm/f030_water_quality_processes/c002_frisianinlet_BLOOM</path>
+  <path version="2025-10-27T13:00:00.464000">e02_dflowfm/f030_water_quality_processes/c002_frisianinlet_BLOOM</path>
   <checks>
     <file name="dflowfmoutput/f34_BLOOM_map.nc" type="netCDF">
       <parameters>
