@@ -191,8 +191,8 @@ contains
             ! This timestep fractional step ?
             ! Enclose the time in an interval, rather than look for equality, as the time step
             ! may be dynamic. (The half timestep is to neutralise the rounding errors)
-            if ( time_bloom_next >  time - 0.5_dp * dts .and. &
-                 time_bloom_next <= time + 1.5_dp * dts ) then
+            if ( time_bloom_next >= time                .and. &
+                 time_bloom_next <  time + 0.5_dp * dts ) then
                 time_bloom_next = time_bloom_next + 86400.0_dp * a(ipndt)
 
                 flux = 0.0
