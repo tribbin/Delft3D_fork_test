@@ -1,8 +1,17 @@
 #!/bin/bash
 
 # Source common utilities
-script_dir="$(dirname "${BASH_SOURCE[0]}")"
-source "$script_dir/common_utilities.sh"
+# When running under SLURM, change to the submission directory first
+if [ -n "$SLURM_SUBMIT_DIR" ]; then
+    cd "$SLURM_SUBMIT_DIR"
+fi
+
+if [ -n "$SLURM_SUBMIT_DIR" ]; then
+    source "$SLURM_SUBMIT_DIR/common_utilities.sh"
+else
+    script_dir="$(dirname "${BASH_SOURCE[0]}")"
+    source "$script_dir/common_utilities.sh"
+fi
 
 submit_all_jobs() {
     local platform="$1"
