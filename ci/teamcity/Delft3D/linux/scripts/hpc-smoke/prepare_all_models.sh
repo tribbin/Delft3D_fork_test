@@ -9,12 +9,11 @@ readonly APPTAINER_FOLDER="~/apptainer"
 
 # Global variables for configuration
 declare -A MODEL_CONFIG
+declare -A PLATFORM_CONFIG
 CONFIG_FILE=""
 
 get_platform_config() {
     local platform="$1"
-    
-    declare -gA PLATFORM_CONFIG
     
     case "$platform" in
         "h7")
