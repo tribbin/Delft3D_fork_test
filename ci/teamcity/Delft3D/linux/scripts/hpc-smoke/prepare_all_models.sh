@@ -237,7 +237,7 @@ substitute_all_templates() {
     
     # Platform-specific substitutions
     substitute_template "$script_file" "{PARTITION_NAME}" "${PLATFORM_CONFIG[partition]}"
-    substitute_template "$script_file" "{MEMORY}" "${PLATFORM_CONFIG[memory]}"
+    substitute_template "$script_file" "{SBATCH_MEMORY_RESERVATION}" "${PLATFORM_CONFIG[memory]}"
     substitute_template "$script_file" "{MODULE_LOAD_SECTION}" "${PLATFORM_CONFIG[module_load]}"
     substitute_template "$script_file" "{EXECUTE_SCRIPT}" "${PLATFORM_CONFIG[execute_script]}"
     substitute_template "$script_file" "{PARTITIONING_COMMAND}" "${PLATFORM_CONFIG[partitioning_cmd_template]}"
