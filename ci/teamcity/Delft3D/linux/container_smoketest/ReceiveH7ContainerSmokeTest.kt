@@ -65,18 +65,6 @@ object LinuxReceiveH7ContainerSmokeTest : BuildType({
                 """.trimIndent()
             }
         }
-        sshExec {
-            name = "Empty smoke test folder"
-            commands = """
-                echo "remove smoke test folder"
-                rm -rf %h7_work_directory%/
-            """.trimIndent()
-            targetUrl = "h7.directory.intra"
-            authMethod = password {
-                username = "%h7_account_username%"
-                password = "%h7_account_password%"
-            }
-        }
         python {
             name = "run post-processing"
             pythonVersion = customPython { executable = "python3" }
