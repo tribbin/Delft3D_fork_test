@@ -18,11 +18,11 @@ CONFIGURATION_ID="$1"
 shift  # Remove configuration_id from arguments, leaving only parameters
 
 # Parse dependency build ID if provided
-DEPEND_ON_BUILD=""
+SUMBIT_BUILD_ID=""
 if [ "$1" = "--depend-on-build" ] && [ -n "$2" ]; then
-    DEPEND_ON_BUILD="$2"
+    SUMBIT_BUILD_ID="$2"
     shift 2  # Remove --depend-on-build and build_id from arguments
-    echo "Will create snapshot dependency on build ID: $DEPEND_ON_BUILD"
+    echo "Will create snapshot dependency on build ID: $SUMBIT_BUILD_ID"
 fi
 
 # TeamCity server configuration
@@ -72,7 +72,7 @@ PROPERTIES_XML=""
 HAS_PARAMS=false
 
 # Start properties section if we have parameters or dependencies
-if [ $# -gt 0 ] || [ -n "$DEPEND_ON_BUILD" ]; then
+if [ $# -gt 0 ] || [ -n "$SUMBIT_BUILD_ID" ]; then
     PROPERTIES_XML="<properties>"
     HAS_PARAMS=true
 fi
@@ -93,13 +93,13 @@ if [ $# -gt 0 ]; then
 fi
 
 # Add dependency parameters if specified
-if [ -n "$DEPEND_ON_BUILD" ]; then
-    echo "Fetching build type for build ID: $DEPEND_ON_BUILD"
+if [ -n "$SUMBIT_BUILD_ID" ]; then
+    echo "Fetching build type for build ID: $SUMBIT_BUILD_ID"
     
     # Get the build configuration ID from the build
     BUILD_INFO_RESPONSE=$(curl -s $AUTH_CREDENTIALS \
         -H "Accept: application/xml" \
-        "$TC_SERVER/app/rest/builds/id:$DEPEND_ON_BUILD")
+        "$TC_SERVER/app/rest/builds/id:$SUMBIT_BUILD_ID")
     
     # Extract buildType id from the response
     SOURCE_BUILD_TYPE=$(echo "$BUILD_INFO_RESPONSE" | grep -o 'buildType id="[^"]*"' | sed 's/buildType id="//;s/"//')
@@ -107,11 +107,11 @@ if [ -n "$DEPEND_ON_BUILD" ]; then
     if [ -n "$SOURCE_BUILD_TYPE" ]; then
         echo "Source build type: $SOURCE_BUILD_TYPE"
         echo "Adding dependency information as build parameters:"
-        echo "  dependency.build.id = $DEPEND_ON_BUILD"
+        echo "  dependency.build.id = $SUMBIT_BUILD_ID"
         echo "  dependency.buildtype.id = $SOURCE_BUILD_TYPE"
         
         # Add dependency parameters to properties
-        PROPERTIES_XML="$PROPERTIES_XML<property name=\"dependency.build.id\" value=\"$DEPEND_ON_BUILD\"/>"
+        PROPERTIES_XML="$PROPERTIES_XML<property name=\"dependency.build.id\" value=\"$SUMBIT_BUILD_ID\"/>"
         PROPERTIES_XML="$PROPERTIES_XML<property name=\"dependency.buildtype.id\" value=\"$SOURCE_BUILD_TYPE\"/>"
         
         if [ "$HAS_PARAMS" = false ]; then
@@ -119,7 +119,7 @@ if [ -n "$DEPEND_ON_BUILD" ]; then
             HAS_PARAMS=true
         fi
     else
-        echo "Warning: Could not determine source build type for build ID $DEPEND_ON_BUILD"
+        echo "Warning: Could not determine source build type for build ID $SUMBIT_BUILD_ID"
     fi
 fi
 
@@ -153,8 +153,8 @@ if [ $# -gt 0 ]; then
 fi
 
 # Build JSON payload
-if [ -n "$DEPEND_ON_BUILD" ]; then
-    echo "Creating JSON payload with snapshot dependency on build ID: $DEPEND_ON_BUILD"
+if [ -n "$SUMBIT_BUILD_ID" ]; then
+    echo "Creating JSON payload with snapshot dependency on build ID: $SUMBIT_BUILD_ID"
     
     # Create JSON payload with snapshot dependency
     JSON_PAYLOAD="{
@@ -164,7 +164,7 @@ if [ -n "$DEPEND_ON_BUILD" ]; then
             \"count\": 1,
             \"build\": [
                 {
-                    \"id\": $DEPEND_ON_BUILD,
+                    \"id\": $SUMBIT_BUILD_ID,
                     \"buildTypeId\": \"$SOURCE_BUILD_TYPE\"
                 }
             ]
@@ -214,7 +214,7 @@ if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 201 ]; then
     if [ -n "$BUILD_ID" ]; then
         echo "Build ID: $BUILD_ID"
         echo "Build URL: $TC_SERVER/viewLog.html?buildId=$BUILD_ID"
-        echo "Dependency on build: $DEPEND_ON_BUILD"
+        echo "Dependency on build: $SUMBIT_BUILD_ID"
     fi
 else
     echo "✗ Failed to trigger build. HTTP Status: $HTTP_STATUS"
