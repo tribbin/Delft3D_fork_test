@@ -10,15 +10,6 @@ PAGE_SIZE = 100  # Maximum page size for Harbor API
 
 
 @dataclass(order=True)
-class YearVersion:
-    """Represents a year.version tag (e.g., 2026.01, release-2025.02)."""
-
-    year: int
-    version: int
-    tag: str
-
-
-@dataclass(order=True)
 class SemVer:
     """Represents a semantic version tag (e.g., 2.30.06-development)."""
 
@@ -28,36 +19,9 @@ class SemVer:
     tag: str
 
 
-def parse_year_version_tags(tags: list[str]) -> list[YearVersion]:
-    """
-    Parse tags matching year.version format (e.g., 2026.01, release-2025.02).
-
-    Args:
-        tags: List of tag strings
-
-    Returns
-    -------
-        List of YearVersion objects sorted by version descending
-    """
-    year_version_pattern = re.compile(r"^(\d{4})\.(\d{2})(?:-release)?$")
-    year_versions = []
-
-    for tag in tags:
-        # Handle both "release-YYYY.MM" and "YYYY.MM-release" formats
-        clean_tag = tag.replace("release-", "").replace("-release", "")
-        match = year_version_pattern.match(clean_tag)
-        if match:
-            year = int(match.group(1))
-            version = int(match.group(2))
-            year_versions.append(YearVersion(year=year, version=version, tag=tag))
-
-    year_versions.sort(reverse=True)
-    return year_versions
-
-
 def parse_semver_tags(tags: list[str]) -> list[SemVer]:
     """
-    Parse tags matching semantic versioning format (e.g., 2.30.06-development).
+    Parse tags matching semantic versioning format (e.g., 2.30.06-development, weekly-2.29.23).
 
     Args:
         tags: List of tag strings
@@ -66,7 +30,7 @@ def parse_semver_tags(tags: list[str]) -> list[SemVer]:
     -------
         List of SemVer objects sorted by version descending
     """
-    semver_pattern = re.compile(r"^(\d+)\.(\d+)\.(\d+)(?:-[\w]+)?$")
+    semver_pattern = re.compile(r"^(?:[\w]+-)?(\d+)\.(\d+)\.(\d+)(?:-[\w]+)?$")
     semvers = []
 
     for tag in tags:
@@ -149,6 +113,12 @@ def parse_arguments() -> argparse.Namespace:
         required=True,
         help="Harbor API password",
     )
+    parser.add_argument(
+        "--new-tag",
+        type=str,
+        required=True,
+        help="New tag to compare against latest versions",
+    )
     return parser.parse_args()
 
 
@@ -164,37 +134,41 @@ def main() -> None:
 
     print(f"\nTotal tags: {len(all_tags)}")
 
-    # Find latest versions
-    year_versions = parse_year_version_tags(all_tags)
+    # Find latest semver version
     semvers = parse_semver_tags(all_tags)
 
-    # Create latest_versions dictionary
-    latest_versions = {
-        "latest_year_version": year_versions[0].tag if year_versions else None,
-        "latest_semver": semvers[0].tag if semvers else None,
-        "all_year_versions": [yv.tag for yv in year_versions],
-        "all_semvers": [sv.tag for sv in semvers],
-    }
+    latest_semver = semvers[0].tag if semvers else None
 
     print("\n" + "=" * 60)
-    print("LATEST VERSIONS")
+    print("LATEST VERSION")
     print("=" * 60)
-    print(f"Latest Year.Version tag: {latest_versions['latest_year_version']}")
-    print(f"Latest Semver tag:       {latest_versions['latest_semver']}")
-
-    print("\nAll Year.Version tags found:")
-    if latest_versions["all_year_versions"]:
-        for tag in latest_versions["all_year_versions"]:
-            print(f"  - {tag}")
-    else:
-        print("  None found")
+    print(f"Latest Semver tag: {latest_semver}")
 
     print("\nAll Semver tags found:")
-    if latest_versions["all_semvers"]:
-        for tag in latest_versions["all_semvers"]:
+    if semvers:
+        for tag in [sv.tag for sv in semvers]:
             print(f"  - {tag}")
     else:
         print("  None found")
+
+    # Check if new_tag matches or is newer than latest semver and set TeamCity variable
+    # Parse the new tag to compare versions
+    new_tag_semvers = parse_semver_tags([args.new_tag])
+    is_latest = False
+
+    if new_tag_semvers and semvers:
+        # Compare: is_latest if new_tag >= latest semver
+        is_latest = new_tag_semvers[0] >= semvers[0]
+    elif new_tag_semvers:
+        # No existing semvers, so new tag is the latest
+        is_latest = True
+
+    print(f"New tag: {args.new_tag}")
+    print(f"Latest semver: {latest_semver}")
+    print(f"Is latest development: {is_latest}")
+
+    # Set TeamCity service message
+    print(f"\n##teamcity[setParameter name='is_latest_development' value='{str(is_latest).lower()}']")
 
 
 if __name__ == "__main__":

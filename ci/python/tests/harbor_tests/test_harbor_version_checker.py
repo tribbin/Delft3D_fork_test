@@ -4,100 +4,14 @@ from pytest_mock import MockerFixture
 
 from ci_tools.harbor.harbor_version_checker import (
     SemVer,
-    YearVersion,
     fetch_all_tags,
     parse_semver_tags,
-    parse_year_version_tags,
 )
-
-
-class TestParseYearVersionTags:
-    @pytest.mark.parametrize(
-        ("tags", "expected_count", "expected_first"),
-        [
-            pytest.param(
-                [
-                    "2.30.06-development",
-                    "development",
-                    "2.30.05-development",
-                    "2.30.04-development",
-                    "2.30.03-development",
-                    "2026.01-release",
-                    "2.30.02-development",
-                    "2.30.01-development",
-                    "2.30.00-development",
-                    "2.29.28-release",
-                    "2.29.27-release",
-                    "2.29.26-release",
-                    "2.29.25-release",
-                    "weekly-2.29.23",
-                    "weekly-2.29.22",
-                    "weekly-2.29.21",
-                    "weekly-2.29.20",
-                    "weekly-2.29.19",
-                    "weekly-2.29.18",
-                    "weekly-2.29.17",
-                    "weekly-2.29.16",
-                    "weekly-2.29.15",
-                    "weekly-2.29.14",
-                    "release-2025.02",
-                    "alma9-release-2025.01",
-                    "alma8-release-2025.01",
-                    "release-2025.01",
-                    "alma8-release-2024.03",
-                    "release-2024.03",
-                    "alma9-release-2024.03",
-                    "alma8-release-2024.02",
-                    "release-2024.02",
-                    "alma9-release-2024.02",
-                    "centos7-release-2024.01",
-                    "centos7",
-                ],
-                35,
-                YearVersion(2026, 1, "2026.01"),
-                id="basic_year_versions",
-            ),
-            pytest.param(
-                ["2.30.06-development", "invalid", "weekly-2.29.23"],
-                0,
-                None,
-                id="no_matching_tags",
-            ),
-            pytest.param(
-                [],
-                0,
-                None,
-                id="empty_list",
-            ),
-        ],
-    )
-    def test_parse_year_version_tags(
-        self,
-        tags: list[str],
-        expected_count: int,
-        expected_first: YearVersion | None,
-    ) -> None:
-        result = parse_year_version_tags(tags)
-        assert len(result) == expected_count
-        if expected_first:
-            assert result[0] == expected_first
-
-    def test_year_version_ignores_non_matching(self) -> None:
-        tags = [
-            "2026.01",
-            "2.30.06-development",
-            "weekly-2.29.23",
-            "2025.02-release",
-        ]
-        result = parse_year_version_tags(tags)
-        assert len(result) == 2
-        assert result[0].tag == "2026.01"
-        assert result[1].tag == "2025.02-release"
 
 
 class TestParseSemverTags:
     @pytest.mark.parametrize(
-        ("tags", "expected_count", "expected_first"),
+        ("tags", "expected_valid_semver_count", "expected_first"),
         [
             pytest.param(
                 [
@@ -137,8 +51,8 @@ class TestParseSemverTags:
                     "centos7-release-2024.01",
                     "centos7",
                 ],
-                35,
-                SemVer(2, 30, 6, "2.30.06"),
+                21,
+                SemVer(2, 30, 6, "2.30.06-development"),
                 id="basic_semver",
             ),
             pytest.param(
@@ -158,11 +72,11 @@ class TestParseSemverTags:
     def test_parse_semver_tags(
         self,
         tags: list[str],
-        expected_count: int,
+        expected_valid_semver_count: int,
         expected_first: SemVer | None,
     ) -> None:
         result = parse_semver_tags(tags)
-        assert len(result) == expected_count
+        assert len(result) == expected_valid_semver_count
         if expected_first:
             assert result[0] == expected_first
 
@@ -198,20 +112,14 @@ class TestParseSemverTags:
             "2.30.05",
         ]
         result = parse_semver_tags(tags)
-        assert len(result) == 2
+        assert len(result) == 3
         assert result[0].tag == "2.30.06-development"
         assert result[1].tag == "2.30.05"
+        assert result[2].tag == "weekly-2.29.23"
 
 
 class TestDataClassOrdering:
-    def test_year_version_comparison(self) -> None:
-        v1 = YearVersion(2026, 1, "2026.01")
-        v2 = YearVersion(2025, 12, "2025.12")
-        v3 = YearVersion(2026, 2, "2026.02")
-
-        assert v1 > v2  # 2026.01 > 2025.12
-        assert v3 > v1  # 2026.02 > 2026.01
-        assert v3 > v2  # 2026.02 > 2025.12
+    """Test cases for dataclass comparison operators."""
 
     def test_semver_comparison(self) -> None:
         v1 = SemVer(2, 30, 6, "2.30.06")
