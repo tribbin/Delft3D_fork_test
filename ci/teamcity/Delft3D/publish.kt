@@ -176,7 +176,7 @@ object Publish : BuildType({
                     "%destination_image_specific%"
                 """.trimIndent()
             }
-            enabled = "%is_latest_development%" == "true"
+            enabled = "%is_latest_development%".equals("true", ignoreCase = true)
             executionMode = BuildStep.ExecutionMode.ALWAYS
         }
         script {
