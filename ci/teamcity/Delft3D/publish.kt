@@ -65,6 +65,7 @@ object Publish : BuildType({
         param("source_image", "containers.deltares.nl/delft3d-dev/delft3d-runtime-container:alma10-%dep.${LinuxBuild.id}.product%-%build.vcs.number%")
         param("new_tag", "%release_version%-%release_type%")
         param("destination_image_specific", "containers.deltares.nl/delft3d/%brand%:%new_tag%")
+        param("destination_image_generic", "containers.deltares.nl/delft3d/%brand%:%release_type%")
     }
 
     if (DslContext.getParameter("enable_release_publisher").lowercase() == "true") {
@@ -171,12 +172,12 @@ object Publish : BuildType({
         }
         dockerCommand {
             conditions {
-                doesNotContain("is_latest_development", "true")
+                equals("is_latest_development", "true")
             }
             name = "Push rolling development tag"
             commandType = push {
                 namesAndTags = """
-                    "%destination_image_specific%"
+                    "%destination_image_generic%"
                 """.trimIndent()
             }
             executionMode = BuildStep.ExecutionMode.ALWAYS
