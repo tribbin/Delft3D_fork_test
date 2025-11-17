@@ -170,13 +170,15 @@ object Publish : BuildType({
             }
         }
         dockerCommand {
+            conditions {
+                doesNotContain("is_latest_development", "true")
+            }
             name = "Push rolling development tag"
             commandType = push {
                 namesAndTags = """
                     "%destination_image_specific%"
                 """.trimIndent()
             }
-            enabled = "%is_latest_development%".equals("true", ignoreCase = true)
             executionMode = BuildStep.ExecutionMode.ALWAYS
         }
         script {
