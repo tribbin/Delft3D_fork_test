@@ -3,7 +3,7 @@
   <documentation>
     <fileVersion>1.2</fileVersion>
     <createdBy>Deltares, Coupling Team</createdBy>
-    <creationDate>2025-11-21T12:17:51.8755957Z</creationDate>
+    <creationDate>2025-11-21T13:36:58.5425254Z</creationDate>
   </documentation>
   <!--<control>
           The <control> specifies the workflow of the deltaresHydro executable.
@@ -30,9 +30,9 @@
       For each component/coupler there will be a corresponding component/coupler
       specification block defined below.-->
   <control>
-    <start name="myNameDFlowFM" />
+    <start name="DFlowFM" />
   </control>
-  <component name="myNameDFlowFM">
+  <component name="DFlowFM">
     <library>dflowfm</library>
     <process>0</process>
     <mpiCommunicator>DFM_COMM_DFMWORLD</mpiCommunicator>
