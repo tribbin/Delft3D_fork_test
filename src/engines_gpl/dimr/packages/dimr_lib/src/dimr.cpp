@@ -871,6 +871,7 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
             // Sync all partitions to execute the same component
             // This ensures that all flow calculations are finished before a wave calculation is started
             if (use_mpi) {
+              log->Write(INFO, my_rank, "At barrier, i = %d.\n", i); // [DEBUG]
                 int ierr = MPI_Barrier(MPI_COMM_WORLD);
             }
 
@@ -911,6 +912,7 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
             }
             else {
                 // CT_STARTGROUP
+                log->Write(INFO, my_rank, "CT_STARTGROUP i = %d\n", i); // [DEBUG]
                 if (*currentTime >= cb->subBlocks[i].tNext) {
                     // Yes, it's time to execute all childBlocks of this subBlock
                     for (int j = 0; j < cb->subBlocks[i].numSubBlocks; j++) {
@@ -963,6 +965,7 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                         }
                         else
                         {
+                            log->Write(INFO, my_rank, "Coupling branch i,j = %d,%d.\n", i, j); // [DEBUG]
                             // Coupler
                             dimr_coupler* thisCoupler = cb->subBlocks[i].subBlocks[j].unit.coupler;
                             double* transferValuePtr;
@@ -979,58 +982,65 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                                 nc_put_var1_double(ncid, thisCoupler->logger->netcdfReferences->timeVar, index, currentTime);
                             }
 
+                            log->Write(INFO, my_rank, "numItems = %d\n", thisCoupler->numItems); // [DEBUG]
                             for (int k = 0; k < thisCoupler->numItems; k++) {
-                                log->Write(ALL, my_rank, "    %s -> %s (%d)", thisCoupler->items[k].sourceName, thisCoupler->items[k].targetName, timeIndexCounter);
+                              log->Write(INFO, my_rank, "    %s -> %s (%d)", thisCoupler->items[k].sourceName, thisCoupler->items[k].targetName, timeIndexCounter);
 
-                                // Getting and Setting of data is split to enable
-                                // transferring data, possibly inbetween different partitions
-                                // TODO: This does not work for arrays (yet), only scalar double
-                                //
-                                // Getting data:
-                                // "transfer" is the value on this rank. Set it to a very big negative value
-                                double transfer = -999000.0;
+                              // Getting and Setting of data is split to enable
+                              // transferring data, possibly inbetween different partitions
+                              // TODO: This does not work for arrays (yet), only scalar double
+                              //
+                              // Getting data:
+                              // "transfer" is the value on this rank. Set it to a very big negative value
+                              double transfer = -999000.0;
 
-                                // addresses eventually updated
-                                // only when the source component is on this rank
-                                // Wanda will drop the value in "transfer" on calling dllGetVar
-                                if (thisCoupler->sourceComponent->onThisRank) {
-                                    getAddress(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->sourceComponent->dllGetVar, &(thisCoupler->items[k].sourceVarPtr),
-                                        thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, transfer);
-                                }
-                                // Use sourceVarPtr to fill "transfer" and sent it to all ranks,
-                                // resulting in transferValuePtr pointing to the correct value on all ranks
-                                transferValuePtr = send(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->items[k].sourceVarPtr,
-                                    thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, &transfer);
+                              // addresses eventually updated
+                              // only when the source component is on this rank
+                              // Wanda will drop the value in "transfer" on calling dllGetVar
+                              if (thisCoupler->sourceComponent->onThisRank) {
+                                getAddress(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->sourceComponent->dllGetVar, &(thisCoupler->items[k].sourceVarPtr),
+                                  thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, transfer);
+                              }
+                              // Use sourceVarPtr to fill "transfer" and sent it to all ranks,
+                              // resulting in transferValuePtr pointing to the correct value on all ranks
+                              transferValuePtr = send(thisCoupler->items[k].sourceName, thisCoupler->sourceComponent->type, thisCoupler->items[k].sourceVarPtr,
+                                thisCoupler->sourceComponent->processes, thisCoupler->sourceComponent->numProcesses, &transfer);
 
-                                // Optional TODO: assuming one source(partition):
-                                //    if there is only one target (partition), and all partitions can act as source partition:
-                                //        choose the target partition to act as source partition
-                                //        no MPI_Bcast needed
-                                //
-                                if (thisCoupler->itemTypes[k] == ITEM_TYPE_SCALAR)
-                                {
-                                    receive(thisCoupler->items[k].targetName,
-                                         thisCoupler->targetComponent->type,
-                                         thisCoupler->targetComponent->dllSetVar,
-                                         thisCoupler->targetComponent->dllGetVar,
-                                         thisCoupler->items[k].targetVarPtr,
-                                         thisCoupler->targetComponent->processes,
-                                         thisCoupler->targetComponent->numProcesses,
-                                         thisCoupler->items[k].targetProcess,
-                                         transferValuePtr);
-                                } else {
-                                    receive_ptr (thisCoupler->items[k].targetName,
-                                         thisCoupler->items[k].sourceName,
-                                         thisCoupler->targetComponent->type,
-                                         thisCoupler->targetComponent->dllSetVar,
-                                         thisCoupler->targetComponent->dllGetVar,
-                                         thisCoupler->sourceComponent->dllGetVarShape,
-                                         thisCoupler->items[k].targetVarPtr,
-                                         thisCoupler->targetComponent->processes,
-                                         thisCoupler->targetComponent->numProcesses,
-                                         thisCoupler->items[k].targetProcess,
-                                         thisCoupler->items[k].sourceVarPtr);
-                                }
+                              // Optional TODO: assuming one source(partition):
+                              //    if there is only one target (partition), and all partitions can act as source partition:
+                              //        choose the target partition to act as source partition
+                              //        no MPI_Bcast needed
+                              //
+                              if (thisCoupler->itemTypes[k] == ITEM_TYPE_SCALAR)
+                              {
+                                log->Write(INFO, my_rank, "Receive scalar\n"); // [DEBUG]
+                                receive(thisCoupler->items[k].targetName,
+                                  thisCoupler->targetComponent->type,
+                                  thisCoupler->targetComponent->dllSetVar,
+                                  thisCoupler->targetComponent->dllGetVar,
+                                  thisCoupler->items[k].targetVarPtr,
+                                  thisCoupler->targetComponent->processes,
+                                  thisCoupler->targetComponent->numProcesses,
+                                  thisCoupler->items[k].targetProcess,
+                                  transferValuePtr);
+                              }
+                              else if (my_rank == 0) {
+                                log->Write(INFO, my_rank, "Receive pointer\n"); // [DEBUG]
+                                receive_ptr(thisCoupler->items[k].targetName,
+                                  thisCoupler->items[k].sourceName,
+                                  thisCoupler->targetComponent->type,
+                                  thisCoupler->targetComponent->dllSetVar,
+                                  thisCoupler->targetComponent->dllGetVar,
+                                  thisCoupler->sourceComponent->dllGetVarShape,
+                                  thisCoupler->items[k].targetVarPtr,
+                                  thisCoupler->targetComponent->processes,
+                                  thisCoupler->targetComponent->numProcesses,
+                                  thisCoupler->items[k].targetProcess,
+                                  thisCoupler->items[k].sourceVarPtr);
+                              }
+                              else {
+                                log->Write(INFO, my_rank, "Skipping!\n"); // [DEBUG]
+                              }
 
                                 if (thisCoupler->logger != NULL && my_rank == 0)
                                 {
