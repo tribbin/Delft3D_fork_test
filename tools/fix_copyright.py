@@ -54,7 +54,7 @@ regex_patterns = [
     r"(?P<before>!\s*\(c\)\s*Copyright\s+)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>\s+Deltares)",
-    # !  Copyright (C) 2026 Geert Prinsen  WL|Deltares (not year ranges)
+    # !  Copyright (C) 2026 Geert Prinsen  WL|Deltares
     r"(?P<before>!\s*Copyright\s*\(C\)\s*)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>\s+.*Deltares)(?!.*\d{4})",
@@ -89,6 +89,10 @@ regex_patterns = [
     r"(?P<before>(?:!\s*)?Copyright\s*©\s*)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>,\s*Rijkswaterstaat,\s*All\s*Rights\s*Reserved\.)",
+    # C define with copyright: #define LEGAL_COPYRIGHT "Copyright \xA9 2023-2026"
+    r"(?P<before>#define\s+LEGAL_COPYRIGHT\s+\"Copyright\s*\\xA9\s*\d{4}-)(?P<year>(?!"
+    + str(year)
+    + r")\d{4})(?P<after>\")",
 ]
 
 # Compile all regex patterns
