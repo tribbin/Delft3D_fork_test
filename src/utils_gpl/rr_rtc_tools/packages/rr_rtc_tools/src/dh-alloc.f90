@@ -29,7 +29,7 @@
 !
 !  dh-alloc.f90  Subroutines for allocating and initialisation of variables (arrays)
 !
-!  Copyright (C) 2025 Geert Prinsen  WL|Deltares
+!  Copyright (C) 2026 Geert Prinsen  WL|Deltares
 !
 !  General information:
 !  This module contains a number of auxilary subroutines that can be

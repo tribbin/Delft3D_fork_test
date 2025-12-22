@@ -29,7 +29,7 @@
 !
 !  readlib.f90  Subroutines for flexible reading from file; = module version  of old Readlib.Lib
 !
-!  Copyright (C) 2025 Geert Prinsen WL|Deltares
+!  Copyright (C) 2026 Geert Prinsen WL|Deltares
 !
 !  General information:
 !  This module contains a number of auxilary subroutines that can be
