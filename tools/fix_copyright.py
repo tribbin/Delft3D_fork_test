@@ -28,11 +28,11 @@ regex_patterns = [
     r"(?P<before>VALUE\s+\"LegalCopyright\",\s*\"Copyright\s*©\s*\d{4}-)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>\\0\")",
-    # C# AssemblyInfo: [assembly: AssemblyCopyright("Copyright © Deltares 2025")]
+    # C# AssemblyInfo: [assembly: AssemblyCopyright("Copyright © Deltares 2026")]
     r"(?P<before>\[assembly:\s*AssemblyCopyright\(\"Copyright\s*©\s*Deltares\s+)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>\"\)\])",
-    # CMake: set(CPACK_PACKAGE_VENDOR "Deltares 2025")
+    # CMake: set(CPACK_PACKAGE_VENDOR "Deltares 2026")
     r"(?P<before>set\(CPACK_PACKAGE_VENDOR\s+\"Deltares\s+)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>\"\))",
