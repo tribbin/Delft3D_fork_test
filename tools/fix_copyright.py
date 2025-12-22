@@ -20,7 +20,7 @@ regex_patterns = [
     r"(?P<before>(?:Copyright|\(C\)|CPACK_PACKAGE_VENDOR).*Deltares.*[-\W+])(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>[^-\/].*)",
-    # Original patterns: Copyright (C) 2025 Deltares
+    # Original patterns: Copyright (C) 2026 Deltares
     r"(?P<before>(?:Copyright|\(C\)|CPACK_PACKAGE_VENDOR).*[-\W+])(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>[^-\/].*Deltares.*)",
@@ -50,15 +50,15 @@ regex_patterns = [
     + r")\d{4})(?P<after>\s+Deltares)",
     # Year ranges ending with old year: 2011-2025, 2012-2025, etc.
     r"(?P<before>\d{4}-)(?P<year>(?!" + str(year) + r")\d{4})(?P<after>.*Deltares)",
-    # !    (c) Copyright 2025 Deltares
+    # !    (c) Copyright 2026 Deltares
     r"(?P<before>!\s*\(c\)\s*Copyright\s+)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>\s+Deltares)",
-    # !  Copyright (C) 2025 Geert Prinsen  WL|Deltares
+    # !  Copyright (C) 2026 Geert Prinsen  WL|Deltares
     r"(?P<before>!\s*Copyright\s*\(C\)\s*)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>.*Deltares)",
-    # !     (C) 2025 Deltares
+    # !     (C) 2026 Deltares
     r"(?P<before>!\s*\(C\)\s*)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>\s+Deltares)",
@@ -66,7 +66,7 @@ regex_patterns = [
     r"(?P<before>#\s*\(c\)\s*Deltares,\s*)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>)",
-    # Copyright (C) 2007-2025 UNESCO-IHE, Deltares
+    # Copyright (C) 2007-2026 UNESCO-IHE, Deltares
     r"(?P<before>Copyright\s*\(C\)\s*\d{4}-)(?P<year>(?!"
     + str(year)
     + r")\d{4})(?P<after>.*Deltares)",
@@ -77,7 +77,18 @@ regex_patterns = [
     # Fortran character parameter: "Copyright (C) "//company//", 2023-2026"
     r"(?P<before>\"Copyright\s*\(C\)\s*\"//[^/]+//\",\s*\d{4}-)(?P<year>(?!"
     + str(year)
-    + r")\d{4})(?P<after>\")",
+    + r")\d{4})(?P<after>\")",  # Asterisk comments: *  Copyright (C) 2026, Deltares
+    r"(?P<before>\*\s*Copyright\s*\(C\)\s*)(?P<year>(?!"
+    + str(year)
+    + r")\d{4})(?P<after>[,\s]+.*Deltares)",
+    # Fortran write statements with copyright: '    Copyright (c) 2026              DELTARES        '
+    r"(?P<before>'[^']*Copyright\s*\(c\)\s*)(?P<year>(?!"
+    + str(year)
+    + r")\d{4})(?P<after>[^']*DELTARES[^']*')",
+    # UNESCO-IHE extended format: ! Copyright (C) 2007-2026 UNESCO-IHE, Deltares and Delft University !
+    r"(?P<before>!\s*Copyright\s*\(C\)\s*\d{4}-)(?P<year>(?!"
+    + str(year)
+    + r")\d{4})(?P<after>\s+UNESCO-IHE.*Deltares.*!)",
 ]
 
 # Compile all regex patterns
