@@ -62,6 +62,9 @@ class HandlerFactory(ABC):
         if handler_type == HandlerType.MINIO:
             logger.debug(f"using MinIO handler for {to_path}")
             handler = MinIOHandler()
+        if handler_type == HandlerType.DVC:
+            logger.debug(f"using DVC handler for {to_path}")
+            handler = DvcHandler()
         if handler_type == HandlerType.NONE:
             raise AttributeError("upload :: no type specified")
 
