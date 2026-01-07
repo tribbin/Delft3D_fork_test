@@ -24,10 +24,10 @@ from src.config.test_case_path import TestCasePath
 from src.config.types.file_type import FileType
 from src.config.types.path_type import PathType
 from src.config.types.presence_type import PresenceType
-from src.suite.test_bench_settings import TestBenchSettings
 from src.utils.logging.i_logger import ILogger
 from src.utils.logging.i_main_logger import IMainLogger
 from src.utils.logging.test_loggers.test_result_type import TestResultType
+from src.suite.command_line_settings import CommandLineSettings
 
 
 class XmlConfig:
@@ -64,12 +64,12 @@ class XmlConfigParser:
         self.__program_configs = []
         self.__default_cases = []
 
-    def load(self, settings: TestBenchSettings, logger: IMainLogger) -> XmlConfig:
+    def load(self, settings: CommandLineSettings, logger: IMainLogger) -> XmlConfig:
         """Load the config file.
 
         Parameters
         ----------
-        settings : TestBenchSettings
+        settings : CommandLineSettings
             The test_bench settings.
         logger : IMainLogger
             The logger class.
@@ -102,15 +102,18 @@ class XmlConfigParser:
         return xml_tree
 
     @classmethod
-    def filter_configs(cls, configs: List[TestCaseConfig], args: str, logger: ILogger) -> List[TestCaseConfig]:
+    def filter_configs(cls, configs: List[TestCaseConfig], filter: str, logger: ILogger) -> List[TestCaseConfig]:
         """Check which filters to apply to configuration."""
         filtered: List[TestCaseConfig] = []
-        filters = args.split(":")
+        filters = filter.split(":")
         program_filter = None
         test_case_filter = None
         max_runtime = None
         operator = None
         start_at_filter = None
+
+        if filter == "":
+            return configs
 
         for filter in filters:
             con, arg = filter.split("=")
@@ -189,7 +192,7 @@ class XmlConfigParser:
             if "{http://www.w3.org/XML/1998/namespace}base" in elem.attrib:
                 del elem.attrib["{http://www.w3.org/XML/1998/namespace}base"]
 
-    def __validate__(self, settings: TestBenchSettings) -> None:
+    def __validate__(self, settings: CommandLineSettings) -> None:
         """Validate Xml file format."""
         xmlschema_doc = etree.parse("configs/xsd/deltaresTestbench.xsd")
         xmlschema = etree.XMLSchema(xmlschema_doc)
@@ -199,7 +202,7 @@ class XmlConfigParser:
         self.__remove_xml_base(xml_doc)
         xmlschema.assertValid(xml_doc)
 
-    def __parse__(self, logger: IMainLogger, settings: TestBenchSettings) -> XmlConfig:
+    def __parse__(self, logger: IMainLogger, settings: CommandLineSettings) -> XmlConfig:
         """Parse the xml file."""
         xml_config = XmlConfig()
         xml_tree = self.__maketree__(settings.config_file)
@@ -211,7 +214,7 @@ class XmlConfigParser:
         return xml_config
 
     def __parse_testcases(
-        self, logger: IMainLogger, xml_doc: Dict[str, Any], settings: TestBenchSettings
+        self, logger: IMainLogger, xml_doc: Dict[str, Any], settings: CommandLineSettings
     ) -> List[TestCaseConfig]:
         """Parse test cases from xml."""
         self.__parse_default_cases(xml_doc, settings)
@@ -233,7 +236,7 @@ class XmlConfigParser:
                     raise
         return testcases
 
-    def __parse_default_cases(self, xml_doc: Dict[str, Any], settings: TestBenchSettings) -> None:
+    def __parse_default_cases(self, xml_doc: Dict[str, Any], settings: CommandLineSettings) -> None:
         """Parse default test cases from xml."""
         for default_cases in self.__loop(xml_doc, "defaultTestCases"):
             for case in default_cases["testCase"]:
@@ -242,7 +245,7 @@ class XmlConfigParser:
                     self.__default_cases.append(testcase)
 
     def __parse_programs(
-        self, xml_doc: Dict[str, Any], root_name: str, settings: TestBenchSettings
+        self, xml_doc: Dict[str, Any], root_name: str, settings: CommandLineSettings
     ) -> List[ProgramConfig]:
         """Parse programs from xml."""
         for programs in self.__loop(xml_doc, "programs"):
@@ -253,7 +256,7 @@ class XmlConfigParser:
                         self.__program_configs.append(program_instance)
         return self.__program_configs
 
-    def __parse_config_tags(self, xml_doc: Dict[str, Any], settings: TestBenchSettings) -> LocalPaths:
+    def __parse_config_tags(self, xml_doc: Dict[str, Any], settings: CommandLineSettings) -> LocalPaths:
         """Parse configuration tags from xml."""
         config_tags = xml_doc["config"]
         local_paths = LocalPaths()
@@ -264,7 +267,7 @@ class XmlConfigParser:
             self.__locations = list(self.__parse_locations(config_tag, settings))
         return local_paths
 
-    def __parse_locations(self, config_tag: Dict[str, Any], settings: TestBenchSettings) -> Iterable[Location]:
+    def __parse_locations(self, config_tag: Dict[str, Any], settings: CommandLineSettings) -> Iterable[Location]:
         for locations_tags in self.__loop(config_tag, "locations"):
             for location_tag in locations_tags["location"]:
                 yield self.__fill_location__(location_tag, settings)
@@ -291,7 +294,7 @@ class XmlConfigParser:
                 new_credentials.password = str(credential_tag["password"][0]["txt"])
                 yield new_credentials
 
-    def __fill_location__(self, element: Dict[str, Any], settings: TestBenchSettings) -> Location:
+    def __fill_location__(self, element: Dict[str, Any], settings: CommandLineSettings) -> Location:
         """Fill location from xml element."""
         if "ref" not in element and "name" not in element:
             return None
@@ -352,7 +355,7 @@ class XmlConfigParser:
                 new_location.to_path = str(element["to"][0]["txt"])
         return new_location
 
-    def __replace_handle_bars(self, new_location: Location, root_text: str, settings: TestBenchSettings) -> str:
+    def __replace_handle_bars(self, new_location: Location, root_text: str, settings: CommandLineSettings) -> str:
         """Replace handlebars in the root text with actual values."""
         server_base_url = settings.server_base_url
         directory_with_handlebar = root_text
@@ -368,7 +371,7 @@ class XmlConfigParser:
         new_location.root = new_location.root.replace("{server_base_url}", server_base_url)
         return new_location.root
 
-    def __fill_program__(self, element: Dict[str, Any], settings: TestBenchSettings) -> Optional[ProgramConfig]:
+    def __fill_program__(self, element: Dict[str, Any], settings: CommandLineSettings) -> Optional[ProgramConfig]:
         """Fill program from xml element."""
         p = ProgramConfig()
         if "ignore" in element:  # ignore program for this case [RL666]
@@ -529,7 +532,7 @@ class XmlConfigParser:
         fc.skip_lines = skiplines
         return fc
 
-    def __fill_case__(self, element: Dict[str, Any], settings: TestBenchSettings) -> Optional[TestCaseConfig]:
+    def __fill_case__(self, element: Dict[str, Any], settings: CommandLineSettings) -> Optional[TestCaseConfig]:
         """Fill cases (including default)."""
         if "ref" not in element:
             test_case = TestCaseConfig()

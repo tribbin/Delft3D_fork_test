@@ -19,6 +19,7 @@ from src.utils.handlers.resolve_handler import ResolveHandler
 from src.utils.logging.i_logger import ILogger
 from src.utils.paths import Paths
 from src.utils.unzipper import Unzipper
+from src.utils.handlers.dvc_handler import DvcHandler
 
 
 class HandlerFactory(ABC):

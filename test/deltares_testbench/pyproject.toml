@@ -124,7 +124,12 @@ addopts = """\
     --doctest-modules \
     --verbose \
     --junitxml=logs/pytest_results.xml \
-    -W error\
+    -W error \
+    --ignore=conversion \
+    --ignore=conversion-sobek \
+    --ignore=src \
+    --ignore=thirdparty \
+    --ignore=tools \
 """
 testpaths = ["test", "tools/minio/utils.py"]
 junit_family = "xunit2"

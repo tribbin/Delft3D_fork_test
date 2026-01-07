@@ -15,6 +15,7 @@ from src.utils.logging.console_logger import ConsoleLogger
 from src.utils.logging.log_level import LogLevel
 from src.utils.logging.test_loggers.test_result_type import TestResultType
 from src.utils.xml_config_parser import XmlConfigParser
+from src.suite.command_line_settings import CommandLineSettings
 from test.helpers.xml_config_helper import XmlConfigHelper
 
 
@@ -32,7 +33,7 @@ class TestXmlConfigParser:
         # Arrange
         content = XmlConfigHelper.make_test_case_config(test_case_path=TestCasePath("test/case/path"))
         parser = XmlConfigParser()
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = content
         settings.server_base_url = "s3://dsc-testbench"
         settings.credentials = Credentials()
@@ -57,7 +58,7 @@ class TestXmlConfigParser:
             test_case_path=TestCasePath("test/case/path", version),
         )
         parser = XmlConfigParser()
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = content
         settings.server_base_url = "s3://dsc-testbench"
         settings.credentials = Credentials()
@@ -81,7 +82,7 @@ class TestXmlConfigParser:
             dependency=Dependency(local_dir="local/dir", case_path="case/dir"),
         )
         parser = XmlConfigParser()
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = content
         settings.server_base_url = "s3://dsc-testbench"
         settings.credentials = Credentials()
@@ -107,7 +108,7 @@ class TestXmlConfigParser:
             test_case_path=TestCasePath("test/case/path", version),
         )
         parser = XmlConfigParser()
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = content
         settings.server_base_url = "https://abcdefg"
         settings.credentials = Credentials()
@@ -138,7 +139,7 @@ class TestXmlConfigParser:
             reference_root="data/cases/",
         )
         parser = XmlConfigParser()
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = content
         settings.credentials = Credentials()
         settings.credentials.name = "commandline"
@@ -165,7 +166,7 @@ class TestXmlConfigParser:
         # Arrange
         content = XmlConfigHelper.make_test_case_config(reference_value="11.0e")
         parser = XmlConfigParser()
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = content
         settings.credentials = Credentials()
         settings.credentials.name = "commandline"
@@ -206,7 +207,7 @@ class TestXmlConfigParser:
         parser = XmlConfigParser()
         _ = parser.load(settings, logger)
 
-    def setup_include_element_xml(self, tmp_dir: Path, version_attr: Optional[str] = "version=") -> TestBenchSettings:
+    def setup_include_element_xml(self, tmp_dir: Path, version_attr: Optional[str] = "version=") -> CommandLineSettings:
         now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
         version = now.isoformat().split("+", 1)[0]
         include_xml = f"""
@@ -231,6 +232,6 @@ class TestXmlConfigParser:
         with open(xml_include_path, "w", encoding="utf-8") as file:
             file.write(include_xml)
         include = f'<xi:include href="{xml_include_path.as_posix()}"/>'
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = XmlConfigHelper.make_test_case_config(include=include)
         return settings

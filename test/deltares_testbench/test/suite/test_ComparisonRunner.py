@@ -28,7 +28,7 @@ class TestComparisonRunner:
         # Arrange
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
-        settings.skip_run = True
+        settings.command_line_settings.skip_run = True
         location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
         location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         config = TestComparisonRunner.create_test_case_config("Name_1", locations=[location1, location2])
@@ -57,7 +57,7 @@ class TestComparisonRunner:
         # Arrange
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
-        settings.skip_run = True
+        settings.command_line_settings.skip_run = True
         location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
         location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         config = TestComparisonRunner.create_test_case_config("Name_1", locations=[location1, location2])
@@ -83,7 +83,7 @@ class TestComparisonRunner:
         # Arrange
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
-        settings.skip_run = True
+        settings.command_line_settings.skip_run = True
         location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
         location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
@@ -116,7 +116,7 @@ class TestComparisonRunner:
         # Arrange
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths(cases_path="data/cases", references_path="data/cases")
-        settings.skip_run = True
+        settings.command_line_settings.skip_run = True
 
         testcase_path = TestCasePath(prefix="abc/prefix", version="DVC")
 
@@ -187,9 +187,9 @@ class TestComparisonRunner:
     def test_run_without_test_cases_logs_no_results(self, mocker: MockerFixture) -> None:
         # Arrange
         settings = TestBenchSettings()
-        settings.config_file = "some.xml"
+        settings.command_line_settings.config_file = "some.xml"
         settings.local_paths = LocalPaths()
-        settings.parallel = False
+        settings.command_line_settings.parallel = False
         # settings.filter = "testcase=e02_f102_c02e_1d-precipitation123"
         logger = MagicMock(spec=ConsoleLogger)
 
@@ -201,7 +201,7 @@ class TestComparisonRunner:
 
         # Assert
         assert (
-            call(f"There are no test cases in '{settings.config_file}' with applied filter '{settings.filter}'.")
+            call(f"There are no test cases in '{settings.command_line_settings.config_file}' with applied filter '{settings.command_line_settings.filter}'.")
             in logger.error.call_args_list
         )
 
@@ -216,25 +216,24 @@ class TestComparisonRunner:
             "Banana_1", ignore_testcase=True, locations=[location1, location2]
         )
         config2 = TestComparisonRunner.create_test_case_config("Banana_2", locations=[location1, location2])
-        settings.config_file = "some.xml"
-        settings.configs_from_xml = [config1, config2]
+        settings.command_line_settings.config_file = "some.xml"
+        xml_configs = [config1, config2]
         settings.local_paths = LocalPaths()
-        settings.parallel = False
-        settings.filter = "testcase=Apple"
+        settings.command_line_settings.parallel = False
+        settings.command_line_settings.filter = "testcase=Apple"
         logger = MagicMock(spec=ConsoleLogger)
 
         runner = ComparisonRunner(settings, logger)
 
         # Act
-        if settings.filter != "":
-            settings.configs_to_run = XmlConfigParser.filter_configs(settings.configs_from_xml, settings.filter, logger)
+        settings.configs_to_run = XmlConfigParser.filter_configs(xml_configs, settings.command_line_settings.filter, logger)
 
         with pytest.raises(ValueError):
             runner.run()
 
         # Assert
         assert (
-            call(f"There are no test cases in '{settings.config_file}' with applied filter '{settings.filter}'.")
+            call(f"There are no test cases in '{settings.command_line_settings.config_file}' with applied filter '{settings.command_line_settings.filter}'.")
             in logger.error.call_args_list
         )
 

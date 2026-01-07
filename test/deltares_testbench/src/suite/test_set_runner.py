@@ -42,7 +42,7 @@ class TestSetRunner(ABC):
         self.__logger = logger
         self.__duration = None
         self.programs: List[Program] = []
-        self.skip_download = settings.skip_download
+        self.skip_download = settings.command_line_settings.skip_download
         self.finished_tests: int = 0
 
     @property
@@ -71,31 +71,27 @@ class TestSetRunner(ABC):
         """Run test cases to generate reference data."""
         start_time = datetime.now()
 
-        if len(self.settings.configs_from_xml) == 0:
-            logline = f"There are no test cases in '{self.settings.config_file}' with applied filter '{self.settings.filter}'."
-            self.__logger.error(logline)
-            raise ValueError(logline)
-        elif len(self.settings.configs_to_run) == 0:
-            logline = f"There are no test cases in '{self.settings.config_file}' with applied filter '{self.settings.filter}'."
+        if len(self.settings.configs_to_run) == 0:
+            logline = f"There are no test cases in '{self.settings.command_line_settings.config_file}' with applied filter '{self.settings.command_line_settings.filter}'."
             self.__logger.error(logline)
             raise ValueError(logline)
 
         try:
             self.programs = list(self.__update_programs())
         except Exception:
-            if self.__settings.teamcity:
+            if self.__settings.command_line_settings.teamcity:
                 sys.stderr.write("##teamcity[testStarted name='Update programs']\n")
                 sys.stderr.write("##teamcity[testFailed name='Update programs' message='Exception occurred']\n")
 
         self.__download_dependencies()
         log_sub_header("Running tests", self.__logger)
 
-        results = self.run_tests_in_parallel() if self.__settings.parallel else self.run_tests_sequentially()
+        results = self.run_tests_in_parallel() if self.__settings.command_line_settings.parallel else self.run_tests_sequentially()
 
         log_separator(self.__logger, char="-", with_new_line=True)
 
         if results:
-            if not self.__settings.skip_post_processing:
+            if not self.__settings.command_line_settings.skip_post_processing:
                 self.show_summary(results, self.__logger)
             else:
                 self.__logger.info("No summary, because postprocessing is skipped due to argument.")
@@ -226,7 +222,7 @@ class TestSetRunner(ABC):
             # Run testcase
             testcase = TestCase(config, logger)
 
-            if self.__settings.skip_run:
+            if self.__settings.command_line_settings.skip_run:
                 logger.info("Skipping execution of testcase (postprocess only)...\n")
             else:
                 if not skip_testcase:
@@ -361,7 +357,7 @@ class TestSetRunner(ABC):
                 skip_testcase = True
                 skip_postprocessing = True
 
-        if self.settings.skip_post_processing:
+        if self.settings.command_line_settings.skip_post_processing:
             skip_postprocessing = True
 
         return skip_testcase, skip_postprocessing
@@ -392,8 +388,8 @@ class TestSetRunner(ABC):
             if len(program_configuration.locations) > 0:
                 for loc in program_configuration.locations:
                     # check type of program
-                    if (self.__settings.run_mode == ModeType.REFERENCE and loc.type == PathType.CHECK) or (
-                        self.__settings.run_mode == ModeType.COMPARE and loc.type == PathType.CHECK
+                    if (self.__settings.command_line_settings.run_mode == ModeType.REFERENCE and loc.type == PathType.CHECK) or (
+                        self.__settings.command_line_settings.run_mode == ModeType.COMPARE and loc.type == PathType.CHECK
                     ):
                         # if the program is local, use the existing location
                         sourceLocation = Paths().mergeFullPath(loc.root, loc.from_path)

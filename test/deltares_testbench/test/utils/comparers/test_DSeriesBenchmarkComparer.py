@@ -11,6 +11,7 @@ from src.utils.comparers.end_result import EndResult
 from src.utils.logging.console_logger import ConsoleLogger
 from src.utils.logging.log_level import LogLevel
 from src.utils.xml_config_parser import XmlConfigParser
+from src.suite.command_line_settings import CommandLineSettings
 from test.utils.test_logger import TestLogger
 
 sys.path.insert(0, abspath(join(dirname(__file__), "..")))
@@ -32,7 +33,7 @@ class TestDSeriesBenchmarkComparer:
         # This is done to point to a specific file
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = join(self.testdata, "Unit_test.xml")
         settings.credentials.name = "commandline"
         # settings.local_paths, settings.programs, settings.configs_to_run = xmlcp.load(settings, logger)
@@ -477,7 +478,7 @@ class TestDSeriesBenchmarkComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = join(self.testdata, "Unit_test_empty_file.xml")
         settings.credentials.name = "commandline"
         # settings.local_paths, settings.programs, settings.configs_to_run = xmlcp.load(settings, logger)

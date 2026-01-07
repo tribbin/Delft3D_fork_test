@@ -13,6 +13,7 @@ from src.utils.comparers.tree_comparer import TreeComparer
 from src.utils.logging.console_logger import ConsoleLogger
 from src.utils.logging.log_level import LogLevel
 from src.utils.xml_config_parser import XmlConfigParser
+from src.suite.command_line_settings import CommandLineSettings
 from test.utils.test_logger import TestLogger
 
 sys.path.insert(0, abspath(join(dirname(__file__), "..")))
@@ -168,7 +169,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = join(self.testdata, "Unit_test.xml")
         settings.credentials.name = "commandline"
         xml_config = xmlcp.load(settings, logger)
@@ -214,7 +215,7 @@ class TestTreeComparer:
             # Parse the xml file.
             xmlcp = XmlConfigParser()
             logger = ConsoleLogger(LogLevel.DEBUG)
-            settings = TestBenchSettings()
+            settings = CommandLineSettings()
             settings.config_file = join(self.testdata, "Unit_test.xml")
             settings.credentials.name = "commandline"
             xml_config = xmlcp.load(settings, logger)
@@ -248,7 +249,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = join(self.testdata, "Unit_test.xml")
         settings.credentials.name = "commandline"
         xml_config = xmlcp.load(settings, logger)
@@ -271,7 +272,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_wrong_name.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -304,7 +305,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_wrong_name.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -328,7 +329,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_NOK_values.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -348,7 +349,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -365,7 +366,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_Ignored.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -386,7 +387,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -445,7 +446,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -502,7 +503,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node_1.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -649,7 +650,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -709,7 +710,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -733,7 +734,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -767,7 +768,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node.xml")
         xml_config = xmlcp.load(settings, logger)
@@ -801,7 +802,7 @@ class TestTreeComparer:
         # Parse the xml file.
         xmlcp = XmlConfigParser()
         logger = ConsoleLogger(LogLevel.DEBUG)
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.credentials.name = "commandline"
         settings.config_file = join(self.testdata, "Unit_test_compare_this_node.xml")
         xml_config = xmlcp.load(settings, logger)
