@@ -1018,8 +1018,8 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                                          thisCoupler->targetComponent->numProcesses,
                                          thisCoupler->items[k].targetProcess,
                                          transferValuePtr);
-                                } else {
-                                    receive_ptr (thisCoupler->items[k].targetName,
+                                } else if (thisCoupler->targetComponent->onThisRank && thisCoupler->sourceComponent->onThisRank) {
+                                    receive_ptr(thisCoupler->items[k].targetName,
                                          thisCoupler->items[k].sourceName,
                                          thisCoupler->targetComponent->type,
                                          thisCoupler->targetComponent->dllSetVar,
@@ -1030,6 +1030,8 @@ void Dimr::runParallelUpdate(dimr_control_block* cb, double tStep) {
                                          thisCoupler->targetComponent->numProcesses,
                                          thisCoupler->items[k].targetProcess,
                                          thisCoupler->items[k].sourceVarPtr);
+                                } else {
+                                    log->Write(WARNING, my_rank, "Skipping pointer based exchange on rank %d: target and source component not on same rank!\n", my_rank);
                                 }
 
                                 if (thisCoupler->logger != NULL && my_rank == 0)
