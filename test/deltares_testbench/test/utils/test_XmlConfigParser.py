@@ -74,7 +74,7 @@ class TestXmlConfigParser:
         assert xml_config.testcase_configs[0].path.version == version
         assert datetime.fromisoformat(xml_config.testcase_configs[0].path.version).replace(tzinfo=timezone.utc) == now
 
-    def test_load__config_with_testcase_depencency__dependency_not_versioned(self) -> None:
+    def test_load__config_with_testcase_dependency__dependency_not_versioned(self) -> None:
         """It should parse a simple testcase with non-versioned dependency."""
         # Arrange
         content = XmlConfigHelper.make_test_case_config(

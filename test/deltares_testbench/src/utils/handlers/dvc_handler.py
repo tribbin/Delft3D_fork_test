@@ -29,7 +29,7 @@ class DvcHandler(IHandler):
         from_path : str
             dvc file path.
         to_path : str
-            Depricated: use to_path as the location of the .dvc file.
+            Deprecated: use from_path as the location of the .dvc file.
         credentials : Credentials
             DVC credentials (used for remote storage access).
         version : str

@@ -579,7 +579,7 @@ class TestSetRunner(ABC):
             else:
                 error_message = (
                     f"Could not build remote path for {config.name}"
-                    f", only input and reference (with OS spec ) paths are supported for DVC downloads."
+                    f", only input and reference (with OS spec) paths are supported for DVC downloads."
                 )
                 raise TestBenchError(error_message)
         elif config.path:
@@ -605,7 +605,7 @@ class TestSetRunner(ABC):
             else:
                 error_message = (
                     f"Could not build local path for {config.name}"
-                    f", only input and reference (with OS spec ) paths are supported for DVC downloads."
+                    f", only input and reference (with OS spec) paths are supported for DVC downloads."
                 )
                 raise TestBenchError(error_message)
         else:
