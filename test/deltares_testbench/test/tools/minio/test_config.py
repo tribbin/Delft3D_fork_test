@@ -340,7 +340,7 @@ class TestConfigParser:
         # Act
         config_data = config_parser.parse_config(config_path)
         case, *other_cases = config_data.test_cases
-        
+
         # Assert
         assert not other_cases
         assert case.name == "foo"

@@ -451,7 +451,7 @@ class XmlConfigParser:
                         str(env["txt"]),
                     ]
         return p
-    
+
     @staticmethod
     def __fill_file_check(element: Dict[str, Any]) -> FileCheck:
         """Fill file check from xml element."""
@@ -662,7 +662,7 @@ class XmlConfigParser:
             if case.name == name:
                 return case
         return None
-    
+
     @staticmethod
     def __loop(xml_doc: Dict[str, Any], key: str) -> List:
         if key in xml_doc:
