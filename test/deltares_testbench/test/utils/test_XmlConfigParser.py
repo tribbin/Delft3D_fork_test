@@ -209,6 +209,7 @@ class TestXmlConfigParser:
     @pytest.mark.parametrize(
         ("server_base_url", "case_root", "expected_root"),
         [
+            ('s3://dsc-testbench', '{server_base_url}/references', 's3://dsc-testbench/references'),
             ("https://example.com/", "{server_base_url}/cases", "https://example.com/cases"),
             ("https://example.com/", "{server_base_url}cases", "https://example.com/cases"),
             ("https://example.com", "{server_base_url}cases", "https://example.com/cases"),

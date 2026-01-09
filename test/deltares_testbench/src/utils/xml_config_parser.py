@@ -358,16 +358,18 @@ class XmlConfigParser:
 
     def __replace_handle_bars(self, root_text: str, settings: CommandLineSettings) -> str:
         """Replace handlebars in the root text with actual values."""
-        server_base_url = settings.server_base_url or ""
-        relative_part = root_text.replace("{server_base_url}", "").lstrip("/")
-
+        server_base_url = (settings.server_base_url or "").strip()
+        relative_part = root_text.replace("{server_base_url}", "")
         if not server_base_url:
-            new_value = relative_part
-        else:
-            normalized_base = server_base_url.rstrip("/") + "/"
-            new_value = urljoin(normalized_base, relative_part)
+            return relative_part.lstrip("/")
 
-        return new_value
+        trimmed_base = server_base_url.rstrip("/")
+        relative_part = relative_part.lstrip("/")
+
+        if not relative_part:
+            return trimmed_base
+
+        return f"{trimmed_base}/{relative_part}"
 
     def __fill_program(self, element: Dict[str, Any], settings: CommandLineSettings) -> Optional[ProgramConfig]:
         """Fill program from xml element."""
