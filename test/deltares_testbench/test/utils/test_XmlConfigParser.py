@@ -206,6 +206,37 @@ class TestXmlConfigParser:
         parser = XmlConfigParser()
         _ = parser.load(settings, logger)
 
+    @pytest.mark.parametrize(
+        ("server_base_url", "case_root", "expected_root"),
+        [
+            ("https://example.com/", "{server_base_url}/cases", "https://example.com/cases"),
+            ("https://example.com/", "{server_base_url}cases", "https://example.com/cases"),
+            ("https://example.com", "{server_base_url}cases", "https://example.com/cases"),
+            ("https://example.com", "{server_base_url}/cases", "https://example.com/cases"),
+            ("", "{server_base_url}cases", "cases"),
+            ("", "{server_base_url}/cases", "cases"),
+        ],
+    )
+    def test_replace_handle_bars(self, server_base_url: str, case_root: str, expected_root: str) -> None:
+        # Arrange
+        parser = XmlConfigParser()
+        settings = CommandLineSettings()
+        settings.server_base_url = server_base_url
+        content = XmlConfigHelper.make_test_case_config(case_root=case_root)
+        settings.config_file = content
+        settings.credentials = Credentials()
+        settings.credentials.name = "commandline"
+        logger = ConsoleLogger(LogLevel.DEBUG)
+        # Act
+
+        xml_config = parser.load(settings, logger)
+        case_location = next(
+            loc for loc in xml_config.testcase_configs[0].locations if loc.name == "dsctestbench-cases"
+        )
+
+        # Assert
+        assert case_location.root == expected_root
+
     def setup_include_element_xml(self, tmp_dir: Path, version_attr: Optional[str] = "version=") -> CommandLineSettings:
         now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
         version = now.isoformat().split("+", 1)[0]

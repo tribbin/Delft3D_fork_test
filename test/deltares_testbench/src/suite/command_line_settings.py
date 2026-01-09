@@ -20,7 +20,7 @@ class CommandLineSettings:
     credentials: Credentials = Credentials()
     filter: str = ""
     skip_run: bool = False
-    skip_download: List[PathType] = []
+    skip_download: Optional[List[PathType]] = None
     teamcity: bool = False
     parallel: bool = False
     test_bench_root: Optional[str] = None
@@ -29,3 +29,8 @@ class CommandLineSettings:
     server_base_url: str = ""
     override_paths: str = ""
     skip_post_processing: bool = False
+
+    def __init__(self) -> None:
+        """Initialize with proper default values for mutable attributes."""
+        if self.skip_download is None:
+            self.skip_download = []

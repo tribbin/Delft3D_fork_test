@@ -617,15 +617,13 @@ class TestSetRunner(ABC):
         self, config: TestCaseConfig, location: Location, remote_path: str, local_path: str, logger: ILogger
     ) -> None:
         """Download files for a location with retry logic."""
-        success = False
         attempts = 0
         max_attempts = 3
 
-        while attempts < max_attempts and not success:
-            attempts += 1
+        for _ in range(max_attempts):
             try:
                 self.__download_single_location(config, location, remote_path, local_path, logger)
-                success = True
+                break
             except Exception as e:
                 error_message = f"Unable to download testcase (attempt {attempts})"
 

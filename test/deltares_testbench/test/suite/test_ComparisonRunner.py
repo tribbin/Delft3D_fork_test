@@ -29,9 +29,9 @@ class TestComparisonRunner:
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
         settings.command_line_settings.skip_run = True
-        location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
-        location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
-        config = TestComparisonRunner.create_test_case_config("Name_1", locations=[location1, location2])
+        ref_location = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
+        case_location = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
+        config = TestComparisonRunner.create_test_case_config("Name_1", locations=[ref_location, case_location])
         config.path = TestCasePath("abc/prefix", "v1")
         settings.configs_to_run = [config]
         logger = MagicMock(spec=ConsoleLogger)
@@ -58,9 +58,9 @@ class TestComparisonRunner:
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
         settings.command_line_settings.skip_run = True
-        location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
-        location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
-        config = TestComparisonRunner.create_test_case_config("Name_1", locations=[location1, location2])
+        ref_location = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
+        case_location = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
+        config = TestComparisonRunner.create_test_case_config("Name_1", locations=[ref_location, case_location])
         config.path = TestCasePath("abc/prefix", "vl")
         settings.configs_to_run = [config]
         logger = MagicMock(spec=ConsoleLogger)
@@ -84,13 +84,13 @@ class TestComparisonRunner:
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
         settings.command_line_settings.skip_run = True
-        location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
-        location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
+        ref_location = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
+        case_location = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
         version = now.isoformat().split("+", 1)[0]
         testcase_path = TestCasePath(prefix="abc/prefix", version=version)
         config = TestComparisonRunner.create_test_case_config(
-            name="testname", testcase_path=testcase_path, locations=[location1, location2]
+            name="testname", testcase_path=testcase_path, locations=[ref_location, case_location]
         )
         settings.configs_to_run = [config]
         logger = MagicMock(spec=ConsoleLogger)
@@ -120,12 +120,14 @@ class TestComparisonRunner:
 
         testcase_path = TestCasePath(prefix="abc/prefix", version="DVC")
 
-        location1 = TestComparisonRunner.create_location(
+        ref_location = TestComparisonRunner.create_location(
             name="reference", root="data/cases/", location_type=PathType.REFERENCE
         )
-        location2 = TestComparisonRunner.create_location(name="case", root="data/cases/", location_type=PathType.INPUT)
+        case_location = TestComparisonRunner.create_location(
+            name="case", root="data/cases/", location_type=PathType.INPUT
+        )
         config = TestComparisonRunner.create_test_case_config(
-            name="testname", testcase_path=testcase_path, locations=[location1, location2]
+            name="testname", testcase_path=testcase_path, locations=[ref_location, case_location]
         )
         config.path = TestCasePath("abc/prefix", "DVC")
         settings.configs_to_run = [config]
@@ -167,12 +169,12 @@ class TestComparisonRunner:
         TestComparisonRunner.clean_empty_logs(log_file_1)
         TestComparisonRunner.clean_empty_logs(log_file_2)
         settings = TestBenchSettings()
-        location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
-        location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
+        ref_location = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
+        case_location = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         config1 = TestComparisonRunner.create_test_case_config(
-            "Name_1", ignore_testcase=True, locations=[location1, location2]
+            "Name_1", ignore_testcase=True, locations=[ref_location, case_location]
         )
-        config2 = TestComparisonRunner.create_test_case_config("Name_2", locations=[location1, location2])
+        config2 = TestComparisonRunner.create_test_case_config("Name_2", locations=[ref_location, case_location])
         settings.configs_to_run = [config1, config2]
         logger = ConsoleLogger(LogLevel.INFO)
         runner = ComparisonRunner(settings, logger)
@@ -212,12 +214,12 @@ class TestComparisonRunner:
     ) -> None:
         # Arrange
         settings = TestBenchSettings()
-        location1 = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
-        location2 = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
+        ref_location = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
+        case_location = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         config1 = TestComparisonRunner.create_test_case_config(
-            "Banana_1", ignore_testcase=True, locations=[location1, location2]
+            "Banana_1", ignore_testcase=True, locations=[ref_location, case_location]
         )
-        config2 = TestComparisonRunner.create_test_case_config("Banana_2", locations=[location1, location2])
+        config2 = TestComparisonRunner.create_test_case_config("Banana_2", locations=[ref_location, case_location])
         settings.command_line_settings.config_file = "some.xml"
         xml_configs = [config1, config2]
         settings.local_paths = LocalPaths()

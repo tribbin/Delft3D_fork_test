@@ -29,12 +29,13 @@ class XmlConfigHelper:
         path_elem += f">{test_case_path.path}</path>"
 
         # Build `dependency` element.
-        dependency_elem = ""
         if dependency:
             dependency_elem = f'<dependency local_dir="{dependency.local_dir}"'
             if dependency.version is not None:
                 dependency_elem += f' version="{dependency.version}"'
             dependency_elem += f">{dependency.version}</dependency>"
+        else:
+            dependency_elem = ""
 
         text = textwrap.dedent(
             rf"""

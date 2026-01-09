@@ -20,6 +20,8 @@ from src.utils.xml_config_parser import XmlConfig, XmlConfigParser
 class TestBenchSettings:
     """Settings for a test bench run."""
 
+    __test__ = False
+
     command_line_settings: CommandLineSettings = CommandLineSettings()
     configs_to_run: List[TestCaseConfig] = []
     local_paths: LocalPaths
@@ -31,6 +33,13 @@ class TestBenchSettings:
         self.local_paths = xml_config.local_paths
         self.programs = xml_config.program_configs
         self.configs_to_run = XmlConfigParser.filter_configs(xml_config.testcase_configs, settings.filter, logger)
+
+    def __init__(self) -> None:
+        """Initialize with proper default values for mutable attributes."""
+        if self.programs is None:
+            self.programs = []
+        if self.configs_to_run is None:
+            self.configs_to_run = []
 
     def log_overview(self, logger: Logger) -> None:
         """Log overview of the parameters.
@@ -47,16 +56,16 @@ class TestBenchSettings:
             PathType.INPUT: "input of cases",
             PathType.REFERENCE: "references",
         }
-        download = ", ".join(
-            val for key, val in name_map.items() if key not in self.command_line_settings.skip_download
-        )
+        skip_targets = set(self.command_line_settings.skip_download or [])
+        downloads = [val for key, val in name_map.items() if key not in skip_targets]
+        downloads_comma_separated = ", ".join(downloads)
 
         logger.info(f"Version  : {sys.version}")
         logger.info(f"Mode     : {self.command_line_settings.run_mode}")
         logger.info(f"Config   : {self.command_line_settings.config_file}")
         logger.info(f"Filter   : {self.command_line_settings.filter}")
         logger.info(f"LogLevel : {str(self.command_line_settings.log_level)}")
-        logger.info(f"Download : [{download}]")
+        logger.info(f"Download : [{downloads_comma_separated}]")
         if self.command_line_settings.skip_run:
             logger.info("Execute  : skip")
         logger.info(f"Username : {self.command_line_settings.credentials.username}")

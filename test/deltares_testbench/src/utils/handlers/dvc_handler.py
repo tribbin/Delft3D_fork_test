@@ -37,9 +37,9 @@ class DvcHandler(IHandler):
         logger : ILogger
             The logger that logs to a file.
         """
-        self._download_with_dvc_pull(from_path, logger)
+        self.__download_with_dvc_pull(from_path, logger)
 
-    def _download_with_dvc_pull(self, dvc_file: str, logger: ILogger) -> None:
+    def __download_with_dvc_pull(self, dvc_file: str, logger: ILogger) -> None:
         """Download using DVC by reading the .dvc file and fetching from remote.
 
         Parameters
@@ -57,7 +57,7 @@ class DvcHandler(IHandler):
                 raise FileNotFoundError(f"DVC file not found: {dvc_file}")
 
             # Open the DVC repository
-            repo_root = self._find_dvc_root(dvc_file)
+            repo_root = self.__find_dvc_root(dvc_file)
             repo = Repo(repo_root)
 
             dvcfile = load_file(repo, dvc_file)
@@ -78,7 +78,7 @@ class DvcHandler(IHandler):
             logger.error(f"Error during DVC pull: {str(e)}")
             raise
 
-    def _find_dvc_root(self, path: str) -> str:
+    def __find_dvc_root(self, path: str) -> str:
         """Find the DVC repository root by looking for .dvc directory.
 
         Parameters

@@ -1,10 +1,11 @@
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 from pytest_mock import MockerFixture
 
 from src.config.local_paths import LocalPaths
 from src.config.program_config import ProgramConfig
 from src.config.test_case_config import TestCaseConfig
+from src.config.types.path_type import PathType
 from src.suite.command_line_settings import CommandLineSettings
 from src.suite.test_bench_settings import TestBenchSettings
 from src.utils.logging.i_logger import ILogger
@@ -95,3 +96,16 @@ class TestTestBenchSettings:
         assert "example_test_case_1" in config_names
         assert "example_test_case_3" in config_names
         assert "other_test_case_2" not in config_names
+
+    def test_log_overview_download_section_excludes_skipped_paths(self) -> None:
+        # Arrange
+        settings = TestBenchSettings()
+        settings.command_line_settings.skip_download = [PathType.INPUT]
+
+        logger = MagicMock(spec=ILogger)
+
+        # Act
+        settings.log_overview(logger)
+
+        # Assert
+        logger.info.assert_any_call("Download : [dependency, references]")

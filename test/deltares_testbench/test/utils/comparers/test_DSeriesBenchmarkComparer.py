@@ -35,7 +35,6 @@ class TestDSeriesBenchmarkComparer:
         settings = CommandLineSettings()
         settings.config_file = join(self.testdata, "Unit_test.xml")
         settings.credentials.name = "commandline"
-        # settings.local_paths, settings.programs, settings.configs_to_run = xmlcp.load(settings, logger)
         xml_config = xmlcp.load(settings, logger)
         file = xml_config.testcase_configs
 
@@ -480,7 +479,6 @@ class TestDSeriesBenchmarkComparer:
         settings = CommandLineSettings()
         settings.config_file = join(self.testdata, "Unit_test_empty_file.xml")
         settings.credentials.name = "commandline"
-        # settings.local_paths, settings.programs, settings.configs_to_run = xmlcp.load(settings, logger)
         xml_config = xmlcp.load(settings, logger)
         file = xml_config.testcase_configs
         # The file to be checked
