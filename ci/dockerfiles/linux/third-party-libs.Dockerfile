@@ -291,8 +291,8 @@ EOF-tiff
 FROM base AS hdf5
 
 ARG INTEL_FORTRAN_COMPILER
-ARG DEBUG
 ARG CACHE_ID_SUFFIX
+# Do not allow a debug build, since the build fails for --enable-build-mode="debug"
 
 COPY --from=compression-libs --link /usr/local/ /usr/local/
 
@@ -310,12 +310,11 @@ else
 fi
 
 MPIFC="mpi${INTEL_FORTRAN_COMPILER}"
-[[ $DEBUG = "0" ]] && BUILD_MODE="production" || BUILD_MODE="debug"
 
 pushd "/var/cache/src/${BASEDIR}"
 ./configure CC=mpiicx CXX=mpiicpx FC=$MPIFC \
     --prefix=/usr/local \
-    --enable-build-mode=$BUILD_MODE \
+    --enable-build-mode="production" \
     --enable-fortran \
     --enable-parallel \
     --disable-szlib \
@@ -535,18 +534,31 @@ EOF-esmf
 
 FROM base AS boost
 
-RUN <<"EOF-boost" 
+ARG DEBUG
+ARG CACHE_ID_SUFFIX
+
+RUN --mount=type=cache,target=/var/cache/src/,id=boost-${CACHE_ID_SUFFIX} <<"EOF-boost"
+source /etc/bashrc
 set -eo pipefail
-dnf install --assumeyes boost-devel
 
-mkdir -p /usr/local/lib
-cp /usr/lib64/libboost_*.so* /usr/local/lib/
+URL='https://archives.boost.io/release/1.90.0/source/boost_1_90_0.tar.gz'
+BASEDIR='boost_1_90_0'
+if [[ -d "/var/cache/src/${BASEDIR}" ]]; then
+    echo "CACHED ${BASEDIR}"
+else
+    echo "Fetching ${URL}..."
+    wget --quiet --output-document=- "$URL" | tar --extract --gzip --file=- --directory='/var/cache/src'
+fi
 
-mkdir -p /usr/local/include
-cp -r /usr/include/boost /usr/local/include/
+pushd "/var/cache/src/${BASEDIR}"
 
-mkdir -p /usr/local/share/licenses/boost-devel
-cp /usr/share/licenses/boost-devel/LICENSE_1_0.txt /usr/local/share/licenses/boost-devel/
+export CC=icx CXX=icpx
+[[ $DEBUG = "0" ]] && VARIANT=release || VARIANT=debug
+
+./bootstrap.sh --prefix=/usr/local
+./b2 --without-python variant=${VARIANT} toolset=intel-linux link=shared threading=multi -j$(nproc) install
+
+popd
 EOF-boost
 
 FROM base AS googletest
