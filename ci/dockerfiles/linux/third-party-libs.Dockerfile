@@ -602,6 +602,22 @@ cmake --install build
 popd
 EOF-eigen
 
+FROM base AS libxml2
+
+RUN <<"EOF-libxml2"
+set -eo pipefail
+dnf install --assumeyes libxml2-devel
+
+mkdir -p /usr/local/lib
+cp /usr/lib64/libxml2.so* /usr/local/lib/
+
+mkdir -p /usr/local/include
+cp -r /usr/include/libxml2 /usr/local/include/
+
+mkdir -p /usr/local/lib/pkgconfig
+cp /usr/lib64/pkgconfig/libxml-2.0.pc /usr/local/lib/pkgconfig/
+EOF-libxml2
+
 FROM base AS all
 
 RUN set -eo pipefail && \
