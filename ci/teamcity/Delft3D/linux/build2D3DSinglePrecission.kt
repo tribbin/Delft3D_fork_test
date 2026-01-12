@@ -70,7 +70,7 @@ object LinuxBuild2D3DSP : BuildType({
             }
             scriptContent = """
                 #!/usr/bin/env bash
-                source /opt/bashrc
+                source /etc/bashrc
                 set -eo pipefail
 
                 cmake -S ./src/cmake -G %generator% -D CONFIGURATION_TYPE:STRING=flow2d3d -D CMAKE_BUILD_TYPE=%build_type% -B build_flow2d3d -D CMAKE_INSTALL_PREFIX=build_flow2d3d/install

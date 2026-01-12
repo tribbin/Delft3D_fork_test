@@ -68,7 +68,7 @@ object LinuxBuild : BuildType({
             name = "Build"
             scriptContent = """
                 #!/usr/bin/env bash
-                source /opt/bashrc
+                source /etc/bashrc
                 set -eo pipefail
 
                 cmake -S ./src/cmake -G %generator% -D CONFIGURATION_TYPE:STRING=%product% -D CMAKE_BUILD_TYPE=%build_type% -B build_%product% -D CMAKE_INSTALL_PREFIX=build_%product%/install
@@ -83,7 +83,9 @@ object LinuxBuild : BuildType({
             name = "Run unit tests"
             scriptContent = """
                 #!/usr/bin/env bash
-                source /opt/bashrc
+                source /etc/bashrc
+                set -eo pipefail
+
                 ctest --test-dir build_%product% --build-config %build_type% --output-junit ../unit-test-report-linux.xml --output-on-failure
             """.trimIndent()
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-third-party-libs:%dep.${LinuxThirdPartyLibs.id}.env.IMAGE_TAG%"
@@ -95,7 +97,9 @@ object LinuxBuild : BuildType({
             name = "Install"
             scriptContent = """
                 #!/usr/bin/env bash
-                source /opt/bashrc
+                source /etc/bashrc
+                set -eo pipefail
+
                 cmake --install build_%product% --config %build_type%
             """.trimIndent()
             dockerImage = "containers.deltares.nl/delft3d-dev/delft3d-third-party-libs:%dep.${LinuxThirdPartyLibs.id}.env.IMAGE_TAG%"
