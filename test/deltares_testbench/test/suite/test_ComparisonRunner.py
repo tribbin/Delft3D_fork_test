@@ -192,7 +192,6 @@ class TestComparisonRunner:
         settings.command_line_settings.config_file = "some.xml"
         settings.local_paths = LocalPaths()
         settings.command_line_settings.parallel = False
-        # settings.filter = "testcase=e02_f102_c02e_1d-precipitation123"
         logger = MagicMock(spec=ConsoleLogger)
 
         runner = ComparisonRunner(settings, logger)
@@ -249,19 +248,31 @@ class TestComparisonRunner:
     def create_test_case_config(
         name: str,
         ignore_testcase: bool = False,
-        locations: List[Location] = None,
-        testcase_path: TestCasePath = TestCasePath("", ""),
+        locations: List[Location] | None = None,
+        testcase_path: TestCasePath | None = None,
     ) -> TestCaseConfig:
         config = TestCaseConfig()
         config.name = name
         config.ignore = ignore_testcase
-        config.path = testcase_path
-        config.locations = locations
+
+        if testcase_path is None:
+            config.path = TestCasePath("", "")
+        else:
+            config.path = testcase_path
+
+        if locations is None:
+            locations = []
+        else:
+            config.locations = locations
+
         return config
 
     @staticmethod
     def create_location(
-        name: str, location_type: PathType = PathType.INPUT, root: str = "https://deltares.nl/", from_path: str = None
+        name: str,
+        location_type: PathType = PathType.INPUT,
+        root: str = "https://deltares.nl/",
+        from_path: str | None = None,
     ) -> Location:
         location = Location()
         location.root = root

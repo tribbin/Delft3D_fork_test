@@ -15,7 +15,7 @@ from src.utils.logging.console_logger import ConsoleLogger
 from src.utils.logging.log_level import LogLevel
 from src.utils.logging.test_loggers.test_result_type import TestResultType
 from src.utils.xml_config_parser import XmlConfigParser
-from test.helpers.xml_config_helper import XmlConfigHelper
+from test.helpers.xml_config_helper import make_test_case_config_xml
 
 
 @pytest.fixture()
@@ -30,7 +30,7 @@ class TestXmlConfigParser:
     def test_load__config_with_testcase__path_not_versioned(self) -> None:
         """It should parse a simple testcase with non-versioned path."""
         # Arrange
-        content = XmlConfigHelper.make_test_case_config(test_case_path=TestCasePath("test/case/path"))
+        content = make_test_case_config_xml(test_case_path=TestCasePath("test/case/path"))
         parser = XmlConfigParser()
         settings = CommandLineSettings()
         settings.config_file = content
@@ -43,17 +43,18 @@ class TestXmlConfigParser:
         xml_config = parser.load(settings, logger)
 
         # Assert
+        test_config = xml_config.testcase_configs[0]
         assert len(xml_config.testcase_configs) == 1
-        assert xml_config.testcase_configs[0].path is not None
-        assert xml_config.testcase_configs[0].path.path == "test/case/path"
-        assert xml_config.testcase_configs[0].path.version is None
+        assert test_config.path is not None
+        assert test_config.path.path == "test/case/path"
+        assert test_config.path.version is None
 
     def test_load__config_with_testcase__path_versioned(self) -> None:
         """It should parse a simple testcase with versioned path."""
         # Arrange
         now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
         version = now.isoformat().split("+", 1)[0]
-        content = XmlConfigHelper.make_test_case_config(
+        content = make_test_case_config_xml(
             test_case_path=TestCasePath("test/case/path", version),
         )
         parser = XmlConfigParser()
@@ -68,16 +69,17 @@ class TestXmlConfigParser:
         xml_config = parser.load(settings, logger)
 
         # Assert
+        test_config = xml_config.testcase_configs[0]
         assert len(xml_config.testcase_configs) == 1
-        assert xml_config.testcase_configs[0].path is not None
-        assert xml_config.testcase_configs[0].path.path == "test/case/path"
-        assert xml_config.testcase_configs[0].path.version == version
+        assert test_config.path is not None
+        assert test_config.path.path == "test/case/path"
+        assert test_config.path.version == version
         assert datetime.fromisoformat(xml_config.testcase_configs[0].path.version).replace(tzinfo=timezone.utc) == now
 
     def test_load__config_with_testcase_dependency__dependency_not_versioned(self) -> None:
         """It should parse a simple testcase with non-versioned dependency."""
         # Arrange
-        content = XmlConfigHelper.make_test_case_config(
+        content = make_test_case_config_xml(
             dependency=Dependency(local_dir="local/dir", case_path="case/dir"),
         )
         parser = XmlConfigParser()
@@ -92,18 +94,19 @@ class TestXmlConfigParser:
         xml_config = parser.load(settings, logger)
 
         # Assert
+        test_config = xml_config.testcase_configs[0]
         assert len(xml_config.testcase_configs) == 1
-        assert xml_config.testcase_configs[0].path is not None
-        assert xml_config.testcase_configs[0].dependency is not None
-        assert xml_config.testcase_configs[0].dependency.local_dir == "local/dir"
-        assert xml_config.testcase_configs[0].dependency.version is None
+        assert test_config.path is not None
+        assert test_config.dependency is not None
+        assert test_config.dependency.local_dir == "local/dir"
+        assert test_config.dependency.version is None
 
     def test_load_with_minio_path(self) -> None:
         """It should parse a simple testcase with non-versioned dependency."""
         # Arrange
         now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
         version = now.isoformat().split("+", 1)[0]
-        content = XmlConfigHelper.make_test_case_config(
+        content = make_test_case_config_xml(
             test_case_path=TestCasePath("test/case/path", version),
         )
         parser = XmlConfigParser()
@@ -118,21 +121,22 @@ class TestXmlConfigParser:
         xml_config = parser.load(settings, logger)
 
         # Assert
+        test_config = xml_config.testcase_configs[0]
         assert len(xml_config.testcase_configs) == 1
-        assert xml_config.testcase_configs[0].path is not None
-        assert xml_config.testcase_configs[0].path.prefix == "test/case/path"
-        assert len(xml_config.testcase_configs[0].locations) == 2
-        assert xml_config.testcase_configs[0].locations[0].name == "dsctestbench-cases"
-        assert xml_config.testcase_configs[0].locations[0].from_path == "."
-        assert xml_config.testcase_configs[0].locations[0].root == "https://abcdefg/cases"
-        assert xml_config.testcase_configs[0].locations[1].name == "dsctestbench-references"
-        assert xml_config.testcase_configs[0].locations[1].from_path == "win64"
-        assert xml_config.testcase_configs[0].locations[1].root == "https://abcdefg/references"
+        assert test_config.path is not None
+        assert test_config.path.prefix == "test/case/path"
+        assert len(test_config.locations) == 2
+        assert test_config.locations[0].name == "dsctestbench-cases"
+        assert test_config.locations[0].from_path == "."
+        assert test_config.locations[0].root == "https://abcdefg/cases"
+        assert test_config.locations[1].name == "dsctestbench-references"
+        assert test_config.locations[1].from_path == "win64"
+        assert test_config.locations[1].root == "https://abcdefg/references"
 
     def test_load_with_local_dvc_path(self) -> None:
         """It should parse a simple testcase with non-versioned dependency."""
         # Arrange
-        content = XmlConfigHelper.make_test_case_config(
+        content = make_test_case_config_xml(
             test_case_path=TestCasePath("e02_dflowfm/f012_inout/c0322_alloutrealistic_f12_e02_3dom", version="DVC"),
             case_root="data/cases/",
             reference_root="data/cases/",
@@ -148,22 +152,23 @@ class TestXmlConfigParser:
         xml_config = parser.load(settings, logger)
 
         # Assert
+        test_config = xml_config.testcase_configs[0]
         assert len(xml_config.testcase_configs) == 1
-        assert xml_config.testcase_configs[0].path is not None
-        assert xml_config.testcase_configs[0].path.prefix == "e02_dflowfm/f012_inout/c0322_alloutrealistic_f12_e02_3dom"
-        assert xml_config.testcase_configs[0].path.version == "DVC"
-        assert len(xml_config.testcase_configs[0].locations) == 2
-        assert xml_config.testcase_configs[0].locations[0].name == "dsctestbench-cases"
-        assert xml_config.testcase_configs[0].locations[0].from_path == "."
-        assert xml_config.testcase_configs[0].locations[0].root == "data/cases/"
-        assert xml_config.testcase_configs[0].locations[1].name == "dsctestbench-references"
-        assert xml_config.testcase_configs[0].locations[1].from_path == "win64"
-        assert xml_config.testcase_configs[0].locations[1].root == "data/cases/"
+        assert test_config.path is not None
+        assert test_config.path.prefix == "e02_dflowfm/f012_inout/c0322_alloutrealistic_f12_e02_3dom"
+        assert test_config.path.version == "DVC"
+        assert len(test_config.locations) == 2
+        assert test_config.locations[0].name == "dsctestbench-cases"
+        assert test_config.locations[0].from_path == "."
+        assert test_config.locations[0].root == "data/cases/"
+        assert test_config.locations[1].name == "dsctestbench-references"
+        assert test_config.locations[1].from_path == "win64"
+        assert test_config.locations[1].root == "data/cases/"
 
     def test_load__config_with_11e__throws_error_and_logs(self) -> None:
         """Throw and log value error in xml parsing."""
         # Arrange
-        content = XmlConfigHelper.make_test_case_config(reference_value="11.0e")
+        content = make_test_case_config_xml(reference_value="11.0e")
         parser = XmlConfigParser()
         settings = CommandLineSettings()
         settings.config_file = content
@@ -223,7 +228,7 @@ class TestXmlConfigParser:
         parser = XmlConfigParser()
         settings = CommandLineSettings()
         settings.server_base_url = server_base_url
-        content = XmlConfigHelper.make_test_case_config(case_root=case_root)
+        content = make_test_case_config_xml(case_root=case_root)
         settings.config_file = content
         settings.credentials = Credentials()
         settings.credentials.name = "commandline"
@@ -264,5 +269,5 @@ class TestXmlConfigParser:
             file.write(include_xml)
         include = f'<xi:include href="{xml_include_path.as_posix()}"/>'
         settings = CommandLineSettings()
-        settings.config_file = XmlConfigHelper.make_test_case_config(include=include)
+        settings.config_file = make_test_case_config_xml(include=include)
         return settings

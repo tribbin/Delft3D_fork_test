@@ -317,7 +317,9 @@ class XmlConfigParser:
             if newroot:
                 new_location.root = newroot
             elif root_text.startswith("{server_base_url}"):
-                new_location.root = XmlConfigParser.__replace_handle_bars(root_text, settings)
+                new_location.root = XmlConfigParser.__replace_handle_bars(
+                    root_text, "{server_base_url}", settings.server_base_url
+                )
             else:
                 # If root text doesn't start with "{server_base_url}", assign it directly
                 new_location.root = root_text
@@ -359,14 +361,14 @@ class XmlConfigParser:
         return new_location
 
     @staticmethod
-    def __replace_handle_bars(root_text: str, settings: CommandLineSettings) -> str:
-        """Replace handlebars in the root text with actual values."""
-        server_base_url = (settings.server_base_url or "").strip()
-        relative_part = root_text.replace("{server_base_url}", "")
-        if not server_base_url:
+    def __replace_handle_bars(root_text: str, handle_bar_parameter: str, replacement: str) -> str:
+        """Replace handlebars in the root text with replacement."""
+        stripped_replacement = (replacement or "").strip()
+        relative_part = root_text.replace(handle_bar_parameter, "")
+        if not stripped_replacement:
             return relative_part.lstrip("/")
 
-        trimmed_base = server_base_url.rstrip("/")
+        trimmed_base = stripped_replacement.rstrip("/")
         relative_part = relative_part.lstrip("/")
 
         if not relative_part:

@@ -23,9 +23,9 @@ class TestBenchSettings:
     __test__ = False
 
     command_line_settings: CommandLineSettings = CommandLineSettings()
-    configs_to_run: List[TestCaseConfig] = []
+    configs_to_run: List[TestCaseConfig] = None
     local_paths: LocalPaths
-    programs: List[ProgramConfig] = []
+    programs: List[ProgramConfig] = None
 
     def setup_runtime_settings(self, settings: CommandLineSettings, xml_config: XmlConfig, logger: ILogger) -> None:
         """Set up runtime settings based on command line settings and XML configuration."""
