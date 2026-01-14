@@ -668,8 +668,9 @@ contains
 
       twav(:) = 0.0_dp
       success = success .and. ecGetValues(ecInstancePtr, item_tp, ecTime)
-      success = success .and. ecGetValues(ecInstancePtr, item_dir, ecTime)
+      !success = success .and. ecGetValues(ecInstancePtr, item_dir, ecTime)
       success = success .and. ecGetValues(ecInstancePtr, item_hrms, ecTime)
+      phiwav(:) = 0.0_dp ! no directions for you
       sxwav(:) = 0.0_dp
       sywav(:) = 0.0_dp
       dsurf(:) = 0.0_dp
