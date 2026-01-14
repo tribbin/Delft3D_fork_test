@@ -1655,7 +1655,7 @@ contains
       call prop_get(md_ptr, 'waves', 'hminlw', hminlw)
       call prop_get(md_ptr, 'waves', 'uorbfac', jauorb) ! 0=delft3d4, sqrt(pi)/2 included in uorb calculation; >0: FM, factor not included; default: 0
       ! backward compatibility for hk in tauwavehk:
-      if ((jawave > NO_WAVES .and. jawave < WAVE_SWAN_ONLINE) .or. flowWithoutWaves) then
+      if (jawave > NO_WAVES .and. (jawave < WAVE_SWAN_ONLINE .or. flowWithoutWaves)) then
          jauorb = 1
       end if
       call prop_get(md_ptr, 'waves', 'jahissigwav', jahissigwav) ! 1: sign wave height on his output; 0: hrms wave height on his output. Default=1
@@ -1702,6 +1702,16 @@ contains
          fwavpendep = 0.0_dp
          write (msgbuf, *) 'unstruc_model::readMDUFile: 3Dwaveturbpendepth<0.0, reset to 0.0. Wave breaking switched off as a source for TKE.'
          call warn_flush()
+      end if
+      !
+      ! safety
+      if (jawave > NO_WAVES .and. flowWithoutWaves) then
+         jawaveStokes = NO_STOKES_DRIFT
+         jawaveforces = WAVE_FORCES_OFF
+         jawavestreaming = WAVE_STREAMING_OFF
+         jawavedelta = WAVE_BOUNDARYLAYER_OFF
+         jawavebreakerturbulence = WAVE_BREAKER_TURB_OFF
+         modind = 0
       end if
 
       call prop_get(md_ptr, 'grw', 'groundwater', jagrw)
