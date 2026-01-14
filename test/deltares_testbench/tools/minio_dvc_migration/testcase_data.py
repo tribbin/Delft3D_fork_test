@@ -9,8 +9,7 @@ from typing import List
 from dvc.repo import Repo
 
 from src.config.types.path_type import PathType
-from src.suite.test_bench_settings import TestBenchSettings
-from src.utils.logging.log_level import LogLevel
+from src.suite.command_line_settings import CommandLineSettings
 from src.utils.logging.logger import Logger
 from src.utils.minio_rewinder import Rewinder
 from src.utils.xml_config_parser import XmlConfigParser
@@ -98,17 +97,10 @@ def extract_testcase_data(xml_file_path: Path, base_url: str, s3_bucket: str) ->
 
     try:
         # Create minimal settings for XML parser
-        settings = TestBenchSettings()
+        settings = CommandLineSettings()
         settings.config_file = str(xml_file_path)
-        settings.log_level = LogLevel.ERROR  # Suppress logs for analysis
-        settings.teamcity = False
-        settings.override_paths = ""
         settings.server_base_url = f"{base_url}/{s3_bucket}"
-
-        # Set up credentials with the expected name "commandline"
         settings.credentials.name = "commandline"
-        settings.credentials.username = "dummy"  # Placeholder for analysis
-        settings.credentials.password = "dummy"  # Placeholder for analysis
 
         # Create logger
         logger = Logger(settings.log_level, settings.teamcity)

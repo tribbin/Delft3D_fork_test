@@ -54,7 +54,7 @@ class XmlFileWithTestCaseData:
             self.__update_testcase_version(root, namespace)
             self.__process_xi_includes(root, xml_path)
 
-            # Write the modified XML back to file with original encoding
+            # Write the modified XML back
             tree.write(xml_path, encoding=encoding, xml_declaration=True, pretty_print=True)
             print(f"Successfully updated XML file: {xml_path}")
 
@@ -94,10 +94,8 @@ class XmlFileWithTestCaseData:
 
     def __process_xi_includes(self, root: etree._Element, current_file: Path) -> None:
         """Process xi:include elements and update the included files recursively."""
-        # Define xi namespace
         xi_ns = {"xi": "http://www.w3.org/2001/XInclude"}
 
-        # Find all xi:include elements
         includes = root.findall(".//xi:include", xi_ns)
 
         for include in includes:
@@ -107,7 +105,6 @@ class XmlFileWithTestCaseData:
                 include_path = Path(current_file).parent / href
                 if include_path.exists():
                     print(f"Processing included file: {include_path}")
-                    # Recursively update the included file
                     self.migrate_xml_to_dvc(include_path)
                 else:
                     print(f"Warning: Included file does not exist: {include_path}")

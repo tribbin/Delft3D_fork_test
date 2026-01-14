@@ -3,7 +3,6 @@
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
 
 
 class S3UrlInfo:
@@ -48,7 +47,7 @@ class S3UrlInfo:
         return Path(f"data/{path}")
 
 
-def timestamp_str_2_datetime(timestamp: str) -> Optional[datetime]:
+def timestamp_str_2_datetime(timestamp: str) -> datetime | None:
     """
     Parse timestamp string for rewind functionality.
 
