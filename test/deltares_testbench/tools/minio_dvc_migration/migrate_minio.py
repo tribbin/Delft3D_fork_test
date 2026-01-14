@@ -45,8 +45,7 @@ def main() -> None:
     print(f"Found existing DVC repo at: {repo_root}")
     repo = Repo(repo_root)
 
-    i = 1
-    for directory in directories_to_migrate:
+    for i, directory in enumerate(directories_to_migrate, start=1):
         print(f"Migrating {i}/{len(directories_to_migrate)}: {directory.path}")
         dvc_paths = []
         local_directory = directory.to_local()
@@ -65,7 +64,6 @@ def main() -> None:
 
         with open(MIGRATION_PROGRESS_FILE, "a") as f:
             f.write(f"{directory.path}\n")
-        i += 1
 
 
 if __name__ == "__main__":

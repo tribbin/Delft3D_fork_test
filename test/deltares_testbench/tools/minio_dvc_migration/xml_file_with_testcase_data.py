@@ -112,28 +112,22 @@ class XmlFileWithTestCaseData:
     def download_from_minio_in_new_folder_structure(self, rewinder: Rewinder) -> None:
         """Download all testcases from MinIO using the new folder structure."""
         print(f"Download {len(self.testcases)} testcases from {self.xml_file}")
-        i = 1
-        for testcase in self.testcases:
+        for i, testcase in enumerate(self.testcases, start=1):
             testcase.download(rewinder=rewinder)
             print(f"Downloaded {i}/{len(self.testcases)}: {testcase.name}")
-            i += 1
 
     def move_testcases_doc_folder_to_parent(self) -> None:
         """Move doc folder to parent folder for all testcases."""
-        i = 1
         for testcase in self.testcases:
             local_path = testcase.case.to_local()
             if is_case_with_doc_folder(local_path):
                 move_doc_folder_to_parent(local_path)
-            i += 1
 
     def add_to_dvc(self, repo: Repo) -> List[Path]:
         """Add all testcases folders to DVC tracking."""
         dvc_files = []
-        i = 1
-        for testcase in self.testcases:
+        for i, testcase in enumerate(self.testcases, start=1):
             print(f"Adding: {testcase.name} - {i}/{len(self.testcases)} cases - {self.xml_file}")
             dvc_files.extend(testcase.add_to_dvc(repo=repo))
-            i += 1
 
         return dvc_files

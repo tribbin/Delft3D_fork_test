@@ -64,12 +64,10 @@ def extract_data_from_xml_files(xml_files: list[Path]) -> list[XmlFileWithTestCa
     """Loop over xml files and parse testcase data."""
     print("Extracting testcase data from XML files...")
     parsed_xmls = []
-    i = 1
-    for xml_file in xml_files:
+    for i, xml_file in enumerate(xml_files, start=1):
         testcases = extract_testcase_data(xml_file, BASE_URL, S3_BUCKET)
         parsed_xmls.append(XmlFileWithTestCaseData(xml_file=xml_file, testcases=testcases))
         print(f"Processed {i}/{len(xml_files)}: {Path(xml_file).name}, found {len(testcases)} testcases")
-        i += 1
     return parsed_xmls
 
 
@@ -94,11 +92,9 @@ def main() -> None:
         xml_file.move_testcases_doc_folder_to_parent()
 
     dvc_files = []
-    i = 1
-    for xml_file in xml_files_with_data:
+    for i, xml_file in enumerate(xml_files_with_data, start=1):
         print(f"Add testcases {xml_file.xml_file.name} to dvc - {i}/{len(xml_files_with_data)} xml's")
         dvc_files.extend(xml_file.add_to_dvc(repo=repo))
-        i += 1
 
     push_dvc_files_to_remote(repo, dvc_files)
 
