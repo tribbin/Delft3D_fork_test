@@ -663,7 +663,7 @@ contains
 
    end subroutine set_parameters_for_3d_dissipation_driven_forces
    
-   !> set wave parameters for jawave == 7 (offline wave coupling) and waveforcing == 3 (wave forces via 3D dissipation distribution)
+   !> set wave parameters for jawave == 7 (offline wave coupling) and waveforcing == 0 (no wave forces)
    subroutine set_parameters_for_no_wave_forces()
 
       twav(:) = 0.0_dp
