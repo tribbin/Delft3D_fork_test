@@ -426,6 +426,11 @@ contains
             elseif (jawave == WAVE_NC_OFFLINE .and. waveforcing == WAVEFORCING_DISSIPATION_3D) then
                !
                call set_parameters_for_3d_dissipation_driven_forces()
+               !
+            elseif (jawave == WAVE_NC_OFFLINE .and. waveforcing == WAVEFORCING_NO_WAVEFORCES) then
+               !
+               call set_parameters_for_no_wave_forces()
+               !
             else
                !
                call set_all_wave_parameters()
@@ -657,6 +662,25 @@ contains
       uorbwav(:) = 0.0_dp
 
    end subroutine set_parameters_for_3d_dissipation_driven_forces
+   
+   !> set wave parameters for jawave == 7 (offline wave coupling) and waveforcing == 3 (wave forces via 3D dissipation distribution)
+   subroutine set_parameters_for_no_wave_forces()
+
+      twav(:) = 0.0_dp
+      success = success .and. ecGetValues(ecInstancePtr, item_tp, ecTime)
+      success = success .and. ecGetValues(ecInstancePtr, item_dir, ecTime)
+      success = success .and. ecGetValues(ecInstancePtr, item_hrms, ecTime)
+      sxwav(:) = 0.0_dp
+      sywav(:) = 0.0_dp
+      dsurf(:) = 0.0_dp
+      dwcap(:) = 0.0_dp
+      sbxwav(:) = 0.0_dp
+      sbywav(:) = 0.0_dp
+      mxwav(:) = 0.0_dp
+      mywav(:) = 0.0_dp
+      uorbwav(:) = 0.0_dp
+
+   end subroutine set_parameters_for_no_wave_forces
 
 !> convert wave direction [degrees] from nautical to cartesian meteorological convention
    elemental function convert_wave_direction_from_nautical_to_cartesian(nautical_wave_direction) result(cartesian_wave_direction)
