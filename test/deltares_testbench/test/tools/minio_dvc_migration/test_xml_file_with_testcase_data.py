@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from src.config.test_case_path import TestCasePath
-from test.helpers.xml_config_helper import XmlConfigHelper
+from test.helpers.xml_config_helper import make_test_case_config_xml
 from tools.minio_dvc_migration.xml_file_with_testcase_data import XmlFileWithTestCaseData
 
 
@@ -12,7 +12,7 @@ def test_migration_of_minio_to_dvc_testcases_xml(tmp_path: Path) -> None:
     """Test that XML file migration updates paths correctly."""
     # Arrange
     version = datetime.now(timezone.utc).isoformat()
-    xml_content_stream = XmlConfigHelper.make_test_case_config(
+    xml_content_stream = make_test_case_config_xml(
         test_case_path=TestCasePath("test/case/path", version=version),
         case_root="{server_base_url}/cases",
         reference_root="{server_base_url}/references",
@@ -44,7 +44,7 @@ def test_migration_of_minio_to_dvc_testcases_xml_with_included_xml(tmp_path: Pat
     version = datetime.now(timezone.utc).isoformat()
 
     # Create the included XML file
-    included_xml_content = XmlConfigHelper.make_test_case_config(
+    included_xml_content = make_test_case_config_xml(
         test_case_path=TestCasePath("included/test/case", version=version),
         case_root="{server_base_url}/cases",
         reference_root="{server_base_url}/references",
@@ -56,7 +56,7 @@ def test_migration_of_minio_to_dvc_testcases_xml_with_included_xml(tmp_path: Pat
 
     # Create the main XML file that includes the other file
     xi_include = '<xi:include href="included_config.xml"/>'
-    main_xml_content = XmlConfigHelper.make_test_case_config(
+    main_xml_content = make_test_case_config_xml(
         test_case_path=TestCasePath("main/test/case", version=version),
         case_root="{server_base_url}/cases",
         reference_root="{server_base_url}/references",
