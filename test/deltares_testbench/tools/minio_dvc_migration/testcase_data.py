@@ -30,6 +30,8 @@ class TestCaseDataResult:
 class TestCaseData:
     """Test case data for XML parsing."""
 
+    __test__ = False
+
     xml_file: str = ""
     name: str = ""
     result: TestCaseDataResult = field(default_factory=TestCaseDataResult)
@@ -69,7 +71,7 @@ class TestCaseData:
         if result:
             dvc_files.extend(result)
         else:
-            print(f"Failed to add case to DVC: {case_path}")
+            raise RuntimeError(f"Failed to add case to DVC: {case_path}")
 
         reference_path = self.reference.to_local()
         print(f"Adding reference to DVC: {reference_path}")
@@ -77,7 +79,7 @@ class TestCaseData:
         if result:
             dvc_files.extend(result)
         else:
-            print(f"Failed to add reference to DVC: {reference_path}")
+            raise RuntimeError(f"Failed to add reference to DVC: {reference_path}")
 
         case_doc_folder = Path(case_path).parent / "doc"
         print(f"Adding doc folder to DVC: {case_doc_folder}")
@@ -85,7 +87,7 @@ class TestCaseData:
         if result:
             dvc_files.extend(result)
         else:
-            print(f"Failed to add doc folder to DVC: {case_doc_folder}")
+            raise RuntimeError(f"Failed to add doc folder to DVC: {case_doc_folder}")
 
         return dvc_files
 

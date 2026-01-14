@@ -3,6 +3,8 @@
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pytest
+
 from src.config.test_case_path import TestCasePath
 from test.helpers.xml_config_helper import make_test_case_config_xml
 from tools.minio_dvc_migration.xml_file_with_testcase_data import XmlFileWithTestCaseData
@@ -36,6 +38,17 @@ def test_migration_of_minio_to_dvc_testcases_xml(tmp_path: Path) -> None:
     assert "{server_base_url}/references" not in modified_content
     assert 'version="DVC"' in modified_content
     assert f'version="{version}"' not in modified_content
+
+
+def test_migrate_xml_to_dvc_missing_file(tmp_path: Path) -> None:
+    """Ensure migrate_xml_to_dvc raises when the XML file is absent."""
+    # Arrange
+    missing_xml = tmp_path / "absent.xml"
+    xml_data = XmlFileWithTestCaseData(missing_xml, [])
+
+    # Act & Assert
+    with pytest.raises(FileNotFoundError, match="XML file does not exist"):
+        xml_data.migrate_xml_to_dvc()
 
 
 def test_migration_of_minio_to_dvc_testcases_xml_with_included_xml(tmp_path: Path) -> None:

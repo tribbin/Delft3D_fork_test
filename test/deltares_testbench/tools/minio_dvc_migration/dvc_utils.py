@@ -34,8 +34,7 @@ def find_dvc_root_in_parent_directories(start_path: Path) -> str:
 def add_directory_to_dvc(path: Path, repo: Repo) -> List[Path]:
     """Add downloaded case and reference data to DVC tracking and return created .dvc files."""
     if not path.exists():
-        print(f"Warning: Path does not exist: {path}")
-        return []
+        raise FileNotFoundError(f"Path does not exist: {path}")
 
     try:
         stages = repo.add(str(path))  # returns list of stage-like objects

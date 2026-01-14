@@ -25,8 +25,7 @@ class XmlFileWithTestCaseData:
         print(f"Update xml: {xml_path}")
 
         if not xml_path.exists():
-            print(f"Warning: XML file does not exist: {xml_path}")
-            return
+            raise FileNotFoundError(f"XML file does not exist: {xml_path}")
 
         try:
             # Read the file to detect original encoding
