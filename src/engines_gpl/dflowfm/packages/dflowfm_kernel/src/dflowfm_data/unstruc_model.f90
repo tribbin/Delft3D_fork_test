@@ -3661,7 +3661,7 @@ contains
          else
             fww = 0
          end if
-         call prop_set(prop_ptr, 'waves', 'flow_without_waves', fww, '1: Do not use wave data in the flow computations, it will only be passed through to D-WAQ; 0: use wave information. Default 0.')
+         call prop_set(prop_ptr, 'waves', 'FlowWithoutWaves', fww, '1: Do not use wave data in the flow computations, it will only be passed through to D-WAQ; 0: use wave information. Default 0.')
          if (writeall .or. hwavuni /= 0.0_dp) then
             call prop_set(prop_ptr, 'waves', 'Hwavuni', hwavuni, 'root mean square wave height (m)')
             call prop_set(prop_ptr, 'waves', 'Twavuni', twavuni, 'root mean square wave period (s)')
