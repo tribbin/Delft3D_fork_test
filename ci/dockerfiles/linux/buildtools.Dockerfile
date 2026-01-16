@@ -29,7 +29,7 @@ dnf config-manager --set-enabled powertools
 # uses the standard library of gcc/g++.
 dnf install --assumeyes \
     which binutils patchelf diffutils procps m4 make gcc-toolset-14 \
-    openssl openssl-devel wget perl python3 xz curl-devel
+    wget perl python3 xz
 
 # For Intel oneAPI, explicitly list the common-vars version, otherwise some much newer versions of packages will also be installed
 # as dependencies. Furthure, do not use intel 2023.2.1, since the dependencies of mkl 2023.2.0 will then also install the C++
@@ -123,7 +123,7 @@ fi
 export CC=icx CXX=icpx CFLAGS="-O3" CXXFLAGS="-O3"
 
 pushd /var/cache/src/cmake-3.30.3
-./bootstrap --parallel=$(nproc)
+./bootstrap --parallel=$(nproc) -- -DCMAKE_USE_OPENSSL=OFF
 make --jobs=$(nproc)
 make install
 popd
