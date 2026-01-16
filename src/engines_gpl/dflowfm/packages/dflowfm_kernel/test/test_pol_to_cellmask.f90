@@ -675,6 +675,226 @@ contains
    end subroutine test_incells_edge_cases
 !$f90tw)
 
+!$f90tw TESTCODE(TEST, test_pol_to_cellmask, test_samples_to_cellmask_basic, test_samples_to_cellmask_basic,
+   subroutine test_samples_to_cellmask_basic() bind(C)
+      ! Test samples_to_cellmask: mark cells that contain at least one sample
+      use m_samples_to_cellmask, only: samples_to_cellmask
+      use m_samples, only: ns, xs, ys
+      use network_data, only: netcell, nump, cellmask
+      use m_alloc, only: realloc
+
+      integer :: i
+
+      ! Setup simple test network: 5 square cells in a row
+      nump = 5
+      call setup_row_netcells()
+
+      ! Setup samples:
+      ! - Cell 1 (0-10): No samples
+      ! - Cell 2 (10-20): One sample at (15, 5)
+      ! - Cell 3 (20-30): Multiple samples at (22, 5), (25, 5), (28, 5)
+      ! - Cell 4 (30-40): No samples
+      ! - Cell 5 (40-50): One sample at (45, 5)
+
+      ns = 5
+      call realloc(xs, ns, keepexisting=.false.)
+      call realloc(ys, ns, keepexisting=.false.)
+
+      ! Cell 2: one sample
+      xs(1) = 15.0_dp
+      ys(1) = 5.0_dp
+
+      ! Cell 3: three samples
+      xs(2) = 22.0_dp
+      ys(2) = 5.0_dp
+
+      xs(3) = 25.0_dp
+      ys(3) = 5.0_dp
+
+      xs(4) = 28.0_dp
+      ys(4) = 5.0_dp
+
+      ! Cell 5: one sample
+      xs(5) = 45.0_dp
+      ys(5) = 5.0_dp
+
+      ! Call the optimized function
+      call samples_to_cellmask()
+
+      ! Verify results:
+      ! Cell 1: No samples -> mask=0
+      call f90_expect_eq(cellmask(1), 0, "Cell 1 should not be masked (no samples)")
+
+      ! Cell 2: One sample -> mask=1
+      call f90_expect_eq(cellmask(2), 1, "Cell 2 should be masked (one sample)")
+
+      ! Cell 3: Multiple samples -> mask=1
+      call f90_expect_eq(cellmask(3), 1, "Cell 3 should be masked (multiple samples)")
+
+      ! Cell 4: No samples -> mask=0
+      call f90_expect_eq(cellmask(4), 0, "Cell 4 should not be masked (no samples)")
+
+      ! Cell 5: One sample -> mask=1
+      call f90_expect_eq(cellmask(5), 1, "Cell 5 should be masked (one sample)")
+
+      ! Cleanup
+      call cleanup_row_netcells()
+      deallocate (xs, ys, cellmask)
+
+   end subroutine test_samples_to_cellmask_basic
+   !$f90tw)
+
+   !$f90tw TESTCODE(TEST, test_pol_to_cellmask, test_samples_to_cellmask_edge_cases, test_samples_to_cellmask_edge_cases,
+   subroutine test_samples_to_cellmask_edge_cases() bind(C)
+      ! Test edge cases: no samples, samples outside all cells, samples on boundaries
+      use m_samples_to_cellmask, only: samples_to_cellmask
+      use m_samples, only: ns, xs, ys
+      use network_data, only: nump, cellmask
+      use m_alloc, only: realloc
+
+      ! Test 1: No samples at all
+      nump = 3
+      call setup_row_netcells_small()
+
+      ns = 0
+      if (allocated(xs)) deallocate (xs)
+      if (allocated(ys)) deallocate (ys)
+      allocate (xs(0), ys(0))
+
+      call samples_to_cellmask()
+
+      ! All cells should be unmarked
+      call f90_expect_eq(cellmask(1), 0, "No samples: Cell 1 should not be masked")
+      call f90_expect_eq(cellmask(2), 0, "No samples: Cell 2 should not be masked")
+      call f90_expect_eq(cellmask(3), 0, "No samples: Cell 3 should not be masked")
+
+      call cleanup_row_netcells_small()
+      deallocate (xs, ys, cellmask)
+
+      ! Test 2: Samples outside all cells
+      nump = 3
+      call setup_row_netcells_small()
+
+      ns = 2
+      call realloc(xs, ns, keepexisting=.false.)
+      call realloc(ys, ns, keepexisting=.false.)
+
+      xs(1) = -5.0_dp  ! Outside to the left
+      ys(1) = 5.0_dp
+
+      xs(2) = 35.0_dp  ! Outside to the right
+      ys(2) = 5.0_dp
+
+      call samples_to_cellmask()
+
+      ! All cells should be unmarked
+      call f90_expect_eq(cellmask(1), 0, "Outside samples: Cell 1 should not be masked")
+      call f90_expect_eq(cellmask(2), 0, "Outside samples: Cell 2 should not be masked")
+      call f90_expect_eq(cellmask(3), 0, "Outside samples: Cell 3 should not be masked")
+
+      call cleanup_row_netcells_small()
+      deallocate (xs, ys, cellmask)
+
+      ! Test 3: Sample on cell boundary (should be counted as inside)
+      nump = 3
+      call setup_row_netcells_small()
+
+      ns = 1
+      call realloc(xs, ns, keepexisting=.false.)
+      call realloc(ys, ns, keepexisting=.false.)
+
+      xs(1) = 10.0_dp  ! Exactly on boundary between cell 1 and 2
+      ys(1) = 5.0_dp
+
+      call samples_to_cellmask()
+
+      ! At least one cell should be marked (boundary behavior)
+      call f90_expect_true(cellmask(1) == 1 .or. cellmask(2) == 1, "Boundary sample: at least one cell should be masked")
+
+      call cleanup_row_netcells_small()
+      deallocate (xs, ys, cellmask)
+
+   end subroutine test_samples_to_cellmask_edge_cases
+   !$f90tw)
+
+   ! Helper subroutine: setup 5 cells in a row (0-10, 10-20, 20-30, 30-40, 40-50)
+   subroutine setup_row_netcells()
+      use network_data, only: netcell, nump, xk, yk, numk, nump1d2d
+      use m_alloc, only: realloc
+      integer :: i, ierr
+
+      if (allocated(netcell)) deallocate (netcell)
+      allocate (netcell(nump), stat=ierr)
+
+      numk = 24  ! 5 cells * 4 corners + 4 shared corners
+      call realloc(xk, numk, keepexisting=.false.)
+      call realloc(yk, numk, keepexisting=.false.)
+      nump1d2d = 5
+
+      ! Create 5 square cells in a row
+      do i = 1, nump1d2d
+         ! Cell i: square from (i-1)*10 to i*10, y from 0 to 10
+         xk((i - 1) * 4 + 1:(i - 1) * 4 + 4) = [(i - 1) * 10.0_dp, i * 10.0_dp, i * 10.0_dp, (i - 1) * 10.0_dp]
+         yk((i - 1) * 4 + 1:(i - 1) * 4 + 4) = [0.0_dp, 0.0_dp, 10.0_dp, 10.0_dp]
+
+         netcell(i)%N = 4
+         allocate (netcell(i)%nod(4))
+         netcell(i)%nod = [(i - 1) * 4 + 1, (i - 1) * 4 + 2, (i - 1) * 4 + 3, (i - 1) * 4 + 4]
+      end do
+
+   end subroutine setup_row_netcells
+
+   subroutine cleanup_row_netcells()
+      use network_data, only: netcell, xk, yk, nump1d2d
+      integer :: i
+
+      do i = 1, size(netcell)
+         if (allocated(netcell(i)%nod)) deallocate (netcell(i)%nod)
+      end do
+      if (allocated(netcell)) deallocate (netcell)
+      if (allocated(xk)) deallocate (xk)
+      if (allocated(yk)) deallocate (yk)
+      nump1d2d = 0
+
+   end subroutine cleanup_row_netcells
+
+   ! Helper subroutine: setup 3 cells in a row (0-10, 10-20, 20-30)
+   subroutine setup_row_netcells_small()
+      use network_data, only: netcell, nump, xk, yk, numk, nump1d2d
+      use m_alloc, only: realloc
+      integer :: i, ierr
+
+      if (allocated(netcell)) deallocate (netcell)
+      allocate (netcell(nump), stat=ierr)
+
+      numk = 12  ! 3 cells * 4 corners
+      call realloc(xk, numk, keepexisting=.false.)
+      call realloc(yk, numk, keepexisting=.false.)
+      nump1d2d = 3
+      do i = 1, nump1d2d
+         xk((i - 1) * 4 + 1:(i - 1) * 4 + 4) = [(i - 1) * 10.0_dp, i * 10.0_dp, i * 10.0_dp, (i - 1) * 10.0_dp]
+         yk((i - 1) * 4 + 1:(i - 1) * 4 + 4) = [0.0_dp, 0.0_dp, 10.0_dp, 10.0_dp]
+
+         netcell(i)%N = 4
+         allocate (netcell(i)%nod(4))
+         netcell(i)%nod = [(i - 1) * 4 + 1, (i - 1) * 4 + 2, (i - 1) * 4 + 3, (i - 1) * 4 + 4]
+      end do
+
+   end subroutine setup_row_netcells_small
+
+   subroutine cleanup_row_netcells_small()
+      use network_data, only: netcell, xk, yk
+      integer :: i
+
+      do i = 1, size(netcell)
+         if (allocated(netcell(i)%nod)) deallocate (netcell(i)%nod)
+      end do
+      if (allocated(netcell)) deallocate (netcell)
+      if (allocated(xk)) deallocate (xk)
+      if (allocated(yk)) deallocate (yk)
+
+   end subroutine cleanup_row_netcells_small
+
 ! ============================================================================
 ! Helper subroutines for setting up test geometries
 ! ============================================================================

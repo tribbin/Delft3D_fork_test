@@ -27,75 +27,56 @@
 !
 !-------------------------------------------------------------------------------
 
-!
-!
-
-! update cellmask from samples
-module m_samples_to_cellmask2
+!> Update cellmask from samples - optimized version with early exit per cell
+module m_samples_to_cellmask
 
    use precision, only: dp
    implicit none
 
 contains
 
-   subroutine samples_to_cellmask2()
+   subroutine samples_to_cellmask()
 
-      use network_data, only: cellmask, nump1d2d, increasepol, nump, npl, netcell, xpl, xk, ypl, yk, zpl
-      use m_samples, only: zs, ns, xs, ys
-      use geometry_module, only: dbpinpol_optinside_perpol2, ipolyfound
-      use m_missing, only: dmiss
+      use network_data, only: cellmask, nump1d2d
+      use m_samples, only: ns, xs, ys
+      use m_cellmask_from_polygon_set, only: init_cell_geom_as_polylines, point_find_netcell, cleanup_cell_geom_polylines
+      use m_alloc, only: realloc
 
-      implicit none
+      integer :: i, k
 
-      integer :: i, in, k, kk, n, nn, num
+      ! Allocate and initialize cellmask
+      call realloc(cellmask, nump1d2d, keepexisting=.false., fill=0)
 
-      if (allocated(cellmask)) then
-         deallocate (cellmask)
+      ! Early exit if no samples
+      if (ns == 0) then
+         return
       end if
-      allocate (cellmask(nump1d2d))
-      cellmask = 0
 
-      zs(1:ns) = 1
+      ! Initialize the spatial index for all netcells
+      ! This builds bounding boxes and polygon data structures for fast point-in-polygon tests
+      call init_cell_geom_as_polylines()
 
-      call increasepol(6 * nump, 0)
-      npl = 0
-
-      do k = 1, nump
-         nn = netcell(k)%N
-         if (nn < 1) then
-            cycle
-         end if
-
-         do n = 1, nn
-            kk = netcell(k)%nod(n)
-            npl = npl + 1
-            xpl(npl) = xk(kk)
-            ypl(npl) = yk(kk)
-            zpl(npl) = 1.0_dp
+      ! Parallel loop over cells with early exit
+      ! Each cell checks samples until it finds one inside, then exits
+      !> Dynamic scheduling in case of unequal work, chunksize guided
+      !$OMP PARALLEL DO SCHEDULE(GUIDED) PRIVATE(i)
+      do k = 1, nump1d2d
+         ! Check all samples for this cell
+         do i = 1, ns
+            ! Fast point-in-polygon test with bounding box optimization
+            if (point_find_netcell(xs(i), ys(i)) == k) then
+               ! Found a sample in this cell, mark it and move to next cell
+               cellmask(k) = 1
+               exit
+            end if
          end do
-         npl = npl + 1
-         xpl(npl) = dmiss
-         ypl(npl) = dmiss
-         zpl(npl) = dmiss
-
       end do
+      !$OMP END PARALLEL DO
 
-      in = -1
-
-      do i = 1, NS !  generate cell mask
-
-         !call dbpinpol(xs(i), ys(i), in, dmiss, 1, NPL, xpl, ypl, zpl) ! ALS JE VOOR VEEL PUNTEN MOET NAGAAN OF ZE IN POLYGON ZITTEN
-
-         call dbpinpol_optinside_perpol2(xs(i), ys(i), 0, 0, in, num, dmiss, 1, NPL, xpl, ypl, zpl)
-         ! call pinpok(xs(i), ys(i), nn, xx, yy, in, jins, dmiss)
-
-         if (ipolyfound > 0) then
-            cellmask(ipolyfound) = 1
-         end if
-
-      end do
+      ! Cleanup spatial index
+      call cleanup_cell_geom_polylines()
 
       return
-   end subroutine samples_to_cellmask2
+   end subroutine samples_to_cellmask
 
-end module m_samples_to_cellmask2
+end module m_samples_to_cellmask
