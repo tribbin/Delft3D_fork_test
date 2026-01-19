@@ -35,7 +35,7 @@ def add_directory_to_dvc(path: Path, repo: Repo) -> List[Path]:
         raise FileNotFoundError(f"Path does not exist: {path}")
 
     try:
-        stages = repo.add(repo=repo, targets=[str(path)])  # returns list of stage-like objects
+        stages = repo.add(targets=[str(path)])  # type: ignore[call-arg]
         dvc_files: List[Path] = []
 
         for s in stages:
