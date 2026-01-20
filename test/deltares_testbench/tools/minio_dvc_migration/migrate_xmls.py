@@ -72,14 +72,13 @@ def extract_data_from_xml_files(xml_files: list[Path]) -> list[XmlFileWithTestCa
     return parsed_xmls
 
 
-
 def main() -> None:
     """Execute main functionality for the minio to DVC migration tool."""
     args = parse_arguments()
 
     xml_files = determine_xml_files_to_process(args)
     xml_files_with_all_testcases = extract_data_from_xml_files(xml_files)
-        
+
     xml_files_with_testcases_to_migrate = filter_cases_to_migrate(xml_files_with_all_testcases)
 
     rewinder = setup_minio_rewinder(BASE_URL)

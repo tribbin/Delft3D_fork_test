@@ -24,11 +24,10 @@ class XmlFileWithTestCaseData:
     def __init__(self, xml_file: Path, testcases: list[TestCaseData]) -> None:
         self.xml_file = xml_file
         self.testcases = testcases
-        
+
     def migrate_xml_to_dvc(self) -> None:
         """Update XML file to use DVC and local data paths."""
         self.__migrate_included_xml_to_dvc(self.xml_file)
-
 
     def __migrate_included_xml_to_dvc(self, xml_path: Path | None = None) -> None:
         """Migrate a single XML file to use DVC and local data paths."""
@@ -96,7 +95,6 @@ class XmlFileWithTestCaseData:
         Only locations that are referenced by (default) testcases are updated.
         Unreferenced locations are left unchanged.
         """
-
         referenced_location_names: set[str] = set()
         testcase_locations = root.findall(".//tb:testCase/tb:location", namespace)
         for testcase_location in testcase_locations:
@@ -113,7 +111,6 @@ class XmlFileWithTestCaseData:
             root_elem = config_location.find("tb:root", namespace)
             if root_elem is not None:
                 root_elem.text = "./data/cases"
-
 
     def __update_testcase_version(self, root: etree._Element, namespace: dict[str, str]) -> None:
         """Update the version attribute for migrated testcases to 'DVC'.
@@ -174,14 +171,12 @@ def filter_cases_to_migrate(xmls: list[XmlFileWithTestCaseData]) -> list[XmlFile
     xmls_with_minio_testcases: list[XmlFileWithTestCaseData] = []
 
     for xml in xmls:
-        migrate_cases = [
-            tc
-            for tc in xml.testcases
-            if rewind_timestep_2_datetime(tc.version.strip()) is not None
-        ]
+        migrate_cases = [tc for tc in xml.testcases if rewind_timestep_2_datetime(tc.version.strip()) is not None]
         if migrate_cases:
             xmls_with_minio_testcases.append(XmlFileWithTestCaseData(xml_file=xml.xml_file, testcases=migrate_cases))
-            print(f"XML {xml.xml_file.name} has {len(migrate_cases)} of {len(xml.testcases)} total testcases to migrate")
+            print(
+                f"XML {xml.xml_file.name} has {len(migrate_cases)} of {len(xml.testcases)} total testcases to migrate"
+            )
         else:
             print(f"All testcases in XML {xml.xml_file.name} are not in MinIO or already in DVC")
 

@@ -1,9 +1,9 @@
 """Unit tests for XML file with testcase data migration."""
 
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-import re
 import pytest
 
 from src.config.test_case_path import TestCasePath
@@ -133,6 +133,7 @@ def test_migration_preserves_non_parseable_version(tmp_path: Path) -> None:
     assert f'version="{version}"' in modified_content
     assert 'version="DVC"' not in modified_content
 
+
 def _tc(version: str) -> TestCaseData:
     return TestCaseData(name="tc", version=version)
 
@@ -208,7 +209,8 @@ def test_migration_of_locations_testcases_xml(tmp_path: Path) -> None:
     assert get_location_root(modified_content, "dsctestbench-cases") == "./data/cases"
     assert get_location_root(modified_content, "dsctestbench-references") == "./data/cases"
     assert get_location_root(modified_content, "unrelated_location") == "{server_base_url}/references"
-   
+
+
 def get_location_root(content: str, location_name: str) -> str:
     match = re.search(
         rf'<location\s+name="{re.escape(location_name)}"\s*>.*?<root>(.*?)</root>',
