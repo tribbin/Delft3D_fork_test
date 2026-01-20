@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Optional
 
 import urllib3
-
 from minio import Minio
 
 from src.config.credentials import Credentials
