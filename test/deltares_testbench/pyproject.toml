@@ -28,7 +28,7 @@ dependencies = [
     "lxml ~= 5.1",
     "pyarrow ~= 16.1", # PyArrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0)
     "pandas ~= 2.0",
-    "matplotlib ~= 3.10.8",
+    "matplotlib >=3.7,<3.9",
     "numpy ~= 1.24",
     "minio ~= 7.2",
     "s3-path-wrangler ~= 0.5",
@@ -40,14 +40,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    # "mypy ~= 1.9",
+    "mypy ~= 1.9",
     "pyfakefs ~= 5.3",
     "pytest ~= 8.0",
     "pytest-cov ~= 6.1.1",
     "pytest-mock ~= 3.12",
     "ruff ~= 0.4",
     "requests ~= 2.32",
-    "ty ~= 0.0.12",
 ]
 
 # Ruff settings (linting and formatting).
@@ -103,12 +102,20 @@ ignore = [
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"  # https://numpydoc.readthedocs.io/en/latest/format.html
 
-[tool.ty.src]
-include = [
-    "src",
-    "test",
-    "tools",
+# Mypy settings (type checking)
+# https://mypy.readthedocs.io/en/stable/config_file.html
+[tool.mypy]
+warn_unused_configs = true
+warn_return_any = true
+pretty = true
+show_error_context = true
+
+# Gets rid of complaints that type stubs are not installed for selected modules.
+[[tool.mypy.overrides]]
+module = [
+    "s3_path_wrangler.*"
 ]
+ignore_missing_imports = true
 
 # Pytest settings
 # https://docs.pytest.org/en/stable/reference/customize.html
