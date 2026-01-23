@@ -17,7 +17,6 @@ from src.config.test_case_path import TestCasePath
 from src.config.types.path_type import PathType
 from src.suite.comparison_runner import ComparisonRunner
 from src.suite.test_bench_settings import TestBenchSettings
-from src.suite.test_set_runner import TestSetRunner
 from src.utils.common import get_default_logging_folder_path
 from src.utils.comparers.end_result import EndResult
 from src.utils.logging.console_logger import ConsoleLogger
@@ -33,6 +32,7 @@ class TestComparisonRunner:
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
         settings.command_line_settings.skip_run = True
+        settings.command_line_settings.skip_download = []
         ref_location = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
         case_location = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         config = TestComparisonRunner.create_test_case_config("Name_1", locations=[ref_location, case_location])
@@ -89,6 +89,7 @@ class TestComparisonRunner:
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths()
         settings.command_line_settings.skip_run = True
+        settings.command_line_settings.skip_download = []
         ref_location = TestComparisonRunner.create_location(name="reference", location_type=PathType.REFERENCE)
         case_location = TestComparisonRunner.create_location(name="case", location_type=PathType.INPUT)
         now = datetime.now(timezone.utc).replace(second=0, microsecond=0)
@@ -122,7 +123,7 @@ class TestComparisonRunner:
         settings = TestBenchSettings()
         settings.local_paths = LocalPaths(cases_path="data/cases", references_path="data/cases")
         settings.command_line_settings.skip_run = True
-
+        settings.command_line_settings.skip_download = []
         testcase_path = TestCasePath(prefix="abc/prefix", version="DVC")
 
         ref_location = TestComparisonRunner.create_location(
@@ -259,6 +260,7 @@ class TestComparisonRunner:
         # Arrange
         # Create settings
         settings = TestBenchSettings()
+        settings.command_line_settings.skip_run = False
         settings.command_line_settings.parallel = False
         settings.local_paths = LocalPaths()
         # Ghastly trick to ensure that the unit test doesn't make any actual web requests.
@@ -292,7 +294,7 @@ class TestComparisonRunner:
         )
         # Make `getError` first return an error, then no error.
         return_values = iter([RuntimeError("Failed to frobnicate"), None])
-        get_error_mock = mocker.patch("src.suite.test_case.Program.getError", side_effect=lambda next(return_values))
+        mocker.patch("src.suite.test_case.Program.getError", side_effect=lambda: next(return_values))
         # Make the return code of the program `1`, and then `0`.
         return_code_mock.side_effect = [1, 0]
 
