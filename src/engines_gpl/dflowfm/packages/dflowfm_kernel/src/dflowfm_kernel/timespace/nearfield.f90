@@ -38,7 +38,7 @@ module m_nearfield
    use fm_external_forcings_data
    use m_transport
 
-   implicit none
+   implicit none(type, external)
    private
 
    public :: default_nearfieldData
@@ -226,8 +226,7 @@ contains
 !> Result: "NearField arrays on FM domain" are filled (nf_sink_n, nf_sour_n, ..., nf_intake_z)
    subroutine desa()
       use m_alloc, only: realloc
-      !
-      ! Locals
+
       integer :: idif
       integer :: istat
       integer :: jakdtree = 1 !< use kdtree (1) or not (other)
@@ -362,7 +361,6 @@ contains
       !
       ! Locals
       integer :: i
-      integer :: istat
       real(hp), dimension(:), allocatable :: find_x !< array containing x-coordinates of locations for which the cell index n is searched for by calling find_flownode
       real(hp), dimension(:), allocatable :: find_y !< array containing y-coordinates of locations for which the cell index n is searched for by calling find_flownode
       character(IdLen), dimension(:), allocatable :: find_name !< array containing names         of locations for which the cell index n is searched for by calling find_flownode
@@ -371,12 +369,7 @@ contains
       call realloc(find_x, nf_numsink, keepExisting=.false., fill=0.0_hp)
       call realloc(find_y, nf_numsink, keepExisting=.false., fill=0.0_hp)
       call realloc(find_n, nf_numsink, keepExisting=.false., fill=0)
-      call realloc(find_name, nf_numsink
-      if (allocated(find_name)) then
-         deallocate (find_name, stat=istat)
-      end if
-      allocate (character(IdLen) :: find_name(nf_numsink), stat=istat)
-      find_name = ' '
+      call realloc(find_name, nf_numsink, keepExisting=.false., fill=' ')
       do i = 1, nf_numsink
          find_x(i) = nf_sink(idif, i, NF_IX)
          find_y(i) = nf_sink(idif, i, NF_IY)
@@ -409,7 +402,6 @@ contains
       ! Locals
       integer :: i
       integer :: j
-      integer :: istat
       integer :: nf_intake_cnt
       integer :: nk
       integer :: kbot
@@ -423,12 +415,7 @@ contains
       call realloc(find_x, nf_numintake, keepExisting=.false., fill=0.0_hp)
       call realloc(find_y, nf_numintake, keepExisting=.false., fill=0.0_hp)
       call realloc(find_n, nf_numintake, keepExisting=.false., fill=0)
-      !call realloc(nf_numintake_idif, nf_num_dif, keepExisting=.false., fill = 0)
-      if (allocated(find_name)) then
-         deallocate (find_name, stat=istat)
-      end if
-      allocate (character(IdLen) :: find_name(nf_numintake), stat=istat)
-      find_name = ' '
+      call realloc(find_name, nf_numintake, keepExisting=.false., fill=' ')
       do i = 1, nf_numintake
          if (comparereal(nf_intake(idif, i, NF_IX), 0.0_hp) == 0 .and. &
              comparereal(nf_intake(idif, i, NF_IY), 0.0_hp) == 0) then
@@ -507,19 +494,6 @@ contains
             end if
          end do
       end if
-      !
-      if (allocated(find_x)) then
-         deallocate (find_x, stat=istat)
-      end if
-      if (allocated(find_y)) then
-         deallocate (find_y, stat=istat)
-      end if
-      if (allocated(find_name)) then
-         deallocate (find_name, stat=istat)
-      end if
-      if (allocated(find_n)) then
-         deallocate (find_n, stat=istat)
-      end if
    end subroutine getIntakeLocations
 !
 !
@@ -537,7 +511,6 @@ contains
       integer, intent(inout) :: jakdtree
       !
       ! Locals
-      integer :: istat
       integer :: isour
       integer :: itrack
       real(hp), dimension(:), allocatable :: find_x !< array containing x-coordinates of locations for which the cell index n is searched for by calling find_flownode
@@ -588,11 +561,7 @@ contains
             call realloc(find_x, NUM_TRACK, keepExisting=.false., fill=0.0_hp)
             call realloc(find_y, NUM_TRACK, keepExisting=.false., fill=0.0_hp)
             call realloc(find_n, NUM_TRACK, keepExisting=.false., fill=0)
-            if (allocated(find_name)) then
-               deallocate (find_name, stat=istat)
-            end if
-            allocate (character(IdLen) :: find_name(NUM_TRACK), stat=istat)
-            find_name = ' '
+            call realloc(find_name, NUM_TRACK, keepExisting=.false., fill=' ')
             do itrack = 1, NUM_TRACK
                find_x(itrack) = xstart + (itrack - 1) * dx
                find_y(itrack) = ystart + (itrack - 1) * dy
@@ -633,11 +602,7 @@ contains
             call realloc(find_x, nf_numsour, keepExisting=.false., fill=0.0_hp)
             call realloc(find_y, nf_numsour, keepExisting=.false., fill=0.0_hp)
             call realloc(find_n, nf_numsour, keepExisting=.false., fill=0)
-            if (allocated(find_name)) then
-               deallocate (find_name, stat=istat)
-            end if
-            allocate (character(IdLen) :: find_name(nf_numsour), stat=istat)
-            find_name = ' '
+            call realloc(find_name, nf_numsour, keepExisting=.false., fill=' ')
             do isour = 1, nf_numsour
                find_x(isour) = nf_sour(idif, isour, NF_IX)
                find_y(isour) = nf_sour(idif, isour, NF_IY)
@@ -659,19 +624,6 @@ contains
                nf_sour_wght(idif, isour) = 1.0_fp ! nf_numsour>1: each source line has a weight of 1.0
             end do
          end if
-      end if
-      !
-      if (allocated(find_x)) then
-         deallocate (find_x, stat=istat)
-      end if
-      if (allocated(find_y)) then
-         deallocate (find_y, stat=istat)
-      end if
-      if (allocated(find_name)) then
-         deallocate (find_name, stat=istat)
-      end if
-      if (allocated(find_n)) then
-         deallocate (find_n, stat=istat)
       end if
    end subroutine getSourceLocations
 !
@@ -782,7 +734,6 @@ contains
       integer :: iintake
       integer :: isour
       integer :: iconst_operator
-      integer :: istat
       integer :: sourId
       real(fp) :: area
       real(fp), dimension(:), allocatable :: intake_avg_consts !< If CONST_OPERATOR = EXCESS: Constituent values, averaged over all intake points
@@ -886,9 +837,6 @@ contains
          cssrc(2, numsrc) = cos(degrad * (90.0_hp - nf_sour(idif, sourId, NF_IUDIR)))
          snsrc(2, numsrc) = sin(degrad * (90.0_hp - nf_sour(idif, sourId, NF_IUDIR)))
       end do
-      if (allocated(intake_avg_consts)) then
-         deallocate (intake_avg_consts, stat=istat)
-      end if
    end subroutine dischargeToSrc
 !
 !
