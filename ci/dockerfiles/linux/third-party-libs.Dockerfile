@@ -691,6 +691,42 @@ cmake --install build
 popd
 EOF-precice
 
+
+FROM base AS vtk
+
+ARG DEBUG
+ARG CACHE_ID_SUFFIX
+
+RUN --mount=type=cache,target=/var/cache/src/,id=precice-${CACHE_ID_SUFFIX} <<"EOF-precice"
+source /etc/bashrc
+set -eo pipefail
+
+URL='https://vtk.org/files/release/9.5/VTK-9.5.2.tar.gz'
+BASEDIR='VTK-9.5.2'
+if [[ -d "/var/cache/src/${BASEDIR}" ]]; then
+    echo "CACHED ${BASEDIR}"
+else
+    echo "Fetching ${URL}..."
+    wget --quiet --output-document=- "$URL" | tar --extract --gzip --file=- --directory='/var/cache/src'
+fi
+
+pushd "/var/cache/src/${BASEDIR}"
+
+[[ $DEBUG = "0" ]] && BUILD_TYPE="Release" || BUILD_TYPE="Debug"
+
+cmake -S . -B build \
+    -D VTK_WRAP_PYTHON="ON" \
+    -D VTK_USE_MPI="ON" \
+    -D CMAKE_BUILD_TYPE=$BUILD_TYPE \
+    -D CMAKE_INSTALL_PREFIX=/usr/local \
+    -D CMAKE_INSTALL_LIBDIR=lib
+
+cmake --build build --parallel $(nproc)
+cmake --install build
+popd
+EOF-vtk
+
+
 FROM base AS all
 
 RUN set -eo pipefail && \
@@ -713,3 +749,4 @@ COPY --from=esmf --link /usr/local/ /usr/local/
 COPY --from=boost --link /usr/local/ /usr/local/
 COPY --from=googletest --link /usr/local/ /usr/local/
 COPY --from=precice --link /usr/local/ /usr/local/
+COPY --from=vtk --link /usr/local/ /usr/local/
