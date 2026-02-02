@@ -12,8 +12,12 @@ project(
     LANGUAGES CXX
 )
 
+if(WIN32)
+    find_package(precice REQUIRED CONFIG PATHS "${CMAKE_SOURCE_DIR}/../third_party_open/precice/precice-3_3_0_modified/lib/cmake/precice")
+else()
 # Find preCICE library
-find_package(precice REQUIRED CONFIG)
+    find_package(precice REQUIRED CONFIG)
+endif()
 
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/CompilerWarnings.cmake)
