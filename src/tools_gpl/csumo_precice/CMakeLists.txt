@@ -12,6 +12,9 @@ project(
     LANGUAGES CXX
 )
 
+# Find preCICE library
+find_package(precice REQUIRED CONFIG)
+
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/CompilerWarnings.cmake)
 
