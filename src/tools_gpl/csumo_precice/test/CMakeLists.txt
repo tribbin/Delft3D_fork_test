@@ -1,5 +1,6 @@
 enable_testing()
 set(source_files test_csumo_precice_lib.cpp)
+set(CMAKE_GTEST_DISCOVER_TESTS_DISCOVERY_MODE PRE_TEST)
 
 add_executable(test_csumo_precice_lib ${source_files})
 
