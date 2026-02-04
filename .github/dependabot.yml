@@ -8,4 +8,5 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "test/deltares_testbench/pip" # Location of package manifests
     schedule:
-      interval: "*/15 * * * *"
+      interval: "cron"
+      cronjob:  "*/10 * * * *"
