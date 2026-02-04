@@ -6,7 +6,13 @@
 version: 2
 updates:
   - package-ecosystem: "pip" # See documentation for possible values
-    directory: "/test/deltares_testbench/pip" # Location of package manifests
+    directory: "test/deltares_testbench/pip" # Location of package manifests
     schedule:
       interval: "cron"
       cronjob:  "*/10 * * * *"
+      timezone: "Europe/Amsterdam"
+    groups:
+      all-pip-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"  # Groups all dependencies
