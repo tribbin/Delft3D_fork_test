@@ -6,6 +6,6 @@
 version: 2
 updates:
   - package-ecosystem: "pip" # See documentation for possible values
-    directory: "https://github.com/tribbin/Delft3D_fork_test/tree/main/test/deltares_testbench/pip" # Location of package manifests
+    directory: "test/deltares_testbench/pip" # Location of package manifests
     schedule:
       interval: "*/15 * * * *"
