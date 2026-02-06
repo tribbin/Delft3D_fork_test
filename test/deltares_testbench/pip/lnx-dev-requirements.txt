@@ -139,7 +139,7 @@ dvc-task==0.40.2
     # via dvc
 entrypoints==0.4
     # via gto
-filelock==3.20.1
+filelock==3.20.3
     # via iterative-telemetry
 flatten-dict==0.4.2
     # via
